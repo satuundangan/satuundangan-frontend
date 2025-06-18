@@ -11,14 +11,36 @@
         Buat undangan digital cantik, simpel, dan gratis! Cocok buat kamu yang pengen tampil beda.
       </p>
       <div class="mt-8 flex justify-center gap-4">
-        <button class="bg-[#FFB3C6] hover:bg-[#ffa3b9] text-white font-semibold py-2 px-6 rounded-xl">
-          Buat Undangan
+        <button class="bg-[#FFB3C6] hover:bg-[#ffa3b9] text-white font-semibold py-2 px-6 rounded-xl"
+          @click="showModal = true">
+          Mulai Desain Gratis
         </button>
+
         <button class="border border-[#FFB3C6] text-[#FFB3C6] hover:bg-[#fff0f4] font-semibold py-2 px-6 rounded-xl">
           Lihat Contoh
         </button>
       </div>
+      <p class="text-xs text-gray-500 mt-2">*Tanpa daftar, langsung mulai aja. Bisa disimpan di browser kamu.</p>
     </section>
+
+    <!-- Modal Pilih Template -->
+    <div v-if="showModal" class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
+      <div class="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
+        <button @click="showModal = false"
+          class="absolute top-3 right-3 text-gray-500 hover:text-gray-800">&times;</button>
+        <h3 class="text-lg font-bold mb-4 text-[#FFB3C6]">Pilih Template Undangan</h3>
+        <div class="grid grid-cols-2 gap-4">
+          <div v-for="(item, index) in templates" :key="index" @click="selectTemplate(index)"
+            :class="[selectedTemplate === index ? 'border-2 border-[#FFB3C6]' : 'border border-gray-200', 'rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] transition']">
+            <img :src="item" alt="template" class="w-full h-32 object-cover" />
+          </div>
+        </div>
+        <button class="mt-6 w-full bg-[#FFB3C6] text-white py-2 rounded-xl hover:bg-[#ffa3b9] font-semibold"
+          :disabled="selectedTemplate === null" @click="goToCreate">
+          Lanjut Isi Desain
+        </button>
+      </div>
+    </div>
 
     <!-- Why Us -->
     <section class="bg-white py-16 px-6">
@@ -43,12 +65,13 @@
     <section class="py-16 px-6 bg-[#FFF6E3]">
       <h2 class="text-3xl font-bold text-center text-[#FFB3C6] mb-12">Langkah Mudah Buat Undangan</h2>
       <div class="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto text-center">
+
         <div class="flex flex-col items-center">
           <div class="bg-white p-6 rounded-full shadow w-20 h-20 flex items-center justify-center mb-4">
             <span class="text-[#FFB3C6] font-bold text-2xl">1</span>
           </div>
-          <h4 class="font-semibold">Daftar</h4>
-          <p class="text-sm text-gray-600">Buat akun dengan cepat dan mudah</p>
+          <h4 class="font-semibold">Mulai Desain</h4>
+          <p class="text-sm text-gray-600">Langsung mulai tanpa login. Desain kamu aman di browser.</p>
         </div>
         <div class="flex flex-col items-center">
           <div class="bg-white p-6 rounded-full shadow w-20 h-20 flex items-center justify-center mb-4">
@@ -67,6 +90,13 @@
         <div class="flex flex-col items-center">
           <div class="bg-white p-6 rounded-full shadow w-20 h-20 flex items-center justify-center mb-4">
             <span class="text-[#FFB3C6] font-bold text-2xl">4</span>
+          </div>
+          <h4 class="font-semibold">Daftar</h4>
+          <p class="text-sm text-gray-600">Buat akun dengan cepat dan mudah</p>
+        </div>
+        <div class="flex flex-col items-center">
+          <div class="bg-white p-6 rounded-full shadow w-20 h-20 flex items-center justify-center mb-4">
+            <span class="text-[#FFB3C6] font-bold text-2xl">5</span>
           </div>
           <h4 class="font-semibold">Sebar</h4>
           <p class="text-sm text-gray-600">Undangan siap dikirim ke semua tamu</p>
@@ -135,13 +165,32 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import Navbar from '@/components/NavbarSection.vue'
 import Footer from '@/components/FooterSection.vue'
+
+const router = useRouter()
+const showModal = ref(false)
+const selectedTemplate = ref(null)
+
 const templates = [
   '/src/assets/template1.png',
   '/src/assets/template1.png',
-  '/src/assets/template1.png',
-];
+  '/src/assets/template1.png'
+]
+
+const goToCreate = () => {
+  if (selectedTemplate.value !== null) {
+    localStorage.setItem('selectedTemplate', selectedTemplate.value)
+    console.log('apasi')
+    router.push('/create')
+  }
+}
+
+const selectTemplate = (index) => {
+  selectedTemplate.value = index
+}
 const testimonials = [
   {
     name: 'Rani & Aldi',
