@@ -1,127 +1,145 @@
 <template>
-  <div class="min-h-screen bg-[#FFF6E3] px-4 py-10 font-sans text-dark">
-    <div class="max-w-4xl mx-auto bg-white rounded-2xl shadow-xl p-6 md:p-10 space-y-10">
-      <!-- Header -->
-      <div class="text-center">
-        <h1 class="text-4xl font-bold text-[#FFB3C6] mb-2">Undangan Pernikahan</h1>
-        <p class="text-lg text-sage">Kami mengundang dengan suka cita ke pernikahan kami</p>
+  <div class="relative min-h-screen bg-black overflow-hidden font-sans">
+    <!-- Welcome Section -->
+    <transition name="invite-reveal" mode="out-in">
+      <div v-if="showWelcome"
+        class="relative flex flex-col items-center justify-center h-screen text-center px-6 text-white"
+        style="background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDhwZDZwbDh0ZjEwcmZwYnQ5ZDZqeTdqeWEzcjRoYjNkMWlveHc0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gKncmZtoUiAcQxPvap/giphy.gif'); background-size: cover; background-position: center;">
+        <div class="absolute inset-0 bg-black/40 backdrop-blur-xs"></div>
+        <div class="relative z-10 space-y-2">
+          <h1 class="text-xl tracking-widest text-gray-200">THE WEDDING OF</h1>
+          <h2 class="text-5xl font-serif font-bold">FAZA</h2>
+          <span class="text-sm text-gray-200">AND</span>
+          <h2 class="text-5xl font-serif font-bold mb-2">DIMAS</h2>
+          <p class="text-sm text-gray-100 mb-6">21.10.2023</p>
+
+          <div class="text-sm text-gray-200">Kepada Yth.</div>
+          <div class="text-xl font-semibold text-white mb-4">Nama Tamu</div>
+
+          <button @click="openInvitation"
+            class="bg-white/90 text-purple-800 py-2 px-6 rounded-md shadow hover:bg-white transition-all duration-300 delay-100">
+            💌 Open Invitation
+          </button>
+
+        </div>
       </div>
 
-      <!-- Foto Mempelai -->
-      <div v-if="data.photoCouple" class="rounded-xl overflow-hidden border border-sage/30 shadow">
-        <img :src="data.photoCouple" class="w-full h-60 object-cover" />
-      </div>
+    </transition>
 
-      <!-- Quote -->
-      <div v-if="data.quote" class="bg-[#FFFDF8] p-6 rounded-xl border-l-4 border-[#FFB3C6] shadow-sm">
-        <p class="italic text-center text-lg">“{{ data.quote }}”</p>
-      </div>
 
-      <!-- Love Story -->
-      <div v-if="data.loveStory">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">💖 Kisah Cinta</h2>
-        <p class="text-sm leading-relaxed text-gray-700">{{ data.loveStory }}</p>
-      </div>
+    <transition name="fade" mode="out-in">
+      <div v-if="!showWelcome" class="">
+        <div
+          class="relative min-h-screen flex flex-col items-center justify-center text-white text-center bg-cover bg-center"
+          :style="{ backgroundImage: `url(${backgroundUrl})` }">
+          <!-- Overlay gradasi -->
+          <div class="absolute inset-0 bg-black/30 backdrop-blur-sm"></div>
 
-      <!-- Countdown -->
-      <div v-if="data.date">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">📅 Tanggal & Waktu</h2>
-        <p class="text-sage text-lg">{{ formatDate(data.date) }}</p>
-      </div>
+          <!-- Konten utama -->
+          <div class="relative z-10 space-y-4">
+            <p class="text-sm tracking-widest uppercase text-white/80">THE WEDDING OF</p>
+            <h1 class="text-5xl font-serif font-semibold uppercase tracking-wide">REFDA</h1>
+            <p class="text-xl font-light">and</p>
+            <h1 class="text-5xl font-serif font-semibold uppercase tracking-wide">TOYYIB</h1>
+            <p class="text-sm mt-2">21.10.2024</p>
 
-      <!-- Lokasi -->
-      <div v-if="data.map">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">📍 Lokasi Acara</h2>
-        <iframe :src="data.map" class="w-full h-60 rounded-xl border border-sage/30" loading="lazy"></iframe>
+            <!-- Countdown -->
+            <div class="flex justify-center gap-6 mt-6 font-semibold">
+              <div v-for="(val, label) in countdown" :key="label" class="text-center">
+                <div class="text-3xl">{{ val }}</div>
+                <div class="text-xs uppercase tracking-wide">{{ label }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <!-- Musik -->
-      <div v-if="data.music">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">🎵 Musik</h2>
-        <iframe :src="embedMusic(data.music)" class="w-full h-40 rounded" allow="autoplay" allowfullscreen></iframe>
-      </div>
-
-      <!-- Denah -->
-      <div v-if="data.denah">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">🗺️ Denah Lokasi</h2>
-        <img :src="data.denah" class="w-full rounded-xl border border-sage/30" />
-      </div>
-
-      <!-- RSVP -->
-      <div v-if="data.rsvp === 'ya'">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">📨 RSVP</h2>
-        <p class="text-gray-600">Silakan konfirmasi kehadiran melalui fitur RSVP.</p>
-      </div>
-
-      <!-- Ucapan -->
-      <div v-if="data.wishes === 'ya'">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">💬 Ucapan</h2>
-        <p class="text-gray-600">Tamu bisa memberikan ucapan langsung dari halaman ini.</p>
-      </div>
-
-      <!-- Enkripsi -->
-      <div v-if="data.encryptedGuest === 'ya'">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">🔒 Nama Tamu</h2>
-        <p class="text-gray-600">Nama tamu akan terenkripsi secara otomatis untuk menjaga privasi.</p>
-      </div>
-
-      <!-- Menu -->
-      <div v-if="data.foodList">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">🍽️ Menu Makanan</h2>
-        <ul class="list-disc pl-5 text-gray-700">
-          <li v-for="item in data.foodList.split(',')" :key="item">{{ item.trim() }}</li>
-        </ul>
-      </div>
-
-      <!-- Gift -->
-      <div v-if="data.gift">
-        <h2 class="text-xl font-semibold text-[#FFB3C6] mb-2">🎁 Amplop & Kado</h2>
-        <p class="text-gray-700">{{ data.gift }}</p>
-      </div>
-
-      <!-- Tombol Share -->
-      <div class="text-center pt-4">
-        <button @click="saveFinal"
-          class="bg-[#FFB3C6] hover:bg-[#ffa3b9] text-white font-bold py-3 px-8 rounded-full shadow-md transition-all">
-          Bagikan Undangan 🔗
-        </button>
-      </div>
-    </div>
+    </transition>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 const data = ref({})
+const showWelcome = ref(true)
+
+function openInvitation() {
+  showWelcome.value = false
+}
+
+const backgroundUrl = 'https://i.pinimg.com/originals/b4/dc/ae/b4dcae8b4c32a650d92ace938f558c7c.jpg'
+const countdown = ref({
+  Hari: '00',
+  Jam: '00',
+  Menit: '00',
+  Detik: '00',
+})
+
+const targetDate = new Date('2025-10-21T00:00:00')
+
+let interval = null
+
+const updateCountdown = () => {
+  const now = new Date()
+  const diff = targetDate - now
+
+  if (diff <= 0) {
+    countdown.value = { Hari: '00', Jam: '00', Menit: '00', Detik: '00' }
+    clearInterval(interval)
+    return
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
+  const minutes = Math.floor((diff / (1000 * 60)) % 60)
+  const seconds = Math.floor((diff / 1000) % 60)
+
+  countdown.value = {
+    Hari: String(days).padStart(2, '0'),
+    Jam: String(hours).padStart(2, '0'),
+    Menit: String(minutes).padStart(2, '0'),
+    Detik: String(seconds).padStart(2, '0'),
+  }
+}
 
 onMounted(() => {
   const stored = localStorage.getItem('formData')
   if (stored) {
     data.value = JSON.parse(stored)
   }
+  updateCountdown()
+  interval = setInterval(updateCountdown, 1000)
 })
 
-function formatDate(datetime) {
-  const date = new Date(datetime)
-  return date.toLocaleString('id-ID', {
-    dateStyle: 'full',
-    timeStyle: 'short',
-  })
-}
-
-function embedMusic(url) {
-  if (url.includes('youtube.com') || url.includes('youtu.be')) {
-    const id = url.includes('watch?v=') ? url.split('watch?v=')[1] : url.split('/').pop()
-    return `https://www.youtube.com/embed/${id}`
-  }
-  if (url.includes('soundcloud.com')) {
-    return `https://w.soundcloud.com/player/?url=${encodeURIComponent(url)}`
-  }
-  return ''
-}
-
-function saveFinal() {
-  alert('Undangan berhasil dibuat! 🎉\n(Simpan ke backend coming soon 🛠️)')
-}
+onBeforeUnmount(() => {
+  clearInterval(interval)
+})
 </script>
+
+<style scoped>
+.invite-reveal-enter-active,
+.invite-reveal-leave-active {
+  transition: all 0.8s ease-in-out;
+  transform-origin: top center;
+}
+
+.invite-reveal-enter-from {
+  opacity: 0;
+  transform: scale(0.9) translateY(20px);
+}
+
+.invite-reveal-enter-to {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.invite-reveal-leave-from {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.invite-reveal-leave-to {
+  opacity: 0;
+  transform: scale(0.95) translateY(-20px);
+}
+</style>
