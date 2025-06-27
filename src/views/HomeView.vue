@@ -14,19 +14,64 @@
 
 
     <!-- Modal Pilih Template -->
-    <div v-if="showModal" class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center">
-      <div class="bg-white w-full max-w-lg p-6 rounded-xl shadow-lg relative">
-        <button @click="showModal = false" class="absolute top-3 right-3 text-muted hover:text-dark">&times;</button>
-        <h3 class="text-lg font-bold mb-4 text-mocha">Pilih Template Undangan</h3>
-        <div class="grid grid-cols-2 gap-4">
-          <div v-for="(item, index) in templates" :key="index" @click="selectTemplate(index)"
-            :class="[selectedTemplate === index ? 'border-2 border-mocha' : 'border border-gray-200', 'rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] transition']">
-            <img :src="item.image" alt="template" class="w-full h-32 object-cover" />
+    <div v-if="showModal" class="fixed inset-0 bg-black/40 z-50 flex items-center justify-center px-4">
+      <div class="bg-white w-full max-w-5xl p-6 rounded-xl shadow-lg relative flex gap-6">
+
+        <!-- Close Button -->
+        <button @click="showModal = false"
+          class="absolute top-3 right-4 text-muted hover:text-dark text-xl">&times;</button>
+
+        <!-- Sidebar Kategori -->
+        <aside class="w-1/4 border-r pr-4">
+          <h4 class="text-sm font-bold text-mocha mb-3 uppercase tracking-wider">Kategori</h4>
+          <ul class="space-y-2 text-sm">
+            <li v-for="(cat, i) in classCategories" :key="i" @click="selectedCategory = cat" :class="[
+              'cursor-pointer px-3 py-2 rounded-md',
+              selectedCategory === cat ? 'bg-mocha text-white' : 'hover:bg-mocha/10 text-gray-700'
+            ]">
+              {{ cat }}
+            </li>
+          </ul>
+        </aside>
+
+        <!-- Template Grid -->
+        <div class="w-3/4">
+          <h3 class="text-lg font-bold mb-4 text-mocha">Pilih Template Undangan</h3>
+
+          <div class="relative">
+            <div v-if="filteredTemplates.length > 0"
+              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[420px] overflow-y-auto pr-2">
+              <div v-for="(item, index) in filteredTemplates" :key="index" @click="selectTemplate(index)" :class="[
+                selectedTemplate === index
+                  ? 'border-2 border-mocha shadow-lg'
+                  : 'border border-gray-200',
+                'rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] h-[250px] transition bg-white flex flex-col'
+              ]">
+                <img :src="item.image" alt="template" class="w-full h-32 object-cover" />
+                <div class="p-3 text-left space-y-1">
+                  <h4 class="text-sm font-bold text-mocha">{{ item.name }}</h4>
+                  <p class="text-xs text-gray-500">{{ item.desc }}</p>
+                  <div class="flex flex-wrap gap-1 mt-2">
+                    <span v-for="tag in item.tags" :key="tag"
+                      class="text-[10px] bg-mocha/10 text-mocha px-2 py-0.5 rounded-full">
+                      #{{ tag }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Coming Soon -->
+            <div v-else class="h-[420px] flex items-center justify-center text-center text-gray-400 italic">
+              📦 Template akan segera hadir. Stay tuned!
+            </div>
           </div>
+
+          <button class="mt-6 w-full btn-primary" :disabled="selectedTemplate === null" @click="goToCreate">
+            Lanjut Isi Desain
+          </button>
         </div>
-        <button class="mt-6 w-full btn-primary" :disabled="selectedTemplate === null" @click="goToCreate">
-          Lanjut Isi Desain
-        </button>
+
       </div>
     </div>
 
@@ -108,7 +153,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '@/components/NavbarSection.vue'
 import Footer from '@/components/FooterSection.vue'
@@ -116,6 +161,7 @@ import Footer from '@/components/FooterSection.vue'
 const router = useRouter()
 const showModal = ref(false)
 const selectedTemplate = ref(null)
+const selectedCategory = ref('Semua')
 
 const steps = [
   { title: "Mulai Desain", desc: "Tanpa login, langsung mulai dari browser." },
@@ -125,35 +171,47 @@ const steps = [
   { title: "Share & Simpan", desc: "Kirim ke tamu atau simpan dulu di HP." },
 ]
 
+const classCategories = ['Semua', 'Premium', 'Eksklusif', 'Gratis']
+
 const templates = [
   {
     name: 'Floral Pink',
     image: '/src/assets/template1.png',
     desc: 'Bunga manis untuk pasangan romantis.',
+    class: 'Premium',
+    tags: ['bunga', 'manis', 'romantis'],
   },
   {
     name: 'Minimalist Love',
     image: '/src/assets/template2.png',
     desc: 'Tampilan simpel dan elegan buat kamu yang lowkey.',
+    class: 'Gratis',
+    tags: ['simpel', 'elegan'],
   },
   {
     name: 'Tropical Vibes',
     image: '/src/assets/template3.png',
     desc: 'Tema tropis ceria penuh warna daun dan bunga.',
+    class: 'Eksklusif',
+    tags: ['tropis', 'warna', 'ceria'],
   },
-];
+]
 
+const filteredTemplates = computed(() => {
+  if (selectedCategory.value === 'Semua') return templates
+  return templates.filter(t => t.category === selectedCategory.value)
+})
 
-const goToCreate = () => {
-  if (selectedTemplate.value !== null) {
-    localStorage.setItem('selectedTemplate', selectedTemplate.value)
-    router.push('/create')
-  }
-}
-
-const selectTemplate = (index) => {
+function selectTemplate(index) {
   selectedTemplate.value = index
 }
+
+function goToCreate() {
+  localStorage.setItem('selectedTemplate', JSON.stringify(templates[selectedTemplate.value]))
+  router.push('/create')
+}
+
+
 const testimonials = [
   {
     name: 'Rani & Aldi',
