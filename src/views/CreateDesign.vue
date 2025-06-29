@@ -6,15 +6,13 @@
       <!-- Template preview -->
       <h2 class="text-lg font-semibold mb-2 text-dark">Template Dipilih:</h2>
       <div class="flex items-start gap-4 mb-6">
-        <img :src="selectedTemplate" class="rounded-xl shadow h-32 w-40 object-cover border-px border-sage/30" />
+        <img :src="selectedTemplate.image" class="rounded-xl shadow h-32 w-40 object-cover border-px border-sage/30" />
         <div class="flex-1 text-sm text-muted">
-          <h3 class="text-base font-bold text-mocha">Floral Pink</h3>
-          <p class="mb-2">Template dengan nuansa feminin dan sentuhan warna soft pink + ivory. Cocok buat vibe intimate
-            & sweet wedding.</p>
+          <h3 class="text-base font-bold text-mocha">{{ selectedTemplate.name }}</h3>
+          <p class="mb-2">{{ selectedTemplate.desc }}</p>
           <div class="flex gap-1">
-            <span class="w-5 h-5 rounded-full bg-[#FFB3C6] border border-gray-300"></span>
-            <span class="w-5 h-5 rounded-full bg-[#FAF9F6] border border-gray-300"></span>
-            <span class="w-5 h-5 rounded-full bg-[#BFA6A0] border border-gray-300"></span>
+            <span v-for="color in selectedTemplate.palleteColor" :key="color"
+              class="w-5 h-5 rounded-full border border-gray-300" :style="{ backgroundColor: color }"></span>
           </div>
         </div>
       </div>
@@ -23,7 +21,6 @@
       <h2 class="text-lg font-semibold mb-2 text-dark">Pilih Komponen Undangan</h2>
       <p class="text-sm text-muted mb-4">Bikin undanganmu makin berkesan dengan bagian-bagian seru di bawah ini</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-
         <template v-for="(section, key) in sectionOptions" :key="key">
           <label class="toggle-box" :class="{ 'active': selectedSections.includes(key) }">
             <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
@@ -32,8 +29,6 @@
           </label>
         </template>
       </div>
-
-
 
       <!-- Button -->
       <div class="mt-8 text-center">
@@ -50,31 +45,36 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-const selectedTemplate = ref('')
+const selectedTemplate = ref({})
 const selectedSections = ref([])
-
-const sectionOptions = {
-  quote: 'Quote Ayat',
-  loveStory: 'Love Story',
-  photoCouple: 'Foto Mempelai',
-  music: 'Musik Latar',
-  map: 'Google Map',
-  rsvp: 'RSVP',
-  wishes: 'Ucapan untuk Mempelai',
-  likes: 'Like Count',
-  countdown: 'Hitung Mundur',
-  denah: 'Denah Ruangan',
-  encryptedGuest: 'Enkripsi Nama Tamu',
-  foodList: 'List Makanan/Minuman',
-  gift: 'Amplop Digital & Alamat Kado',
-}
+const sectionOptions = ref({})
 
 onMounted(() => {
   const template = localStorage.getItem('selectedTemplate')
   if (!template) {
     router.push('/')
   } else {
-    selectedTemplate.value = template
+    selectedTemplate.value = JSON.parse(template)
+    console.log(selectedTemplate.value.sectionOptions)
+  }
+  if (selectedTemplate.value.sectionOptions && selectedTemplate.value.sectionOptions.length > 0) {
+    sectionOptions.value = selectedTemplate.value.sectionOptions
+  } else {
+    sectionOptions.value = {
+      quote: 'Quote Ayat',
+      loveStory: 'Love Story',
+      photoCouple: 'Foto Mempelai',
+      music: 'Musik Latar',
+      map: 'Google Map',
+      rsvp: 'RSVP',
+      wishes: 'Ucapan untuk Mempelai',
+      likes: 'Like Count',
+      countdown: 'Hitung Mundur',
+      denah: 'Denah Ruangan',
+      encryptedGuest: 'Enkripsi Nama Tamu',
+      foodList: 'List Makanan/Minuman',
+      gift: 'Amplop Digital & Alamat Kado',
+    }
   }
 })
 

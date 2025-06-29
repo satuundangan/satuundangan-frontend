@@ -40,13 +40,14 @@
 
           <div class="relative">
             <div v-if="filteredTemplates.length > 0"
-              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[420px] max-h-[420px] overflow-y-auto pr-2">
-              <div v-for="(item) in filteredTemplates" :key="item.id" @click="selectTemplate(item.id)" :class="[
-                selectedTemplate === item.id
-                  ? 'border-2 border-mocha shadow-lg'
-                  : 'border border-gray-200',
-                'rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] h-[270px] transition bg-white flex flex-col'
-              ]">
+              class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[420px] max-h-[420px] overflow-y-auto p-1">
+              <div v-for="(item) in filteredTemplates" :key="item.id" :ref="el => templateRefs[item.id] = el"
+                @click="selectTemplate(item.id)" :class="[
+                  selectedTemplate === item.id
+                    ? 'border-2 border-mocha shadow-lg'
+                    : 'border border-gray-200',
+                  'rounded-xl overflow-hidden cursor-pointer hover:scale-[1.02] h-[270px] transition bg-white flex flex-col'
+                ]">
                 <img :src="item.image" alt="template" class="w-full h-32 object-cover" />
                 <div class="p-3 text-left space-y-1">
                   <h4 class="text-sm font-bold text-mocha">{{ item.name }}</h4>
@@ -162,7 +163,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick, reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '@/components/NavbarSection.vue'
 import Footer from '@/components/FooterSection.vue'
@@ -171,6 +172,27 @@ const router = useRouter()
 const showModal = ref(false)
 const selectedTemplate = ref(null)
 const selectedCategory = ref('Semua')
+const templateRefs = reactive({})
+
+
+watch(() => showModal.value, (newVal) => {
+  if (newVal) {
+    document.body.classList.add('overflow-hidden')
+  } else {
+    document.body.classList.remove('overflow-hidden')
+  }
+})
+watch(() => showModal.value, async (val) => {
+  if (val && selectedTemplate.value) {
+    await nextTick() // tunggu DOM-nya render dulu
+    const el = templateRefs[selectedTemplate.value]
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
+  }
+})
+
+
 
 const steps = [
   { title: "Mulai Desain", desc: "Tanpa login, langsung mulai dari browser." },
@@ -182,7 +204,6 @@ const steps = [
 
 const classCategories = ['Semua', 'Premium', 'Eksklusif', 'Gratis']
 
-
 const templates = [
   {
     id: 1,
@@ -192,6 +213,7 @@ const templates = [
     class: 'Premium',
     tags: ['bunga', 'manis', 'romantis'],
     palleteColor: ['#ffc0cb', '#f7d900', '#0f0757'],
+    sectionOptions: ['quote', 'photoCouple', 'music', 'wishes', 'gift']
   },
   {
     id: 2,
@@ -201,6 +223,7 @@ const templates = [
     class: 'Gratis',
     tags: ['simpel', 'elegan'],
     palleteColor: ['#e5e5e5', '#ffffff', '#222222'],
+    sectionOptions: ['quote', 'loveStory', 'photoCouple', 'map', 'rsvp']
   },
   {
     id: 3,
@@ -210,6 +233,7 @@ const templates = [
     class: 'Eksklusif',
     tags: ['tropis', 'warna', 'ceria'],
     palleteColor: ['#34d399', '#10b981', '#065f46'],
+    sectionOptions: ['photoCouple', 'map', 'gift', 'wishes', 'likes']
   },
   {
     id: 4,
@@ -219,6 +243,7 @@ const templates = [
     class: 'Premium',
     tags: ['rustic', 'kayu', 'natural'],
     palleteColor: ['#deb887', '#a0522d', '#fffaf0'],
+    sectionOptions: ['quote', 'photoCouple', 'gift', 'denah', 'wishes']
   },
   {
     id: 5,
@@ -228,6 +253,7 @@ const templates = [
     class: 'Eksklusif',
     tags: ['modern', 'elegan', 'mewah'],
     palleteColor: ['#1f2937', '#4b5563', '#d1d5db'],
+    sectionOptions: ['photoCouple', 'music', 'likes', 'encryptedGuest', 'rsvp']
   },
   {
     id: 6,
@@ -237,6 +263,7 @@ const templates = [
     class: 'Gratis',
     tags: ['pastel', 'imut', 'lembut'],
     palleteColor: ['#fbcfe8', '#fcd34d', '#a7f3d0'],
+    sectionOptions: ['loveStory', 'photoCouple', 'countdown', 'foodList', 'gift']
   },
   {
     id: 7,
@@ -246,6 +273,7 @@ const templates = [
     class: 'Premium',
     tags: ['emas', 'hangat', 'sunset'],
     palleteColor: ['#ffd700', '#ffa500', '#ff8c00'],
+    sectionOptions: ['photoCouple', 'map', 'gift', 'wishes']
   },
   {
     id: 8,
@@ -255,6 +283,7 @@ const templates = [
     class: 'Eksklusif',
     tags: ['vintage', 'klasik', 'nostalgia'],
     palleteColor: ['#cdb4db', '#ffb4a2', '#ffcdb2'],
+    sectionOptions: ['quote', 'loveStory', 'music', 'rsvp']
   },
   {
     id: 9,
@@ -264,6 +293,7 @@ const templates = [
     class: 'Premium',
     tags: ['dongeng', 'romantis', 'fantasi'],
     palleteColor: ['#f0abfc', '#c084fc', '#a78bfa'],
+    sectionOptions: ['quote', 'wishes', 'photoCouple', 'music']
   },
   {
     id: 10,
@@ -273,6 +303,7 @@ const templates = [
     class: 'Gratis',
     tags: ['biru', 'damai', 'tenang'],
     palleteColor: ['#60a5fa', '#3b82f6', '#2563eb'],
+    sectionOptions: ['photoCouple', 'countdown', 'map', 'foodList']
   },
 ]
 
@@ -290,7 +321,8 @@ function selectTemplate(id) {
 }
 
 function goToCreate() {
-  localStorage.setItem('selectedTemplate', JSON.stringify(templates[selectedTemplate.value]))
+  localStorage.setItem('selectedTemplate', JSON.stringify(templates.find((t) => t.id === selectedTemplate.value)))
+  showModal.value = false;
   router.push('/create')
 }
 
@@ -304,14 +336,14 @@ const testimonials = [
     avatar: 'https://i.pravatar.cc/150?img=47',
   },
   {
-    id: 1,
+    id: 2,
     name: 'Nabila',
     role: 'Sahabat Mempelai',
     text: 'Desainnya gemes banget! Gampang di-share dan interaktif.',
     avatar: 'https://i.pravatar.cc/150?img=32',
   },
   {
-    id: 1,
+    id: 3,
     name: 'Vina & Robby',
     role: 'Pengantin',
     text: 'Nggak nyangka bisa dapet hasil seprofesional ini cuma dari HP doang!',

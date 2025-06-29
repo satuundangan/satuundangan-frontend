@@ -127,10 +127,11 @@ const formData = ref({
 const sections = ref({})
 
 onMounted(() => {
-  const stored = localStorage.getItem('selectedSections')
+  const stored = localStorage.getItem('selectedTemplate')
   if (!stored) return router.push('/create')
   const selected = JSON.parse(stored)
-  sections.value = selected.reduce((obj, key) => {
+  const activeSections = selected.sectionOptions || []
+  sections.value = activeSections.reduce((obj, key) => {
     obj[key] = true
     return obj
   }, {})
