@@ -94,6 +94,12 @@
   background-color: var(--color-accent-gold);
 }
 
+.btn-primary:disabled {
+  background-color: #e5e7eb; /* Tailwind's gray-300 */
+  color: #9ca3af; /* Tailwind's gray-500 */
+  cursor: not-allowed;
+}
+
 .btn-outline {
   border: 2px solid var(--color-mocha);
   color: var(--color-mocha);
