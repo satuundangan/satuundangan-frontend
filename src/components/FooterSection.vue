@@ -1,36 +1,47 @@
 <template>
-  <footer class="bg-[#FFCCD2] text-gray-800 py-10 ">
-    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-8 text-center md:text-left">
+  <footer class="bg-mocha text-ivory py-12">
+    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-10">
+      <!-- Brand Info -->
       <div>
-        <h3 class="text-xl font-bold text-pink-600">UndangDong</h3>
-        <p class="text-sm mt-2">Platform undangan online lucu & modern buat hari spesial kamu.</p>
+        <div class="flex items-center gap-3 mb-4">
+          <div
+            class="bg-accent-gold w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
+            su.
+          </div>
+          <h3 class="text-xl font-bold tracking-tight">satuundangan.id</h3>
+        </div>
+        <p class="text-sm text-ivory/80 leading-relaxed">
+          Buat undangan digital elegan dan personal untuk hari spesialmu. Gratis, tanpa login, langsung jadi 🎉
+        </p>
       </div>
+
+      <!-- Navigasi -->
       <div>
-        <h4 class="font-semibold mb-2">Navigasi</h4>
-        <ul class="text-sm space-y-1">
-          <li><a href="#" class="hover:text-pink-600">Buat Undangan</a></li>
-          <li><a href="#" class="hover:text-pink-600">Lihat Template</a></li>
-          <li><a href="#" class="hover:text-pink-600">FAQ</a></li>
+        <h4 class="text-lg font-semibold mb-4 text-white">Navigasi</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="#" class="hover:text-white transition">Buat Undangan</a></li>
+          <li><a href="#" class="hover:text-white transition">Template</a></li>
+          <li><a href="#" class="hover:text-white transition">Harga</a></li>
+          <li><a href="#" class="hover:text-white transition">Kontak</a></li>
         </ul>
       </div>
+
+      <!-- Sosial Media -->
       <div>
-        <h4 class="font-semibold mb-2">Ikuti Kami</h4>
-        <div class="flex justify-center md:justify-start gap-4 text-xl text-pink-600">
-          <a href="#"><i class="fab fa-instagram"></i></a>
-          <a href="#"><i class="fab fa-tiktok"></i></a>
-          <a href="#"><i class="fab fa-twitter"></i></a>
+        <h4 class="text-lg font-semibold mb-4 text-white">Ikuti Kami</h4>
+        <div class="flex gap-4 text-xl">
+          <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="hover:text-white transition"><i class="fab fa-tiktok"></i></a>
+          <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
         </div>
       </div>
     </div>
-    <div class="text-center text-xs text-gray-600 mt-8">
-      © 2025 UndangDong. All rights reserved.
+
+    <div class="mt-10 text-center text-xs text-ivory/70 border-t border-ivory/20 pt-6">
+      © 2025 satuundangan.id — All rights reserved.
     </div>
   </footer>
 </template>
-
-<script setup>
-// gak perlu logic
-</script>
 
 <style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');

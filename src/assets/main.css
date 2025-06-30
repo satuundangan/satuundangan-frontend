@@ -1,5 +1,151 @@
 @import 'tailwindcss';
 
+:root {
+  --color-mocha: #bfa6a0;
+  --color-sage: #a8b8a2;
+  --color-ivory: #faf9f6;
+  --color-text-dark: #3b3a36;
+  --color-accent-gold: #d6b18a;
+}
+
+/* Backgrounds */
+.bg-mocha {
+  background-color: var(--color-mocha);
+}
+
+.bg-sage {
+  background-color: var(--color-sage);
+}
+
+.bg-ivory {
+  background-color: var(--color-ivory);
+}
+
+.bg-accent-gold {
+  background-color: var(--color-accent-gold);
+}
+
+/* Text Colors */
+.text-mocha {
+  color: var(--color-mocha);
+}
+
+.text-sage {
+  color: var(--color-sage);
+}
+
+.text-ivory {
+  color: var(--color-ivory);
+}
+
+.text-dark {
+  color: var(--color-text-dark);
+}
+
+.text-accent-gold {
+  color: var(--color-accent-gold);
+}
+
+/* Border Colors */
+.border-mocha {
+  border-color: var(--color-mocha);
+}
+
+.border-sage {
+  border-color: var(--color-sage);
+}
+
+.border-accent-gold {
+  border-color: var(--color-accent-gold);
+}
+
+/* Hover States */
+.hover\:bg-mocha:hover {
+  background-color: var(--color-mocha);
+}
+
+.hover\:bg-sage:hover {
+  background-color: var(--color-sage);
+}
+
+.hover\:bg-accent-gold:hover {
+  background-color: var(--color-accent-gold);
+}
+
+.hover\:text-mocha:hover {
+  color: var(--color-mocha);
+}
+
+.hover\:text-accent-gold:hover {
+  color: var(--color-accent-gold);
+}
+
+/* Buttons */
+.btn-primary {
+  background-color: var(--color-mocha);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: background-color 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-accent-gold);
+}
+
+.btn-primary:disabled {
+  background-color: #e5e7eb; /* Tailwind's gray-300 */
+  color: #9ca3af; /* Tailwind's gray-500 */
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  border: 2px solid var(--color-mocha);
+  color: var(--color-mocha);
+  background-color: transparent;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-outline:hover {
+  background-color: var(--color-mocha);
+  color: white;
+}
+
+/* Section Padding */
+.section {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+
+/* Card Style */
+.card {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+}
+
+/* Typography Enhancer */
+.heading {
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--color-mocha);
+}
+
+.subheading {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--color-dark);
+}
+
+.text-muted {
+  color: #777;
+}
+
 @keyframes spin-slow {
   0% {
     transform: rotate(0deg);

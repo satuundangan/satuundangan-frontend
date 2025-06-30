@@ -20,7 +20,7 @@
     </section>
 
     <!-- Ayat Section -->
-    <section class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 bg-white text-center">
+    <section class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 bg-white ">
       <h2 class="text-2xl font-bold text-[#6B4EFF] mb-4">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيم</h2>
       <p class="italic text-[#4B4B4B] max-w-2xl mx-auto">
         "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu
@@ -32,7 +32,7 @@
     </section>
 
     <!-- Couple Section -->
-    <section class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 text-center">
+    <section class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 ">
       <h2 class="text-3xl font-bold text-[#6B4EFF] mb-8">Mempelai</h2>
       <div class="grid md:grid-cols-2 gap-10 max-w-4xl mx-auto items-center">
         <div>
@@ -49,8 +49,7 @@
     </section>
 
     <!-- Acara Section -->
-    <section
-      class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 bg-[#CDC1FF]/20 text-center">
+    <section class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 bg-[#CDC1FF]/20">
       <h2 class="text-3xl font-bold text-[#6B4EFF] mb-8">Rangkaian Acara</h2>
       <div class="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
         <div class="bg-white rounded-xl shadow p-6">
@@ -138,7 +137,7 @@
 
 
     <!-- RSVP Section -->
-    <section class="min-h-screen flex flex-col justify-center items-center text-center py-16 px-6 text-center bg-white">
+    <section class="min-h-screen flex flex-col justify-center items-center py-16 px-6 text-center bg-white">
       <h2 class="text-3xl font-bold text-[#6B4EFF] mb-6">Konfirmasi Kehadiran</h2>
       <form class="max-w-md mx-auto space-y-4">
         <input type="text" placeholder="Nama Lengkap" class="w-full border border-[#DDD2C3] rounded-lg px-4 py-2" />
