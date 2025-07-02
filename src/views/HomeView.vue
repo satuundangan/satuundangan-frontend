@@ -1,6 +1,6 @@
 <template>
   <div class="bg-ivory min-h-screen font-sans text-dark">
-    <Navbar />
+    <Navbar @create-invitation="showModal = true" />
 
     <!-- Hero Section -->
     <section class="min-h-screen bg-ivory flex flex-col justify-center items-center text-center px-4">
