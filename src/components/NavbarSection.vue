@@ -25,19 +25,90 @@
 
       <!-- CTA -->
       <div class="flex items-center gap-4">
-        <button class="text-sm text-mocha hover:text-accent-gold transition" @click="show = true">Login</button>
-        <button class="btn-primary">
-          Buat Undangan
-        </button>
+        <template v-if="userName">
+          <div class="relative">
+            <button @click="toggleDropdown" class="flex items-center gap-2 text-sm text-dark hover:text-mocha">
+              <div
+                class="w-8 h-8 bg-sage text-white font-bold rounded-full flex items-center justify-center shadow-inner">
+                {{ userName.charAt(0).toUpperCase() }}
+              </div>
+              <span class="hidden md:inline">{{ userName }}</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Dropdown -->
+            <div v-if="dropdownOpen" ref="dropdownRef"
+              class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
+              <a href="/dashboard" class="block px-4 py-2 text-sm text-dark hover:bg-gray-100">Dashboard</a>
+              <a href="/pengaturan" class="block px-4 py-2 text-sm text-dark hover:bg-gray-100">Pengaturan</a>
+              <button @click="handleLogout"
+                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">Logout</button>
+            </div>
+          </div>
+        </template>
+
       </div>
+
     </div>
   </nav>
 </template>
 <script setup>
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import AuthModal from '@/components/AuthModal.vue'
+import { useAuthStore } from '@/store/auth'
+import Swal from 'sweetalert2'
+import { useToast } from 'vue-toastification'
+import { onClickOutside } from '@vueuse/core'
 
 const show = ref(false)
-const authMode = ref('login') // << ini yang belum lo masukin!
+const authMode = ref('login')
+
+const auth = useAuthStore()
+const userName = computed(() => auth.user?.name || null)
+
+const toast = useToast()
+const dropdownOpen = ref(false)
+const dropdownRef = ref(null);
+
+onClickOutside(dropdownRef, () => {
+  dropdownOpen.value = false
+})
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+
+const handleLogout = async () => {
+  const result = await Swal.fire({
+    title: 'Yakin mau logout?',
+    text: 'Kamu akan keluar dari akunmu.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#aaa',
+    confirmButtonText: 'Logout',
+    cancelButtonText: 'Batal',
+  })
+
+  if (result.isConfirmed) {
+    auth.logout()
+    toast.success('Logout berhasil, sampai jumpa lagi 👋')
+  }
+}
+
 
 </script>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(-5px);
+}
+</style>

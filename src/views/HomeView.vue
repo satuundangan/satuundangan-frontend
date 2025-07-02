@@ -163,10 +163,11 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, reactive } from 'vue'
+import { ref, computed, watch, nextTick, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '@/components/NavbarSection.vue'
 import Footer from '@/components/FooterSection.vue'
+import { getTemplateDesigns } from '@/api/templateDesign'
 
 const router = useRouter()
 const showModal = ref(false)
@@ -201,118 +202,128 @@ const steps = [
   { title: "Lihat Preview", desc: "Lihat hasil undanganmu secara real-time." },
   { title: "Share & Simpan", desc: "Kirim ke tamu atau simpan dulu di HP." },
 ]
-
+const templates = ref([])
+const loading = ref(true)
 const classCategories = ['Semua', 'Premium', 'Eksklusif', 'Gratis']
 
-const templates = [
-  {
-    id: 1,
-    name: 'Floral Pink',
-    image: 'https://images.unsplash.com/photo-1520686847074-d2f4ab0c7e2b?auto=format&fit=crop&w=800&q=80',
-    desc: 'Bunga manis untuk pasangan romantis.',
-    class: 'Premium',
-    tags: ['bunga', 'manis', 'romantis'],
-    palleteColor: ['#ffc0cb', '#f7d900', '#0f0757'],
-    sectionOptions: ['quote', 'photoCouple', 'music', 'wishes', 'gift']
-  },
-  {
-    id: 2,
-    name: 'Minimalist Love',
-    image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
-    desc: 'Tampilan simpel dan elegan buat kamu yang lowkey.',
-    class: 'Gratis',
-    tags: ['simpel', 'elegan'],
-    palleteColor: ['#e5e5e5', '#ffffff', '#222222'],
-    sectionOptions: ['quote', 'loveStory', 'photoCouple', 'map', 'rsvp']
-  },
-  {
-    id: 3,
-    name: 'Tropical Vibes',
-    image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-    desc: 'Tema tropis ceria penuh warna daun dan bunga.',
-    class: 'Eksklusif',
-    tags: ['tropis', 'warna', 'ceria'],
-    palleteColor: ['#34d399', '#10b981', '#065f46'],
-    sectionOptions: ['photoCouple', 'map', 'gift', 'wishes', 'likes']
-  },
-  {
-    id: 4,
-    name: 'Rustic Charm',
-    image: 'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=800&q=80',
-    desc: 'Nuansa alam dan kayu klasik yang hangat.',
-    class: 'Premium',
-    tags: ['rustic', 'kayu', 'natural'],
-    palleteColor: ['#deb887', '#a0522d', '#fffaf0'],
-    sectionOptions: ['quote', 'photoCouple', 'gift', 'denah', 'wishes']
-  },
-  {
-    id: 5,
-    name: 'Modern Elegance',
-    image: 'https://images.unsplash.com/photo-1611078489935-7f7c0479c043?auto=format&fit=crop&w=800&q=80',
-    desc: 'Desain modern, bersih dan mewah.',
-    class: 'Eksklusif',
-    tags: ['modern', 'elegan', 'mewah'],
-    palleteColor: ['#1f2937', '#4b5563', '#d1d5db'],
-    sectionOptions: ['photoCouple', 'music', 'likes', 'encryptedGuest', 'rsvp']
-  },
-  {
-    id: 6,
-    name: 'Cute Pastel',
-    image: 'https://images.unsplash.com/photo-1611589997935-01e2436c92df?auto=format&fit=crop&w=800&q=80',
-    desc: 'Warna pastel yang lembut dan imut.',
-    class: 'Gratis',
-    tags: ['pastel', 'imut', 'lembut'],
-    palleteColor: ['#fbcfe8', '#fcd34d', '#a7f3d0'],
-    sectionOptions: ['loveStory', 'photoCouple', 'countdown', 'foodList', 'gift']
-  },
-  {
-    id: 7,
-    name: 'Golden Hour',
-    image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
-    desc: 'Kilau emas hangat di tiap detailnya.',
-    class: 'Premium',
-    tags: ['emas', 'hangat', 'sunset'],
-    palleteColor: ['#ffd700', '#ffa500', '#ff8c00'],
-    sectionOptions: ['photoCouple', 'map', 'gift', 'wishes']
-  },
-  {
-    id: 8,
-    name: 'Vintage Vibe',
-    image: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=800&q=80',
-    desc: 'Getaran klasik penuh nostalgia.',
-    class: 'Eksklusif',
-    tags: ['vintage', 'klasik', 'nostalgia'],
-    palleteColor: ['#cdb4db', '#ffb4a2', '#ffcdb2'],
-    sectionOptions: ['quote', 'loveStory', 'music', 'rsvp']
-  },
-  {
-    id: 9,
-    name: 'Fairytale Romance',
-    image: 'https://images.unsplash.com/photo-1509818314394-1a8416c8ad71?auto=format&fit=crop&w=800&q=80',
-    desc: 'Serasa di negeri dongeng.',
-    class: 'Premium',
-    tags: ['dongeng', 'romantis', 'fantasi'],
-    palleteColor: ['#f0abfc', '#c084fc', '#a78bfa'],
-    sectionOptions: ['quote', 'wishes', 'photoCouple', 'music']
-  },
-  {
-    id: 10,
-    name: 'Serenity Blue',
-    image: 'https://images.unsplash.com/photo-1610968610493-60d04e88f30c?auto=format&fit=crop&w=800&q=80',
-    desc: 'Tenang, damai, dan penuh cinta.',
-    class: 'Gratis',
-    tags: ['biru', 'damai', 'tenang'],
-    palleteColor: ['#60a5fa', '#3b82f6', '#2563eb'],
-    sectionOptions: ['photoCouple', 'countdown', 'map', 'foodList']
-  },
-]
+// const templates = [
+//   {
+//     id: 1,
+//     name: 'Floral Pink',
+//     image: 'https://images.unsplash.com/photo-1520686847074-d2f4ab0c7e2b?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Bunga manis untuk pasangan romantis.',
+//     class: 'Premium',
+//     tags: ['bunga', 'manis', 'romantis'],
+//     palleteColor: ['#ffc0cb', '#f7d900', '#0f0757'],
+//     sectionOptions: ['quote', 'photoCouple', 'music', 'wishes', 'gift']
+//   },
+//   {
+//     id: 2,
+//     name: 'Minimalist Love',
+//     image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Tampilan simpel dan elegan buat kamu yang lowkey.',
+//     class: 'Gratis',
+//     tags: ['simpel', 'elegan'],
+//     palleteColor: ['#e5e5e5', '#ffffff', '#222222'],
+//     sectionOptions: ['quote', 'loveStory', 'photoCouple', 'map', 'rsvp']
+//   },
+//   {
+//     id: 3,
+//     name: 'Tropical Vibes',
+//     image: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Tema tropis ceria penuh warna daun dan bunga.',
+//     class: 'Eksklusif',
+//     tags: ['tropis', 'warna', 'ceria'],
+//     palleteColor: ['#34d399', '#10b981', '#065f46'],
+//     sectionOptions: ['photoCouple', 'map', 'gift', 'wishes', 'likes']
+//   },
+//   {
+//     id: 4,
+//     name: 'Rustic Charm',
+//     image: 'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Nuansa alam dan kayu klasik yang hangat.',
+//     class: 'Premium',
+//     tags: ['rustic', 'kayu', 'natural'],
+//     palleteColor: ['#deb887', '#a0522d', '#fffaf0'],
+//     sectionOptions: ['quote', 'photoCouple', 'gift', 'denah', 'wishes']
+//   },
+//   {
+//     id: 5,
+//     name: 'Modern Elegance',
+//     image: 'https://images.unsplash.com/photo-1611078489935-7f7c0479c043?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Desain modern, bersih dan mewah.',
+//     class: 'Eksklusif',
+//     tags: ['modern', 'elegan', 'mewah'],
+//     palleteColor: ['#1f2937', '#4b5563', '#d1d5db'],
+//     sectionOptions: ['photoCouple', 'music', 'likes', 'encryptedGuest', 'rsvp']
+//   },
+//   {
+//     id: 6,
+//     name: 'Cute Pastel',
+//     image: 'https://images.unsplash.com/photo-1611589997935-01e2436c92df?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Warna pastel yang lembut dan imut.',
+//     class: 'Gratis',
+//     tags: ['pastel', 'imut', 'lembut'],
+//     palleteColor: ['#fbcfe8', '#fcd34d', '#a7f3d0'],
+//     sectionOptions: ['loveStory', 'photoCouple', 'countdown', 'foodList', 'gift']
+//   },
+//   {
+//     id: 7,
+//     name: 'Golden Hour',
+//     image: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Kilau emas hangat di tiap detailnya.',
+//     class: 'Premium',
+//     tags: ['emas', 'hangat', 'sunset'],
+//     palleteColor: ['#ffd700', '#ffa500', '#ff8c00'],
+//     sectionOptions: ['photoCouple', 'map', 'gift', 'wishes']
+//   },
+//   {
+//     id: 8,
+//     name: 'Vintage Vibe',
+//     image: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Getaran klasik penuh nostalgia.',
+//     class: 'Eksklusif',
+//     tags: ['vintage', 'klasik', 'nostalgia'],
+//     palleteColor: ['#cdb4db', '#ffb4a2', '#ffcdb2'],
+//     sectionOptions: ['quote', 'loveStory', 'music', 'rsvp']
+//   },
+//   {
+//     id: 9,
+//     name: 'Fairytale Romance',
+//     image: 'https://images.unsplash.com/photo-1509818314394-1a8416c8ad71?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Serasa di negeri dongeng.',
+//     class: 'Premium',
+//     tags: ['dongeng', 'romantis', 'fantasi'],
+//     palleteColor: ['#f0abfc', '#c084fc', '#a78bfa'],
+//     sectionOptions: ['quote', 'wishes', 'photoCouple', 'music']
+//   },
+//   {
+//     id: 10,
+//     name: 'Serenity Blue',
+//     image: 'https://images.unsplash.com/photo-1610968610493-60d04e88f30c?auto=format&fit=crop&w=800&q=80',
+//     desc: 'Tenang, damai, dan penuh cinta.',
+//     class: 'Gratis',
+//     tags: ['biru', 'damai', 'tenang'],
+//     palleteColor: ['#60a5fa', '#3b82f6', '#2563eb'],
+//     sectionOptions: ['photoCouple', 'countdown', 'map', 'foodList']
+//   },
+// ]
 
-
+onMounted(async () => {
+  try {
+    const data = await getTemplateDesigns()
+    templates.value = data // pastikan struktur datanya sesuai!
+  } catch (e) {
+    console.error('Gagal ambil template:', e)
+  } finally {
+    loading.value = false
+  }
+})
 
 const filteredTemplates = computed(() => {
   if (selectedCategory.value === 'Semua') return templates
   console.log(selectedCategory.value)
-  return templates.filter(t => t.class === selectedCategory.value)
+  return templates.value.filter(t => t.class === selectedCategory.value)
 })
 
 function selectTemplate(id) {
@@ -321,7 +332,7 @@ function selectTemplate(id) {
 }
 
 function goToCreate() {
-  localStorage.setItem('selectedTemplate', JSON.stringify(templates.find((t) => t.id === selectedTemplate.value)))
+  localStorage.setItem('selectedTemplate', JSON.stringify(templates.value.find((t) => t.id === selectedTemplate.value)))
   showModal.value = false;
   router.push('/create')
 }

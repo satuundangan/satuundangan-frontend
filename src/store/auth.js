@@ -1,32 +1,43 @@
+// src/store/auth.js
 import { defineStore } from 'pinia'
+import { login, register, getProfile } from '@/api/auth'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
-    token: null,
     user: null,
+    token: null,
   }),
   actions: {
-    async login({ email, password }) {
-      const res = await fetch('https://api.satuundangan.id/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+    async login(payload) {
+      const res = await login(payload)
+      console.log(res);
 
-      if (!res.ok) throw new Error('Login failed')
-
-      const data = await res.json()
-      this.token = data.access_token
-      localStorage.setItem('token', this.token)
-      await this.fetchUser()
+      this.token = res.access_token
+      localStorage.setItem('token', res.access_token)
+      await this.fetchProfile()
     },
-    async fetchUser() {
-      const res = await fetch('https://api.satuundangan.id/user/me', {
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-      })
-      this.user = await res.json()
+    async register(payload) {
+      const res = await register(payload)
+      this.token = res.access_token
+      localStorage.setItem('token', res.access_token)
+      await this.fetchProfile()
+    },
+    async fetchProfile() {
+      if (!this.token) return
+      const res = await getProfile()
+      this.user = res
+    },
+    logout() {
+      this.token = null
+      this.user = null
+      localStorage.removeItem('token')
+    },
+    async init() {
+      const token = localStorage.getItem('token')
+      if (token) {
+        this.token = token
+        await this.fetchProfile()
+      }
     },
   },
 })
