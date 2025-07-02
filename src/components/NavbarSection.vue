@@ -21,10 +21,11 @@
         <li><a href="#" class="hover:text-mocha transition">Portofolio</a></li>
         <li><a href="#" class="hover:text-mocha transition">Blog</a></li>
       </ul>
+      <AuthModal :show="show" :authMode="authMode" @update:authMode="authMode = $event" @close="show = false" />
 
       <!-- CTA -->
       <div class="flex items-center gap-4">
-        <button class="text-sm text-mocha hover:text-accent-gold transition">Login</button>
+        <button class="text-sm text-mocha hover:text-accent-gold transition" @click="show = true">Login</button>
         <button class="btn-primary">
           Buat Undangan
         </button>
@@ -32,3 +33,11 @@
     </div>
   </nav>
 </template>
+<script setup>
+import { ref } from 'vue'
+import AuthModal from '@/components/AuthModal.vue'
+
+const show = ref(false)
+const authMode = ref('login') // << ini yang belum lo masukin!
+
+</script>
