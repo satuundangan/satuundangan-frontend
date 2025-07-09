@@ -1,471 +1,96 @@
 <template>
-  <div class="relative min-h-screen bg-black overflow-hidden font-sans">
-    <!-- Welcome Section -->
-    <transition name="invite-reveal" mode="out-in">
-      <div v-if="showWelcome"
-        class="relative flex flex-col items-center justify-center h-screen text-center px-6 text-[#60a5fa]"
-        style="background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDhwZDZwbDh0ZjEwcmZwYnQ5ZDZqeTdqeWEzcjRoYjNkMWlveHc0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gKncmZtoUiAcQxPvap/giphy.gif'); background-size: cover; background-position: center;">
-        <div class="absolute inset-0 bg-black/40 backdrop-blur-xs"></div>
-        <div class="relative z-10 space-y-2">
-          <h1 class="text-md font-light tracking-widest ">THE WEDDING OF</h1>
-          <h2 class="text-5xl font-serif font-semibold">ADAM</h2>
-          <span class="text-sm ">AND</span>
-          <h2 class="text-5xl font-serif font-semibold mb-2">HAWA</h2>
-          <p class="text-sm mb-6">21.10.2023</p>
-
-          <div class="text-sm ">Kepada Yth.</div>
-          <div class="text-xl font-semibold text-white mb-4">Nama Tamu</div>
-
-          <button @click="openInvitation"
-            class="bg-blue-50 text-purple-800 py-2 px-6 rounded-md shadow hover:bg-purple-200 transition-all duration-300 delay-50">
-            💌 Open Invitation
-          </button>
-
-        </div>
+  <div class="h-screen w-screen bg-gray-950 text-white flex flex-col">
+    <!-- NAVBAR -->
+    <header class="h-14 flex items-center justify-between px-6 bg-gray-900 border-b border-gray-800">
+      <h1 class="font-semibold text-lg">🎉 Preview Undangan</h1>
+      <div class="flex gap-2">
+        <button v-for="mode in modes" :key="mode" @click="viewMode = mode"
+          :class="['px-3 py-1.5 text-sm rounded-md', viewMode === mode ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600']">
+          {{ mode }}
+        </button>
+        <button @click="enterFullscreen" class="px-3 py-1.5 text-sm rounded-md bg-green-600 hover:bg-green-700">🔎
+          Fullscreen</button>
+        <button @click="handlePublish" class="px-3 py-1.5 text-sm rounded-md bg-purple-600 hover:bg-purple-700">✨
+          Publish</button>
       </div>
+    </header>
 
-    </transition>
-
-
-    <transition name="invite-reveal" mode="out-in">
-      <div v-if="!showWelcome" class="">
-        <!-- Bagian awal -->
-        <div
-          class="relative min-h-[110vh] flex flex-col items-center justify-center text-white text-center bg-cover bg-center"
-          :style="{ backgroundImage: `url(${backgroundUrl})` }">
-          <!-- Overlay gradasi -->
-          <div class="absolute inset-0 bg-black/10 backdrop-brightness-75"></div>
-          <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#4b5563] to-transparent z-[1]">
-          </div>
-          <!-- Konten utama -->
-          <div class="relative z-10 space-y-4">
-            <p class="text-sm tracking-widest uppercase">The Wedding Of</p>
-            <h1 class="text-3xl font-serif font-semibold uppercase tracking-wide">Groom Name</h1>
-            <p class="text-xl font-light">and</p>
-            <h1 class="text-3xl font-serif font-semibold uppercase tracking-wide">Brides Name</h1>
-            <p class="text-sm mt-2">Day.Month.Year</p>
-
-            <!-- Countdown -->
-            <div class="flex justify-center gap-6 mt-6 font-semibold">
-              <div v-for="(val, label) in countdown" :key="label" class="text-center">
-                <div class="text-xl">{{ val }}</div>
-                <div class="text-xs uppercase tracking-wide">{{ label }}</div>
-              </div>
-            </div>
-          </div>
+    <!-- BODY -->
+    <div class="flex flex-1 overflow-hidden">
+      <!-- SIDEBAR -->
+      <aside class="hidden md:block w-64 bg-gray-900 border-r border-gray-800 p-4">
+        <p class="text-sm font-semibold mb-3">📌 Info Preview</p>
+        <ul class="text-xs text-gray-300 space-y-2">
+          <li>- Simulasi tampilan real</li>
+          <li>- Perangkat: Mobile/Web/Fullscreen</li>
+        </ul>
+        <div class="mt-4">
+          <span v-if="!isPublished"
+            class="bg-yellow-500/10 text-yellow-400 text-xs px-3 py-1 rounded-full border border-yellow-500 inline-block mt-2">
+            ⚠️ Ini hanya preview. Belum dipublish publik.
+          </span>
         </div>
+      </aside>
 
-        <!-- Section Kutipan Ayat -->
-        <section class="bg-[#4b5563] sm:py-24 py-12 text-center px-4">
+      <!-- MAIN -->
+      <main class="flex-1 flex justify-center items-center p-4">
+        <div class="border border-gray-700 shadow-lg overflow-hidden bg-white" :class="frameClass">
+          <iframe ref="iframeRef" :src="previewUrl" class="w-full h-full" frameborder="0" allowfullscreen />
+        </div>
+      </main>
+    </div>
 
-          <p class="italic text-gray-300 max-w-xl mx-auto leading-relaxed">
-            "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu
-            sendiri,
-            agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang."
-          </p>
-          <p class="mt-4 text-sm italic text-gray-300">Q.S. Ar-Rum : 21</p>
-        </section>
-        <section class="bg-gradient-to-b from-[#4b5563] via-[#3e3e3e] to-[#2e2e2e] text-gray-300 py-16 px-4">
-          <div
-            class="max-w-5xl relative mx-auto text-center bg-white/5 backdrop-blur-lg rounded-t-[3rem] pt-12 px-4 pb-24 ">
-
-            <!-- Gradient di bawah -->
-            <div
-              class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#2e2e2e] to-transparent z-[1] pointer-events-none">
-            </div>
-
-            <h2 class="text-3xl font-serif text-[#f8f4f0] uppercase mb-2">Our Wedding</h2>
-            <p class="italic text-gray-300 text-sm max-w-xl mx-auto leading-relaxed px-4 py-3">
-              Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara
-              Pernikahan kami
-            </p>
-
-            <!-- Divider -->
-            <div class="flex items-center justify-center mb-8 px-12">
-              <div class="flex-grow border-t border-white/20"></div>
-              <div class="mx-4 text-[#bfa88f] text-xl">
-                <i class="fas fa-heart"></i>
-              </div>
-              <div class="flex-grow border-t border-white/20"></div>
-            </div>
-
-            <!-- Cards -->
-            <div class="flex flex-col md:flex-row justify-center gap-8">
-              <!-- Bride -->
-              <div
-                class="w-full md:w-1/2 max-w-sm bg-white/5 backdrop-blur border border-white/10 rounded-3xl shadow-lg overflow-hidden relative">
-                <div
-                  class="absolute top-4 left-4 bg-gradient-to-br from-[#bfa88f] to-[#d1bfa7] text-white text-[11px] font-semibold px-3 py-1 rounded-full uppercase tracking-wide shadow">
-                  Bride
-                </div>
-                <img src="https://i.pinimg.com/736x/7f/4b/41/7f4b41f027b8e316e2821274761b86b6.jpg" alt="Bride"
-                  class="w-full h-72 object-cover grayscale-0 hover:grayscale transition duration-300">
-                <div class="p-5 text-center text-white">
-                  <h3 class="text-lg font-serif font-semibold mb-1">Mafaza Humaira Zega</h3>
-                  <p class="text-xs text-gray-300 mb-2">Putra dari Bapak Bapak, S.H. & Ibu Ibu Komplek</p>
-                  <a href="https://instagram.com" target="_blank"
-                    class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]">
-                    ig: @gatausiapa
-                  </a>
-                </div>
-              </div>
-
-              <!-- Groom -->
-              <div
-                class="w-full md:w-1/2 max-w-sm bg-white/5 backdrop-blur border border-white/10 rounded-3xl shadow-lg overflow-hidden relative">
-                <div
-                  class="absolute top-4 left-4 bg-gradient-to-br from-[#bfa88f] to-[#d1bfa7] text-white text-[11px] font-semibold px-3 py-1 rounded-full uppercase tracking-wide shadow">
-                  Groom
-                </div>
-                <img
-                  src="https://cdn0.weddingwire.in/article/1811/original/1280/jpg/101181-wedding-dresses-for-men-11jpg.jpeg"
-                  alt="Groom" class="w-full h-72 object-cover grayscale-0 hover:grayscale transition duration-300">
-                <div class="p-5 text-center text-white">
-                  <h3 class="text-lg font-serif font-semibold mb-1">Habib Palsu</h3>
-                  <p class="text-xs text-gray-300 mb-2">Putra dari Bapak Bapak, S.H. & Ibu Ibu Komplek Juga</p>
-                  <a href="https://instagram.com" target="_blank"
-                    class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]">
-                    ig: @sahateing
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        <section
-          class="relative bg-gradient-to-b from-[#2e2e2e] via-[#3e3e3e] to-[#4b5563] text-gray-200 py-20 px-6 overflow-hidden">
-          <div
-            class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-mosaic.png')] opacity-10 pointer-events-none">
-          </div>
-
-          <div class="max-w-5xl mx-auto text-center relative z-10">
-            <h2 class="text-4xl font-serif font-bold text-white mb-14 tracking-wide">Detail Acara</h2>
-
-            <div class="grid md:grid-cols-2 gap-10">
-              <!-- Card Akad -->
-              <div
-                class="relative bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl">
-
-                <!-- Sudut Daun -->
-                <div class="absolute bottom-4 right-4 text-3xl text-white/10">🌿</div>
-
-                <!-- Icon Bulat -->
-                <div
-                  class="absolute top-4 left-4  rounded-full w-12 h-12 flex items-center justify-center text-2xl text-white ">
-                  🕊️
-                </div>
-
-                <!-- Isi -->
-                <h3 class="text-2xl font-serif text-white mb-3 ">Akad Nikah</h3>
-                <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Tanggal:</strong> 21 Oktober 2024</p>
-                <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Waktu:</strong> 08.00 WIB</p>
-                <p class="text-sm text-gray-200"><strong class="text-white">Lokasi:</strong> Masjid Agung Al-Azhar</p>
-              </div>
-
-              <!-- Card Resepsi -->
-              <div
-                class="relative bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl">
-
-                <!-- Sudut Daun Dekoratif -->
-                <div class="absolute bottom-4 left-4 text-3xl text-white/10">🌿</div>
-
-                <!-- Icon Bulat 🎉 -->
-                <div class="absolute top-4 right-4 w-12 h-12 flex items-center justify-center text-2xl text-white ">
-                  🎉
-                </div>
-
-                <!-- Isi Konten -->
-                <h3 class="text-2xl font-serif text-white mb-3">Resepsi</h3>
-                <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Tanggal:</strong> Minggu, 21 Oktober
-                  2024</p>
-                <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Waktu:</strong> 11.00 WIB - Selesai</p>
-                <p class="text-sm text-gray-200"><strong class="text-white">Lokasi:</strong> Gedung Serbaguna Al-Azhar,
-                  Jakarta Selatan</p>
-              </div>
-
-            </div>
-          </div>
-        </section>
-        <section class="bg-[#4b5563] py-16 px-4 text-white">
-          <div
-            class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl p-8 relative overflow-hidden group">
-
-            <!-- Ornamen di sudut -->
-            <div class="absolute bottom-4 right-4 text-4xl text-white/10 group-hover:text-white/20 transition">💫</div>
-
-            <h2 class="text-3xl font-serif font-bold text-white text-center mb-8 drop-shadow-md">Konfirmasi Kehadiran
-              (RSVP)</h2>
-
-            <form @submit.prevent="submitRSVP" class="space-y-5">
-              <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
-                class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition"
-                required />
-
-              <input v-model="rsvp.phone" type="tel" placeholder="Nomor Telepon / WhatsApp"
-                class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition" />
-
-              <select v-model="rsvp.attendance"
-                class="w-full p-4 rounded-xl bg-white/10 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition"
-                required>
-                <option disabled value="">Apakah kamu akan hadir?</option>
-                <option value="hadir" class="text-black">Hadir</option>
-                <option value="tidak" class="text-black">Tidak Hadir</option>
-              </select>
-
-              <textarea v-model="rsvp.message" placeholder="Ucapan atau pesan untuk pengantin" rows="3"
-                class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition"></textarea>
-
-              <button type="submit"
-                class="bg-white/10 hover:bg-[#4b5563] text-white font-bold py-3 px-6 rounded-full w-full shadow-lg transition-all">
-                Kirim RSVP 💌
-              </button>
-            </form>
-          </div>
-        </section>
-        <!-- Love Story - Elegant Dark Style -->
-        <section class="bg-gradient-to-b to-[#2e2e2e] via-[#3e3e3e] from-[#4b5563] py-16 px-4">
-          <div class="max-w-5xl mx-auto text-center mb-12">
-            <h2 class="text-4xl font-serif text-[#f8f4f0] font-bold tracking-wider mb-6">Our Love Story</h2>
-
-            <div class="relative border-l-4 border-[#bfa88f]/40 pl-10 space-y-16">
-              <!-- Item 1 -->
-              <div
-                class="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6 text-left">
-                <div
-                  class="absolute -left-6 top-6 bg-[#bfa88f] text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-                  <i class="fa-solid fa-calendar-days"></i>
-                </div>
-                <img src="https://i.ibb.co/2tXkWKV/couple1.jpg" alt="Love Story Photo 1"
-                  class="w-full max-h-60 object-cover rounded-xl mb-4">
-                <p class="text-sm text-gray-300 font-medium mb-1">12 September 2017</p>
-                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Awal Bertemu</h3>
-                <p class="text-gray-200 leading-relaxed">
-                  Tahun di mana dia dikenalkan oleh rekan kerjanya yang juga temanku melalui sosial media.
-                </p>
-              </div>
-
-              <!-- Item 2 -->
-              <div
-                class="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6 text-left">
-                <div
-                  class="absolute -left-6 top-6 bg-[#bfa88f] text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
-                  <i class="fa-solid fa-calendar-days"></i>
-                </div>
-                <img src="https://i.ibb.co/gzSRtgD/couple2.jpg" alt="Love Story Photo 2"
-                  class="w-full max-h-60 object-cover rounded-xl mb-4">
-                <p class="text-sm text-gray-300 font-medium mb-1">8 Maret 2018</p>
-                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Jadian</h3>
-                <p class="text-gray-200 leading-relaxed">
-                  Setelah banyak ngobrol dan saling mengenal, akhirnya kami memutuskan untuk bersama.
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Kirim Hadiah - Elegant Dark Style -->
-        <section class="bg-[#2e2e2e] py-16 px-4">
-          <div class="max-w-2xl mx-auto text-center">
-            <h2 class="text-3xl font-serif font-bold text-[#f8f4f0] mb-6">Kirim Hadiah</h2>
-            <p class="text-gray-300 mb-10 max-w-lg mx-auto">
-              Doa restu Anda sudah cukup, namun jika ingin mengirimkan hadiah sebagai tanda kasih, kami menyediakan opsi
-              berikut:
-            </p>
-
-            <div class="grid md:grid-cols-2 gap-6 text-left">
-              <!-- Bank -->
-              <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
-                <h3 class="font-semibold text-[#d1bfa7] mb-2">🏦 Transfer Bank</h3>
-                <p class="text-sm text-gray-300"><strong>BCA</strong></p>
-                <p class="text-sm text-gray-300">1234567890</p>
-                <p class="text-sm text-gray-300 mb-2">a.n. Dimas Noval</p>
-                <button @click="copyToClipboard('1234567890')" class="text-xs text-[#f8e9d0] hover:underline mt-1">
-                  Salin No. Rekening
-                </button>
-              </div>
-
-              <!-- E-Wallet -->
-              <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
-                <h3 class="font-semibold text-[#d1bfa7] mb-2">📱 E-Wallet (QRIS)</h3>
-                <img
-                  src="https://www.xendit.co/wp-content/uploads/2023/06/How-to-Enable-QR-Payments-for-Your-Business.jpeg"
-                  alt="QRIS" class="w-40 mx-auto mb-3 rounded-md border border-white/20" />
-                <p class="text-xs text-center text-gray-400">Scan QR untuk mengirim melalui e-wallet favorit Anda</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Section: Ucapan & Doa -->
-        <section class="bg-[#2e2e2e] py-16 px-4">
-          <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6">
-            <h2 class="text-3xl font-serif font-bold text-[#f8f4f0] text-center mb-6">Ucapan & Doa</h2>
-
-            <form @submit.prevent="submitWishes" class="space-y-4">
-              <input v-model="wishes.name" type="text" placeholder="Nama"
-                class="w-full p-3 rounded-xl bg-white/5 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d1bfa7]/50"
-                required />
-
-              <textarea v-model="wishes.message" placeholder="Tulis ucapan terbaikmu untuk pengantin 💖" rows="3"
-                class="w-full p-3 rounded-xl bg-white/5 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d1bfa7]/50"
-                required></textarea>
-
-              <button type="submit"
-                class="bg-white/10 hover:bg-[#4b5563] text-white font-semibold py-3 px-6 rounded-full w-full transition-all">
-                Kirim Ucapan 🎉
-              </button>
-            </form>
-
-            <!-- List wishes -->
-            <div
-              class="mt-8 space-y-4 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-              <div v-for="(wish, index) in wishesList" :key="index"
-                class="bg-white/10 border border-white/10 text-white p-3 rounded-xl shadow text-sm">
-                <p class="font-semibold text-[#d1bfa7]">{{ wish.name }}</p>
-                <p class="text-gray-300 mt-1">{{ wish.message }}</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Section: Penutup -->
-        <section class="bg-gradient-to-b from-[#2e2e2e] via-[#3e3e3e] to-[#4b5563] py-20 px-4 text-center">
-          <div class="max-w-xl mx-auto">
-            <h2 class="text-sm uppercase tracking-widest text-gray-400">The Wedding of</h2>
-            <h1 class="text-4xl md:text-5xl font-serif font-bold text-[#f8f4f0] my-4">Adam & Hawa</h1>
-            <p class="text-sm text-gray-400 mb-10">21 Oktober 2024</p>
-
-            <p class="text-md text-gray-300 max-w-md mx-auto leading-relaxed">
-              Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan
-              memberikan doa restu. Atas kehadiran dan doa restunya, kami mengucapkan terima kasih.
-            </p>
-
-            <div class="mt-8 text-sm text-gray-400 italic">With love,</div>
-            <div class="text-lg font-bold text-[#d1bfa7]">Adam & Hawa</div>
-          </div>
-        </section>
-
-      </div>
-
-    </transition>
+    <!-- MODAL LOGIN -->
+    <AuthModal v-if="showLogin" :show="showLogin" :authMode="authMode" @close="showLogin = false"
+      @update:authMode="authMode = $event" />
   </div>
 </template>
 
+
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed } from 'vue'
+import { useAuthStore } from '@/store/auth'
+import { useRouter } from 'vue-router'
+import AuthModal from '@/components/AuthModal.vue'
 
-const data = ref({})
-const showWelcome = ref(true)
-const rsvp = ref({
-  name: '',
-  phone: '',
-  attendance: '',
-  message: '',
-})
-const wishes = ref({
-  name: '',
-  message: '',
-})
-const wishesList = ref([])
+const auth = useAuthStore()
+const router = useRouter()
 
-function submitWishes() {
-  if (!wishes.value.name || !wishes.value.message) return
-  wishesList.value.push({ ...wishes.value })
-  wishes.value.name = ''
-  wishes.value.message = ''
-  alert('Ucapan terkirim! 🎊')
-}
+const viewMode = ref('Mobile')
+const modes = ['Mobile', 'Web']
+const iframeRef = ref(null)
+const isPublished = ref(false)
 
-function submitRSVP() {
-  console.log('RSVP data:', rsvp.value)
-  alert(`Terima kasih ${rsvp.value.name}, RSVP kamu berhasil dikirim! ✨`)
-  // Simpan ke backend / firebase / localStorage dll
-}
+const previewUrl = '/invitation'
 
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text)
-  alert('Nomor rekening disalin ke clipboard ✅')
-}
+const showLogin = ref(false)
+const authMode = ref('login')
 
-function openInvitation() {
-  showWelcome.value = false
-}
-
-const backgroundUrl = 'https://hi.momenkita.id/wp-content/uploads/2024/03/IMG_7686-.jpg'
-const countdown = ref({
-  Hari: '00',
-  Jam: '00',
-  Menit: '00',
-  Detik: '00',
+const frameClass = computed(() => {
+  switch (viewMode.value) {
+    case 'Mobile':
+      return 'w-[390px] h-[844px] rounded-[2.5rem]'
+    case 'Web':
+      return 'w-[1280px] h-[720px] rounded-md'
+    case 'Fullscreen':
+      return 'w-full h-[calc(100vh-3.5rem)]'
+    default:
+      return 'w-[390px] h-[844px] rounded-[2.5rem]'
+  }
 })
 
-const targetDate = new Date('2025-07-21T00:00:00')
+function enterFullscreen() {
+  const el = iframeRef.value
+  if (el?.requestFullscreen) el.requestFullscreen()
+  else alert('Browser tidak mendukung fullscreen mode 😓')
+}
 
-let interval = null
-
-const updateCountdown = () => {
-  const now = new Date()
-  const diff = targetDate - now
-
-  if (diff <= 0) {
-    countdown.value = { Hari: '00', Jam: '00', Menit: '00', Detik: '00' }
-    clearInterval(interval)
+const handlePublish = () => {
+  if (!auth.isLoggedIn) {
+    showLogin.value = true
     return
   }
-
-  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24)
-  const minutes = Math.floor((diff / (1000 * 60)) % 60)
-  const seconds = Math.floor((diff / 1000) % 60)
-
-  countdown.value = {
-    Hari: String(days).padStart(2, '0'),
-    Jam: String(hours).padStart(2, '0'),
-    Menit: String(minutes).padStart(2, '0'),
-    Detik: String(seconds).padStart(2, '0'),
-  }
+  // Setelah login sukses, arahkan ke halaman detail pembayaran
+  router.push('/payment-details')
 }
-
-onMounted(() => {
-  const stored = localStorage.getItem('formData')
-  if (stored) {
-    data.value = JSON.parse(stored)
-  }
-  updateCountdown()
-  interval = setInterval(updateCountdown, 1000)
-})
-
-onBeforeUnmount(() => {
-  clearInterval(interval)
-})
 </script>
-
-<style scoped>
-/* .invite-reveal-enter-active,
-.invite-reveal-leave-active {
-  transition: all 0.8s ease-in-out;
-  transform-origin: top center;
-}
-
-.invite-reveal-enter-from {
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
-}
-
-.invite-reveal-enter-to {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.invite-reveal-leave-from {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.invite-reveal-leave-to {
-  opacity: 0;
-  transform: scale(0.95) translateY(-20px);
-} */
-</style>

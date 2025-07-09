@@ -6,7 +6,8 @@
       <!-- Template preview -->
       <h2 class="text-lg font-semibold mb-2 text-dark">Template Dipilih:</h2>
       <div class="flex items-start gap-4 mb-6">
-        <img :src="selectedTemplate.image" class="rounded-xl shadow h-32 w-40 object-cover border-px border-sage/30" />
+        <img :src="selectedTemplate.previewUrl"
+          class="rounded-xl shadow h-32 w-40 object-cover border-px border-sage/30" />
         <div class="flex-1 text-sm text-muted">
           <h3 class="text-base font-bold text-mocha">{{ selectedTemplate.name }}</h3>
           <p class="mb-2">{{ selectedTemplate.desc }}</p>

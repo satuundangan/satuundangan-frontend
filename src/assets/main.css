@@ -60,9 +60,9 @@
 }
 
 /* Hover States */
-.hover\:bg-mocha:hover {
-  background-color: var(--color-mocha);
-}
+/* .hover\:bg-mocha:hover {
+  background-color: var(--color-sage);
+} */
 
 .hover\:bg-sage:hover {
   background-color: var(--color-sage);
