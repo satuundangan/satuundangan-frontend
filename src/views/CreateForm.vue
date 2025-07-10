@@ -3,15 +3,36 @@
     <h1 class="text-3xl font-bold text-mocha text-center mb-10">Langkah 3: Isi Data Undangan</h1>
 
     <div class="max-w-6xl mx-auto bg-white p-8 rounded-3xl shadow-xl border border-gray-300 space-y-8">
-      <div>
-        <label class="block text-mocha font-semibold mb-2">Judul Undangan</label>
-        <input v-model="formData.title" type="text" placeholder="Contoh: The Wedding of..."
-          class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+
+      <!-- Data Mempelai -->
+      <div class="space-y-6">
+        <h2 class="text-xl font-bold text-center text-mocha border-b pb-2">Data Mempelai</h2>
+        <div class="mt-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Mempelai Wanita -->
+            <div class="space-y-4">
+              <h3 class="text-mocha font-semibold">Mempelai Wanita</h3>
+              <input v-model="formData.brideName" type="text" placeholder="Nama Lengkap Wanita"
+                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+              <input v-model="formData.brideParents" type="text" placeholder="Nama Orang Tua Wanita"
+                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+            </div>
+
+            <!-- Mempelai Pria -->
+            <div class="space-y-4">
+              <h3 class="text-mocha font-semibold">Mempelai Pria</h3>
+              <input v-model="formData.groomName" type="text" placeholder="Nama Lengkap Pria"
+                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+              <input v-model="formData.groomParents" type="text" placeholder="Nama Orang Tua Pria"
+                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+            </div>
+          </div>
+        </div>
       </div>
 
       <div>
-        <label class="block text-mocha font-semibold mb-2">Nama Pasangan</label>
-        <input v-model="formData.coupleName" type="text" placeholder="Contoh: John & Jane"
+        <label class="block text-mocha font-semibold mb-2">Judul Undangan</label>
+        <input v-model="formData.title" type="text" placeholder="Contoh: The Wedding of..."
           class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
       </div>
 
@@ -351,17 +372,6 @@
         </div>
       </div>
 
-
-
-      <!-- Ortu -->
-      <div>
-        <label class="block text-mocha font-semibold mb-2">Nama Orang Tua</label>
-        <input v-model="formData.parentBride" placeholder="Orang Tua Mempelai Wanita" type="text"
-          class="w-full p-2 border border-gray-300 rounded-xl bg-white mb-2" />
-        <input v-model="formData.parentGroom" placeholder="Orang Tua Mempelai Pria" type="text"
-          class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
-      </div>
-
       <!-- Live Stream -->
       <div>
         <label class="block text-mocha font-semibold mb-2">Link Live Streaming</label>
@@ -394,7 +404,8 @@ const isPremiumTemplate = ref(false) // set true jika template premium
 const formData = ref({
   // Data Umum
   title: '',
-  coupleName: '',
+  brideName: '',
+  groomName: '',
   templateName: '',
   isPublished: false,
   quote: '',
@@ -484,6 +495,7 @@ const addLoveStory = () => {
     isOpen: true
   })
 }
+
 const removeLoveStory = (index) => loveStories.value.splice(index, 1)
 const handleFileUploadLoveStory = (event, index) => {
   const file = event.target.files[0]
@@ -569,7 +581,8 @@ function generatePayload() {
   const payload = {
     title: formData.value.title,
     slug: formData.value.title.toLowerCase().replace(/\s+/g, '-'),
-    coupleName: formData.value.coupleName,
+    brideName: formData.value.brideName,
+    groomName: formData.value.groomName,
     templateName: formData.value.templateName,
     isPublished: formData.value.isPublished,
     quoteSource: formData.value.quoteSource,
@@ -643,14 +656,14 @@ function saveAndPreview() {
 
 // ==== Lifecycle ====
 onMounted(() => {
-  const stored = localStorage.getItem('selectedTemplate')
-  if (!stored) return router.push('/create')
-  const selected = JSON.parse(stored)
-  const activeSections = selected.sectionOptions || []
-  sections.value = activeSections.reduce((obj, key) => {
-    obj[key] = true
-    return obj
-  }, {})
+  // const stored = localStorage.getItem('selectedTemplate')
+  // if (!stored) return router.push('/create')
+  // const selected = JSON.parse(stored)
+  // const activeSections = selected.sectionOptions || []
+  // sections.value = activeSections.reduce((obj, key) => {
+  //   obj[key] = true
+  //   return obj
+  // }, {})
 })
 </script>
 

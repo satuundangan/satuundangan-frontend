@@ -46,14 +46,17 @@
   </div>
 </template>
 
+<style scoped></style>
 
 <script setup>
 import { ref, computed } from 'vue'
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
-import AuthModal from '@/components/AuthModal.vue'
+import AuthModal from '@/components/modal/AuthModal.vue'
+
 
 const auth = useAuthStore()
+const userName = computed(() => auth.user?.name || null)
 const router = useRouter()
 
 const viewMode = ref('Mobile')
@@ -69,13 +72,13 @@ const authMode = ref('login')
 const frameClass = computed(() => {
   switch (viewMode.value) {
     case 'Mobile':
-      return 'w-[390px] h-[844px] rounded-[2.5rem]'
+      return 'w-[28%] h-full rounded-[2rem]'
     case 'Web':
-      return 'w-[1280px] h-[720px] rounded-md'
+      return 'w-full h-full rounded-md'
     case 'Fullscreen':
       return 'w-full h-[calc(100vh-3.5rem)]'
     default:
-      return 'w-[390px] h-[844px] rounded-[2.5rem]'
+      return 'w-[390px] h-full rounded-[2rem]'
   }
 })
 
@@ -86,11 +89,11 @@ function enterFullscreen() {
 }
 
 const handlePublish = () => {
-  if (!auth.isLoggedIn) {
+  if (!userName.value) {
     showLogin.value = true
     return
   }
   // Setelah login sukses, arahkan ke halaman detail pembayaran
-  router.push('/payment-details')
+  router.push('/checkout')
 }
 </script>

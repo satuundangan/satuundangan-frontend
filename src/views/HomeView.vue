@@ -57,7 +57,7 @@
                   </div>
                   <div :class="['bg-[{{color}}] p-1 rounded-full']">
                   </div>
-                  <p class="text-xs text-gray-500">{{ item.desc }}</p>
+                  <p class="text-xs text-gray-500">{{ item.description }}</p>
                   <div class="flex flex-wrap gap-1 mt-2">
                     <span v-for="tag in item.tags" :key="tag"
                       class="text-[10px] bg-mocha/10 text-mocha px-2 py-0.5 rounded-full">
@@ -113,7 +113,7 @@
             {{ index + 1 }}
           </div>
           <h4 class="font-semibold text-dark mb-2">{{ step.title }}</h4>
-          <p class="text-sm text-muted">{{ step.desc }}</p>
+          <p class="text-sm text-muted">{{ step.description }}</p>
         </div>
       </div>
     </section>
@@ -129,7 +129,7 @@
           </div>
           <div class="p-5 text-center">
             <h4 class="font-semibold text-dark text-lg mb-1">{{ item.name }}</h4>
-            <p class="text-sm text-muted">{{ item.desc }}</p>
+            <p class="text-sm text-muted">{{ item.description }}</p>
           </div>
         </div>
       </div>
@@ -165,9 +165,9 @@
 <script setup>
 import { ref, computed, watch, nextTick, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import Navbar from '@/components/NavbarSection.vue'
-import Footer from '@/components/FooterSection.vue'
-import { getTemplateDesigns } from '@/api/templateDesign'
+import Navbar from '@/components/layout/NavbarSection.vue'
+import Footer from '@/components/layout/FooterSection.vue'
+// import { getTemplateDesigns } from '@/api/templateDesign'
 
 const router = useRouter()
 const showModal = ref(false)
@@ -183,6 +183,7 @@ watch(() => showModal.value, (newVal) => {
     document.body.classList.remove('overflow-hidden')
   }
 })
+
 watch(() => showModal.value, async (val) => {
   if (val && selectedTemplate.value) {
     await nextTick() // tunggu DOM-nya render dulu
@@ -194,129 +195,60 @@ watch(() => showModal.value, async (val) => {
 })
 
 
-
 const steps = [
-  { title: "Mulai Desain", desc: "Tanpa login, langsung mulai dari browser." },
-  { title: "Pilih Template", desc: "Pilih tema undangan yang kamu suka." },
-  { title: "Isi Data", desc: "Masukkan info nikah, foto, lokasi, dll." },
-  { title: "Lihat Preview", desc: "Lihat hasil undanganmu secara real-time." },
-  { title: "Share & Simpan", desc: "Kirim ke tamu atau simpan dulu di HP." },
+  { title: "Mulai Desain", description: "Tanpa login, langsung mulai dari browser." },
+  { title: "Pilih Template", description: "Pilih tema undangan yang kamu suka." },
+  { title: "Isi Data", description: "Masukkan info nikah, foto, lokasi, dll." },
+  { title: "Lihat Preview", description: "Lihat hasil undanganmu secara real-time." },
+  { title: "Share & Simpan", description: "Kirim ke tamu atau simpan dulu di HP." },
 ]
 const templates = ref([
   {
     id: 1,
-    name: 'Floral Pink',
-    previewUrl: 'https://images.unsplash.com/photo-1520686847074-d2f4ab0c7e2b?auto=format&fit=crop&w=800&q=80',
-    desc: 'Bunga manis untuk pasangan romantis.',
+    name: 'Dark Elegant',
+    previewUrl: 'https://i.pinimg.com/736x/9b/2b/45/9b2b4584e36ea2757eebe765d2184611.jpg',
+    description: 'Elegant Dark Style dengan kesan simple romantis.',
     category: 'Premium',
-    tags: ['bunga', 'manis', 'romantis'],
-    palleteColor: ['#ffc0cb', '#f7d900', '#0f0757'],
-    sectionOptions: ['quote', 'photoCouple', 'music', 'wishes', 'gift']
+    tags: ['elegant', 'manis', 'romantis'],
+    palleteColor: {
+      primary: '#e5e5e5',
+      secondary: '#ffffff',
+      accent: '#222222',
+      background: '#ffffff',
+      text: '#222222'
+    },
+    sectionOptions: [
+      'Quote Ayat',
+      'Love Story',
+      'Foto Mempelai',
+      'Musik Latar',
+      'Google Map',
+      'RSVP',
+      'Ucapan untuk Mempelai',
+      'Like Count',
+      'Hitung Mundur',
+      'Denah Ruangan',
+      'Enkripsi Nama Tamu',
+      'List Makanan/Minuman',
+      'Amplop Digital & Alamat Kado',
+      'Gallery',
+    ]
   },
-  {
-    id: 2,
-    name: 'Minimalist Love',
-    previewUrl: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&w=800&q=80',
-    desc: 'Tampilan simpel dan elegan buat kamu yang lowkey.',
-    category: 'Gratis',
-    tags: ['simpel', 'elegan'],
-    palleteColor: ['#e5e5e5', '#ffffff', '#222222'],
-    sectionOptions: ['quote', 'loveStory', 'photoCouple', 'map', 'rsvp']
-  },
-  {
-    id: 3,
-    name: 'Tropical Vibes',
-    previewUrl: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80',
-    desc: 'Tema tropis ceria penuh warna daun dan bunga.',
-    category: 'Eksklusif',
-    tags: ['tropis', 'warna', 'ceria'],
-    palleteColor: ['#34d399', '#10b981', '#065f46'],
-    sectionOptions: ['photoCouple', 'map', 'gift', 'wishes', 'likes']
-  },
-  {
-    id: 4,
-    name: 'Rustic Charm',
-    previewUrl: 'https://images.unsplash.com/photo-1524985069026-dd778a71c7b4?auto=format&fit=crop&w=800&q=80',
-    desc: 'Nuansa alam dan kayu klasik yang hangat.',
-    category: 'Premium',
-    tags: ['rustic', 'kayu', 'natural'],
-    palleteColor: ['#deb887', '#a0522d', '#fffaf0'],
-    sectionOptions: ['quote', 'photoCouple', 'gift', 'denah', 'wishes']
-  },
-  {
-    id: 5,
-    name: 'Modern Elegance',
-    previewUrl: 'https://images.unsplash.com/photo-1611078489935-7f7c0479c043?auto=format&fit=crop&w=800&q=80',
-    desc: 'Desain modern, bersih dan mewah.',
-    category: 'Eksklusif',
-    tags: ['modern', 'elegan', 'mewah'],
-    palleteColor: ['#1f2937', '#4b5563', '#d1d5db'],
-    sectionOptions: ['photoCouple', 'music', 'likes', 'encryptedGuest', 'rsvp']
-  },
-  {
-    id: 6,
-    name: 'Cute Pastel',
-    previewUrl: 'https://images.unsplash.com/photo-1611589997935-01e2436c92df?auto=format&fit=crop&w=800&q=80',
-    desc: 'Warna pastel yang lembut dan imut.',
-    category: 'Gratis',
-    tags: ['pastel', 'imut', 'lembut'],
-    palleteColor: ['#fbcfe8', '#fcd34d', '#a7f3d0'],
-    sectionOptions: ['loveStory', 'photoCouple', 'countdown', 'foodList', 'gift']
-  },
-  {
-    id: 7,
-    name: 'Golden Hour',
-    previewUrl: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=800&q=80',
-    desc: 'Kilau emas hangat di tiap detailnya.',
-    category: 'Premium',
-    tags: ['emas', 'hangat', 'sunset'],
-    palleteColor: ['#ffd700', '#ffa500', '#ff8c00'],
-    sectionOptions: ['photoCouple', 'map', 'gift', 'wishes']
-  },
-  {
-    id: 8,
-    name: 'Vintage Vibe',
-    previewUrl: 'https://images.unsplash.com/photo-1519682337058-a94d519337bc?auto=format&fit=crop&w=800&q=80',
-    desc: 'Getaran klasik penuh nostalgia.',
-    category: 'Eksklusif',
-    tags: ['vintage', 'klasik', 'nostalgia'],
-    palleteColor: ['#cdb4db', '#ffb4a2', '#ffcdb2'],
-    sectionOptions: ['quote', 'loveStory', 'music', 'rsvp']
-  },
-  {
-    id: 9,
-    name: 'Fairytale Romance',
-    previewUrl: 'https://images.unsplash.com/photo-1509818314394-1a8416c8ad71?auto=format&fit=crop&w=800&q=80',
-    desc: 'Serasa di negeri dongeng.',
-    category: 'Premium',
-    tags: ['dongeng', 'romantis', 'fantasi'],
-    palleteColor: ['#f0abfc', '#c084fc', '#a78bfa'],
-    sectionOptions: ['quote', 'wishes', 'photoCouple', 'music']
-  },
-  {
-    id: 10,
-    name: 'Serenity Blue',
-    previewUrl: 'https://images.unsplash.com/photo-1610968610493-60d04e88f30c?auto=format&fit=crop&w=800&q=80',
-    desc: 'Tenang, damai, dan penuh cinta.',
-    category: 'Gratis',
-    tags: ['biru', 'damai', 'tenang'],
-    palleteColor: ['#60a5fa', '#3b82f6', '#2563eb'],
-    sectionOptions: ['photoCouple', 'countdown', 'map', 'foodList']
-  },
-])
-const loading = ref(true)
+]);
+
+// const loading = ref(true)
 const classCategories = ['Semua', 'Premium', 'Eksklusif', 'Gratis']
 
 
 onMounted(async () => {
-  try {
-    const data = await getTemplateDesigns()
-    templates.value = data // pastikan struktur datanya sesuai!
-  } catch (e) {
-    console.error('Gagal ambil template:', e)
-  } finally {
-    loading.value = false
-  }
+  // try {
+  //   const data = await getTemplateDesigns()
+  //   templates.value = data // pastikan struktur datanya sesuai!
+  // } catch (e) {
+  //   console.error('Gagal ambil template:', e)
+  // } finally {
+  //   loading.value = false
+  // }
 })
 
 const filteredTemplates = computed(() => {

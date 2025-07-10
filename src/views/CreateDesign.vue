@@ -23,9 +23,9 @@
       <p class="text-sm text-muted mb-4">Bikin undanganmu makin berkesan dengan bagian-bagian seru di bawah ini</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <template v-for="(section, key) in sectionOptions" :key="key">
-          <label class="toggle-box" :class="{ 'active': selectedSections.includes(key) }">
-            <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
-            <i class="fa-solid fa-circle-check" v-if="selectedSections.includes(key)"></i>
+          <label class="toggle-box" :class="{ 'active': selectedSections.includes(section) }">
+            <input type="checkbox" v-model="selectedSections" :value="section" class="hidden" />
+            <i class="fa-solid fa-circle-check" v-if="selectedSections.includes(section)"></i>
             {{ section }}
           </label>
         </template>

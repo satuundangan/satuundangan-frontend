@@ -1,3 +1,4 @@
+import CheckoutPage from '@/views/CheckoutPage.vue'
 import CreateDesign from '@/views/CreateDesign.vue'
 import CreateForm from '@/views/CreateForm.vue'
 import HomeView from '@/views/HomeView.vue'
@@ -32,6 +33,11 @@ const router = createRouter({
       path: '/preview',
       name: 'preview',
       component: PreviewInvitation,
+    },
+    {
+      path: '/checkout',
+      name: 'checkout',
+      component: CheckoutPage,
     },
   ],
 })

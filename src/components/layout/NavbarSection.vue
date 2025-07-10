@@ -98,8 +98,8 @@
 </template>
 <script setup>
 import { ref, computed } from 'vue'
-import AuthModal from '@/components/AuthModal.vue'
-import { useAuthStore } from '@/store/auth'
+import AuthModal from '@/components/modal/AuthModal.vue'
+import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
 import { useToast } from 'vue-toastification'
 import { onClickOutside } from '@vueuse/core'

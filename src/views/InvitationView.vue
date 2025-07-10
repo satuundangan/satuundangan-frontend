@@ -1,17 +1,17 @@
 <template>
-  <div class="relative min-h-screen bg-black overflow-hidden font-sans">
+  <div class="relative min-h-screen bg-black overflow-hidden font-sans no-scrollbar">
     <!-- Welcome Section -->
     <transition name="invite-reveal" mode="out-in">
       <div v-if="showWelcome"
-        class="relative flex flex-col items-center justify-center h-screen text-center px-6 text-[#60a5fa]"
+        class="relative flex flex-col items-center justify-center h-screen text-center px-6 text-white"
         style="background-image: url('https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExeDhwZDZwbDh0ZjEwcmZwYnQ5ZDZqeTdqeWEzcjRoYjNkMWlveHc0NiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/gKncmZtoUiAcQxPvap/giphy.gif'); background-size: cover; background-position: center;">
         <div class="absolute inset-0 bg-black/40 backdrop-blur-xs"></div>
         <div class="relative z-10 space-y-2">
           <h1 class="text-md font-light tracking-widest ">THE WEDDING OF</h1>
-          <h2 class="text-5xl font-serif font-semibold">ADAM</h2>
+          <h2 class="text-5xl font-serif font-semibold" v-html="data.groomName"></h2>
           <span class="text-sm ">AND</span>
-          <h2 class="text-5xl font-serif font-semibold mb-2">HAWA</h2>
-          <p class="text-sm mb-6">21.10.2023</p>
+          <h2 class="text-5xl font-serif font-semibold mb-2" v-html="data.brideName"></h2>
+          <p class="text-sm mb-6" v-html="data.akadLocation?.dateTime"></p>
 
           <div class="text-sm ">Kepada Yth.</div>
           <div class="text-xl font-semibold text-white mb-4">Nama Tamu</div>
@@ -40,10 +40,11 @@
           <!-- Konten utama -->
           <div class="relative z-10 space-y-4">
             <p class="text-sm tracking-widest uppercase">The Wedding Of</p>
-            <h1 class="text-3xl font-serif font-semibold uppercase tracking-wide">Groom Name</h1>
+            <h1 class="text-3xl font-serif font-semibold uppercase tracking-wide" v-html="data.groomName"></h1>
             <p class="text-xl font-light">and</p>
-            <h1 class="text-3xl font-serif font-semibold uppercase tracking-wide">Brides Name</h1>
-            <p class="text-sm mt-2">Day.Month.Year</p>
+            <h1 class="text-3xl font-serif font-semibold uppercase tracking-wide" v-html="data.brideName">
+            </h1>
+            <p class="text-sm mt-2" v-html="data.akadLocation?.dateTime"></p>
 
             <!-- Countdown -->
             <div class="flex justify-center gap-6 mt-6 font-semibold">
@@ -99,7 +100,7 @@
                   Bride
                 </div>
                 <img src="https://i.pinimg.com/736x/7f/4b/41/7f4b41f027b8e316e2821274761b86b6.jpg" alt="Bride"
-                  class="w-full h-72 object-cover grayscale-0 hover:grayscale transition duration-300">
+                  class="w-full h-72 object-cover grayscale-0  transition duration-300">
                 <div class="p-5 text-center text-white">
                   <h3 class="text-lg font-serif font-semibold mb-1">Mafaza Humaira Zega</h3>
                   <p class="text-xs text-gray-300 mb-2">Putra dari Bapak Bapak, S.H. & Ibu Ibu Komplek</p>
@@ -119,7 +120,7 @@
                 </div>
                 <img
                   src="https://cdn0.weddingwire.in/article/1811/original/1280/jpg/101181-wedding-dresses-for-men-11jpg.jpeg"
-                  alt="Groom" class="w-full h-72 object-cover grayscale-0 hover:grayscale transition duration-300">
+                  alt="Groom" class="w-full h-72 object-cover grayscale-0  transition duration-300">
                 <div class="p-5 text-center text-white">
                   <h3 class="text-lg font-serif font-semibold mb-1">Habib Palsu</h3>
                   <p class="text-xs text-gray-300 mb-2">Putra dari Bapak Bapak, S.H. & Ibu Ibu Komplek Juga</p>
@@ -393,7 +394,7 @@ function openInvitation() {
   showWelcome.value = false
 }
 
-const backgroundUrl = 'https://hi.momenkita.id/wp-content/uploads/2024/03/IMG_7686-.jpg'
+const backgroundUrl = 'https://www.shutterstock.com/image-photo/wedding-couple-indoors-hugging-each-600nw-297700607.jpg '
 const countdown = ref({
   Hari: '00',
   Jam: '00',
@@ -401,8 +402,16 @@ const countdown = ref({
   Detik: '00',
 })
 
-const targetDate = new Date('2025-07-21T00:00:00')
+let targetDate = null
 
+if (data.value.akadLocation?.dateTime) {
+  const parsed = new Date(data.value.akadLocation.dateTime)
+  if (!isNaN(parsed)) {
+    targetDate = parsed
+  } else {
+    console.warn("Tanggalnya gak valid bro 🚨", data.value.akadLocation.dateTime)
+  }
+}
 let interval = null
 
 const updateCountdown = () => {
@@ -429,9 +438,10 @@ const updateCountdown = () => {
 }
 
 onMounted(() => {
-  const stored = localStorage.getItem('formData')
+  const stored = localStorage.getItem('finalPayload')
   if (stored) {
     data.value = JSON.parse(stored)
+    console.log(data.value)
   }
   updateCountdown()
   interval = setInterval(updateCountdown, 1000)
@@ -443,29 +453,16 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* .invite-reveal-enter-active,
-.invite-reveal-leave-active {
-  transition: all 0.8s ease-in-out;
-  transform-origin: top center;
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-.invite-reveal-enter-from {
-  opacity: 0;
-  transform: scale(0.9) translateY(20px);
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
-
-.invite-reveal-enter-to {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.invite-reveal-leave-from {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.invite-reveal-leave-to {
-  opacity: 0;
-  transform: scale(0.95) translateY(-20px);
-} */
 </style>

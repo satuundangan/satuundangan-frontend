@@ -10,7 +10,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(payload) {
       const res = await login(payload)
-      console.log(res);
+      console.log(res)
 
       this.token = res.access_token
       localStorage.setItem('token', res.access_token)

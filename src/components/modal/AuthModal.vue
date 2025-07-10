@@ -1,6 +1,6 @@
 <template>
   <transition name="fade">
-    <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+    <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 text-black">
       <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md relative">
         <div class="absolute top-4 right-4">
           <button @click="$emit('close')"
@@ -53,7 +53,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useAuthStore } from '@/store/auth'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
