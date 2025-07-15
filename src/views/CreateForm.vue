@@ -34,7 +34,12 @@
         <label class="block text-mocha font-semibold mb-2">Judul Undangan</label>
         <input v-model="formData.title" type="text" placeholder="Contoh: The Wedding of..."
           class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+        <p v-if="suggestedTitle && formData.title !== suggestedTitle" class="text-sm text-gray-400 italic mt-1">
+          Saran: {{ suggestedTitle }}
+          <button @click="formData.title = suggestedTitle" class="text-blue-600 underline ml-2">Gunakan</button>
+        </p>
       </div>
+
 
       <!-- Quote Ayat -->
       <div v-if="sections.quote">
@@ -391,7 +396,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 // ==== Router ====
@@ -653,6 +658,16 @@ function saveAndPreview() {
   generatePayload()
   router.push('/preview')
 }
+
+const suggestedTitle = computed(() => {
+  const groom = formData.value.groomName.trim()
+  const bride = formData.value.brideName.trim()
+  if (groom && bride) {
+    return `The Wedding of ${groom} & ${bride}`
+  }
+  return ''
+})
+
 
 // ==== Lifecycle ====
 onMounted(() => {

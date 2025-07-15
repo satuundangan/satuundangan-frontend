@@ -1,11 +1,28 @@
 @import 'tailwindcss';
 
 :root {
-  --color-mocha: #bfa6a0;
-  --color-sage: #a8b8a2;
-  --color-ivory: #faf9f6;
-  --color-text-dark: #3b3a36;
-  --color-accent-gold: #d6b18a;
+  --color-mocha: #a47148;
+  --color-sage: #94a684;
+  --color-ivory: #fffaf3;
+  --color-text-dark: #2f2f2f;
+  --color-accent-gold: #c89f68;
+
+  --font-alex: 'Alex Brush', cursive;
+  --font-montserrat: 'Montserrat', sans-serif;
+}
+
+.font-alex {
+  font-family: var(--font-alex);
+}
+
+.font-montserrat {
+  font-family: var(--font-montserrat);
+}
+
+.btn-glow-gold {
+  box-shadow:
+    0 0 10px rgba(214, 177, 138, 0.6),
+    0 0 20px rgba(180, 140, 91, 0.3);
 }
 
 /* Backgrounds */
