@@ -15,7 +15,7 @@ const router = createRouter({
       component: HomeView,
     },
     {
-      path: '/invitation',
+      path: '/:slug',
       name: 'invitation',
       component: Invitation,
     },

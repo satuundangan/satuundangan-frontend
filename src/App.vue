@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-[#FFF6E3] min-h-screen text-gray-800 font-sans">
+  <div class=" text-gray-800 font-sans">
     <router-view />
   </div>
 </template>
@@ -14,3 +14,6 @@ onMounted(() => {
 })
 
 </script>
+
+
+<style></style>

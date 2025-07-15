@@ -85,7 +85,8 @@
         </template>
 
         <template v-else>
-          <button class="text-sm text-mocha hover:text-accent-gold transition" @click="show = true">Login</button>
+          <button class="text-sm text-mocha hover:text-accent-gold transition" @click="show = true">Login/Sign
+            Up</button>
           <button class="px-4 py-2 md:py-3 text-sm text-white bg-[#bfa6a0] hover:bg-[#5a4f4c] transition-all rounded-xl"
             @click="emit('create-invitation')">
             Buat Undangan
