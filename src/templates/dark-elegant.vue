@@ -37,7 +37,8 @@
         :style="{ backgroundImage: `url(${backgroundUrl})` }">
         <!-- Overlay gradasi -->
         <div class="absolute inset-0 bg-black/20 backdrop-brightness-75"></div>
-        <div class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#4b5563] to-transparent z-[1]"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-40 z-[1]" :style="paletteStyle.gradientBottomFromTransparent">
+        </div>
 
         <!-- Konten utama -->
         <div class="relative z-10 space-y-4 font-montserrat">
@@ -63,7 +64,7 @@
       </div>
 
       <!-- Section Kutipan Ayat -->
-      <section class="bg-[#4b5563] sm:py-24 py-16 text-center px-6 relative font-montserrat">
+      <section :style="paletteStyle.background" class="sm:py-24 py-16 text-center px-6 relative font-montserrat">
         <!-- Border atas bawah -->
         <div class="absolute top-0 left-1/2 w-32 h-[1px] bg-white/30 -translate-x-1/2"></div>
         <div class="absolute bottom-0 left-1/2 w-32 h-[1px] bg-white/30 -translate-x-1/2"></div>
@@ -78,13 +79,13 @@
       </section>
 
 
-      <section class="bg-gradient-to-b from-[#4b5563] via-[#3e3e3e] to-[#2e2e2e] text-gray-300 py-16 px-4">
+      <section :style="paletteStyle.background" class=" text-gray-300 py-16 px-4">
         <div
           class="max-w-5xl relative mx-auto text-center bg-white/5 backdrop-blur-lg rounded-t-[3rem] pt-12 px-4 pb-24 ">
 
           <!-- Gradient di bawah -->
-          <div
-            class="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#2e2e2e] to-transparent z-[1] pointer-events-none">
+          <div :style="paletteStyle.gradientBottomFromTransparent"
+            class="absolute bottom-0 left-0 right-0 h-40 z-[1] pointer-events-none">
           </div>
 
           <h2 class="text-3xl font-serif text-[#f8f4f0] uppercase mb-2">Our Wedding</h2>
@@ -104,25 +105,6 @@
 
           <!-- Cards -->
           <div class="flex flex-col md:flex-row justify-center gap-8">
-            <!-- Bride -->
-            <div
-              class="w-full md:w-1/2 max-w-sm bg-white/5 backdrop-blur border border-white/10 rounded-3xl shadow-lg overflow-hidden relative">
-              <div
-                class="absolute top-4 left-4 bg-gradient-to-br from-[#bfa88f] to-[#d1bfa7] text-white text-[11px] font-semibold px-3 py-1 rounded-full uppercase tracking-wide shadow">
-                Bride
-              </div>
-              <img src="https://i.pinimg.com/736x/7f/4b/41/7f4b41f027b8e316e2821274761b86b6.jpg" alt="Bride"
-                class="w-full h-72 object-cover grayscale-0  transition duration-300">
-              <div class="p-5 text-center text-white">
-                <h3 class="text-lg font-serif font-semibold mb-1">Mafaza Humaira Zega</h3>
-                <p class="text-xs text-gray-300 mb-2">Putra dari Bapak Bapak, S.H. & Ibu Ibu Komplek</p>
-                <a href="https://instagram.com" target="_blank"
-                  class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]">
-                  ig: @gatausiapa
-                </a>
-              </div>
-            </div>
-
             <!-- Groom -->
             <div
               class="w-full md:w-1/2 max-w-sm bg-white/5 backdrop-blur border border-white/10 rounded-3xl shadow-lg overflow-hidden relative">
@@ -134,11 +116,31 @@
                 src="https://cdn0.weddingwire.in/article/1811/original/1280/jpg/101181-wedding-dresses-for-men-11jpg.jpeg"
                 alt="Groom" class="w-full h-72 object-cover grayscale-0  transition duration-300">
               <div class="p-5 text-center text-white">
-                <h3 class="text-lg font-serif font-semibold mb-1">Habib Palsu</h3>
-                <p class="text-xs text-gray-300 mb-2">Putra dari Bapak Bapak, S.H. & Ibu Ibu Komplek Juga</p>
+                <h3 class="text-lg font-serif font-semibold mb-1" v-html="data.groomName"></h3>
+                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents.groomParents"></p>
                 <a href="https://instagram.com" target="_blank"
-                  class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]">
-                  ig: @sahateing
+                  class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]"
+                  v-html="'IG : ' + data.socialMediaGroom.instagram">
+                </a>
+              </div>
+            </div>
+
+            <!-- Bride -->
+            <div
+              class="w-full md:w-1/2 max-w-sm bg-white/5 backdrop-blur border border-white/10 rounded-3xl shadow-lg overflow-hidden relative">
+              <div
+                class="absolute top-4 left-4 bg-gradient-to-br from-[#bfa88f] to-[#d1bfa7] text-white text-[11px] font-semibold px-3 py-1 rounded-full uppercase tracking-wide shadow">
+                Bride
+              </div>
+              <img src="https://i.pinimg.com/736x/7f/4b/41/7f4b41f027b8e316e2821274761b86b6.jpg" alt="Bride"
+                class="w-full h-72 object-cover grayscale-0  transition duration-300">
+              <div class="p-5 text-center text-white">
+                <h3 class="text-lg font-serif font-semibold mb-1" v-html="data.brideName"></h3>
+                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents.brideParents"></p>
+                <a href="https://instagram.com" target="_blank"
+                  class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]"
+                  v-html="'IG : ' + data.socialMediaBrides.instagram">
+
                 </a>
               </div>
             </div>
@@ -147,15 +149,17 @@
       </section>
 
 
-      <section
-        class="relative bg-gradient-to-b from-[#2e2e2e] via-[#3e3e3e] to-[#4b5563] text-gray-200 py-20 px-6 overflow-hidden">
+      <section :style="paletteStyle.background" class="relative text-gray-200 py-20 px-6 overflow-hidden">
         <div
           class="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/dark-mosaic.png')] opacity-10 pointer-events-none">
         </div>
 
         <div class="max-w-5xl mx-auto text-center relative z-10">
-          <h2 class="text-4xl font-serif font-bold text-white mb-14 tracking-wide">Detail Acara</h2>
+          <h2 class="text-4xl font-serif font-alex font-bold text-white mb-5 tracking-wide ">Acara Pernikahan</h2>
 
+          <p class="mb-7 font-montserrat">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila,
+            Bapak/Ibu/Saudara/i berkenan hadir untuk
+            memberikan do'a restunya, kami ucapkan terima kasih.</p>
           <div class="grid md:grid-cols-2 gap-10">
             <!-- Card Akad -->
             <div
@@ -201,85 +205,152 @@
           </div>
         </div>
       </section>
-      <section class="bg-[#4b5563] py-16 px-4 text-white">
+
+
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
         <div
-          class="max-w-2xl mx-auto bg-white/10 backdrop-blur-md border border-white/20 rounded-3xl shadow-2xl p-8 relative overflow-hidden group">
+          class="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] p-10 relative overflow-hidden group transition-all duration-500">
+          <!-- Ornamen -->
+          <div class="absolute bottom-6 right-6 text-5xl text-white/10 group-hover:text-white/30 transition-all">
+            💫
+          </div>
 
-          <!-- Ornamen di sudut -->
-          <div class="absolute bottom-4 right-4 text-4xl text-white/10 group-hover:text-white/20 transition">💫</div>
+          <h2 class="text-4xl font-serif font-semibold text-center text-white drop-shadow-xl mb-10">
+            Konfirmasi Kehadiran
+          </h2>
 
-          <h2 class="text-3xl font-serif font-bold text-white text-center mb-8 drop-shadow-md">Konfirmasi Kehadiran
-            (RSVP)</h2>
-
-          <form @submit.prevent="submitRSVP" class="space-y-5">
+          <form @submit.prevent="submitRSVP" class="space-y-6">
+            <!-- Nama Lengkap -->
             <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
-              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition"
+              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"
               required />
 
-            <input v-model="rsvp.phone" type="tel" placeholder="Nomor Telepon / WhatsApp"
-              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition" />
+            <!-- Kehadiran: Fancy Checkbox Style -->
+            <div class="flex gap-4 justify-left">
+              <label
+                class="flex items-center justify-center px-6 py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
+                :class="rsvp.attendance === 'hadir' ? 'ring-2 ring-white/50' : ''">
+                <input type="radio" value="hadir" v-model="rsvp.attendance" class="hidden" required />
+                Hadir
+              </label>
 
-            <select v-model="rsvp.attendance"
-              class="w-full p-4 rounded-xl bg-white/10 text-white border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition"
-              required>
-              <option disabled value="">Apakah kamu akan hadir?</option>
-              <option value="hadir" class="text-black">Hadir</option>
-              <option value="tidak" class="text-black">Tidak Hadir</option>
-            </select>
+              <label
+                class="flex items-center justify-center px-6 py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
+                :class="rsvp.attendance === 'belum tau' ? 'ring-2 ring-white/50' : ''">
+                <input type="radio" value="belum tau" v-model="rsvp.attendance" class="hidden" />
+                Belum Tau
+              </label>
 
-            <textarea v-model="rsvp.message" placeholder="Ucapan atau pesan untuk pengantin" rows="3"
-              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/20 focus:outline-none focus:ring-2 focus:ring-[#4b5563] focus:bg-white/20 transition"></textarea>
+              <label
+                class="flex items-center justify-center px-6 py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
+                :class="rsvp.attendance === 'tidak' ? 'ring-2 ring-white/50' : ''">
+                <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden" />
+                Tidak Hadir
+              </label>
+            </div>
 
-            <button type="submit"
-              class="bg-white/10 hover:bg-[#4b5563] text-white font-bold py-3 px-6 rounded-full w-full shadow-lg transition-all">
+            <!-- Jumlah Tamu Hadir -->
+            <div v-if="rsvp.attendance === 'hadir'">
+              <select v-model="rsvp.totalGuest"
+                class="w-full p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"
+                required>
+                <option disabled value="">Jumlah Tamu yang Hadir</option>
+                <option v-for="n in guestOptions" :key="n" :value="n" class="text-black">
+                  {{ n }} Orang
+                </option>
+              </select>
+            </div>
+
+
+            <!-- Ucapan -->
+            <textarea v-model="rsvp.message" rows="3" placeholder="Ucapan atau pesan untuk pengantin"
+              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"></textarea>
+
+            <!-- Tombol Submit -->
+            <button type="submit" :style="paletteStyle.button"
+              class="w-full py-3 px-6 font-semibold rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
               Kirim RSVP 💌
             </button>
           </form>
         </div>
       </section>
-      <!-- Love Story - Elegant Dark Style -->
-      <section class="bg-gradient-to-b to-[#2e2e2e] via-[#3e3e3e] from-[#4b5563] py-16 px-4">
-        <div class="max-w-5xl mx-auto text-center mb-12">
-          <h2 class="text-4xl font-serif text-[#f8f4f0] font-bold tracking-wider mb-6">Our Love Story</h2>
 
-          <div class="relative border-l-4 border-[#bfa88f]/40 pl-10 space-y-16">
-            <!-- Item 1 -->
-            <div
-              class="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6 text-left">
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
+        <div class="max-w-2xl mx-auto">
+          <h2 class="text-3xl font-serif font-semibold text-center mb-10 drop-shadow-lg">
+            Ucapan dari Tamu
+          </h2>
+
+          <div v-if="wishesList.length === 0" class="text-center text-white/50">
+            Belum ada ucapan masuk 😢 Jadilah yang pertama!
+          </div>
+
+          <ul class="space-y-6">
+            <li v-for="(wish, index) in wishesList" :key="index"
+              class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 shadow-md transition hover:scale-[1.02]">
+              <p class="text-white text-lg font-semibold mb-1">{{ wish.name }}</p>
+              <p class="text-white/80">{{ wish.message }}</p>
+            </li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Love Story - Elegant Responsive Timeline -->
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
+        <div class="max-w-5xl mx-auto text-center mb-16">
+          <h2 class="text-4xl font-serif font-bold tracking-wide text-[#f8f4f0] mb-8">Our Love Story</h2>
+
+          <!-- Timeline Container -->
+          <div class="relative space-y-16 before:absolute before:top-0 before:bottom-0 before:w-1 before:bg-[#bfa88f]/30
+                md:before:left-1/2 before:left-4 md:before:-ml-0.5">
+
+            <!-- Timeline Item -->
+            <div class="relative md:w-1/2 md:pl-10 md:pr-0 pl-12 pr-4 text-left md:ml-auto group">
+              <!-- Icon -->
               <div
-                class="absolute -left-6 top-6 bg-[#bfa88f] text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
                 <i class="fa-solid fa-calendar-days"></i>
               </div>
-              <img src="https://i.ibb.co/2tXkWKV/couple1.jpg" alt="Love Story Photo 1"
-                class="w-full max-h-60 object-cover rounded-xl mb-4">
-              <p class="text-sm text-gray-300 font-medium mb-1">12 September 2017</p>
-              <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Awal Bertemu</h3>
-              <p class="text-gray-200 leading-relaxed">
-                Tahun di mana dia dikenalkan oleh rekan kerjanya yang juga temanku melalui sosial media.
-              </p>
+
+              <!-- Card -->
+              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
+                <img src="https://i.ibb.co/2tXkWKV/couple1.jpg" alt="Love Story Photo 1"
+                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
+                <p class="text-sm text-gray-300 font-medium mb-1">12 September 2017</p>
+                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Awal Bertemu</h3>
+                <p class="text-gray-200 leading-relaxed">
+                  Tahun di mana dia dikenalkan oleh rekan kerjanya yang juga temanku melalui sosial media.
+                </p>
+              </div>
             </div>
 
-            <!-- Item 2 -->
-            <div
-              class="relative bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6 text-left">
+            <!-- Timeline Item 2 (alternate side on desktop) -->
+            <div class="relative md:w-1/2 md:pr-10 md:pl-0 pl-12 pr-4 text-left md:mr-auto group">
+              <!-- Icon -->
               <div
-                class="absolute -left-6 top-6 bg-[#bfa88f] text-white rounded-full w-10 h-10 flex items-center justify-center shadow-md">
+                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
                 <i class="fa-solid fa-calendar-days"></i>
               </div>
-              <img src="https://i.ibb.co/gzSRtgD/couple2.jpg" alt="Love Story Photo 2"
-                class="w-full max-h-60 object-cover rounded-xl mb-4">
-              <p class="text-sm text-gray-300 font-medium mb-1">8 Maret 2018</p>
-              <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Jadian</h3>
-              <p class="text-gray-200 leading-relaxed">
-                Setelah banyak ngobrol dan saling mengenal, akhirnya kami memutuskan untuk bersama.
-              </p>
+
+              <!-- Card -->
+              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
+                <img src="https://i.ibb.co/gzSRtgD/couple2.jpg" alt="Love Story Photo 2"
+                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
+                <p class="text-sm text-gray-300 font-medium mb-1">8 Maret 2018</p>
+                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Jadian</h3>
+                <p class="text-gray-200 leading-relaxed">
+                  Setelah banyak ngobrol dan saling mengenal, akhirnya kami memutuskan untuk bersama.
+                </p>
+              </div>
             </div>
+
           </div>
         </div>
       </section>
 
+
       <!-- Kirim Hadiah - Elegant Dark Style -->
-      <section class="bg-[#2e2e2e] py-16 px-4">
+      <section :style="paletteStyle.background" class=" py-16 px-4">
         <div class="max-w-2xl mx-auto text-center">
           <h2 class="text-3xl font-serif font-bold text-[#f8f4f0] mb-6">Kirim Hadiah</h2>
           <p class="text-gray-300 mb-10 max-w-lg mx-auto">
@@ -312,7 +383,7 @@
       </section>
 
       <!-- Section: Ucapan & Doa -->
-      <section class="bg-[#2e2e2e] py-16 px-4">
+      <!-- <section class="bg-[#2e2e2e] py-16 px-4">
         <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6">
           <h2 class="text-3xl font-serif font-bold text-[#f8f4f0] text-center mb-6">Ucapan & Doa</h2>
 
@@ -329,10 +400,10 @@
               class="bg-white/10 hover:bg-[#4b5563] text-white font-semibold py-3 px-6 rounded-full w-full transition-all">
               Kirim Ucapan 🎉
             </button>
-          </form>
+          </form> -->
 
-          <!-- List wishes -->
-          <div
+      <!-- List wishes -->
+      <!-- <div
             class="mt-8 space-y-4 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
             <div v-for="(wish, index) in wishesList" :key="index"
               class="bg-white/10 border border-white/10 text-white p-3 rounded-xl shadow text-sm">
@@ -340,8 +411,7 @@
               <p class="text-gray-300 mt-1">{{ wish.message }}</p>
             </div>
           </div>
-        </div>
-      </section>
+      </section> -->
 
       <!-- Section: Penutup -->
       <section class="bg-gradient-to-b from-[#2e2e2e] via-[#3e3e3e] to-[#4b5563] py-20 px-4 text-center">
@@ -383,6 +453,10 @@ const usePaletteStyle = (palette) => ({
     backgroundColor: palette.background,
     color: palette.text,
     borderColor: palette.border
+  },
+  gradientBottomFromTransparent: {
+    backgroundImage: `linear-gradient(to bottom, rgba(255,0,0,0), ${palette.background})`,
+    color: palette.text
   },
   gradientBottom: {
     backgroundImage: `linear-gradient(to bottom, ${palette.background}, ${palette.accent})`,
@@ -442,29 +516,36 @@ const showWelcome = ref(true)
 
 const rsvp = ref({
   name: '',
-  phone: '',
   attendance: '',
+  totalGuest: '', // baru ditambah
   message: '',
 })
 
-const wishes = ref({
-  name: '',
-  message: '',
-})
 const wishesList = ref([])
 
-function submitWishes() {
-  if (!wishes.value.name || !wishes.value.message) return
-  wishesList.value.push({ ...wishes.value })
-  wishes.value.name = ''
-  wishes.value.message = ''
-  alert('Ucapan terkirim! 🎊')
-}
+const guestOptions = [1, 2, 3, 4, 5] // bisa diganti dari API nanti
+
+// Misalnya mau fetch dari API:
+onMounted(() => {
+  // Example API call
+  // fetch('/api/guest-options')
+  //   .then(res => res.json())
+  //   .then(data => guestOptions.value = data)
+})
 
 function submitRSVP() {
-  console.log('RSVP data:', rsvp.value)
+  if (rsvp.value.attendance === 'hadir' || rsvp.value.attendance === 'belum tau' || rsvp.value.attendance === 'tidak') {
+    if (rsvp.value.name && rsvp.value.message) {
+      wishesList.value.push({
+        name: rsvp.value.name,
+        message: rsvp.value.message
+      })
+    }
+  }
+
   alert(`Terima kasih ${rsvp.value.name}, RSVP kamu berhasil dikirim! ✨`)
 }
+
 
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text)
