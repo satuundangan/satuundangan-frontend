@@ -207,6 +207,62 @@
       </section>
 
 
+      <!-- Love Story - Elegant Responsive Timeline -->
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
+        <div class="max-w-5xl mx-auto text-center mb-16">
+          <h2 class="text-4xl font-serif font-bold tracking-wide text-[#f8f4f0] mb-8">Our Love Story</h2>
+
+          <!-- Timeline Container -->
+          <div class="relative space-y-16 before:absolute before:top-0 before:bottom-0 before:w-1 before:bg-[#bfa88f]/30
+                md:before:left-1/2 before:left-4 md:before:-ml-0.5">
+
+            <!-- Timeline Item -->
+            <div class="relative md:w-1/2 md:pl-10 md:pr-0 pl-12 pr-4 text-left md:ml-auto group">
+              <!-- Icon -->
+              <div
+                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+
+              <!-- Card -->
+              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
+                <img src="https://i.ibb.co/2tXkWKV/couple1.jpg" alt="Love Story Photo 1"
+                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
+                <p class="text-sm text-gray-300 font-medium mb-1">12 September 2017</p>
+                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Awal Bertemu</h3>
+                <p class="text-gray-200 leading-relaxed">
+                  Tahun di mana dia dikenalkan oleh rekan kerjanya yang juga temanku melalui sosial media.
+                </p>
+              </div>
+            </div>
+
+            <!-- Timeline Item 2 (alternate side on desktop) -->
+            <div class="relative md:w-1/2 md:pr-10 md:pl-0 pl-12 pr-4 text-left md:mr-auto group">
+              <!-- Icon -->
+              <div
+                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
+                <i class="fa-solid fa-calendar-days"></i>
+              </div>
+
+              <!-- Card -->
+              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
+                <img src="https://i.ibb.co/gzSRtgD/couple2.jpg" alt="Love Story Photo 2"
+                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
+                <p class="text-sm text-gray-300 font-medium mb-1">8 Maret 2018</p>
+                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Jadian</h3>
+                <p class="text-gray-200 leading-relaxed">
+                  Setelah banyak ngobrol dan saling mengenal, akhirnya kami memutuskan untuk bersama.
+                </p>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+
+
+
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
         <div
           class="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] p-10 relative overflow-hidden group transition-all duration-500">
@@ -275,6 +331,12 @@
         </div>
       </section>
 
+
+
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
+        <GalleryInvitation :items="galleryImages" />
+      </section>
+
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
         <div class="max-w-2xl mx-auto">
           <h2 class="text-3xl font-serif font-semibold text-center mb-10 drop-shadow-lg">
@@ -285,68 +347,20 @@
             Belum ada ucapan masuk 😢 Jadilah yang pertama!
           </div>
 
-          <ul class="space-y-6">
-            <li v-for="(wish, index) in wishesList" :key="index"
-              class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 shadow-md transition hover:scale-[1.02]">
-              <p class="text-white text-lg font-semibold mb-1">{{ wish.name }}</p>
-              <p class="text-white/80">{{ wish.message }}</p>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <!-- Love Story - Elegant Responsive Timeline -->
-      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
-        <div class="max-w-5xl mx-auto text-center mb-16">
-          <h2 class="text-4xl font-serif font-bold tracking-wide text-[#f8f4f0] mb-8">Our Love Story</h2>
-
-          <!-- Timeline Container -->
-          <div class="relative space-y-16 before:absolute before:top-0 before:bottom-0 before:w-1 before:bg-[#bfa88f]/30
-                md:before:left-1/2 before:left-4 md:before:-ml-0.5">
-
-            <!-- Timeline Item -->
-            <div class="relative md:w-1/2 md:pl-10 md:pr-0 pl-12 pr-4 text-left md:ml-auto group">
-              <!-- Icon -->
-              <div
-                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
-                <i class="fa-solid fa-calendar-days"></i>
-              </div>
-
-              <!-- Card -->
-              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
-                <img src="https://i.ibb.co/2tXkWKV/couple1.jpg" alt="Love Story Photo 1"
-                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
-                <p class="text-sm text-gray-300 font-medium mb-1">12 September 2017</p>
-                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Awal Bertemu</h3>
-                <p class="text-gray-200 leading-relaxed">
-                  Tahun di mana dia dikenalkan oleh rekan kerjanya yang juga temanku melalui sosial media.
-                </p>
-              </div>
-            </div>
-
-            <!-- Timeline Item 2 (alternate side on desktop) -->
-            <div class="relative md:w-1/2 md:pr-10 md:pl-0 pl-12 pr-4 text-left md:mr-auto group">
-              <!-- Icon -->
-              <div
-                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
-                <i class="fa-solid fa-calendar-days"></i>
-              </div>
-
-              <!-- Card -->
-              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
-                <img src="https://i.ibb.co/gzSRtgD/couple2.jpg" alt="Love Story Photo 2"
-                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
-                <p class="text-sm text-gray-300 font-medium mb-1">8 Maret 2018</p>
-                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Jadian</h3>
-                <p class="text-gray-200 leading-relaxed">
-                  Setelah banyak ngobrol dan saling mengenal, akhirnya kami memutuskan untuk bersama.
-                </p>
-              </div>
-            </div>
-
+          <!-- Scrollable area -->
+          <div
+            class="max-h-[60vh] overflow-y-auto pr-2 space-y-6 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-white/5 hover:scrollbar-thumb-white/40 transition-all">
+            <ul class="space-y-6">
+              <li v-for="(wish, index) in wishesList" :key="index"
+                class="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-5 shadow-md transition hover:scale-[1.02]">
+                <p class="text-white text-lg font-semibold mb-1">{{ wish.name }}</p>
+                <p class="text-white/80">{{ wish.message }}</p>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
+
 
 
       <!-- Kirim Hadiah - Elegant Dark Style -->
@@ -434,8 +448,12 @@
 
   </div>
 </template>
+
 <script setup>
+import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
+
+
 
 /* === PALETTE SETUP === */
 const defaultPalette = {
@@ -445,6 +463,50 @@ const defaultPalette = {
   accent: '#b48c5b',
   border: '#444444'
 }
+
+const galleryImages = ref([
+
+  {
+    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
+    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
+    alt: 'Description 1',
+    caption: 'Caption 1',
+    colSpan: 1, // optional - controls grid size
+    rowSpan: 2  // optional - controls grid size
+  },
+
+
+  {
+    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
+    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
+    alt: 'Description 1',
+    caption: 'Caption 1',
+    colSpan: 2, // optional - controls grid size
+    rowSpan: 1  // optional - controls grid size
+  },
+
+
+  {
+    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
+    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
+    alt: 'Description 1',
+    caption: 'Caption 1',
+    colSpan: 1, // optional - controls grid size
+    rowSpan: 1  // optional - controls grid size
+  },
+
+
+  {
+    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
+    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
+    alt: 'Description 1',
+    caption: 'Caption 1',
+    colSpan: 1, // optional - controls grid size
+    rowSpan: 1  // optional - controls grid size
+  },
+
+])
+
 
 const paletteColor = ref({ ...defaultPalette }) // jadi reactive bro
 
@@ -648,5 +710,73 @@ onBeforeUnmount(() => {
   opacity: 0;
   transform: translateY(-40px);
   pointer-events: none;
+}
+
+/* Scrollbar umum */
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  transition: background 0.3s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+
+.gallery-collage {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  grid-auto-rows: 200px;
+  gap: 12px;
+}
+
+.gallery-collage .item {
+  overflow: hidden;
+  border-radius: 1rem;
+  position: relative;
+}
+
+.gallery-collage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.gallery-collage img:hover {
+  transform: scale(1.05);
+}
+
+/* Custom placement */
+.item-1 {
+  grid-column: span 3;
+  grid-row: span 2;
+}
+
+.item-2 {
+  grid-column: span 3;
+}
+
+.item-3 {
+  grid-column: span 2;
+  grid-row: span 2;
+}
+
+.item-4 {
+  grid-column: span 2;
+}
+
+.item-5 {
+  grid-column: span 2;
 }
 </style>
