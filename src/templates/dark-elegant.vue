@@ -1,9 +1,9 @@
 <template>
   <div class="relative min-h-screen bg-black overflow-hidden font-sans no-scrollbar font-montserrat">
-    <transition name="fade-up">
+    <transition name="slide-up">
 
       <div v-if="showWelcome"
-        class="relative flex flex-col items-center justify-center h-screen text-center px-6 text-white transition-opacity duration-700 ease-in-out"
+        class="absolute w-full flex flex-col items-center justify-center h-screen text-center px-6 bg-transparent text-white transition-opacity duration-700 ease-in-out z-50"
         style="background-image: url('/background/default-dark-background.jpg'); background-size: cover; background-position: center;">
 
         <div class="absolute inset-0 bg-black/40 backdrop-blur-xs"></div>
@@ -88,7 +88,7 @@
             class="absolute bottom-0 left-0 right-0 h-40 z-[1] pointer-events-none">
           </div>
 
-          <h2 class="text-3xl font-serif text-[#f8f4f0] uppercase mb-2">Our Wedding</h2>
+          <h2 class="text-4xl font-serif text-white font-alex mb-2">Our Wedding</h2>
           <p class="italic text-gray-300 text-sm max-w-xl mx-auto leading-relaxed px-4 py-3">
             Tanpa mengurangi rasa hormat, kami bermaksud mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara
             Pernikahan kami
@@ -117,10 +117,10 @@
                 alt="Groom" class="w-full h-72 object-cover grayscale-0  transition duration-300">
               <div class="p-5 text-center text-white">
                 <h3 class="text-lg font-serif font-semibold mb-1" v-html="data.groomName"></h3>
-                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents.groomParents"></p>
+                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents?.groomParents"></p>
                 <a href="https://instagram.com" target="_blank"
                   class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]"
-                  v-html="'IG : ' + data.socialMediaGroom.instagram">
+                  v-html="'IG : ' + data.socialMediaGroom?.instagram">
                 </a>
               </div>
             </div>
@@ -136,10 +136,10 @@
                 class="w-full h-72 object-cover grayscale-0  transition duration-300">
               <div class="p-5 text-center text-white">
                 <h3 class="text-lg font-serif font-semibold mb-1" v-html="data.brideName"></h3>
-                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents.brideParents"></p>
+                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents?.brideParents"></p>
                 <a href="https://instagram.com" target="_blank"
                   class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]"
-                  v-html="'IG : ' + data.socialMediaBrides.instagram">
+                  v-html="'IG : ' + data.socialMediaBrides?.instagram">
 
                 </a>
               </div>
@@ -210,7 +210,7 @@
       <!-- Love Story - Elegant Responsive Timeline -->
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
         <div class="max-w-5xl mx-auto text-center mb-16">
-          <h2 class="text-4xl font-serif font-bold tracking-wide text-[#f8f4f0] mb-8">Our Love Story</h2>
+          <h2 class="text-4xl font-alex font-serif font-bold tracking-wide text-[#f8f4f0] mb-8">Our Love Story</h2>
 
           <!-- Timeline Container -->
           <div class="relative space-y-16 before:absolute before:top-0 before:bottom-0 before:w-1 before:bg-[#bfa88f]/30
@@ -262,43 +262,49 @@
 
 
 
-
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
         <div
-          class="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] p-10 relative overflow-hidden group transition-all duration-500">
+          class="max-w-2xl mx-auto bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.25)] p-6 sm:p-10 relative overflow-hidden group transition-all duration-500">
+
           <!-- Ornamen -->
-          <div class="absolute bottom-6 right-6 text-5xl text-white/10 group-hover:text-white/30 transition-all">
+          <div
+            class="absolute bottom-6 right-6 text-4xl sm:text-5xl text-white/10 group-hover:text-white/30 transition-all">
             💫
           </div>
 
-          <h2 class="text-4xl font-serif font-semibold text-center text-white drop-shadow-xl mb-10">
+          <h2
+            class="text-2xl sm:text-3xl font-alex md:text-4xl font-serif font-semibold text-center text-white drop-shadow-xl mb-2 sm:mb-4">
             Konfirmasi Kehadiran
           </h2>
 
-          <form @submit.prevent="submitRSVP" class="space-y-6">
+          <p class="text-center text-white/80 italic mb-8">
+            "Kehadiran dan doa baik Anda adalah hadiah terindah bagi kami di hari bahagia ini"
+          </p>
+
+          <form @submit.prevent="submitRSVP" class="space-y-6 text-sm sm:text-base">
             <!-- Nama Lengkap -->
             <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
-              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"
+              class="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"
               required />
 
-            <!-- Kehadiran: Fancy Checkbox Style -->
-            <div class="flex gap-4 justify-left">
+            <!-- Kehadiran -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-center">
               <label
-                class="flex items-center justify-center px-6 py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
+                class="flex items-center justify-center px-4 py-3 sm:px-6 sm:py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
                 :class="rsvp.attendance === 'hadir' ? 'ring-2 ring-white/50' : ''">
                 <input type="radio" value="hadir" v-model="rsvp.attendance" class="hidden" required />
                 Hadir
               </label>
 
               <label
-                class="flex items-center justify-center px-6 py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
+                class="flex items-center justify-center px-4 py-3 sm:px-6 sm:py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
                 :class="rsvp.attendance === 'belum tau' ? 'ring-2 ring-white/50' : ''">
                 <input type="radio" value="belum tau" v-model="rsvp.attendance" class="hidden" />
                 Belum Tau
               </label>
 
               <label
-                class="flex items-center justify-center px-6 py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
+                class="flex items-center justify-center px-4 py-3 sm:px-6 sm:py-3 rounded-md border border-white/30 text-white bg-white/10 cursor-pointer hover:bg-white/20 transition-all"
                 :class="rsvp.attendance === 'tidak' ? 'ring-2 ring-white/50' : ''">
                 <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden" />
                 Tidak Hadir
@@ -308,7 +314,7 @@
             <!-- Jumlah Tamu Hadir -->
             <div v-if="rsvp.attendance === 'hadir'">
               <select v-model="rsvp.totalGuest"
-                class="w-full p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"
+                class="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"
                 required>
                 <option disabled value="">Jumlah Tamu yang Hadir</option>
                 <option v-for="n in guestOptions" :key="n" :value="n" class="text-black">
@@ -317,24 +323,17 @@
               </select>
             </div>
 
-
             <!-- Ucapan -->
             <textarea v-model="rsvp.message" rows="3" placeholder="Ucapan atau pesan untuk pengantin"
-              class="w-full p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"></textarea>
+              class="w-full p-3 sm:p-4 rounded-xl bg-white/10 text-white placeholder-white/60 border border-white/30 focus:outline-none focus:ring-2 focus:ring-white/40 focus:bg-white/20 transition-all"></textarea>
 
             <!-- Tombol Submit -->
             <button type="submit" :style="paletteStyle.button"
-              class="w-full py-3 px-6 font-semibold rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
+              class="w-full py-3 px-6 font-semibold text-sm sm:text-base rounded-full shadow-lg hover:opacity-90 active:scale-95 transition-all">
               Kirim RSVP 💌
             </button>
           </form>
         </div>
-      </section>
-
-
-
-      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
-        <GalleryInvitation :items="galleryImages" />
       </section>
 
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
@@ -362,40 +361,83 @@
       </section>
 
 
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
+        <GalleryInvitation :items="galleryImages" />
+      </section>
+      <!-- Gift Section - Elegant Dark Theme -->
+      <section :style="paletteStyle.background" class="py-20 px-4 text-white">
+        <div class="max-w-4xl mx-auto">
+          <!-- Section Header -->
+          <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-alex font-serif font-light tracking-wider mb-4 text-[#f8f4f0]">
+              Kirim Hadiah
+            </h2>
+            <div class="w-24 h-px bg-gradient-to-r from-transparent via-[#d1bfa7] to-transparent mx-auto mb-6"></div>
+            <p class="text-[#e0d5c5] max-w-2xl mx-auto text-lg leading-relaxed">
+              Doa dan restu Anda sudah menjadi hadiah terindah. Jika ingin berbagi kebahagiaan lebih,
+              kami dengan rendah hati menerima tanda kasih melalui:
+            </p>
+          </div>
 
-      <!-- Kirim Hadiah - Elegant Dark Style -->
-      <section :style="paletteStyle.background" class=" py-16 px-4">
-        <div class="max-w-2xl mx-auto text-center">
-          <h2 class="text-3xl font-serif font-bold text-[#f8f4f0] mb-6">Kirim Hadiah</h2>
-          <p class="text-gray-300 mb-10 max-w-lg mx-auto">
-            Doa restu Anda sudah cukup, namun jika ingin mengirimkan hadiah sebagai tanda kasih, kami menyediakan opsi
-            berikut:
-          </p>
+          <!-- Gift Options -->
+          <div class="grid md:grid-cols-2 gap-8">
+            <!-- Bank Transfer -->
+            <div
+              class="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-lg border border-white/10 rounded-xl p-8 shadow-xl hover:border-white/20 transition-all duration-300">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="text-2xl text-[#d1bfa7]">🏦</div>
+                <h3 class="font-serif text-xl text-[#f8e9d0]">Transfer Bank</h3>
+              </div>
 
-          <div class="grid md:grid-cols-2 gap-6 text-left">
-            <!-- Bank -->
-            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
-              <h3 class="font-semibold text-[#d1bfa7] mb-2">🏦 Transfer Bank</h3>
-              <p class="text-sm text-gray-300"><strong>BCA</strong></p>
-              <p class="text-sm text-gray-300">1234567890</p>
-              <p class="text-sm text-gray-300 mb-2">a.n. Dimas Noval</p>
-              <button @click="copyToClipboard('1234567890')" class="text-xs text-[#f8e9d0] hover:underline mt-1">
-                Salin No. Rekening
+              <div class="space-y-3 pl-2 border-l-2 border-[#d1bfa7]/30">
+                <div>
+                  <p class="text-sm text-[#c9c9c9]">Bank Central Asia (BCA)</p>
+                  <p class="text-lg font-medium text-white">123 456 7890</p>
+                </div>
+                <div>
+                  <p class="text-sm text-[#c9c9c9]">a.n.</p>
+                  <p class="text-lg font-medium text-white">Dimas Noval</p>
+                </div>
+              </div>
+
+              <button @click="copyToClipboard('1234567890')"
+                class="mt-6 px-4 py-2 text-sm bg-[#d1bfa7]/10 hover:bg-[#d1bfa7]/20 border border-[#d1bfa7]/30 rounded-lg text-[#f8e9d0] transition-all flex items-center gap-2">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Salin Nomor Rekening
               </button>
             </div>
 
             <!-- E-Wallet -->
-            <div class="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-lg">
-              <h3 class="font-semibold text-[#d1bfa7] mb-2">📱 E-Wallet (QRIS)</h3>
-              <img
-                src="https://www.xendit.co/wp-content/uploads/2023/06/How-to-Enable-QR-Payments-for-Your-Business.jpeg"
-                alt="QRIS" class="w-40 mx-auto mb-3 rounded-md border border-white/20" />
-              <p class="text-xs text-center text-gray-400">Scan QR untuk mengirim melalui e-wallet favorit Anda</p>
+            <div
+              class="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-lg border border-white/10 rounded-xl p-8 shadow-xl hover:border-white/20 transition-all duration-300">
+              <div class="flex items-center gap-3 mb-4">
+                <div class="text-2xl text-[#d1bfa7]">📱</div>
+                <h3 class="font-serif text-xl text-[#f8e9d0]">E-Wallet (QRIS)</h3>
+              </div>
+
+              <div class="flex flex-col items-center">
+                <div class="bg-white p-3 rounded-lg mb-4 shadow-inner">
+                  <img
+                    src="https://www.xendit.co/wp-content/uploads/2023/06/How-to-Enable-QR-Payments-for-Your-Business.jpeg"
+                    alt="QR Code" class="w-40 h-40 object-contain mx-auto" />
+                </div>
+                <p class="text-center text-sm text-[#c9c9c9] max-w-xs">
+                  Scan QR code untuk mengirim melalui aplikasi e-wallet favorit Anda
+                </p>
+              </div>
             </div>
           </div>
+
+          <!-- Footer Note -->
+          <p class="text-center text-[#c9c9c9] text-sm mt-12 italic">
+            *Terima kasih telah menjadi bagian dari perjalanan cinta kami
+          </p>
         </div>
       </section>
-
       <!-- Section: Ucapan & Doa -->
       <!-- <section class="bg-[#2e2e2e] py-16 px-4">
         <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6">
@@ -428,19 +470,50 @@
       </section> -->
 
       <!-- Section: Penutup -->
-      <section class="bg-gradient-to-b from-[#2e2e2e] via-[#3e3e3e] to-[#4b5563] py-20 px-4 text-center">
-        <div class="max-w-xl mx-auto">
-          <h2 class="text-sm uppercase tracking-widest text-gray-400">The Wedding of</h2>
-          <h1 class="text-4xl md:text-5xl font-serif font-bold text-[#f8f4f0] my-4">Adam & Hawa</h1>
-          <p class="text-sm text-gray-400 mb-10">21 Oktober 2024</p>
+      <section
+        class="bg-gradient-to-b min-h-screen flex justify-center items-center from-[#1e1e1e] via-[#2a2a2a] to-[#363636] py-24 px-4 text-center relative overflow-hidden">
+        <!-- Decorative elements -->
+        <div class="absolute inset-0 opacity-10">
+          <div class="absolute top-1/4 left-1/4 w-32 h-32 rounded-full bg-[#d1bfa7] mix-blend-overlay filter blur-3xl">
+          </div>
+          <div
+            class="absolute bottom-1/3 right-1/4 w-40 h-40 rounded-full bg-[#f8f4f0] mix-blend-overlay filter blur-3xl">
+          </div>
+        </div>
 
-          <p class="text-md text-gray-300 max-w-md mx-auto leading-relaxed">
-            Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan
-            memberikan doa restu. Atas kehadiran dan doa restunya, kami mengucapkan terima kasih.
-          </p>
+        <div class="max-w-2xl mx-auto relative z-10 ">
+          <!-- Wedding of -->
+          <div class="mb-2">
+            <span class="text-xs uppercase tracking-[0.5em] text-[#d1bfa7] opacity-80">The Wedding of</span>
+          </div>
 
-          <div class="mt-8 text-sm text-gray-400 italic">With love,</div>
-          <div class="text-lg font-bold text-[#d1bfa7]">Adam & Hawa</div>
+          <!-- Couple Names -->
+          <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-[#f8f4f0] mb-4 leading-tight">
+            <span class="inline-block transform transition-all duration-500 hover:scale-105">Adam</span>
+            <span class="mx-3 text-[#d1bfa7] font-thin">&</span>
+            <span class="inline-block transform transition-all duration-500 hover:scale-105">Hawa</span>
+          </h1>
+
+          <!-- Date -->
+          <div class="mb-10">
+            <div class="w-24 h-px bg-gradient-to-r from-transparent via-[#d1bfa7]/50 to-transparent mx-auto mb-3"></div>
+            <p class="text-sm tracking-widest text-[#d1bfa7] font-light">21 Oktober 2024</p>
+            <div class="w-24 h-px bg-gradient-to-r from-transparent via-[#d1bfa7]/50 to-transparent mx-auto mt-3"></div>
+          </div>
+
+          <!-- Invitation Text -->
+          <div class="mb-12">
+            <p class="text-[#e0d5c5] text-lg leading-relaxed max-w-lg mx-auto font-light">
+              Merupakan kehormatan dan kebahagiaan bagi kami atas kehadiran Bapak/Ibu/Saudara/i
+              untuk memberikan doa restu dalam perjalanan rumah tangga kami.
+            </p>
+          </div>
+
+          <!-- Signature -->
+          <div class="mt-12">
+            <div class="text-xs text-[#d1bfa7]/70 tracking-widest mb-1">With love,</div>
+            <div class="text-xl font-serif text-[#f8e9d0] tracking-wider">Adam & Hawa</div>
+          </div>
         </div>
       </section>
 
@@ -465,49 +538,115 @@ const defaultPalette = {
 }
 
 const galleryImages = ref([
-
+  // Featured image (large square - top left)
   {
-    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
-    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
-    alt: 'Description 1',
-    caption: 'Caption 1',
-    colSpan: 1, // optional - controls grid size
-    rowSpan: 2  // optional - controls grid size
+    src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
+    thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400',
+    alt: 'Mountain landscape',
+    caption: 'Beautiful mountain view at sunrise',
+    colSpan: 1,
+    rowSpan: 1
   },
-
-
+  // Vertical image (top right)
   {
-    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
-    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
-    alt: 'Description 1',
-    caption: 'Caption 1',
-    colSpan: 2, // optional - controls grid size
-    rowSpan: 1  // optional - controls grid size
+    src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e',
+    thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200',
+    alt: 'Forest path',
+    caption: 'Sunlight through the trees',
+    colSpan: 1,
+    rowSpan: 1
   },
-
-
+  // Small square (middle right)
   {
-    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
-    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
-    alt: 'Description 1',
-    caption: 'Caption 1',
-    colSpan: 1, // optional - controls grid size
-    rowSpan: 1  // optional - controls grid size
+    src: 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f',
+    thumbnail: 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=200',
+    alt: 'Beach sunset',
+    caption: 'Golden hour at the beach',
+    colSpan: 1,
+    rowSpan: 1
   },
-
-
+  // Wide horizontal (middle)
   {
-    src: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg',
-    thumbnail: 'https://d1hjkbq40fs2x4.cloudfront.net/2016-01-31/files/1045.jpg', // optional
-    alt: 'Description 1',
-    caption: 'Caption 1',
-    colSpan: 1, // optional - controls grid size
-    rowSpan: 1  // optional - controls grid size
+    src: 'https://images.unsplash.com/photo-1470114716159-e389f8712fda',
+    thumbnail: 'https://images.unsplash.com/photo-1470114716159-e389f8712fda?w=400',
+    alt: 'Waterfall',
+    caption: 'Majestic waterfall in the jungle',
+    colSpan: 1,
+    rowSpan: 1
   },
-
+  // Small square (bottom left)
+  {
+    src: 'https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0',
+    thumbnail: 'https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?w=200',
+    alt: 'Desert',
+    caption: 'Sand dunes at sunset',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Vertical image (bottom right)
+  {
+    src: 'https://images.unsplash.com/photo-1511497584788-876760111969',
+    thumbnail: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=200',
+    alt: 'Cityscape',
+    caption: 'Urban skyline at night',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Second row - left vertical
+  {
+    src: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
+    thumbnail: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=200',
+    alt: 'Flowers',
+    caption: 'Colorful spring flowers',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Small square (middle)
+  {
+    src: 'https://images.unsplash.com/photo-1417325384643-aac51acc9e5d',
+    thumbnail: 'https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?w=200',
+    alt: 'Coffee',
+    caption: 'Morning coffee time',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Wide horizontal (bottom)
+  {
+    src: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
+    thumbnail: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400',
+    alt: 'Lake view',
+    caption: 'Serene lake at dusk',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Small square (top)
+  {
+    src: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e',
+    thumbnail: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=200',
+    alt: 'Rock formation',
+    caption: 'Natural rock arch',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Vertical image (middle)
+  {
+    src: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716',
+    thumbnail: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=200',
+    alt: 'Waterfall',
+    caption: 'Misty forest waterfall',
+    colSpan: 1,
+    rowSpan: 1
+  },
+  // Small square (bottom)
+  {
+    src: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05',
+    thumbnail: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=200',
+    alt: 'Foggy landscape',
+    caption: 'Mystical morning fog',
+    colSpan: 1,
+    rowSpan: 1
+  }
 ])
-
-
 const paletteColor = ref({ ...defaultPalette }) // jadi reactive bro
 
 const usePaletteStyle = (palette) => ({
@@ -676,7 +815,7 @@ onMounted(() => {
         updateCountdown()
         interval = setInterval(updateCountdown, 1000)
       } else {
-        console.warn("Tanggalnya gak valid bro 🚨", data.value.akadLocation.dateTime)
+        console.warn("Tanggalnya gak valid bro", data.value.akadLocation.dateTime)
       }
     }
   }
@@ -701,15 +840,30 @@ onBeforeUnmount(() => {
   /* Firefox */
 }
 
-/* main.css */
-.fade-up-leave-active {
-  transition: all 0.7s ease-in-out;
+
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.8s ease-in-out;
 }
 
-.fade-up-leave-to {
+.slide-up-enter-from {
   opacity: 0;
-  transform: translateY(-40px);
-  pointer-events: none;
+  transform: translateY(20px);
+}
+
+.slide-up-enter-to {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-up-leave-from {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.slide-up-leave-to {
+  opacity: 0;
+  transform: translateY(-100%);
 }
 
 /* Scrollbar umum */
@@ -730,53 +884,5 @@ onBeforeUnmount(() => {
 
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.4);
-}
-
-.gallery-collage {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  grid-auto-rows: 200px;
-  gap: 12px;
-}
-
-.gallery-collage .item {
-  overflow: hidden;
-  border-radius: 1rem;
-  position: relative;
-}
-
-.gallery-collage img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.3s ease;
-  display: block;
-}
-
-.gallery-collage img:hover {
-  transform: scale(1.05);
-}
-
-/* Custom placement */
-.item-1 {
-  grid-column: span 3;
-  grid-row: span 2;
-}
-
-.item-2 {
-  grid-column: span 3;
-}
-
-.item-3 {
-  grid-column: span 2;
-  grid-row: span 2;
-}
-
-.item-4 {
-  grid-column: span 2;
-}
-
-.item-5 {
-  grid-column: span 2;
 }
 </style>

@@ -1,5 +1,5 @@
 <template>
-  <div class="gallery-container">
+  <div class="gallery-container mx-auto max-w-5xl">
     <!-- Thumbnail Grid -->
     <div class="grid-container">
       <div v-for="(item, index) in items" :key="index" class="grid-item" :style="{
@@ -141,60 +141,88 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
-/* Grid Layout */
+/* Main Container */
 .gallery-container {
   width: 100%;
-  padding: 1rem;
+  max-width: 1200px;
+  padding: 2rem 1rem;
+  margin: 0 auto;
 }
 
+/* Grid Layout */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+  grid-auto-flow: dense;
 }
 
+/* Grid Items */
 .grid-item {
   position: relative;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: transform 0.3s ease;
-  aspect-ratio: 1/1;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
 }
 
+/* Hover Effects */
 .grid-item:hover {
   transform: scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.2);
+  z-index: 5;
 }
 
-.grid-item[style*="grid-column: span 2"] {
-  aspect-ratio: 2/1;
-}
-
-.grid-item[style*="grid-row: span 2"] {
-  aspect-ratio: 1/2;
-}
-
-.grid-item[style*="grid-column: span 2"][style*="grid-row: span 2"] {
-  aspect-ratio: 2/2;
-}
-
+/* Image Styling */
 .thumbnail-image {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  transition: transform 0.5s ease;
 }
 
+.grid-item:hover .thumbnail-image {
+  transform: scale(1.05);
+}
+
+/* Caption Styling */
 .image-caption {
   position: absolute;
   bottom: 0;
   left: 0;
   right: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.7), transparent);
+  padding: 1.2rem;
   color: white;
-  padding: 0.5rem;
-  font-size: 0.8rem;
+  font-size: 0.95rem;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 30%, transparent);
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.grid-item:hover .image-caption {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Aspect Ratio Handling */
+.grid-item[style*="grid-column: span 1"][style*="grid-row: span 1"] {
+  aspect-ratio: 1/1;
+}
+
+.grid-item[style*="grid-column: span 2"][style*="grid-row: span 1"] {
+  aspect-ratio: 2/1;
+}
+
+.grid-item[style*="grid-column: span 1"][style*="grid-row: span 2"] {
+  aspect-ratio: 1/1.5;
+}
+
+.grid-item[style*="grid-column: span 2"][style*="grid-row: span 2"] {
+  aspect-ratio: 2/1;
 }
 
 /* Lightbox Styles */
@@ -204,12 +232,13 @@ onBeforeUnmount(() => {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: rgba(0, 0, 0, 0.9);
+  background-color: rgba(0, 0, 0, 0.95);
   z-index: 1000;
   display: flex;
   align-items: center;
   justify-content: center;
   touch-action: pan-y;
+  backdrop-filter: blur(8px);
 }
 
 .lightbox-content {
@@ -227,98 +256,156 @@ onBeforeUnmount(() => {
   max-height: 100%;
   object-fit: contain;
   user-select: none;
+  border-radius: 8px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
 }
 
 .lightbox-caption {
   position: absolute;
-  bottom: 1rem;
+  bottom: 2rem;
   left: 50%;
   transform: translateX(-50%);
   color: white;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 0.5rem 1rem;
-  border-radius: 4px;
+  background-color: rgba(0, 0, 0, 0.7);
+  padding: 0.8rem 1.5rem;
+  border-radius: 24px;
   max-width: 80%;
   text-align: center;
+  font-size: 1.1rem;
 }
 
+/* Navigation Buttons */
 .close-btn {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
-  font-size: 2rem;
-  color: white;
-  background: none;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
-}
-
-.nav-btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 2rem;
+  top: 2rem;
+  right: 2rem;
+  font-size: 2.5rem;
   color: white;
   background: rgba(0, 0, 0, 0.3);
   border: none;
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
   border-radius: 50%;
   cursor: pointer;
   z-index: 1001;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.close-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 2.5rem;
+  color: white;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  width: 4rem;
+  height: 4rem;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1001;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.nav-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: translateY(-50%) scale(1.1);
 }
 
 .prev-btn {
-  left: 1rem;
+  left: 2rem;
 }
 
 .next-btn {
-  right: 1rem;
+  right: 2rem;
 }
 
-/* Animation */
+/* Animations */
 .slide-next-enter-active,
 .slide-next-leave-active,
 .slide-prev-enter-active,
 .slide-prev-leave-active {
-  transition: all 0.3s ease;
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .slide-next-enter-from {
-  transform: translateX(100%);
+  transform: translateX(30%);
   opacity: 0;
 }
 
 .slide-next-leave-to {
-  transform: translateX(-100%);
+  transform: translateX(-30%);
   opacity: 0;
 }
 
 .slide-prev-enter-from {
-  transform: translateX(-100%);
+  transform: translateX(-30%);
   opacity: 0;
 }
 
 .slide-prev-leave-to {
-  transform: translateX(100%);
+  transform: translateX(30%);
   opacity: 0;
 }
 
-/* Mobile responsiveness */
+/* Mobile Responsiveness */
 @media (max-width: 768px) {
   .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-    gap: 0.5rem;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .grid-item {
+    aspect-ratio: 1/1 !important;
+    grid-column: span 1 !important;
+    grid-row: span 1 !important;
+  }
+
+  .image-caption {
+    padding: 0.8rem;
+    font-size: 0.8rem;
+  }
+
+  .close-btn {
+    top: 1rem;
+    right: 1rem;
+    width: 2.8rem;
+    height: 2.8rem;
+    font-size: 2rem;
   }
 
   .nav-btn {
-    width: 2.5rem;
-    height: 2.5rem;
-    font-size: 1.5rem;
+    width: 3rem;
+    height: 3rem;
+    font-size: 2rem;
+  }
+
+  .lightbox-caption {
+    bottom: 1.5rem;
+    padding: 0.6rem 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Small Mobile Devices */
+@media (max-width: 480px) {
+  .grid-container {
+    grid-template-columns: 1fr;
+  }
+
+  .lightbox-content {
+    width: 95%;
+    height: 85%;
   }
 }
 </style>
