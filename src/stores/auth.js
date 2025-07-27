@@ -39,5 +39,15 @@ export const useAuthStore = defineStore('auth', {
         await this.fetchProfile()
       }
     },
+    async handleLoginWithToken(token) {
+      if (!token) return;
+
+      // Simpan token ke state dan localStorage
+      this.token = token;
+      localStorage.setItem('token', token);
+
+      // Ambil data profil pengguna
+      await this.fetchProfile();
+    },
   },
 })
