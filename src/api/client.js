@@ -1,4 +1,4 @@
-const BASE_URL = 'https://localhost:8080'
+const BASE_URL = 'http://localhost:3000'
 // const BASE_URL = 'https://api.satuundangan.id'
 
 export async function apiFetch(path, options = {}) {
