@@ -438,36 +438,7 @@
           </p>
         </div>
       </section>
-      <!-- Section: Ucapan & Doa -->
-      <!-- <section class="bg-[#2e2e2e] py-16 px-4">
-        <div class="max-w-2xl mx-auto bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-2xl p-6">
-          <h2 class="text-3xl font-serif font-bold text-[#f8f4f0] text-center mb-6">Ucapan & Doa</h2>
 
-          <form @submit.prevent="submitWishes" class="space-y-4">
-            <input v-model="wishes.name" type="text" placeholder="Nama"
-              class="w-full p-3 rounded-xl bg-white/5 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d1bfa7]/50"
-              required />
-
-            <textarea v-model="wishes.message" placeholder="Tulis ucapan terbaikmu untuk pengantin 💖" rows="3"
-              class="w-full p-3 rounded-xl bg-white/5 border border-white/20 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[#d1bfa7]/50"
-              required></textarea>
-
-            <button type="submit"
-              class="bg-white/10 hover:bg-[#4b5563] text-white font-semibold py-3 px-6 rounded-full w-full transition-all">
-              Kirim Ucapan 🎉
-            </button>
-          </form> -->
-
-      <!-- List wishes -->
-      <!-- <div
-            class="mt-8 space-y-4 max-h-64 overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
-            <div v-for="(wish, index) in wishesList" :key="index"
-              class="bg-white/10 border border-white/10 text-white p-3 rounded-xl shadow text-sm">
-              <p class="font-semibold text-[#d1bfa7]">{{ wish.name }}</p>
-              <p class="text-gray-300 mt-1">{{ wish.message }}</p>
-            </div>
-          </div>
-      </section> -->
 
       <!-- Section: Penutup -->
       <section
@@ -761,7 +732,7 @@ function openInvitation() {
 }
 
 /* === COUNTDOWN === */
-const backgroundUrl = 'https://img.freepik.com/premium-photo/young-girl-wearing-flowery-headband-necklace-is-smiling-she-is-surrounded-by-other-people_715671-30163.jpg'
+let backgroundUrl = 'https://img.freepik.com/premium-photo/young-girl-wearing-flowery-headband-necklace-is-smiling-she-is-surrounded-by-other-people_715671-30163.jpg'
 
 const countdown = ref({
   Hari: '00',
@@ -818,6 +789,9 @@ onMounted(() => {
         console.warn("Tanggalnya gak valid bro", data.value.akadLocation.dateTime)
       }
     }
+
+    backgroundUrl = data.value.bridePhotoUrl.replace(' ', '%20');
+    console.log("Background URL:", backgroundUrl)
   }
 })
 

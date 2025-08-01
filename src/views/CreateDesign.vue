@@ -23,9 +23,9 @@
       <p class="text-sm text-muted mb-4">Bikin undanganmu makin berkesan dengan bagian-bagian seru di bawah ini</p>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <template v-for="(section, key) in sectionOptions" :key="key">
-          <label class="toggle-box" :class="{ 'active': selectedSections.includes(section) }">
-            <input type="checkbox" v-model="selectedSections" :value="section" class="hidden" />
-            <i class="fa-solid fa-circle-check" v-if="selectedSections.includes(section)"></i>
+          <label class="toggle-box" :class="{ 'active': selectedSections.includes(key) }">
+            <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
+            <i class="fa-solid fa-circle-check" v-if="selectedSections.includes(key)"></i>
             {{ section }}
           </label>
         </template>
@@ -39,47 +39,78 @@
       </div>
     </div>
   </div>
+
+  <AuthModal v-if="showLogin" :show="showLogin" :authMode="authMode" @close="showLogin = false"
+    @update:authMode="authMode = $event" />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import AuthModal from '@/components/modal/AuthModal.vue'
+import { useAuthStore } from '@/stores/auth'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
 const selectedTemplate = ref({})
 const selectedSections = ref([])
 const sectionOptions = ref({})
+const showLogin = ref(false)
+const auth = useAuthStore()
+const userName = computed(() => auth.user?.name || null)
+const authMode = ref('login')
 
+const sectionOptionsLabelMap = {
+  quote: 'Quote Ayat',
+  loveStory: 'Love Story',
+  photoCouple: 'Foto Mempelai',
+  music: 'Musik Latar',
+  map: 'Google Map',
+  rsvp: 'RSVP',
+  wishes: 'Ucapan untuk Mempelai',
+  likes: 'Like Count',
+  countdown: 'Hitung Mundur',
+  denah: 'Denah Ruangan',
+  encryptedGuest: 'Enkripsi Nama Tamu',
+  foodList: 'List Makanan/Minuman',
+  gift: 'Amplop Digital & Alamat Kado'
+}
 onMounted(() => {
   const template = localStorage.getItem('selectedTemplate')
+  const selectedSectionsLocalStorage = localStorage.getItem('selectedSections')
   if (!template) {
     router.push('/')
   } else {
     selectedTemplate.value = JSON.parse(template)
-    console.log(selectedTemplate.value.sectionOptions)
-  }
-  if (selectedTemplate.value.sectionOptions && selectedTemplate.value.sectionOptions.length > 0) {
-    sectionOptions.value = selectedTemplate.value.sectionOptions
-  } else {
-    sectionOptions.value = {
-      quote: 'Quote Ayat',
-      loveStory: 'Love Story',
-      photoCouple: 'Foto Mempelai',
-      music: 'Musik Latar',
-      map: 'Google Map',
-      rsvp: 'RSVP',
-      wishes: 'Ucapan untuk Mempelai',
-      likes: 'Like Count',
-      countdown: 'Hitung Mundur',
-      denah: 'Denah Ruangan',
-      encryptedGuest: 'Enkripsi Nama Tamu',
-      foodList: 'List Makanan/Minuman',
-      gift: 'Amplop Digital & Alamat Kado',
+
+    if (selectedTemplate.value.sectionOptions && selectedTemplate.value.sectionOptions.length > 0) {
+      sectionOptions.value = {}
+
+      selectedTemplate.value.sectionOptions.forEach(label => {
+        const key = getKeyFromLabel(label)
+        if (key) {
+          sectionOptions.value[key] = sectionOptionsLabelMap[key]
+        }
+      })
+    } else {
+      sectionOptions.value = { ...sectionOptionsLabelMap }
     }
+    if (selectedSectionsLocalStorage) {
+      selectedSections.value = JSON.parse(selectedSectionsLocalStorage)
+    }
+
   }
 })
+function getKeyFromLabel(label) {
+  return Object.keys(sectionOptionsLabelMap).find(key => sectionOptionsLabelMap[key] === label)
+}
+
 
 function goToForm() {
+  if (!userName.value) {
+    showLogin.value = true
+    return
+  }
+  // console.log(selectedSections.value)
   localStorage.setItem('selectedSections', JSON.stringify(selectedSections.value))
   router.push('/create/form')
 }

@@ -15,8 +15,15 @@
         <form @submit.prevent="authMode === 'login' ? handleLogin() : handleRegister()" class="space-y-4">
           <input v-model="email" type="email" placeholder="Email"
             class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-mocha" />
-          <input v-model="password" type="password" placeholder="Password"
-            class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-mocha" />
+          <div class="relative">
+            <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="Password"
+              class="w-full border border-gray-300 rounded-lg p-2 pr-10 focus:outline-none focus:ring focus:ring-mocha" />
+            <button type="button" class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-mocha"
+              @click="togglePassword">
+              <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+            </button>
+          </div>
+
           <input v-if="authMode === 'register'" v-model="name" type="text" placeholder="Nama Lengkap"
             class="w-full border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring focus:ring-mocha" />
           <button type="submit"
@@ -73,6 +80,11 @@ const loading = ref(false)
 const auth = useAuthStore()
 const toast = useToast()
 
+const showPassword = ref(false)
+
+function togglePassword() {
+  showPassword.value = !showPassword.value
+}
 
 const handleLogin = async () => {
   loading.value = true

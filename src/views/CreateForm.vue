@@ -137,7 +137,14 @@
         <label class="block text-mocha font-semibold mb-2">Foto Mempelai (Background Awal)</label>
         <input type="file" accept="image/*" @change="handleCouplePhotoUpload"
           class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
-        <img v-if="formData.photoCouple" :src="formData.photoCouple" class="mt-2 rounded-xl h-48 object-cover shadow" />
+
+        <div class="">
+          <div v-if="formData.photoCouple">
+            <p>Preview:</p>
+            <img :src="formData.photoCouple" class="mt-2 rounded-xl h-48 object-cover shadow" />
+          </div>
+
+        </div>
       </div>
 
       <!-- Musik -->
@@ -174,7 +181,7 @@
             <input type="radio" :value="false" v-model="formData.isSingleEvent" /> Tidak, Akad & Resepsi dipisah
           </label>
         </div>
-
+        {{ formData.isSingleEvent }}
         <div v-if="formData.isSingleEvent != null">
           <!-- Gabungan -->
           <div v-if="formData.isSingleEvent">
@@ -182,9 +189,9 @@
             <input v-model="formData.map" type="link" placeholder="https://maps.google.com/..."
               class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
             <!-- Tanggal -->
-            <div>
-              <label class="block text-sm font-semibold text-mocha mb-1">Tanggal</label>
-              <input v-model="formData.date" type="date"
+            <div class="mt-4">
+              <label class="block text-sm font-semibold text-mocha mb-1">Tanggal & Waktu Acara</label>
+              <input v-model="formData.dateTime" type="datetime-local"
                 class="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring focus:ring-gray-500">
             </div>
             <input v-model="formData.mapDesc" type="text" placeholder="Keterangan Lokasi"
@@ -222,9 +229,9 @@
       </div>
 
       <!-- Tanggal & Waktu -->
-      <div v-if="sections.countdown">
-        <label class="block text-mocha font-semibold mb-2">Tanggal & Waktu Acara</label>
-        <input v-model="formData.date" type="datetime-local"
+      <div v-if="sections.countdown && !formData.isSingleEvent">
+        <label class="block text-mocha font-semibold mb-2">Tanggal & Waktu Acara (Untuk Countdown)</label>
+        <input v-model="formData.dateTime" type="datetime-local"
           class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
       </div>
 
@@ -238,14 +245,15 @@
       </div>
 
       <!-- Galeri -->
-      <div v-if="sections.gallery">
+      <!-- <div v-if="sections.gallery ?? true"> -->
+        <div>
         <label class="block text-mocha font-semibold mb-2">Galeri Foto Mempelai</label>
         <input type="file" accept="image/*" multiple @change="handleGalleryUpload"
           class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
 
-        <div v-if="formData.gallery?.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
+        <div v-if="formData.gallery.length" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 mt-4">
           <div v-for="(img, i) in formData.gallery" :key="i" class="relative group">
-            <img :src="img" class="w-full h-40 object-cover rounded-lg shadow" />
+            <img :src="img.preview" class="w-full h-40 object-cover rounded-lg shadow" />
             <button @click="removeGalleryImage(i)"
               class="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full px-2 py-1 hover:bg-red-600 opacity-0 group-hover:opacity-100 transition">
               ✕
@@ -385,9 +393,10 @@
       </div>
 
       <div class="text-center pt-6">
-        <button @click="saveAndPreview"
+        <button @click="saveAndPreview" :disabled="isUploading"
           class="bg-mocha text-white font-semibold py-3 px-8 rounded-full hover:bg-mocha/90 shadow">
-          Lihat Preview
+          <span v-if="!isUploading">Lihat Preview</span>
+          <span v-else>Mengupload...</span>
         </button>
       </div>
     </div>
@@ -398,9 +407,11 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { uploadFileApi } from '@/api/file'
 
 // ==== Router ====
 const router = useRouter()
+const isUploading = ref(false);
 
 // ==== Global States ====
 const isPremiumTemplate = ref(false) // set true jika template premium
@@ -469,26 +480,27 @@ const formData = ref({
 
 // ==== Section Checklist ====
 const sections = ref({
-  quote: 'Quote Ayat',
-  loveStory: 'Love Story',
-  photoCouple: 'Foto Mempelai',
-  music: 'Musik Latar',
-  map: 'Google Map',
-  rsvp: 'RSVP',
-  wishes: 'Ucapan untuk Mempelai',
-  likes: 'Like Count',
-  countdown: 'Hitung Mundur',
-  gallery: 'Gallery',
-  denah: 'Denah Ruangan',
-  encryptedGuest: 'Enkripsi Nama Tamu',
-  foodList: 'List Makanan/Minuman',
-  gift: 'Amplop Digital & Alamat Kado',
+  // quote: 'Quote Ayat',
+  // loveStory: 'Love Story',
+  // photoCouple: 'Foto Mempelai',
+  // music: 'Musik Latar',
+  // map: 'Google Map',
+  // rsvp: 'RSVP',
+  // wishes: 'Ucapan untuk Mempelai',
+  // likes: 'Like Count',
+  // countdown: 'Hitung Mundur',
+  // gallery: 'Gallery',
+  // denah: 'Denah Ruangan',
+  // encryptedGuest: 'Enkripsi Nama Tamu',
+  // foodList: 'List Makanan/Minuman',
+  // gift: 'Amplop Digital & Alamat Kado',
 })
 
 // ==== Nested States ====
 const loveStories = ref([])
 const foodList = ref([])
 const giftAddresses = ref([])
+const finalPayload = ref()
 
 // ==== Love Story ====
 const addLoveStory = () => {
@@ -502,38 +514,78 @@ const addLoveStory = () => {
 }
 
 const removeLoveStory = (index) => loveStories.value.splice(index, 1)
-const handleFileUploadLoveStory = (event, index) => {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => loveStories.value[index].photo = reader.result
-  reader.readAsDataURL(file)
-}
 
-// ==== Gallery ====
+// Foto Mempelai
+const handleCouplePhotoUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    formData.value.photoCouple = reader.result; // Untuk preview
+    formData.value.photoCoupleFile = file;     // Untuk upload nanti
+  };
+  reader.readAsDataURL(file);
+};
+
+// Love Story Photo
+const handleFileUploadLoveStory = (event, index) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    loveStories.value[index].photo = reader.result; // Untuk preview
+    loveStories.value[index].photoFile = file;      // Untuk upload nanti
+  };
+  reader.readAsDataURL(file);
+};
+
+// Gallery
 const handleGalleryUpload = (e) => {
   const files = Array.from(e.target.files)
   if (!files.length) return
-  const readers = files.map(file => new Promise((resolve, reject) => {
-    const reader = new FileReader()
-    reader.onload = () => resolve(reader.result)
-    reader.onerror = reject
-    reader.readAsDataURL(file)
-  }))
-  Promise.all(readers).then(images => {
-    formData.value.gallery.push(...images)
-  }).catch(console.error)
-}
-const removeGalleryImage = (index) => formData.value.gallery.splice(index, 1)
 
-// ==== Mempelai Photo ====
-const handleCouplePhotoUpload = (e) => {
-  const file = e.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => formData.value.photoCouple = reader.result
-  reader.readAsDataURL(file)
+  files.forEach(file => {
+    const reader = new FileReader()
+    reader.onload = () => {
+      formData.value.gallery.push({
+        preview: reader.result, // Untuk preview di frontend
+        file: file             // Untuk diupload ke backend
+      })
+    }
+    reader.readAsDataURL(file)
+  })
 }
+const removeGalleryImage = (index) => {
+  formData.value.gallery.splice(index, 1)
+}
+
+// Denah
+const handleDenahUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    formData.value.denah = reader.result; // Untuk preview
+    formData.value.denahFile = file;      // Untuk upload nanti
+  };
+  reader.readAsDataURL(file);
+};
+
+// E-Wallet
+const handleWalletImageUpload = (event, index) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    formData.value.eWalletLink[index].wallet_image = reader.result; // Untuk preview
+    formData.value.eWalletLink[index].wallet_imageFile = file;      // Untuk upload nanti
+  };
+  reader.readAsDataURL(file);
+};
 
 // ==== Musik ====
 const handleMusicUpload = (e) => {
@@ -547,14 +599,6 @@ const handleMusicUpload = (e) => {
   reader.readAsDataURL(file)
 }
 
-// ==== Denah ====
-const handleDenahUpload = (e) => {
-  const file = e.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => formData.value.denah = reader.result
-  reader.readAsDataURL(file)
-}
 
 // ==== Food List ====
 const addFood = () => foodList.value.push('')
@@ -573,13 +617,6 @@ const addWallet = () => {
   })
 }
 const removeWallet = (index) => formData.value.eWalletLink.splice(index, 1)
-const handleWalletImageUpload = (event, index) => {
-  const file = event.target.files[0]
-  if (!file) return
-  const reader = new FileReader()
-  reader.onload = () => formData.value.eWalletLink[index].wallet_image = reader.result
-  reader.readAsDataURL(file)
-}
 
 // ==== Generate Payload ====
 function generatePayload() {
@@ -591,26 +628,37 @@ function generatePayload() {
     templateName: formData.value.templateName,
     isPublished: formData.value.isPublished,
     quoteSource: formData.value.quoteSource,
+    quoteType: formData.value.quoteType,
     quoteText: formData.value.quote,
+    dateTime: formData.value.dateTime,
+    bridePhotoUrl: formData.value.photoCoupleUrl || formData.value.photoCouple,
 
     loveStory: loveStories.value.map(story => ({
       title: story.title,
-      images: story.photo,
+      images: story.photoUrl || story.photo,
       content: story.description,
       date: story.date
     })),
 
+    galleryImages: formData.value.gallery.map(img => img.url || img.preview),
+    floorPlanImageUrl: formData.value.denahUrl || formData.value.denah,
+
+    eWalletLink: formData.value.eWalletLink.map(wallet => ({
+      wallet_provider: wallet.wallet_provider,
+      wallet_image: wallet.wallet_imageUrl || wallet.wallet_image,
+      wallet_number: wallet.wallet_number
+    })),
     musicChoice: isPremiumTemplate.value && formData.value.music === 'custom'
       ? formData.value.musicFileName
       : formData.value.music,
+    isSingleEvent: formData.value.isSingleEvent,
     isCustomMusic: isPremiumTemplate.value && formData.value.music === 'custom',
-    bridePhotoUrl: formData.value.photoCouple,
-
     akadLocation: formData.value.isSingleEvent ? null : {
       mapUrl: formData.value.akadMap,
       description: formData.value.akadDesc,
       dateTime: formData.value.akadDateTime
     },
+
     resepsiLocation: formData.value.isSingleEvent ? null : {
       mapUrl: formData.value.resepsiMap,
       description: formData.value.resepsiDesc,
@@ -618,16 +666,11 @@ function generatePayload() {
     },
     mergeEvents: formData.value.isSingleEvent,
     encryptedGuestName: formData.value.encryptedGuest === 'ya',
-    floorPlanImageUrl: formData.value.denah,
-
     menu: {
       title: 'Menu Makanan',
       items: foodList.value
     },
-    galleryImages: formData.value.gallery,
     giftDeliveryAddress: giftAddresses.value,
-    eWalletLink: formData.value.eWalletLink,
-
     socialMediaBrides: {
       instagram: formData.value.sosmedBride.instagram,
       tiktok: formData.value.sosmedBride.tiktok,
@@ -647,6 +690,7 @@ function generatePayload() {
     liveStreamingLink: formData.value.liveStreamingLink,
     selectedSections: Object.keys(sections.value).filter(k => !!sections.value[k]),
     enableGuestMessage: formData.value.wishes === 'ya'
+
   }
 
   localStorage.setItem('finalPayload', JSON.stringify(payload))
@@ -654,9 +698,84 @@ function generatePayload() {
 }
 
 // ==== Action ====
-function saveAndPreview() {
-  generatePayload()
-  router.push('/preview')
+async function saveAndPreview() {
+  isUploading.value = true;
+  try {
+    await uploadAllFiles();
+    generatePayload();
+    router.push('/preview');
+  } catch (error) {
+    console.error(error);
+    alert('Upload gagal, silakan coba lagi');
+  } finally {
+    isUploading.value = false;
+  }
+}
+
+async function uploadAllFiles() {
+  const uploadPromises = [];
+  // 1. Upload Foto Mempelai
+  if (formData.value.photoCoupleFile) {
+    console.log(formData.value.photoCoupleFile)
+    uploadPromises.push(
+      uploadFileToBackend(formData.value.photoCoupleFile)
+        .then(url => formData.value.photoCoupleUrl = url)
+    );
+  }
+
+  // 2. Upload Love Story Photos
+  loveStories.value.forEach((story, index) => {
+    console.log(story.photoFile)
+    if (story.photoFile) {
+      uploadPromises.push(
+        uploadFileToBackend(story.photoFile)
+          .then(url => loveStories.value[index].photoUrl = url)
+      );
+    }
+  });
+
+  // 3. Upload Gallery Images
+  formData.value.gallery.forEach((img, index) => {
+    if (img.file) {
+      uploadPromises.push(
+        uploadFileToBackend(img.file)
+          .then(url => {
+            formData.value.gallery[index].url = url // Simpan URL hasil upload
+          })
+      );
+    }
+  });
+
+  // 4. Upload Denah
+  if (formData.value.denahFile) {
+    uploadPromises.push(
+      uploadFileToBackend(formData.value.denahFile)
+        .then(url => formData.value.denahUrl = url)
+    );
+  }
+
+  // 5. Upload Wallet Images
+  formData.value.eWalletLink.forEach((wallet, index) => {
+    if (wallet.wallet_imageFile) {
+      uploadPromises.push(
+        uploadFileToBackend(wallet.wallet_imageFile)
+          .then(url => formData.value.eWalletLink[index].wallet_imageUrl = url)
+      );
+    }
+  });
+
+  // Tunggu semua upload selesai
+  await Promise.all(uploadPromises);
+}
+
+async function uploadFileToBackend(file) {
+  const data = await uploadFileApi(file)
+
+  if (!data.fileUrl) {
+    throw new Error('Upload failed');
+  }
+
+  return data.fileUrl;
 }
 
 const suggestedTitle = computed(() => {
@@ -667,19 +786,114 @@ const suggestedTitle = computed(() => {
   }
   return ''
 })
-
-
 // ==== Lifecycle ====
 onMounted(() => {
-  // const stored = localStorage.getItem('selectedTemplate')
-  // if (!stored) return router.push('/create')
-  // const selected = JSON.parse(stored)
-  // const activeSections = selected.sectionOptions || []
-  // sections.value = activeSections.reduce((obj, key) => {
-  //   obj[key] = true
-  //   return obj
-  // }, {})
+  const stored = localStorage.getItem('selectedSections')
+  const finalPayloadStored = localStorage.getItem('finalPayload')
+
+  if (!stored) return router.push('/create')
+
+  // Parse finalPayload dari localStorage
+  finalPayload.value = JSON.parse(finalPayloadStored);
+
+  // Mapping finalPayload ke formData
+  if (finalPayload.value) {
+    mapPayloadToFormData(finalPayload.value);
+  }
+
+  const selected = JSON.parse(stored)
+  const activeSections = selected || []
+
+  sections.value = activeSections.reduce((obj, key) => {
+    obj[key] = true
+    return obj
+  }, {})
 })
+
+// Fungsi untuk mapping payload ke formData
+function mapPayloadToFormData(payload) {
+  // Data Umum
+  formData.value.title = payload.title || '';
+  formData.value.brideName = payload.brideName || '';
+  formData.value.groomName = payload.groomName || '';
+  formData.value.templateName = payload.templateName || '';
+  formData.value.isPublished = payload.isPublished || false;
+  formData.value.quote = payload.quoteText || '';
+  formData.value.quoteSource = payload.quoteSource || 'bebas';
+  formData.value.quoteType = payload.quoteType || '';
+  formData.value.dateTime = payload.dateTime || '';
+
+  // Musik
+  formData.value.music = payload.isCustomMusic ? 'custom' : payload.musicChoice || '';
+  formData.value.musicFileName = payload.isCustomMusic ? payload.musicChoice : '';
+
+  // Foto & Gallery
+  formData.value.photoCouple = payload.bridePhotoUrl || '';
+  formData.value.gallery = payload.galleryImages
+    ? payload.galleryImages.map(img => ({ preview: img }))
+    : [];
+  // Lokasi & Tanggal
+  formData.value.isSingleEvent = payload.mergeEvents;
+  formData.value.akadMap = payload.akadLocation?.mapUrl || '';
+  formData.value.akadDesc = payload.akadLocation?.description || '';
+  formData.value.akadDateTime = payload.akadLocation?.dateTime || '';
+  formData.value.resepsiMap = payload.resepsiLocation?.mapUrl || '';
+  formData.value.resepsiDesc = payload.resepsiLocation?.description || '';
+  formData.value.resepsiDateTime = payload.resepsiLocation?.dateTime || '';
+  formData.value.map = payload.mergeEvents ? payload.resepsiLocation?.mapUrl || payload.akadLocation?.mapUrl || '' : '';
+  formData.value.mapDesc = payload.mergeEvents ? payload.resepsiLocation?.description || payload.akadLocation?.description || '' : '';
+  formData.value.date = payload.mergeEvents ? payload.resepsiLocation?.dateTime || payload.akadLocation?.dateTime || '' : '';
+
+  // Fitur Tambahan
+  formData.value.denah = payload.floorPlanImageUrl || '';
+  formData.value.encryptedGuest = payload.encryptedGuestName ? 'ya' : 'tidak';
+  formData.value.rsvp = 'ya'; // Default, sesuaikan jika ada di payload
+  formData.value.wishes = payload.enableGuestMessage ? 'ya' : 'tidak';
+
+  // Sosmed & Live
+  formData.value.sosmedBride = {
+    instagram: payload.socialMediaBrides?.instagram || '',
+    tiktok: payload.socialMediaBrides?.tiktok || '',
+    youtube: payload.socialMediaBrides?.youtube || '',
+    other: payload.socialMediaBrides?.lainnya || ''
+  };
+  formData.value.sosmedGroom = {
+    instagram: payload.socialMediaGroom?.instagram || '',
+    tiktok: payload.socialMediaGroom?.tiktok || '',
+    youtube: payload.socialMediaGroom?.youtube || '',
+    other: payload.socialMediaGroom?.lainnya || ''
+  };
+  formData.value.liveStreamingLink = payload.liveStreamingLink || '';
+
+  // Orang Tua
+  formData.value.brideParents = payload.parents?.brideParents || '';
+  formData.value.groomParents = payload.parents?.groomParents || '';
+
+  // Wallet
+  formData.value.eWalletLink = payload.eWalletLink ? payload.eWalletLink.map(wallet => ({
+    wallet_provider: wallet.wallet_provider || '',
+    wallet_image: wallet.wallet_image || '',
+    wallet_number: wallet.wallet_number || ''
+  })) : [];
+
+  // Data lainnya yang mungkin perlu dimapping
+  if (payload.loveStory) {
+    loveStories.value = payload.loveStory.map(story => ({
+      title: story.title || '',
+      photo: story.images || '',
+      description: story.content || '',
+      date: story.date || ''
+    }));
+  }
+
+  if (payload.giftDeliveryAddress) {
+    giftAddresses.value = payload.giftDeliveryAddress;
+  }
+
+  if (payload.menu?.items) {
+    foodList.value = payload.menu.items;
+  }
+}
 </script>
 
 
