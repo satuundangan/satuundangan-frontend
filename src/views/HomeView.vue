@@ -206,6 +206,7 @@ const templates = ref([
   {
     id: 1,
     name: 'Dark Elegant',
+    slug: 'dark-elegant',
     previewUrl: 'https://i.pinimg.com/736x/9b/2b/45/9b2b4584e36ea2757eebe765d2184611.jpg',
     description: 'Elegant Dark Style dengan kesan simple romantis.',
     category: 'Premium',
@@ -236,9 +237,9 @@ const templates = ref([
   },
 ]);
 
-// const loading = ref(true)
 const classCategories = ['Semua', 'Premium', 'Eksklusif', 'Gratis']
 
+// const loading = ref(true)
 
 onMounted(async () => {
   // try {

@@ -790,8 +790,17 @@ onMounted(() => {
       }
     }
 
-    backgroundUrl = data.value.bridePhotoUrl.replace(' ', '%20');
-    console.log("Background URL:", backgroundUrl)
+    if (data.value.bridePhotoUrl) {
+      // Menggunakan encodeURI untuk menangani spasi dan karakter khusus lainnya
+      backgroundUrl = encodeURI(data.value.bridePhotoUrl.trim());
+      console.log("Encoded Background URL:", backgroundUrl)
+
+      // Contoh implementasi ke CSS background
+      document.documentElement.style.setProperty(
+        '--background-url',
+        `url('${backgroundUrl}')`
+      );
+    }
   }
 })
 
