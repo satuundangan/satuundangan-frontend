@@ -70,12 +70,10 @@
         <div class="absolute bottom-0 left-1/2 w-32 h-[1px] bg-white/30 -translate-x-1/2"></div>
 
         <p class="italic text-gray-200 max-w-2xl mx-auto text-lg leading-relaxed">
-          "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu
-          sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan
-          sayang."
+          {{ data.quoteText }}
         </p>
 
-        <p class="mt-4 text-sm italic text-gray-300 tracking-wide">Q.S. Ar-Rum : 21</p>
+        <p class="mt-4 text-sm italic text-gray-300 tracking-wide">{{ data.quoteSource }}</p>
       </section>
 
 
@@ -113,15 +111,25 @@
                 Groom
               </div>
               <img
-                src="https://cdn0.weddingwire.in/article/1811/original/1280/jpg/101181-wedding-dresses-for-men-11jpg.jpeg"
-                alt="Groom" class="w-full h-72 object-cover grayscale-0  transition duration-300">
+                :src="data.groomPhotoUrl || 'https://cdn0.weddingwire.in/article/1811/original/1280/jpg/101181-wedding-dresses-for-men-11jpg.jpeg'"
+                alt="Groom" class="w-full h-72 object-cover grayscale-0 transition duration-300">
               <div class="p-5 text-center text-white">
-                <h3 class="text-lg font-serif font-semibold mb-1" v-html="data.groomName"></h3>
-                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents?.groomParents"></p>
-                <a href="https://instagram.com" target="_blank"
-                  class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]"
-                  v-html="'IG : ' + data.socialMediaGroom?.instagram">
-                </a>
+                <h3 class="text-lg font-serif font-semibold mb-1">{{ data.groomName || 'Mempelai Pria' }}</h3>
+                <p class="text-xs text-gray-300 mb-2">Putra dari {{ data.parents?.groomParents ||
+                'Orang Tua Mempelai Pria' }}</p>
+
+                <template v-if="data.socialMediaGroom?.instagram">
+                  <a :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]">
+                    IG: @{{ cleanInstagramHandle(data.socialMediaGroom.instagram) }}
+                  </a>
+                </template>
+                <template v-else>
+                  <span class="inline-block text-xs bg-gray-500/50 text-white px-3 py-1 rounded-full">
+                    Tidak ada Instagram
+                  </span>
+                </template>
               </div>
             </div>
 
@@ -132,16 +140,26 @@
                 class="absolute top-4 left-4 bg-gradient-to-br from-[#bfa88f] to-[#d1bfa7] text-white text-[11px] font-semibold px-3 py-1 rounded-full uppercase tracking-wide shadow">
                 Bride
               </div>
-              <img src="https://i.pinimg.com/736x/7f/4b/41/7f4b41f027b8e316e2821274761b86b6.jpg" alt="Bride"
-                class="w-full h-72 object-cover grayscale-0  transition duration-300">
+              <img
+                :src="data.bridePhotoUrl || 'https://i.pinimg.com/736x/7f/4b/41/7f4b41f027b8e316e2821274761b86b6.jpg'"
+                alt="Bride" class="w-full h-72 object-cover grayscale-0 transition duration-300">
               <div class="p-5 text-center text-white">
-                <h3 class="text-lg font-serif font-semibold mb-1" v-html="data.brideName"></h3>
-                <p class="text-xs text-gray-300 mb-2" v-html="'Putra dari ' + data.parents?.brideParents"></p>
-                <a href="https://instagram.com" target="_blank"
-                  class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]"
-                  v-html="'IG : ' + data.socialMediaBrides?.instagram">
+                <h3 class="text-lg font-serif font-semibold mb-1">{{ data.brideName || 'Mempelai Wanita' }}</h3>
+                <p class="text-xs text-gray-300 mb-2">Putri dari {{ data.parents?.brideParents
+                || 'Orang Tua Mempelai Wanita' }}</p>
 
-                </a>
+                <template v-if="data.socialMediaBrides?.instagram">
+                  <a :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-block text-xs bg-[#bfa88f]/90 text-white cursor-pointer px-3 py-1 rounded-full hover:bg-[#bfa88f]">
+                    IG: @{{ cleanInstagramHandle(data.socialMediaBrides.instagram) }}
+                  </a>
+                </template>
+                <template v-else>
+                  <span class="inline-block text-xs bg-gray-500/50 text-white px-3 py-1 rounded-full">
+                    Tidak ada Instagram
+                  </span>
+                </template>
               </div>
             </div>
           </div>
@@ -155,57 +173,139 @@
         </div>
 
         <div class="max-w-5xl mx-auto text-center relative z-10">
-          <h2 class="text-4xl font-serif font-alex font-bold text-white mb-5 tracking-wide ">Acara Pernikahan</h2>
+          <h2 class="text-4xl font-serif font-alex font-bold text-white mb-5 tracking-wide">Acara Pernikahan</h2>
 
           <p class="mb-7 font-montserrat">Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila,
             Bapak/Ibu/Saudara/i berkenan hadir untuk
             memberikan do'a restunya, kami ucapkan terima kasih.</p>
-          <div class="grid md:grid-cols-2 gap-10">
-            <!-- Card Akad -->
-            <div
-              class="relative bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl">
 
-              <!-- Sudut Daun -->
+          <!-- Tampilan Gabungan -->
+          <div v-if="data.mergeEvents" class="space-y-10">
+            <!-- Card Acara Gabungan -->
+            <div
+              class="bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl max-w-2xl mx-auto">
+              <div
+                class="absolute top-4 left-4 rounded-full w-12 h-12 flex items-center justify-center text-2xl text-white">
+                🎉</div>
               <div class="absolute bottom-4 right-4 text-3xl text-white/10">🌿</div>
 
-              <!-- Icon Bulat -->
+              <h3 class="text-2xl font-serif text-white mb-3">Akad & Resepsi</h3>
+              <p class="text-sm text-gray-200 mb-1">
+                <strong class="text-white">Tanggal:</strong> {{ formatDate(data.akadLocation.dateTime) }}
+              </p>
+              <p class="text-sm text-gray-200 mb-1">
+                <strong class="text-white">Waktu:</strong> {{ formatTime(data.akadLocation.dateTime) }} - {{
+                formatEndTime(data.resepsiLocation.dateTime) }}
+              </p>
+              <p class="text-sm text-gray-200 mb-3">
+                <strong class="text-white">Lokasi:</strong> {{ data.akadLocation.description }}
+              </p>
+
+              <!-- Tombol Google Maps -->
+              <a :href="data.akadLocation.mapUrl" target="_blank"
+                class="inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                    clip-rule="evenodd" />
+                </svg>
+                Buka di Google Maps
+              </a>
+            </div>
+
+            <!-- Peta Gabungan -->
+            <div class="rounded-2xl overflow-hidden shadow-xl border border-white/20">
+              <iframe :src="getEmbedUrl(data.akadLocation.mapUrl)" width="100%" height="400" style="border:0;"
+                allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                class="opacity-90 hover:opacity-100 transition-opacity">
+              </iframe>
+            </div>
+          </div>
+
+          <!-- Tampilan Terpisah -->
+          <div v-else class="space-y-10">
+            <div class="grid md:grid-cols-2 gap-10">
+              <!-- Card Akad -->
               <div
-                class="absolute top-4 left-4  rounded-full w-12 h-12 flex items-center justify-center text-2xl text-white ">
-                🕊️
+                class="relative bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl">
+                <div class="absolute bottom-4 right-4 text-3xl text-white/10">🌿</div>
+                <div
+                  class="absolute top-4 left-4 rounded-full w-12 h-12 flex items-center justify-center text-2xl text-white">
+                  🕊️</div>
+
+                <h3 class="text-2xl font-serif text-white mb-3">Akad Nikah</h3>
+                <p class="text-sm text-gray-200 mb-1">
+                  <strong class="text-white">Tanggal:</strong> {{ formatDate(data.akadLocation.dateTime) }}
+                </p>
+                <p class="text-sm text-gray-200 mb-1">
+                  <strong class="text-white">Waktu:</strong> {{ formatTime(data.akadLocation.dateTime) }}
+                </p>
+                <p class="text-sm text-gray-200 mb-3">
+                  <strong class="text-white">Lokasi:</strong> {{ data.akadLocation.description }}
+                </p>
+
+                <a :href="data.akadLocation.mapUrl" target="_blank"
+                  class="inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  Buka di Google Maps
+                </a>
               </div>
 
-              <!-- Isi -->
-              <h3 class="text-2xl font-serif text-white mb-3 ">Akad Nikah</h3>
-              <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Tanggal:</strong> 21 Oktober 2024</p>
-              <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Waktu:</strong> 08.00 WIB</p>
-              <p class="text-sm text-gray-200"><strong class="text-white">Lokasi:</strong> Masjid Agung Al-Azhar</p>
+              <!-- Card Resepsi -->
+              <div
+                class="relative bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl">
+                <div class="absolute bottom-4 left-4 text-3xl text-white/10">🌿</div>
+                <div class="absolute top-4 right-4 w-12 h-12 flex items-center justify-center text-2xl text-white">🎉
+                </div>
+
+                <h3 class="text-2xl font-serif text-white mb-3">Resepsi</h3>
+                <p class="text-sm text-gray-200 mb-1">
+                  <strong class="text-white">Tanggal:</strong> {{ formatDate(data.resepsiLocation.dateTime) }}
+                </p>
+                <p class="text-sm text-gray-200 mb-1">
+                  <strong class="text-white">Waktu:</strong> {{ formatTime(data.resepsiLocation.dateTime) }} - Selesai
+                </p>
+                <p class="text-sm text-gray-200 mb-3">
+                  <strong class="text-white">Lokasi:</strong> {{ data.resepsiLocation.description }}
+                </p>
+
+                <a :href="data.resepsiLocation.mapUrl" target="_blank"
+                  class="inline-flex items-center justify-center px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                      clip-rule="evenodd" />
+                  </svg>
+                  Buka di Google Maps
+                </a>
+              </div>
             </div>
 
-            <!-- Card Resepsi -->
-            <div
-              class="relative bg-white/10 backdrop-blur-md border border-white/30 rounded-3xl shadow-2xl p-8 overflow-hidden group transition-all hover:scale-[1.01] hover:shadow-3xl">
-
-              <!-- Sudut Daun Dekoratif -->
-              <div class="absolute bottom-4 left-4 text-3xl text-white/10">🌿</div>
-
-              <!-- Icon Bulat 🎉 -->
-              <div class="absolute top-4 right-4 w-12 h-12 flex items-center justify-center text-2xl text-white ">
-                🎉
+            <!-- Peta Terpisah -->
+            <div class="grid md:grid-cols-2 gap-10">
+              <div class="rounded-2xl overflow-hidden shadow-xl border border-white/20">
+                <h4 class="text-xl font-serif text-white bg-white/10 py-3 px-5">Lokasi Akad Nikah</h4>
+                <iframe :src="getEmbedUrl(data.akadLocation.mapUrl)" width="100%" height="300" style="border:0;"
+                  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                  class="opacity-90 hover:opacity-100 transition-opacity">
+                </iframe>
               </div>
 
-              <!-- Isi Konten -->
-              <h3 class="text-2xl font-serif text-white mb-3">Resepsi</h3>
-              <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Tanggal:</strong> Minggu, 21 Oktober
-                2024</p>
-              <p class="text-sm text-gray-200 mb-1"><strong class="text-white">Waktu:</strong> 11.00 WIB - Selesai</p>
-              <p class="text-sm text-gray-200"><strong class="text-white">Lokasi:</strong> Gedung Serbaguna Al-Azhar,
-                Jakarta Selatan</p>
+              <div class="rounded-2xl overflow-hidden shadow-xl border border-white/20">
+                <h4 class="text-xl font-serif text-white bg-white/10 py-3 px-5">Lokasi Resepsi</h4>
+                <iframe :src="getEmbedUrl(data.resepsiLocation.mapUrl)" width="100%" height="300" style="border:0;"
+                  allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+                  class="opacity-90 hover:opacity-100 transition-opacity">
+                </iframe>
+              </div>
             </div>
-
           </div>
         </div>
       </section>
-
 
       <!-- Love Story - Elegant Responsive Timeline -->
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
@@ -213,53 +313,58 @@
           <h2 class="text-4xl font-alex font-serif font-bold tracking-wide text-[#f8f4f0] mb-8">Our Love Story</h2>
 
           <!-- Timeline Container -->
-          <div class="relative space-y-16 before:absolute before:top-0 before:bottom-0 before:w-1 before:bg-[#bfa88f]/30
-                md:before:left-1/2 before:left-4 md:before:-ml-0.5">
+          <div v-if="data.loveStory && data.loveStory.length > 0" class="relative space-y-16 before:absolute before:top-0 before:bottom-0 before:w-1 before:bg-[#bfa88f]/30
+                  md:before:left-1/2 before:left-4 md:before:-ml-0.5">
 
             <!-- Timeline Item -->
-            <div class="relative md:w-1/2 md:pl-10 md:pr-0 pl-12 pr-4 text-left md:ml-auto group">
-              <!-- Icon -->
-              <div
-                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
-                <i class="fa-solid fa-calendar-days"></i>
-              </div>
+            <div v-for="(story, index) in data.loveStory" :key="index" :class="['relative group',
+              index % 2 === 0 ? 'md:w-1/2 md:pl-10 md:pr-0 pl-12 pr-4 text-left md:ml-auto' :
+                'md:w-1/2 md:pr-10 md:pl-0 pl-12 pr-4 text-left md:mr-auto']">
+
 
               <!-- Card -->
-              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
-                <img src="https://i.ibb.co/2tXkWKV/couple1.jpg" alt="Love Story Photo 1"
+              <div
+                class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6 transition-all duration-300 hover:scale-[1.02]">
+                <img v-if="story.images" :src="story.images" :alt="'Love Story Photo ' + (index + 1)"
                   class="w-full max-h-60 object-cover rounded-xl mb-4" />
-                <p class="text-sm text-gray-300 font-medium mb-1">12 September 2017</p>
-                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Awal Bertemu</h3>
-                <p class="text-gray-200 leading-relaxed">
-                  Tahun di mana dia dikenalkan oleh rekan kerjanya yang juga temanku melalui sosial media.
+                <div v-else class="w-full h-60 bg-white/10 rounded-xl mb-4 flex items-center justify-center">
+                  <i class="fa-solid fa-image text-4xl text-white/30"></i>
+                </div>
+
+                <p v-if="story.date" class="text-sm text-gray-300 font-medium mb-1">
+                  <i class="fa-solid fa-calendar-days mr-2"></i>
+
+                  {{ formatStoryDate(story.date) }}
                 </p>
-              </div>
-            </div>
+                <p v-else class="text-sm text-gray-300 font-medium mb-1">
+                  <i class="fa-solid fa-calendar-days mr-2"></i>
+                  {{ formatStoryDate(data.dateTime) }}
+                </p>
 
-            <!-- Timeline Item 2 (alternate side on desktop) -->
-            <div class="relative md:w-1/2 md:pr-10 md:pl-0 pl-12 pr-4 text-left md:mr-auto group">
-              <!-- Icon -->
-              <div
-                class="absolute top-6 left-0 md:left-1/2 md:-translate-x-1/2 w-10 h-10 bg-[#bfa88f] text-white rounded-full flex items-center justify-center shadow-md z-10">
-                <i class="fa-solid fa-calendar-days"></i>
-              </div>
+                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">
+                  {{ story.title || 'Our Special Moment' }}
+                </h3>
 
-              <!-- Card -->
-              <div class="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl shadow-2xl p-6">
-                <img src="https://i.ibb.co/gzSRtgD/couple2.jpg" alt="Love Story Photo 2"
-                  class="w-full max-h-60 object-cover rounded-xl mb-4" />
-                <p class="text-sm text-gray-300 font-medium mb-1">8 Maret 2018</p>
-                <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Jadian</h3>
                 <p class="text-gray-200 leading-relaxed">
-                  Setelah banyak ngobrol dan saling mengenal, akhirnya kami memutuskan untuk bersama.
+                  {{ story.content || 'This is one of our precious moments together that we want to share with you.' }}
                 </p>
               </div>
             </div>
 
           </div>
+
+          <!-- Empty State -->
+          <div v-else class="py-10 text-center">
+            <div class="inline-block bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-8 max-w-md">
+              <i class="fa-solid fa-heart-crack text-4xl text-[#bfa88f] mb-4"></i>
+              <h3 class="text-xl font-semibold text-[#d1bfa7] mb-2">Our Story is Being Written</h3>
+              <p class="text-gray-200">
+                We're still creating beautiful memories together. Come back later to see our love story!
+              </p>
+            </div>
+          </div>
         </div>
       </section>
-
 
 
       <section :style="paletteStyle.background" class="py-20 px-4 text-white">
@@ -389,26 +494,23 @@
                 <h3 class="font-serif text-xl text-[#f8e9d0]">Transfer Bank</h3>
               </div>
 
-              <div class="space-y-3 pl-2 border-l-2 border-[#d1bfa7]/30">
-                <div>
-                  <p class="text-sm text-[#c9c9c9]">Bank Central Asia (BCA)</p>
-                  <p class="text-lg font-medium text-white">123 456 7890</p>
-                </div>
-                <div>
-                  <p class="text-sm text-[#c9c9c9]">a.n.</p>
-                  <p class="text-lg font-medium text-white">Dimas Noval</p>
+              <div class="space-y-3 pl-2 border-l-2 border-[#d1bfa7]/30" v-if="data.bankAccounts && data.bankAccounts.length > 0">
+                <div v-for="(account, index) in data.bankAccounts" :key="index">
+                  <p class="text-sm text-[#c9c9c9]">{{ account.bankName }}</p>
+                  <p class="text-lg font-medium text-white">{{ account.accountNumber }}</p>
+                  <p class="text-sm text-[#c9c9c9]">a.n. {{ account.accountName }}</p>
+                  <button @click="copyToClipboard(account.accountNumber, account.bankName)"
+                    class="mt-2 px-3 py-1 text-xs bg-[#d1bfa7]/10 hover:bg-[#d1bfa7]/20 border border-[#d1bfa7]/30 rounded-lg text-[#f8e9d0] transition-all flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Salin Nomor Rekening
+                  </button>
+                  <div v-if="index < data.bankAccounts.length - 1" class="my-3 border-t border-white/10"></div>
                 </div>
               </div>
-
-              <button @click="copyToClipboard('1234567890')"
-                class="mt-6 px-4 py-2 text-sm bg-[#d1bfa7]/10 hover:bg-[#d1bfa7]/20 border border-[#d1bfa7]/30 rounded-lg text-[#f8e9d0] transition-all flex items-center gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-                Salin Nomor Rekening
-              </button>
             </div>
 
             <!-- E-Wallet -->
@@ -416,10 +518,29 @@
               class="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-lg border border-white/10 rounded-xl p-8 shadow-xl hover:border-white/20 transition-all duration-300">
               <div class="flex items-center gap-3 mb-4">
                 <div class="text-2xl text-[#d1bfa7]">📱</div>
-                <h3 class="font-serif text-xl text-[#f8e9d0]">E-Wallet (QRIS)</h3>
+                <h3 class="font-serif text-xl text-[#f8e9d0]">E-Wallet</h3>
               </div>
 
-              <div class="flex flex-col items-center">
+              <div v-if="data.eWalletLink && data.eWalletLink.length > 0">
+                <div v-for="(wallet, index) in data.eWalletLink" :key="index" class="mb-6 last:mb-0">
+                  <div class="flex items-center gap-3 mb-3">
+                    <img :src="wallet.wallet_image" :alt="wallet.wallet_provider"
+                      class="w-8 h-8 object-contain rounded-full">
+                    <h4 class="font-medium text-[#f8e9d0]">{{ wallet.wallet_provider }}</h4>
+                  </div>
+                  <p class="text-lg font-medium text-white mb-2">{{ wallet.wallet_number }}</p>
+                  <button @click="copyToClipboard(wallet.wallet_number, wallet.wallet_provider)"
+                    class="px-3 py-1 text-xs bg-[#d1bfa7]/10 hover:bg-[#d1bfa7]/20 border border-[#d1bfa7]/30 rounded-lg text-[#f8e9d0] transition-all flex items-center gap-1">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                    Salin Nomor
+                  </button>
+                </div>
+              </div>
+              <div v-else class="flex flex-col items-center">
                 <div class="bg-white p-3 rounded-lg mb-4 shadow-inner">
                   <img
                     src="https://www.xendit.co/wp-content/uploads/2023/06/How-to-Enable-QR-Payments-for-Your-Business.jpeg"
@@ -432,13 +553,26 @@
             </div>
           </div>
 
+          <!-- Gift Delivery Address -->
+          <div v-if="data.giftDeliveryAddress && data.giftDeliveryAddress.length > 0"
+            class="mt-10 bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-lg border border-white/10 rounded-xl p-8 shadow-xl">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="text-2xl text-[#d1bfa7]">📦</div>
+              <h3 class="font-serif text-xl text-[#f8e9d0]">Alamat Pengiriman</h3>
+            </div>
+            <ul class="space-y-2 pl-2 border-l-2 border-[#d1bfa7]/30">
+              <li v-for="(address, index) in data.giftDeliveryAddress" :key="index" class="text-white">
+                {{ address }}
+              </li>
+            </ul>
+          </div>
+
           <!-- Footer Note -->
           <p class="text-center text-[#c9c9c9] text-sm mt-12 italic">
             *Terima kasih telah menjadi bagian dari perjalanan cinta kami
           </p>
         </div>
       </section>
-
 
       <!-- Section: Penutup -->
       <section
@@ -460,15 +594,15 @@
 
           <!-- Couple Names -->
           <h1 class="text-5xl md:text-6xl lg:text-7xl font-serif font-light text-[#f8f4f0] mb-4 leading-tight">
-            <span class="inline-block transform transition-all duration-500 hover:scale-105">Adam</span>
+            <span class="inline-block transform transition-all duration-500 hover:scale-105">{{ data.groomName }}</span>
             <span class="mx-3 text-[#d1bfa7] font-thin">&</span>
-            <span class="inline-block transform transition-all duration-500 hover:scale-105">Hawa</span>
+            <span class="inline-block transform transition-all duration-500 hover:scale-105">{{ data.brideName }}</span>
           </h1>
 
           <!-- Date -->
           <div class="mb-10">
             <div class="w-24 h-px bg-gradient-to-r from-transparent via-[#d1bfa7]/50 to-transparent mx-auto mb-3"></div>
-            <p class="text-sm tracking-widest text-[#d1bfa7] font-light">21 Oktober 2024</p>
+            <p class="text-sm tracking-widest text-[#d1bfa7] font-light">{{ data.akadLocation?.dateTime }}</p>
             <div class="w-24 h-px bg-gradient-to-r from-transparent via-[#d1bfa7]/50 to-transparent mx-auto mt-3"></div>
           </div>
 
@@ -483,7 +617,8 @@
           <!-- Signature -->
           <div class="mt-12">
             <div class="text-xs text-[#d1bfa7]/70 tracking-widest mb-1">With love,</div>
-            <div class="text-xl font-serif text-[#f8e9d0] tracking-wider">Adam & Hawa</div>
+            <div class="text-xl font-serif text-[#f8e9d0] tracking-wider">{{ data.groomName }} & {{ data.brideName }}
+            </div>
           </div>
         </div>
       </section>
@@ -509,114 +644,16 @@ const defaultPalette = {
 }
 
 const galleryImages = ref([
-  // Featured image (large square - top left)
-  {
-    src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
-    thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400',
-    alt: 'Mountain landscape',
-    caption: 'Beautiful mountain view at sunrise',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Vertical image (top right)
-  {
-    src: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e',
-    thumbnail: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=200',
-    alt: 'Forest path',
-    caption: 'Sunlight through the trees',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Small square (middle right)
-  {
-    src: 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f',
-    thumbnail: 'https://images.unsplash.com/photo-1518173946687-a4c8892bbd9f?w=200',
-    alt: 'Beach sunset',
-    caption: 'Golden hour at the beach',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Wide horizontal (middle)
-  {
-    src: 'https://images.unsplash.com/photo-1470114716159-e389f8712fda',
-    thumbnail: 'https://images.unsplash.com/photo-1470114716159-e389f8712fda?w=400',
-    alt: 'Waterfall',
-    caption: 'Majestic waterfall in the jungle',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Small square (bottom left)
-  {
-    src: 'https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0',
-    thumbnail: 'https://images.unsplash.com/photo-1504208434309-cb69f4fe52b0?w=200',
-    alt: 'Desert',
-    caption: 'Sand dunes at sunset',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Vertical image (bottom right)
-  {
-    src: 'https://images.unsplash.com/photo-1511497584788-876760111969',
-    thumbnail: 'https://images.unsplash.com/photo-1511497584788-876760111969?w=200',
-    alt: 'Cityscape',
-    caption: 'Urban skyline at night',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Second row - left vertical
-  {
-    src: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07',
-    thumbnail: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=200',
-    alt: 'Flowers',
-    caption: 'Colorful spring flowers',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Small square (middle)
-  {
-    src: 'https://images.unsplash.com/photo-1417325384643-aac51acc9e5d',
-    thumbnail: 'https://images.unsplash.com/photo-1417325384643-aac51acc9e5d?w=200',
-    alt: 'Coffee',
-    caption: 'Morning coffee time',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Wide horizontal (bottom)
-  {
-    src: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470',
-    thumbnail: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=400',
-    alt: 'Lake view',
-    caption: 'Serene lake at dusk',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Small square (top)
-  {
-    src: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e',
-    thumbnail: 'https://images.unsplash.com/photo-1472214103451-9374bd1c798e?w=200',
-    alt: 'Rock formation',
-    caption: 'Natural rock arch',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Vertical image (middle)
-  {
-    src: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716',
-    thumbnail: 'https://images.unsplash.com/photo-1433086966358-54859d0ed716?w=200',
-    alt: 'Waterfall',
-    caption: 'Misty forest waterfall',
-    colSpan: 1,
-    rowSpan: 1
-  },
-  // Small square (bottom)
-  {
-    src: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05',
-    thumbnail: 'https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=200',
-    alt: 'Foggy landscape',
-    caption: 'Mystical morning fog',
-    colSpan: 1,
-    rowSpan: 1
-  }
+  // // Featured image (large square - top left)
+  // {
+  //   src: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb',
+  //   thumbnail: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=400',
+  //   alt: 'Mountain landscape',
+  //   caption: 'Beautiful mountain view at sunrise',
+  //   colSpan: 1,
+  //   rowSpan: 1
+  // },
+
 ])
 const paletteColor = ref({ ...defaultPalette }) // jadi reactive bro
 
@@ -697,13 +734,7 @@ const wishesList = ref([])
 
 const guestOptions = [1, 2, 3, 4, 5] // bisa diganti dari API nanti
 
-// Misalnya mau fetch dari API:
-onMounted(() => {
-  // Example API call
-  // fetch('/api/guest-options')
-  //   .then(res => res.json())
-  //   .then(data => guestOptions.value = data)
-})
+
 
 function submitRSVP() {
   if (rsvp.value.attendance === 'hadir' || rsvp.value.attendance === 'belum tau' || rsvp.value.attendance === 'tidak') {
@@ -718,17 +749,82 @@ function submitRSVP() {
   alert(`Terima kasih ${rsvp.value.name}, RSVP kamu berhasil dikirim! ✨`)
 }
 
-
-function copyToClipboard(text) {
-  navigator.clipboard.writeText(text)
-  alert('Nomor rekening disalin ke clipboard')
+function formatInstagramUrl(handle) {
+  if (!handle) return '#';
+  // Remove @ if exists
+  const cleanHandle = handle.replace(/^@/, '');
+  return `https://www.instagram.com//${cleanHandle}`;
+}
+function cleanInstagramHandle(handle) {
+  if (!handle) return '';
+  // Remove @ and any URL parts if accidentally included
+  return handle.replace(/^@/, '').replace(/^https?:\/\/(www\.)?instagram\.com\//, '');
 }
 
+
+function copyToClipboard(text, label = '') {
+  navigator.clipboard.writeText(text).then(() => {
+    const message = label ? `${label} berhasil disalin!` : 'Berhasil disalin!';
+    alert(message);
+  }).catch(err => {
+    console.error('Failed to copy: ', err);
+  });
+}
 function openInvitation() {
   showWelcome.value = false
   setTimeout(() => {
     document.getElementById('invitation-content')?.scrollIntoView({ behavior: 'smooth' })
   }, 500)
+}
+
+function formatDate(dateTime) {
+  if (!dateTime) return '-';
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  return new Date(dateTime).toLocaleDateString('id-ID', options);
+}
+
+function formatTime(dateTime) {
+  if (!dateTime) return '-';
+  return new Date(dateTime).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatEndTime(dateTime) {
+  if (!dateTime) return 'Selesai';
+  const endTime = new Date(dateTime);
+  endTime.setHours(endTime.getHours() + 3); // Asumsi resepsi 3 jam
+  return endTime.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+}
+function getEmbedUrl(shareUrl) {
+  if (!shareUrl) return '';
+
+  try {
+    // Jika sudah berupa URL embed
+    if (shareUrl.includes('embed')) return shareUrl;
+
+    // Ekstrak place ID dari URL sharing Google Maps
+    const url = new URL(shareUrl);
+    const placeId = url.pathname.split('/place/')[1]?.split('/')[0];
+
+    if (placeId) {
+      return `https://www.google.com/maps/embed/v1/place?key=YOUR_API_KEY&q=place_id:${placeId}`;
+    }
+
+    // Fallback ke URL asli jika tidak bisa diekstrak
+    return shareUrl;
+  } catch {
+    return shareUrl;
+  }
+}
+
+function formatStoryDate(dateString) {
+  if (!dateString) return 'Special Moment';
+
+  try {
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('id-ID', options);
+  } catch {
+    return dateString;
+  }
 }
 
 /* === COUNTDOWN === */
@@ -772,8 +868,7 @@ onMounted(() => {
   const stored = localStorage.getItem('finalPayload')
   if (stored) {
     data.value = JSON.parse(stored)
-    console.log(data.value)
-
+    // console.log("Data loaded from localStorage:", data.value)
     // Optional: inject palette dari DB kalau ada
     if (data.value.palleteColor) {
       paletteColor.value = { ...defaultPalette, ...data.value.palleteColor }
@@ -790,9 +885,9 @@ onMounted(() => {
       }
     }
 
-    if (data.value.bridePhotoUrl) {
+    if (data.value.photoCoupleUrl) {
       // Menggunakan encodeURI untuk menangani spasi dan karakter khusus lainnya
-      backgroundUrl = encodeURI(data.value.bridePhotoUrl.trim());
+      backgroundUrl = encodeURI(data.value.photoCoupleUrl.trim());
       console.log("Encoded Background URL:", backgroundUrl)
 
       // Contoh implementasi ke CSS background
@@ -800,6 +895,19 @@ onMounted(() => {
         '--background-url',
         `url('${backgroundUrl}')`
       );
+    }
+
+    if(data.value.galleryImages && data.value.galleryImages.length > 0) {
+      data.value.galleryImages.forEach(image => {
+        galleryImages.value.push({
+          src: image,
+          thumbnail: image,
+          alt: image.alt || 'Gallery Image',
+            caption: '',
+            colSpan: 1,
+            rowSpan: 1
+        })
+      })
     }
   }
 })

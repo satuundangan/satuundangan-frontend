@@ -16,6 +16,17 @@
                 class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
               <input v-model="formData.brideParents" type="text" placeholder="Nama Orang Tua Wanita"
                 class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+
+              <!-- Upload Foto Wanita -->
+              <div>
+                <label class="block text-sm font-medium text-mocha mb-1">Foto Mempelai Wanita</label>
+                <input type="file" accept="image/*" @change="handleBridePhotoUpload"
+                  class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+                <div v-if="formData.bridePhoto" class="mt-2">
+                  <img :src="formData.bridePhoto" alt="Foto Mempelai Wanita"
+                    class="max-w-48 h-72 object-cover rounded-xl shadow" />
+                </div>
+              </div>
             </div>
 
             <!-- Mempelai Pria -->
@@ -25,6 +36,17 @@
                 class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
               <input v-model="formData.groomParents" type="text" placeholder="Nama Orang Tua Pria"
                 class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+
+              <!-- Upload Foto Pria -->
+              <div>
+                <label class="block text-sm font-medium text-mocha mb-1">Foto Mempelai Pria</label>
+                <input type="file" accept="image/*" @change="handleGroomPhotoUpload"
+                  class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+                <div v-if="formData.groomPhoto" class="mt-2">
+                  <img :src="formData.groomPhoto" alt="Foto Mempelai Pria"
+                    class="max-w-48 h-72  object-cover rounded-xl shadow" />
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -246,7 +268,7 @@
 
       <!-- Galeri -->
       <!-- <div v-if="sections.gallery ?? true"> -->
-        <div>
+      <div>
         <label class="block text-mocha font-semibold mb-2">Galeri Foto Mempelai</label>
         <input type="file" accept="image/*" multiple @change="handleGalleryUpload"
           class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
@@ -303,8 +325,7 @@
           + Tambah Alamat Kado
         </button>
       </div>
-
-      <!-- E-WALLET -->
+      <!-- E-WALLET SECTION -->
       <div class="mb-6" v-if="sections.gift">
         <label class="block text-mocha font-semibold mb-2">QRIS / E-Wallet</label>
 
@@ -343,6 +364,56 @@
         <button @click="addWallet"
           class="text-sm text-white bg-mocha hover:bg-mocha/90 px-4 py-2 rounded-full transition-all">
           + Tambah QRIS / E-Wallet
+        </button>
+      </div>
+
+      <!-- BANK ACCOUNT SECTION -->
+      <div class="mb-6" v-if="sections.gift">
+        <label class="block text-mocha font-semibold mb-2">Rekening Bank</label>
+
+        <div v-for="(account, index) in formData.bankAccounts" :key="index"
+          class="mb-4 border border-gray-300 rounded-xl bg-white p-4 relative">
+
+          <button @click="removeBankAccount(index)"
+            class="absolute top-2 right-3 text-xs text-red-500 hover:underline">Hapus</button>
+
+          <!-- Bank Name -->
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-mocha mb-1">Nama Bank (Contoh: BCA, Mandiri, BRI)</label>
+            <input v-model="account.bankName" type="text"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-gray-500" />
+          </div>
+
+          <!-- Account Number -->
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-mocha mb-1">Nomor Rekening</label>
+            <input v-model="account.accountNumber" type="text"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-gray-500"
+              placeholder="Contoh: 1234567890" />
+          </div>
+
+          <!-- Account Holder Name -->
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-mocha mb-1">Atas Nama</label>
+            <input v-model="account.accountName" type="text"
+              class="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:ring-gray-500"
+              placeholder="Nama pemilik rekening" />
+          </div>
+
+          <!-- Bank Logo -->
+          <div class="mb-2">
+            <label class="block text-sm font-medium text-mocha mb-1">Logo Bank (Opsional)</label>
+            <input type="file" accept="image/*" @change="handleBankLogoUpload($event, index)"
+              class="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring focus:ring-gray-500" />
+            <div v-if="account.bankLogo" class="mt-3">
+              <img :src="account.bankLogo" alt="Bank Logo" class="h-24 w-24 object-contain rounded-lg shadow" />
+            </div>
+          </div>
+        </div>
+
+        <button @click="addBankAccount"
+          class="text-sm text-white bg-mocha hover:bg-mocha/90 px-4 py-2 rounded-full transition-all">
+          + Tambah Rekening Bank
         </button>
       </div>
 
@@ -475,7 +546,8 @@ const formData = ref({
   groomParents: '',
 
   // Wallet
-  eWalletLink: []
+  eWalletLink: [],
+  bankAccounts: []
 })
 
 // ==== Section Checklist ====
@@ -540,6 +612,30 @@ const handleFileUploadLoveStory = (event, index) => {
   };
   reader.readAsDataURL(file);
 };
+
+function handleBridePhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    formData.value.bridePhoto = reader.result; // For preview
+    formData.value.bridePhotoFile = file;     // For upload later
+  };
+  reader.readAsDataURL(file);
+}
+
+function handleGroomPhotoUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    formData.value.groomPhoto = reader.result; // For preview
+    formData.value.groomPhotoFile = file;     // For upload later
+  };
+  reader.readAsDataURL(file);
+}
 
 // Gallery
 const handleGalleryUpload = (e) => {
@@ -618,6 +714,31 @@ const addWallet = () => {
 }
 const removeWallet = (index) => formData.value.eWalletLink.splice(index, 1)
 
+function addBankAccount() {
+  formData.value.bankAccounts.push({
+    bankName: "",
+    accountNumber: "",
+    accountName: "",
+    bankLogo: ""
+  });
+}
+
+function removeBankAccount(index) {
+  formData.value.bankAccounts.splice(index, 1);
+}
+
+const handleBankLogoUpload = (event, index) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    formData.value.bankAccounts[index].bankLogo = reader.result; // Untuk preview
+    formData.value.bankAccounts[index].bankLogoFile = file;      // Untuk upload nanti
+  };
+  reader.readAsDataURL(file);
+};
+
 // ==== Generate Payload ====
 function generatePayload() {
   const payload = {
@@ -625,13 +746,15 @@ function generatePayload() {
     slug: formData.value.title.toLowerCase().replace(/\s+/g, '-'),
     brideName: formData.value.brideName,
     groomName: formData.value.groomName,
+    bridePhotoUrl: formData.value.bridePhotoUrl || formData.value.bridePhoto,
+    groomPhotoUrl: formData.value.groomPhotoUrl || formData.value.groomPhoto,
     templateName: formData.value.templateName,
     isPublished: formData.value.isPublished,
     quoteSource: formData.value.quoteSource,
     quoteType: formData.value.quoteType,
     quoteText: formData.value.quote,
     dateTime: formData.value.dateTime,
-    bridePhotoUrl: formData.value.photoCoupleUrl || formData.value.photoCouple,
+    photoCoupleUrl: formData.value.photoCoupleUrl || formData.value.photoCouple,
 
     loveStory: loveStories.value.map(story => ({
       title: story.title,
@@ -648,6 +771,14 @@ function generatePayload() {
       wallet_image: wallet.wallet_imageUrl || wallet.wallet_image,
       wallet_number: wallet.wallet_number
     })),
+
+    bankAccounts: formData.value.bankAccounts.map(bankAccount => ({
+      bankName: bankAccount.bankName,
+      accountNumber: bankAccount.accountNumber,
+      accountName: bankAccount.accountName,
+      bankLogo: bankAccount.bankLogoUrl || bankAccount.bankLogo,
+    })),
+
     musicChoice: isPremiumTemplate.value && formData.value.music === 'custom'
       ? formData.value.musicFileName
       : formData.value.music,
@@ -714,6 +845,23 @@ async function saveAndPreview() {
 
 async function uploadAllFiles() {
   const uploadPromises = [];
+
+  // Upload Bride Photo
+  if (formData.value.bridePhotoFile) {
+    uploadPromises.push(
+      uploadFileToBackend(formData.value.bridePhotoFile)
+        .then(url => formData.value.bridePhotoUrl = url)
+    );
+  }
+
+  // Upload Groom Photo
+  if (formData.value.groomPhotoFile) {
+    uploadPromises.push(
+      uploadFileToBackend(formData.value.groomPhotoFile)
+        .then(url => formData.value.groomPhotoUrl = url)
+    );
+  }
+
   // 1. Upload Foto Mempelai
   if (formData.value.photoCoupleFile) {
     console.log(formData.value.photoCoupleFile)
@@ -760,6 +908,16 @@ async function uploadAllFiles() {
       uploadPromises.push(
         uploadFileToBackend(wallet.wallet_imageFile)
           .then(url => formData.value.eWalletLink[index].wallet_imageUrl = url)
+      );
+    }
+  });
+
+  // 6. Upload Bank Images
+  formData.value.bankAccounts.forEach((bankAccount, index) => {
+    if (bankAccount.bankLogoFile) {
+      uploadPromises.push(
+        uploadFileToBackend(bankAccount.bankLogoFile)
+          .then(url => formData.value.bankAccounts[index].bankLogoUrl = url)
       );
     }
   });
@@ -816,6 +974,8 @@ function mapPayloadToFormData(payload) {
   formData.value.title = payload.title || '';
   formData.value.brideName = payload.brideName || '';
   formData.value.groomName = payload.groomName || '';
+  formData.value.bridePhoto = payload.bridePhotoUrl || '';
+  formData.value.groomPhoto = payload.groomPhotoUrl || '';
   formData.value.templateName = payload.templateName || '';
   formData.value.isPublished = payload.isPublished || false;
   formData.value.quote = payload.quoteText || '';
@@ -828,7 +988,7 @@ function mapPayloadToFormData(payload) {
   formData.value.musicFileName = payload.isCustomMusic ? payload.musicChoice : '';
 
   // Foto & Gallery
-  formData.value.photoCouple = payload.bridePhotoUrl || '';
+  formData.value.photoCouple = payload.photoCoupleUrl || '';
   formData.value.gallery = payload.galleryImages
     ? payload.galleryImages.map(img => ({ preview: img }))
     : [];
@@ -874,6 +1034,14 @@ function mapPayloadToFormData(payload) {
     wallet_provider: wallet.wallet_provider || '',
     wallet_image: wallet.wallet_image || '',
     wallet_number: wallet.wallet_number || ''
+  })) : [];
+
+  formData.value.bankAccounts = payload.bankAccounts ? payload.bankAccounts.map(bankAccount => ({
+    bankName: bankAccount.bankName || '',
+    accountNumber: bankAccount.accountNumber || '',
+    accountName: bankAccount.accountName || '',
+    bankLogo: bankAccount.bankLogo || '',
+
   })) : [];
 
   // Data lainnya yang mungkin perlu dimapping
