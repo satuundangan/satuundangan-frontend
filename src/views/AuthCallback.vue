@@ -9,24 +9,25 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-onMounted(() => {
-  const route = useRoute()
-  const router = useRouter()
-  const authStore = useAuthStore()
+// 🚨 Panggil di top-level
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
 
-  // 1. Ambil token dari query parameter URL
+onMounted(async () => {
   const token = route.query.token
 
   if (token) {
     console.log('Token diterima:', token)
-    // 2. Simpan token dan fetch profile menggunakan aksi di Pinia
-    // Kita buat sebuah aksi baru untuk menangani ini
-    authStore.handleLoginWithToken(token).then(() => {
-      // 3. Arahkan ke halaman utama atau dashboard setelah berhasil
-      router.push('/checkout') // atau '/dashboard'
-    })
+
+    try {
+      await authStore.handleLoginWithToken(token)
+      router.push('/checkout') // atau arahkan ke dashboard
+    } catch (err) {
+      console.error('Gagal login Google:', err)
+      router.push('/')
+    }
   } else {
-    // Jika tidak ada token, arahkan ke halaman utama
     console.error('Callback dipanggil tanpa token.')
     router.push('/')
   }
