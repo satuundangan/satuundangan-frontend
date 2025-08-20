@@ -10,18 +10,32 @@
         <div class="mt-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Mempelai Wanita -->
-            <div class="space-y-4">
-              <h3 class="text-mocha font-semibold">Mempelai Wanita</h3>
-              <input v-model="formData.brideName" type="text" placeholder="Nama Lengkap Wanita"
-                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
-              <input v-model="formData.brideParents" type="text" placeholder="Nama Orang Tua Wanita"
-                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+            <!-- Mempelai Wanita -->
+            <div class="space-y-4" data-field="brideName">
+              <div class="">
+
+                <h3 class="text-mocha font-semibold">Mempelai Wanita <span class="text-red-500">*</span></h3>
+                <input v-model="formData.brideName" @input="validateField('brideName')" type="text"
+                  placeholder="Nama Lengkap Wanita"
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.brideName ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.brideName" class="text-red-500 text-sm">{{ requiredFields.brideName }}</p>
+              </div>
+              <div>
+
+                <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text"
+                  placeholder="Nama Orang Tua Wanita"
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.brideParents ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.brideParents" class="text-red-500 text-sm">{{ requiredFields.brideParents }}
+                </p>
+              </div>
 
               <!-- Upload Foto Wanita -->
               <div>
-                <label class="block text-sm font-medium text-mocha mb-1">Foto Mempelai Wanita</label>
+                <label class="block text-sm font-medium text-mocha mb-1">Foto Mempelai Wanita <span
+                    class="text-red-500">*</span></label>
                 <input type="file" accept="image/*" @change="handleBridePhotoUpload"
-                  class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.bridePhoto ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.bridePhoto" class="text-red-500 text-sm">{{ requiredFields.bridePhoto }}</p>
                 <div v-if="formData.bridePhoto" class="mt-2">
                   <img :src="formData.bridePhoto" alt="Foto Mempelai Wanita"
                     class="max-w-48 h-72 object-cover rounded-xl shadow" />
@@ -30,21 +44,32 @@
             </div>
 
             <!-- Mempelai Pria -->
-            <div class="space-y-4">
-              <h3 class="text-mocha font-semibold">Mempelai Pria</h3>
-              <input v-model="formData.groomName" type="text" placeholder="Nama Lengkap Pria"
-                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
-              <input v-model="formData.groomParents" type="text" placeholder="Nama Orang Tua Pria"
-                class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+            <div class="space-y-4" data-field="groomName">
+              <div class="">
+                <h3 class="text-mocha font-semibold">Mempelai Pria <span class="text-red-500">*</span></h3>
+                <input v-model="formData.groomName" @input="validateField('groomName')" type="text"
+                  placeholder="Nama Lengkap Pria"
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.groomName ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.groomName" class="text-red-500 text-sm">{{ requiredFields.groomName }}</p>
+              </div>
+              <div class="">
 
+                <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text"
+                  placeholder="Nama Orang Tua Pria"
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.groomParents ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.groomParents" class="text-red-500 text-sm">{{ requiredFields.groomParents }}
+                </p>
+              </div>
               <!-- Upload Foto Pria -->
               <div>
-                <label class="block text-sm font-medium text-mocha mb-1">Foto Mempelai Pria</label>
+                <label class="block text-sm font-medium text-mocha mb-1">Foto Mempelai Pria <span
+                    class="text-red-500">*</span></label>
                 <input type="file" accept="image/*" @change="handleGroomPhotoUpload"
-                  class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.groomPhoto ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.groomPhoto" class="text-red-500 text-sm">{{ requiredFields.groomPhoto }}</p>
                 <div v-if="formData.groomPhoto" class="mt-2">
                   <img :src="formData.groomPhoto" alt="Foto Mempelai Pria"
-                    class="max-w-48 h-72  object-cover rounded-xl shadow" />
+                    class="max-w-48 h-72 object-cover rounded-xl shadow" />
                 </div>
               </div>
             </div>
@@ -52,10 +77,12 @@
         </div>
       </div>
 
-      <div>
-        <label class="block text-mocha font-semibold mb-2">Judul Undangan</label>
-        <input v-model="formData.title" type="text" placeholder="Contoh: The Wedding of..."
-          class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+      <div data-field="title">
+        <label class="block text-mocha font-semibold mb-2">Judul Undangan <span class="text-red-500">*</span></label>
+        <input v-model="formData.title" @input="validateField('title')" type="text"
+          placeholder="Contoh: The Wedding of..."
+          :class="['w-full p-2 border rounded-xl bg-white', validationErrors.title ? 'border-red-500' : 'border-gray-300']" />
+        <p v-if="validationErrors.title" class="text-red-500 text-sm">{{ requiredFields.title }}</p>
         <p v-if="suggestedTitle && formData.title !== suggestedTitle" class="text-sm text-gray-400 italic mt-1">
           Saran: {{ suggestedTitle }}
           <button @click="formData.title = suggestedTitle" class="text-blue-600 underline ml-2">Gunakan</button>
@@ -155,17 +182,18 @@
 
 
       <!-- Foto Mempelai -->
-      <div v-if="sections.photoCouple">
-        <label class="block text-mocha font-semibold mb-2">Foto Mempelai (Background Awal)</label>
+      <div v-if="sections.photoCouple" data-field="photoCouple">
+        <label class="block text-mocha font-semibold mb-2">Foto Mempelai (Background Awal) <span
+            class="text-red-500">*</span></label>
         <input type="file" accept="image/*" @change="handleCouplePhotoUpload"
-          class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+          :class="['w-full p-2 border rounded-xl bg-white', validationErrors.photoCouple ? 'border-red-500' : 'border-gray-300']" />
+        <p v-if="validationErrors.photoCouple" class="text-red-500 text-sm">{{ requiredFields.photoCouple }}</p>
 
         <div class="">
           <div v-if="formData.photoCouple">
             <p>Preview:</p>
             <img :src="formData.photoCouple" class="mt-2 rounded-xl h-48 object-cover shadow" />
           </div>
-
         </div>
       </div>
 
@@ -191,10 +219,9 @@
         </p>
       </div>
 
-      <!-- Lokasi -->
-      <div v-if="sections.map">
-        <label class="block text-mocha font-semibold mb-2">Apakah Acara Digabung?</label>
-
+      <div v-if="sections.map" data-field="isSingleEvent">
+        <label class="block text-mocha font-semibold mb-2">Apakah Acara Digabung? <span
+            class="text-red-500">*</span></label>
         <div class="flex gap-4 items-center">
           <label class="flex items-center gap-2">
             <input type="radio" :value="true" v-model="formData.isSingleEvent" /> Ya, satu lokasi
@@ -203,18 +230,24 @@
             <input type="radio" :value="false" v-model="formData.isSingleEvent" /> Tidak, Akad & Resepsi dipisah
           </label>
         </div>
-        {{ formData.isSingleEvent }}
+        <p v-if="validationErrors.isSingleEvent" class="text-red-500 text-sm">{{ requiredFields.isSingleEvent }}</p>
+
         <div v-if="formData.isSingleEvent != null">
           <!-- Gabungan -->
           <div v-if="formData.isSingleEvent">
-            <label class="block font-medium mt-4 mb-1">Link Google Maps</label>
-            <input v-model="formData.map" type="link" placeholder="https://maps.google.com/..."
-              class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+            <label class="block font-medium mt-4 mb-1">Link Google Maps <span class="text-red-500">*</span></label>
+            <input v-model="formData.map" @input="validateField('map')" type="link"
+              placeholder="https://maps.google.com/..."
+              :class="['w-full p-2 border rounded-xl bg-white', validationErrors.map ? 'border-red-500' : 'border-gray-300']" />
+            <p v-if="validationErrors.map" class="text-red-500 text-sm">{{ requiredFields.map }}</p>
+
             <!-- Tanggal -->
-            <div class="mt-4">
-              <label class="block text-sm font-semibold text-mocha mb-1">Tanggal & Waktu Acara</label>
+            <div class="mt-4" data-field="dateTime">
+              <label class="block text-sm font-semibold text-mocha mb-1">Tanggal & Waktu Acara <span
+                  class="text-red-500">*</span></label>
               <input v-model="formData.dateTime" type="datetime-local"
-                class="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring focus:ring-gray-500">
+                :class="['w-full p-2 border rounded-md bg-white', validationErrors.dateTime ? 'border-red-500' : 'border-gray-300']">
+              <p v-if="validationErrors.dateTime" class="text-red-500 text-sm">{{ requiredFields.dateTime }}</p>
             </div>
             <input v-model="formData.mapDesc" type="text" placeholder="Keterangan Lokasi"
               class="w-full p-2 mt-2 border border-gray-300 rounded-xl bg-white" />
@@ -223,33 +256,49 @@
           <!-- Akad & Resepsi -->
           <div v-else>
             <div class="grid md:grid-cols-2 gap-4">
-              <div>
-                <label class="block font-medium mt-4 mb-1">Link Maps Akad</label>
-                <input v-model="formData.akadMap" type="link" placeholder="https://maps.google.com/..."
-                  class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+              <div data-field="akadMap">
+                <label class="block font-medium mt-4 mb-1">Link Maps Akad <span class="text-red-500">*</span></label>
+                <input v-model="formData.akadMap" @input="validateField('akadMap')" type="link"
+                  placeholder="https://maps.google.com/..."
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.akadMap ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.akadMap" class="text-red-500 text-sm">{{ requiredFields.akadMap }}</p>
 
                 <input v-model="formData.akadDesc" type="text" placeholder="Keterangan Lokasi Akad"
                   class="w-full p-2 mt-2 border border-gray-300 rounded-xl bg-white" />
-                <label class="block text-sm font-semibold text-mocha  my-1">Tanggal Akad</label>
-                <input v-model="formData.akadDateTime" type="date"
-                  class="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring focus:ring-gray-500">
 
+                <div data-field="akadDateTime">
+                  <label class="block text-sm font-semibold text-mocha my-1">Tanggal Akad <span
+                      class="text-red-500">*</span></label>
+                  <input v-model="formData.akadDateTime" type="datetime-local"
+                    :class="['w-full p-2 border rounded-md bg-white', validationErrors.akadDateTime ? 'border-red-500' : 'border-gray-300']">
+                  <p v-if="validationErrors.akadDateTime" class="text-red-500 text-sm">{{ requiredFields.akadDateTime }}
+                  </p>
+                </div>
               </div>
-              <div>
-                <label class="block font-medium mt-4 mb-1">Link Maps Resepsi</label>
-                <input v-model="formData.resepsiMap" type="link" placeholder="https://maps.google.com/..."
-                  class="w-full p-2 border border-gray-300 rounded-xl bg-white" />
+
+              <div data-field="resepsiMap">
+                <label class="block font-medium mt-4 mb-1">Link Maps Resepsi <span class="text-red-500">*</span></label>
+                <input v-model="formData.resepsiMap" @input="validateField('resepsiMap')" type="link"
+                  placeholder="https://maps.google.com/..."
+                  :class="['w-full p-2 border rounded-xl bg-white', validationErrors.resepsiMap ? 'border-red-500' : 'border-gray-300']" />
+                <p v-if="validationErrors.resepsiMap" class="text-red-500 text-sm">{{ requiredFields.resepsiMap }}</p>
+
                 <input v-model="formData.resepsiDesc" type="text" placeholder="Keterangan Lokasi Resepsi"
                   class="w-full p-2 mt-2 border border-gray-300 rounded-xl bg-white" />
-                <label class="block text-sm font-semibold text-mocha my-1">Tanggal Resepsi</label>
-                <input v-model="formData.resepsiDateTime" type="date"
-                  class="w-full p-2 border border-gray-300 rounded-md bg-white focus:outline-none focus:ring focus:ring-gray-500">
+
+                <div data-field="resepsiDateTime">
+                  <label class="block text-sm font-semibold text-mocha my-1">Tanggal Resepsi <span
+                      class="text-red-500">*</span></label>
+                  <input v-model="formData.resepsiDateTime" type="datetime-local"
+                    :class="['w-full p-2 border rounded-md bg-white', validationErrors.resepsiDateTime ? 'border-red-500' : 'border-gray-300']">
+                  <p v-if="validationErrors.resepsiDateTime" class="text-red-500 text-sm">{{
+                    requiredFields.resepsiDateTime }}</p>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-
       <!-- Tanggal & Waktu -->
       <div v-if="sections.countdown && !formData.isSingleEvent">
         <label class="block text-mocha font-semibold mb-2">Tanggal & Waktu Acara (Untuk Countdown)</label>
@@ -285,11 +334,12 @@
       </div>
 
 
-      <!-- DENAH RUANGAN (Upload File) -->
-      <div class="mb-6" v-if="sections.denah">
-        <label class="block text-mocha font-semibold mb-2">Gambar Denah Ruangan</label>
+      <div class="mb-6" v-if="sections.denah" data-field="denah">
+        <label class="block text-mocha font-semibold mb-2">Gambar Denah Ruangan <span
+            class="text-red-500">*</span></label>
         <input type="file" accept="image/*" @change="handleDenahUpload"
-          class="w-full p-2 bg-white border border-gray-300 rounded-xl focus:outline-none focus:ring focus:ring-gray-500" />
+          :class="['w-full p-2 bg-white border rounded-xl', validationErrors.denah ? 'border-red-500' : 'border-gray-300']" />
+        <p v-if="validationErrors.denah" class="text-red-500 text-sm">{{ requiredFields.denah }}</p>
         <div v-if="formData.denah" class="mt-2">
           <img :src="formData.denah" alt="Denah" class="h-48 object-cover rounded-xl shadow-md" />
         </div>
@@ -829,7 +879,206 @@ function generatePayload() {
 }
 
 // ==== Action ====
+// Add these to your script setup
+const validationErrors = ref({
+  // Bride & Groom Info
+  brideName: false,
+  groomName: false,
+  brideParents: false,
+  groomParents: false,
+  bridePhoto: false,
+  groomPhoto: false,
+
+  // Wedding Info
+  title: false,
+  dateTime: false,
+  photoCouple: false,
+
+  // Location Info
+  isSingleEvent: false,
+  map: false,
+  akadMap: false,
+  resepsiMap: false,
+  akadDateTime: false,
+  resepsiDateTime: false,
+
+  // Love Story
+  loveStories: [],
+
+  // Gallery
+  gallery: false,
+
+  // Other Sections
+  denah: false,
+  music: false,
+});
+
+const requiredFields = {
+  // Basic Info
+  brideName: 'Nama mempelai wanita wajib diisi',
+  groomName: 'Nama mempelai pria wajib diisi',
+  brideParents: 'Nama orang tua wanita wajib diisi',
+  groomParents: 'Nama orang tua pria wajib diisi',
+  bridePhoto: 'Foto mempelai wanita wajib diupload',
+  groomPhoto: 'Foto mempelai pria wajib diupload',
+  title: 'Judul undangan wajib diisi',
+  dateTime: 'Tanggal dan waktu acara wajib diisi',
+  photoCouple: 'Foto utama pasangan wajib diupload',
+
+  // Location
+  isSingleEvent: 'Pilih jenis acara (digabung atau dipisah)',
+  map: 'Link Google Maps wajib diisi',
+  akadMap: 'Link Google Maps akad wajib diisi',
+  resepsiMap: 'Link Google Maps resepsi wajib diisi',
+  akadDateTime: 'Tanggal dan waktu akad wajib diisi',
+  resepsiDateTime: 'Tanggal dan waktu resepsi wajib diisi',
+
+  // Other
+  gallery: 'Minimal upload 1 foto untuk galeri',
+  denah: 'Denah ruangan wajib diupload',
+  music: 'Pilih musik latar',
+};
+
+// Add this function
+function validateForm() {
+  let isValid = true;
+
+  // Reset all errors
+  validationErrors.value = Object.keys(validationErrors.value).reduce((acc, key) => {
+    acc[key] = false;
+    return acc;
+  }, {});
+
+  // Validate basic info
+  if (!formData.value.brideName?.trim()) {
+    validationErrors.value.brideName = true;
+    isValid = false;
+  }
+
+  if (!formData.value.groomName?.trim()) {
+    validationErrors.value.groomName = true;
+    isValid = false;
+  }
+
+  if (!formData.value.brideParents?.trim()) {
+    validationErrors.value.brideParents = true;
+    isValid = false;
+  }
+
+  if (!formData.value.groomParents?.trim()) {
+    validationErrors.value.groomParents = true;
+    isValid = false;
+  }
+
+  if (!formData.value.bridePhoto) {
+    validationErrors.value.bridePhoto = true;
+    isValid = false;
+  }
+
+  if (!formData.value.groomPhoto) {
+    validationErrors.value.groomPhoto = true;
+    isValid = false;
+  }
+
+  if (!formData.value.title?.trim()) {
+    validationErrors.value.title = true;
+    isValid = false;
+  }
+
+  if (!formData.value.photoCouple) {
+    validationErrors.value.photoCouple = true;
+    isValid = false;
+  }
+
+  // Validate date/time based on event type
+  if (formData.value.isSingleEvent === null) {
+    validationErrors.value.isSingleEvent = true;
+    isValid = false;
+  } else if (formData.value.isSingleEvent) {
+    if (!formData.value.dateTime) {
+      validationErrors.value.dateTime = true;
+      isValid = false;
+    }
+    if (!formData.value.map?.trim()) {
+      validationErrors.value.map = true;
+      isValid = false;
+    }
+  } else {
+    if (!formData.value.akadMap?.trim()) {
+      validationErrors.value.akadMap = true;
+      isValid = false;
+    }
+    if (!formData.value.resepsiMap?.trim()) {
+      validationErrors.value.resepsiMap = true;
+      isValid = false;
+    }
+    if (!formData.value.akadDateTime) {
+      validationErrors.value.akadDateTime = true;
+      isValid = false;
+    }
+    if (!formData.value.resepsiDateTime) {
+      validationErrors.value.resepsiDateTime = true;
+      isValid = false;
+    }
+  }
+
+  // Validate love stories
+  validationErrors.value.loveStories = loveStories.value.map(story => ({
+    title: !story.title?.trim(),
+    date: !story.date?.trim(),
+    description: !story.description?.trim(),
+    photo: !story.photo
+  }));
+
+  if (loveStories.value.length > 0) {
+    const hasInvalidStory = validationErrors.value.loveStories.some(
+      story => story.title || story.date || story.description || story.photo
+    );
+    if (hasInvalidStory) isValid = false;
+  }
+
+  // Validate gallery
+  if (formData.value.gallery.length === 0) {
+    validationErrors.value.gallery = true;
+    isValid = false;
+  }
+
+  // Validate other sections
+  if (sections.value.denah && !formData.value.denah) {
+    validationErrors.value.denah = true;
+    isValid = false;
+  }
+
+  if (sections.value.music && !formData.value.music) {
+    validationErrors.value.music = true;
+    isValid = false;
+  }
+
+  return isValid;
+}
+
+// Update the saveAndPreview function
 async function saveAndPreview() {
+  if (!validateForm()) {
+    // Scroll to the first error
+    const firstErrorField = Object.keys(validationErrors.value).find(
+      key => validationErrors.value[key] === true ||
+        (Array.isArray(validationErrors.value[key]) && validationErrors.value[key].some(item => item))
+    );
+
+    if (firstErrorField) {
+      const element = document.querySelector(`[data-field="${firstErrorField}"]`);
+      if (element) {
+        element.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }
+
+    return;
+  }
+
   isUploading.value = true;
   try {
     await uploadAllFiles();
@@ -840,6 +1089,13 @@ async function saveAndPreview() {
     alert('Upload gagal, silakan coba lagi');
   } finally {
     isUploading.value = false;
+  }
+}
+
+// Add this helper function for real-time validation
+function validateField(fieldName) {
+  if (requiredFields[fieldName]) {
+    validationErrors.value[fieldName] = !formData.value[fieldName]?.trim();
   }
 }
 
