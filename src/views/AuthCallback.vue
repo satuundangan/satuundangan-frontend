@@ -27,6 +27,7 @@ onMounted(async () => {
       router.push(redirectTo)
     } catch (err) {
       console.error('Login error:', err)
+
       router.push('/')
     }
   } else {

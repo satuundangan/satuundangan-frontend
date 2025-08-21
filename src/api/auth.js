@@ -12,6 +12,7 @@ export const register = (data) =>
     method: 'POST',
     body: JSON.stringify(data),
   })
+
 export const getProfile = () => apiFetch('/user/me')
 
 // export async function getProfile(token) {
