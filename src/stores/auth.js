@@ -7,8 +7,15 @@ export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     token: null,
+    redirectPath: null,
   }),
   actions: {
+    setRedirectPath(path) {
+      this.redirectPath = path
+    },
+    clearRedirectPath() {
+      this.redirectPath = null
+    },
     async login(payload) {
       const res = await login(payload)
       this.token = res.access_token
@@ -25,7 +32,9 @@ export const useAuthStore = defineStore('auth', {
     },
     async fetchProfile() {
       if (!this.token) return
-      const res = await getProfile(this.token)
+
+      const res = await getProfile()
+
       this.user = res.data ?? res // tergantung apa yg dikembalikan API
     },
     logout() {

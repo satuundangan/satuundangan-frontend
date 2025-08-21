@@ -9,22 +9,25 @@ import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 
-// 🚨 Panggil di top-level
-const route = useRoute()
-const router = useRouter()
-const authStore = useAuthStore()
-
 onMounted(async () => {
+  const route = useRoute()
+  const router = useRouter()
+  const authStore = useAuthStore()
+
   const token = route.query.token
 
   if (token) {
-    console.log('Token diterima:', token)
-
     try {
       await authStore.handleLoginWithToken(token)
-      router.push('/checkout') // atau arahkan ke dashboard
+
+      // Ambil path yang sebelumnya disimpan atau default ke dashboard
+      const redirectTo = authStore.redirectPath || '/dashboard'
+      authStore.clearRedirectPath()
+
+      router.push(redirectTo)
     } catch (err) {
-      console.error('Gagal login Google:', err)
+      console.error('Login error:', err)
+
       router.push('/')
     }
   } else {

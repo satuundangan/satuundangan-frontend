@@ -6,6 +6,11 @@ import Invitation from '@/views/InvitationView.vue'
 import PreviewInvitation from '@/views/PreviewInvitation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import DashboardView from '@/views/dashboard/DashboardView.vue'
+import InvitationsView from '@/views/dashboard/InvitationsView.vue'
+import TemplatesView from '@/views/dashboard/TemplatesView.vue'
+import GuestbookView from '@/views/dashboard/GuestbookView.vue'
+import SettingsView from '@/views/dashboard/SettingsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -45,19 +50,28 @@ const router = createRouter({
       name: 'google-callback',
       component: () => import('@/views/AuthCallback.vue'),
     },
+    {
+      path: '/dashboard',
+      name: 'dashboard',
+      component: DashboardView,
+    },
+    { path: '/invitations', name: 'Invitations', component: InvitationsView },
+    { path: '/templates', name: 'Templates', component: TemplatesView },
+    { path: '/guestbook', name: 'Guestbook', component: GuestbookView },
+    { path: '/settings', name: 'Settings', component: SettingsView },
   ],
 })
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
 
   if (requiresAuth && !authStore.user) {
-    console.log('Anda harus login untuk mengakses halaman ini.');
-    next({ name: 'home' });
+    console.log('Anda harus login untuk mengakses halaman ini.')
+    next({ name: 'home' })
   } else {
-    next();
+    next()
   }
-});
+})
 
 export default router
