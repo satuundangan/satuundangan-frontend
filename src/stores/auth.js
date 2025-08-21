@@ -1,53 +1,65 @@
 // src/store/auth.js
 import { defineStore } from 'pinia'
 import { login, register, getProfile } from '@/api/auth'
+import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
     token: null,
+    redirectPath: null,
   }),
   actions: {
+    setRedirectPath(path) {
+      this.redirectPath = path
+    },
+    clearRedirectPath() {
+      this.redirectPath = null
+    },
     async login(payload) {
       const res = await login(payload)
-      console.log(res)
-
       this.token = res.access_token
       localStorage.setItem('token', res.access_token)
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.access_token}`
       await this.fetchProfile()
     },
     async register(payload) {
       const res = await register(payload)
       this.token = res.access_token
       localStorage.setItem('token', res.access_token)
+      axios.defaults.headers.common['Authorization'] = `Bearer ${res.access_token}`
       await this.fetchProfile()
     },
     async fetchProfile() {
       if (!this.token) return
       const res = await getProfile()
-      this.user = res
+      this.user = res.data ?? res // tergantung apa yg dikembalikan API
     },
     logout() {
       this.token = null
       this.user = null
       localStorage.removeItem('token')
+      delete axios.defaults.headers.common['Authorization']
     },
     async init() {
       const token = localStorage.getItem('token')
       if (token) {
         this.token = token
-        await this.fetchProfile()
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+        try {
+          await this.fetchProfile()
+        } catch (error) {
+          console.error('Token tidak valid, logout otomatis', error)
+          this.logout()
+        }
       }
     },
     async handleLoginWithToken(token) {
-      if (!token) return;
-
-      // Simpan token ke state dan localStorage
-      this.token = token;
-      localStorage.setItem('token', token);
-
-      // Ambil data profil pengguna
-      await this.fetchProfile();
+      if (!token) return
+      this.token = token
+      localStorage.setItem('token', token)
+      axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+      await this.fetchProfile()
     },
   },
 })
