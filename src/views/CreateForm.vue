@@ -1023,14 +1023,14 @@ function validateForm() {
   }
 
   // Validate love stories
-  validationErrors.value.loveStories = loveStories.value.map(story => ({
+  validationErrors.value.loveStories = sections.value.loveStories && loveStories.value.map(story => ({
     title: !story.title?.trim(),
     date: !story.date?.trim(),
     description: !story.description?.trim(),
     photo: !story.photo
   }));
 
-  if (loveStories.value.length > 0) {
+  if (sections.value.loveStories && loveStories.value.length > 0) {
     const hasInvalidStory = validationErrors.value.loveStories.some(
       story => story.title || story.date || story.description || story.photo
     );
@@ -1038,7 +1038,7 @@ function validateForm() {
   }
 
   // Validate gallery
-  if (formData.value.gallery.length === 0) {
+  if (sections.value.gallery && formData.value.gallery.length === 0) {
     validationErrors.value.gallery = true;
     isValid = false;
   }
