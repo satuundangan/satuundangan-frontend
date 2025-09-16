@@ -84,7 +84,6 @@ const invitation = ref({
   isPremium: true
 })
 
-const paymentMethod = ref('')
 const loading = ref(false)
 
 
