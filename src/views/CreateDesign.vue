@@ -12,7 +12,7 @@
           <h3 class="text-base font-bold text-mocha">{{ selectedTemplate.name }}</h3>
           <p class="mb-2">{{ selectedTemplate.desc }}</p>
           <div class="flex gap-1">
-            <span v-for="color in selectedTemplate.palleteColor" :key="color"
+            <span v-for="color in selectedTemplate.paletteColor" :key="color"
               class="w-5 h-5 rounded-full border border-gray-300" :style="{ backgroundColor: color }"></span>
           </div>
         </div>
@@ -74,6 +74,17 @@ const sectionOptionsLabelMap = {
   foodList: 'List Makanan/Minuman',
   gift: 'Amplop Digital & Alamat Kado'
 }
+
+const defaultCommonSections = [
+  'quote',
+  'photoCouple',
+  'loveStory',
+  'countdown',
+  'rsvp',
+  'wishes',
+  'map'
+]
+
 onMounted(() => {
   const template = localStorage.getItem('selectedTemplate')
   const selectedSectionsLocalStorage = localStorage.getItem('selectedSections')
@@ -96,6 +107,8 @@ onMounted(() => {
     }
     if (selectedSectionsLocalStorage) {
       selectedSections.value = JSON.parse(selectedSectionsLocalStorage)
+    }else {
+      selectedSections.value = defaultCommonSections.filter(s => sectionOptions.value[s])
     }
 
   }
