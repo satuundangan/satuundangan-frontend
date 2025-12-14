@@ -521,25 +521,27 @@
         </button>
       </div>
     </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { uploadFileApi } from '@/api/file'
+// import CoupleSection from './create-form/components/CoupleSection.vue'
+// import InvitationTitleSection from './create-form/components/InvitationTitleSection.vue'
+// import QuoteSection from './create-form/components/QuoteSection.vue'
+// import LoveStorySection from './create-form/components/LoveStorySection.vue'
+// import MediaSection from './create-form/components/MediaSection.vue'
+// import EventSection from './create-form/components/EventSection.vue'
+// import GiftSection from './create-form/components/GiftSection.vue'
+// import SocialSection from './create-form/components/SocialSection.vue'
 
-// ==== Router ====
 const router = useRouter()
-const isUploading = ref(false);
+const isUploading = ref(false)
+const isPremiumTemplate = ref(false)
 
-// ==== Global States ====
-const isPremiumTemplate = ref(false) // set true jika template premium
-
-// ==== Reactive Data ====
 const formData = ref({
-  // Data Umum
   title: '',
   brideName: '',
   groomName: '',
@@ -548,17 +550,16 @@ const formData = ref({
   quote: '',
   quoteSource: 'bebas',
   quoteType: '',
-
-  // Musik
   music: '',
   musicFile: null,
   musicFileName: '',
-
-  // Foto & Gallery
+  bridePhoto: '',
+  bridePhotoFile: null,
+  groomPhoto: '',
+  groomPhotoFile: null,
   photoCouple: '',
+  photoCoupleFile: null,
   gallery: [],
-
-  // Lokasi & Tanggal
   isSingleEvent: null,
   akadMap: '',
   akadDesc: '',
@@ -568,228 +569,238 @@ const formData = ref({
   resepsiDateTime: '',
   map: '',
   mapDesc: '',
-  date: '',
-
-  // Fitur Tambahan
+  dateTime: '',
   denah: '',
+  denahFile: null,
   encryptedGuest: 'ya',
   rsvp: 'ya',
   wishes: 'ya',
-
-  // Sosmed & Live
   sosmedBride: {
     instagram: '',
     tiktok: '',
     youtube: '',
-    other: ''
+    otherSocial: '',
   },
   sosmedGroom: {
     instagram: '',
     tiktok: '',
     youtube: '',
-    other: ''
+    otherSocial: '',
   },
   liveStreamingLink: '',
-
-  // Orang Tua
   brideParents: '',
   groomParents: '',
-
-  // Wallet
   eWalletLink: [],
-  bankAccounts: []
+  bankAccounts: [],
 })
 
-// ==== Section Checklist ====
-const sections = ref({
-  // quote: 'Quote Ayat',
-  // loveStory: 'Love Story',
-  // photoCouple: 'Foto Mempelai',
-  // music: 'Musik Latar',
-  // map: 'Google Map',
-  // rsvp: 'RSVP',
-  // wishes: 'Ucapan untuk Mempelai',
-  // likes: 'Like Count',
-  // countdown: 'Hitung Mundur',
-  // gallery: 'Gallery',
-  // denah: 'Denah Ruangan',
-  // encryptedGuest: 'Enkripsi Nama Tamu',
-  // foodList: 'List Makanan/Minuman',
-  // gift: 'Amplop Digital & Alamat Kado',
-})
-
-// ==== Nested States ====
+const sections = ref({})
 const loveStories = ref([])
 const foodList = ref([])
 const giftAddresses = ref([])
-const finalPayload = ref()
+const finalPayload = ref(null)
 
-// ==== Love Story ====
-const addLoveStory = () => {
+const validationErrors = ref({
+  brideName: '',
+  groomName: '',
+  brideParents: '',
+  groomParents: '',
+  bridePhoto: '',
+  groomPhoto: '',
+  title: '',
+  photoCouple: '',
+  isSingleEvent: '',
+  map: '',
+  dateTime: '',
+  akadMap: '',
+  resepsiMap: '',
+  akadDateTime: '',
+  resepsiDateTime: '',
+  gallery: '',
+  denah: '',
+  music: '',
+  loveStories: [],
+})
+
+const suggestedTitle = computed(() => {
+  const groom = formData.value.groomName.trim()
+  const bride = formData.value.brideName.trim()
+  return groom && bride ? `The Wedding of ${groom} & ${bride}` : ''
+})
+
+watch(
+  () => formData.value.isSingleEvent,
+  () => {
+    validateField('isSingleEvent')
+    if (formData.value.isSingleEvent) {
+      validateField('map')
+      validateField('dateTime')
+    } else if (formData.value.isSingleEvent === false) {
+      ;['akadMap', 'akadDateTime', 'resepsiMap', 'resepsiDateTime'].forEach(validateField)
+    }
+  }
+)
+
+watch(
+  loveStories,
+  () => {
+    validateLoveStories()
+  },
+  { deep: true }
+)
+
+function addLoveStory() {
   loveStories.value.push({
     title: '',
-    date: '',
     photo: '',
+    photoFile: null,
     description: '',
-    isOpen: true
+    isOpen: true,
   })
+  validateLoveStories()
 }
 
-const removeLoveStory = (index) => loveStories.value.splice(index, 1)
-
-// Foto Mempelai
-const handleCouplePhotoUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    formData.value.photoCouple = reader.result; // Untuk preview
-    formData.value.photoCoupleFile = file;     // Untuk upload nanti
-  };
-  reader.readAsDataURL(file);
-};
-
-// Love Story Photo
-const handleFileUploadLoveStory = (event, index) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    loveStories.value[index].photo = reader.result; // Untuk preview
-    loveStories.value[index].photoFile = file;      // Untuk upload nanti
-  };
-  reader.readAsDataURL(file);
-};
-
-function handleBridePhotoUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    formData.value.bridePhoto = reader.result; // For preview
-    formData.value.bridePhotoFile = file;     // For upload later
-  };
-  reader.readAsDataURL(file);
+function removeLoveStory(index) {
+  loveStories.value.splice(index, 1)
+  validateLoveStories()
 }
 
-function handleGroomPhotoUpload(e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
+function handleCouplePhotoUpload(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
   reader.onload = () => {
-    formData.value.groomPhoto = reader.result; // For preview
-    formData.value.groomPhotoFile = file;     // For upload later
-  };
-  reader.readAsDataURL(file);
+    formData.value.photoCouple = reader.result
+    formData.value.photoCoupleFile = file
+    validateField('photoCouple')
+  }
+  reader.readAsDataURL(file)
 }
 
-// Gallery
-const handleGalleryUpload = (e) => {
-  const files = Array.from(e.target.files)
+function handleFileUploadLoveStory(event, index) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    loveStories.value[index].photo = reader.result
+    loveStories.value[index].photoFile = file
+    validateLoveStories()
+  }
+  reader.readAsDataURL(file)
+}
+
+function handleBridePhotoUpload(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    formData.value.bridePhoto = reader.result
+    formData.value.bridePhotoFile = file
+    validateField('bridePhoto')
+  }
+  reader.readAsDataURL(file)
+}
+
+function handleGroomPhotoUpload(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    formData.value.groomPhoto = reader.result
+    formData.value.groomPhotoFile = file
+    validateField('groomPhoto')
+  }
+  reader.readAsDataURL(file)
+}
+
+function handleGalleryUpload(event) {
+  const files = Array.from(event.target.files || [])
   if (!files.length) return
-
-  files.forEach(file => {
+  files.forEach((file) => {
     const reader = new FileReader()
     reader.onload = () => {
-      formData.value.gallery.push({
-        preview: reader.result, // Untuk preview di frontend
-        file: file             // Untuk diupload ke backend
-      })
+      formData.value.gallery.push({ preview: reader.result, file })
+      validateField('gallery')
     }
     reader.readAsDataURL(file)
   })
 }
-const removeGalleryImage = (index) => {
+
+function removeGalleryImage(index) {
   formData.value.gallery.splice(index, 1)
+  validateField('gallery')
 }
 
-// Denah
-const handleDenahUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
+function handleDenahUpload(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
   reader.onload = () => {
-    formData.value.denah = reader.result; // Untuk preview
-    formData.value.denahFile = file;      // Untuk upload nanti
-  };
-  reader.readAsDataURL(file);
-};
+    formData.value.denah = reader.result
+    formData.value.denahFile = file
+    validateField('denah')
+  }
+  reader.readAsDataURL(file)
+}
 
-// E-Wallet
-const handleWalletImageUpload = (event, index) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
+function handleWalletImageUpload(event, index) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
   reader.onload = () => {
-    formData.value.eWalletLink[index].wallet_image = reader.result; // Untuk preview
-    formData.value.eWalletLink[index].wallet_imageFile = file;      // Untuk upload nanti
-  };
-  reader.readAsDataURL(file);
-};
+    formData.value.eWalletLink[index].wallet_image = reader.result
+    formData.value.eWalletLink[index].wallet_imageFile = file
+  }
+  reader.readAsDataURL(file)
+}
 
-// ==== Musik ====
-const handleMusicUpload = (e) => {
-  const file = e.target.files[0]
+function handleMusicUpload(event) {
+  const file = event.target.files?.[0]
   if (!file) return
   const reader = new FileReader()
   reader.onload = () => {
     formData.value.musicFile = reader.result
     formData.value.musicFileName = file.name
+    validateField('music')
   }
   reader.readAsDataURL(file)
 }
 
-
-// ==== Food List ====
-const addFood = () => foodList.value.push('')
-const removeFood = (index) => foodList.value.splice(index, 1)
-
-// ==== Alamat Kado ====
-const addGift = () => giftAddresses.value.push('')
-const removeGift = (index) => giftAddresses.value.splice(index, 1)
-
-// ==== E-Wallet ====
+const addFood = () => {
+  foodList.value.push('')
+}
+const removeFood = (index) => {
+  foodList.value.splice(index, 1)
+}
+const addGift = () => {
+  giftAddresses.value.push('')
+}
+const removeGift = (index) => {
+  giftAddresses.value.splice(index, 1)
+}
 const addWallet = () => {
-  formData.value.eWalletLink.push({
-    wallet_provider: '',
-    wallet_image: '',
-    wallet_number: ''
-  })
+  formData.value.eWalletLink.push({ wallet_provider: '', wallet_image: '', wallet_imageFile: null, wallet_number: '' })
 }
-const removeWallet = (index) => formData.value.eWalletLink.splice(index, 1)
-
+const removeWallet = (index) => {
+  formData.value.eWalletLink.splice(index, 1)
+}
 function addBankAccount() {
-  formData.value.bankAccounts.push({
-    bankName: "",
-    accountNumber: "",
-    accountName: "",
-    bankLogo: ""
-  });
+  formData.value.bankAccounts.push({ bankName: '', accountNumber: '', accountName: '', bankLogo: '', bankLogoFile: null })
 }
-
 function removeBankAccount(index) {
-  formData.value.bankAccounts.splice(index, 1);
+  formData.value.bankAccounts.splice(index, 1)
+}
+function handleBankLogoUpload(event, index) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = () => {
+    formData.value.bankAccounts[index].bankLogo = reader.result
+    formData.value.bankAccounts[index].bankLogoFile = file
+  }
+  reader.readAsDataURL(file)
 }
 
-const handleBankLogoUpload = (event, index) => {
-  const file = event.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    formData.value.bankAccounts[index].bankLogo = reader.result; // Untuk preview
-    formData.value.bankAccounts[index].bankLogoFile = file;      // Untuk upload nanti
-  };
-  reader.readAsDataURL(file);
-};
-
-// ==== Generate Payload ====
 function generatePayload() {
   const payload = {
     title: formData.value.title,
@@ -805,33 +816,29 @@ function generatePayload() {
     quoteText: formData.value.quote,
     dateTime: formData.value.dateTime,
     photoCoupleUrl: formData.value.photoCoupleUrl || formData.value.photoCouple,
-
-    loveStory: loveStories.value.map(story => ({
+    loveStory: loveStories.value.map((story) => ({
       title: story.title,
       images: story.photoUrl || story.photo,
       content: story.description,
-      date: story.date
+      date: story.date,
     })),
-
-    galleryImages: formData.value.gallery.map(img => img.url || img.preview),
+    galleryImages: formData.value.gallery.map((img) => img.url || img.preview),
     floorPlanImageUrl: formData.value.denahUrl || formData.value.denah,
-
-    eWalletLink: formData.value.eWalletLink.map(wallet => ({
+    eWalletLink: formData.value.eWalletLink.map((wallet) => ({
       wallet_provider: wallet.wallet_provider,
       wallet_image: wallet.wallet_imageUrl || wallet.wallet_image,
-      wallet_number: wallet.wallet_number
+      wallet_number: wallet.wallet_number,
     })),
-
-    bankAccounts: formData.value.bankAccounts.map(bankAccount => ({
-      bankName: bankAccount.bankName,
-      accountNumber: bankAccount.accountNumber,
-      accountName: bankAccount.accountName,
-      bankLogo: bankAccount.bankLogoUrl || bankAccount.bankLogo,
+    bankAccounts: formData.value.bankAccounts.map((account) => ({
+      bankName: account.bankName,
+      accountNumber: account.accountNumber,
+      accountName: account.accountName,
+      bankLogo: account.bankLogoUrl || account.bankLogo,
     })),
-
-    musicChoice: isPremiumTemplate.value && formData.value.music === 'custom'
-      ? formData.value.musicFileName
-      : formData.value.music,
+    musicChoice:
+      isPremiumTemplate.value && formData.value.music === 'custom'
+        ? formData.value.musicFileName
+        : formData.value.music,
     isSingleEvent: formData.value.isSingleEvent,
     isCustomMusic: isPremiumTemplate.value && formData.value.music === 'custom',
     akadLocation: formData.value.isSingleEvent ? null : {
@@ -849,493 +856,409 @@ function generatePayload() {
     encryptedGuestName: formData.value.encryptedGuest === 'ya',
     menu: {
       title: 'Menu Makanan',
-      items: foodList.value
+      items: foodList.value,
     },
     giftDeliveryAddress: giftAddresses.value,
     socialMediaBrides: {
       instagram: formData.value.sosmedBride.instagram,
       tiktok: formData.value.sosmedBride.tiktok,
       youtube: formData.value.sosmedBride.youtube,
-      lainnya: formData.value.sosmedBride.otherSocial
+      lainnya: formData.value.sosmedBride.otherSocial,
     },
     socialMediaGroom: {
       instagram: formData.value.sosmedGroom.instagram,
       tiktok: formData.value.sosmedGroom.tiktok,
       youtube: formData.value.sosmedGroom.youtube,
-      lainnya: formData.value.sosmedGroom.otherSocial
+      lainnya: formData.value.sosmedGroom.otherSocial,
     },
     parents: {
       brideParents: formData.value.brideParents,
-      groomParents: formData.value.groomParents
+      groomParents: formData.value.groomParents,
     },
     liveStreamingLink: formData.value.liveStreamingLink,
-    selectedSections: Object.keys(sections.value).filter(k => !!sections.value[k]),
-    enableGuestMessage: formData.value.wishes === 'ya'
-
+    selectedSections: Object.keys(sections.value).filter((key) => !!sections.value[key]),
+    enableGuestMessage: formData.value.wishes === 'ya',
   }
-
   localStorage.setItem('finalPayload', JSON.stringify(payload))
-  console.log('[Payload Generated]', payload)
 }
 
-// ==== Action ====
-// Add these to your script setup
-const validationErrors = ref({
-  // Bride & Groom Info
-  brideName: false,
-  groomName: false,
-  brideParents: false,
-  groomParents: false,
-  bridePhoto: false,
-  groomPhoto: false,
+function resetValidationErrors() {
+  Object.keys(validationErrors.value).forEach((key) => {
+    validationErrors.value[key] = key === 'loveStories' ? [] : ''
+  })
+}
 
-  // Wedding Info
-  title: false,
-  dateTime: false,
-  photoCouple: false,
+function isValidUrl(value) {
+  if (!value) return false
+  try {
+    const { protocol } = new URL(value)
+    return protocol === 'http:' || protocol === 'https:'
+  } catch {
+    return false
+  }
+}
 
-  // Location Info
-  isSingleEvent: false,
-  map: false,
-  akadMap: false,
-  resepsiMap: false,
-  akadDateTime: false,
-  resepsiDateTime: false,
+function validateField(field) {
+  let message = ''
+  const data = formData.value
+  switch (field) {
+    case 'brideName':
+      if (!data.brideName?.trim()) message = 'Nama mempelai wanita wajib diisi'
+      else if (data.brideName.trim().length < 3) message = 'Minimal 3 karakter'
+      break
+    case 'groomName':
+      if (!data.groomName?.trim()) message = 'Nama mempelai pria wajib diisi'
+      else if (data.groomName.trim().length < 3) message = 'Minimal 3 karakter'
+      break
+    case 'brideParents':
+      if (!data.brideParents?.trim()) message = 'Nama orang tua wanita wajib diisi'
+      break
+    case 'groomParents':
+      if (!data.groomParents?.trim()) message = 'Nama orang tua pria wajib diisi'
+      break
+    case 'bridePhoto':
+      if (!data.bridePhoto && !data.bridePhotoFile) message = 'Foto mempelai wanita wajib diupload'
+      break
+    case 'groomPhoto':
+      if (!data.groomPhoto && !data.groomPhotoFile) message = 'Foto mempelai pria wajib diupload'
+      break
+    case 'title':
+      if (!data.title?.trim()) message = 'Judul undangan wajib diisi'
+      else if (data.title.trim().length < 5) message = 'Judul minimal 5 karakter'
+      break
+    case 'photoCouple':
+      if (sections.value.photoCouple && !data.photoCouple && !data.photoCoupleFile) message = 'Foto utama pasangan wajib diupload'
+      break
+    case 'music':
+      if (sections.value.music) {
+        if (!data.music) message = 'Pilih musik latar'
+        else if (data.music === 'custom' && !isPremiumTemplate.value) message = 'Musik custom hanya tersedia di template premium'
+      }
+      break
+    case 'isSingleEvent':
+      if (data.isSingleEvent !== true && data.isSingleEvent !== false) message = 'Pilih jenis acara (digabung atau dipisah)'
+      break
+    case 'map':
+      if (data.isSingleEvent) {
+        if (!data.map?.trim()) message = 'Link Google Maps wajib diisi'
+        else if (!isValidUrl(data.map)) message = 'Link Google Maps harus diawali http/https'
+      }
+      break
+    case 'dateTime':
+      if (data.isSingleEvent) {
+        if (!data.dateTime) message = 'Tanggal dan waktu acara wajib diisi'
+        else if (Number.isNaN(new Date(data.dateTime).getTime())) message = 'Format tanggal tidak valid'
+      }
+      break
+    case 'akadMap':
+      if (data.isSingleEvent === false) {
+        if (!data.akadMap?.trim()) message = 'Link Google Maps akad wajib diisi'
+        else if (!isValidUrl(data.akadMap)) message = 'Link Google Maps akad harus diawali http/https'
+      }
+      break
+    case 'resepsiMap':
+      if (data.isSingleEvent === false) {
+        if (!data.resepsiMap?.trim()) message = 'Link Google Maps resepsi wajib diisi'
+        else if (!isValidUrl(data.resepsiMap)) message = 'Link Google Maps resepsi harus diawali http/https'
+      }
+      break
+    case 'akadDateTime':
+      if (data.isSingleEvent === false) {
+        if (!data.akadDateTime) message = 'Tanggal dan waktu akad wajib diisi'
+        else if (Number.isNaN(new Date(data.akadDateTime).getTime())) message = 'Format tanggal akad tidak valid'
+      }
+      break
+    case 'resepsiDateTime':
+      if (data.isSingleEvent === false) {
+        if (!data.resepsiDateTime) message = 'Tanggal dan waktu resepsi wajib diisi'
+        else if (Number.isNaN(new Date(data.resepsiDateTime).getTime())) message = 'Format tanggal resepsi tidak valid'
+      }
+      break
+    case 'gallery':
+      if (!data.gallery.length) message = 'Minimal upload 1 foto untuk galeri'
+      break
+    case 'denah':
+      if (sections.value.denah && !data.denah && !data.denahFile) message = 'Denah ruangan wajib diupload'
+      break
+    default:
+      break
+  }
+  validationErrors.value[field] = message
+  return !message
+}
 
-  // Love Story
-  loveStories: [],
+function validateLoveStories() {
+  if (!sections.value.loveStory || loveStories.value.length === 0) {
+    validationErrors.value.loveStories = []
+    return true
+  }
+  const errors = loveStories.value.map((story) => ({
+    title: story.title?.trim() ? '' : 'Judul cerita wajib diisi',
+    description: story.description?.trim() ? '' : 'Deskripsi cerita wajib diisi',
+    photo: story.photo ? '' : 'Foto cerita wajib diupload',
+  }))
+  validationErrors.value.loveStories = errors
+  return errors.every((item) => !item.title && !item.description && !item.photo)
+}
 
-  // Gallery
-  gallery: false,
-
-  // Other Sections
-  denah: false,
-  music: false,
-});
-
-const requiredFields = {
-  // Basic Info
-  brideName: 'Nama mempelai wanita wajib diisi',
-  groomName: 'Nama mempelai pria wajib diisi',
-  brideParents: 'Nama orang tua wanita wajib diisi',
-  groomParents: 'Nama orang tua pria wajib diisi',
-  bridePhoto: 'Foto mempelai wanita wajib diupload',
-  groomPhoto: 'Foto mempelai pria wajib diupload',
-  title: 'Judul undangan wajib diisi',
-  dateTime: 'Tanggal dan waktu acara wajib diisi',
-  photoCouple: 'Foto utama pasangan wajib diupload',
-
-  // Location
-  isSingleEvent: 'Pilih jenis acara (digabung atau dipisah)',
-  map: 'Link Google Maps wajib diisi',
-  akadMap: 'Link Google Maps akad wajib diisi',
-  resepsiMap: 'Link Google Maps resepsi wajib diisi',
-  akadDateTime: 'Tanggal dan waktu akad wajib diisi',
-  resepsiDateTime: 'Tanggal dan waktu resepsi wajib diisi',
-
-  // Other
-  gallery: 'Minimal upload 1 foto untuk galeri',
-  denah: 'Denah ruangan wajib diupload',
-  music: 'Pilih musik latar',
-};
-
-// Add this function
 function validateForm() {
-  let isValid = true;
-
-  // Reset all errors
-  validationErrors.value = Object.keys(validationErrors.value).reduce((acc, key) => {
-    acc[key] = false;
-    return acc;
-  }, {});
-
-  // Validate basic info
-  if (!formData.value.brideName?.trim()) {
-    validationErrors.value.brideName = true;
-    isValid = false;
-  }
-
-  if (!formData.value.groomName?.trim()) {
-    validationErrors.value.groomName = true;
-    isValid = false;
-  }
-
-  if (!formData.value.brideParents?.trim()) {
-    validationErrors.value.brideParents = true;
-    isValid = false;
-  }
-
-  if (!formData.value.groomParents?.trim()) {
-    validationErrors.value.groomParents = true;
-    isValid = false;
-  }
-
-  if (!formData.value.bridePhoto) {
-    validationErrors.value.bridePhoto = true;
-    isValid = false;
-  }
-
-  if (!formData.value.groomPhoto) {
-    validationErrors.value.groomPhoto = true;
-    isValid = false;
-  }
-
-  if (!formData.value.title?.trim()) {
-    validationErrors.value.title = true;
-    isValid = false;
-  }
-
-  if (!formData.value.photoCouple) {
-    validationErrors.value.photoCouple = true;
-    isValid = false;
-  }
-
-  // Validate date/time based on event type
-  if (formData.value.isSingleEvent === null) {
-    validationErrors.value.isSingleEvent = true;
-    isValid = false;
-  } else if (formData.value.isSingleEvent) {
-    if (!formData.value.dateTime) {
-      validationErrors.value.dateTime = true;
-      isValid = false;
-    }
-    if (!formData.value.map?.trim()) {
-      validationErrors.value.map = true;
-      isValid = false;
-    }
-  } else {
-    if (!formData.value.akadMap?.trim()) {
-      validationErrors.value.akadMap = true;
-      isValid = false;
-    }
-    if (!formData.value.resepsiMap?.trim()) {
-      validationErrors.value.resepsiMap = true;
-      isValid = false;
-    }
-    if (!formData.value.akadDateTime) {
-      validationErrors.value.akadDateTime = true;
-      isValid = false;
-    }
-    if (!formData.value.resepsiDateTime) {
-      validationErrors.value.resepsiDateTime = true;
-      isValid = false;
-    }
-  }
-
-  // Validate love stories
-  validationErrors.value.loveStories = sections.value.loveStories && loveStories.value.map(story => ({
-    title: !story.title?.trim(),
-    date: !story.date?.trim(),
-    description: !story.description?.trim(),
-    photo: !story.photo
-  }));
-
-  if (sections.value.loveStories && loveStories.value.length > 0) {
-    const hasInvalidStory = validationErrors.value.loveStories.some(
-      story => story.title || story.date || story.description || story.photo
-    );
-    if (hasInvalidStory) isValid = false;
-  }
-
-  // Validate gallery
-  if (sections.value.gallery && formData.value.gallery.length === 0) {
-    validationErrors.value.gallery = true;
-    isValid = false;
-  }
-
-  // Validate other sections
-  if (sections.value.denah && !formData.value.denah) {
-    validationErrors.value.denah = true;
-    isValid = false;
-  }
-
-  if (sections.value.music && !formData.value.music) {
-    validationErrors.value.music = true;
-    isValid = false;
-  }
-
-  return isValid;
+  resetValidationErrors()
+  const fieldsToValidate = [
+    'brideName',
+    'groomName',
+    'brideParents',
+    'groomParents',
+    'bridePhoto',
+    'groomPhoto',
+    'title',
+    'photoCouple',
+    'isSingleEvent',
+    'map',
+    'dateTime',
+    'akadMap',
+    'akadDateTime',
+    'resepsiMap',
+    'resepsiDateTime',
+    'gallery',
+    'denah',
+    'music',
+  ]
+  const results = fieldsToValidate.map((field) => validateField(field))
+  const loveStoryValid = validateLoveStories()
+  return results.every(Boolean) && loveStoryValid
 }
 
-// Update the saveAndPreview function
+function findFirstErrorField() {
+  const order = [
+    'brideName',
+    'brideParents',
+    'bridePhoto',
+    'groomName',
+    'groomParents',
+    'groomPhoto',
+    'title',
+    'photoCouple',
+    'isSingleEvent',
+    'map',
+    'dateTime',
+    'akadMap',
+    'akadDateTime',
+    'resepsiMap',
+    'resepsiDateTime',
+    'gallery',
+    'denah',
+    'music',
+  ]
+  const sectionMap = {
+    brideParents: 'brideName',
+    bridePhoto: 'brideName',
+    groomParents: 'brideName',
+    groomPhoto: 'brideName',
+  }
+  for (const key of order) {
+    if (validationErrors.value[key]) {
+      return sectionMap[key] || key
+    }
+  }
+  if (validationErrors.value.loveStories.some((story) => story.title || story.description || story.photo)) {
+    return 'loveStories'
+  }
+  return ''
+}
+
 async function saveAndPreview() {
   if (!validateForm()) {
-    // Scroll to the first error
-    const firstErrorField = Object.keys(validationErrors.value).find(
-      key => validationErrors.value[key] === true ||
-        (Array.isArray(validationErrors.value[key]) && validationErrors.value[key].some(item => item))
-    );
-
-    if (firstErrorField) {
-      const element = document.querySelector(`[data-field="${firstErrorField}"]`);
+    const target = findFirstErrorField()
+    if (target) {
+      const element = document.querySelector(`[data-field="${target}"]`)
       if (element) {
-        element.scrollIntoView({
-          behavior: 'smooth',
-          block: 'center'
-        });
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
       }
     }
-
-    return;
+    return
   }
 
-  isUploading.value = true;
+  isUploading.value = true
   try {
-    await uploadAllFiles();
-    generatePayload();
-    router.push('/preview');
+    await uploadAllFiles()
+    generatePayload()
+    router.push('/preview')
   } catch (error) {
-    console.error(error);
-    alert('Upload gagal, silakan coba lagi');
+    console.error(error)
+    alert('Upload gagal, silakan coba lagi')
   } finally {
-    isUploading.value = false;
-  }
-}
-
-// Add this helper function for real-time validation
-function validateField(fieldName) {
-  if (requiredFields[fieldName]) {
-    validationErrors.value[fieldName] = !formData.value[fieldName]?.trim();
+    isUploading.value = false
   }
 }
 
 async function uploadAllFiles() {
-  const uploadPromises = [];
-
-  // Upload Bride Photo
+  const uploads = []
   if (formData.value.bridePhotoFile) {
-    uploadPromises.push(
-      uploadFileToBackend(formData.value.bridePhotoFile)
-        .then(url => formData.value.bridePhotoUrl = url)
-    );
+    uploads.push(
+      uploadFileToBackend(formData.value.bridePhotoFile).then((url) => {
+        formData.value.bridePhotoUrl = url
+      })
+    )
   }
-
-  // Upload Groom Photo
   if (formData.value.groomPhotoFile) {
-    uploadPromises.push(
-      uploadFileToBackend(formData.value.groomPhotoFile)
-        .then(url => formData.value.groomPhotoUrl = url)
-    );
+    uploads.push(
+      uploadFileToBackend(formData.value.groomPhotoFile).then((url) => {
+        formData.value.groomPhotoUrl = url
+      })
+    )
   }
-
-  // 1. Upload Foto Mempelai
   if (formData.value.photoCoupleFile) {
-    console.log(formData.value.photoCoupleFile)
-    uploadPromises.push(
-      uploadFileToBackend(formData.value.photoCoupleFile)
-        .then(url => formData.value.photoCoupleUrl = url)
-    );
+    uploads.push(
+      uploadFileToBackend(formData.value.photoCoupleFile).then((url) => {
+        formData.value.photoCoupleUrl = url
+      })
+    )
   }
-
-  // 2. Upload Love Story Photos
   loveStories.value.forEach((story, index) => {
-    console.log(story.photoFile)
     if (story.photoFile) {
-      uploadPromises.push(
-        uploadFileToBackend(story.photoFile)
-          .then(url => loveStories.value[index].photoUrl = url)
-      );
+      uploads.push(
+        uploadFileToBackend(story.photoFile).then((url) => {
+          loveStories.value[index].photoUrl = url
+        })
+      )
     }
-  });
-
-  // 3. Upload Gallery Images
-  formData.value.gallery.forEach((img, index) => {
-    if (img.file) {
-      uploadPromises.push(
-        uploadFileToBackend(img.file)
-          .then(url => {
-            formData.value.gallery[index].url = url // Simpan URL hasil upload
-          })
-      );
+  })
+  formData.value.gallery.forEach((image, index) => {
+    if (image.file) {
+      uploads.push(
+        uploadFileToBackend(image.file).then((url) => {
+          formData.value.gallery[index].url = url
+        })
+      )
     }
-  });
-
-  // 4. Upload Denah
+  })
   if (formData.value.denahFile) {
-    uploadPromises.push(
-      uploadFileToBackend(formData.value.denahFile)
-        .then(url => formData.value.denahUrl = url)
-    );
+    uploads.push(
+      uploadFileToBackend(formData.value.denahFile).then((url) => {
+        formData.value.denahUrl = url
+      })
+    )
   }
-
-  // 5. Upload Wallet Images
   formData.value.eWalletLink.forEach((wallet, index) => {
     if (wallet.wallet_imageFile) {
-      uploadPromises.push(
-        uploadFileToBackend(wallet.wallet_imageFile)
-          .then(url => formData.value.eWalletLink[index].wallet_imageUrl = url)
-      );
+      uploads.push(
+        uploadFileToBackend(wallet.wallet_imageFile).then((url) => {
+          formData.value.eWalletLink[index].wallet_imageUrl = url
+        })
+      )
     }
-  });
-
-  // 6. Upload Bank Images
-  formData.value.bankAccounts.forEach((bankAccount, index) => {
-    if (bankAccount.bankLogoFile) {
-      uploadPromises.push(
-        uploadFileToBackend(bankAccount.bankLogoFile)
-          .then(url => formData.value.bankAccounts[index].bankLogoUrl = url)
-      );
+  })
+  formData.value.bankAccounts.forEach((account, index) => {
+    if (account.bankLogoFile) {
+      uploads.push(
+        uploadFileToBackend(account.bankLogoFile).then((url) => {
+          formData.value.bankAccounts[index].bankLogoUrl = url
+        })
+      )
     }
-  });
-
-  // Tunggu semua upload selesai
-  await Promise.all(uploadPromises);
+  })
+  await Promise.all(uploads)
 }
 
 async function uploadFileToBackend(file) {
   const data = await uploadFileApi(file)
-
-  if (!data.fileUrl) {
-    throw new Error('Upload failed');
-  }
-
-  return data.fileUrl;
+  if (!data.fileUrl) throw new Error('Upload failed')
+  return data.fileUrl
 }
 
-const suggestedTitle = computed(() => {
-  const groom = formData.value.groomName.trim()
-  const bride = formData.value.brideName.trim()
-  if (groom && bride) {
-    return `The Wedding of ${groom} & ${bride}`
-  }
-  return ''
-})
-// ==== Lifecycle ====
 onMounted(() => {
   const stored = localStorage.getItem('selectedSections')
   const finalPayloadStored = localStorage.getItem('finalPayload')
-
-  if (!stored) return router.push('/create')
-
-  // Parse finalPayload dari localStorage
-  finalPayload.value = JSON.parse(finalPayloadStored);
-
-  // Mapping finalPayload ke formData
-  if (finalPayload.value) {
-    mapPayloadToFormData(finalPayload.value);
+  if (!stored) {
+    router.push('/create')
+    return
   }
-
-  const selected = JSON.parse(stored)
-  const activeSections = selected || []
-
-  sections.value = activeSections.reduce((obj, key) => {
-    obj[key] = true
-    return obj
+  finalPayload.value = finalPayloadStored ? JSON.parse(finalPayloadStored) : null
+  if (finalPayload.value) {
+    mapPayloadToFormData(finalPayload.value)
+  }
+  const activeSections = JSON.parse(stored) || []
+  sections.value = activeSections.reduce((acc, key) => {
+    acc[key] = true
+    return acc
   }, {})
 })
 
-// Fungsi untuk mapping payload ke formData
 function mapPayloadToFormData(payload) {
-  // Data Umum
-  formData.value.title = payload.title || '';
-  formData.value.brideName = payload.brideName || '';
-  formData.value.groomName = payload.groomName || '';
-  formData.value.bridePhoto = payload.bridePhotoUrl || '';
-  formData.value.groomPhoto = payload.groomPhotoUrl || '';
-  formData.value.templateName = payload.templateName || '';
-  formData.value.isPublished = payload.isPublished || false;
-  formData.value.quote = payload.quoteText || '';
-  formData.value.quoteSource = payload.quoteSource || 'bebas';
-  formData.value.quoteType = payload.quoteType || '';
-  formData.value.dateTime = payload.dateTime || '';
-
-  // Musik
-  formData.value.music = payload.isCustomMusic ? 'custom' : payload.musicChoice || '';
-  formData.value.musicFileName = payload.isCustomMusic ? payload.musicChoice : '';
-
-  // Foto & Gallery
-  formData.value.photoCouple = payload.photoCoupleUrl || '';
-  formData.value.gallery = payload.galleryImages
-    ? payload.galleryImages.map(img => ({ preview: img }))
-    : [];
-  // Lokasi & Tanggal
-  formData.value.isSingleEvent = payload.mergeEvents;
-  formData.value.akadMap = payload.akadLocation?.mapUrl || '';
-  formData.value.akadDesc = payload.akadLocation?.description || '';
-  formData.value.akadDateTime = payload.akadLocation?.dateTime || '';
-  formData.value.resepsiMap = payload.resepsiLocation?.mapUrl || '';
-  formData.value.resepsiDesc = payload.resepsiLocation?.description || '';
-  formData.value.resepsiDateTime = payload.resepsiLocation?.dateTime || '';
-  formData.value.map = payload.mergeEvents ? payload.resepsiLocation?.mapUrl || payload.akadLocation?.mapUrl || '' : '';
-  formData.value.mapDesc = payload.mergeEvents ? payload.resepsiLocation?.description || payload.akadLocation?.description || '' : '';
-  formData.value.date = payload.mergeEvents ? payload.resepsiLocation?.dateTime || payload.akadLocation?.dateTime || '' : '';
-
-  // Fitur Tambahan
-  formData.value.denah = payload.floorPlanImageUrl || '';
-  formData.value.encryptedGuest = payload.encryptedGuestName ? 'ya' : 'tidak';
-  formData.value.rsvp = 'ya'; // Default, sesuaikan jika ada di payload
-  formData.value.wishes = payload.enableGuestMessage ? 'ya' : 'tidak';
-
-  // Sosmed & Live
+  formData.value.title = payload.title || ''
+  formData.value.brideName = payload.brideName || ''
+  formData.value.groomName = payload.groomName || ''
+  formData.value.bridePhoto = payload.bridePhotoUrl || ''
+  formData.value.groomPhoto = payload.groomPhotoUrl || ''
+  formData.value.templateName = payload.templateName || ''
+  formData.value.isPublished = payload.isPublished || false
+  formData.value.quote = payload.quoteText || ''
+  formData.value.quoteSource = payload.quoteSource || 'bebas'
+  formData.value.quoteType = payload.quoteType || ''
+  formData.value.dateTime = payload.dateTime || ''
+  formData.value.music = payload.isCustomMusic ? 'custom' : payload.musicChoice || ''
+  formData.value.musicFileName = payload.isCustomMusic ? payload.musicChoice : ''
+  formData.value.photoCouple = payload.photoCoupleUrl || ''
+  formData.value.gallery = payload.galleryImages ? payload.galleryImages.map((img) => ({ preview: img })) : []
+  formData.value.isSingleEvent = payload.mergeEvents ?? null
+  formData.value.akadMap = payload.akadLocation?.mapUrl || ''
+  formData.value.akadDesc = payload.akadLocation?.description || ''
+  formData.value.akadDateTime = payload.akadLocation?.dateTime || ''
+  formData.value.resepsiMap = payload.resepsiLocation?.mapUrl || ''
+  formData.value.resepsiDesc = payload.resepsiLocation?.description || ''
+  formData.value.resepsiDateTime = payload.resepsiLocation?.dateTime || ''
+  formData.value.map = payload.mergeEvents ? payload.resepsiLocation?.mapUrl || payload.akadLocation?.mapUrl || '' : ''
+  formData.value.mapDesc = payload.mergeEvents ? payload.resepsiLocation?.description || payload.akadLocation?.description || '' : ''
+  formData.value.denah = payload.floorPlanImageUrl || ''
+  formData.value.encryptedGuest = payload.encryptedGuestName ? 'ya' : 'tidak'
+  formData.value.wishes = payload.enableGuestMessage ? 'ya' : 'tidak'
   formData.value.sosmedBride = {
     instagram: payload.socialMediaBrides?.instagram || '',
     tiktok: payload.socialMediaBrides?.tiktok || '',
     youtube: payload.socialMediaBrides?.youtube || '',
-    other: payload.socialMediaBrides?.lainnya || ''
-  };
+    otherSocial: payload.socialMediaBrides?.lainnya || '',
+  }
   formData.value.sosmedGroom = {
     instagram: payload.socialMediaGroom?.instagram || '',
     tiktok: payload.socialMediaGroom?.tiktok || '',
     youtube: payload.socialMediaGroom?.youtube || '',
-    other: payload.socialMediaGroom?.lainnya || ''
-  };
-  formData.value.liveStreamingLink = payload.liveStreamingLink || '';
-
-  // Orang Tua
-  formData.value.brideParents = payload.parents?.brideParents || '';
-  formData.value.groomParents = payload.parents?.groomParents || '';
-
-  // Wallet
-  formData.value.eWalletLink = payload.eWalletLink ? payload.eWalletLink.map(wallet => ({
-    wallet_provider: wallet.wallet_provider || '',
-    wallet_image: wallet.wallet_image || '',
-    wallet_number: wallet.wallet_number || ''
-  })) : [];
-
-  formData.value.bankAccounts = payload.bankAccounts ? payload.bankAccounts.map(bankAccount => ({
-    bankName: bankAccount.bankName || '',
-    accountNumber: bankAccount.accountNumber || '',
-    accountName: bankAccount.accountName || '',
-    bankLogo: bankAccount.bankLogo || '',
-
-  })) : [];
-
-  // Data lainnya yang mungkin perlu dimapping
+    otherSocial: payload.socialMediaGroom?.lainnya || '',
+  }
+  formData.value.liveStreamingLink = payload.liveStreamingLink || ''
+  formData.value.brideParents = payload.parents?.brideParents || ''
+  formData.value.groomParents = payload.parents?.groomParents || ''
+  formData.value.eWalletLink = payload.eWalletLink
+    ? payload.eWalletLink.map((wallet) => ({
+      wallet_provider: wallet.wallet_provider || '',
+      wallet_image: wallet.wallet_image || '',
+      wallet_number: wallet.wallet_number || '',
+      wallet_imageFile: null,
+    }))
+    : []
+  formData.value.bankAccounts = payload.bankAccounts
+    ? payload.bankAccounts.map((account) => ({
+      bankName: account.bankName || '',
+      accountNumber: account.accountNumber || '',
+      accountName: account.accountName || '',
+      bankLogo: account.bankLogo || '',
+      bankLogoFile: null,
+    }))
+    : []
   if (payload.loveStory) {
-    loveStories.value = payload.loveStory.map(story => ({
+    loveStories.value = payload.loveStory.map((story) => ({
       title: story.title || '',
       photo: story.images || '',
+      photoFile: null,
       description: story.content || '',
-      date: story.date || ''
-    }));
+      date: story.date || '',
+      isOpen: false,
+    }))
   }
-
   if (payload.giftDeliveryAddress) {
-    giftAddresses.value = payload.giftDeliveryAddress;
+    giftAddresses.value = payload.giftDeliveryAddress
   }
-
   if (payload.menu?.items) {
-    foodList.value = payload.menu.items;
+    foodList.value = payload.menu.items
   }
 }
 </script>
-
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.3s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-  max-height: 0;
-}
-
-.fade-enter-to,
-.fade-leave-from {
-  opacity: 1;
-  max-height: 999px;
-}
-</style>

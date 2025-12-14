@@ -46,23 +46,6 @@
           </p>
         </div>
 
-        <!-- Metode Pembayaran -->
-        <div v-if="invitation?.isPremium">
-          <label class="block text-sm text-mocha font-semibold mb-1">Metode Pembayaran</label>
-          <select v-model="paymentMethod" class="w-full p-3 border border-gray-300 rounded-xl bg-white">
-            <option disabled value="">Pilih Metode</option>
-            <option value="qris">📱 QRIS</option>
-            <option value="gopay">💙 GoPay</option>
-            <option value="dana">🔵 DANA</option>
-            <option value="manual">🏦 Transfer Manual</option>
-          </select>
-
-          <!-- Note -->
-          <p class="text-xs text-gray-400 mt-2" v-if="paymentMethod === 'manual'">
-            Setelah klik, kamu akan diarahkan ke halaman instruksi transfer manual.
-          </p>
-        </div>
-
         <!-- CTA -->
         <div class="pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
           <router-link :to="`/edit/${invitation?.id}`" class="text-sm text-gray-500 hover:underline">
@@ -86,6 +69,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import axios from 'axios'
+
 
 const router = useRouter()
 
@@ -99,8 +84,9 @@ const invitation = ref({
   isPremium: true
 })
 
-const paymentMethod = ref('')
 const loading = ref(false)
+
+
 
 onMounted(() => {
   // Kalau belum login / invitation kosong, redirect dulu
@@ -109,21 +95,67 @@ onMounted(() => {
   }
 })
 
-const handleCheckout = () => {
-  if (invitation.value.isPremium && !paymentMethod.value) {
-    alert('Silakan pilih metode pembayaran!')
-    return
-  }
+
+const loadSnapScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.snap) return resolve(true)
+
+    const script = document.createElement("script")
+    script.src = "https://app.sandbox.midtrans.com/snap/snap.js"
+    script.setAttribute("data-client-key", "Mid-client-KK-xRAA_WfaMnsHO")
+    script.onload = () => resolve(true)
+    script.onerror = () => reject("Snap.js gagal dimuat")
+    document.body.appendChild(script)
+  })
+}
+
+
+const handleCheckout = async () => {
 
   loading.value = true
-  setTimeout(() => {
+  try {
+    // 1. Minta snap_token dari BE
+    const { data } = await axios.post("http://localhost:3000/payment/create", {
+      orderId: `order-${Date.now()}`,
+      amount: 49000,
+      name: "Fauzan & Ayu",
+      email: "customer@email.com",
+    })
+
+    const snapToken = data.token
+
+    // 2. Pastikan snap.js sudah diload
+    await loadSnapScript()
+
+    // 3. Panggil Midtrans Snap
+    window.snap.pay(snapToken, {
+      onSuccess: function(result) {
+        console.log("Payment success:", result)
+        router.push(`/success/${data.orderId}`)
+      },
+      onPending: function(result) {
+        console.log("Payment pending:", result)
+      },
+      onError: function(result) {
+        console.error("Payment error:", result)
+      },
+      onClose: function() {
+        console.warn("Payment popup closed tanpa bayar")
+      },
+    })
+  } catch (err) {
+    console.error("Checkout gagal:", err)
+  } finally {
     loading.value = false
-    if (invitation.value.isPremium) {
-      router.push(`/payment/${invitation.value.id}?method=${paymentMethod.value}`)
-    } else {
-      router.push(`/success/${invitation.value.id}`)
-    }
-  }, 1000)
+  }
+  // setTimeout(() => {
+  //   loading.value = false
+  //   if (invitation.value.isPremium) {
+  //     router.push(`/payment/${invitation.value.id}?method=${paymentMethod.value}`)
+  //   } else {
+  //     router.push(`/success/${invitation.value.id}`)
+  //   }
+  // }, 1000)
 }
 
 const formatDate = (date) => {

@@ -52,7 +52,7 @@
                 <div class="p-3 text-left space-y-1">
                   <h4 class="text-sm font-bold text-mocha">{{ item.name }}</h4>
                   <div class="flex gap-1">
-                    <span v-for="color in item.palleteColor" :key="color"
+                    <span v-for="color in item.paletteColor" :key="color"
                       class="w-5 h-5 rounded-full border border-gray-300" :style="{ backgroundColor: color }"></span>
                   </div>
                   <div :class="['bg-[{{color}}] p-1 rounded-full']">
@@ -167,7 +167,7 @@ import { ref, computed, watch, nextTick, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
-// import { getTemplateDesigns } from '@/api/templateDesign'
+import { getTemplateDesigns } from '@/api/templateDesign'
 
 const router = useRouter()
 const showModal = ref(false)
@@ -203,53 +203,53 @@ const steps = [
   { title: "Share & Simpan", description: "Kirim ke tamu atau simpan dulu di HP." },
 ]
 const templates = ref([
-  {
-    id: 1,
-    name: 'Dark Elegant',
-    slug: 'dark-elegant',
-    previewUrl: 'https://i.pinimg.com/736x/9b/2b/45/9b2b4584e36ea2757eebe765d2184611.jpg',
-    description: 'Elegant Dark Style dengan kesan simple romantis.',
-    category: 'Premium',
-    tags: ['elegant', 'manis', 'romantis'],
-    palleteColor: {
-      primary: '#e5e5e5',
-      secondary: '#ffffff',
-      accent: '#222222',
-      background: '#ffffff',
-      text: '#222222'
-    },
-    sectionOptions: [
-      'Quote Ayat',
-      'Love Story',
-      'Foto Mempelai',
-      'Musik Latar',
-      'Google Map',
-      'RSVP',
-      'Ucapan untuk Mempelai',
-      'Like Count',
-      'Hitung Mundur',
-      'Denah Ruangan',
-      'Enkripsi Nama Tamu',
-      'List Makanan/Minuman',
-      'Amplop Digital & Alamat Kado',
-      'Gallery',
-    ]
-  },
+  // {
+  //   id: 1,
+  //   name: 'Dark Elegant',
+  //   slug: 'dark-elegant',
+  //   previewUrl: 'https://i.pinimg.com/736x/9b/2b/45/9b2b4584e36ea2757eebe765d2184611.jpg',
+  //   description: 'Elegant Dark Style dengan kesan simple romantis.',
+  //   category: 'Premium',
+  //   tags: ['elegant', 'manis', 'romantis'],
+  //   palleteColor: {
+  //     primary: '#e5e5e5',
+  //     secondary: '#ffffff',
+  //     accent: '#222222',
+  //     background: '#ffffff',
+  //     text: '#222222'
+  //   },
+  //   sectionOptions: [
+  //     'Quote Ayat',
+  //     'Love Story',
+  //     'Foto Mempelai',
+  //     'Musik Latar',
+  //     'Google Map',
+  //     'RSVP',
+  //     'Ucapan untuk Mempelai',
+  //     'Like Count',
+  //     'Hitung Mundur',
+  //     'Denah Ruangan',
+  //     'Enkripsi Nama Tamu',
+  //     'List Makanan/Minuman',
+  //     'Amplop Digital & Alamat Kado',
+  //     'Gallery',
+  //   ]
+  // },
 ]);
 
 const classCategories = ['Semua', 'Premium', 'Eksklusif', 'Gratis']
 
-// const loading = ref(true)
+const loading = ref(true)
 
 onMounted(async () => {
-  // try {
-  //   const data = await getTemplateDesigns()
-  //   templates.value = data // pastikan struktur datanya sesuai!
-  // } catch (e) {
-  //   console.error('Gagal ambil template:', e)
-  // } finally {
-  //   loading.value = false
-  // }
+  try {
+    const data = await getTemplateDesigns()
+    templates.value = data // pastikan struktur datanya sesuai!
+  } catch (e) {
+    console.error('Gagal ambil template:', e)
+  } finally {
+    loading.value = false
+  }
 })
 
 const filteredTemplates = computed(() => {

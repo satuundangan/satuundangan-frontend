@@ -62,7 +62,8 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
-import { useRoute } from 'vue-router'
+import { BASE_URL } from '@/api/client'
+
 
 const props = defineProps({
   show: Boolean,
@@ -82,8 +83,6 @@ const auth = useAuthStore()
 const toast = useToast()
 
 const showPassword = ref(false)
-const route = useRoute()
-
 
 function togglePassword() {
   showPassword.value = !showPassword.value
@@ -119,11 +118,7 @@ const handleRegister = async () => {
 
 
 const handleGoogleLogin = () => {
-  const authStore = useAuthStore()
-
-  authStore.setRedirectPath(route.fullPath)
-
-  window.location.href = 'https://api.satuundangan.id/auth/google'
+  window.location.href = `${BASE_URL}/auth/google`
 }
 
 const toggleAuthMode = () => {

@@ -1,0 +1,71 @@
+import { apiFetch } from './client.js'
+
+function withParams(path, params = {}) {
+  const searchParams = new URLSearchParams()
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') return
+    searchParams.append(key, value)
+  })
+  const query = searchParams.toString()
+  return query ? `${path}?${query}` : path
+}
+
+// Users
+export const fetchAdminUsers = (params) => apiFetch(withParams('/admin/users', params))
+export const createAdminUser = (payload) =>
+  apiFetch('/admin/users', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+export const updateAdminUser = (id, payload) =>
+  apiFetch(`/admin/users/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+export const deleteAdminUser = (id) =>
+  apiFetch(`/admin/users/${id}`, {
+    method: 'DELETE',
+  })
+
+// Invitations
+export const fetchAdminInvitations = (params) => apiFetch(withParams('/admin/invitations', params))
+export const deleteAdminInvitation = (id) =>
+  apiFetch(`/admin/invitations/${id}`, {
+    method: 'DELETE',
+  })
+
+// Guests
+export const fetchAdminGuests = (params) => apiFetch(withParams('/admin/guests', params))
+export const updateAdminGuest = (id, payload) =>
+  apiFetch(`/admin/guests/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+export const deleteAdminGuest = (id) =>
+  apiFetch(`/admin/guests/${id}`, {
+    method: 'DELETE',
+  })
+
+// Guest Messages
+export const fetchAdminGuestMessages = (params) => apiFetch(withParams('/admin/guest-messages', params))
+export const deleteAdminGuestMessage = (id) =>
+  apiFetch(`/admin/guest-messages/${id}`, {
+    method: 'DELETE',
+  })
+
+// Template Designs
+export const fetchAdminTemplates = (params) => apiFetch(withParams('/admin/template-designs', params))
+export const createAdminTemplate = (payload) =>
+  apiFetch('/admin/template-designs', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+export const updateAdminTemplate = (id, payload) =>
+  apiFetch(`/admin/template-designs/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+export const deleteAdminTemplate = (id) =>
+  apiFetch(`/admin/template-designs/${id}`, {
+    method: 'DELETE',
+  })
