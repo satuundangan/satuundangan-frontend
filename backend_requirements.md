@@ -49,12 +49,52 @@ To support the "proper" functioning of the frontend application, the backend mus
   - **Logic:** Backend should calculate the price (e.g., Rp 49.000) based on the invitation type/status, *not* parameters sent from the frontend.
 
 ## 4. Admin Panel
+
+### Invitations
 - **Extended Invitation Details**
   - **Endpoint:** `GET /admin/invitations/:id`
   - **Purpose:** Allow admins to see full details of a specific invitation without needing to impersonate the user.
 - **Update Invitation (Admin)**
   - **Endpoint:** `PATCH /admin/invitations/:id`
   - **Purpose:** Allow admins to toggle `is_active`, `is_premium`, or moderate content.
+
+### Master Data Management
+- **Master Sections (Fitur Undangan)**
+  - **CRUD Endpoints:** `GET`, `POST`, `PATCH`, `DELETE` `/admin/sections`
+  - **Data Structure:**
+    ```json
+    {
+      "id": "uuid",
+      "label": "Love Story",
+      "key": "loveStory",
+      "is_active": true
+    }
+    ```
+  - **Usage:** Used to dynamically populate the "Section Options" checkboxes in the Template Management page.
+
+- **Audio Management**
+  - **CRUD Endpoints:** `GET`, `POST`, `DELETE` `/admin/audio`
+  - **Data Structure:**
+    ```json
+    {
+      "id": "uuid",
+      "title": "Romantic Piano",
+      "category": "romantic",
+      "url": "https://bucket/song.mp3"
+    }
+    ```
+
+- **Bank & Payment Methods**
+  - **CRUD Endpoints:** `GET`, `POST`, `DELETE` `/admin/banks`
+  - **Data Structure:**
+    ```json
+    {
+      "id": "uuid",
+      "name": "BCA",
+      "code": "014",
+      "logo": "https://bucket/bca.png"
+    }
+    ```
 
 ## 5. System
 - **Profile Endpoint**
