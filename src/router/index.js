@@ -21,6 +21,7 @@ import AdminTemplates from '@/views/admin/AdminTemplates.vue'
 import AdminAudio from '@/views/admin/AdminAudio.vue'
 import AdminBanks from '@/views/admin/AdminBanks.vue'
 import AdminSections from '@/views/admin/AdminSections.vue'
+import AdminCategories from '@/views/admin/AdminCategories.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -122,6 +123,12 @@ const router = createRouter({
       path: '/admin/sections',
       name: 'admin-sections',
       component: AdminSections,
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/categories',
+      name: 'admin-categories',
+      component: AdminCategories,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
   ],

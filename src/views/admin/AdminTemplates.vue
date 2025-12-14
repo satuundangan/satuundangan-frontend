@@ -9,6 +9,7 @@
             <th class="px-4 py-3">Nama</th>
             <th class="px-4 py-3">Slug</th>
             <th class="px-4 py-3">Kategori</th>
+            <th class="px-4 py-3">Harga</th>
             <th class="px-4 py-3">Status</th>
             <th class="px-4 py-3 text-right">Aksi</th>
           </tr>
@@ -17,7 +18,17 @@
           <tr v-for="template in templates" :key="template.id">
             <td class="px-4 py-3 font-medium text-slate-900">{{ template.name }}</td>
             <td class="px-4 py-3 text-slate-600">{{ template.slug }}</td>
-            <td class="px-4 py-3 text-slate-600 capitalize">{{ template.category }}</td>
+            <td class="px-4 py-3 text-slate-600 capitalize">
+              <span
+                class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-slate-100 text-slate-700">
+                <span class="h-2 w-2 rounded-full"
+                  :style="{ backgroundColor: getCategoryColor(template.category) }"></span>
+                {{ template.category }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-slate-600">
+              {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(template.price || 0) }}
+            </td>
             <td class="px-4 py-3">
               <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
                 :class="template.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
@@ -34,10 +45,10 @@
             </td>
           </tr>
           <tr v-if="!loading && !templates.length">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
           </tr>
         </tbody>
       </table>
@@ -76,11 +87,22 @@
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Kategori</label>
-              <input v-model="form.category" type="text"
+              <select v-model="form.category"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required>
+                <option value="" disabled>Pilih Kategori</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.name">
+                  {{ cat.name }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="text-sm font-medium text-slate-600">Harga (Rp)</label>
+              <input v-model="form.price" type="number" min="0"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required />
             </div>
-            <div>
+            <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Preview URL</label>
               <input v-model="form.previewUrl" type="url"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
@@ -91,10 +113,22 @@
               <textarea v-model="form.description" rows="3"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
             </div>
-            <div>
-              <label class="text-sm font-medium text-slate-600">Tags (pisahkan dengan koma)</label>
-              <input v-model="form.tags" type="text"
-                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+
+            <!-- Tags Input UI -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Tags</label>
+              <div
+                class="mt-2 flex flex-wrap gap-2 rounded-lg border border-slate-200 px-3 py-2 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100">
+                <span v-for="(tag, index) in form.tags" :key="index"
+                  class="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                  {{ tag }}
+                  <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
+                </span>
+                <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.comma.prevent="addTag" @blur="addTag"
+                  type="text" placeholder="Ketik tag dan enter..."
+                  class="min-w-[120px] flex-1 bg-transparent text-sm outline-none" />
+              </div>
+              <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
             </div>
 
             <!-- Palette Color UI -->
@@ -163,6 +197,7 @@ import {
   createAdminTemplate,
   updateAdminTemplate,
   deleteAdminTemplate,
+  fetchAdminCategories,
 } from '@/api/admin.js'
 import { fetchAdminSections } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
@@ -170,6 +205,7 @@ import Swal from 'sweetalert2'
 
 const toast = useToast()
 const templates = ref([])
+const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const total = ref(0)
 const page = ref(1)
@@ -180,13 +216,15 @@ const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
+const tagInput = ref('')
 const form = reactive({
   name: '',
   slug: '',
   category: '',
+  price: 0,
   previewUrl: '',
   description: '',
-  tags: '',
+  tags: [],
   paletteColor: [],
   sectionOptions: [],
   isActive: true,
@@ -197,14 +235,16 @@ const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 async function loadData() {
   loading.value = true
   try {
-    const [tmplRes, sectRes] = await Promise.all([
+    const [tmplRes, catRes, sectRes] = await Promise.all([
       fetchAdminTemplates({ page: page.value, limit, q: search.value }),
+      fetchAdminCategories({ limit: 100 }), // Get all categories
       fetchAdminSections() // Fetch all active sections
     ])
 
     templates.value = tmplRes.data
     total.value = tmplRes.total
 
+    categories.value = catRes
     availableSections.value = sectRes || []
   } catch (error) {
     toast.error(error.message || 'Gagal memuat data')
@@ -226,6 +266,11 @@ function setPage(newPage) {
   loadData()
 }
 
+function getCategoryColor(categoryName) {
+  const cat = categories.value.find(c => c.name === categoryName)
+  return cat ? cat.color : '#cbd5e1'
+}
+
 function addColor() {
   form.paletteColor.push('#000000')
 }
@@ -234,18 +279,30 @@ function removeColor(index) {
   form.paletteColor.splice(index, 1)
 }
 
+function addTag() {
+  const val = tagInput.value.trim()
+  if (val && !form.tags.includes(val)) {
+    form.tags.push(val)
+  }
+  tagInput.value = ''
+}
+
+function removeTag(index) {
+  form.tags.splice(index, 1)
+}
+
 function openCreate() {
   editing.value = null
+  tagInput.value = ''
   Object.assign(form, {
     name: '',
     slug: '',
     category: '',
+    price: 0,
     previewUrl: '',
     description: '',
-    tags: '',
+    tags: [],
     paletteColor: ['#FFFFFF', '#000000'],
-    // Default: auto-select sections that are marked as 'active' globally if desired,
-    // or start empty. Let's start empty or all. Let's start with all active ones.
     sectionOptions: availableSections.value.filter(s => s.is_active).map(s => s.key),
     isActive: true,
   })
@@ -254,17 +311,18 @@ function openCreate() {
 
 function openEdit(template) {
   editing.value = template
+  tagInput.value = ''
 
   let pColor = []
   if (Array.isArray(template.paletteColor)) {
-    pColor = template.paletteColor
+    pColor = [...template.paletteColor]
   } else if (typeof template.paletteColor === 'string') {
     try { pColor = JSON.parse(template.paletteColor) } catch { }
   }
 
   let sOptions = []
   if (Array.isArray(template.sectionOptions)) {
-    sOptions = template.sectionOptions
+    sOptions = [...template.sectionOptions]
   } else if (typeof template.sectionOptions === 'object' && template.sectionOptions !== null) {
     sOptions = Object.keys(template.sectionOptions).filter(k => template.sectionOptions[k])
   } else if (typeof template.sectionOptions === 'string') {
@@ -275,13 +333,21 @@ function openEdit(template) {
     } catch { }
   }
 
+  let tags = []
+  if (Array.isArray(template.tags)) {
+    tags = [...template.tags]
+  } else if (typeof template.tags === 'string') {
+    tags = template.tags.split(',').map(t => t.trim()).filter(Boolean)
+  }
+
   Object.assign(form, {
     name: template.name || '',
     slug: template.slug || '',
     category: template.category || '',
+    price: template.price || 0,
     previewUrl: template.previewUrl || '',
     description: template.description || '',
-    tags: Array.isArray(template.tags) ? template.tags.join(', ') : template.tags || '',
+    tags: tags,
     paletteColor: pColor,
     sectionOptions: sOptions,
     isActive: Boolean(template.isActive),
@@ -299,15 +365,13 @@ function buildPayload() {
     name: form.name,
     slug: form.slug,
     category: form.category,
+    price: form.price,
     previewUrl: form.previewUrl,
     description: form.description || null,
     isActive: form.isActive,
     paletteColor: form.paletteColor,
-    sectionOptions: form.sectionOptions
-  }
-
-  if (form.tags) {
-    payload.tags = form.tags.split(',').map((tag) => tag.trim()).filter(Boolean)
+    sectionOptions: form.sectionOptions,
+    tags: form.tags
   }
 
   return payload

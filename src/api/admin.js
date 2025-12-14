@@ -69,3 +69,20 @@ export const deleteAdminTemplate = (id) =>
   apiFetch(`/admin/template-designs/${id}`, {
     method: 'DELETE',
   })
+
+// Categories
+export const fetchAdminCategories = (params) => apiFetch(withParams('/admin/categories', params))
+export const createAdminCategory = (payload) =>
+  apiFetch('/admin/categories', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+export const updateAdminCategory = (id, payload) =>
+  apiFetch(`/admin/categories/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+export const deleteAdminCategory = (id) =>
+  apiFetch(`/admin/categories/${id}`, {
+    method: 'DELETE',
+  })
