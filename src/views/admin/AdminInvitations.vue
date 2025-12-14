@@ -25,7 +25,10 @@
             <td class="px-4 py-3 text-slate-600">{{ inv.slug }}</td>
             <td class="px-4 py-3 text-slate-600">{{ inv.category || '-' }}</td>
             <td class="px-4 py-3 text-right">
-              <button class="rounded-lg border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50" @click="confirmDelete(inv)">Hapus</button>
+              <div class="flex justify-end gap-2">
+                <a :href="`/${inv.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50">Lihat</a>
+                <button class="rounded-lg border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50" @click="confirmDelete(inv)">Hapus</button>
+              </div>
             </td>
           </tr>
           <tr v-if="!loading && !invitations.length">
