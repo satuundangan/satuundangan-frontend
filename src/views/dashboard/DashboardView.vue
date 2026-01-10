@@ -1,21 +1,74 @@
 <template>
-  <div class="flex h-screen bg-gray-100">
+  <div class="flex h-screen bg-gray-50">
     <Sidebar />
 
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col ml-64 transition-all duration-300">
       <Topbar title="Dashboard" showButton />
 
-      <main class="p-6 space-y-6 overflow-y-auto">
-        <!-- Stats -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard label="Total Invitations" :value="stats.total" />
-          <StatCard label="Active" :value="stats.active" />
-          <StatCard label="Guest Responses" :value="stats.responses" />
+      <main class="p-8 space-y-8 overflow-y-auto">
+        <!-- Welcome Banner -->
+        <div class="bg-gradient-to-r from-mocha to-[#bfa6a0] rounded-2xl p-8 text-white shadow-lg relative overflow-hidden">
+           <div class="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+           <h2 class="text-3xl font-serif font-bold mb-2 relative z-10">Halo, {{ userName }}!</h2>
+           <p class="opacity-90 relative z-10">Siap menyebarkan kabar bahagiamu hari ini?</p>
         </div>
 
-        <!-- Table -->
-        <div v-if="loading" class="text-center py-10 text-gray-500">Memuat data...</div>
-        <InvitationsTable v-else :invitations="invitations" />
+        <!-- Stats -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <StatCard label="Total Undangan" :value="stats.total" icon="💌" color="bg-blue-50 text-blue-600" />
+          <StatCard label="Tamu Terundang" :value="stats.guests" icon="👥" color="bg-purple-50 text-purple-600" />
+          <StatCard label="Ucapan Masuk" :value="stats.responses" icon="💬" color="bg-green-50 text-green-600" />
+        </div>
+
+        <!-- Recent Activity & Quick Share -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+           <!-- Recent Invitations -->
+           <div class="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+              <h3 class="font-bold text-dark mb-4 flex items-center gap-2">
+                 <span>🎉</span> Undangan Terakhir
+              </h3>
+              
+              <div v-if="loading" class="py-10 text-center text-gray-400">Loading...</div>
+              <div v-else-if="invitations.length === 0" class="py-10 text-center text-gray-400 italic">
+                 Belum ada undangan. <router-link to="/create" class="text-mocha underline">Buat sekarang</router-link>
+              </div>
+              
+              <div v-else class="space-y-4">
+                 <div v-for="inv in invitations.slice(0, 3)" :key="inv.id" class="flex items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                    <div class="flex items-center gap-4">
+                       <img :src="inv.photoCoupleUrl || 'https://via.placeholder.com/50'" class="w-12 h-12 rounded-full object-cover shadow-sm" />
+                       <div>
+                          <h4 class="font-bold text-dark text-sm">{{ inv.title }}</h4>
+                          <p class="text-xs text-muted">{{ inv.slug }}</p>
+                       </div>
+                    </div>
+                    <div class="flex gap-2">
+                       <a :href="`/${inv.slug}`" target="_blank" class="px-3 py-1.5 text-xs font-bold text-mocha bg-mocha/10 rounded-lg hover:bg-mocha hover:text-white transition">
+                          Lihat
+                       </a>
+                       <router-link :to="`/invitations`" class="px-3 py-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition">
+                          Kelola
+                       </router-link>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           <!-- Quick Actions -->
+           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center items-center text-center space-y-4">
+              <div class="w-16 h-16 bg-sage/20 rounded-full flex items-center justify-center text-3xl mb-2">🚀</div>
+              <h3 class="font-bold text-dark">Aksi Cepat</h3>
+              <p class="text-xs text-muted">Mulai sesuatu yang baru.</p>
+              
+              <router-link to="/create" class="w-full py-3 bg-mocha text-white rounded-xl font-bold shadow-lg shadow-mocha/20 hover:shadow-mocha/40 transition-all hover:-translate-y-1">
+                 + Buat Undangan Baru
+              </router-link>
+              <router-link to="/guests" class="w-full py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 transition">
+                 Kelola Tamu
+              </router-link>
+           </div>
+        </div>
+
       </main>
     </div>
   </div>
@@ -26,30 +79,33 @@ import { onMounted, ref, computed } from "vue";
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
 import Topbar from "@/components/dashboard/TopbarDashboard.vue";
 import StatCard from "@/components/dashboard/StatCard.vue";
-import InvitationsTable from "@/components/dashboard/InvitationsTable.vue";
 import { getInvitations } from "@/api/invitation";
+import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
+const auth = useAuthStore();
 const invitations = ref([]);
 const loading = ref(true);
 
+const userName = computed(() => auth.user?.name || 'User');
+
 const stats = computed(() => {
   const total = invitations.value.length;
-  const active = invitations.value.filter(i => i.isActive).length; // Assumes isActive boolean or string
-  // Guest responses would ideally come from a separate API or included in the invitation object
+  // Mock data for guests/responses since we need deeper API calls to aggregate or new stats endpoint
+  // In real app, call /dashboard/stats
+  const guests = 0; 
   const responses = 0; 
-  return { total, active, responses };
+  return { total, guests, responses };
 });
 
 onMounted(async () => {
   try {
     const res = await getInvitations();
-    // Handle both array response or { data: [] } response structure
     invitations.value = Array.isArray(res) ? res : (res.data || []);
   } catch (error) {
     console.error(error);
-    toast.error("Gagal memuat data dashboard");
+    toast.error("Gagal memuat dashboard");
   } finally {
     loading.value = false;
   }
