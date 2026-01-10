@@ -1,14 +1,7 @@
 <template>
-  <AdminShell
-    title="Template Desain"
-    description="Kelola daftar template undangan"
-    show-search
-    :search="search"
-    search-placeholder="Cari nama, slug, atau kategori"
-    action-label="Tambah Template"
-    @update:search="handleSearch"
-    @action="openCreate"
-  >
+  <AdminShell title="Template Desain" description="Kelola daftar template undangan" show-search :search="search"
+    search-placeholder="Cari nama, slug, atau kategori" action-label="Tambah Template" @update:search="handleSearch"
+    @action="openCreate">
     <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
       <table class="min-w-full divide-y divide-slate-200 text-sm">
         <thead class="bg-slate-50 text-left font-medium text-slate-500">
@@ -16,6 +9,7 @@
             <th class="px-4 py-3">Nama</th>
             <th class="px-4 py-3">Slug</th>
             <th class="px-4 py-3">Kategori</th>
+            <th class="px-4 py-3">Harga</th>
             <th class="px-4 py-3">Status</th>
             <th class="px-4 py-3 text-right">Aksi</th>
           </tr>
@@ -24,27 +18,37 @@
           <tr v-for="template in templates" :key="template.id">
             <td class="px-4 py-3 font-medium text-slate-900">{{ template.name }}</td>
             <td class="px-4 py-3 text-slate-600">{{ template.slug }}</td>
-            <td class="px-4 py-3 text-slate-600 capitalize">{{ template.category }}</td>
-            <td class="px-4 py-3">
+            <td class="px-4 py-3 text-slate-600 capitalize">
               <span
-                class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-                :class="template.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'"
-              >
+                class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-slate-100 text-slate-700">
+                <span class="h-2 w-2 rounded-full"
+                  :style="{ backgroundColor: getCategoryColor(template.category) }"></span>
+                {{ template.category }}
+              </span>
+            </td>
+            <td class="px-4 py-3 text-slate-600">
+              {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(template.price || 0) }}
+            </td>
+            <td class="px-4 py-3">
+              <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
+                :class="template.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
                 {{ template.isActive ? 'Aktif' : 'Nonaktif' }}
               </span>
             </td>
             <td class="px-4 py-3 text-right">
               <div class="flex justify-end gap-2 text-xs font-medium">
-                <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50" @click="openEdit(template)">Edit</button>
-                <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50" @click="confirmDelete(template)">Hapus</button>
+                <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50"
+                  @click="openEdit(template)">Edit</button>
+                <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50"
+                  @click="confirmDelete(template)">Hapus</button>
               </div>
             </td>
           </tr>
           <tr v-if="!loading && !templates.length">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
           </tr>
         </tbody>
       </table>
@@ -53,8 +57,10 @@
     <div v-if="total > limit" class="mt-4 flex items-center justify-between text-sm text-slate-600">
       <p>Menampilkan halaman {{ page }} dari {{ totalPages }}</p>
       <div class="flex items-center gap-2">
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40" :disabled="page === 1" @click="setPage(page - 1)">Sebelumnya</button>
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40" :disabled="page === totalPages" @click="setPage(page + 1)">Berikutnya</button>
+        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="page === 1" @click="setPage(page - 1)">Sebelumnya</button>
+        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
+          :disabled="page === totalPages" @click="setPage(page + 1)">Berikutnya</button>
       </div>
     </div>
 
@@ -69,44 +75,109 @@
           <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submitForm">
             <div>
               <label class="text-sm font-medium text-slate-600">Nama</label>
-              <input v-model="form.name" type="text" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" required />
+              <input v-model="form.name" type="text"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required />
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Slug</label>
-              <input v-model="form.slug" type="text" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" required />
+              <input v-model="form.slug" type="text"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required />
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Kategori</label>
-              <input v-model="form.category" type="text" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" required />
+              <select v-model="form.category"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required>
+                <option value="" disabled>Pilih Kategori</option>
+                <option v-for="cat in categories" :key="cat.id" :value="cat.name">
+                  {{ cat.name }}
+                </option>
+              </select>
             </div>
             <div>
+              <label class="text-sm font-medium text-slate-600">Harga (Rp)</label>
+              <input v-model="form.price" type="number" min="0"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required />
+            </div>
+            <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Preview URL</label>
-              <input v-model="form.previewUrl" type="url" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" required />
+              <input v-model="form.previewUrl" type="url"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required />
             </div>
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Deskripsi</label>
-              <textarea v-model="form.description" rows="3" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+              <textarea v-model="form.description" rows="3"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
             </div>
-            <div>
-              <label class="text-sm font-medium text-slate-600">Tags (pisahkan dengan koma)</label>
-              <input v-model="form.tags" type="text" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-            </div>
-            <div>
-              <label class="text-sm font-medium text-slate-600">Palette Color (JSON)</label>
-              <textarea v-model="form.paletteColor" rows="3" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" placeholder='{"primary":"#000"}' />
-            </div>
+
+            <!-- Tags Input UI -->
             <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Section Options (JSON)</label>
-              <textarea v-model="form.sectionOptions" rows="4" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" placeholder='{"hero":true,"gallery":true}' />
+              <label class="text-sm font-medium text-slate-600">Tags</label>
+              <div
+                class="mt-2 flex flex-wrap gap-2 rounded-lg border border-slate-200 px-3 py-2 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100">
+                <span v-for="(tag, index) in form.tags" :key="index"
+                  class="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                  {{ tag }}
+                  <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
+                </span>
+                <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.comma.prevent="addTag" @blur="addTag"
+                  type="text" placeholder="Ketik tag dan enter..."
+                  class="min-w-[120px] flex-1 bg-transparent text-sm outline-none" />
+              </div>
+              <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
             </div>
+
+            <!-- Palette Color UI -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Palette Colors</label>
+              <div class="mt-2 flex flex-wrap gap-2">
+                <div v-for="(color, index) in form.paletteColor" :key="index"
+                  class="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-1 pr-2 py-1">
+                  <input type="color" v-model="form.paletteColor[index]"
+                    class="h-6 w-6 cursor-pointer rounded-full border-none bg-transparent p-0" />
+                  <input type="text" v-model="form.paletteColor[index]"
+                    class="w-20 bg-transparent text-xs font-mono outline-none" />
+                  <button type="button" @click="removeColor(index)"
+                    class="text-slate-400 hover:text-rose-500">×</button>
+                </div>
+                <button type="button" @click="addColor"
+                  class="flex items-center gap-1 rounded-full border border-dashed border-slate-300 px-3 py-1 text-xs font-medium text-slate-500 hover:border-slate-400 hover:text-slate-600">
+                  + Warna
+                </button>
+              </div>
+            </div>
+
+            <!-- Section Options UI -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Section Options</label>
+              <div v-if="availableSections.length" class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                <label v-for="section in availableSections" :key="section.key"
+                  class="flex items-center gap-2 rounded-lg border border-slate-200 p-2 hover:bg-slate-50 cursor-pointer">
+                  <input type="checkbox" :value="section.key" v-model="form.sectionOptions"
+                    class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                  <span class="text-sm text-slate-700 capitalize">{{ section.label }}</span>
+                </label>
+              </div>
+              <div v-else class="mt-2 text-sm text-slate-400 italic">
+                Belum ada section yang tersedia. Tambahkan di menu Master Fitur.
+              </div>
+            </div>
+
             <div class="md:col-span-2 flex items-center gap-2">
-              <input id="templateActive" v-model="form.isActive" type="checkbox" class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+              <input id="templateActive" v-model="form.isActive" type="checkbox"
+                class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
               <label for="templateActive" class="text-sm font-medium text-slate-600">Aktifkan template</label>
             </div>
 
             <div class="md:col-span-2 flex justify-end gap-2 pt-2 text-sm font-medium">
-              <button type="button" class="rounded-lg border border-slate-200 px-4 py-2" @click="closeForm">Batal</button>
-              <button type="submit" :disabled="saving" class="rounded-lg bg-slate-900 px-4 py-2 text-white hover:bg-slate-800 disabled:opacity-60">
+              <button type="button" class="rounded-lg border border-slate-200 px-4 py-2"
+                @click="closeForm">Batal</button>
+              <button type="submit" :disabled="saving"
+                class="rounded-lg bg-slate-900 px-4 py-2 text-white hover:bg-slate-800 disabled:opacity-60">
                 {{ saving ? 'Menyimpan…' : 'Simpan' }}
               </button>
             </div>
@@ -126,12 +197,16 @@ import {
   createAdminTemplate,
   updateAdminTemplate,
   deleteAdminTemplate,
+  fetchAdminCategories,
 } from '@/api/admin.js'
+import { fetchAdminSections } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
 const templates = ref([])
+const categories = ref([])
+const availableSections = ref([]) // Dynamic sections from DB
 const total = ref(0)
 const page = ref(1)
 const limit = 10
@@ -141,34 +216,44 @@ const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
+const tagInput = ref('')
 const form = reactive({
   name: '',
   slug: '',
   category: '',
+  price: 0,
   previewUrl: '',
   description: '',
-  tags: '',
-  paletteColor: '',
-  sectionOptions: '',
+  tags: [],
+  paletteColor: [],
+  sectionOptions: [],
   isActive: true,
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 
-async function loadTemplates() {
+async function loadData() {
   loading.value = true
   try {
-    const res = await fetchAdminTemplates({ page: page.value, limit, q: search.value })
-    templates.value = res.data
-    total.value = res.total
+    const [tmplRes, catRes, sectRes] = await Promise.all([
+      fetchAdminTemplates({ page: page.value, limit, q: search.value }),
+      fetchAdminCategories({ limit: 100 }), // Get all categories
+      fetchAdminSections() // Fetch all active sections
+    ])
+
+    templates.value = tmplRes.data
+    total.value = tmplRes.total
+
+    categories.value = catRes
+    availableSections.value = sectRes || []
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat template')
+    toast.error(error.message || 'Gagal memuat data')
   } finally {
     loading.value = false
   }
 }
 
-const debouncedSearch = useDebounceFn(() => loadTemplates(), 300)
+const debouncedSearch = useDebounceFn(() => loadData(), 300)
 
 function handleSearch(value) {
   search.value = value
@@ -178,20 +263,47 @@ function handleSearch(value) {
 
 function setPage(newPage) {
   page.value = newPage
-  loadTemplates()
+  loadData()
+}
+
+function getCategoryColor(categoryName) {
+  const cat = categories.value.find(c => c.name === categoryName)
+  return cat ? cat.color : '#cbd5e1'
+}
+
+function addColor() {
+  form.paletteColor.push('#000000')
+}
+
+function removeColor(index) {
+  form.paletteColor.splice(index, 1)
+}
+
+function addTag() {
+  const val = tagInput.value.trim()
+  if (val && !form.tags.includes(val)) {
+    form.tags.push(val)
+  }
+  tagInput.value = ''
+}
+
+function removeTag(index) {
+  form.tags.splice(index, 1)
 }
 
 function openCreate() {
   editing.value = null
+  tagInput.value = ''
   Object.assign(form, {
     name: '',
     slug: '',
     category: '',
+    price: 0,
     previewUrl: '',
     description: '',
-    tags: '',
-    paletteColor: '',
-    sectionOptions: '',
+    tags: [],
+    paletteColor: ['#FFFFFF', '#000000'],
+    sectionOptions: availableSections.value.filter(s => s.is_active).map(s => s.key),
     isActive: true,
   })
   showForm.value = true
@@ -199,15 +311,45 @@ function openCreate() {
 
 function openEdit(template) {
   editing.value = template
+  tagInput.value = ''
+
+  let pColor = []
+  if (Array.isArray(template.paletteColor)) {
+    pColor = [...template.paletteColor]
+  } else if (typeof template.paletteColor === 'string') {
+    try { pColor = JSON.parse(template.paletteColor) } catch { }
+  }
+
+  let sOptions = []
+  if (Array.isArray(template.sectionOptions)) {
+    sOptions = [...template.sectionOptions]
+  } else if (typeof template.sectionOptions === 'object' && template.sectionOptions !== null) {
+    sOptions = Object.keys(template.sectionOptions).filter(k => template.sectionOptions[k])
+  } else if (typeof template.sectionOptions === 'string') {
+    try {
+      const parsed = JSON.parse(template.sectionOptions)
+      if (Array.isArray(parsed)) sOptions = parsed
+      else sOptions = Object.keys(parsed).filter(k => parsed[k])
+    } catch { }
+  }
+
+  let tags = []
+  if (Array.isArray(template.tags)) {
+    tags = [...template.tags]
+  } else if (typeof template.tags === 'string') {
+    tags = template.tags.split(',').map(t => t.trim()).filter(Boolean)
+  }
+
   Object.assign(form, {
     name: template.name || '',
     slug: template.slug || '',
     category: template.category || '',
+    price: template.price || 0,
     previewUrl: template.previewUrl || '',
     description: template.description || '',
-    tags: Array.isArray(template.tags) ? template.tags.join(', ') : template.tags || '',
-    paletteColor: template.paletteColor ? JSON.stringify(template.paletteColor, null, 2) : '',
-    sectionOptions: template.sectionOptions ? JSON.stringify(template.sectionOptions, null, 2) : '',
+    tags: tags,
+    paletteColor: pColor,
+    sectionOptions: sOptions,
     isActive: Boolean(template.isActive),
   })
   showForm.value = true
@@ -218,40 +360,18 @@ function closeForm() {
   saving.value = false
 }
 
-function parseJsonField(value, fieldLabel) {
-  if (!value) return undefined
-  try {
-    return JSON.parse(value)
-  } catch (error) {
-    void error
-    toast.error(`${fieldLabel} harus berupa JSON yang valid`)
-    throw new Error('INVALID_JSON')
-  }
-}
-
 function buildPayload() {
   const payload = {
     name: form.name,
     slug: form.slug,
     category: form.category,
+    price: form.price,
     previewUrl: form.previewUrl,
     description: form.description || null,
     isActive: form.isActive,
-  }
-
-  if (form.tags) {
-    payload.tags = form.tags
-      .split(',')
-      .map((tag) => tag.trim())
-      .filter(Boolean)
-  }
-
-  if (form.paletteColor) {
-    payload.paletteColor = parseJsonField(form.paletteColor, 'Palette color')
-  }
-
-  if (form.sectionOptions) {
-    payload.sectionOptions = parseJsonField(form.sectionOptions, 'Section options')
+    paletteColor: form.paletteColor,
+    sectionOptions: form.sectionOptions,
+    tags: form.tags
   }
 
   return payload
@@ -270,11 +390,9 @@ async function submitForm() {
       toast.success('Template dibuat')
     }
     showForm.value = false
-    loadTemplates()
+    loadData()
   } catch (error) {
-    if (error?.message !== 'INVALID_JSON') {
-      toast.error(error.message || 'Gagal menyimpan template')
-    }
+    toast.error(error.message || 'Gagal menyimpan template')
   } finally {
     saving.value = false
   }
@@ -295,14 +413,14 @@ async function confirmDelete(template) {
   try {
     await deleteAdminTemplate(template.id)
     toast.success('Template dihapus')
-    loadTemplates()
+    loadData()
   } catch (error) {
     toast.error(error.message || 'Gagal menghapus template')
   }
 }
 
 onMounted(() => {
-  loadTemplates()
+  loadData()
 })
 </script>
 
@@ -311,6 +429,7 @@ onMounted(() => {
 .fade-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;

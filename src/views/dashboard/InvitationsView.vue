@@ -4,19 +4,34 @@
     <div class="flex-1 flex flex-col">
       <Topbar title="Invitations" showButton />
       <main class="p-6 space-y-6 overflow-y-auto">
-        <InvitationsTable :invitations="invitations" />
+        <div v-if="loading" class="text-center py-10 text-gray-500">Memuat data...</div>
+        <InvitationsTable v-else :invitations="invitations" />
       </main>
     </div>
   </div>
 </template>
 
 <script setup>
+import { onMounted, ref } from "vue";
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
 import Topbar from "@/components/dashboard/TopbarDashboard.vue";
 import InvitationsTable from "@/components/dashboard/InvitationsTable.vue";
+import { getInvitations } from "@/api/invitation";
+import { useToast } from "vue-toastification";
 
-const invitations = [
-  { id: 1, title: "Andi & Siti Wedding", status: "Active", date: "2025-09-12" },
-  { id: 2, title: "Birthday - Fikri", status: "Draft", date: "2025-10-02" },
-];
+const toast = useToast();
+const invitations = ref([]);
+const loading = ref(true);
+
+onMounted(async () => {
+  try {
+    const res = await getInvitations();
+    invitations.value = Array.isArray(res) ? res : (res.data || []);
+  } catch (error) {
+    console.error(error);
+    toast.error("Gagal memuat daftar undangan");
+  } finally {
+    loading.value = false;
+  }
+});
 </script>

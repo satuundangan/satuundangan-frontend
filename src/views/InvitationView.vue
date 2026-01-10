@@ -1,5 +1,5 @@
 <script setup>
-// import { getInvitationBySlug } from '@/api/invitation'
+import { getInvitationBySlug } from '@/api/invitation'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw } from 'vue'
 import { useRoute } from 'vue-router'
 
@@ -12,15 +12,20 @@ const error = ref(null)
 
 onMounted(async () => {
   try {
-    // const data = await getInvitationBySlug(slug)
-    // invitationData.value = data
+    const data = await getInvitationBySlug(slug)
+    invitationData.value = data
 
-    const templateSlug = slug//data.template_slug
+    // Default to 'dark-elegant' if template_slug is missing
+    const templateSlug = data.template_slug || 'dark-elegant'
 
     // Dynamic import template berdasarkan slug
-    TemplateComponent.value = markRaw(defineAsyncComponent(() =>
-      import(`../templates/${templateSlug}.vue`)
-    ))
+    // Ensure the path matches your project structure
+    TemplateComponent.value = markRaw(defineAsyncComponent({
+      loader: () => import(`../templates/${templateSlug}.vue`),
+      errorComponent: {
+        template: '<div class="text-center p-10">Template tidak ditemukan atau gagal dimuat.</div>'
+      }
+    }))
   } catch (err) {
     error.value = 'Undangan tidak ditemukan atau terjadi kesalahan.'
     console.error(err)

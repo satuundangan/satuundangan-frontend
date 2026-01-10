@@ -1,104 +1,138 @@
 <template>
-  <nav class="sticky top-0 z-50 bg-ivory shadow-sm  border-mocha px-6 py-4">
-
-    <div class="max-w-7xl mx-auto flex md:justify-between justify-start items-center">
-      <button @click="sidebarOpen = true" class="md:hidden text-mocha text-2xl">
-        ☰
-      </button>
-      <!-- Sidebar (Mobile) -->
-      <transition name="fade">
-        <div v-if="sidebarOpen" class="fixed inset-0 z-40 bg-black/50 md:hidden" @click="sidebarOpen = false">
-          <aside class="fixed left-0 top-0 bottom-0 w-64 bg-white p-6 shadow-md z-50" @click.stop>
-            <div class="flex justify-between items-center mb-6">
-              <h2 class="text-lg font-bold text-mocha">Menu</h2>
-              <button @click="sidebarOpen = false" class="text-xl font-bold text-gray-400">×</button>
-            </div>
-
-            <ul class="space-y-4 text-dark">
-              <li><a href="#" class="block hover:text-mocha">Home</a></li>
-              <li><a href="#" class="block hover:text-mocha">Fitur</a></li>
-              <li><a href="#" class="block hover:text-mocha">Tema</a></li>
-              <li><a href="#" class="block hover:text-mocha">Harga</a></li>
-              <li><a href="#" class="block hover:text-mocha">Portofolio</a></li>
-              <li><a href="#" class="block hover:text-mocha">Blog</a></li>
-              <li v-if="userName">
-                <button @click="handleLogout" class="text-red-500 hover:underline">Logout</button>
-              </li>
-              <li v-else>
-                <button @click="() => { sidebarOpen = false; show.value = true }"
-                  class="hover:text-mocha">Login</button>
-                <button @click="() => { emit('create-invitation'); sidebarOpen = false }" class="btn-primary mt-2">
-                  Buat Undangan
-                </button>
-              </li>
-            </ul>
-          </aside>
-        </div>
-      </transition>
-
+  <nav :class="[
+    'fixed top-0 left-0 right-0 z-50 transition-all duration-300 border-b',
+    isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm border-gray-200 py-3' : 'bg-transparent border-transparent py-5'
+  ]">
+    <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
+      
       <!-- Logo -->
-      <div class="flex items-center gap-3">
-        <div
-          class="hidden bg-sage text-white font-bold rounded-full w-9 h-9 md:flex items-center justify-center shadow-inner text-lg">
-          1
+      <a href="#" class="flex items-center gap-2 group">
+        <div class="bg-mocha text-white font-serif font-bold rounded-lg w-10 h-10 flex items-center justify-center text-xl shadow-lg group-hover:bg-accent-gold transition-colors duration-300">
+          S
         </div>
-        <h1 class="pl-3 md:pl-0 text-lg font-bold text-dark tracking-tight">
-          <span class="text-mocha">satu</span>undangan<span class="text-sage">.id</span>
-        </h1>
-      </div>
+        <div class="flex flex-col">
+          <span :class="['font-serif font-bold text-lg leading-none tracking-tight', isScrolled ? 'text-dark' : 'text-mocha']">
+            SatuUndangan
+          </span>
+          <span :class="['text-[10px] tracking-[0.2em] uppercase font-medium', isScrolled ? 'text-muted' : 'text-dark/60']">
+            Digital Invitation
+          </span>
+        </div>
+      </a>
 
-      <!-- Navigation -->
-      <ul class="hidden md:flex gap-6 text-sm font-medium text-dark">
-        <li><a href="#" class="hover:text-mocha transition">Home</a></li>
-        <li><a href="#" class="hover:text-mocha transition">Fitur</a></li>
-        <li><a href="#" class="hover:text-mocha transition">Tema</a></li>
-        <li><a href="#" class="hover:text-mocha transition">Harga</a></li>
-        <li><a href="#" class="hover:text-mocha transition">Portofolio</a></li>
-        <li><a href="#" class="hover:text-mocha transition">Blog</a></li>
+      <!-- Desktop Menu -->
+      <ul class="hidden md:flex items-center gap-8">
+        <li v-for="item in menuItems" :key="item.text">
+          <a :href="item.href" 
+             :class="[
+               'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
+               isScrolled ? 'text-dark' : 'text-dark/80'
+             ]">
+             {{ item.text }}
+             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </li>
       </ul>
-      <AuthModal :show="show" :authMode="authMode" @update:authMode="authMode = $event" @close="show = false" />
 
-      <!-- CTA -->
+      <!-- CTA & User (Desktop) -->
       <div class="hidden md:flex items-center gap-4">
         <template v-if="userName">
           <div class="relative">
-            <button @click="toggleDropdown" class="flex items-center gap-2 text-sm text-dark hover:text-mocha">
-              <div
-                class="w-8 h-8 bg-sage text-white font-bold rounded-full flex items-center justify-center shadow-inner">
-                {{ userName.charAt(0).toUpperCase() }}
-              </div>
-              <span class="hidden md:inline">{{ userName }}</span>
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
+             <button @click="toggleDropdown" 
+                class="flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-full border border-gray-200 bg-white hover:border-mocha transition-colors shadow-sm">
+                <div class="w-8 h-8 bg-sage/20 text-sage font-bold rounded-full flex items-center justify-center text-sm">
+                   {{ userName.charAt(0).toUpperCase() }}
+                </div>
+                <span class="text-sm font-medium text-dark max-w-[100px] truncate">{{ userName }}</span>
+                <svg class="w-4 h-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+             </button>
 
-            <!-- Dropdown -->
+              <!-- Dropdown -->
             <div v-if="dropdownOpen" ref="dropdownRef"
-              class="absolute right-0 mt-2 w-44 bg-white border border-gray-200 rounded-lg shadow-lg z-50">
-              <a href="/dashboard" class="block px-4 py-2 text-sm text-dark hover:bg-gray-100">Dashboard</a>
-              <a href="/pengaturan" class="block px-4 py-2 text-sm text-dark hover:bg-gray-100">Pengaturan</a>
+              class="absolute right-0 mt-3 w-48 bg-white border border-gray-100 rounded-xl shadow-xl z-50 py-2 animate-in fade-in slide-in-from-top-2">
+              <div class="px-4 py-2 border-b border-gray-50 mb-1">
+                 <p class="text-xs text-muted">Signed in as</p>
+                 <p class="text-sm font-bold text-dark truncate">{{ userName }}</p>
+              </div>
+              <a href="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
+                 <span>📊</span> Dashboard
+              </a>
+              <a href="/dashboard/settings" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
+                 <span>⚙️</span> Pengaturan
+              </a>
+              <div class="border-t border-gray-50 my-1"></div>
               <button @click="handleLogout"
-                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50">Logout</button>
+                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2">
+                <span>🚪</span> Logout
+              </button>
             </div>
           </div>
         </template>
-
+        
         <template v-else>
-          <button class="text-sm text-mocha hover:text-accent-gold transition" @click="show = true">Login/Sign
-            Up</button>
-          <button class="px-4 py-2 md:py-3 text-sm text-white bg-[#bfa6a0] hover:bg-[#5a4f4c] transition-all rounded-xl"
-            @click="emit('create-invitation')">
-            Buat Undangan
+          <button @click="show = true" class="text-sm font-semibold hover:text-mocha transition" :class="isScrolled ? 'text-dark' : 'text-dark/80'">
+             Masuk
+          </button>
+          <button @click="$emit('create-invitation')" class="btn-primary shadow-lg shadow-mocha/20 text-sm px-6 py-2.5 rounded-full hover:shadow-mocha/40 hover:-translate-y-0.5 transition-all">
+             Buat Undangan
           </button>
         </template>
       </div>
 
+      <!-- Mobile Menu Button -->
+      <button @click="sidebarOpen = true" class="md:hidden text-2xl" :class="isScrolled ? 'text-dark' : 'text-dark'">
+        ☰
+      </button>
     </div>
+
+    <!-- Mobile Sidebar -->
+    <transition name="slide-fade">
+      <div v-if="sidebarOpen" class="fixed inset-0 z-[60]" @click="sidebarOpen = false">
+         <div class="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
+         
+         <aside class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white shadow-2xl p-6 flex flex-col" @click.stop>
+            <div class="flex justify-between items-center mb-8">
+               <h3 class="font-serif font-bold text-2xl text-mocha">Menu</h3>
+               <button @click="sidebarOpen = false" class="text-3xl text-gray-400 font-light hover:text-red-500 transition">&times;</button>
+            </div>
+
+            <ul class="space-y-6 flex-1">
+              <li v-for="item in menuItems" :key="item.text">
+                 <a :href="item.href" class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2">
+                   {{ item.text }}
+                 </a>
+              </li>
+            </ul>
+
+            <div class="space-y-4 pt-6 border-t border-gray-100">
+               <template v-if="userName">
+                  <div class="flex items-center gap-3 mb-4">
+                     <div class="w-10 h-10 bg-sage text-white rounded-full flex items-center justify-center font-bold">
+                        {{ userName.charAt(0).toUpperCase() }}
+                     </div>
+                     <div>
+                        <p class="text-sm text-muted">Halo,</p>
+                        <p class="font-bold text-dark">{{ userName }}</p>
+                     </div>
+                  </div>
+                  <a href="/dashboard" class="btn-outline w-full text-center py-3 rounded-xl block">Dashboard</a>
+                  <button @click="handleLogout" class="w-full text-red-500 py-2 text-sm hover:underline">Logout</button>
+               </template>
+               <template v-else>
+                  <button @click="show = true; sidebarOpen = false" class="btn-outline w-full py-3 rounded-xl">Masuk</button>
+                  <button @click="$emit('create-invitation'); sidebarOpen = false" class="btn-primary w-full py-3 rounded-xl shadow-lg shadow-mocha/20">Buat Undangan</button>
+               </template>
+            </div>
+         </aside>
+      </div>
+    </transition>
+    
+    <AuthModal :show="show" :authMode="authMode" @update:authMode="authMode = $event" @close="show = false" />
   </nav>
 </template>
+
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted } from 'vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
@@ -108,6 +142,7 @@ import { onClickOutside } from '@vueuse/core'
 const show = ref(false)
 const authMode = ref('login')
 const sidebarOpen = ref(false)
+const isScrolled = ref(false)
 
 const auth = useAuthStore()
 const userName = computed(() => auth.user?.name || null)
@@ -115,6 +150,14 @@ const userName = computed(() => auth.user?.name || null)
 const toast = useToast()
 const dropdownOpen = ref(false)
 const dropdownRef = ref(null);
+
+const menuItems = [
+  { text: 'Home', href: '#' },
+  { text: 'Fitur', href: '#features' },
+  { text: 'Katalog', href: '#templates' },
+  { text: 'Harga', href: '#pricing' },
+  { text: 'Testimoni', href: '#testimonials' },
+]
 
 onClickOutside(dropdownRef, () => {
   dropdownOpen.value = false
@@ -126,33 +169,48 @@ const emit = defineEmits(['create-invitation'])
 
 const handleLogout = async () => {
   const result = await Swal.fire({
-    title: 'Yakin mau logout?',
-    text: 'Kamu akan keluar dari akunmu.',
+    title: 'Logout?',
+    text: 'Sesi anda akan berakhir.',
     icon: 'warning',
     showCancelButton: true,
-    confirmButtonColor: '#d33',
-    cancelButtonColor: '#aaa',
-    confirmButtonText: 'Logout',
+    confirmButtonColor: '#a47148', // mocha
+    cancelButtonColor: '#e5e7eb',
+    confirmButtonText: 'Ya, Logout',
     cancelButtonText: 'Batal',
+    customClass: {
+       cancelButton: 'text-gray-600'
+    }
   })
 
   if (result.isConfirmed) {
     auth.logout()
-    toast.success('Logout berhasil, sampai jumpa lagi 👋')
+    toast.success('Berhasil logout 👋')
   }
 }
 
-
-</script>
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: all 0.2s ease;
+const handleScroll = () => {
+   isScrolled.value = window.scrollY > 50
 }
 
-.fade-enter-from,
-.fade-leave-to {
+onMounted(() => {
+   window.addEventListener('scroll', handleScroll)
+})
+
+onUnmounted(() => {
+   window.removeEventListener('scroll', handleScroll)
+})
+
+</script>
+
+<style scoped>
+.slide-fade-enter-active,
+.slide-fade-leave-active {
+  transition: all 0.3s ease;
+}
+
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateX(100%);
   opacity: 0;
-  transform: translateY(-5px);
 }
 </style>

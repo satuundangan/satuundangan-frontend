@@ -1,44 +1,70 @@
 <template>
-  <footer class="bg-mocha text-ivory py-12">
-    <div class="max-w-6xl mx-auto px-6 grid md:grid-cols-3 gap-10">
-      <!-- Brand Info -->
-      <div>
-        <div class="flex items-center gap-3 mb-4">
-          <div
-            class="bg-accent-gold w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-lg shadow">
-            su.
-          </div>
-          <h3 class="text-xl font-bold tracking-tight">satuundangan.id</h3>
+  <footer class="bg-[#1c1917] text-white pt-20 pb-10 font-sans">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="grid md:grid-cols-4 gap-12 border-b border-white/10 pb-12">
+        
+        <!-- Brand -->
+        <div class="md:col-span-1 space-y-6">
+           <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-mocha rounded-lg flex items-center justify-center font-serif font-bold text-xl text-white">S</div>
+              <span class="font-serif font-bold text-xl tracking-tight">satuundangan.id</span>
+           </div>
+           <p class="text-gray-400 text-sm leading-relaxed">
+             Platform undangan pernikahan digital premium. Buat momen spesialmu lebih berkesan dengan desain elegan dan fitur canggih.
+           </p>
+           <div class="flex gap-4">
+              <a href="#" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+                 <i class="fab fa-instagram"></i>
+              </a>
+              <a href="#" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+                 <i class="fab fa-tiktok"></i>
+              </a>
+              <a href="#" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+                 <i class="fab fa-whatsapp"></i>
+              </a>
+           </div>
         </div>
-        <p class="text-sm text-ivory/80 leading-relaxed">
-          Buat undangan digital elegan dan personal untuk hari spesialmu. Gratis, tanpa login, langsung jadi 🎉
-        </p>
-      </div>
 
-      <!-- Navigasi -->
-      <div>
-        <h4 class="text-lg font-semibold mb-4 text-white">Navigasi</h4>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="hover:text-white transition">Buat Undangan</a></li>
-          <li><a href="#" class="hover:text-white transition">Template</a></li>
-          <li><a href="#" class="hover:text-white transition">Harga</a></li>
-          <li><a href="#" class="hover:text-white transition">Kontak</a></li>
-        </ul>
-      </div>
+        <!-- Links -->
+        <div>
+           <h4 class="font-bold text-lg mb-6">Layanan</h4>
+           <ul class="space-y-4 text-sm text-gray-400">
+              <li><a href="#" class="hover:text-mocha transition">Buat Undangan</a></li>
+              <li><a href="#" class="hover:text-mocha transition">Katalog Tema</a></li>
+              <li><a href="#" class="hover:text-mocha transition">Fitur Premium</a></li>
+              <li><a href="#" class="hover:text-mocha transition">Harga</a></li>
+           </ul>
+        </div>
 
-      <!-- Sosial Media -->
-      <div>
-        <h4 class="text-lg font-semibold mb-4 text-white">Ikuti Kami</h4>
-        <div class="flex gap-4 text-xl">
-          <a href="#" class="hover:text-white transition"><i class="fab fa-instagram"></i></a>
-          <a href="#" class="hover:text-white transition"><i class="fab fa-tiktok"></i></a>
-          <a href="#" class="hover:text-white transition"><i class="fab fa-twitter"></i></a>
+        <div>
+           <h4 class="font-bold text-lg mb-6">Perusahaan</h4>
+           <ul class="space-y-4 text-sm text-gray-400">
+              <li><a href="#" class="hover:text-mocha transition">Tentang Kami</a></li>
+              <li><a href="#" class="hover:text-mocha transition">Hubungi Kami</a></li>
+              <li><a href="#" class="hover:text-mocha transition">Syarat & Ketentuan</a></li>
+              <li><a href="#" class="hover:text-mocha transition">Kebijakan Privasi</a></li>
+           </ul>
+        </div>
+
+        <!-- Newsletter -->
+        <div>
+           <h4 class="font-bold text-lg mb-6">Berlangganan</h4>
+           <p class="text-gray-400 text-sm mb-4">Dapatkan info promo dan update desain terbaru.</p>
+           <form @submit.prevent class="flex flex-col gap-3">
+              <input type="email" placeholder="Email kamu" class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition text-white placeholder-gray-600">
+              <button class="bg-mocha text-white font-bold text-sm py-3 rounded-lg hover:bg-accent-gold transition-colors">
+                 Subscribe
+              </button>
+           </form>
         </div>
       </div>
-    </div>
 
-    <div class="mt-10 text-center text-xs text-ivory/70 border-t border-ivory/20 pt-6">
-      © 2025 satuundangan.id — All rights reserved.
+      <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+         <p>© 2026 SatuUndangan.id. All rights reserved.</p>
+         <div class="flex gap-6">
+            <span>Made with ❤️ in Indonesia</span>
+         </div>
+      </div>
     </div>
   </footer>
 </template>

@@ -74,7 +74,6 @@ const sectionOptionsLabelMap = {
   foodList: 'List Makanan/Minuman',
   gift: 'Amplop Digital & Alamat Kado'
 }
-
 const defaultCommonSections = [
   'quote',
   'photoCouple',
@@ -84,7 +83,6 @@ const defaultCommonSections = [
   'wishes',
   'map'
 ]
-
 onMounted(() => {
   const template = localStorage.getItem('selectedTemplate')
   const selectedSectionsLocalStorage = localStorage.getItem('selectedSections')
@@ -107,7 +105,7 @@ onMounted(() => {
     }
     if (selectedSectionsLocalStorage) {
       selectedSections.value = JSON.parse(selectedSectionsLocalStorage)
-    }else {
+    } else {
       selectedSections.value = defaultCommonSections.filter(s => sectionOptions.value[s])
     }
 

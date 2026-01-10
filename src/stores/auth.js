@@ -33,10 +33,10 @@ export const useAuthStore = defineStore('auth', {
     async fetchProfile() {
       if (!this.token) return
       try {
-        //console.log('Fetching profile with token:', this.token)
         const res = await getProfile(this.token)
-        //console.log('fetchProfile result:', res) // harus object user
-        this.user = res // tergantung apa yg dikembalikan API
+        console.log('Fetched profile:', res)
+        // Handle response wrapping (e.g. { data: { ... } })
+        this.user = res
       } catch (error) {
         console.error('Gagal mengambil profil:', error)
         this.logout()
