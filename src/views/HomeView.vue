@@ -296,8 +296,8 @@ onMounted(async () => {
     if(tplData) templates.value = tplData
     
     if(catData) {
-       // Format categories if needed, ensure consistency
-       const formattedCats = catData.map(c => ({ id: c.id, name: c.name }))
+       // Format categories (API returns { key, label })
+       const formattedCats = catData.map(c => ({ id: c.key, name: c.label }))
        categories.value = [{ id: 'all', name: 'Semua' }, ...formattedCats]
     }
     
@@ -311,12 +311,10 @@ onMounted(async () => {
 // Filter Logic
 const filteredTemplates = computed(() => {
   if (selectedCategory.value === 'all') return templates.value
-  // Assuming template object has category_id or similar. 
-  // If the API returns 'category' object inside template, adjust accordingly.
-  // Checking data structure might be needed. For now assuming item.category.id or item.categoryId
+  
   return templates.value.filter(t => {
-     // Robust check for various API responses
-     return t.categoryId === selectedCategory.value || t.category?.id === selectedCategory.value
+     // Case-insensitive check
+     return t.category && t.category.toLowerCase() === selectedCategory.value.toLowerCase()
   })
 })
 
