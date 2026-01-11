@@ -3,10 +3,10 @@
     
     <!-- Desktop Header -->
     <header class="hidden md:flex items-center justify-between px-8 py-4 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
-      <div class="flex items-center gap-3">
+      <router-link to="/" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
          <div class="w-8 h-8 bg-mocha text-white rounded-lg flex items-center justify-center font-serif font-bold">S</div>
-         <span class="font-serif font-bold text-lg text-mocha tracking-tight">Preview Mode</span>
-      </div>
+         <span class="font-serif font-bold text-lg text-mocha tracking-tight">SatuUndangan</span>
+      </router-link>
 
       <div class="flex items-center gap-2">
          <div class="flex bg-gray-100 p-1 rounded-lg">
