@@ -8,14 +8,22 @@
          <span class="font-serif font-bold text-lg text-mocha tracking-tight">Preview Mode</span>
       </div>
 
-      <div class="flex bg-gray-100 p-1 rounded-lg">
-         <button @click="viewMode = 'Mobile'" 
-            :class="['px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2', viewMode === 'Mobile' ? 'bg-white text-mocha shadow-sm' : 'text-gray-500 hover:text-gray-700']">
-            <i class="fa-solid fa-mobile-screen"></i> Mobile
-         </button>
-         <button @click="viewMode = 'Desktop'" 
-            :class="['px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2', viewMode === 'Desktop' ? 'bg-white text-mocha shadow-sm' : 'text-gray-500 hover:text-gray-700']">
-            <i class="fa-solid fa-desktop"></i> Desktop
+      <div class="flex items-center gap-2">
+         <div class="flex bg-gray-100 p-1 rounded-lg">
+            <button @click="viewMode = 'Mobile'" 
+               :class="['px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2', viewMode === 'Mobile' ? 'bg-white text-mocha shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+               <i class="fa-solid fa-mobile-screen"></i> Mobile
+            </button>
+            <button @click="viewMode = 'Desktop'" 
+               :class="['px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2', viewMode === 'Desktop' ? 'bg-white text-mocha shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+               <i class="fa-solid fa-desktop"></i> Desktop
+            </button>
+         </div>
+
+         <button @click="toggleFullscreen" 
+            class="ml-2 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-mocha transition-colors"
+            :title="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'">
+            <i :class="isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
          </button>
       </div>
 
@@ -23,7 +31,7 @@
     </header>
 
     <!-- Main Preview Area -->
-    <main class="flex-1 relative w-full h-full overflow-hidden flex justify-center items-center bg-gray-100/50">
+    <main ref="previewContainer" class="flex-1 relative w-full h-full overflow-hidden flex justify-center items-center bg-gray-100/50">
        <!-- Background Pattern (Optional) -->
        <div class="absolute inset-0 opacity-5 pointer-events-none" 
             style="background-image: radial-gradient(#a47148 1px, transparent 1px); background-size: 20px 20px;">
@@ -40,9 +48,8 @@
            <div v-if="viewMode === 'Mobile'" class="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-dark rounded-b-xl z-20 pointer-events-none"></div>
            
            <!-- Content -->
-           <div class="w-full h-full overflow-y-auto no-scrollbar scroll-smooth">
-              <DarkElegant v-if="templateName === 'dark-elegant' || !templateName" />
-              <!-- Add other templates here with v-else-if -->
+           <div class="w-full h-full overflow-hidden">
+              <iframe v-if="iframeUrl" :src="iframeUrl" class="w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
            </div>
        </div>
     </main>
@@ -78,7 +85,6 @@ import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import AuthModal from '@/components/modal/AuthModal.vue'
-import DarkElegant from '@/templates/dark-elegant.vue'
 
 const auth = useAuthStore()
 const userName = computed(() => auth.user?.name || null)
@@ -88,10 +94,24 @@ const viewMode = ref('Mobile')
 const isPublishing = ref(false)
 const showLogin = ref(false)
 const authMode = ref('login')
-const templateName = ref('')
+const isFullscreen = ref(false)
+const previewContainer = ref(null)
+const iframeUrl = ref('')
 
 function goBack() {
    router.push('/create/form')
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    if (previewContainer.value.requestFullscreen) {
+      previewContainer.value.requestFullscreen();
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    }
+  }
 }
 
 const handlePublish = async () => {
@@ -116,9 +136,13 @@ onMounted(() => {
   const stored = localStorage.getItem('finalPayload')
   if (stored) {
      const data = JSON.parse(stored)
-     // Fallback to slug if templateName not set, or default
-     templateName.value = data.templateName ? data.templateName.toLowerCase().replace(/\s+/g, '-') : 'dark-elegant'
+     const slug = data.slug || 'preview'
+     iframeUrl.value = `/${slug}?preview=true`
   }
+  
+  document.addEventListener('fullscreenchange', () => {
+    isFullscreen.value = !!document.fullscreenElement;
+  });
 })
 </script>
 
@@ -128,6 +152,7 @@ onMounted(() => {
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -138,7 +163,14 @@ onMounted(() => {
 }
 
 @keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

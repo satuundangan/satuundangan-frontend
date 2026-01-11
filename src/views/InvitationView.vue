@@ -11,12 +11,22 @@ const loading = ref(true)
 const error = ref(null)
 
 onMounted(async () => {
+  const isPreview = route.query.preview === 'true'
+  
   try {
-    const data = await getInvitationBySlug(slug)
+    let data;
+    if (isPreview) {
+      const stored = localStorage.getItem('finalPayload')
+      data = stored ? JSON.parse(stored) : null
+      if (!data) throw new Error('No preview data found')
+    } else {
+      data = await getInvitationBySlug(slug)
+    }
+    
     invitationData.value = data
 
-    // Default to 'dark-elegant' if template_slug is missing
-    const templateSlug = data.template_slug || 'dark-elegant'
+    // Default to 'dark-elegant' if templateName or template_slug is missing
+    const templateSlug = (data.templateName || data.template_slug || 'dark-elegant').toLowerCase().replace(/\s+/g, '-')
 
     // Dynamic import template berdasarkan slug
     // Ensure the path matches your project structure
