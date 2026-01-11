@@ -250,7 +250,7 @@ import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import StepsSection from '@/components/landing/StepsSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
 import { getTemplateDesigns } from '@/api/templateDesign'
-import { getInvitationCategories } from '@/api/invitation' // Import kategori API
+import { getCategories } from '@/api/category' // Update Import
 
 const router = useRouter()
 const showModal = ref(false)
@@ -290,14 +290,14 @@ onMounted(async () => {
   try {
     const [tplData, catData] = await Promise.all([
        getTemplateDesigns(),
-       getInvitationCategories()
+       getCategories() // Call /categories
     ])
     
     if(tplData) templates.value = tplData
     
     if(catData) {
-       // Format categories (API returns { key, label })
-       const formattedCats = catData.map(c => ({ id: c.key, name: c.label }))
+       // Format categories (API returns { key, label } or based on Category entity)
+       const formattedCats = catData.map(c => ({ id: c.key || c.id, name: c.label || c.name }))
        categories.value = [{ id: 'all', name: 'Semua' }, ...formattedCats]
     }
     
