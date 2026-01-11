@@ -1,11 +1,8 @@
 <template>
-  <div class="gallery-container mx-auto max-w-5xl">
+  <div class="gallery-container mx-auto max-w-6xl px-4">
     <!-- Thumbnail Grid -->
     <div class="grid-container">
-      <div v-for="(item, index) in items" :key="index" class="grid-item" :style="{
-        'grid-column': `span ${item.colSpan || 1}`,
-        'grid-row': `span ${item.rowSpan || 1}`
-      }" @click="openLightbox(index)">
+      <div v-for="(item, index) in items" :key="index" class="grid-item" @click="openLightbox(index)">
         <img :src="item.thumbnail || item.src" :alt="item.alt || `Image ${index + 1}`" class="thumbnail-image"
           loading="lazy" />
         <div v-if="item.caption" class="image-caption">{{ item.caption }}</div>
@@ -13,25 +10,27 @@
     </div>
 
     <!-- Lightbox Overlay -->
-    <div v-if="lightboxVisible" class="lightbox-overlay" @click="closeLightbox" @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove" @touchend="handleTouchEnd">
-      <button class="close-btn" @click.stop="closeLightbox">×</button>
-      <button class="nav-btn prev-btn" @click.stop="prevImage" @touchstart.stop>‹</button>
+    <Teleport to="body">
+      <div v-if="lightboxVisible" class="lightbox-overlay" @click="closeLightbox" @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+        <button class="close-btn" @click.stop="closeLightbox">×</button>
+        <button class="nav-btn prev-btn" @click.stop="prevImage" @touchstart.stop>‹</button>
 
-      <div class="lightbox-content">
-        <transition :name="transitionDirection" mode="out-in">
-          <div class="slide-container" :key="currentIndex">
-            <img :src="items[currentIndex].src" :alt="items[currentIndex].alt || `Image ${currentIndex + 1}`"
-              class="lightbox-image" ref="lightboxImage" />
-            <div v-if="items[currentIndex].caption" class="lightbox-caption">
-              {{ items[currentIndex].caption }}
+        <div class="lightbox-content">
+          <transition :name="transitionDirection" mode="out-in">
+            <div class="slide-container" :key="currentIndex">
+              <img :src="items[currentIndex].src" :alt="items[currentIndex].alt || `Image ${currentIndex + 1}`"
+                class="lightbox-image" ref="lightboxImage" />
+              <div v-if="items[currentIndex].caption" class="lightbox-caption">
+                {{ items[currentIndex].caption }}
+              </div>
             </div>
-          </div>
-        </transition>
-      </div>
+          </transition>
+        </div>
 
-      <button class="nav-btn next-btn" @click.stop="nextImage" @touchstart.stop>›</button>
-    </div>
+        <button class="nav-btn next-btn" @click.stop="nextImage" @touchstart.stop>›</button>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -144,28 +143,38 @@ onBeforeUnmount(() => {
 /* Main Container */
 .gallery-container {
   width: 100%;
-  max-width: 1200px;
-  padding: 2rem 1rem;
-  margin: 0 auto;
+  padding: 2rem 0;
 }
 
 /* Grid Layout */
 .grid-container {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1.5rem;
-  grid-auto-flow: dense;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .grid-container {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 /* Grid Items */
 .grid-item {
   position: relative;
   overflow: hidden;
-  border-radius: 12px;
+  border-radius: 8px;
   cursor: pointer;
+  aspect-ratio: 1 / 1;
   transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-
 }
 
 /* Hover Effects */
@@ -206,23 +215,6 @@ onBeforeUnmount(() => {
 .grid-item:hover .image-caption {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Aspect Ratio Handling */
-.grid-item[style*="grid-column: span 1"][style*="grid-row: span 1"] {
-  aspect-ratio: 1/1;
-}
-
-.grid-item[style*="grid-column: span 2"][style*="grid-row: span 1"] {
-  aspect-ratio: 2/1;
-}
-
-.grid-item[style*="grid-column: span 1"][style*="grid-row: span 2"] {
-  aspect-ratio: 1/1.5;
-}
-
-.grid-item[style*="grid-column: span 2"][style*="grid-row: span 2"] {
-  aspect-ratio: 2/1;
 }
 
 /* Lightbox Styles */
@@ -358,24 +350,7 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 
-/* Mobile Responsiveness */
 @media (max-width: 768px) {
-  .grid-container {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  .grid-item {
-    aspect-ratio: 1/1 !important;
-    grid-column: span 1 !important;
-    grid-row: span 1 !important;
-  }
-
-  .image-caption {
-    padding: 0.8rem;
-    font-size: 0.8rem;
-  }
-
   .close-btn {
     top: 1rem;
     right: 1rem;
@@ -394,18 +369,6 @@ onBeforeUnmount(() => {
     bottom: 1.5rem;
     padding: 0.6rem 1rem;
     font-size: 0.9rem;
-  }
-}
-
-/* Small Mobile Devices */
-@media (max-width: 480px) {
-  .grid-container {
-    grid-template-columns: 1fr;
-  }
-
-  .lightbox-content {
-    width: 95%;
-    height: 85%;
   }
 }
 </style>

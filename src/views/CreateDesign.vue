@@ -145,14 +145,31 @@ onMounted(() => {
     try {
        selectedTemplate.value = JSON.parse(template)
 
-       if (selectedTemplate.value.sectionOptions && selectedTemplate.value.sectionOptions.length > 0) {
-         sectionOptions.value = {}
-         selectedTemplate.value.sectionOptions.forEach(label => {
-           const key = getKeyFromLabel(label)
-           if (key) {
-             sectionOptions.value[key] = sectionOptionsLabelMap[key]
-           }
-         })
+       if (selectedTemplate.value.sectionOptions) {
+         let options = selectedTemplate.value.sectionOptions;
+         
+         if (typeof options === 'string') {
+            try {
+               options = JSON.parse(options);
+            } catch (e) {
+               // Fallback: if not JSON, maybe comma separated?
+               if(options.includes(',')) options = options.split(',').map(s => s.trim());
+               else options = [options];
+            }
+         }
+
+         if (Array.isArray(options) && options.length > 0) {
+             sectionOptions.value = {}
+             options.forEach(label => {
+               const key = getKeyFromLabel(label)
+               if (key) {
+                 sectionOptions.value[key] = sectionOptionsLabelMap[key]
+               }
+             })
+         } else {
+             // Fallback if array is empty or invalid
+             sectionOptions.value = { ...sectionOptionsLabelMap }
+         }
        } else {
          sectionOptions.value = { ...sectionOptionsLabelMap }
        }

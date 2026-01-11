@@ -1,147 +1,82 @@
 <template>
-  <div class="h-screen w-screen bg-gray-950 text-white flex flex-col">
-    <!-- NAVBAR -->
-    <header class="h-14 flex items-center justify-between px-6 bg-gray-900 border-b border-gray-800">
-      <h1 class="font-semibold text-lg flex items-center gap-2">
-        <span v-if="isLoading" class="animate-pulse">🔄</span>
-        <span v-else>🎉</span>
-        Preview Undangan
-      </h1>
-      <div class="flex gap-2">
-        <button v-for="mode in modes" :key="mode" @click="viewMode = mode"
-          :class="['px-3 py-1.5 text-sm rounded-md transition-all', viewMode === mode ? 'bg-blue-600' : 'bg-gray-700 hover:bg-gray-600']">
-          {{ mode }}
-        </button>
-        <button @click="enterFullscreen"
-          class="px-3 py-1.5 text-sm rounded-md bg-green-600 hover:bg-green-700 transition-all flex items-center gap-1">
-          <span v-if="isFullscreen">📱</span>
-          <span v-else>🔍</span>
-          {{ isFullscreen ? 'Exit' : 'Fullscreen' }}
-        </button>
-        <button @click="handlePublish"
-          class="px-3 py-1.5 text-sm rounded-md bg-purple-600 hover:bg-purple-700 transition-all flex items-center gap-1">
-          <span v-if="isPublishing">
-            <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
-            </svg>
-          </span>
-          <span v-else>✨</span>
-          {{ isPublishing ? 'Memproses...' : 'Publish' }}
-        </button>
+  <div class="min-h-screen bg-ivory flex flex-col h-screen overflow-hidden font-sans text-dark">
+    
+    <!-- Desktop Header -->
+    <header class="hidden md:flex items-center justify-between px-8 py-4 bg-white/80 backdrop-blur-md border-b border-gray-200 z-50">
+      <router-link to="/" class="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity">
+         <div class="w-8 h-8 bg-mocha text-white rounded-lg flex items-center justify-center font-serif font-bold">S</div>
+         <span class="font-serif font-bold text-lg text-mocha tracking-tight">SatuUndangan</span>
+      </router-link>
+
+      <div class="flex items-center gap-2">
+         <div class="flex bg-gray-100 p-1 rounded-lg">
+            <button @click="viewMode = 'Mobile'" 
+               :class="['px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2', viewMode === 'Mobile' ? 'bg-white text-mocha shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+               <i class="fa-solid fa-mobile-screen"></i> Mobile
+            </button>
+            <button @click="viewMode = 'Desktop'" 
+               :class="['px-4 py-1.5 rounded-md text-sm font-medium transition-all flex items-center gap-2', viewMode === 'Desktop' ? 'bg-white text-mocha shadow-sm' : 'text-gray-500 hover:text-gray-700']">
+               <i class="fa-solid fa-desktop"></i> Desktop
+            </button>
+         </div>
+
+         <button @click="toggleFullscreen" 
+            class="ml-2 w-10 h-10 flex items-center justify-center rounded-lg bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-mocha transition-colors"
+            :title="isFullscreen ? 'Exit Fullscreen' : 'Fullscreen'">
+            <i :class="isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
+         </button>
       </div>
+
+      <div class="w-24"></div> <!-- Spacer for balance -->
     </header>
 
-    <!-- BODY -->
-    <div class="flex flex-1 overflow-hidden">
-      <!-- Loading Overlay -->
-      <div v-if="isLoading" class="absolute inset-0 bg-gray-950/80 z-50 flex items-center justify-center">
-        <div class="text-center">
-          <svg class="animate-spin h-10 w-10 text-blue-500 mx-auto mb-3" xmlns="http://www.w3.org/2000/svg" fill="none"
-            viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-            </path>
-          </svg>
-          <p class="text-sm text-gray-300">Memuat preview undangan...</p>
+    <!-- Main Preview Area -->
+    <main ref="previewContainer" class="flex-1 relative w-full h-full overflow-hidden flex justify-center items-center bg-gray-100/50">
+       <!-- Background Pattern (Optional) -->
+       <div class="absolute inset-0 opacity-5 pointer-events-none" 
+            style="background-image: radial-gradient(#a47148 1px, transparent 1px); background-size: 20px 20px;">
+       </div>
+
+       <!-- The Frame -->
+       <div :class="[
+          'transition-all duration-500 ease-in-out shadow-2xl relative bg-white overflow-hidden', 
+          viewMode === 'Mobile' 
+            ? 'w-full md:w-[375px] h-full md:h-[80vh] md:rounded-[2.5rem] md:border-[8px] md:border-dark' 
+            : 'w-full h-full'
+       ]">
+           <!-- Notch (Mobile Mode Only) -->
+           <div v-if="viewMode === 'Mobile'" class="hidden md:block absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-dark rounded-b-xl z-20 pointer-events-none"></div>
+           
+           <!-- Content -->
+           <div class="w-full h-full overflow-hidden">
+              <iframe v-if="iframeUrl" :src="iframeUrl" class="w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms"></iframe>
+           </div>
+       </div>
+    </main>
+
+    <!-- Bottom Action Bar -->
+    <div class="fixed bottom-0 left-0 right-0 p-4 md:bottom-8 md:p-0 z-[60] flex justify-center pointer-events-none">
+        <div class="flex items-center gap-2 sm:gap-4 bg-white/90 backdrop-blur-xl p-2 pl-4 sm:pl-6 pr-2 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50 ring-1 ring-black/5 animate-slide-up pointer-events-auto">
+            <div class="text-xs sm:text-sm font-semibold text-gray-500 mr-2 hidden sm:block">
+               Sudah sesuai?
+            </div>
+            
+            <button @click="goBack" class="px-4 py-2.5 sm:px-5 rounded-full text-xs sm:text-sm font-bold text-gray-600 hover:bg-gray-100 transition-colors flex items-center gap-2">
+               <i class="fa-solid fa-pen"></i> <span class="hidden sm:inline">Edit Data</span><span class="sm:hidden">Edit</span>
+            </button>
+            
+            <button @click="handlePublish" :disabled="isPublishing" 
+               class="px-5 py-2.5 sm:px-6 rounded-full text-xs sm:text-sm font-bold text-white bg-mocha hover:bg-mocha/90 shadow-lg shadow-mocha/20 transition-all hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
+               <span v-if="isPublishing" class="animate-spin"><i class="fa-solid fa-circle-notch"></i></span>
+               <span v-else>Lanjut Pembayaran</span>
+               <i v-if="!isPublishing" class="fa-solid fa-arrow-right"></i>
+            </button>
         </div>
-      </div>
-
-      <!-- SIDEBAR -->
-      <aside class="hidden md:block w-64 bg-gray-900 border-r border-gray-800 p-4 transition-all duration-300">
-        <div class="sticky top-4">
-          <p class="text-sm font-semibold mb-3 flex items-center gap-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24"
-              stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Info Preview
-          </p>
-          <ul class="text-xs text-gray-300 space-y-2">
-            <li class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mt-0.5 flex-shrink-0" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              Simulasi tampilan real-time
-            </li>
-            <li class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mt-0.5 flex-shrink-0" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              Perangkat: Mobile/Web/Fullscreen
-            </li>
-            <li class="flex items-start gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3 mt-0.5 flex-shrink-0" fill="none"
-                viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-              </svg>
-              Responsif di berbagai ukuran layar
-            </li>
-          </ul>
-
-          <div class="mt-6">
-            <div v-if="!isPublished"
-              class="bg-yellow-500/10 text-yellow-400 text-xs p-3 rounded-lg border border-yellow-500/50">
-              <div class="flex items-start gap-2">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mt-0.5 flex-shrink-0" fill="none"
-                  viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                <div>
-                  <p class="font-medium">Ini hanya preview</p>
-                  <p class="mt-1 opacity-80">Undangan belum dipublikasikan ke publik</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </aside>
-
-      <!-- MAIN -->
-      <main class="flex-1 flex justify-center items-center p-4 transition-all duration-300">
-        <div class="border border-gray-700 shadow-lg overflow-hidden bg-white relative" :class="frameClass">
-          <!-- Device frame for mobile view -->
-          <div v-if="viewMode === 'Mobile'"
-            class="absolute inset-0 pointer-events-none flex items-center justify-center">
-            <div class="absolute top-0 w-full h-8 bg-gray-900/50 rounded-t-[2rem] flex items-center justify-center">
-              <div class="w-24 h-1.5 bg-gray-700 rounded-full"></div>
-            </div>
-            <div class="absolute bottom-0 w-full h-8 bg-gray-900/50 rounded-b-[2rem] flex items-center justify-center">
-              <div class="w-8 h-8 rounded-full border border-gray-700"></div>
-            </div>
-          </div>
-
-          <!-- Loading state for iframe -->
-          <div v-if="isIframeLoading" class="absolute inset-0 bg-gray-100 flex items-center justify-center">
-            <div class="text-center">
-              <svg class="animate-spin h-8 w-8 text-gray-500 mx-auto mb-2" xmlns="http://www.w3.org/2000/svg"
-                fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-                </path>
-              </svg>
-              <p class="text-xs text-gray-500">Memuat konten undangan...</p>
-            </div>
-          </div>
-
-          <iframe seamless="seamless" ref="iframeRef" :src="previewUrl" class="w-full h-full iframe-content"
-            frameborder="0" allowfullscreen sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
-            @load="onIframeLoad" />
-        </div>
-      </main>
     </div>
 
-    <!-- MODAL LOGIN -->
     <AuthModal v-if="showLogin" :show="showLogin" :authMode="authMode" @close="showLogin = false"
       @update:authMode="authMode = $event" />
+
   </div>
 </template>
 
@@ -156,56 +91,27 @@ const userName = computed(() => auth.user?.name || null)
 const router = useRouter()
 
 const viewMode = ref('Mobile')
-const modes = ['Mobile', 'Web']
-const iframeRef = ref(null)
-const isPublished = ref(false)
-const isLoading = ref(true)
-const isIframeLoading = ref(true)
 const isPublishing = ref(false)
-const isFullscreen = ref(false)
-
-let previewUrl = '/'
-
 const showLogin = ref(false)
 const authMode = ref('login')
+const isFullscreen = ref(false)
+const previewContainer = ref(null)
+const iframeUrl = ref('')
 
-const frameClass = computed(() => {
-  switch (viewMode.value) {
-    case 'Mobile':
-      return 'w-full md:w-[360px] h-full rounded-[2rem]'
-    case 'Web':
-      return 'w-full h-full rounded-md'
-    case 'Fullscreen':
-      return 'w-full h-[calc(100vh-3.5rem)]'
-    default:
-      return 'w-[360px] h-[640px] rounded-[2rem]'
-  }
-})
+function goBack() {
+   router.push('/create/form')
+}
 
-function enterFullscreen() {
-  const el = iframeRef.value
-  if (!el) return
-
+function toggleFullscreen() {
   if (!document.fullscreenElement) {
-    if (el.requestFullscreen) {
-      el.requestFullscreen()
-      isFullscreen.value = true
-      viewMode.value = 'Fullscreen'
-    } else {
-      alert('Browser tidak mendukung fullscreen mode 😓')
+    if (previewContainer.value.requestFullscreen) {
+      previewContainer.value.requestFullscreen();
     }
   } else {
     if (document.exitFullscreen) {
-      document.exitFullscreen()
-      isFullscreen.value = false
-      viewMode.value = 'Mobile'
+      document.exitFullscreen();
     }
   }
-}
-
-const onIframeLoad = () => {
-  isIframeLoading.value = false
-  isLoading.value = false
 }
 
 const handlePublish = async () => {
@@ -216,8 +122,8 @@ const handlePublish = async () => {
 
   try {
     isPublishing.value = true
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000))
+    // Simulate API logic or preparation
+    await new Promise(resolve => setTimeout(resolve, 800))
     router.push('/checkout')
   } catch (error) {
     console.error('Publish error:', error)
@@ -227,59 +133,44 @@ const handlePublish = async () => {
 }
 
 onMounted(() => {
-  // Get from localstorage
-  const savedUrl = localStorage.getItem('selectedTemplate')
-  if (savedUrl) {
-    const slug = JSON.parse(savedUrl).slug
-    previewUrl = '/' + slug
-    console.log('Preview URL:', previewUrl)
+  const stored = localStorage.getItem('finalPayload')
+  if (stored) {
+     const data = JSON.parse(stored)
+     const slug = data.slug || 'preview'
+     iframeUrl.value = `/${slug}?preview=true`
   }
-
-  // Simulate loading delay
-  setTimeout(() => {
-    if (isIframeLoading.value) {
-      isIframeLoading.value = false
-      isLoading.value = false
-    }
-  }, 3000)
-
-  // Listen for fullscreen change
+  
   document.addEventListener('fullscreenchange', () => {
-    isFullscreen.value = !!document.fullscreenElement
-    if (!isFullscreen.value) {
-      viewMode.value = 'Mobile'
-    }
-  })
+    isFullscreen.value = !!document.fullscreenElement;
+  });
 })
 </script>
 
 <style scoped>
-/* Smooth transitions */
-iframe {
-  transition: opacity 0.3s ease;
-}
-/* Container iframe */
-.iframe-container {
-  overflow: hidden;
-  position: relative;
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
 }
 
-/* Style iframe */
-.iframe-content {
-  width: 100%;
-  height: 100%;
-  border: none;
-  overflow: hidden;
-  display: block;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 
-  /* Untuk browser WebKit (Chrome, Safari) */
-  ::-webkit-scrollbar {
-    display: none;
+.animate-slide-up {
+  animation: slideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
   }
 
-  -ms-overflow-style: none;
-  /* IE dan Edge */
-  scrollbar-width: none;
-  /* Firefox */
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 </style>

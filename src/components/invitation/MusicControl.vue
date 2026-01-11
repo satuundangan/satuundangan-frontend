@@ -1,45 +1,67 @@
 <template>
-  <div class="fixed bottom-4 right-4 z-50 spin-slow">
+  <div class="absolute bottom-24 right-4 z-40">
     <button @click="toggleAudio"
-      class="w-14 h-14 bg-black text-white rounded-full flex items-center justify-center shadow-lg hover:scale-105 transition-transform duration-200">
-      <svg v-if="!isPlaying" class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-        stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="5,3 19,12 5,21 5,3" />
-      </svg>
-      <svg v-else class="w-6 h-6 animate-pulse" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"
-        stroke-linecap="round" stroke-linejoin="round">
-        <rect x="6" y="4" width="4" height="16"></rect>
-        <rect x="14" y="4" width="4" height="16"></rect>
-      </svg>
+      class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 backdrop-blur-md border border-white/20"
+      :class="isPlaying ? 'bg-mocha/80 text-white animate-spin-slow' : 'bg-black/50 text-white/70'">
+      
+      <i v-if="isPlaying" class="fa-solid fa-compact-disc text-xl"></i>
+      <i v-else class="fa-solid fa-play text-lg ml-1"></i>
     </button>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
+
+const props = defineProps({
+  src: {
+    type: String,
+    default: '/audio/romantic_music1.mp3'
+  },
+  autoPlay: {
+    type: Boolean,
+    default: true
+  }
+})
 
 const isPlaying = ref(false)
 const audio = ref(null)
 
-onMounted(() => {
-  // Bikin instance audio pas mounted
-  audio.value = new Audio('/audio/romantic_music1.mp3')
-  audio.value.loop = true
-  audio.value.volume = 0.6
-
-  // Autoplay bakal gagal tanpa user interaction, jadi pasang event listener
-  const tryPlay = () => {
-    audio.value.play().then(() => {
-      isPlaying.value = true
-    }).catch(() => {
-      isPlaying.value = false
-    })
-
-    // Hapus listener biar gak dobel2
-    window.removeEventListener('click', tryPlay)
+const initAudio = () => {
+  if(audio.value) {
+    audio.value.pause()
+    audio.value = null
   }
+  audio.value = new Audio(props.src)
+  audio.value.loop = true
+}
 
-  window.addEventListener('click', tryPlay)
+onMounted(() => {
+  initAudio()
+
+  if (props.autoPlay) {
+    const tryPlay = () => {
+      if(!audio.value) return
+      audio.value.play().then(() => {
+        isPlaying.value = true
+      }).catch((e) => {
+        console.log("Autoplay blocked:", e)
+        isPlaying.value = false
+      })
+      window.removeEventListener('click', tryPlay)
+      window.removeEventListener('touchstart', tryPlay)
+    }
+
+    window.addEventListener('click', tryPlay)
+    window.addEventListener('touchstart', tryPlay)
+  }
+})
+
+onUnmounted(() => {
+  if (audio.value) {
+    audio.value.pause()
+    audio.value = null
+  }
 })
 
 const toggleAudio = () => {
@@ -51,4 +73,22 @@ const toggleAudio = () => {
   }
   isPlaying.value = !isPlaying.value
 }
+
+watch(() => props.src, () => {
+   initAudio()
+   if(isPlaying.value) audio.value.play()
+})
 </script>
+
+<style scoped>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+.animate-spin-slow {
+  animation: spin 4s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+</style>

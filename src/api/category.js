@@ -1,3 +1,3 @@
 import { apiFetch } from "./client";
 
-export const getCategories = () => apiFetch('/template-design/categories')
+export const getCategories = () => apiFetch('/categories')
