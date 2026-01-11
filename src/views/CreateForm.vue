@@ -58,7 +58,7 @@
                        </div>
 
                        <div data-field="bridePhoto">
-                          <label class="form-label">Foto Wanita <span class="text-red-500">*</span></label>
+                          <label class="form-label">Foto wanita <span class="text-red-500">*</span></label>
                           <div class="relative group">
                              <input type="file" accept="image/*" @change="handleBridePhotoUpload" class="hidden" id="bridePhoto" />
                              <label for="bridePhoto" 
@@ -305,6 +305,18 @@
                  </div>
                  <p v-if="validationErrors.gallery" class="form-error mt-2">{{ validationErrors.gallery }}</p>
               </div>
+
+              <!-- Video Prewedding -->
+              <div v-if="sections['video-prewedding']">
+                 <label class="form-label">Link Video Prewedding (YouTube/Vimeo)</label>
+                 <input v-model="formData.videoPrewedding" type="text" placeholder="https://youtu.be/..." class="form-input" />
+              </div>
+
+              <!-- Live Stream -->
+              <div v-if="sections['live-stream']">
+                 <label class="form-label">Link Live Streaming</label>
+                 <input v-model="formData.liveStreamingLink" type="text" placeholder="https://youtube.com/live/..." class="form-input" />
+              </div>
               
               <!-- Music Selection -->
               <div v-if="sections.music" class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
@@ -324,6 +336,48 @@
                        <p v-if="!isPremiumTemplate" class="text-xs text-red-500 mt-1">* Fitur Premium</p>
                     </div>
                  </div>
+              </div>
+           </section>
+
+           <!-- Section: Fitur Tambahan -->
+           <section class="space-y-6 pt-8 border-t border-gray-100">
+              <div class="flex items-center gap-4 pb-4 border-b border-gray-100">
+                 <div class="w-10 h-10 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-xl">✨</div>
+                 <h2 class="text-xl font-bold text-dark">Fitur Tambahan</h2>
+              </div>
+
+              <div class="grid md:grid-cols-2 gap-6">
+                 <!-- Turut Mengundang -->
+                 <div v-if="sections['turut-mengundang']">
+                    <label class="form-label">Turut Mengundang</label>
+                    <textarea v-model="formData.turutMengundang" rows="4" placeholder="Keluarga Besar Bpk..." class="form-input"></textarea>
+                 </div>
+
+                 <!-- Footer Text -->
+                 <div v-if="sections.footer">
+                    <label class="form-label">Teks Penutup (Footer)</label>
+                    <textarea v-model="formData.footerText" rows="4" placeholder="Terima kasih atas doa restu..." class="form-input"></textarea>
+                 </div>
+              </div>
+
+              <div class="flex flex-col gap-4">
+                 <!-- Health Protocol -->
+                 <label v-if="sections['health-protocol']" class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                    <input type="checkbox" v-model="formData.healthProtocol" class="text-mocha focus:ring-mocha w-5 h-5" />
+                    <div>
+                       <span class="font-bold text-dark block">Tampilkan Protokol Kesehatan</span>
+                       <span class="text-xs text-muted">Icon masker, cuci tangan, dll.</span>
+                    </div>
+                 </label>
+
+                 <!-- Enable Cover -->
+                 <label v-if="sections.cover" class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                    <input type="checkbox" v-model="formData.enableCover" class="text-mocha focus:ring-mocha w-5 h-5" />
+                    <div>
+                       <span class="font-bold text-dark block">Aktifkan Halaman Cover (Welcome Screen)</span>
+                       <span class="text-xs text-muted">Halaman pembuka sebelum masuk ke undangan utama.</span>
+                    </div>
+                 </label>
               </div>
            </section>
 
@@ -405,6 +459,11 @@ const formData = ref({
     otherSocial: '',
   },
   liveStreamingLink: '',
+  videoPrewedding: '',
+  turutMengundang: '',
+  footerText: '',
+  healthProtocol: false,
+  enableCover: true,
   brideParents: '',
   groomParents: '',
   eWalletLink: [],
@@ -547,7 +606,7 @@ function generatePayload() {
     
     loveStory: loveStories.value.map((story) => ({
       title: story.title,
-      images: story.photoUrl || story.photo, // Docs say 'content', 'title', 'date'. Images might need check.
+      images: story.photoUrl || story.photo,
       content: story.description,
       date: story.date,
     })),
@@ -560,7 +619,8 @@ function generatePayload() {
       wallet_provider: wallet.wallet_provider,
       wallet_image: wallet.wallet_imageUrl || wallet.wallet_image,
       wallet_number: wallet.wallet_number,
-    }))) : "",
+    })))
+     : "",
     
     // Bank accounts aren't explicitly in 'POST /invitation' docs top level but form has them. 
     // If backend supports 'bankAccounts', keep it. If not, maybe it goes into eWalletLink or similar?
@@ -626,6 +686,12 @@ function generatePayload() {
       groomParents: formData.value.groomParents,
     },
     liveStreamingLink: formData.value.liveStreamingLink,
+    videoPrewedding: formData.value.videoPrewedding,
+    turutMengundang: formData.value.turutMengundang,
+    footerText: formData.value.footerText,
+    healthProtocol: formData.value.healthProtocol,
+    enableCover: formData.value.enableCover !== false, // Default true
+    
     selectedSections: Object.keys(sections.value).filter((key) => !!sections.value[key]),
     enableGuestMessage: formData.value.wishes === 'ya',
   }
@@ -828,7 +894,6 @@ onMounted(() => {
 })
 
 function mapPayloadToFormData(payload) {
-  // Mapping logic remains similar but ensures reactivity
   if(!payload) return
   
   formData.value.title = payload.title || ''
@@ -869,8 +934,12 @@ function mapPayloadToFormData(payload) {
 
   formData.value.brideParents = payload.parents?.brideParents || ''
   formData.value.groomParents = payload.parents?.groomParents || ''
-  
-  // Map other complex objects if needed...
+  formData.value.videoPrewedding = payload.videoPrewedding || ''
+  formData.value.turutMengundang = payload.turutMengundang || ''
+  formData.value.footerText = payload.footerText || ''
+  formData.value.healthProtocol = payload.healthProtocol || false
+  formData.value.enableCover = payload.enableCover !== false // Default true
+  formData.value.liveStreamingLink = payload.liveStreamingLink || ''
 }
 </script>
 

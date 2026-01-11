@@ -99,6 +99,7 @@ import AuthModal from '@/components/modal/AuthModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { getSections } from '@/api/master' // Import API
 
 const router = useRouter()
 const selectedTemplate = ref({})
@@ -117,12 +118,22 @@ const sectionOptionsLabelMap = {
   map: 'Peta Lokasi (Google Maps)',
   rsvp: 'Konfirmasi Kehadiran (RSVP)',
   wishes: 'Kolom Ucapan & Doa',
-  // likes: 'Like Count',
   countdown: 'Hitung Mundur Acara',
   denah: 'Denah Lokasi / Ruangan',
   encryptedGuest: 'Enkripsi Nama Tamu',
   foodList: 'Daftar Menu Makanan',
-  gift: 'Amplop Digital & Kado'
+  gift: 'Amplop Digital & Kado',
+  // Additional from API
+  cover: 'Halaman Sampul (Cover)',
+  gallery: 'Galeri Foto',
+  'live-stream': 'Live Streaming Link',
+  'health-protocol': 'Protokol Kesehatan',
+  'digital-envelope': 'Amplop Digital (QRIS/Bank)',
+  'event-details': 'Detail Acara Lengkap',
+  'likes': 'Fitur Like / Suka',
+  'footer': 'Halaman Penutup',
+  'turut-mengundang': 'Turut Mengundang',
+  'video-prewedding': 'Video Prewedding'
 }
 
 const defaultCommonSections = [
@@ -135,7 +146,7 @@ const defaultCommonSections = [
   'map'
 ]
 
-onMounted(() => {
+onMounted(async () => {
   const template = localStorage.getItem('selectedTemplate')
   const selectedSectionsLocalStorage = localStorage.getItem('selectedSections')
   
@@ -144,41 +155,44 @@ onMounted(() => {
   } else {
     try {
        selectedTemplate.value = JSON.parse(template)
-
-       if (selectedTemplate.value.sectionOptions) {
-         let options = selectedTemplate.value.sectionOptions;
-         
-         if (typeof options === 'string') {
-            try {
-               options = JSON.parse(options);
-            } catch (e) {
-               // Fallback: if not JSON, maybe comma separated?
-               if(options.includes(',')) options = options.split(',').map(s => s.trim());
-               else options = [options];
-            }
-         }
-
-         if (Array.isArray(options) && options.length > 0) {
-             sectionOptions.value = {}
-             options.forEach(label => {
-               const key = getKeyFromLabel(label)
-               if (key) {
-                 sectionOptions.value[key] = sectionOptionsLabelMap[key]
-               }
-             })
-         } else {
-             // Fallback if array is empty or invalid
-             sectionOptions.value = { ...sectionOptionsLabelMap }
-         }
-       } else {
-         sectionOptions.value = { ...sectionOptionsLabelMap }
-       }
        
+       // 1. Fetch ALL available master sections from API
+       try {
+          const apiSections = await getSections()
+          if (Array.isArray(apiSections) && apiSections.length > 0) {
+             const newOptions = {}
+             apiSections.forEach(s => {
+                // Use label from API or fallback to our map
+                newOptions[s.key] = s.label || sectionOptionsLabelMap[s.key] || s.key
+             })
+             sectionOptions.value = newOptions
+          } else {
+             sectionOptions.value = { ...sectionOptionsLabelMap }
+          }
+       } catch (e) {
+          console.error("Gagal ambil master sections, using fallback", e)
+          sectionOptions.value = { ...sectionOptionsLabelMap }
+       }
+
        if (selectedSectionsLocalStorage) {
          selectedSections.value = JSON.parse(selectedSectionsLocalStorage)
        } else {
-         // Default selection logic: check if key exists in available options
-         selectedSections.value = defaultCommonSections.filter(s => sectionOptions.value[s])
+         // 2. Initial selection based on template
+         let templateOptions = selectedTemplate.value.sectionOptions;
+         
+         if (typeof templateOptions === 'string') {
+            try { templateOptions = JSON.parse(templateOptions); } catch (e) {
+               if(templateOptions.includes(',')) templateOptions = templateOptions.split(',').map(s => s.trim());
+               else templateOptions = [templateOptions];
+            }
+         }
+
+         if (Array.isArray(templateOptions) && templateOptions.length > 0) {
+             const keys = templateOptions.map(opt => getKeyFromLabel(opt)).filter(Boolean);
+             selectedSections.value = keys;
+         } else {
+             selectedSections.value = defaultCommonSections.filter(s => sectionOptions.value[s])
+         }
        }
     } catch(e) {
        console.error("Error parsing template data", e)
@@ -187,9 +201,27 @@ onMounted(() => {
   }
 })
 
-function getKeyFromLabel(label) {
-  // Simple check
-  return Object.keys(sectionOptionsLabelMap).find(key => sectionOptionsLabelMap[key] === label)
+function getKeyFromLabel(input) {
+  if (!input) return null;
+  
+  // 1. Direct key match (case insensitive)
+  const directKey = Object.keys(sectionOptionsLabelMap).find(
+    key => key.toLowerCase() === input.toLowerCase()
+  );
+  if (directKey) return directKey;
+
+  // 2. Normalization (e.g. 'Love Story' -> 'loveStory' or 'love-story' -> 'loveStory')
+  const normalizedInput = input.toLowerCase().replace(/[^a-z0-9]/g, '');
+  const normalizedKey = Object.keys(sectionOptionsLabelMap).find(
+    key => key.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedInput
+  );
+  if (normalizedKey) return normalizedKey;
+
+  // 3. Label match
+  const labelKey = Object.keys(sectionOptionsLabelMap).find(
+    key => sectionOptionsLabelMap[key].toLowerCase().includes(input.toLowerCase())
+  );
+  return labelKey || null;
 }
 
 
