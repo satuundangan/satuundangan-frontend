@@ -26,6 +26,18 @@ Example: `Authorization: Bearer <token>`
 - `GET /categories/:id`
   - **Description:** Get category by ID.
 
+### Sections
+**Base Path:** `/sections`
+
+- `GET /sections`
+  - **Description:** List all master sections.
+  - **Response:**
+    ```json
+    [
+      { "id": "uuid", "label": "Akad Nikah", "key": "akad", "is_active": true }
+    ]
+    ```
+
 ### Template Designs
 **Base Path:** `/template-design`
 

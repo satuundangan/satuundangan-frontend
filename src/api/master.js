@@ -39,6 +39,9 @@ export const deleteAdminBank = (id) =>
     method: 'DELETE',
   })
 
+// Public Master Data
+export const getSections = () => apiFetch('/sections')
+
 // Master Sections (Fitur Undangan)
 export const fetchAdminSections = (params) => apiFetch(withParams('/admin/sections', params))
 export const createAdminSection = (payload) =>
