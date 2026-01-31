@@ -1,6 +1,6 @@
 @import 'tailwindcss';
 
-:root {
+@theme {
   --color-mocha: #a47148;
   --color-sage: #94a684;
   --color-ivory: #fffaf3;
@@ -11,13 +11,12 @@
   --font-montserrat: 'Montserrat', sans-serif;
 }
 
-.font-alex {
-  font-family: var(--font-alex);
-}
-
-.font-montserrat {
-  font-family: var(--font-montserrat);
-}
+/* 
+  Legacy/Custom Utility Aliases 
+  (These are technically redundant with Tailwind v4 auto-generated utilities 
+  but kept for safety if used in non-standard ways, though I will clean up 
+  the manual bg/text/border classes as Tailwind handles them better now)
+*/
 
 .btn-glow-gold {
   box-shadow:
@@ -25,142 +24,47 @@
     0 0 20px rgba(180, 140, 91, 0.3);
 }
 
-/* Backgrounds */
-.bg-mocha {
-  background-color: var(--color-mocha);
-}
+/* Custom Components using @apply for consistency */
 
-.bg-sage {
-  background-color: var(--color-sage);
-}
-
-.bg-ivory {
-  background-color: var(--color-ivory);
-}
-
-.bg-accent-gold {
-  background-color: var(--color-accent-gold);
-}
-
-/* Text Colors */
-.text-mocha {
-  color: var(--color-mocha);
-}
-
-.text-sage {
-  color: var(--color-sage);
-}
-
-.text-ivory {
-  color: var(--color-ivory);
-}
-
-.text-dark {
-  color: var(--color-text-dark);
-}
-
-.text-accent-gold {
-  color: var(--color-accent-gold);
-}
-
-/* Border Colors */
-.border-mocha {
-  border-color: var(--color-mocha);
-}
-
-.border-sage {
-  border-color: var(--color-sage);
-}
-
-.border-accent-gold {
-  border-color: var(--color-accent-gold);
-}
-
-/* Hover States */
-/* .hover\:bg-mocha:hover {
-  background-color: var(--color-sage);
-} */
-
-.hover\:bg-sage:hover {
-  background-color: var(--color-sage);
-}
-
-.hover\:bg-accent-gold:hover {
-  background-color: var(--color-accent-gold);
-}
-
-.hover\:text-mocha:hover {
-  color: var(--color-mocha);
-}
-
-.hover\:text-accent-gold:hover {
-  color: var(--color-accent-gold);
-}
-
-/* Buttons */
 .btn-primary {
-  background-color: var(--color-mocha);
-  color: white;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: background-color 0.3s ease;
+  @apply bg-mocha text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-300;
 }
 
 .btn-primary:hover {
-  background-color: var(--color-accent-gold);
+  @apply bg-accent-gold;
 }
 
 .btn-primary:disabled {
-  background-color: #e5e7eb; /* Tailwind's gray-300 */
-  color: #9ca3af; /* Tailwind's gray-500 */
-  cursor: not-allowed;
+  @apply bg-gray-300 text-gray-400 cursor-not-allowed;
 }
 
 .btn-outline {
-  border: 2px solid var(--color-mocha);
-  color: var(--color-mocha);
-  background-color: transparent;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 600;
-  transition: all 0.3s ease;
+  @apply border-2 border-mocha text-mocha bg-transparent py-3 px-6 rounded-lg font-semibold transition-all duration-300;
 }
 
 .btn-outline:hover {
-  background-color: var(--color-mocha);
-  color: white;
+  @apply bg-mocha text-white;
 }
 
-/* Section Padding */
 .section {
-  padding-top: 4rem;
-  padding-bottom: 4rem;
+  @apply py-16;
 }
 
-/* Card Style */
 .card {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 2rem;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  @apply bg-white rounded-2xl p-8 shadow-[0_4px_20px_rgba(0,0,0,0.06)];
 }
 
 /* Typography Enhancer */
 .heading {
-  font-size: 2rem;
-  font-weight: 800;
-  color: var(--color-mocha);
+  @apply text-4xl font-extrabold text-mocha;
 }
 
 .subheading {
-  font-size: 1.25rem;
-  font-weight: 600;
-  color: var(--color-dark);
+  @apply text-xl font-semibold text-text-dark;
 }
 
 .text-muted {
-  color: #777;
+  @apply text-[#777];
 }
 
 @keyframes spin-slow {
