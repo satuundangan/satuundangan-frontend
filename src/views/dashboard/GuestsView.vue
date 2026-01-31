@@ -38,6 +38,7 @@
                <tr>
                  <th class="px-6 py-4">Nama Tamu</th>
                  <th class="px-6 py-4">Kategori</th>
+                 <th class="px-6 py-4">Link Undangan</th>
                  <th class="px-6 py-4">Status Kirim</th>
                  <th class="px-6 py-4">Status RSVP</th>
                  <th class="px-6 py-4 text-right">Aksi</th>
@@ -50,6 +51,11 @@
                     <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">{{ guest.group || 'Umum' }}</span>
                  </td>
                  <td class="px-6 py-4">
+                    <a :href="`/${guest.invitation?.slug}/${guest.slug}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
+                       Lihat Undangan
+                    </a>
+                 </td>
+                 <td class="px-6 py-4">
                     <span :class="guest.statusSend === 'sent' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-100 text-gray-500 border-gray-200'" class="px-2 py-1 rounded-md text-[10px] font-bold border uppercase">
                        {{ guest.statusSend === 'sent' ? 'Terkirim' : 'Belum' }}
                     </span>
@@ -60,7 +66,7 @@
                     <span v-else class="text-gray-400 text-xs italic">Menunggu</span>
                  </td>
                  <td class="px-6 py-4 text-right flex justify-end gap-2">
-                    <button @click="shareWhatsApp(guest)" class="text-green-500 hover:text-green-600 bg-green-50 p-2 rounded-lg transition" title="Kirim WA">
+                    <button @click="openShareModal(guest)" class="text-green-500 hover:text-green-600 bg-green-50 p-2 rounded-lg transition" title="Kirim WA">
                        <i class="fa-brands fa-whatsapp text-lg"></i>
                     </button>
                     <button @click="deleteGuestHandler(guest.id)" class="text-red-400 hover:text-red-600 bg-red-50 p-2 rounded-lg transition" title="Hapus">
@@ -69,7 +75,7 @@
                  </td>
                </tr>
                <tr v-if="filteredGuests.length === 0">
-                  <td colspan="5" class="px-6 py-10 text-center text-gray-400 italic">Belum ada tamu yang ditambahkan.</td>
+                  <td colspan="6" class="px-6 py-10 text-center text-gray-400 italic">Belum ada tamu yang ditambahkan.</td>
                </tr>
              </tbody>
            </table>
@@ -112,6 +118,29 @@
        </div>
     </div>
 
+    <!-- Share / WhatsApp Modal -->
+    <div v-if="showShareModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+       <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl animate-scale-up">
+          <h3 class="font-bold text-lg mb-4 text-mocha">Kirim Undangan via WhatsApp</h3>
+          
+          <div class="space-y-3">
+             <div>
+                <label class="text-xs font-bold text-gray-500 uppercase">Pesan WhatsApp</label>
+                <textarea v-if="loadingMessage" disabled class="w-full border border-gray-300 rounded-lg p-2 mt-1 bg-gray-50 h-32 text-sm italic">Memuat pesan template...</textarea>
+                <textarea v-else v-model="shareMessage" class="w-full border border-gray-300 rounded-lg p-2 mt-1 focus:ring-mocha focus:border-mocha outline-none h-32 text-sm" placeholder="Tulis pesan..."></textarea>
+                <p class="text-xs text-gray-400 mt-1">Anda bisa mengedit pesan ini sebelum dikirim.</p>
+             </div>
+          </div>
+
+          <div class="mt-6 flex gap-3 justify-end">
+             <button @click="showShareModal = false" class="px-4 py-2 text-gray-500 hover:bg-gray-100 rounded-lg text-sm font-medium">Batal</button>
+             <button @click="sendWhatsApp" :disabled="loadingMessage" class="px-4 py-2 bg-green-500 text-white rounded-lg text-sm font-medium hover:bg-green-600 flex items-center gap-2">
+                <i class="fa-brands fa-whatsapp"></i> Kirim Sekarang
+             </button>
+          </div>
+       </div>
+    </div>
+
   </div>
 </template>
 
@@ -131,6 +160,12 @@ const loading = ref(false);
 const showAddModal = ref(false);
 const isSubmitting = ref(false);
 const searchQuery = ref("");
+
+// Share Modal State
+const showShareModal = ref(false);
+const shareMessage = ref("");
+const selectedGuestForShare = ref(null);
+const loadingMessage = ref(false);
 
 const newGuest = ref({
   name: "",
@@ -208,22 +243,52 @@ async function deleteGuestHandler(id) {
    }
 }
 
-async function shareWhatsApp(guest) {
-   try {
-      const link = await getGuestShareLink(guest.id); // API returns share string
-      if(link) {
-         window.open(link, '_blank');
-      } else {
-         toast.error("Gagal generate link");
-      }
-   } catch(e) {
-      console.error(e);
-      // Fallback manual if API fails (simulated)
-      const inv = invitations.value.find(i => i.id === selectedInvitationId.value);
-      const url = `${window.location.origin}/${inv.slug}?to=${encodeURIComponent(guest.name)}`;
-      const text = `Halo ${guest.name}, kami mengundangmu ke pernikahan kami. Cek undangan di: ${url}`;
-      window.open(`https://wa.me/${guest.phoneNumber || ''}?text=${encodeURIComponent(text)}`, '_blank');
-   }
+async function openShareModal(guest) {
+  selectedGuestForShare.value = guest;
+  showShareModal.value = true;
+  loadingMessage.value = true;
+  shareMessage.value = "";
+
+  try {
+    const response = await getGuestShareLink(guest.id);
+    // Backend returns { waLink, url, message } potentially wrapped in { data: ... }
+    const data = response?.data || response;
+    
+    if (data?.message) {
+      shareMessage.value = data.message;
+    } else {
+      // Fallback message if API doesn't return one
+      const url = data?.url || '';
+      const name = guest.name?.split(' ')[0] || 'Teman';
+      shareMessage.value = `Hai ${name}! Ini undangan pernikahan kami 🎉\nKlik untuk lihat: ${url}`;
+    }
+  } catch (error) {
+    console.error("Failed to load share message:", error);
+    toast.error("Gagal memuat pesan template");
+    shareMessage.value = `Halo ${guest.name}, mohon maaf link undangan belum dapat dimuat.`;
+  } finally {
+    loadingMessage.value = false;
+  }
+}
+
+function sendWhatsApp() {
+  if (!selectedGuestForShare.value) return;
+
+  const guest = selectedGuestForShare.value;
+  const phone = (guest.phoneNumber || '').replace(/[^0-9]/g, '');
+  
+  // Format phone number to 62...
+  const waNumber = phone.startsWith('0')
+    ? `62${phone.slice(1)}`
+    : phone.startsWith('62')
+      ? phone
+      : phone;
+
+  const encodedMessage = encodeURIComponent(shareMessage.value);
+  const waLink = `https://wa.me/${waNumber}?text=${encodedMessage}`;
+  
+  window.open(waLink, '_blank');
+  showShareModal.value = false;
 }
 </script>
 

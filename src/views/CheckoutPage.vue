@@ -1,66 +1,205 @@
 <template>
-  <div class="min-h-screen bg-ivory px-4 py-10">
-    <div class="max-w-3xl mx-auto">
-      <!-- Header -->
-      <div class="text-center mb-10">
-        <h1 class="text-3xl font-bold text-mocha">Checkout Undangan</h1>
-        <p class="text-gray-600 text-sm">Cek ulang detail undangan sebelum dipublish!</p>
+  <div class="min-h-screen bg-ivory font-montserrat py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto">
+      
+      <!-- Header & Stepper -->
+      <div class="text-center mb-16">
+        <h1 class="text-5xl font-bold text-mocha mb-8 font-alex tracking-wide">Checkout</h1>
+        
+        <nav aria-label="Progress" class="flex justify-center">
+          <ol class="flex items-center gap-2 md:gap-4">
+            <li class="flex items-center gap-2 group">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sage/20 text-sage text-xs font-bold border border-sage/30">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              <span class="text-xs md:text-sm font-medium text-sage">Detail</span>
+            </li>
+            <li class="h-[2px] w-4 md:w-8 bg-sage/30"></li>
+            <li class="flex items-center gap-2">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-sage/20 text-sage text-xs font-bold border border-sage/30">
+                <i class="fa-solid fa-check"></i>
+              </span>
+              <span class="text-xs md:text-sm font-medium text-sage">Desain</span>
+            </li>
+            <li class="h-[2px] w-4 md:w-8 bg-mocha/30"></li>
+            <li class="flex items-center gap-2">
+              <span class="flex h-8 w-8 items-center justify-center rounded-full bg-mocha text-white text-xs font-bold ring-4 ring-mocha/10">3</span>
+              <span class="text-xs md:text-sm font-bold text-mocha">Pembayaran</span>
+            </li>
+          </ol>
+        </nav>
       </div>
 
-      <!-- Checkout Card -->
-      <div class="bg-white rounded-2xl shadow-xl border border-gray-200 p-6 space-y-6">
-        <div class="flex flex-col md:flex-row gap-6">
-          <!-- Thumbnail -->
-          <img :src="invitation?.photoCouple || '/default-thumbnail.jpg'"
-            class="w-full md:w-48 h-48 object-cover rounded-xl shadow" />
+      <div v-if="loading && !invitation" class="flex flex-col items-center justify-center py-20">
+        <div class="w-16 h-16 border-4 border-mocha/20 border-t-mocha rounded-full animate-spin mb-6"></div>
+        <p class="text-mocha/60 font-medium animate-pulse">Menyiapkan rincian pembayaran...</p>
+      </div>
 
-          <!-- Detail -->
-          <div class="flex-1 space-y-2">
-            <h2 class="text-xl font-semibold text-mocha">{{ invitation?.title || 'Judul Undangan' }}</h2>
-            <p class="text-gray-700">{{ invitation?.coupleName || '-' }}</p>
-            <p class="text-gray-500 text-sm">{{ formatDate(invitation?.date) }}</p>
+      <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        
+        <!-- Left Column: Invitation Preview -->
+        <div class="lg:col-span-7 space-y-8">
+          <div class="card overflow-hidden !p-0 border-none group">
+            <div class="relative aspect-[16/10] overflow-hidden">
+              <img 
+                :src="invitation?.photoCouple || invitation?.photoCoupleUrl || invitation?.bridePhotoUrl || '/default-thumbnail.jpg'"
+                class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
+                alt="Couple Preview" 
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
+              
+              <!-- Premium Badge -->
+              <div class="absolute top-6 right-6">
+                <div class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-accent-gold/30">
+                  <i class="fa-solid fa-gem text-accent-gold animate-pulse"></i>
+                  <span class="text-xs font-bold text-mocha uppercase tracking-widest">Premium Plan</span>
+                </div>
+              </div>
 
-            <!-- Slug Preview -->
-            <p class="text-sm text-gray-500">
-              Link Undangan:
-              <span class="text-blue-600 underline">{{ `undangdong.com/${invitation?.slug || 'nama-kamu'}` }}</span>
-            </p>
+              <!-- Title Overlay -->
+              <div class="absolute bottom-8 left-8 text-white">
+                <p class="text-accent-gold font-alex text-2xl mb-1">The Wedding of</p>
+                <h2 class="text-4xl font-bold font-alex leading-tight">
+                  {{ invitation?.coupleName || invitation?.title || 'Romeo & Juliet' }}
+                </h2>
+              </div>
+            </div>
 
-            <!-- Template Badge -->
-            <div class="mt-2">
-              <span class="inline-block px-3 py-1 text-xs rounded-full cursor-help"
-                :class="invitation?.isPremium ? 'bg-yellow-100 text-yellow-800' : 'bg-green-100 text-green-700'" :title="invitation?.isPremium
-                  ? 'Template Premium memiliki desain eksklusif dan fitur lengkap.'
-                  : 'Template gratis dengan fitur standar.'">
-                {{ invitation?.isPremium ? 'Template Premium' : 'Template Gratis' }}
-              </span>
+            <div class="p-8 bg-white">
+              <div class="grid grid-cols-2 gap-6">
+                <div class="space-y-1">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Tanggal Acara</p>
+                  <p class="text-mocha font-semibold flex items-center gap-2">
+                    <i class="fa-regular fa-calendar-check text-accent-gold"></i>
+                    {{ formatDate(invitation?.dateTime || invitation?.createdAt) }}
+                  </p>
+                </div>
+                <div class="space-y-1 text-right">
+                  <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Custom Slug</p>
+                  <p class="text-mocha font-semibold">/{{ invitation?.slug }}</p>
+                </div>
+              </div>
+              
+              <div class="mt-8 pt-8 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
+                <div class="space-y-2">
+                  <i class="fa-solid fa-music text-sage/60"></i>
+                  <p class="text-[10px] text-gray-500 font-medium">Background Music</p>
+                </div>
+                <div class="space-y-2">
+                  <i class="fa-solid fa-images text-sage/60"></i>
+                  <p class="text-[10px] text-gray-500 font-medium">Unlimited Gallery</p>
+                </div>
+                <div class="space-y-2">
+                  <i class="fa-solid fa-comments text-sage/60"></i>
+                  <p class="text-[10px] text-gray-500 font-medium">Guest Messages</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Trust Signals -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="bg-white/50 border border-white p-4 rounded-2xl text-center space-y-2">
+              <div class="w-10 h-10 bg-sage/10 text-sage rounded-full flex items-center justify-center mx-auto">
+                <i class="fa-solid fa-shield-halved"></i>
+              </div>
+              <p class="text-[10px] font-bold text-gray-600 uppercase">Secure</p>
+            </div>
+            <div class="bg-white/50 border border-white p-4 rounded-2xl text-center space-y-2">
+              <div class="w-10 h-10 bg-accent-gold/10 text-accent-gold rounded-full flex items-center justify-center mx-auto">
+                <i class="fa-solid fa-bolt"></i>
+              </div>
+              <p class="text-[10px] font-bold text-gray-600 uppercase">Instant</p>
+            </div>
+            <div class="bg-white/50 border border-white p-4 rounded-2xl text-center space-y-2">
+              <div class="w-10 h-10 bg-mocha/10 text-mocha rounded-full flex items-center justify-center mx-auto">
+                <i class="fa-solid fa-headset"></i>
+              </div>
+              <p class="text-[10px] font-bold text-gray-600 uppercase">24/7 Help</p>
             </div>
           </div>
         </div>
 
-        <!-- Harga -->
-        <div class="flex justify-between items-center border-t pt-4">
-          <p class="text-gray-600">Total Pembayaran</p>
-          <p class="text-xl font-bold text-mocha">
-            {{ invitation?.isPremium ? 'Rp 49.000' : 'Gratis' }}
-          </p>
+        <!-- Right Column: Order Summary -->
+        <div class="lg:col-span-5 sticky top-8">
+          <div class="card bg-white shadow-2xl border-none relative overflow-hidden">
+            <!-- Decorative Element -->
+            <div class="absolute -right-16 -top-16 w-48 h-48 bg-ivory rounded-full opacity-50"></div>
+            
+            <div class="relative">
+              <h3 class="text-2xl font-bold text-mocha mb-8 flex items-center gap-3">
+                <i class="fa-solid fa-receipt text-accent-gold"></i>
+                Ringkasan Pesanan
+              </h3>
+
+              <div class="space-y-6 mb-8">
+                <div class="flex justify-between items-start group">
+                  <div>
+                    <p class="font-bold text-gray-800">Premium Invitation</p>
+                    <p class="text-xs text-gray-400 mt-1 capitalize">{{ invitation?.templateName || 'The Elegant Collection' }}</p>
+                  </div>
+                  <p class="font-bold text-mocha">Rp 49.000</p>
+                </div>
+
+                <div class="flex justify-between items-center text-sm py-4 border-y border-dashed border-gray-100">
+                  <div class="flex items-center gap-2 text-gray-500">
+                    <i class="fa-solid fa-ticket"></i>
+                    <span>Promo Code</span>
+                  </div>
+                  <button class="text-accent-gold font-bold text-xs hover:underline uppercase tracking-wider">Add Code</button>
+                </div>
+
+                <div class="space-y-3">
+                  <div class="flex justify-between text-sm text-gray-500">
+                    <span>Subtotal</span>
+                    <span>Rp 49.000</span>
+                  </div>
+                  <div class="flex justify-between text-sm text-gray-500">
+                    <span>Admin Fee</span>
+                    <span class="text-sage font-medium">Free</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Grand Total -->
+              <div class="bg-ivory/50 rounded-2xl p-6 mb-8 border border-mocha/5">
+                <div class="flex justify-between items-center mb-1">
+                  <span class="text-sm font-bold text-mocha uppercase tracking-widest">Total Bayar</span>
+                  <span class="text-3xl font-extrabold text-mocha">
+                    Rp 49.000
+                  </span>
+                </div>
+                <p class="text-[10px] text-gray-400 text-right">Termasuk PPN 11% (jika ada)</p>
+              </div>
+
+              <!-- Action -->
+              <div class="space-y-4">
+                <button 
+                  :disabled="loading" 
+                  @click="handleCheckout"
+                  class="btn-primary w-full !py-5 flex items-center justify-center gap-3 group text-lg shadow-xl shadow-mocha/20"
+                >
+                  <i v-if="loading" class="fa-solid fa-circle-notch animate-spin"></i>
+                  <span v-else>Bayar Sekarang</span>
+                  <i v-if="!loading" class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-2"></i>
+                </button>
+                
+                <p class="text-[10px] text-center text-gray-400 leading-relaxed px-4">
+                  Dengan mengklik tombol di atas, Anda setuju dengan <a href="#" class="underline hover:text-mocha">Syarat & Ketentuan</a> serta <a href="#" class="underline hover:text-mocha">Kebijakan Privasi</a> kami.
+                </p>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Back Link -->
+          <div class="mt-8 text-center">
+             <router-link :to="`/edit/${invitation?.id}`" class="text-sm font-bold text-mocha/40 hover:text-mocha transition-all flex items-center justify-center gap-2 group">
+                <i class="fa-solid fa-chevron-left text-[10px] transition-transform group-hover:-translate-x-1"></i>
+                <span>Kembali Edit Undangan</span>
+             </router-link>
+          </div>
         </div>
 
-        <!-- CTA -->
-        <div class="pt-6 flex flex-col md:flex-row justify-between items-center gap-4">
-          <router-link :to="`/edit/${invitation?.id}`" class="text-sm text-gray-500 hover:underline">
-            ← Kembali Edit Undangan
-          </router-link>
-          <button :disabled="loading" @click="handleCheckout"
-            class="bg-mocha text-white font-semibold py-3 px-6 rounded-full hover:bg-mocha/90 transition-all w-full md:w-auto disabled:opacity-50">
-            {{ loading ? 'Memproses...' : (invitation?.isPremium ? 'Bayar & Publish' : 'Publish Undangan') }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Footer Hint -->
-      <div class="text-center text-sm text-gray-400 mt-10">
-        Setelah publish, undanganmu langsung bisa dibagikan 🎉
       </div>
     </div>
   </div>
@@ -68,33 +207,30 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import axios from 'axios'
-
+import { useRoute, useRouter } from 'vue-router'
+import { getInvitationBySlug } from '@/api/invitation'
+import { createPayment } from '@/api/payment'
 
 const router = useRouter()
+const route = useRoute()
 
-const invitation = ref({
-  id: '123',
-  title: 'Undangan Pernikahan Fauzan & Ayu',
-  coupleName: 'Fauzan & Ayu',
-  date: '2025-07-20',
-  slug: 'fauzan-ayu',
-  photoCouple: '/img/foto-couple.jpg',
-  isPremium: true
-})
-
+const invitation = ref(null)
 const loading = ref(false)
 
+onMounted(async () => {
+  const slug = route.query.slug
+  if (!slug) return
 
-
-onMounted(() => {
-  // Kalau belum login / invitation kosong, redirect dulu
-  if (!invitation.value?.id) {
-    router.push('/login')
+  try {
+    loading.value = true
+    const response = await getInvitationBySlug(slug)
+    invitation.value = response.data || response
+  } catch (err) {
+    console.error('Gagal memuat undangan:', err)
+  } finally {
+    loading.value = false
   }
 })
-
 
 const loadSnapScript = () => {
   return new Promise((resolve, reject) => {
@@ -109,58 +245,53 @@ const loadSnapScript = () => {
   })
 }
 
-
 const handleCheckout = async () => {
+  if (!invitation.value) return
 
   loading.value = true
   try {
-    // 1. Minta snap_token dari BE
-    const { data } = await axios.post("http://localhost:3000/payment/create", {
-      orderId: `order-${Date.now()}`,
-      amount: 49000,
-      name: "Fauzan & Ayu",
-      email: "customer@email.com",
-    })
-
+    const payload = {
+      orderId: `order-${Date.now()}-${invitation.value.id}`,
+      amount: 49000, 
+      name: invitation.value.coupleName || invitation.value.title,
+      email: "user@example.com", // TODO: Replace with real user email
+      invitationId: invitation.value.id 
+    }
+    
+    const data = await createPayment(payload)
     const snapToken = data.token
 
-    // 2. Pastikan snap.js sudah diload
     await loadSnapScript()
 
-    // 3. Panggil Midtrans Snap
     window.snap.pay(snapToken, {
       onSuccess: function(result) {
         console.log("Payment success:", result)
-        router.push(`/success/${data.orderId}`)
+        router.push(`/${invitation.value.slug}`)
       },
       onPending: function(result) {
         console.log("Payment pending:", result)
+        alert('Pembayaran tertunda')
       },
       onError: function(result) {
         console.error("Payment error:", result)
+        alert('Pembayaran gagal')
       },
       onClose: function() {
-        console.warn("Payment popup closed tanpa bayar")
+        console.warn("Payment popup closed")
       },
     })
   } catch (err) {
     console.error("Checkout gagal:", err)
+    alert('Terjadi kesalahan pembayaran: ' + (err.response?.data?.message || err.message))
   } finally {
     loading.value = false
   }
-  // setTimeout(() => {
-  //   loading.value = false
-  //   if (invitation.value.isPremium) {
-  //     router.push(`/payment/${invitation.value.id}?method=${paymentMethod.value}`)
-  //   } else {
-  //     router.push(`/success/${invitation.value.id}`)
-  //   }
-  // }, 1000)
 }
 
 const formatDate = (date) => {
   if (!date) return '-'
   const d = new Date(date)
+  if (isNaN(d.getTime())) return '-'
   return d.toLocaleDateString('id-ID', {
     weekday: 'long',
     year: 'numeric',
@@ -169,3 +300,27 @@ const formatDate = (date) => {
   })
 }
 </script>
+
+<style scoped>
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+.card {
+  transition-property: all;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(164, 113, 72, 0.2); /* bg-mocha/20 */
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(164, 113, 72, 0.4); /* bg-mocha/40 */
+}
+</style>

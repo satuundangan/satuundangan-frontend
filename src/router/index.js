@@ -9,6 +9,7 @@ import { useAuthStore } from '@/stores/auth.js'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import InvitationsView from '@/views/dashboard/InvitationsView.vue'
 import TemplatesView from '@/views/dashboard/TemplatesView.vue'
+import GuestsView from '@/views/dashboard/GuestsView.vue'
 import GuestbookView from '@/views/dashboard/GuestbookView.vue'
 import SettingsView from '@/views/dashboard/SettingsView.vue'
 import AdminLogin from '@/views/admin/AdminLogin.vue'
@@ -131,6 +132,7 @@ const router = createRouter({
       component: AdminCategories,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
+    { path: '/guests', name: 'Guests', component: GuestsView },
   ],
 })
 
