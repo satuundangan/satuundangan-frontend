@@ -62,7 +62,7 @@
                           <div class="relative group">
                              <input type="file" accept="image/*" @change="handleBridePhotoUpload" class="hidden" id="bridePhoto" />
                              <label for="bridePhoto" 
-                                class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-white">
+                                class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-white">
                                 <img v-if="formData.bridePhoto" :src="formData.bridePhoto" class="w-full h-full object-cover" />
                                 <div v-else class="flex flex-col items-center text-gray-400">
                                    <i class="fa-solid fa-cloud-arrow-up text-2xl mb-2"></i>
@@ -106,7 +106,7 @@
                           <div class="relative group">
                              <input type="file" accept="image/*" @change="handleGroomPhotoUpload" class="hidden" id="groomPhoto" />
                              <label for="groomPhoto" 
-                                class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-white">
+                                class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-300 rounded-xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-white">
                                 <img v-if="formData.groomPhoto" :src="formData.groomPhoto" class="w-full h-full object-cover" />
                                 <div v-else class="flex flex-col items-center text-gray-400">
                                    <i class="fa-solid fa-cloud-arrow-up text-2xl mb-2"></i>
