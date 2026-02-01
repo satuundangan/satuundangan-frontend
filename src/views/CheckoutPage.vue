@@ -211,8 +211,11 @@ import { useRoute, useRouter } from 'vue-router'
 import { getInvitationBySlug } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
 
+import { useAuthStore } from '@/stores/auth'
+
 const router = useRouter()
 const route = useRoute()
+const authStore = useAuthStore()
 
 const invitation = ref(null)
 const loading = ref(false)
@@ -248,13 +251,19 @@ const loadSnapScript = () => {
 const handleCheckout = async () => {
   if (!invitation.value) return
 
+  // Ensure user is logged in
+  if (!authStore.user?.email) {
+    alert("Mohon login terlebih dahulu")
+    return
+  }
+
   loading.value = true
   try {
     const payload = {
       orderId: `order-${Date.now()}-${invitation.value.id}`,
       amount: 49000, 
       name: invitation.value.coupleName || invitation.value.title,
-      email: "user@example.com", // TODO: Replace with real user email
+      email: authStore.user.email,
       invitationId: invitation.value.id 
     }
     
