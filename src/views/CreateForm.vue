@@ -322,18 +322,19 @@
               <div v-if="sections.music" class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
                  <label class="form-label">Musik Latar</label>
                  <div class="grid md:grid-cols-2 gap-4">
-                    <select v-model="formData.music" class="form-input">
+                    <select v-model="formData.music" class="form-input" @change="handleMusicChange">
                       <option disabled value="">Pilih Musik</option>
                       <option value="romantic">Romantic Instrumental</option>
                       <option value="acoustic">Acoustic Vibes</option>
                       <option value="classic">Classic Wedding</option>
-                      <option value="custom">Custom (Upload Sendiri)</option>
+                      <option value="custom" :disabled="!isPremiumTemplate">Custom (Upload Sendiri) {{ !isPremiumTemplate ? '(Premium Only)' : '' }}</option>
                     </select>
                     
                     <div v-if="formData.music === 'custom'">
                        <input type="file" accept="audio/*" @change="handleMusicUpload" class="form-input text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-mocha/10 file:text-mocha hover:file:bg-mocha/20"/>
                        <p v-if="formData.musicFileName" class="text-xs text-mocha mt-1 font-medium">🎵 {{ formData.musicFileName }}</p>
-                       <p v-if="!isPremiumTemplate" class="text-xs text-red-500 mt-1">* Fitur Premium</p>
+                       <p v-if="!isPremiumTemplate" class="text-xs text-red-500 mt-1">* Fitur Premium: Upgrade template untuk upload musik sendiri.</p>
+                       <p v-if="validationErrors.music" class="form-error">{{ validationErrors.music }}</p>
                     </div>
                  </div>
               </div>
@@ -410,7 +411,10 @@ import { uploadFileApi } from '@/api/file'
 
 const router = useRouter()
 const isUploading = ref(false)
-const isPremiumTemplate = ref(false)
+const isPremiumTemplate = computed(() => {
+   const selectedTemplate = JSON.parse(localStorage.getItem('selectedTemplate') || '{}')
+   return selectedTemplate.isPremium === true || selectedTemplate.isPremium === 'true'
+})
 
 const formData = ref({
   title: '',
@@ -715,46 +719,60 @@ function isValidUrl(value) {
 function validateField(field) {
   let message = ''
   const data = formData.value
+  const urlRegex = /^(https?:\/\/[^\s$.?#].[^\s]*)$/i
+
   switch (field) {
     case 'brideName':
-      if (!data.brideName?.trim()) message = 'Nama wajib diisi'
+      if (!data.brideName?.trim()) message = 'Nama Mempelai Wanita wajib diisi'
       break
     case 'groomName':
-      if (!data.groomName?.trim()) message = 'Nama wajib diisi'
+      if (!data.groomName?.trim()) message = 'Nama Mempelai Pria wajib diisi'
       break
-    case 'brideParents':
-      // if (!data.brideParents?.trim()) message = 'Wajib diisi'
-      break
-    case 'groomParents':
-      // if (!data.groomParents?.trim()) message = 'Wajib diisi'
-      break
+    // case 'brideParents':
+    //   // Optional
+    //   break
+    // case 'groomParents':
+    //   // Optional
+    //   break
     case 'bridePhoto':
-      if (!data.bridePhoto && !data.bridePhotoFile) message = 'Foto wajib diupload'
+      if (!data.bridePhoto && !data.bridePhotoFile) message = 'Foto Mempelai Wanita wajib diupload'
       break
     case 'groomPhoto':
-      if (!data.groomPhoto && !data.groomPhotoFile) message = 'Foto wajib diupload'
+      if (!data.groomPhoto && !data.groomPhotoFile) message = 'Foto Mempelai Pria wajib diupload'
       break
     case 'title':
-      if (!data.title?.trim()) message = 'Judul wajib diisi'
+      if (!data.title?.trim()) message = 'Judul Undangan wajib diisi'
       else if (data.title.trim().length < 3) message = 'Minimal 3 karakter'
+      // Slug validation if title can be used as slug source, but backend handles slug generation often.
+      // If we want to validate implicit slug chars:
+      // else if (!/^[a-zA-Z0-9\s&]+$/.test(data.title)) message = 'Judul mengandung karakter ilegal'
       break
     case 'photoCouple':
-      if (sections.value.photoCouple && !data.photoCouple && !data.photoCoupleFile) message = 'Foto utama wajib diupload'
+      if (sections.value.photoCouple && !data.photoCouple && !data.photoCoupleFile) message = 'Foto utama (Cover) wajib diupload'
       break
     case 'isSingleEvent':
-      if (data.isSingleEvent === null) message = 'Pilih format acara'
+      if (data.isSingleEvent === null) message = 'Wajib pilih format acara'
       break
     case 'map':
-      if (data.isSingleEvent && !data.map?.trim()) message = 'Link Maps wajib diisi'
+      if (data.isSingleEvent) {
+          if (!data.map?.trim()) message = 'Link Maps wajib diisi'
+          else if (!urlRegex.test(data.map)) message = 'Link Maps tidak valid (harus https://...)'
+      }
       break
     case 'dateTime':
-      if (data.isSingleEvent && !data.dateTime) message = 'Tanggal & waktu wajib diisi'
+      if (data.isSingleEvent && !data.dateTime) message = 'Tanggal & waktu acara wajib diisi'
       break
     case 'akadMap':
-      if (data.isSingleEvent === false && !data.akadMap?.trim()) message = 'Link Maps Akad wajib diisi'
+      if (data.isSingleEvent === false) {
+          if (!data.akadMap?.trim()) message = 'Link Maps Akad wajib diisi'
+          else if (!urlRegex.test(data.akadMap)) message = 'Link Maps Akad tidak valid'
+      }
       break
     case 'resepsiMap':
-      if (data.isSingleEvent === false && !data.resepsiMap?.trim()) message = 'Link Maps Resepsi wajib diisi'
+      if (data.isSingleEvent === false) {
+          if (!data.resepsiMap?.trim()) message = 'Link Maps Resepsi wajib diisi'
+          else if (!urlRegex.test(data.resepsiMap)) message = 'Link Maps Resepsi tidak valid'
+      }
       break
     case 'akadDateTime':
       if (data.isSingleEvent === false && !data.akadDateTime) message = 'Waktu Akad wajib diisi'
@@ -763,7 +781,12 @@ function validateField(field) {
       if (data.isSingleEvent === false && !data.resepsiDateTime) message = 'Waktu Resepsi wajib diisi'
       break
     case 'gallery':
-      // if (!data.gallery.length) message = 'Minimal 1 foto galeri'
+      // Backend doesn't Strictly require gallery, but if section enabled, better have at least 1?
+      // Keeping it optional as requested in some contexts, but strict if 'sections.gallery' is true could be good.
+      // if (sections.value.gallery && (!data.gallery || data.gallery.length === 0)) message = 'Minimal 1 foto galeri'
+      break
+    case 'music':
+      if (data.music === 'custom' && !data.musicFile && !data.musicFileName) message = 'File musik wajib diupload'
       break
     default:
       break
@@ -785,7 +808,15 @@ function validateForm() {
   
   // Custom checks for conditional fields
   
+  
   return results.every(Boolean)
+}
+
+function handleMusicChange() {
+  if (formData.value.music === 'custom' && !isPremiumTemplate.value) {
+     alert("Fitur ini hanya untuk Template Premium. Silakan upgrade atau pilih musik yang tersedia.")
+     formData.value.music = ''
+  }
 }
 
 function findFirstErrorField() {

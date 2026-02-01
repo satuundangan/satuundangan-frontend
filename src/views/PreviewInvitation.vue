@@ -114,19 +114,34 @@ function toggleFullscreen() {
   }
 }
 
+import { createInvitation } from '@/api/invitation'
+
 const handlePublish = async () => {
   if (!userName.value) {
     showLogin.value = true
     return
   }
 
+  if (isPublishing.value) return
+
   try {
     isPublishing.value = true
-    // Simulate API logic or preparation
-    await new Promise(resolve => setTimeout(resolve, 800))
-    router.push('/checkout')
+    const payloadString = localStorage.getItem('finalPayload')
+    if (!payloadString) {
+      alert('Data undangan tidak ditemukan. Silakan buat ulang.')
+      router.push('/create')
+      return
+    }
+
+    const payload = JSON.parse(payloadString)
+    const response = await createInvitation(payload)
+    const invitation = response.data || response
+    const slug = invitation.slug
+
+    router.push(`/checkout?slug=${slug}`)
   } catch (error) {
     console.error('Publish error:', error)
+    alert('Gagal mempublish undangan: ' + (error.response?.data?.message || error.message))
   } finally {
     isPublishing.value = false
   }

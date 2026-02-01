@@ -153,9 +153,22 @@ function togglePassword() {
 }
 
 const handleLogin = async () => {
-  if(!email.value || !password.value) {
+  if (!email.value || !password.value) {
      toast.warning('Email dan Password wajib diisi')
      return
+  }
+
+  // Email regex validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) {
+    toast.warning('Format email tidak valid (contoh: nama@email.com)')
+    return
+  }
+  
+  // Password length validation
+  if (password.value.length < 6) {
+    toast.warning('Password minimal 6 karakter')
+    return
   }
   
   loading.value = true
@@ -172,9 +185,28 @@ const handleLogin = async () => {
 }
 
 const handleRegister = async () => {
-  if(!name.value || !email.value || !password.value) {
+  if (!name.value || !email.value || !password.value) {
      toast.warning('Semua data wajib diisi')
      return
+  }
+
+  // Name validation
+  if (name.value.trim().length < 3) {
+    toast.warning('Nama lengkap minimal 3 karakter')
+    return
+  }
+
+  // Email regex validation
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) {
+    toast.warning('Format email tidak valid (contoh: nama@email.com)')
+    return
+  }
+
+  // Password length validation
+  if (password.value.length < 6) {
+    toast.warning('Password minimal 6 karakter')
+    return
   }
 
   loading.value = true
