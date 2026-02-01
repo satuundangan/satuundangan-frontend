@@ -31,6 +31,7 @@ const router = createRouter({
       path: '/',
       name: 'home',
       component: HomeView,
+      meta: { title: 'Home' },
     },
     {
       path: '/:slug',
@@ -41,6 +42,7 @@ const router = createRouter({
       path: '/create',
       name: 'create',
       component: CreateDesign,
+      meta: { title: 'Pilih Desain' },
     },
     {
       path: '/create/form',
@@ -56,6 +58,7 @@ const router = createRouter({
       path: '/checkout',
       name: 'checkout',
       component: CheckoutPage,
+      meta: { title: 'Checkout & Pembayaran' },
     },
     {
       path: '/auth/callback',
@@ -68,8 +71,8 @@ const router = createRouter({
       component: DashboardView,
     },
     { path: '/invitations', name: 'Invitations', component: InvitationsView },
-    { path: '/templates', name: 'Templates', component: TemplatesView },
-    { path: '/guestbook', name: 'Guestbook', component: GuestbookView },
+    { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
+    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu' } },
     { path: '/settings', name: 'Settings', component: SettingsView },
     { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
     {
@@ -172,6 +175,18 @@ router.beforeEach(async (to, from, next) => {
   if (guestOnly && authStore.user?.isAdmin) {
     next({ name: 'admin-dashboard' })
     return
+  }
+
+  // Update Page Title
+  const defaultTitle = 'Satu Undangan - Buat Undangan Digital Pernikahan'
+  if (to.meta.title) {
+    document.title = `${to.meta.title} | Satu Undangan`
+  } else if (to.name === 'invitation') {
+    // For dynamic invitation, we let the component handle the specific title,
+    // or set a temporary one here.
+    document.title = 'Loading Invitation... | Satu Undangan'
+  } else {
+    document.title = defaultTitle
   }
 
   next()
