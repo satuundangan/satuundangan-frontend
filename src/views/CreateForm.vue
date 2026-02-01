@@ -629,15 +629,12 @@ function generatePayload() {
     })))
      : "",
     
-    // Bank accounts aren't explicitly in 'POST /invitation' docs top level but form has them. 
-    // If backend supports 'bankAccounts', keep it. If not, maybe it goes into eWalletLink or similar?
-    // Keeping it as is for now, assuming docs might be partial or it's a custom field.
-    bankAccounts: formData.value.bankAccounts.map((account) => ({
-      bankName: account.bankName,
-      accountNumber: account.accountNumber,
-      accountName: account.accountName,
-      bankLogo: account.bankLogoUrl || account.bankLogo,
-    })),
+    // bankAccounts: formData.value.bankAccounts.map((account) => ({
+    //   bankName: account.bankName,
+    //   accountNumber: account.accountNumber,
+    //   accountName: account.accountName,
+    //   bankLogo: account.bankLogoUrl || account.bankLogo,
+    // })),
     
     musicChoice:
       formData.value.music === 'custom'
