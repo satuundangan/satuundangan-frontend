@@ -165,7 +165,7 @@
                      class="form-input"
                      placeholder="Tulis ayat atau kata-kata mutiara pilihanmu..."></textarea>
                     <div v-else class="bg-gray-50 p-4 rounded-xl border border-gray-200 italic text-muted text-sm">
-                       “Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu...”
+                       "{{ DEFAULT_QUOTE }}"
                     </div>
                  </div>
               </div>
@@ -483,6 +483,8 @@ const foodList = ref([])
 const giftAddresses = ref([])
 const finalPayload = ref(null)
 
+const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir. (QS. Ar-Rum: 21)"
+
 const validationErrors = ref({})
 
 const suggestedTitle = computed(() => {
@@ -607,7 +609,8 @@ function generatePayload() {
     isPublished: formData.value.isPublished,
     quoteSource: formData.value.quoteSource,
     quoteType: formData.value.quoteType,
-    quoteText: formData.value.quote,
+    quoteType: formData.value.quoteType,
+    quoteText: formData.value.quoteType === 'custom' ? formData.value.quote : DEFAULT_QUOTE,
     dateTime: formData.value.dateTime,
     photoCoupleUrl: formData.value.photoCoupleUrl || formData.value.photoCouple,
     
