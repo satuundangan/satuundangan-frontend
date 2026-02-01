@@ -213,8 +213,22 @@ async function fetchGuests(invId) {
 }
 
 async function submitGuest() {
-   if(!newGuest.value.name) return toast.warning("Nama wajib diisi");
+   if(!newGuest.value.name?.trim()) {
+      toast.warning("Nama tamu wajib diisi");
+      return;
+   }
    
+   // Phone Number Strict Validation (Optional but strict if filled)
+   if (newGuest.value.phoneNumber) {
+      // Regex: Allow +62, 62, or 08 followed by digits. 
+      // User-friendly check.
+      const phoneRegex = /^(\+62|62|08)[0-9]{6,15}$/; 
+      if (!phoneRegex.test(newGuest.value.phoneNumber)) {
+         toast.warning("Nomor HP tidak valid. Gunakan format 08... atau 62...");
+         return;
+      }
+   }
+
    isSubmitting.value = true;
    try {
       await createGuest({

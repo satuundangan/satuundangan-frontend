@@ -525,6 +525,30 @@ function addToCalendar() {
 }
 
 function submitRSVP() {
+  // Validate Name
+  if (!rsvp.value.name?.trim()) {
+    alert("Mohon isi nama Anda.")
+    return
+  }
+  
+  // Validate Attendance
+  if (!rsvp.value.attendance) {
+    alert("Mohon pilih konfirmasi kehadiran (Hadir/Maaf/Ragu).")
+    return
+  }
+
+  // Validate Total Guests if 'Hadir'
+  if (rsvp.value.attendance === 'hadir' && !rsvp.value.totalGuest) {
+    alert("Mohon pilih jumlah tamu yang akan hadir.")
+    return
+  }
+  
+  // Validate Message
+  if (!rsvp.value.message?.trim() || rsvp.value.message.trim().length < 3) {
+    alert("Mohon isi ucapan & doa minimal 3 karakter.")
+    return
+  }
+
   alert(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
 }
 
