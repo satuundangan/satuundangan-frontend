@@ -68,8 +68,8 @@
             <button @click="handlePublish" :disabled="isPublishing" 
                class="px-5 py-2.5 sm:px-6 rounded-full text-xs sm:text-sm font-bold text-white bg-mocha hover:bg-mocha/90 shadow-lg shadow-mocha/20 transition-all hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
                <span v-if="isPublishing" class="animate-spin"><i class="fa-solid fa-circle-notch"></i></span>
-               <span v-else>Lanjut Pembayaran</span>
-               <i v-if="!isPublishing" class="fa-solid fa-arrow-right"></i>
+               <span v-else>{{ isEditMode ? 'Simpan Perubahan' : 'Lanjut Pembayaran' }}</span>
+               <i v-if="!isPublishing" :class="isEditMode ? 'fa-solid fa-save' : 'fa-solid fa-arrow-right'"></i>
             </button>
         </div>
     </div>
@@ -97,6 +97,7 @@ const authMode = ref('login')
 const isFullscreen = ref(false)
 const previewContainer = ref(null)
 const iframeUrl = ref('')
+const isEditMode = ref(!!localStorage.getItem('editInvitationId'))
 
 function goBack() {
    router.push('/create/form')
@@ -114,7 +115,7 @@ function toggleFullscreen() {
   }
 }
 
-import { createInvitation } from '@/api/invitation'
+import { createInvitation, updateInvitation } from '@/api/invitation'
 
 const handlePublish = async () => {
   if (!userName.value) {
@@ -134,8 +135,21 @@ const handlePublish = async () => {
     }
 
     const payload = JSON.parse(payloadString)
-    const response = await createInvitation(payload)
-    const invitation = response.data || response
+    
+    // Check if we are in Edit Mode
+    const editId = localStorage.getItem('editInvitationId')
+    let invitation
+    
+    if (editId) {
+       const res = await updateInvitation(editId, payload)
+       invitation = res.data || res
+       // Clear edit ID after success
+       localStorage.removeItem('editInvitationId')
+    } else {
+       const response = await createInvitation(payload)
+       invitation = response.data || response
+    }
+
     const slug = invitation.slug
 
     router.push(`/checkout?slug=${slug}`)

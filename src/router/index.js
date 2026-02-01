@@ -50,6 +50,12 @@ const router = createRouter({
       component: CreateForm,
     },
     {
+      path: '/invitation/:id/edit',
+      name: 'invitation.edit',
+      component: CreateForm,
+      meta: { title: 'Edit Undangan' },
+    },
+    {
       path: '/preview',
       name: 'preview',
       component: PreviewInvitation,

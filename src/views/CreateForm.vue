@@ -391,7 +391,7 @@
               <button @click="saveAndPreview" :disabled="isUploading"
                 class="bg-mocha text-white font-bold py-3 px-6 md:py-4 md:px-10 rounded-xl hover:bg-mocha/90 shadow-lg shadow-mocha/20 hover:shadow-mocha/30 hover:-translate-y-1 transition-all disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2 md:gap-3 text-sm md:text-base">
                 <span v-if="isUploading" class="animate-spin w-4 h-4 md:w-5 md:h-5 border-2 border-white/30 border-t-white rounded-full"></span>
-                <span v-else>Preview <span class="hidden md:inline">Undangan</span></span>
+                <span v-else>{{ route.params.id ? 'Preview Perubahan' : 'Preview Undangan' }}</span>
                 <i v-if="!isUploading" class="fa-solid fa-wand-magic-sparkles"></i>
               </button>
            </div>
@@ -406,8 +406,11 @@
 
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { uploadFileApi } from '@/api/file'
+import { getInvitationById } from '@/api/invitation'
+
+const route = useRoute()
 
 const router = useRouter()
 const isUploading = ref(false)
@@ -922,7 +925,39 @@ onMounted(() => {
     acc[key] = true
     return acc
   }, {})
+
+  // Edit Mode Logic
+  if (route.params.id) {
+      handleEditMode(route.params.id)
+  }
 })
+
+async function handleEditMode(id) {
+  try {
+     const res = await getInvitationById(id)
+     const data = res.data || res
+     
+     // Map API response to formData
+     mapPayloadToFormData(data)
+     
+     // Store ID for preview page
+     localStorage.setItem('editInvitationId', id)
+     
+     // Also update selectedSections based on data
+     if(data.selectedSections) {
+        sections.value = data.selectedSections.reduce((acc, key) => {
+           acc[key] = true
+           return acc
+        }, {})
+        localStorage.setItem('selectedSections', JSON.stringify(data.selectedSections))
+     }
+
+  } catch (error) {
+     console.error("Failed to load invitation", error)
+     alert("Gagal memuat data undangan")
+     router.push('/dashboard')
+  }
+}
 
 function mapPayloadToFormData(payload) {
   if(!payload) return
