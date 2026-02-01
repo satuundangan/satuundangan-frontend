@@ -192,11 +192,13 @@
           </div>
           
           <!-- Back Link -->
-          <div class="mt-8 text-center">
-             <router-link :to="`/edit/${invitation?.id}`" class="text-sm font-bold text-mocha/40 hover:text-mocha transition-all flex items-center justify-center gap-2 group">
+          <div class="mt-8 text-center animate-fade-in delay-300">
+             <router-link :to="invitation?.id ? `/invitation/${invitation.id}/edit` : '/create/form'" 
+                class="text-sm font-bold text-mocha/40 hover:text-mocha transition-all flex items-center justify-center gap-2 group">
                 <i class="fa-solid fa-chevron-left text-[10px] transition-transform group-hover:-translate-x-1"></i>
                 <span>Kembali Edit Undangan</span>
              </router-link>
+             <p v-if="!invitation?.id" class="text-xs text-mocha/20 mt-1">*Edit akan menggunakan draft terakhir di browser ini.</p>
           </div>
         </div>
 
