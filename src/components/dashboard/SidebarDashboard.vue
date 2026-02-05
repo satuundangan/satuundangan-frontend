@@ -22,7 +22,7 @@
     </nav>
 
     <div class="p-4 border-t border-gray-100">
-       <button class="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium">
+       <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium">
           <span>🚪</span> Logout
        </button>
     </div>
@@ -31,10 +31,17 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
+const auth = useAuthStore();
 
 function goToHome() {
+  router.push('/');
+}
+
+function handleLogout() {
+  auth.logout();
   router.push('/');
 }
 

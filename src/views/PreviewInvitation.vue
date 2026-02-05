@@ -56,7 +56,21 @@
 
     <!-- Bottom Action Bar -->
     <div class="fixed bottom-0 left-0 right-0 p-4 md:bottom-8 md:p-0 z-[60] flex justify-center pointer-events-none">
-        <div class="flex items-center gap-2 sm:gap-4 bg-white/90 backdrop-blur-xl p-2 pl-4 sm:pl-6 pr-2 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50 ring-1 ring-black/5 animate-slide-up pointer-events-auto">
+        
+        <!-- Toggle Button (Show) -->
+        <button v-if="!isActionBarVisible" @click="isActionBarVisible = true"
+           class="pointer-events-auto w-12 h-12 rounded-full bg-white shadow-lg flex items-center justify-center text-mocha hover:scale-110 transition-transform absolute bottom-4 right-4 md:static">
+           <i class="fa-solid fa-eye"></i>
+        </button>
+
+        <!-- Main Bar -->
+        <div v-else class="relative flex items-center gap-2 sm:gap-4 bg-white/90 backdrop-blur-xl p-2 pl-4 sm:pl-6 pr-2 rounded-full shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-white/50 ring-1 ring-black/5 animate-slide-up pointer-events-auto">
+            
+            <!-- Hide Button -->
+            <button @click="isActionBarVisible = false" class="absolute -top-3 -right-3 bg-white w-6 h-6 rounded-full shadow-md flex items-center justify-center text-gray-400 hover:text-red-500 text-xs border border-gray-100 transition-colors z-10" title="Sembunyikan">
+               <i class="fa-solid fa-times"></i>
+            </button>
+
             <div class="text-xs sm:text-sm font-semibold text-gray-500 mr-2 hidden sm:block">
                Sudah sesuai?
             </div>
@@ -83,12 +97,13 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import AuthModal from '@/components/modal/AuthModal.vue'
 
 const auth = useAuthStore()
 const userName = computed(() => auth.user?.name || null)
 const router = useRouter()
+const route = useRoute()
 
 const viewMode = ref('Mobile')
 const isPublishing = ref(false)
@@ -98,6 +113,7 @@ const isFullscreen = ref(false)
 const previewContainer = ref(null)
 const iframeUrl = ref('')
 const isEditMode = ref(!!localStorage.getItem('editInvitationId'))
+const isActionBarVisible = ref(true)
 
 function goBack() {
    router.push('/create/form')
@@ -115,7 +131,7 @@ function toggleFullscreen() {
   }
 }
 
-import { createInvitation, updateInvitation } from '@/api/invitation'
+import { createInvitation, updateInvitation, getInvitationBySlug } from '@/api/invitation'
 
 const handlePublish = async () => {
   if (!userName.value) {
@@ -127,46 +143,52 @@ const handlePublish = async () => {
 
   try {
     isPublishing.value = true
-    const payloadString = localStorage.getItem('finalPayload')
-    if (!payloadString) {
-      alert('Data undangan tidak ditemukan. Silakan buat ulang.')
-      router.push('/create')
-      return
-    }
-
-    const payload = JSON.parse(payloadString)
-    
-    // Check if we are in Edit Mode
+    // In preview mode, the invitation is already saved as draft in backend
+    // So 'publish' just means proceeding to checkout for that specific invitation
     const editId = localStorage.getItem('editInvitationId')
-    let invitation
+    const slug = route.query.slug
     
-    if (editId) {
-       const res = await updateInvitation(editId, payload)
-       invitation = res.data || res
-       // Clear edit ID after success
-       localStorage.removeItem('editInvitationId')
-    } else {
-       const response = await createInvitation(payload)
-       invitation = response.data || response
+    if (!slug) {
+       alert("Data undangan tidak ditemukan.")
+       return
     }
-
-    const slug = invitation.slug
 
     router.push(`/checkout?slug=${slug}`)
   } catch (error) {
     console.error('Publish error:', error)
-    alert('Gagal mempublish undangan: ' + (error.response?.data?.message || error.message))
+    alert('Gagal memproses undangan: ' + (error.response?.data?.message || error.message))
   } finally {
     isPublishing.value = false
   }
 }
 
-onMounted(() => {
-  const stored = localStorage.getItem('finalPayload')
-  if (stored) {
-     const data = JSON.parse(stored)
-     const slug = data.slug || 'preview'
-     iframeUrl.value = `/${slug}?preview=true`
+onMounted(async () => {
+  const slugParam = route.query.slug
+  
+  if (slugParam) {
+     try {
+        // Just verify it exists or get details if needed
+        const res = await getInvitationBySlug(slugParam)
+        const data = res.data || res
+        iframeUrl.value = `/${data.slug}?preview=true`
+     } catch (err) {
+        console.error("Failed to fetch invitation for preview", err)
+        // Fallback to localStorage if backend fetch fails
+        const stored = localStorage.getItem('finalPayload')
+        if (stored) {
+           const data = JSON.parse(stored)
+           const slug = data.slug || 'preview'
+           iframeUrl.value = `/${slug}?preview=true`
+        }
+     }
+  } else {
+     // Fallback for direct navigation without slug
+     const stored = localStorage.getItem('finalPayload')
+     if (stored) {
+        const data = JSON.parse(stored)
+        const slug = data.slug || 'preview'
+        iframeUrl.value = `/${slug}?preview=true`
+     }
   }
   
   document.addEventListener('fullscreenchange', () => {

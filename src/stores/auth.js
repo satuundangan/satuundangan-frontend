@@ -34,7 +34,7 @@ export const useAuthStore = defineStore('auth', {
       if (!this.token) return
       try {
         const res = await getProfile(this.token)
-        console.log('Fetched profile:', res)
+        // console.log('Fetched profile:', res)
         // Handle response wrapping (e.g. { data: { ... } })
         this.user = res
       } catch (error) {

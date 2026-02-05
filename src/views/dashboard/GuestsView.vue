@@ -16,7 +16,7 @@
               </select>
            </div>
            
-           <button @click="showAddModal = true" class="bg-mocha text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-mocha/90 flex items-center gap-2 shadow-lg shadow-mocha/20">
+           <button @click="showAddModal = true" :disabled="!selectedInvitationId" class="bg-mocha text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-mocha/90 flex items-center gap-2 shadow-lg shadow-mocha/20 disabled:opacity-50 disabled:cursor-not-allowed">
               <span>+</span> Tambah Tamu
            </button>
         </div>

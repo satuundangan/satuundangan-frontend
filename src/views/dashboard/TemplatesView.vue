@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen bg-gray-100">
     <Sidebar />
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col ml-64 transition-all duration-300">
       <Topbar title="Templates" />
       <main class="p-6 grid grid-cols-1 md:grid-cols-3 gap-6 overflow-y-auto">
         <div v-for="n in 6" :key="n" class="bg-white rounded-xl shadow p-4">

@@ -16,6 +16,7 @@ app.use(Toast, {
   closeOnClick: true,
   pauseOnFocusLoss: true,
   draggable: true,
+  containerClassName: 'z-[10000]',
 })
 
 

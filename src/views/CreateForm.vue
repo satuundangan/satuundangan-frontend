@@ -142,34 +142,7 @@
            </section>
 
            <!-- Section: Quote -->
-           <section v-if="sections.quote" class="space-y-6 pt-8 border-t border-gray-100">
-               <div class="flex items-center gap-4 pb-4 border-b border-gray-100">
-                 <div class="w-10 h-10 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-xl">📜</div>
-                 <h2 class="text-xl font-bold text-dark">Quote / Ayat</h2>
-              </div>
-              
-              <div class="grid md:grid-cols-3 gap-6">
-                 <div class="md:col-span-1 space-y-3">
-                    <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition" :class="formData.quoteType === 'default' ? 'border-mocha bg-mocha/5' : 'border-gray-200'">
-                       <input type="radio" value="default" v-model="formData.quoteType" class="text-mocha focus:ring-mocha" />
-                       <span class="font-medium">Quote Default</span>
-                    </label>
-                    <label class="flex items-center gap-3 p-3 border rounded-xl cursor-pointer hover:bg-gray-50 transition" :class="formData.quoteType === 'custom' ? 'border-mocha bg-mocha/5' : 'border-gray-200'">
-                       <input type="radio" value="custom" v-model="formData.quoteType" class="text-mocha focus:ring-mocha" />
-                       <span class="font-medium">Tulis Sendiri</span>
-                    </label>
-                 </div>
-                 
-                 <div class="md:col-span-2">
-                    <textarea v-if="formData.quoteType === 'custom'" v-model="formData.quote" rows="4"
-                     class="form-input"
-                     placeholder="Tulis ayat atau kata-kata mutiara pilihanmu..."></textarea>
-                    <div v-else class="bg-gray-50 p-4 rounded-xl border border-gray-200 italic text-muted text-sm">
-                       "{{ DEFAULT_QUOTE }}"
-                    </div>
-                 </div>
-              </div>
-           </section>
+           <QuoteSection v-if="sections.quote" :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
 
            <!-- Section: Acara -->
            <section class="space-y-6 pt-8 border-t border-gray-100">
@@ -408,7 +381,8 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { uploadFileApi } from '@/api/file'
-import { getInvitationById } from '@/api/invitation'
+import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
+import QuoteSection from './create-form/components/QuoteSection.vue'
 
 const route = useRoute()
 
@@ -609,7 +583,6 @@ function generatePayload() {
     isPublished: formData.value.isPublished,
     quoteSource: formData.value.quoteSource,
     quoteType: formData.value.quoteType,
-    quoteType: formData.value.quoteType,
     quoteText: formData.value.quoteType === 'custom' ? formData.value.quote : DEFAULT_QUOTE,
     dateTime: formData.value.dateTime,
     photoCoupleUrl: formData.value.photoCoupleUrl || formData.value.photoCouple,
@@ -631,13 +604,6 @@ function generatePayload() {
       wallet_number: wallet.wallet_number,
     })))
      : "",
-    
-    // bankAccounts: formData.value.bankAccounts.map((account) => ({
-    //   bankName: account.bankName,
-    //   accountNumber: account.accountNumber,
-    //   accountName: account.accountName,
-    //   bankLogo: account.bankLogoUrl || account.bankLogo,
-    // })),
     
     musicChoice:
       formData.value.music === 'custom'
@@ -702,7 +668,11 @@ function generatePayload() {
     selectedSections: Object.keys(sections.value).filter((key) => !!sections.value[key]),
     enableGuestMessage: formData.value.wishes === 'ya',
   }
+  
+  // Keep localStorage as backup/sync for now
   localStorage.setItem('finalPayload', JSON.stringify(payload))
+  
+  return payload
 }
 
 function resetValidationErrors() {
@@ -731,12 +701,6 @@ function validateField(field) {
     case 'groomName':
       if (!data.groomName?.trim()) message = 'Nama Mempelai Pria wajib diisi'
       break
-    // case 'brideParents':
-    //   // Optional
-    //   break
-    // case 'groomParents':
-    //   // Optional
-    //   break
     case 'bridePhoto':
       if (!data.bridePhoto && !data.bridePhotoFile) message = 'Foto Mempelai Wanita wajib diupload'
       break
@@ -746,9 +710,6 @@ function validateField(field) {
     case 'title':
       if (!data.title?.trim()) message = 'Judul Undangan wajib diisi'
       else if (data.title.trim().length < 3) message = 'Minimal 3 karakter'
-      // Slug validation if title can be used as slug source, but backend handles slug generation often.
-      // If we want to validate implicit slug chars:
-      // else if (!/^[a-zA-Z0-9\s&]+$/.test(data.title)) message = 'Judul mengandung karakter ilegal'
       break
     case 'photoCouple':
       if (sections.value.photoCouple && !data.photoCouple && !data.photoCoupleFile) message = 'Foto utama (Cover) wajib diupload'
@@ -783,11 +744,6 @@ function validateField(field) {
     case 'resepsiDateTime':
       if (data.isSingleEvent === false && !data.resepsiDateTime) message = 'Waktu Resepsi wajib diisi'
       break
-    case 'gallery':
-      // Backend doesn't Strictly require gallery, but if section enabled, better have at least 1?
-      // Keeping it optional as requested in some contexts, but strict if 'sections.gallery' is true could be good.
-      // if (sections.value.gallery && (!data.gallery || data.gallery.length === 0)) message = 'Minimal 1 foto galeri'
-      break
     case 'music':
       if (data.music === 'custom' && !data.musicFile && !data.musicFileName) message = 'File musik wajib diupload'
       break
@@ -798,67 +754,10 @@ function validateField(field) {
   return !message
 }
 
-
-function validateForm() {
-  resetValidationErrors()
-  const fieldsToValidate = [
-    'brideName', 'groomName', 'bridePhoto', 'groomPhoto', 'title', 
-    'photoCouple', 'isSingleEvent', 'map', 'dateTime', 
-    'akadMap', 'akadDateTime', 'resepsiMap', 'resepsiDateTime'
-  ]
-  
-  const results = fieldsToValidate.map((field) => validateField(field))
-  
-  // Custom checks for conditional fields
-  
-  
-  return results.every(Boolean)
-}
-
 function handleMusicChange() {
   if (formData.value.music === 'custom' && !isPremiumTemplate.value) {
      alert("Fitur ini hanya untuk Template Premium. Silakan upgrade atau pilih musik yang tersedia.")
      formData.value.music = ''
-  }
-}
-
-function findFirstErrorField() {
-  const order = [
-    'brideName', 'groomName', 'bridePhoto', 'groomPhoto', 'title', 
-    'photoCouple', 'isSingleEvent', 'map', 'dateTime', 
-    'akadMap', 'akadDateTime', 'resepsiMap', 'resepsiDateTime'
-  ]
-  for (const key of order) {
-    if (validationErrors.value[key]) {
-      return key
-    }
-  }
-  return ''
-}
-
-async function saveAndPreview() {
-  if (!validateForm()) {
-    const target = findFirstErrorField()
-    if (target) {
-      const element = document.querySelector(`[data-field="${target}"]`)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        // Add shake animation logic here if desired
-      }
-    }
-    return
-  }
-
-  isUploading.value = true
-  try {
-    await uploadAllFiles()
-    generatePayload()
-    router.push('/preview')
-  } catch (error) {
-    console.error(error)
-    alert('Gagal mengupload file. Pastikan koneksi internet stabil.')
-  } finally {
-    isUploading.value = false
   }
 }
 
@@ -900,6 +799,75 @@ async function uploadFileToBackend(file) {
   const data = await uploadFileApi(file)
   if (!data.fileUrl) throw new Error('Upload failed')
   return data.fileUrl
+}
+
+function validateForm() {
+  resetValidationErrors()
+  const fieldsToValidate = [
+    'brideName', 'groomName', 'bridePhoto', 'groomPhoto', 'title', 
+    'photoCouple', 'isSingleEvent', 'map', 'dateTime', 
+    'akadMap', 'akadDateTime', 'resepsiMap', 'resepsiDateTime'
+  ]
+  
+  const results = fieldsToValidate.map((field) => validateField(field))
+  return results.every(Boolean)
+}
+
+function findFirstErrorField() {
+  const order = [
+    'brideName', 'groomName', 'bridePhoto', 'groomPhoto', 'title', 
+    'photoCouple', 'isSingleEvent', 'map', 'dateTime', 
+    'akadMap', 'akadDateTime', 'resepsiMap', 'resepsiDateTime'
+  ]
+  for (const key of order) {
+    if (validationErrors.value[key]) {
+      return key
+    }
+  }
+  return ''
+}
+
+async function saveAndPreview() {
+  if (!validateForm()) {
+    const target = findFirstErrorField()
+    if (target) {
+      const element = document.querySelector(`[data-field="${target}"]`)
+      if (element) {
+        element.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+    }
+    return
+  }
+
+  isUploading.value = true
+  try {
+    await uploadAllFiles()
+    const payload = generatePayload()
+    
+    let result
+    // Check if we have an edit ID either from route or localStorage
+    const editId = route.params.id || localStorage.getItem('editInvitationId')
+    
+    if (editId) {
+       const res = await updateInvitation(editId, payload)
+       result = res.data || res
+       localStorage.setItem('editInvitationId', editId)
+    } else {
+       const res = await createInvitation(payload)
+       result = res.data || res
+       // Store the new ID so if they come back they edit this one instead of creating new
+       localStorage.setItem('editInvitationId', result.id)
+    }
+    
+    // Navigate with slug query param for preview to fetch
+    router.push({ path: '/preview', query: { slug: result.slug } })
+    
+  } catch (error) {
+    console.error(error)
+    alert('Gagal menyimpan undangan: ' + (error.response?.data?.message || error.message))
+  } finally {
+    isUploading.value = false
+  }
 }
 
 onMounted(() => {
@@ -969,6 +937,7 @@ function mapPayloadToFormData(payload) {
   formData.value.groomPhoto = payload.groomPhotoUrl || ''
   formData.value.templateName = payload.templateName || ''
   formData.value.quote = payload.quoteText || ''
+  formData.value.quoteSource = payload.quoteSource || ''
   formData.value.quoteType = payload.quoteType || 'default'
   formData.value.dateTime = payload.dateTime || ''
   formData.value.music = payload.isCustomMusic ? 'custom' : payload.musicChoice || ''

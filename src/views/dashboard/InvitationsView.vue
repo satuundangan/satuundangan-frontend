@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen bg-gray-100">
     <Sidebar />
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col ml-64 transition-all duration-300">
       <Topbar title="Invitations" showButton />
       <main class="p-6 space-y-6 overflow-y-auto">
         <div v-if="loading" class="text-center py-10 text-gray-500">Memuat data...</div>

@@ -20,7 +20,19 @@ onMounted(async () => {
       data = stored ? JSON.parse(stored) : null
       if (!data) throw new Error('No preview data found')
     } else {
-      data = await getInvitationBySlug(slug)
+      const response = await getInvitationBySlug(slug)
+      const rawData = response.data || response
+      
+      // Flatten the data: merge root properties with content properties
+      data = {
+        ...rawData.content,
+        id: rawData.id,
+        title: rawData.title,
+        slug: rawData.slug,
+        template_slug: rawData.template_slug,
+        is_premium: rawData.is_premium,
+        is_active: rawData.is_active
+      }
     }
     
     invitationData.value = data

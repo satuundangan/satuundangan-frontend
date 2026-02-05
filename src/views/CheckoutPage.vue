@@ -42,17 +42,18 @@
           <div class="card overflow-hidden !p-0 border-none group">
             <div class="relative aspect-[16/10] overflow-hidden">
               <img 
-                :src="invitation?.photoCouple || invitation?.photoCoupleUrl || invitation?.bridePhotoUrl || '/default-thumbnail.jpg'"
+                :src="invitation?.content?.photoCoupleUrl || invitation?.content?.bridePhotoUrl || invitation?.content?.groomPhotoUrl || '/default-thumbnail.jpg'"
                 class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
                 alt="Couple Preview" 
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
               
-              <!-- Premium Badge -->
+              <!-- Plan Badge -->
               <div class="absolute top-6 right-6">
-                <div class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border border-accent-gold/30">
-                  <i class="fa-solid fa-gem text-accent-gold animate-pulse"></i>
-                  <span class="text-xs font-bold text-mocha uppercase tracking-widest">Premium Plan</span>
+                <div class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border"
+                  :class="invitation?.is_premium ? 'border-accent-gold/30' : 'border-sage/30'">
+                  <i :class="invitation?.is_premium ? 'fa-solid fa-gem text-accent-gold animate-pulse' : 'fa-solid fa-star text-sage'"></i>
+                  <span class="text-xs font-bold text-mocha uppercase tracking-widest">{{ planName }}</span>
                 </div>
               </div>
 
@@ -60,7 +61,7 @@
               <div class="absolute bottom-8 left-8 text-white">
                 <p class="text-accent-gold font-alex text-2xl mb-1">The Wedding of</p>
                 <h2 class="text-4xl font-bold font-alex leading-tight">
-                  {{ invitation?.coupleName || invitation?.title || 'Romeo & Juliet' }}
+                  {{ invitation?.content?.coupleName || invitation?.title || 'Mempelai' }}
                 </h2>
               </div>
             </div>
@@ -71,7 +72,7 @@
                   <p class="text-[10px] uppercase tracking-[0.2em] text-gray-400 font-bold">Tanggal Acara</p>
                   <p class="text-mocha font-semibold flex items-center gap-2">
                     <i class="fa-regular fa-calendar-check text-accent-gold"></i>
-                    {{ formatDate(invitation?.dateTime || invitation?.createdAt) }}
+                    {{ formatDate(invitation?.content?.akadLocation?.dateTime || invitation?.content?.dateTime) }}
                   </p>
                 </div>
                 <div class="space-y-1 text-right">
@@ -87,7 +88,7 @@
                 </div>
                 <div class="space-y-2">
                   <i class="fa-solid fa-images text-sage/60"></i>
-                  <p class="text-[10px] text-gray-500 font-medium">Unlimited Gallery</p>
+                  <p class="text-[10px] text-gray-500 font-medium">Gallery Photos</p>
                 </div>
                 <div class="space-y-2">
                   <i class="fa-solid fa-comments text-sage/60"></i>
@@ -135,10 +136,10 @@
               <div class="space-y-6 mb-8">
                 <div class="flex justify-between items-start group">
                   <div>
-                    <p class="font-bold text-gray-800">Premium Invitation</p>
-                    <p class="text-xs text-gray-400 mt-1 capitalize">{{ invitation?.templateName || 'The Elegant Collection' }}</p>
+                    <p class="font-bold text-gray-800">{{ planName }} Invitation</p>
+                    <p class="text-xs text-gray-400 mt-1 capitalize">{{ invitation?.template_slug?.replace('-', ' ') || 'Dark Elegant' }}</p>
                   </div>
-                  <p class="font-bold text-mocha">Rp 49.000</p>
+                  <p class="font-bold text-mocha">{{ formatCurrency(planPrice) }}</p>
                 </div>
 
                 <div class="flex justify-between items-center text-sm py-4 border-y border-dashed border-gray-100">
@@ -152,7 +153,7 @@
                 <div class="space-y-3">
                   <div class="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
-                    <span>Rp 49.000</span>
+                    <span>{{ formatCurrency(planPrice) }}</span>
                   </div>
                   <div class="flex justify-between text-sm text-gray-500">
                     <span>Admin Fee</span>
@@ -166,7 +167,7 @@
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm font-bold text-mocha uppercase tracking-widest">Total Bayar</span>
                   <span class="text-3xl font-extrabold text-mocha">
-                    Rp 49.000
+                    {{ formatCurrency(planPrice) }}
                   </span>
                 </div>
                 <p class="text-[10px] text-gray-400 text-right">Termasuk PPN 11% (jika ada)</p>
@@ -198,7 +199,6 @@
                 <i class="fa-solid fa-chevron-left text-[10px] transition-transform group-hover:-translate-x-1"></i>
                 <span>Kembali Edit Undangan</span>
              </router-link>
-             <p v-if="!invitation?.id" class="text-xs text-mocha/20 mt-1">*Edit akan menggunakan draft terakhir di browser ini.</p>
           </div>
         </div>
 
@@ -208,7 +208,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getInvitationBySlug } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
@@ -221,6 +221,9 @@ const authStore = useAuthStore()
 
 const invitation = ref(null)
 const loading = ref(false)
+
+const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
+const planPrice = computed(() => invitation.value?.is_premium ? 49000 : 19000)
 
 onMounted(async () => {
   const slug = route.query.slug
@@ -263,8 +266,8 @@ const handleCheckout = async () => {
   try {
     const payload = {
       orderId: `order-${Date.now()}-${invitation.value.id}`,
-      amount: 49000, 
-      name: invitation.value.coupleName || invitation.value.title,
+      amount: planPrice.value, 
+      name: invitation.value.content?.coupleName || invitation.value.title,
       email: authStore.user.email,
       invitationId: invitation.value.id 
     }
@@ -276,11 +279,11 @@ const handleCheckout = async () => {
 
     window.snap.pay(snapToken, {
       onSuccess: function(result) {
-        console.log("Payment success:", result)
+        // console.log("Payment success:", result)
         router.push(`/${invitation.value.slug}`)
       },
       onPending: function(result) {
-        console.log("Payment pending:", result)
+        // console.log("Payment pending:", result)
         alert('Pembayaran tertunda')
       },
       onError: function(result) {
@@ -300,7 +303,7 @@ const handleCheckout = async () => {
 }
 
 const formatDate = (date) => {
-  if (!date) return '-'
+  if (!date || date === "") return '-'
   const d = new Date(date)
   if (isNaN(d.getTime())) return '-'
   return d.toLocaleDateString('id-ID', {
@@ -309,6 +312,14 @@ const formatDate = (date) => {
     month: 'long',
     day: 'numeric'
   })
+}
+
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(value)
 }
 </script>
 

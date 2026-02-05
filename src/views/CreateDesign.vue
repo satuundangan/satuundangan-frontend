@@ -153,6 +153,18 @@ onMounted(async () => {
   if (!template) {
     router.push('/')
   } else {
+    // Check for existing draft if coming directly (not just switched template)
+    if (selectedSectionsLocalStorage) {
+       const userWantsResume = confirm("Anda memiliki draft undangan sebelumnya. Lanjutkan edit? \nKlik 'Cancel' untuk buat undangan baru (Pilih Template).")
+       if (!userWantsResume) {
+          localStorage.removeItem('selectedTemplate')
+          localStorage.removeItem('selectedSections')
+          localStorage.removeItem('finalPayload')
+          router.push('/')
+          return
+       }
+    }
+
     try {
        selectedTemplate.value = JSON.parse(template)
        
