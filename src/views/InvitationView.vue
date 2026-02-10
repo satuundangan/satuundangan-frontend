@@ -35,7 +35,10 @@ onMounted(async () => {
       }
     }
     
-    invitationData.value = data
+    invitationData.value = {
+      ...data,
+      guestName: route.query.to || 'Tamu Undangan'
+    }
 
     // Default to 'dark-elegant' if templateName or template_slug is missing
     const templateSlug = (data.templateName || data.template_slug || 'dark-elegant').toLowerCase().replace(/\s+/g, '-')

@@ -33,9 +33,11 @@
               
               <p class="text-gray-600 text-sm italic mb-4">"{{ msg.message }}"</p>
               
-              <!-- <div class="pt-4 border-t border-gray-50 flex justify-end">
-                 <button class="text-xs text-red-400 hover:text-red-600 font-medium">Hapus</button>
-              </div> -->
+              <div class="pt-4 border-t border-gray-50 flex justify-end">
+                 <button @click="handleDeleteMessage(msg.id)" class="text-xs text-red-400 hover:text-red-600 font-medium flex items-center gap-1">
+                    <i class="fa-solid fa-trash-can"></i> Hapus
+                 </button>
+              </div>
            </div>
            
            <div v-if="messages.length === 0" class="col-span-full py-20 text-center text-gray-400 italic bg-white rounded-2xl border border-dashed border-gray-200">
@@ -53,7 +55,7 @@ import { onMounted, ref, watch } from "vue";
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
 import Topbar from "@/components/dashboard/TopbarDashboard.vue";
 import { getInvitations } from "@/api/invitation";
-import { getGuestMessagesByInvitationId } from "@/api/guestMessage";
+import { getGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
@@ -96,5 +98,17 @@ async function fetchMessages(invId) {
 function formatDate(dateStr) {
    if(!dateStr) return '';
    return new Date(dateStr).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
+}
+
+async function handleDeleteMessage(id) {
+   if(!confirm("Hapus ucapan ini?")) return;
+   try {
+      await deleteGuestMessage(id);
+      toast.success("Ucapan dihapus");
+      await fetchMessages(selectedInvitationId.value);
+   } catch(e) {
+      console.error(e);
+      toast.error("Gagal menghapus");
+   }
 }
 </script>

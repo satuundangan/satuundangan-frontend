@@ -2,9 +2,7 @@
   <div class="relative min-h-screen bg-white overflow-hidden font-sans no-scrollbar font-montserrat text-gray-800">
 
     <!-- Music Control -->
-    <div class="absolute z-50">
-       <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" />
-    </div>
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" />
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"
@@ -61,7 +59,7 @@
 
           <div class="mt-8 p-6 bg-white/60 backdrop-blur-md rounded-2xl border border-gray-200 max-w-xs mx-auto w-full shadow-lg">
             <p class="text-xs text-gray-500 mb-2">Kepada Yth.</p>
-            <p class="text-xl font-bold text-gray-900 mb-4">Nama Tamu</p>
+            <p class="text-xl font-bold text-gray-900 mb-4">{{ data.guestName }}</p>
             <button @click="openInvitation"
               class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-full transition-all transform hover:scale-105 shadow-lg shadow-blue-200 flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-envelope-open"></i> Buka Undangan
@@ -408,8 +406,15 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
 // Basic Data Init
-const data = ref({})
+const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
@@ -440,22 +445,20 @@ const vObserve = {
 function openInvitation() {
   showWelcome.value = false
   setTimeout(() => {
-    document.getElementById('main-content').classList.remove('opacity-0')
+    const el = document.getElementById('main-content')
+    if(el) el.classList.remove('opacity-0')
   }, 100)
 }
 
 function getMusicUrl(choice) {
   if (!choice) return null
-  // If it's a file name, assume local/uploaded path logic, else full URL
-  // For now, simple mapping or return as is if custom
-  if (choice.includes('.')) return choice // assumes file path
+  if (choice.includes('/') || choice.includes('http')) return choice
   if (choice === 'romantic') return '/audio/romantic_music1.mp3'
   return '/audio/romantic_music1.mp3' // default
 }
 
 function getParentName(parentString, index) {
   if (!parentString) return '...'
-  // Simple split assuming "Father & Mother" format
   const parts = parentString.split('&')
   return parts[index]?.trim() || (index === 0 ? parentString : '')
 }
@@ -463,28 +466,31 @@ function getParentName(parentString, index) {
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatStoryDate(dateStr) {
   if (!dateStr) return 'Our Memory'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Our Memory'
   return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 }
 
 function formatInstagramUrl(handle) {
+  if(!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
 
 function getEmbedUrlVideo(url) {
    if (!url) return '';
-   // Convert YouTube watch URL to embed
    if (url.includes('youtube.com/watch')) {
       const videoId = url.split('v=')[1];
       const ampersandPosition = videoId.indexOf('&');
@@ -508,11 +514,10 @@ function copyToClipboard(text) {
 function addToCalendar() {
   const event = {
     title: `Wedding of ${data.value.groomName} & ${data.value.brideName}`,
-    start: new Date(data.value.akadLocation?.dateTime || Date.now()).toISOString(),
+    start: new Date(data.value.akadLocation?.dateTime || data.value.dateTime || Date.now()).toISOString(),
     duration: [3, "hour"],
     description: "Kami mengundang Anda untuk hadir di pernikahan kami."
   }
-  // Simple Google Calendar Link
   const start = event.start.replace(/-|:|\.\d\d\d/g, "")
   const end = new Date(new Date(event.start).getTime() + 3 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "")
   const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${start}/${end}&details=${encodeURIComponent(event.description)}`
@@ -520,43 +525,41 @@ function addToCalendar() {
 }
 
 function submitRSVP() {
-  // Validate Name
   if (!rsvp.value.name?.trim()) {
     alert("Mohon isi nama Anda.")
     return
   }
-  
-  // Validate Attendance
   if (!rsvp.value.attendance) {
-    alert("Mohon pilih konfirmasi kehadiran (Hadir/Maaf/Ragu).")
+    alert("Mohon pilih konfirmasi kehadiran.")
     return
   }
-
-  // Validate Total Guests if 'Hadir'
-  if (rsvp.value.attendance === 'hadir' && !rsvp.value.totalGuest) {
-    alert("Mohon pilih jumlah tamu yang akan hadir.")
-    return
-  }
-  
-  // Validate Message
-  if (!rsvp.value.message?.trim() || rsvp.value.message.trim().length < 3) {
-    alert("Mohon isi ucapan & doa minimal 3 karakter.")
-    return
-  }
-
   alert(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
 }
 
-// --- Lifecycle ---
-onMounted(() => {
-  const stored = localStorage.getItem('finalPayload')
-  if (stored) {
-    data.value = JSON.parse(stored)
-    if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
+function initData() {
+  if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
 
-    // Countdown
-    if (data.value.akadLocation?.dateTime) {
-      const target = new Date(data.value.akadLocation.dateTime).getTime()
+  // Backfill Event Data if missing (Critical Fix)
+  if (!data.value.akadLocation && data.value.dateTime) {
+    data.value.akadLocation = {
+      dateTime: data.value.dateTime,
+      description: 'Lokasi Acara',
+      mapUrl: ''
+    }
+  }
+  if (!data.value.resepsiLocation && data.value.dateTime && !data.value.isSingleEvent) {
+    data.value.resepsiLocation = {
+      dateTime: data.value.dateTime,
+      description: 'Lokasi Resepsi',
+      mapUrl: ''
+    }
+  }
+
+  // Countdown
+  if (data.value.akadLocation?.dateTime) {
+    const target = new Date(data.value.akadLocation.dateTime).getTime()
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
       interval = setInterval(() => {
         const now = new Date().getTime()
         const diff = target - now
@@ -568,25 +571,35 @@ onMounted(() => {
         countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
       }, 1000)
     }
+  }
 
-    // Gallery
-    if (data.value.galleryImages && data.value.galleryImages.length > 0) {
-      galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-    } else {
-      // Placeholder if empty
-      galleryImages.value = [
-        { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' },
-        { src: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=400' },
-        { src: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=400' },
-        { src: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=400' }
-      ]
+  // Gallery
+  if (data.value.galleryImages && data.value.galleryImages.length > 0) {
+    galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
+  }
+}
+
+// --- Lifecycle ---
+onMounted(() => {
+  if (!props.data || Object.keys(props.data).length === 0) {
+    const stored = localStorage.getItem('finalPayload')
+    if (stored) {
+      data.value = JSON.parse(stored)
     }
   }
+  initData()
 })
 
 onUnmounted(() => {
   if (interval) clearInterval(interval)
 })
+
+watch(() => props.data, (newVal) => {
+  if (newVal && Object.keys(newVal).length > 0) {
+    data.value = newVal
+    initData()
+  }
+}, { deep: true })
 </script>
 
 <style scoped>
@@ -599,6 +612,16 @@ onUnmounted(() => {
 
 .font-montserrat {
   font-family: 'Montserrat', sans-serif;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.8s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .animate-fade-in-up {

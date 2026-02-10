@@ -24,3 +24,5 @@ export const deleteInvitation = (id) =>
 export const getInvitationBySlug = (slug) => apiFetch(`/invitation/slug/${slug}`)
 
 export const getInvitationCategories = () => apiFetch('/invitation/categories')
+
+export const getDashboardStats = () => apiFetch('/dashboard/stats')

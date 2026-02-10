@@ -51,7 +51,7 @@
                     <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">{{ guest.group || 'Umum' }}</span>
                  </td>
                  <td class="px-6 py-4">
-                    <a :href="`/${guest.invitation?.slug}/${guest.slug}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
+                    <a :href="`/${currentInvitationSlug}?to=${encodeURIComponent(guest.name)}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
                        Lihat Undangan
                     </a>
                  </td>
@@ -166,6 +166,11 @@ const showShareModal = ref(false);
 const shareMessage = ref("");
 const selectedGuestForShare = ref(null);
 const loadingMessage = ref(false);
+
+const currentInvitationSlug = computed(() => {
+   const inv = invitations.value.find(i => i.id === selectedInvitationId.value);
+   return inv?.slug || "";
+});
 
 const newGuest = ref({
   name: "",

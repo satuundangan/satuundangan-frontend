@@ -14,9 +14,15 @@ export async function apiFetch(path, options = {}) {
   })
 
   if (!res.ok) {
-    const err = await res.json()
+    const err = await res.json().catch(() => ({ message: 'Something went wrong' }))
     throw new Error(err.message || 'Something went wrong')
   }
 
-  return res.json()
+  // Handle empty response
+  const contentType = res.headers.get('content-type')
+  if (!contentType || !contentType.includes('application/json')) {
+    return res
+  }
+
+  return res.json().catch(() => res)
 }

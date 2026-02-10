@@ -4,45 +4,42 @@
     <!-- Music Control -->
     <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" />
 
-        <!-- Bottom Navigation -->
+    <!-- Bottom Navigation -->
 
-        <nav v-if="!showWelcome"
+    <nav v-if="!showWelcome"
+      class="fixed bottom-6 left-0 right-0 mx-auto z-50 bg-black/80 backdrop-blur-xl border border-[#d6b18a]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-2xl shadow-black/50 animate-slide-up w-fit max-w-[95%] md:hidden">
 
-          class="fixed bottom-6 left-0 right-0 mx-auto z-50 bg-black/80 backdrop-blur-xl border border-[#d6b18a]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-2xl shadow-black/50 animate-slide-up w-fit max-w-[95%] md:hidden">
 
-          
 
-          <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+        class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
+        :class="activeSection === item.id ? 'text-[#d6b18a] scale-110' : 'text-white/50 hover:text-white/80'">
 
-            class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
 
-            :class="activeSection === item.id ? 'text-[#d6b18a] scale-110' : 'text-white/50 hover:text-white/80'">
 
-            
+        <i :class="[item.icon, 'text-xl mb-0.5']"></i>
 
-            <i :class="[item.icon, 'text-xl mb-0.5']"></i>
+        <span class="text-[9px] font-medium tracking-wide uppercase">{{ item.label }}</span>
 
-            <span class="text-[9px] font-medium tracking-wide uppercase">{{ item.label }}</span>
 
-            
 
-            <!-- Active Indicator Dot -->
+        <!-- Active Indicator Dot -->
 
-            <span class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#d6b18a] transition-all duration-300"
+        <span
+          class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#d6b18a] transition-all duration-300"
+          :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"></span>
 
-              :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"></span>
+      </button>
 
-          </button>
 
-    
 
-        </nav>
+    </nav>
 
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
         class="absolute inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat transition-all duration-1000"
-        :style="{ backgroundImage: `url('${backgroundUrl}')` }">
+        :style="{ backgroundImage: `url(${backgroundUrl})` }">
 
         <div class="absolute inset-0 bg-black/40"></div>
 
@@ -68,7 +65,7 @@
 
           <div class="mt-8 p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 max-w-xs mx-auto w-full">
             <p class="text-xs text-gray-400 mb-2">Kepada Yth.</p>
-            <p class="text-xl font-bold text-white mb-4">Nama Tamu</p>
+            <p class="text-xl font-bold text-white mb-4">{{ data.guestName }}</p>
             <button @click="openInvitation"
               class="w-full py-3 bg-[#d6b18a] hover:bg-[#b48c5b] text-black font-bold rounded-full transition-all transform hover:scale-105 shadow-lg shadow-[#d6b18a]/20 flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-envelope-open"></i> Buka Undangan
@@ -84,7 +81,7 @@
       <!-- HERO -->
       <section id="home"
         class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
-        :style="{ backgroundImage: `url('${backgroundUrl}')` }">
+        :style="{ backgroundImage: `url(${backgroundUrl})` }">
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/90"></div>
 
         <div class="relative z-10 space-y-6" v-observe>
@@ -178,7 +175,7 @@
       <section id="event" class="py-20 md:py-24 px-6 relative overflow-hidden">
         <!-- Parallax Background -->
         <div class="absolute inset-0 bg-fixed bg-cover bg-center bg-no-repeat opacity-20"
-          :style="{ backgroundImage: `url('${backgroundUrl}')` }"></div>
+          :style="{ backgroundImage: `url(${backgroundUrl})` }"></div>
         <div class="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-transparent to-[#1a1a1a]"></div>
 
         <div class="max-w-4xl mx-auto relative z-10 text-center">
@@ -258,12 +255,13 @@
 
       <!-- DENAH LOKASI (FLOOR PLAN) -->
       <section v-if="data.floorPlanImageUrl" class="py-20 md:py-24 px-6 bg-black" v-observe>
-         <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Denah Lokasi</h2>
-            <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20 group">
-               <img :src="data.floorPlanImageUrl" alt="Denah Lokasi" class="w-full object-contain hover:scale-105 transition-transform duration-500" />
-            </div>
-         </div>
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Denah Lokasi</h2>
+          <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20 group">
+            <img :src="data.floorPlanImageUrl" alt="Denah Lokasi"
+              class="w-full object-contain hover:scale-105 transition-transform duration-500" />
+          </div>
+        </div>
       </section>
 
       <!-- VIDEO PREWEDDING -->
@@ -280,13 +278,14 @@
       <!-- MENU MAKANAN -->
       <section v-if="data.menu?.items?.length" class="py-20 md:py-24 px-6 bg-black">
         <div class="max-w-3xl mx-auto text-center">
-           <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-12">{{ data.menu.title || 'Menu Hidangan' }}</h2>
-           <div class="grid gap-6 md:grid-cols-2">
-              <div v-for="(item, idx) in data.menu.items" :key="idx" class="bg-[#1a1a1a] p-6 rounded-2xl border border-[#333] hover:border-[#d6b18a]/50 transition-colors">
-                 <h4 class="text-xl font-serif text-white mb-2">{{ item.name }}</h4>
-                 <p class="text-gray-400 text-sm">{{ item.description }}</p>
-              </div>
-           </div>
+          <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-12">{{ data.menu.title || 'Menu Hidangan' }}</h2>
+          <div class="grid gap-6 md:grid-cols-2">
+            <div v-for="(item, idx) in data.menu.items" :key="idx"
+              class="bg-[#1a1a1a] p-6 rounded-2xl border border-[#333] hover:border-[#d6b18a]/50 transition-colors">
+              <h4 class="text-xl font-serif text-white mb-2">{{ item.name }}</h4>
+              <p class="text-gray-400 text-sm">{{ item.description }}</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -423,7 +422,7 @@
       <section v-if="data.turutMengundang" class="py-16 px-6 bg-black text-center border-t border-[#222]">
         <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
         <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang
-          }}</p>
+        }}</p>
       </section>
 
       <!-- FOOTER -->
@@ -454,7 +453,7 @@ const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
-const backgroundUrl = ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
+const backgroundUrl = ref('https://images.pexels.com/photos/2531237/pexels-photo-2531237.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500')//ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
 
 // Navigation
 const navItems = [
@@ -525,12 +524,12 @@ function getMusicUrl(choice) {
   return '/audio/romantic_music1.mp3' // default
 }
 
-function getParentName(parentString, index) {
-  if (!parentString) return '...'
-  // Simple split assuming "Father & Mother" format
-  const parts = parentString.split('&')
-  return parts[index]?.trim() || (index === 0 ? parentString : '')
-}
+// function getParentName(parentString, index) {
+//   if (!parentString) return '...'
+//   // Simple split assuming "Father & Mother" format
+//   const parts = parentString.split('&')
+//   return parts[index]?.trim() || (index === 0 ? parentString : '')
+// }
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
@@ -636,11 +635,11 @@ function initData() {
     }
   }
   if (!data.value.resepsiLocation && data.value.dateTime && !data.value.isSingleEvent) {
-     data.value.resepsiLocation = {
+    data.value.resepsiLocation = {
       dateTime: data.value.dateTime,
       description: 'Lokasi Resepsi',
       mapUrl: ''
-     }
+    }
   }
 
   // Countdown
@@ -683,7 +682,7 @@ onMounted(() => {
       data.value = JSON.parse(stored)
     }
   }
-  
+
   initData()
 })
 
@@ -714,6 +713,16 @@ onUnmounted(() => {
 
 .font-montserrat {
   font-family: 'Montserrat', sans-serif;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.8s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .animate-fade-in-up {

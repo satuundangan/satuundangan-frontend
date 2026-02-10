@@ -79,30 +79,44 @@ import { onMounted, ref, computed } from "vue";
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
 import Topbar from "@/components/dashboard/TopbarDashboard.vue";
 import StatCard from "@/components/dashboard/StatCard.vue";
-import { getInvitations } from "@/api/invitation";
+import { getInvitations, getDashboardStats } from "@/api/invitation";
 import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
 const auth = useAuthStore();
 const invitations = ref([]);
+const statsData = ref({
+  total_invitations: 0,
+  total_guests: 0,
+  total_responses: 0
+});
 const loading = ref(true);
 
 const userName = computed(() => auth.user?.name || 'User');
 
 const stats = computed(() => {
-  const total = invitations.value.length;
-  // Mock data for guests/responses since we need deeper API calls to aggregate or new stats endpoint
-  // In real app, call /dashboard/stats
-  const guests = 0; 
-  const responses = 0; 
-  return { total, guests, responses };
+  return {
+    total: statsData.value.total_invitations || invitations.value.length,
+    guests: statsData.value.total_guests || 0,
+    responses: statsData.value.total_responses || 0
+  };
 });
 
 onMounted(async () => {
   try {
-    const res = await getInvitations();
-    invitations.value = Array.isArray(res) ? res : (res.data || []);
+    const [invRes, statsRes] = await Promise.allSettled([
+      getInvitations(),
+      getDashboardStats()
+    ]);
+    
+    if (invRes.status === 'fulfilled') {
+      invitations.value = Array.isArray(invRes.value) ? invRes.value : (invRes.value.data || []);
+    }
+    
+    if (statsRes.status === 'fulfilled') {
+      statsData.value = statsRes.value.data || statsRes.value;
+    }
   } catch (error) {
     console.error(error);
     toast.error("Gagal memuat dashboard");

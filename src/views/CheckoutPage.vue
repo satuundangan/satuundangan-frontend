@@ -184,6 +184,15 @@
                   <span v-else>Bayar Sekarang</span>
                   <i v-if="!loading" class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-2"></i>
                 </button>
+
+                <!-- Payment Simulation (Dev only) -->
+                <button 
+                  v-if="isDevelopment"
+                  @click="simulatePaymentSuccess"
+                  class="w-full py-3 border-2 border-dashed border-sage text-sage font-bold rounded-xl hover:bg-sage/5 transition-all text-sm"
+                >
+                  <i class="fa-solid fa-vial mr-2"></i> Simulasi Bayar Berhasil (Dev Only)
+                </button>
                 
                 <p class="text-[10px] text-center text-gray-400 leading-relaxed px-4">
                   Dengan mengklik tombol di atas, Anda setuju dengan <a href="#" class="underline hover:text-mocha">Syarat & Ketentuan</a> serta <a href="#" class="underline hover:text-mocha">Kebijakan Privasi</a> kami.
@@ -221,6 +230,7 @@ const authStore = useAuthStore()
 
 const invitation = ref(null)
 const loading = ref(false)
+const isDevelopment = computed(() => import.meta.env.DEV || window.location.hostname === 'localhost')
 
 const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
 const planPrice = computed(() => invitation.value?.is_premium ? 49000 : 19000)
@@ -239,6 +249,16 @@ onMounted(async () => {
     loading.value = false
   }
 })
+
+const simulatePaymentSuccess = () => {
+  if (!invitation.value) return
+  loading.value = true
+  setTimeout(() => {
+    loading.value = false
+    alert("Simulasi pembayaran berhasil!")
+    router.push(`/${invitation.value.slug}`)
+  }, 1500)
+}
 
 const loadSnapScript = () => {
   return new Promise((resolve, reject) => {
@@ -278,11 +298,11 @@ const handleCheckout = async () => {
     await loadSnapScript()
 
     window.snap.pay(snapToken, {
-      onSuccess: function(result) {
+      onSuccess: function() {
         // console.log("Payment success:", result)
         router.push(`/${invitation.value.slug}`)
       },
-      onPending: function(result) {
+      onPending: function() {
         // console.log("Payment pending:", result)
         alert('Pembayaran tertunda')
       },
