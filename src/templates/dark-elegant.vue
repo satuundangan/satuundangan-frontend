@@ -2,42 +2,46 @@
   <div class="relative min-h-screen bg-black overflow-hidden font-sans no-scrollbar font-montserrat text-[#f0f0f0]">
 
     <!-- Music Control -->
-    <div class="absolute z-50">
-       <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" />
-    </div>
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" />
 
     <!-- Bottom Navigation -->
+
     <nav v-if="!showWelcome"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 bg-black/60 backdrop-blur-xl border border-white/10 rounded-full px-6 py-3 flex gap-6 shadow-2xl animate-slide-up w-max max-w-[90%] overflow-x-auto no-scrollbar">
-      <a href="#home"
-        class="text-white/60 hover:text-[#d6b18a] transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px]">Home</span>
-      </a>
-      <a href="#couple"
-        class="text-white/60 hover:text-[#d6b18a] transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-heart text-lg"></i>
-        <span class="text-[10px]">Couple</span>
-      </a>
-      <a href="#event"
-        class="text-white/60 hover:text-[#d6b18a] transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-calendar-check text-lg"></i>
-        <span class="text-[10px]">Event</span>
-      </a>
-      <a href="#rsvp"
-        class="text-white/60 hover:text-[#d6b18a] transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-envelope text-lg"></i>
-        <span class="text-[10px]">RSVP</span>
-      </a>
+      class="fixed bottom-6 left-0 right-0 mx-auto z-50 bg-black/80 backdrop-blur-xl border border-[#d6b18a]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-2xl shadow-black/50 animate-slide-up w-fit max-w-[95%] md:hidden">
+
+
+
+      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+        class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
+        :class="activeSection === item.id ? 'text-[#d6b18a] scale-110' : 'text-white/50 hover:text-white/80'">
+
+
+
+        <i :class="[item.icon, 'text-xl mb-0.5']"></i>
+
+        <span class="text-[9px] font-medium tracking-wide uppercase">{{ item.label }}</span>
+
+
+
+        <!-- Active Indicator Dot -->
+
+        <span
+          class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#d6b18a] transition-all duration-300"
+          :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"></span>
+
+      </button>
+
+
+
     </nav>
 
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="absolute inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-cover bg-center transition-all duration-1000"
+        class="absolute inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat transition-all duration-1000"
         :style="{ backgroundImage: `url(${backgroundUrl})` }">
 
-        <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+        <div class="absolute inset-0 bg-black/40"></div>
 
         <div class="relative z-10 space-y-6 animate-fade-in-up w-full">
           <div
@@ -61,7 +65,7 @@
 
           <div class="mt-8 p-6 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 max-w-xs mx-auto w-full">
             <p class="text-xs text-gray-400 mb-2">Kepada Yth.</p>
-            <p class="text-xl font-bold text-white mb-4">Nama Tamu</p>
+            <p class="text-xl font-bold text-white mb-4">{{ data.guestName }}</p>
             <button @click="openInvitation"
               class="w-full py-3 bg-[#d6b18a] hover:bg-[#b48c5b] text-black font-bold rounded-full transition-all transform hover:scale-105 shadow-lg shadow-[#d6b18a]/20 flex items-center justify-center gap-2 text-sm">
               <i class="fa-solid fa-envelope-open"></i> Buka Undangan
@@ -76,9 +80,9 @@
 
       <!-- HERO -->
       <section id="home"
-        class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 bg-fixed bg-cover bg-center"
+        class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
         :style="{ backgroundImage: `url(${backgroundUrl})` }">
-        <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/90"></div>
 
         <div class="relative z-10 space-y-6" v-observe>
           <p class="text-xs md:text-sm tracking-[0.4em] uppercase text-[#d6b18a]">We Are Getting Married</p>
@@ -133,9 +137,7 @@
                 <div
                   class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-6 md:p-8 text-center">
                   <h3 class="text-2xl md:text-3xl font-alex text-[#d6b18a]">{{ data.groomName }}</h3>
-                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putra dari Bpk. {{
-                    getParentName(data.parents?.groomParents, 0) }} & Ibu {{ getParentName(data.parents?.groomParents,
-                    1) }}</p>
+                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putra dari {{ data.parents?.groomParents }}</p>
                   <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)"
                     target="_blank" class="inline-block mt-4 text-[#d6b18a] hover:text-white transition-colors">
                     <i class="fa-brands fa-instagram text-xl"></i>
@@ -156,9 +158,7 @@
                 <div
                   class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-6 md:p-8 text-center">
                   <h3 class="text-2xl md:text-3xl font-alex text-[#d6b18a]">{{ data.brideName }}</h3>
-                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putri dari Bpk. {{
-                    getParentName(data.parents?.brideParents, 0) }} & Ibu {{ getParentName(data.parents?.brideParents,
-                    1) }}</p>
+                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putri dari {{ data.parents?.brideParents }}</p>
                   <a v-if="data.socialMediaBrides?.instagram"
                     :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank"
                     class="inline-block mt-4 text-[#d6b18a] hover:text-white transition-colors">
@@ -174,7 +174,7 @@
       <!-- EVENTS -->
       <section id="event" class="py-20 md:py-24 px-6 relative overflow-hidden">
         <!-- Parallax Background -->
-        <div class="absolute inset-0 bg-fixed bg-cover bg-center opacity-20"
+        <div class="absolute inset-0 bg-fixed bg-cover bg-center bg-no-repeat opacity-20"
           :style="{ backgroundImage: `url(${backgroundUrl})` }"></div>
         <div class="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-transparent to-[#1a1a1a]"></div>
 
@@ -240,9 +240,10 @@
 
           <!-- Live Stream -->
           <div v-if="data.liveStreamingLink" class="mt-8" v-observe>
-             <a :href="data.liveStreamingLink" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-red-600/80 hover:bg-red-600 text-white rounded-full transition-all shadow-lg hover:scale-105 font-bold">
-                <i class="fa-solid fa-video"></i> Tonton Live Streaming
-             </a>
+            <a :href="data.liveStreamingLink" target="_blank"
+              class="inline-flex items-center gap-2 px-6 py-3 bg-red-600/80 hover:bg-red-600 text-white rounded-full transition-all shadow-lg hover:scale-105 font-bold">
+              <i class="fa-solid fa-video"></i> Tonton Live Streaming
+            </a>
           </div>
 
           <button @click="addToCalendar"
@@ -252,14 +253,40 @@
         </div>
       </section>
 
+      <!-- DENAH LOKASI (FLOOR PLAN) -->
+      <section v-if="data.floorPlanImageUrl" class="py-20 md:py-24 px-6 bg-black" v-observe>
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Denah Lokasi</h2>
+          <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20 group">
+            <img :src="data.floorPlanImageUrl" alt="Denah Lokasi"
+              class="w-full object-contain hover:scale-105 transition-transform duration-500" />
+          </div>
+        </div>
+      </section>
+
       <!-- VIDEO PREWEDDING -->
       <section v-if="data.videoPrewedding" class="py-20 md:py-24 px-6 bg-[#1a1a1a]" v-observe>
-         <div class="max-w-4xl mx-auto text-center">
-            <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Video Prewedding</h2>
-            <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20">
-               <iframe :src="getEmbedUrlVideo(data.videoPrewedding)" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Video Prewedding</h2>
+          <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20">
+            <iframe :src="getEmbedUrlVideo(data.videoPrewedding)" class="absolute inset-0 w-full h-full" frameborder="0"
+              allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU MAKANAN -->
+      <section v-if="data.menu?.items?.length" class="py-20 md:py-24 px-6 bg-black">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-12">{{ data.menu.title || 'Menu Hidangan' }}</h2>
+          <div class="grid gap-6 md:grid-cols-2">
+            <div v-for="(item, idx) in data.menu.items" :key="idx"
+              class="bg-[#1a1a1a] p-6 rounded-2xl border border-[#333] hover:border-[#d6b18a]/50 transition-colors">
+              <h4 class="text-xl font-serif text-white mb-2">{{ item.name }}</h4>
+              <p class="text-gray-400 text-sm">{{ item.description }}</p>
             </div>
-         </div>
+          </div>
+        </div>
       </section>
 
       <!-- LOVE STORY -->
@@ -289,7 +316,7 @@
       </section>
 
       <!-- GALLERY -->
-      <section v-if="galleryImages.length" class="py-20 md:py-24 px-4 bg-black">
+      <section id="gallery" v-if="galleryImages.length" class="py-20 md:py-24 px-4 bg-black">
         <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-8 md:mb-12" v-observe>Captured Moments
         </h2>
 
@@ -374,27 +401,28 @@
 
       <!-- PROTOKOL KESEHATAN -->
       <section v-if="data.healthProtocol" class="py-16 px-6 bg-[#1a1a1a] text-center border-t border-[#333]">
-         <h3 class="text-xl font-serif text-white mb-8">Protokol Kesehatan</h3>
-         <div class="flex justify-center gap-8 flex-wrap text-[#d6b18a]">
-            <div class="flex flex-col items-center gap-2 w-24">
-               <i class="fa-solid fa-mask text-3xl"></i>
-               <span class="text-xs text-gray-400">Pakai Masker</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 w-24">
-               <i class="fa-solid fa-hands-bubbles text-3xl"></i>
-               <span class="text-xs text-gray-400">Cuci Tangan</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 w-24">
-               <i class="fa-solid fa-people-arrows text-3xl"></i>
-               <span class="text-xs text-gray-400">Jaga Jarak</span>
-            </div>
-         </div>
+        <h3 class="text-xl font-serif text-white mb-8">Protokol Kesehatan</h3>
+        <div class="flex justify-center gap-8 flex-wrap text-[#d6b18a]">
+          <div class="flex flex-col items-center gap-2 w-24">
+            <i class="fa-solid fa-mask text-3xl"></i>
+            <span class="text-xs text-gray-400">Pakai Masker</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 w-24">
+            <i class="fa-solid fa-hands-bubbles text-3xl"></i>
+            <span class="text-xs text-gray-400">Cuci Tangan</span>
+          </div>
+          <div class="flex flex-col items-center gap-2 w-24">
+            <i class="fa-solid fa-people-arrows text-3xl"></i>
+            <span class="text-xs text-gray-400">Jaga Jarak</span>
+          </div>
+        </div>
       </section>
 
       <!-- TURUT MENGUNDANG -->
       <section v-if="data.turutMengundang" class="py-16 px-6 bg-black text-center border-t border-[#222]">
-         <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
-         <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang }}</p>
+        <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
+        <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang
+        }}</p>
       </section>
 
       <!-- FOOTER -->
@@ -409,16 +437,33 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
 // Basic Data Init
-const data = ref({})
+const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
-const backgroundUrl = ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
+const backgroundUrl = ref('https://images.pexels.com/photos/2531237/pexels-photo-2531237.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500')//ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
+
+// Navigation
+const navItems = [
+  { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
+  { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+  { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
+  { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
+  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
+]
+const activeSection = ref('home')
 
 // Countdown Logic
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
@@ -446,63 +491,88 @@ function openInvitation() {
   showWelcome.value = false
   setTimeout(() => {
     document.getElementById('main-content').classList.remove('opacity-0')
+    initScrollSpy()
   }, 100)
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth' })
+  activeSection.value = id
+}
+
+function initScrollSpy() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        activeSection.value = entry.target.id
+      }
+    })
+  }, { threshold: 0.5 })
+
+  navItems.forEach(item => {
+    const el = document.getElementById(item.id)
+    if (el) observer.observe(el)
+  })
 }
 
 function getMusicUrl(choice) {
   if (!choice) return null
   // If it's a file name, assume local/uploaded path logic, else full URL
-  // For now, simple mapping or return as is if custom
-  if (choice.includes('.')) return choice // assumes file path
+  if (choice.includes('/') || choice.includes('http')) return choice
   if (choice === 'romantic') return '/audio/romantic_music1.mp3'
   return '/audio/romantic_music1.mp3' // default
 }
 
-function getParentName(parentString, index) {
-  if (!parentString) return '...'
-  // Simple split assuming "Father & Mother" format
-  const parts = parentString.split('&')
-  return parts[index]?.trim() || (index === 0 ? parentString : '')
-}
+// function getParentName(parentString, index) {
+//   if (!parentString) return '...'
+//   // Simple split assuming "Father & Mother" format
+//   const parts = parentString.split('&')
+//   return parts[index]?.trim() || (index === 0 ? parentString : '')
+// }
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatStoryDate(dateStr) {
   if (!dateStr) return 'Our Memory'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return 'Our Memory'
   return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
 }
 
 function formatInstagramUrl(handle) {
+  if (!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
 
 function getEmbedUrlVideo(url) {
-   if (!url) return '';
-   // Convert YouTube watch URL to embed
-   if (url.includes('youtube.com/watch')) {
-      const videoId = url.split('v=')[1];
-      const ampersandPosition = videoId.indexOf('&');
-      if(ampersandPosition !== -1) {
-        return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
-      }
-      return `https://www.youtube.com/embed/${videoId}`;
-   }
-   if (url.includes('youtu.be')) {
-      const videoId = url.split('youtu.be/')[1];
-      return `https://www.youtube.com/embed/${videoId}`;
-   }
-   return url;
+  if (!url) return '';
+  // Convert YouTube watch URL to embed
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1];
+    const ampersandPosition = videoId.indexOf('&');
+    if (ampersandPosition !== -1) {
+      return `https://www.youtube.com/embed/${videoId.substring(0, ampersandPosition)}`;
+    }
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  if (url.includes('youtu.be')) {
+    const videoId = url.split('youtu.be/')[1];
+    return `https://www.youtube.com/embed/${videoId}`;
+  }
+  return url;
 }
 
 function copyToClipboard(text) {
@@ -513,7 +583,7 @@ function copyToClipboard(text) {
 function addToCalendar() {
   const event = {
     title: `Wedding of ${data.value.groomName} & ${data.value.brideName}`,
-    start: new Date(data.value.akadLocation?.dateTime || Date.now()).toISOString(),
+    start: new Date(data.value.akadLocation?.dateTime || data.value.dateTime || Date.now()).toISOString(),
     duration: [3, "hour"],
     description: "Kami mengundang Anda untuk hadir di pernikahan kami."
   }
@@ -530,7 +600,7 @@ function submitRSVP() {
     alert("Mohon isi nama Anda.")
     return
   }
-  
+
   // Validate Attendance
   if (!rsvp.value.attendance) {
     alert("Mohon pilih konfirmasi kehadiran (Hadir/Maaf/Ragu).")
@@ -542,7 +612,7 @@ function submitRSVP() {
     alert("Mohon pilih jumlah tamu yang akan hadir.")
     return
   }
-  
+
   // Validate Message
   if (!rsvp.value.message?.trim() || rsvp.value.message.trim().length < 3) {
     alert("Mohon isi ucapan & doa minimal 3 karakter.")
@@ -552,16 +622,30 @@ function submitRSVP() {
   alert(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
 }
 
-// --- Lifecycle ---
-onMounted(() => {
-  const stored = localStorage.getItem('finalPayload')
-  if (stored) {
-    data.value = JSON.parse(stored)
-    if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
+// Initialize Data Helper
+function initData() {
+  if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
 
-    // Countdown
-    if (data.value.akadLocation?.dateTime) {
-      const target = new Date(data.value.akadLocation.dateTime).getTime()
+  // Backfill Event Data if missing (Critical Fix)
+  if (!data.value.akadLocation && data.value.dateTime) {
+    data.value.akadLocation = {
+      dateTime: data.value.dateTime,
+      description: 'Lokasi Acara',
+      mapUrl: ''
+    }
+  }
+  if (!data.value.resepsiLocation && data.value.dateTime && !data.value.isSingleEvent) {
+    data.value.resepsiLocation = {
+      dateTime: data.value.dateTime,
+      description: 'Lokasi Resepsi',
+      mapUrl: ''
+    }
+  }
+
+  // Countdown
+  if (data.value.akadLocation?.dateTime) {
+    const target = new Date(data.value.akadLocation.dateTime).getTime()
+    if (!isNaN(target)) {
       interval = setInterval(() => {
         const now = new Date().getTime()
         const diff = target - now
@@ -573,21 +657,46 @@ onMounted(() => {
         countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
       }, 1000)
     }
+  }
 
-    // Gallery
-    if (data.value.galleryImages && data.value.galleryImages.length > 0) {
-      galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-    } else {
-      // Placeholder if empty
-      galleryImages.value = [
-        { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' },
-        { src: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=400' },
-        { src: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=400' },
-        { src: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=400' }
-      ]
+  // Gallery
+  if (data.value.galleryImages && data.value.galleryImages.length > 0) {
+    galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
+  } else {
+    // Placeholder if empty
+    galleryImages.value = [
+      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' },
+      { src: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=400' },
+      { src: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=400' },
+      { src: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=400' }
+    ]
+  }
+}
+
+// --- Lifecycle ---
+onMounted(() => {
+  // If props.data is empty, try localStorage (fallback for direct preview access)
+  if (!props.data || Object.keys(props.data).length === 0) {
+    const stored = localStorage.getItem('finalPayload')
+    if (stored) {
+      data.value = JSON.parse(stored)
     }
   }
+
+  initData()
 })
+
+onUnmounted(() => {
+  if (interval) clearInterval(interval)
+})
+
+// Watch for prop changes (e.g. when InvitationView updates)
+watch(() => props.data, (newVal) => {
+  if (newVal && Object.keys(newVal).length > 0) {
+    data.value = newVal
+    initData()
+  }
+}, { deep: true })
 
 onUnmounted(() => {
   if (interval) clearInterval(interval)
@@ -604,6 +713,16 @@ onUnmounted(() => {
 
 .font-montserrat {
   font-family: 'Montserrat', sans-serif;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.8s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 .animate-fade-in-up {
@@ -628,12 +747,12 @@ onUnmounted(() => {
 
 @keyframes slideUp {
   from {
-    transform: translate(-50%, 100%);
+    transform: translateY(100%);
     opacity: 0;
   }
 
   to {
-    transform: translate(-50%, 0);
+    transform: translateY(0);
     opacity: 1;
   }
 }

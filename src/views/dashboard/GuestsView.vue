@@ -16,7 +16,7 @@
               </select>
            </div>
            
-           <button @click="showAddModal = true" class="bg-mocha text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-mocha/90 flex items-center gap-2 shadow-lg shadow-mocha/20">
+           <button @click="showAddModal = true" :disabled="!selectedInvitationId" class="bg-mocha text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-mocha/90 flex items-center gap-2 shadow-lg shadow-mocha/20 disabled:opacity-50 disabled:cursor-not-allowed">
               <span>+</span> Tambah Tamu
            </button>
         </div>
@@ -51,7 +51,7 @@
                     <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">{{ guest.group || 'Umum' }}</span>
                  </td>
                  <td class="px-6 py-4">
-                    <a :href="`/${guest.invitation?.slug}/${guest.slug}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
+                    <a :href="`/${currentInvitationSlug}?to=${encodeURIComponent(guest.name)}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
                        Lihat Undangan
                     </a>
                  </td>
@@ -166,6 +166,11 @@ const showShareModal = ref(false);
 const shareMessage = ref("");
 const selectedGuestForShare = ref(null);
 const loadingMessage = ref(false);
+
+const currentInvitationSlug = computed(() => {
+   const inv = invitations.value.find(i => i.id === selectedInvitationId.value);
+   return inv?.slug || "";
+});
 
 const newGuest = ref({
   name: "",

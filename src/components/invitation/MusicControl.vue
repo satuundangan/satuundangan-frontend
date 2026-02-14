@@ -1,5 +1,5 @@
 <template>
-  <div class="absolute bottom-24 right-4 z-40">
+  <div class="fixed bottom-24 right-4 z-50">
     <button @click="toggleAudio"
       class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 backdrop-blur-md border border-white/20"
       :class="isPlaying ? 'bg-mocha/80 text-white animate-spin-slow' : 'bg-black/50 text-white/70'">
@@ -45,7 +45,7 @@ onMounted(() => {
       audio.value.play().then(() => {
         isPlaying.value = true
       }).catch((e) => {
-        console.log("Autoplay blocked:", e)
+        // console.log("Autoplay blocked:", e)
         isPlaying.value = false
       })
       window.removeEventListener('click', tryPlay)

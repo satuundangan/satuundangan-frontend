@@ -1,7 +1,7 @@
 <template>
   <div class="flex h-screen bg-gray-100">
     <Sidebar />
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col ml-64 transition-all duration-300">
       <Topbar title="Settings" />
       <main class="p-6 overflow-y-auto">
         <div class="bg-white p-6 rounded-xl shadow space-y-4 max-w-lg">

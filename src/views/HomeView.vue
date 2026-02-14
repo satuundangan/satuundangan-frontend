@@ -211,7 +211,9 @@
                   <p class="text-xs text-muted mb-3 line-clamp-2 flex-1 leading-relaxed">{{ item.description }}</p>
 
                   <div class="pt-3 border-t border-gray-50 mt-auto flex justify-between items-center">
-                    <span class="text-[10px] text-gray-400 font-mono">ID: {{ item.id }}</span>
+                    <div class="flex gap-1">
+                      <span v-for="color in item.paletteColor" :key="color" class="w-3 h-3 rounded-full border border-gray-100" :style="{ backgroundColor: color }"></span>
+                    </div>
                     <span v-if="selectedTemplate === item.id" class="text-xs font-bold text-mocha">Terpilih</span>
                   </div>
                 </div>
@@ -362,7 +364,6 @@ function selectTemplate(id) {
 
 function goToCreate() {
   const tpl = templates.value.find((t) => t.id === selectedTemplate.value)
-  console.log(tpl)
 
   if (tpl) {
     localStorage.setItem('selectedTemplate', JSON.stringify(tpl))

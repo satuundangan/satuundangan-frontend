@@ -18,7 +18,7 @@ onMounted(async () => {
   if (token) {
     try {
       await authStore.handleLoginWithToken(token)
-      router.push('/checkout') // redirect ke dashboard/checkout
+      router.push('/dashboard') // redirect ke dashboard
 
       //console.log('Token dari query:', token)
 
