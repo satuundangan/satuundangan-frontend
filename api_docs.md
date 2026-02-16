@@ -223,7 +223,7 @@ Protected by `JwtAuthGuard` and `AdminGuard`.
       "template_slug": "elegant-white",
       "content": { ... }, // Full invitation details
       "is_premium": false,
-      "is_active": true
+      "is_published": true
     }
     ```
 

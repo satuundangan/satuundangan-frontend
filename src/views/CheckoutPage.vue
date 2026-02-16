@@ -219,7 +219,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getInvitationBySlug } from '@/api/invitation'
+import { getInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
 
 import { useAuthStore } from '@/stores/auth'
@@ -250,14 +250,21 @@ onMounted(async () => {
   }
 })
 
-const simulatePaymentSuccess = () => {
+const simulatePaymentSuccess = async () => {
   if (!invitation.value) return
   loading.value = true
-  setTimeout(() => {
+  try {
+    // Manually activate the invitation in backend for simulation
+    await updateInvitation(invitation.value.id, { isPublished: true })
+    
     loading.value = false
-    alert("Simulasi pembayaran berhasil!")
+    alert("Simulasi pembayaran berhasil! Undangan Anda kini aktif.")
     router.push(`/${invitation.value.slug}`)
-  }, 1500)
+  } catch (err) {
+    console.error("Gagal aktivasi simulasi:", err)
+    alert("Simulasi pembayaran gagal di sisi server")
+    loading.value = false
+  }
 }
 
 const loadSnapScript = () => {
@@ -298,9 +305,16 @@ const handleCheckout = async () => {
     await loadSnapScript()
 
     window.snap.pay(snapToken, {
-      onSuccess: function() {
-        // console.log("Payment success:", result)
-        router.push(`/${invitation.value.slug}`)
+      onSuccess: async function() {
+        try {
+          // Instant activation for better UX (Backend webhook will also handle this as fallback)
+          await updateInvitation(invitation.value.id, { isPublished: true })
+          router.push(`/${invitation.value.slug}`)
+        } catch (e) {
+          console.error("Instant activation failed:", e)
+          // Still redirect, let them know it might take a moment
+          router.push(`/${invitation.value.slug}`)
+        }
       },
       onPending: function() {
         // console.log("Payment pending:", result)
