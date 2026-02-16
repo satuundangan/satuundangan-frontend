@@ -126,8 +126,8 @@ async function loadData() {
   loading.value = true
   try {
     const res = await fetchAdminCategories({ page: page.value, limit, q: search.value })
-    categories.value = res
-    total.value = res.total
+    categories.value = res.data || []
+    total.value = res.total || 0
   } catch (error) {
     toast.error(error.message || 'Gagal memuat data')
   } finally {
