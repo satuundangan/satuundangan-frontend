@@ -131,33 +131,27 @@
               <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
             </div>
 
-            <!-- Palette Color UI -->
+            <!-- Palette UI -->
             <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Palette Colors</label>
-              <div class="mt-2 flex flex-wrap gap-2">
-                <div v-for="(color, index) in form.paletteColor" :key="index"
-                  class="flex items-center gap-1 rounded-full border border-slate-200 bg-slate-50 pl-1 pr-2 py-1">
-                  <input type="color" v-model="form.paletteColor[index]"
-                    class="h-6 w-6 cursor-pointer rounded-full border-none bg-transparent p-0" />
-                  <input type="text" v-model="form.paletteColor[index]"
-                    class="w-20 bg-transparent text-xs font-mono outline-none" />
-                  <button type="button" @click="removeColor(index)"
-                    class="text-slate-400 hover:text-rose-500">×</button>
-                </div>
-                <button type="button" @click="addColor"
-                  class="flex items-center gap-1 rounded-full border border-dashed border-slate-300 px-3 py-1 text-xs font-medium text-slate-500 hover:border-slate-400 hover:text-slate-600">
-                  + Warna
-                </button>
-              </div>
+              <label class="text-sm font-medium text-slate-600">Palette Warna</label>
+              <select v-model="form.paletteId"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                required>
+                <option value="" disabled>Pilih Palette</option>
+                <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
+                  {{ pal.name }} ({{ pal.color1 }}, {{ pal.color2 }}, {{ pal.color3 }})
+                </option>
+              </select>
             </div>
 
             <!-- Section Options UI -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Section Options</label>
               <div v-if="availableSections.length" class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                <label v-for="section in availableSections" :key="section.key"
+                <label v-for="section in availableSections" :key="section.id"
                   class="flex items-center gap-2 rounded-lg border border-slate-200 p-2 hover:bg-slate-50 cursor-pointer">
-                  <input type="checkbox" :value="section.key" v-model="form.sectionOptions"
+                  <input type="checkbox" :checked="isSectionEnabled(section.id)"
+                    @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
                   <span class="text-sm text-slate-700 capitalize">{{ section.label }}</span>
                 </label>
@@ -198,6 +192,7 @@ import {
   updateAdminTemplate,
   deleteAdminTemplate,
   fetchAdminCategories,
+  fetchAdminPalettes,
 } from '@/api/admin.js'
 import { fetchAdminSections } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
@@ -206,6 +201,7 @@ import Swal from 'sweetalert2'
 const toast = useToast()
 const templates = ref([])
 const categories = ref([])
+const palettes = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const total = ref(0)
 const page = ref(1)
@@ -225,8 +221,8 @@ const form = reactive({
   previewUrl: '',
   description: '',
   tags: [],
-  paletteColor: [],
-  sectionOptions: [],
+  paletteId: '',
+  sections: [],
   isActive: true,
 })
 
@@ -235,17 +231,19 @@ const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 async function loadData() {
   loading.value = true
   try {
-    const [tmplRes, catRes, sectRes] = await Promise.all([
+    const [tmplRes, catRes, sectRes, palRes] = await Promise.all([
       fetchAdminTemplates({ page: page.value, limit, q: search.value }),
       fetchAdminCategories({ limit: 100 }), // Get all categories
-      fetchAdminSections() // Fetch all active sections
+      fetchAdminSections({ limit: 100 }), // Fetch all active sections
+      fetchAdminPalettes({ limit: 100 })
     ])
 
     templates.value = tmplRes.data
     total.value = tmplRes.total
 
-    categories.value = catRes
-    availableSections.value = sectRes || []
+    categories.value = catRes.data || catRes
+    availableSections.value = sectRes.data || sectRes
+    palettes.value = palRes.data || palRes
   } catch (error) {
     toast.error(error.message || 'Gagal memuat data')
   } finally {
@@ -271,12 +269,22 @@ function getCategoryColor(categoryName) {
   return cat ? cat.color : '#cbd5e1'
 }
 
-function addColor() {
-  form.paletteColor.push('#000000')
+function isSectionEnabled(sectionId) {
+  return form.sections.some(s => s.sectionId === sectionId && s.is_enabled)
 }
 
-function removeColor(index) {
-  form.paletteColor.splice(index, 1)
+function toggleSection(sectionId) {
+  const index = form.sections.findIndex(s => s.sectionId === sectionId)
+  if (index > -1) {
+    form.sections[index].is_enabled = !form.sections[index].is_enabled
+  } else {
+    // If not found, add it as enabled
+    form.sections.push({
+      sectionId,
+      order: form.sections.length + 1,
+      is_enabled: true
+    })
+  }
 }
 
 function addTag() {
@@ -302,8 +310,12 @@ function openCreate() {
     previewUrl: '',
     description: '',
     tags: [],
-    paletteColor: ['#FFFFFF', '#000000'],
-    sectionOptions: availableSections.value.filter(s => s.is_active).map(s => s.key),
+    paletteId: '',
+    sections: availableSections.value.map((s, index) => ({
+      sectionId: s.id,
+      order: index + 1,
+      is_enabled: true
+    })),
     isActive: true,
   })
   showForm.value = true
@@ -313,32 +325,23 @@ function openEdit(template) {
   editing.value = template
   tagInput.value = ''
 
-  let pColor = []
-  if (Array.isArray(template.paletteColor)) {
-    pColor = [...template.paletteColor]
-  } else if (typeof template.paletteColor === 'string') {
-    try { pColor = JSON.parse(template.paletteColor) } catch { }
-  }
-
-  let sOptions = []
-  if (Array.isArray(template.sectionOptions)) {
-    sOptions = [...template.sectionOptions]
-  } else if (typeof template.sectionOptions === 'object' && template.sectionOptions !== null) {
-    sOptions = Object.keys(template.sectionOptions).filter(k => template.sectionOptions[k])
-  } else if (typeof template.sectionOptions === 'string') {
-    try {
-      const parsed = JSON.parse(template.sectionOptions)
-      if (Array.isArray(parsed)) sOptions = parsed
-      else sOptions = Object.keys(parsed).filter(k => parsed[k])
-    } catch { }
-  }
-
   let tags = []
   if (Array.isArray(template.tags)) {
     tags = [...template.tags]
   } else if (typeof template.tags === 'string') {
     tags = template.tags.split(',').map(t => t.trim()).filter(Boolean)
   }
+
+  // Map existing sections or initialize with available ones
+  const templateSections = Array.isArray(template.sections) ? template.sections : []
+  const sections = availableSections.value.map((s, index) => {
+    const existing = templateSections.find(ts => ts.sectionId === s.id || ts.id === s.id)
+    return {
+      sectionId: s.id,
+      order: existing ? existing.order : index + 1,
+      is_enabled: existing ? existing.is_enabled : false
+    }
+  })
 
   Object.assign(form, {
     name: template.name || '',
@@ -348,8 +351,8 @@ function openEdit(template) {
     previewUrl: template.previewUrl || '',
     description: template.description || '',
     tags: tags,
-    paletteColor: pColor,
-    sectionOptions: sOptions,
+    paletteId: template.paletteId || (template.palette ? template.palette.id : ''),
+    sections: sections,
     isActive: Boolean(template.isActive),
   })
   showForm.value = true
@@ -369,8 +372,12 @@ function buildPayload() {
     previewUrl: form.previewUrl,
     description: form.description || null,
     isActive: form.isActive,
-    paletteColor: form.paletteColor,
-    sectionOptions: form.sectionOptions,
+    paletteId: form.paletteId,
+    sections: form.sections.map(s => ({
+      sectionId: s.sectionId,
+      order: s.order,
+      is_enabled: s.is_enabled
+    })),
     tags: form.tags
   }
 

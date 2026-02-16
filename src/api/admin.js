@@ -86,3 +86,6 @@ export const deleteAdminCategory = (id) =>
   apiFetch(`/admin/categories/${id}`, {
     method: 'DELETE',
   })
+
+// Palette Colors
+export const fetchAdminPalettes = (params) => apiFetch(withParams('/admin/palette-colors', params))
