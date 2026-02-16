@@ -134,14 +134,24 @@
             <!-- Palette UI -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Palette Warna</label>
-              <select v-model="form.paletteId"
-                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                required>
-                <option value="" disabled>Pilih Palette</option>
-                <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
-                  {{ pal.name }} ({{ pal.color1 }}, {{ pal.color2 }}, {{ pal.color3 }})
-                </option>
-              </select>
+              <div class="mt-2 flex items-center gap-3">
+                <select v-model="form.paletteId"
+                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  required>
+                  <option value="" disabled>Pilih Palette</option>
+                  <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
+                    {{ pal.name }}
+                  </option>
+                </select>
+                <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
+                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                    :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
+                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                    :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
+                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                    :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
+                </div>
+              </div>
             </div>
 
             <!-- Section Options UI -->
@@ -227,6 +237,11 @@ const form = reactive({
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
+
+const selectedPalette = computed(() => {
+  if (!form.paletteId) return null
+  return palettes.value.find(p => p.id === form.paletteId)
+})
 
 async function loadData() {
   loading.value = true
