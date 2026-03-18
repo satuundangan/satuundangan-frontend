@@ -1,7 +1,12 @@
 <script setup>
 import { getInvitationBySlug } from '@/api/invitation'
-import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw } from 'vue'
+import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+
+const templateMap = {
+  'dark-elegant': () => import('../templates/dark-elegant.vue'),
+  'light-modern': () => import('../templates/light-modern.vue'),
+}
 
 const route = useRoute()
 const router = useRouter()
@@ -42,16 +47,13 @@ onMounted(async () => {
       guestName: route.query.to || 'Tamu Undangan'
     }
 
-    // Determine template slug
+    // Determine template slug, fallback to dark-elegant if not found
     const templateSlug = (data.template_slug || 'dark-elegant').toLowerCase().replace(/\s+/g, '-')
+    const loader = templateMap[templateSlug] || templateMap['dark-elegant']
 
-    // Dynamic import template berdasarkan slug
-    // Ensure the path matches your project structure
     TemplateComponent.value = markRaw(defineAsyncComponent({
-      loader: () => import(`../templates/${templateSlug}.vue`),
-      errorComponent: {
-        template: '<div class="text-center p-10">Template tidak ditemukan atau gagal dimuat.</div>'
-      }
+      loader,
+      errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
     }))
   } catch (err) {
     error.value = 'Undangan tidak ditemukan atau terjadi kesalahan.'
