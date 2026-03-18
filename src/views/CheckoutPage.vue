@@ -219,7 +219,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getInvitationBySlug } from '@/api/invitation'
+import { getInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
 
 import { useAuthStore } from '@/stores/auth'
@@ -233,7 +233,7 @@ const loading = ref(false)
 const isDevelopment = computed(() => import.meta.env.DEV || window.location.hostname === 'localhost')
 
 const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
-const planPrice = computed(() => invitation.value?.is_premium ? 49000 : 19000)
+const planPrice = computed(() => invitation.value?.price || (invitation.value?.is_premium ? 49000 : 19000))
 
 onMounted(async () => {
   const slug = route.query.slug
@@ -250,14 +250,21 @@ onMounted(async () => {
   }
 })
 
-const simulatePaymentSuccess = () => {
+const simulatePaymentSuccess = async () => {
   if (!invitation.value) return
   loading.value = true
-  setTimeout(() => {
+  try {
+    // Manually activate the invitation in backend for simulation
+    await updateInvitation(invitation.value.id, { isPublished: true })
+    
     loading.value = false
-    alert("Simulasi pembayaran berhasil!")
+    alert("Simulasi pembayaran berhasil! Undangan Anda kini aktif.")
     router.push(`/${invitation.value.slug}`)
-  }, 1500)
+  } catch (err) {
+    console.error("Gagal aktivasi simulasi:", err)
+    alert("Simulasi pembayaran gagal di sisi server")
+    loading.value = false
+  }
 }
 
 const loadSnapScript = () => {
@@ -284,23 +291,34 @@ const handleCheckout = async () => {
 
   loading.value = true
   try {
-    const payload = {
-      orderId: `order-${Date.now()}-${invitation.value.id}`,
-      amount: planPrice.value, 
-      name: invitation.value.content?.coupleName || invitation.value.title,
-      email: authStore.user.email,
-      invitationId: invitation.value.id 
+    const data = await createPayment({ invitation_id: invitation.value.id })
+    console.log('Payment response:', data)
+
+    if (data.is_free) {
+      console.log('Free template, redirecting to:', `/${invitation.value.slug}`)
+      try {
+        await updateInvitation(invitation.value.id, { isPublished: true })
+      } catch (e) {
+        console.error('updateInvitation failed:', e)
+      }
+      router.push(`/${invitation.value.slug}`)
+      return
     }
-    
-    const data = await createPayment(payload)
+
     const snapToken = data.token
 
     await loadSnapScript()
 
     window.snap.pay(snapToken, {
-      onSuccess: function() {
-        // console.log("Payment success:", result)
-        router.push(`/${invitation.value.slug}`)
+      onSuccess: async function() {
+        try {
+          // Instant activation for better UX (Backend webhook will also handle this as fallback)
+          await updateInvitation(invitation.value.id, { isPublished: true })
+          router.push(`/${invitation.value.slug}`)
+        } catch (e) {
+          console.error("Instant activation failed:", e)
+          router.push(`/${invitation.value.slug}`)
+        }
       },
       onPending: function() {
         // console.log("Payment pending:", result)

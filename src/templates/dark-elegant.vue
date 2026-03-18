@@ -39,7 +39,7 @@
     <transition name="fade">
       <div v-if="showWelcome"
         class="absolute inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat transition-all duration-1000"
-        :style="{ backgroundImage: `url(${backgroundUrl})` }">
+        :style="{ backgroundImage: `url('${backgroundUrl}')` }">
 
         <div class="absolute inset-0 bg-black/40"></div>
 
@@ -81,7 +81,7 @@
       <!-- HERO -->
       <section id="home"
         class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
-        :style="{ backgroundImage: `url(${backgroundUrl})` }">
+        :style="{ backgroundImage: `url('${backgroundUrl}')` }">
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/90"></div>
 
         <div class="relative z-10 space-y-6" v-observe>
@@ -175,7 +175,7 @@
       <section id="event" class="py-20 md:py-24 px-6 relative overflow-hidden">
         <!-- Parallax Background -->
         <div class="absolute inset-0 bg-fixed bg-cover bg-center bg-no-repeat opacity-20"
-          :style="{ backgroundImage: `url(${backgroundUrl})` }"></div>
+          :style="{ backgroundImage: `url('${backgroundUrl}')` }"></div>
         <div class="absolute inset-0 bg-gradient-to-b from-[#1a1a1a] via-transparent to-[#1a1a1a]"></div>
 
         <div class="max-w-4xl mx-auto relative z-10 text-center">
@@ -422,7 +422,7 @@
       <section v-if="data.turutMengundang" class="py-16 px-6 bg-black text-center border-t border-[#222]">
         <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
         <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang
-        }}</p>
+          }}</p>
       </section>
 
       <!-- FOOTER -->
@@ -453,7 +453,7 @@ const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
-const backgroundUrl = ref('https://images.pexels.com/photos/2531237/pexels-photo-2531237.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500')//ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
+const backgroundUrl = ref('')
 
 // Navigation
 const navItems = [
@@ -624,6 +624,7 @@ function submitRSVP() {
 
 // Initialize Data Helper
 function initData() {
+  console.log(data.value.photoCoupleUrl)
   if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
 
   // Backfill Event Data if missing (Critical Fix)
@@ -697,10 +698,6 @@ watch(() => props.data, (newVal) => {
     initData()
   }
 }, { deep: true })
-
-onUnmounted(() => {
-  if (interval) clearInterval(interval)
-})
 </script>
 
 <style scoped>

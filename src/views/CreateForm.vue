@@ -554,9 +554,10 @@ const route = useRoute()
 
 const router = useRouter()
 const isUploading = ref(false)
+const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
+
 const isPremiumTemplate = computed(() => {
-   const selectedTemplate = JSON.parse(localStorage.getItem('selectedTemplate') || '{}')
-   return selectedTemplate.isPremium === true || selectedTemplate.isPremium === 'true'
+   return selectedTemplateRef.value.isPremium === true || selectedTemplateRef.value.isPremium === 'true'
 })
 
 const formData = ref({
@@ -722,6 +723,7 @@ function removeGalleryImage(index) {
 function handleMusicUpload(event) {
    const file = event.target.files?.[0]
    if (!file) return
+   formData.value.musicFileRaw = file
    const reader = new FileReader()
    reader.onload = () => {
       formData.value.musicFile = reader.result
@@ -733,7 +735,7 @@ function handleMusicUpload(event) {
 
 
 function generatePayload() {
-   const selectedTemplate = JSON.parse(localStorage.getItem('selectedTemplate') || '{}')
+   const selectedTemplate = selectedTemplateRef.value
 
    const payload = {
       title: formData.value.title,
@@ -774,7 +776,7 @@ function generatePayload() {
 
       musicChoice:
          formData.value.music === 'custom'
-            ? formData.value.musicFileName
+            ? (formData.value.musicUrl || formData.value.musicFileName)
             : formData.value.music,
       isSingleEvent: formData.value.isSingleEvent,
       isCustomMusic: formData.value.music === 'custom',
@@ -987,6 +989,7 @@ async function uploadAllFiles() {
    })
 
    pushUpload(formData.value.denahFile, url => formData.value.denahUrl = url)
+   pushUpload(formData.value.musicFileRaw, url => formData.value.musicUrl = url)
 
    formData.value.eWalletLink.forEach((wallet, index) => {
       pushUpload(wallet.wallet_imageFile, url => formData.value.eWalletLink[index].wallet_imageUrl = url)
@@ -1078,12 +1081,14 @@ onMounted(() => {
    const stored = localStorage.getItem('selectedSections')
    const finalPayloadStored = localStorage.getItem('finalPayload')
 
-   if (!stored) {
+   // If not in edit mode and no sections selected, redirect to design selection
+   if (!route.params.id && !stored) {
       router.push('/create')
       return
    }
 
-   if (finalPayloadStored) {
+   // Only load draft from localStorage if NOT in edit mode
+   if (!route.params.id && finalPayloadStored) {
       try {
          finalPayload.value = JSON.parse(finalPayloadStored)
          mapPayloadToFormData(finalPayload.value)
@@ -1092,7 +1097,7 @@ onMounted(() => {
       }
    }
 
-   const activeSections = JSON.parse(stored) || []
+   const activeSections = JSON.parse(stored || '[]')
    sections.value = activeSections.reduce((acc, key) => {
       acc[key] = true
       return acc
@@ -1114,6 +1119,12 @@ async function handleEditMode(id) {
 
       // Store ID for preview page
       localStorage.setItem('editInvitationId', id)
+
+      // Store template info for premium checks
+      if (data.templateDesign) {
+         selectedTemplateRef.value = data.templateDesign
+         localStorage.setItem('selectedTemplate', JSON.stringify(data.templateDesign))
+      }
 
       // Also update selectedSections based on data
       if (data.selectedSections) {
@@ -1146,6 +1157,7 @@ function mapPayloadToFormData(payload) {
    formData.value.dateTime = payload.dateTime || ''
    formData.value.music = payload.isCustomMusic ? 'custom' : payload.musicChoice || ''
    formData.value.musicFileName = payload.isCustomMusic ? payload.musicChoice : ''
+   formData.value.musicUrl = payload.isCustomMusic ? payload.musicChoice : ''
    formData.value.photoCouple = payload.photoCoupleUrl || payload.photoCouple || ''
    formData.value.photoCoupleUrl = payload.photoCoupleUrl || payload.photoCouple || ''
 
