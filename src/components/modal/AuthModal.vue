@@ -125,6 +125,7 @@ import { ref, watch, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import { BASE_URL } from '@/api/client'
+import { useRouter } from 'vue-router'
 
 
 const props = defineProps({
@@ -143,6 +144,7 @@ const loading = ref(false)
 
 const auth = useAuthStore()
 const toast = useToast()
+const router = useRouter()
 
 const showPassword = ref(false)
 
@@ -186,6 +188,7 @@ const handleLogin = async () => {
     await auth.login({ email: email.value, password: password.value })
     toast.success('Selamat datang kembali! 🎉')
     emit('close')
+    router.push('/dashboard')
   } catch (e) {
     toast.error('Login gagal! Periksa email dan password.')
     console.error(e)

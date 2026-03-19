@@ -314,7 +314,8 @@ onMounted(async () => {
 
     if (catData) {
       // Use the category NAME (label) as the ID for selection logic
-      const formattedCats = catData.map(c => ({
+      const rawCatData = Array.isArray(catData) ? catData : (catData.data || [])
+      const formattedCats = rawCatData.map(c => ({
         id: c.label || c.name,
         name: c.label || c.name
       }))
