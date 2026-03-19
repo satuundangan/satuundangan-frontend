@@ -35,11 +35,6 @@ const router = createRouter({
       meta: { title: 'Home' },
     },
     {
-      path: '/:slug',
-      name: 'invitation',
-      component: Invitation,
-    },
-    {
       path: '/create',
       name: 'create',
       component: CreateDesign,
@@ -149,6 +144,16 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     { path: '/guests', name: 'Guests', component: GuestsView },
+    {
+      path: '/inv/:slug/:guestSlug',
+      name: 'invitation.guest',
+      component: Invitation,
+    },
+    {
+      path: '/:slug',
+      name: 'invitation',
+      component: Invitation,
+    },
   ],
 })
 

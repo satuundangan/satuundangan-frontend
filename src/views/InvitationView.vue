@@ -42,9 +42,27 @@ onMounted(async () => {
       is_published: rawData.is_published
     }
     
+    // Determine Guest Name
+    let guestName = 'Tamu Undangan'
+    if (route.query.to) {
+      guestName = route.query.to
+    } else if (route.query.e) {
+      try {
+        // Correctly decode UTF-8 from base64
+        const binaryString = atob(route.query.e)
+        const bytes = new Uint8Array(binaryString.length)
+        for (let i = 0; i < binaryString.length; i++) {
+          bytes[i] = binaryString.charCodeAt(i)
+        }
+        guestName = new TextDecoder().decode(bytes)
+      } catch (e) {
+        console.error('Failed to decode guest name', e)
+      }
+    }
+    
     invitationData.value = {
       ...data,
-      guestName: route.query.to || 'Tamu Undangan'
+      guestName: guestName
     }
 
     // Determine template slug, fallback to dark-elegant if not found
