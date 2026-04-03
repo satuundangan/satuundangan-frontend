@@ -24,6 +24,7 @@ import AdminBanks from '@/views/admin/AdminBanks.vue'
 import AdminSections from '@/views/admin/AdminSections.vue'
 import AdminCategories from '@/views/admin/AdminCategories.vue'
 import AdminPalettes from '@/views/admin/AdminPalettes.vue'
+import AdminPromoCodes from '@/views/admin/AdminPromoCodes.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -141,6 +142,12 @@ const router = createRouter({
       path: '/admin/palettes',
       name: 'admin-palettes',
       component: AdminPalettes,
+      meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/promo-codes',
+      name: 'admin-promo-codes',
+      component: AdminPromoCodes,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     { path: '/guests', name: 'Guests', component: GuestsView },
