@@ -142,18 +142,56 @@
                   <p class="font-bold text-mocha">{{ formatCurrency(planPrice) }}</p>
                 </div>
 
-                <div class="flex justify-between items-center text-sm py-4 border-y border-dashed border-gray-100">
-                  <div class="flex items-center gap-2 text-gray-500">
-                    <i class="fa-solid fa-ticket"></i>
-                    <span>Promo Code</span>
+                <!-- Promo Code Input -->
+                <div class="py-4 border-y border-dashed border-gray-100 space-y-3">
+                  <div v-if="!appliedPromo" class="flex gap-2">
+                    <div class="relative flex-1">
+                      <i class="fa-solid fa-ticket absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                      <input
+                        v-model="promoCode"
+                        type="text"
+                        placeholder="Kode Promo"
+                        :disabled="promoLoading"
+                        @keyup.enter="applyPromo"
+                        class="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-mocha uppercase tracking-wider disabled:opacity-50"
+                      />
+                    </div>
+                    <button
+                      @click="applyPromo"
+                      :disabled="promoLoading || !promoCode.trim()"
+                      class="px-4 py-2 bg-accent-gold text-white text-xs font-bold rounded-lg hover:bg-accent-gold/90 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider whitespace-nowrap"
+                    >
+                      {{ promoLoading ? '...' : 'Pakai' }}
+                    </button>
                   </div>
-                  <button class="text-accent-gold font-bold text-xs hover:underline uppercase tracking-wider">Add Code</button>
+
+                  <!-- Applied Promo -->
+                  <div v-if="appliedPromo" class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg px-3 py-2">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-circle-check text-green-500 text-sm"></i>
+                      <span class="text-sm font-bold text-green-700 uppercase tracking-wider">{{ appliedPromo.code }}</span>
+                    </div>
+                    <button @click="removePromo" class="text-xs text-gray-400 hover:text-red-500 font-medium">Hapus</button>
+                  </div>
+
+                  <!-- Promo Error -->
+                  <p v-if="promoError" class="text-xs text-red-500 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    {{ promoError }}
+                  </p>
                 </div>
 
                 <div class="space-y-3">
                   <div class="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
                     <span>{{ formatCurrency(planPrice) }}</span>
+                  </div>
+                  <div v-if="appliedPromo" class="flex justify-between text-sm">
+                    <span class="text-green-600">
+                      Diskon
+                      <span v-if="appliedPromo.discount_type === 'percentage'">({{ appliedPromo.discount_value }}%)</span>
+                    </span>
+                    <span class="text-green-600 font-medium">- {{ formatCurrency(appliedPromo.discount_amount) }}</span>
                   </div>
                   <div class="flex justify-between text-sm text-gray-500">
                     <span>Admin Fee</span>
@@ -166,9 +204,12 @@
               <div class="bg-ivory/50 rounded-2xl p-6 mb-8 border border-mocha/5">
                 <div class="flex justify-between items-center mb-1">
                   <span class="text-sm font-bold text-mocha uppercase tracking-widest">Total Bayar</span>
-                  <span class="text-3xl font-extrabold text-mocha">
-                    {{ formatCurrency(planPrice) }}
-                  </span>
+                  <div class="text-right">
+                    <p v-if="appliedPromo" class="text-xs text-gray-400 line-through">{{ formatCurrency(planPrice) }}</p>
+                    <span class="text-3xl font-extrabold" :class="finalPrice === 0 ? 'text-green-600' : 'text-mocha'">
+                      {{ finalPrice === 0 ? 'GRATIS' : formatCurrency(finalPrice) }}
+                    </span>
+                  </div>
                 </div>
                 <p class="text-[10px] text-gray-400 text-right">Termasuk PPN 11% (jika ada)</p>
               </div>
@@ -221,7 +262,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
-
+import { validatePromoCode } from '@/api/promo'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -234,6 +275,41 @@ const isDevelopment = computed(() => import.meta.env.DEV || window.location.host
 
 const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
 const planPrice = computed(() => invitation.value?.price || (invitation.value?.is_premium ? 49000 : 19000))
+
+// Promo Code
+const promoCode = ref('')
+const promoLoading = ref(false)
+const promoError = ref('')
+const appliedPromo = ref(null)
+
+const finalPrice = computed(() => appliedPromo.value ? appliedPromo.value.final_price : planPrice.value)
+
+async function applyPromo() {
+  const code = promoCode.value.trim().toUpperCase()
+  if (!code || !invitation.value?.id) return
+
+  promoLoading.value = true
+  promoError.value = ''
+  try {
+    const res = await validatePromoCode(code, invitation.value.id)
+    if (res.success) {
+      appliedPromo.value = res.data
+      promoCode.value = ''
+    } else {
+      promoError.value = res.message || 'Kode promo tidak valid'
+    }
+  } catch (err) {
+    promoError.value = err.message || 'Kode promo tidak valid atau sudah tidak berlaku'
+  } finally {
+    promoLoading.value = false
+  }
+}
+
+function removePromo() {
+  appliedPromo.value = null
+  promoError.value = ''
+  promoCode.value = ''
+}
 
 onMounted(async () => {
   const slug = route.query.slug
@@ -291,7 +367,9 @@ const handleCheckout = async () => {
 
   loading.value = true
   try {
-    const data = await createPayment({ invitation_id: invitation.value.id })
+    const payload = { invitation_id: invitation.value.id }
+    if (appliedPromo.value) payload.promo_code = appliedPromo.value.code
+    const data = await createPayment(payload)
     console.log('Payment response:', data)
 
     if (data.is_free) {
