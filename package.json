@@ -6,7 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "npm run prerender",
     "preview": "vite preview",
+    "prerender": "node scripts/prerender.js",
     "test": "vitest",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
