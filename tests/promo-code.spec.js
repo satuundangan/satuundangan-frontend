@@ -259,7 +259,7 @@ test.describe('Promo Code: Admin Management', () => {
 
     await setupAuth(page)
 
-    await page.route('http://localhost:3000/admin/promo-codes**', (route) => {
+    await page.route('https://api.satuundangan.id/admin/promo-codes**', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
@@ -327,7 +327,7 @@ test.describe('Promo Code: Admin Management', () => {
 
   test('should send uppercase code in create payload', async ({ page }) => {
     let createPayload = null
-    await page.route('http://localhost:3000/admin/promo-codes', (route) => {
+    await page.route('https://api.satuundangan.id/admin/promo-codes', (route) => {
       if (route.request().method() === 'POST') {
         createPayload = JSON.parse(route.request().postData() || '{}')
         route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ success: true }) })
