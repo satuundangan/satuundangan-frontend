@@ -188,7 +188,26 @@ const handleLogin = async () => {
     await auth.login({ email: email.value, password: password.value })
     toast.success('Selamat datang kembali! 🎉')
     emit('close')
-    router.push('/dashboard')
+    
+    // Logic for redirection:
+    // 1. Check if there's a redirect query in the URL
+    // 2. Check if we have a stored redirect path
+    // 3. If on home or guest pages, go to dashboard
+    // 4. Otherwise, stay where we are
+    
+    const queryRedirect = router.currentRoute.value.query.redirect
+    const storedRedirect = localStorage.getItem('redirect_after_login')
+    
+    if (queryRedirect) {
+      router.push(queryRedirect)
+    } else if (storedRedirect) {
+      localStorage.removeItem('redirect_after_login')
+      router.push(storedRedirect)
+    } else if (router.currentRoute.value.path === '/' || router.currentRoute.value.path === '/login') {
+      router.push('/dashboard')
+    }
+    // Else: Stay on current page
+
   } catch (e) {
     toast.error('Login gagal! Periksa email dan password.')
     console.error(e)
@@ -237,6 +256,8 @@ const handleRegister = async () => {
 
 
 const handleGoogleLogin = () => {
+  // Simpan path saat ini agar bisa kembali setelah login Google
+  localStorage.setItem('redirect_after_login', router.currentRoute.value.fullPath)
   window.location.href = `${BASE_URL}/auth/google`
 }
 

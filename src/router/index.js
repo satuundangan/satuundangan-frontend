@@ -72,11 +72,12 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
+      meta: { requiresAuth: true },
     },
-    { path: '/invitations', name: 'Invitations', component: InvitationsView },
+    { path: '/invitations', name: 'Invitations', component: InvitationsView, meta: { requiresAuth: true } },
     { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
-    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu' } },
-    { path: '/settings', name: 'Settings', component: SettingsView },
+    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true } },
+    { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true } },
     { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
     {
       path: '/admin',
@@ -187,7 +188,7 @@ router.beforeEach(async (to, from, next) => {
     if (requiresAdmin) {
       next({ name: 'admin-login', query: { redirect: to.fullPath } })
     } else {
-      next({ name: 'home' })
+      next({ name: 'home', query: { login: 'true', redirect: to.fullPath } })
     }
     return
   }
