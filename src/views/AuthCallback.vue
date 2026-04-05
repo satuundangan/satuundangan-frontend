@@ -18,9 +18,14 @@ onMounted(async () => {
   if (token) {
     try {
       await authStore.handleLoginWithToken(token)
-      router.push('/dashboard') // redirect ke dashboard
-
-      //console.log('Token dari query:', token)
+      
+      const redirectPath = localStorage.getItem('redirect_after_login')
+      if (redirectPath) {
+        localStorage.removeItem('redirect_after_login')
+        router.push(redirectPath)
+      } else {
+        router.push('/dashboard') // fallback ke dashboard
+      }
 
     } catch (e) {
       console.error('Gagal login Google:', e)

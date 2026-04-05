@@ -138,6 +138,7 @@ import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
 import { useToast } from 'vue-toastification'
 import { onClickOutside } from '@vueuse/core'
+import { useRoute } from 'vue-router'
 
 const show = ref(false)
 const authMode = ref('login')
@@ -145,6 +146,7 @@ const sidebarOpen = ref(false)
 const isScrolled = ref(false)
 
 const auth = useAuthStore()
+const route = useRoute()
 const userName = computed(() => auth.user?.name || null)
 
 const toast = useToast()
@@ -194,6 +196,12 @@ const handleScroll = () => {
 
 onMounted(() => {
    window.addEventListener('scroll', handleScroll)
+   
+   // Buka modal login otomatis jika ada query parameter login=true
+   if (route.query.login === 'true') {
+      show.value = true
+      authMode.value = 'login'
+   }
 })
 
 onUnmounted(() => {
