@@ -310,11 +310,14 @@ onMounted(async () => {
       getCategories()
     ])
 
-    if (tplData) templates.value = tplData
+    if (tplData) {
+      const rawTplData = Array.isArray(tplData) ? tplData : (tplData.data || [])
+      templates.value = Array.isArray(rawTplData) ? rawTplData : []
+    }
 
     if (catData) {
       // Use the category NAME (label) as the ID for selection logic
-      const rawCatData = Array.isArray(catData) ? catData : (catData.data || [])
+      const rawCatData = Array.isArray(catData) ? catData : (Array.isArray(catData.data) ? catData.data : [])
       const formattedCats = rawCatData.map(c => ({
         id: c.label || c.name,
         name: c.label || c.name

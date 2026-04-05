@@ -440,6 +440,8 @@
 import { ref, onMounted, onUnmounted, watch } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import { createGuestMessage } from '@/api/guestMessage'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   data: {
@@ -448,11 +450,12 @@ const props = defineProps({
   }
 })
 
+const toast = useToast()
 // Basic Data Init
 const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
 const backgroundUrl = ref('')
 
 // Navigation
@@ -594,7 +597,7 @@ function addToCalendar() {
   window.open(url, '_blank')
 }
 
-function submitRSVP() {
+async function submitRSVP() {
   // Validate Name
   if (!rsvp.value.name?.trim()) {
     alert("Mohon isi nama Anda.")
@@ -607,19 +610,29 @@ function submitRSVP() {
     return
   }
 
-  // Validate Total Guests if 'Hadir'
-  if (rsvp.value.attendance === 'hadir' && !rsvp.value.totalGuest) {
-    alert("Mohon pilih jumlah tamu yang akan hadir.")
-    return
-  }
-
   // Validate Message
   if (!rsvp.value.message?.trim() || rsvp.value.message.trim().length < 3) {
     alert("Mohon isi ucapan & doa minimal 3 karakter.")
     return
   }
 
-  alert(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
+  try {
+    await createGuestMessage({
+      invitationId: data.value.id,
+      guestName: rsvp.value.name,
+      message: rsvp.value.message,
+      rsvpStatus: rsvp.value.attendance,
+      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+    })
+    
+    toast.success(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
+    
+    // Reset form
+    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+  } catch (err) {
+    console.error('Failed to submit RSVP:', err)
+    toast.error("Gagal mengirim RSVP. Silakan coba lagi.")
+  }
 }
 
 // Initialize Data Helper

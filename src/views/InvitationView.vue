@@ -25,7 +25,9 @@ onMounted(async () => {
     const rawData = response.data || response
     
     // Check if invitation is active or if we are in preview mode
-    if (!rawData.is_published && !isPreviewMode.value) {
+    const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+    
+    if (!isPublished && !isPreviewMode.value) {
       error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
       loading.value = false
       return
@@ -38,8 +40,8 @@ onMounted(async () => {
       title: rawData.title,
       slug: rawData.slug,
       template_slug: rawData.template_slug || rawData.templateName,
-      is_premium: rawData.is_premium,
-      is_published: rawData.is_published
+      is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
+      is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
     }
     
     // Determine Guest Name
