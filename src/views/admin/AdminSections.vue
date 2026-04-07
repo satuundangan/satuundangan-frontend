@@ -114,7 +114,11 @@ async function loadSections() {
   loading.value = true
   try {
     const res = await fetchAdminSections({ q: search.value })
-    sections.value = Array.isArray(res) ? res : (res.data || [])
+    const rawData = Array.isArray(res) ? res : (res.data || [])
+    sections.value = rawData.map(item => ({
+      ...item,
+      is_active: !!item.is_active
+    }))
   } catch (error) {
     toast.error(error.message || 'Gagal memuat data')
   } finally {
@@ -140,7 +144,7 @@ function openEdit(item) {
   Object.assign(form, {
     label: item.label,
     key: item.key,
-    is_active: item.is_active,
+    is_active: !!item.is_active,
   })
   showForm.value = true
 }

@@ -189,7 +189,7 @@
                   'bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-gray-100 flex flex-col group shadow-sm'
                 ]">
                 <div class="relative h-44 overflow-hidden bg-gray-200">
-                  <img :src="item.previewUrl || 'https://via.placeholder.com/400x300'"
+                  <img :src="item.thumbnailUrl || item.previewUrl || 'https://via.placeholder.com/400x300'"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   <div v-if="selectedTemplate === item.id"
                     class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in">

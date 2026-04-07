@@ -168,43 +168,49 @@ onMounted(async () => {
     try {
        selectedTemplate.value = JSON.parse(template)
        
-       // 1. Fetch ALL available master sections from API
-       try {
-          const apiSections = await getSections()
-          if (Array.isArray(apiSections) && apiSections.length > 0) {
-             const newOptions = {}
-             apiSections.forEach(s => {
-                // Use label from API or fallback to our map
+       // 1. Determine Section Options based on Template
+       if (selectedTemplate.value.sections && Array.isArray(selectedTemplate.value.sections) && selectedTemplate.value.sections.length > 0) {
+          const newOptions = {}
+          const enabledKeys = []
+          
+          selectedTemplate.value.sections.forEach(s => {
+             if (s.is_enabled) {
                 newOptions[s.key] = s.label || sectionOptionsLabelMap[s.key] || s.key
-             })
-             sectionOptions.value = newOptions
-          } else {
+                enabledKeys.push(s.key)
+             }
+          })
+          sectionOptions.value = newOptions
+          
+          // Default selection for NEW invitation: all enabled sections from template
+          if (!selectedSectionsLocalStorage) {
+             selectedSections.value = enabledKeys
+          }
+       } else {
+          // Fallback to fetch ALL if template doesn't have sections defined (old data)
+          try {
+             const apiSections = await getSections()
+             if (Array.isArray(apiSections) && apiSections.length > 0) {
+                const newOptions = {}
+                apiSections.forEach(s => {
+                   newOptions[s.key] = s.label || sectionOptionsLabelMap[s.key] || s.key
+                })
+                sectionOptions.value = newOptions
+             } else {
+                sectionOptions.value = { ...sectionOptionsLabelMap }
+             }
+          } catch (e) {
+             console.error("Gagal ambil master sections, using fallback", e)
              sectionOptions.value = { ...sectionOptionsLabelMap }
           }
-       } catch (e) {
-          console.error("Gagal ambil master sections, using fallback", e)
-          sectionOptions.value = { ...sectionOptionsLabelMap }
+
+          if (!selectedSectionsLocalStorage) {
+             selectedSections.value = defaultCommonSections.filter(s => sectionOptions.value[s])
+          }
        }
 
+       // 2. Override with localStorage if exists (resuming draft)
        if (selectedSectionsLocalStorage) {
          selectedSections.value = JSON.parse(selectedSectionsLocalStorage)
-       } else {
-         // 2. Initial selection based on template
-         let templateOptions = selectedTemplate.value.sectionOptions;
-         
-         if (typeof templateOptions === 'string') {
-            try { templateOptions = JSON.parse(templateOptions); } catch (e) {
-               if(templateOptions.includes(',')) templateOptions = templateOptions.split(',').map(s => s.trim());
-               else templateOptions = [templateOptions];
-            }
-         }
-
-         if (Array.isArray(templateOptions) && templateOptions.length > 0) {
-             const keys = templateOptions.map(opt => getKeyFromLabel(opt)).filter(Boolean);
-             selectedSections.value = keys;
-         } else {
-             selectedSections.value = defaultCommonSections.filter(s => sectionOptions.value[s])
-         }
        }
     } catch(e) {
        console.error("Error parsing template data", e)

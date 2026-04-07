@@ -6,6 +6,7 @@
       <table class="min-w-full divide-y divide-slate-200 text-sm">
         <thead class="bg-slate-50 text-left font-medium text-slate-500">
           <tr>
+            <th class="px-4 py-3 w-16">Preview</th>
             <th class="px-4 py-3">Nama</th>
             <th class="px-4 py-3">Slug</th>
             <th class="px-4 py-3">Kategori</th>
@@ -16,6 +17,14 @@
         </thead>
         <tbody class="divide-y divide-slate-200">
           <tr v-for="template in templates" :key="template.id">
+            <td class="px-4 py-3">
+              <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden">
+                <img :src="template.thumbnailUrl || template.previewUrl" class="h-full w-full object-cover" v-if="template.thumbnailUrl || template.previewUrl" />
+                <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
+                  <i class="fa-solid fa-image text-xs"></i>
+                </div>
+              </div>
+            </td>
             <td class="px-4 py-3 font-medium text-slate-900">{{ template.name }}</td>
             <td class="px-4 py-3 text-slate-600">{{ template.slug }}</td>
             <td class="px-4 py-3 text-slate-600 capitalize">
@@ -103,10 +112,25 @@
                 required />
             </div>
             <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Preview URL</label>
+              <label class="text-sm font-medium text-slate-600">Preview URL (Opsional)</label>
               <input v-model="form.previewUrl" type="url"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                required />
+                placeholder="https://demo.satuundangan.id/template-a" />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Thumbnail URL</label>
+              <div class="mt-2 flex gap-2">
+                <input v-model="form.thumbnailUrl" type="url"
+                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  placeholder="https://example.com/image.jpg" />
+                <button type="button" @click="triggerThumbnailUpload"
+                  class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                <input type="file" ref="thumbnailInput" class="hidden" accept="image/*" @change="handleThumbnailUpload" />
+              </div>
+              <div v-if="form.thumbnailUrl" class="mt-2 relative w-32 h-20 rounded-lg overflow-hidden border border-slate-200">
+                <img :src="form.thumbnailUrl" class="w-full h-full object-cover" />
+                <button @click="form.thumbnailUrl = ''" class="absolute top-1 right-1 bg-white/80 rounded-full p-0.5 text-rose-500 hover:text-rose-700">×</button>
+              </div>
             </div>
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Deskripsi</label>
@@ -134,47 +158,102 @@
             <!-- Palette UI -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Palette Warna</label>
-              <div class="mt-2 flex items-center gap-3">
-                <select v-model="form.paletteId"
-                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                  required>
-                  <option value="" disabled>Pilih Palette</option>
-                  <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
-                    {{ pal.name }}
-                  </option>
-                </select>
-                <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
+              <div class="mt-2 space-y-4">
+                <div class="flex items-center gap-4">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" v-model="paletteType" value="preset" class="text-slate-900" />
+                    <span class="text-sm">Gunakan Preset</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" v-model="paletteType" value="custom" class="text-slate-900" />
+                    <span class="text-sm font-bold text-indigo-600">Warna Custom (All-in-One)</span>
+                  </label>
+                </div>
+
+                <!-- Preset Selection -->
+                <div v-if="paletteType === 'preset'" class="flex items-center gap-3">
+                  <select v-model="form.paletteId"
+                    class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                    <option value="" disabled>Pilih Palette</option>
+                    <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
+                      {{ pal.name }}
+                    </option>
+                  </select>
+                  <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
+                    <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                      :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
+                    <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                      :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
+                    <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                      :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
+                  </div>
+                </div>
+
+                <!-- Custom Color Pickers -->
+                <div v-if="paletteType === 'custom'" class="grid grid-cols-3 gap-4 rounded-xl bg-slate-50 p-4 border border-slate-200">
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400">Primary</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" v-model="customPalette.primary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
+                      <input type="text" v-model="customPalette.primary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400">Secondary</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" v-model="customPalette.secondary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
+                      <input type="text" v-model="customPalette.secondary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400">Accent</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" v-model="customPalette.accent" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
+                      <input type="text" v-model="customPalette.accent" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             <!-- Section Options UI -->
             <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Section Options</label>
-              <div v-if="availableSections.length" class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                <label v-for="section in availableSections" :key="section.id"
-                  class="flex items-center gap-2 rounded-lg border border-slate-200 p-2 hover:bg-slate-50 cursor-pointer">
+              <label class="text-sm font-medium text-slate-600">Section Options & Urutan</label>
+              <div v-if="availableSections.length" class="mt-2 space-y-2">
+                <div v-for="section in availableSections" :key="section.id"
+                  class="flex items-center gap-4 rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
                   <input type="checkbox" :checked="isSectionEnabled(section.id)"
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-                  <span class="text-sm text-slate-700 capitalize">{{ section.label }}</span>
-                </label>
+                  
+                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
+                  
+                  <div class="flex items-center gap-2 ml-auto">
+                    <span class="text-[10px] uppercase text-slate-400 font-bold">Urutan:</span>
+                    <input type="number" 
+                      :value="getSectionOrder(section.id)"
+                      @input="updateSectionOrder(section.id, $event.target.value)"
+                      class="w-16 rounded border border-slate-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
+                      min="1" />
+                  </div>
+                </div>
               </div>
               <div v-else class="mt-2 text-sm text-slate-400 italic">
                 Belum ada section yang tersedia. Tambahkan di menu Master Fitur.
               </div>
             </div>
 
-            <div class="md:col-span-2 flex items-center gap-2">
-              <input id="templateActive" v-model="form.isActive" type="checkbox"
-                class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-              <label for="templateActive" class="text-sm font-medium text-slate-600">Aktifkan template</label>
+            <div class="md:col-span-2 flex flex-wrap gap-6">
+              <div class="flex items-center gap-2">
+                <input id="templateActive" v-model="form.isActive" type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                <label for="templateActive" class="text-sm font-medium text-slate-600">Aktifkan template</label>
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="templatePremium" v-model="form.isPremium" type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                <label for="templatePremium" class="text-sm font-medium text-slate-600 font-bold text-amber-600">Template Premium</label>
+              </div>
             </div>
 
             <div class="md:col-span-2 flex justify-end gap-2 pt-2 text-sm font-medium">
@@ -205,10 +284,12 @@ import {
   fetchAdminPalettes,
 } from '@/api/admin.js'
 import { fetchAdminSections } from '@/api/master.js'
+import { uploadFileApi } from '@/api/file.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
+const thumbnailInput = ref(null)
 const templates = ref([])
 const categories = ref([])
 const palettes = ref([])
@@ -223,17 +304,26 @@ const saving = ref(false)
 const editing = ref(null)
 
 const tagInput = ref('')
+const paletteType = ref('preset') // 'preset' | 'custom'
+const customPalette = reactive({
+  primary: '#0F172A',
+  secondary: '#64748B',
+  accent: '#38BDF8'
+})
+
 const form = reactive({
   name: '',
   slug: '',
   category: '',
   price: 0,
   previewUrl: '',
+  thumbnailUrl: '',
   description: '',
   tags: [],
   paletteId: '',
   sections: [],
   isActive: true,
+  isPremium: false,
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
@@ -288,6 +378,24 @@ function isSectionEnabled(sectionId) {
   return form.sections.some(s => s.sectionId === sectionId && s.is_enabled)
 }
 
+function getSectionOrder(sectionId) {
+  const s = form.sections.find(s => s.sectionId === sectionId)
+  return s ? s.order : 1
+}
+
+function updateSectionOrder(sectionId, val) {
+  const index = form.sections.findIndex(s => s.sectionId === sectionId)
+  if (index > -1) {
+    form.sections[index].order = Number(val)
+  } else {
+    form.sections.push({
+      sectionId,
+      order: Number(val),
+      is_enabled: false
+    })
+  }
+}
+
 function toggleSection(sectionId) {
   const index = form.sections.findIndex(s => s.sectionId === sectionId)
   if (index > -1) {
@@ -299,6 +407,24 @@ function toggleSection(sectionId) {
       order: form.sections.length + 1,
       is_enabled: true
     })
+  }
+}
+
+function triggerThumbnailUpload() {
+  thumbnailInput.value?.click()
+}
+
+async function handleThumbnailUpload(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  try {
+    const res = await uploadFileApi(file)
+    form.thumbnailUrl = res.fileUrl
+    toast.success('Thumbnail berhasil diupload')
+  } catch (error) {
+    toast.error('Gagal mengupload thumbnail')
+  } finally {
+    event.target.value = ''
   }
 }
 
@@ -317,12 +443,15 @@ function removeTag(index) {
 function openCreate() {
   editing.value = null
   tagInput.value = ''
+  paletteType.value = 'preset'
+  Object.assign(customPalette, { primary: '#0F172A', secondary: '#64748B', accent: '#38BDF8' })
   Object.assign(form, {
     name: '',
     slug: '',
     category: '',
     price: 0,
     previewUrl: '',
+    thumbnailUrl: '',
     description: '',
     tags: [],
     paletteId: '',
@@ -332,6 +461,7 @@ function openCreate() {
       is_enabled: true
     })),
     isActive: true,
+    isPremium: false,
   })
   showForm.value = true
 }
@@ -339,6 +469,18 @@ function openCreate() {
 function openEdit(template) {
   editing.value = template
   tagInput.value = ''
+
+  // Determine palette type
+  if (template.paletteId || template.palette) {
+    paletteType.value = 'preset'
+  } else if (template.paletteColors && template.paletteColors.length >= 3) {
+    paletteType.value = 'custom'
+    customPalette.primary = template.paletteColors[0]
+    customPalette.secondary = template.paletteColors[1]
+    customPalette.accent = template.paletteColors[2]
+  } else {
+    paletteType.value = 'preset'
+  }
 
   let tags = []
   if (Array.isArray(template.tags)) {
@@ -364,11 +506,13 @@ function openEdit(template) {
     category: template.category || '',
     price: template.price || 0,
     previewUrl: template.previewUrl || '',
+    thumbnailUrl: template.thumbnailUrl || '',
     description: template.description || '',
     tags: tags,
     paletteId: template.paletteId || (template.palette ? template.palette.id : ''),
     sections: sections,
     isActive: Boolean(template.isActive),
+    isPremium: Boolean(template.isPremium),
   })
   showForm.value = true
 }
@@ -383,17 +527,26 @@ function buildPayload() {
     name: form.name,
     slug: form.slug,
     category: form.category,
-    price: form.price,
+    price: Number(form.price),
     previewUrl: form.previewUrl,
+    thumbnailUrl: form.thumbnailUrl || null,
     description: form.description || null,
     isActive: form.isActive,
-    paletteId: form.paletteId,
+    isPremium: form.isPremium,
     sections: form.sections.map(s => ({
       sectionId: s.sectionId,
       order: s.order,
       is_enabled: s.is_enabled
     })),
     tags: form.tags
+  }
+
+  if (paletteType.value === 'preset') {
+    payload.paletteId = form.paletteId
+    payload.paletteColors = null
+  } else {
+    payload.paletteId = null
+    payload.paletteColors = [customPalette.primary, customPalette.secondary, customPalette.accent]
   }
 
   return payload
