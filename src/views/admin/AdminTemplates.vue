@@ -6,6 +6,7 @@
       <table class="min-w-full divide-y divide-slate-200 text-sm">
         <thead class="bg-slate-50 text-left font-medium text-slate-500">
           <tr>
+            <th class="px-4 py-3 w-16">Preview</th>
             <th class="px-4 py-3">Nama</th>
             <th class="px-4 py-3">Slug</th>
             <th class="px-4 py-3">Kategori</th>
@@ -16,6 +17,14 @@
         </thead>
         <tbody class="divide-y divide-slate-200">
           <tr v-for="template in templates" :key="template.id">
+            <td class="px-4 py-3">
+              <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden">
+                <img :src="template.thumbnailUrl || template.previewUrl" class="h-full w-full object-cover" v-if="template.thumbnailUrl || template.previewUrl" />
+                <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
+                  <i class="fa-solid fa-image text-xs"></i>
+                </div>
+              </div>
+            </td>
             <td class="px-4 py-3 font-medium text-slate-900">{{ template.name }}</td>
             <td class="px-4 py-3 text-slate-600">{{ template.slug }}</td>
             <td class="px-4 py-3 text-slate-600 capitalize">
