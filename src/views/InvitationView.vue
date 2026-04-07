@@ -6,6 +6,7 @@ import { useRoute, useRouter } from 'vue-router'
 const templateMap = {
   'dark-elegant': () => import('../templates/dark-elegant.vue'),
   'light-modern': () => import('../templates/light-modern.vue'),
+  'botanical-watercolor': () => import('../templates/botanical-watercolor.vue'),
 }
 
 const route = useRoute()
