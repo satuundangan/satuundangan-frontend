@@ -17,9 +17,12 @@ const TemplateComponent = shallowRef(null)
 const loading = ref(true)
 const error = ref(null)
 const isPreviewMode = ref(false)
+const isInsideFrame = ref(false)
 
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true'
+  // Check if inside iframe or forced via query param
+  isInsideFrame.value = window.self !== window.top || route.query.frame === 'true'
   
   try {
     const response = await getInvitationBySlug(slug)
@@ -101,7 +104,7 @@ const goToCheckout = () => {
       <component :is="TemplateComponent" :data="invitationData" />
       
       <!-- Floating Publish Button for Preview Mode -->
-      <div v-if="isPreviewMode && !invitationData?.is_published" 
+      <div v-if="isPreviewMode && !invitationData?.is_published && !isInsideFrame" 
         class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-6">
         <div class="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-mocha/10 flex items-center justify-between gap-4">
           <div class="hidden sm:block">

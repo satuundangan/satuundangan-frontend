@@ -170,7 +170,7 @@ onMounted(async () => {
         // Just verify it exists or get details if needed
         const res = await getInvitationBySlug(slugParam)
         const data = res.data || res
-        iframeUrl.value = `/${data.slug}?preview=true`
+        iframeUrl.value = `/${data.slug}?preview=true&frame=true`
      } catch (err) {
         console.error("Failed to fetch invitation for preview", err)
         // Fallback to localStorage if backend fetch fails
@@ -178,7 +178,7 @@ onMounted(async () => {
         if (stored) {
            const data = JSON.parse(stored)
            const slug = data.slug || 'preview'
-           iframeUrl.value = `/${slug}?preview=true`
+           iframeUrl.value = `/${slug}?preview=true&frame=true`
         }
      }
   } else {
@@ -187,7 +187,7 @@ onMounted(async () => {
      if (stored) {
         const data = JSON.parse(stored)
         const slug = data.slug || 'preview'
-        iframeUrl.value = `/${slug}?preview=true`
+        iframeUrl.value = `/${slug}?preview=true&frame=true`
      }
   }
   
