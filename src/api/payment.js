@@ -5,3 +5,6 @@ export const createPayment = (data) =>
     method: 'POST',
     body: JSON.stringify(data),
   })
+
+export const getPaymentStatus = (orderId) =>
+  apiFetch(`/payment/status/${orderId}`)

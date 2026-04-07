@@ -343,23 +343,9 @@ const simulatePaymentSuccess = async () => {
   }
 }
 
-const loadSnapScript = () => {
-  return new Promise((resolve, reject) => {
-    if (window.snap) return resolve(true)
-
-    const script = document.createElement("script")
-    script.src = "https://app.sandbox.midtrans.com/snap/snap.js"
-    script.setAttribute("data-client-key", "Mid-client-KK-xRAA_WfaMnsHO")
-    script.onload = () => resolve(true)
-    script.onerror = () => reject("Snap.js gagal dimuat")
-    document.body.appendChild(script)
-  })
-}
-
 const handleCheckout = async () => {
   if (!invitation.value) return
 
-  // Ensure user is logged in
   if (!authStore.user?.email) {
     alert("Mohon login terlebih dahulu")
     return
@@ -370,10 +356,8 @@ const handleCheckout = async () => {
     const payload = { invitation_id: invitation.value.id }
     if (appliedPromo.value) payload.promo_code = appliedPromo.value.code
     const data = await createPayment(payload)
-    console.log('Payment response:', data)
 
     if (data.is_free) {
-      console.log('Free template, redirecting to:', `/${invitation.value.slug}`)
       try {
         await updateInvitation(invitation.value.id, { isPublished: true })
       } catch (e) {
@@ -383,33 +367,10 @@ const handleCheckout = async () => {
       return
     }
 
-    const snapToken = data.token
-
-    await loadSnapScript()
-
-    window.snap.pay(snapToken, {
-      onSuccess: async function() {
-        try {
-          // Instant activation for better UX (Backend webhook will also handle this as fallback)
-          await updateInvitation(invitation.value.id, { isPublished: true })
-          router.push(`/${invitation.value.slug}`)
-        } catch (e) {
-          console.error("Instant activation failed:", e)
-          router.push(`/${invitation.value.slug}`)
-        }
-      },
-      onPending: function() {
-        // console.log("Payment pending:", result)
-        alert('Pembayaran tertunda')
-      },
-      onError: function(result) {
-        console.error("Payment error:", result)
-        alert('Pembayaran gagal')
-      },
-      onClose: function() {
-        console.warn("Payment popup closed")
-      },
-    })
+    if (data.redirect_url) {
+      window.location.href = data.redirect_url
+      return
+    }
   } catch (err) {
     console.error("Checkout gagal:", err)
     alert('Terjadi kesalahan pembayaran: ' + (err.response?.data?.message || err.message))
