@@ -4,12 +4,22 @@
     <!-- Paper Texture Overlay -->
     <div class="fixed inset-0 pointer-events-none z-0 opacity-30 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
 
-    <!-- Floating Watercolors (Static but decorative) -->
-    <div class="fixed -top-10 -left-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-40 pointer-events-none animate-float-slow">
-       <img src="https://images.vexels.com/content/229391/preview/watercolor-pink-flower-corner-design-29699b.png" class="w-full h-full object-contain" />
+    <!-- Floating Watercolors (Embedded SVG for 100% stability) -->
+    <div class="fixed -top-10 -left-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-30 pointer-events-none animate-float-slow text-[#b48c5b]">
+       <svg viewBox="0 0 200 200" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+         <path d="M0 0C50 0 100 20 120 70C140 120 180 140 200 140V0H0Z" opacity="0.2"/>
+         <path d="M40 20C60 20 70 40 70 60C70 80 50 90 30 80C10 70 10 40 40 20Z" opacity="0.5"/>
+         <path d="M80 50C100 50 110 70 110 90C110 110 90 120 70 110C50 100 50 70 80 50Z" opacity="0.4"/>
+         <path d="M20 70C40 70 50 90 50 110C50 130 30 140 10 130C-10 120 -10 90 20 70Z" opacity="0.3"/>
+       </svg>
     </div>
-    <div class="fixed -bottom-10 -right-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-40 pointer-events-none animate-float-slow-reverse">
-       <img src="https://images.vexels.com/content/229391/preview/watercolor-pink-flower-corner-design-29699b.png" class="w-full h-full object-contain rotate-180" />
+    <div class="fixed -bottom-10 -right-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-30 pointer-events-none animate-float-slow-reverse text-[#b48c5b]">
+       <svg viewBox="0 0 200 200" fill="currentColor" xmlns="http://www.w3.org/2000/svg" class="rotate-180">
+         <path d="M0 0C50 0 100 20 120 70C140 120 180 140 200 140V0H0Z" opacity="0.2"/>
+         <path d="M40 20C60 20 70 40 70 60C70 80 50 90 30 80C10 70 10 40 40 20Z" opacity="0.5"/>
+         <path d="M80 50C100 50 110 70 110 90C110 110 90 120 70 110C50 100 50 70 80 50Z" opacity="0.4"/>
+         <path d="M20 70C40 70 50 90 50 110C50 130 30 140 10 130C-10 120 -10 90 20 70Z" opacity="0.3"/>
+       </svg>
     </div>
 
     <!-- Falling Petals Effect -->
@@ -394,7 +404,7 @@ function initScrollSpy() {
       if (entry.isIntersecting) activeSection.value = entry.target.id
     })
   }, { threshold: 0.5 })
-  navItems.forEach(item => {
+  navItems.value.forEach(item => {
     const el = document.getElementById(item.id)
     if (el) observer.observe(el)
   })
