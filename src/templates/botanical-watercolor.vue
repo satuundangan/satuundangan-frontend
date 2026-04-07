@@ -109,7 +109,7 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" class="py-24 px-6">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-24 px-6">
         <div class="max-w-5xl mx-auto text-center">
           <h2 class="text-3xl md:text-5xl font-playfair text-[#4a4a4a] mb-16" v-observe>The Bride & Groom</h2>
           
@@ -154,7 +154,7 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" class="py-24 px-6 relative bg-white/50">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-24 px-6 relative bg-white/50">
         <div class="max-w-4xl mx-auto text-center space-y-12">
           <h2 class="text-3xl md:text-5xl font-playfair text-[#4a4a4a]" v-observe>Event Details</h2>
           
@@ -200,7 +200,7 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="galleryImages.length" class="py-24 px-4">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-24 px-4">
         <h2 class="text-3xl md:text-5xl font-playfair text-center text-[#4a4a4a] mb-12" v-observe>Moments Gallery</h2>
         <div class="max-w-6xl mx-auto">
           <GalleryInvitation :items="galleryImages" />
@@ -208,7 +208,7 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" class="py-24 px-6 bg-[#fdfaf5]">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-24 px-6 bg-[#fdfaf5]">
         <div class="max-w-2xl mx-auto bg-white border border-[#e8d5c4] rounded-[3rem] p-8 md:p-16 shadow-lg text-center" v-observe>
           <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-2">RSVP</h2>
           <p class="text-gray-400 mb-10 text-sm">Konfirmasi kehadiran Anda di hari bahagia kami</p>
@@ -293,14 +293,31 @@ const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
 
-// Navigation
-const navItems = [
-  { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
-  { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
-  { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-  { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
-  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
+// Navigation items with their corresponding keys in backend
+const allNavItems = [
+  { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
+  { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
+  { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
+  { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
+  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
 ]
+
+const navItems = computed(() => {
+  // If no sections defined in data, show all as fallback
+  if (!data.value.sections || !data.value.sections.length) return allNavItems
+  
+  return allNavItems.filter(item => {
+    const sectionSettings = data.value.sections.find(s => s.key === item.key)
+    return sectionSettings ? sectionSettings.is_enabled : true
+  })
+})
+
+const isSectionEnabled = (key) => {
+  if (!data.value.sections || !data.value.sections.length) return true
+  const section = data.value.sections.find(s => s.key === key)
+  return section ? section.is_enabled : true
+}
+
 const activeSection = ref('home')
 
 // Countdown
