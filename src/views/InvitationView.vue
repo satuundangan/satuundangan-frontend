@@ -7,6 +7,10 @@ const templateMap = {
   'dark-elegant': () => import('../templates/dark-elegant.vue'),
   'light-modern': () => import('../templates/light-modern.vue'),
   'botanical-watercolor': () => import('../templates/botanical-watercolor.vue'),
+  'royal-gold': () => import('../templates/royal-gold.vue'),
+  'minimalist-terra': () => import('../templates/minimalist-terra.vue'),
+  'celestial-sparkle': () => import('../templates/celestial-sparkle.vue'),
+  'editorial-magazine': () => import('../templates/editorial-magazine.vue'),
 }
 
 const route = useRoute()
