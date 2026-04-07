@@ -5,11 +5,11 @@
     <div class="fixed inset-0 pointer-events-none z-0 opacity-30 mix-blend-multiply bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
 
     <!-- Floating Watercolors (Static but decorative) -->
-    <div class="fixed -top-10 -left-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-80 pointer-events-none animate-float-slow">
-       <img src="https://cdni.iconscout.com/illustration/premium/thumb/watercolor-flower-border-illustration-download-in-svg-png-gif-file-formats--floral-frame-pink-rose-pack-nature-illustrations-6453961.png" class="w-full h-full object-contain" />
+    <div class="fixed -top-10 -left-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-40 pointer-events-none animate-float-slow">
+       <img src="https://images.vexels.com/content/229391/preview/watercolor-pink-flower-corner-design-29699b.png" class="w-full h-full object-contain" />
     </div>
-    <div class="fixed -bottom-10 -right-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-80 pointer-events-none animate-float-slow-reverse">
-       <img src="https://cdni.iconscout.com/illustration/premium/thumb/watercolor-floral-wreath-illustration-download-in-svg-png-gif-file-formats--flower-frame-pink-rose-pack-nature-illustrations-6453963.png" class="w-full h-full object-contain rotate-180" />
+    <div class="fixed -bottom-10 -right-10 w-48 h-48 md:w-64 md:h-64 z-10 opacity-40 pointer-events-none animate-float-slow-reverse">
+       <img src="https://images.vexels.com/content/229391/preview/watercolor-pink-flower-corner-design-29699b.png" class="w-full h-full object-contain rotate-180" />
     </div>
 
     <!-- Falling Petals Effect -->
@@ -277,7 +277,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
@@ -289,6 +289,24 @@ const props = defineProps({
 
 const toast = useToast()
 const data = ref(props.data || {})
+
+// Normalize sections from different possible structures
+const activeSections = computed(() => {
+  // Structure 1: data.sections (direct from template)
+  if (data.value.sections && Array.isArray(data.value.sections)) {
+    return data.value.sections
+  }
+  // Structure 2: data.content.selectedSections (from invitation content)
+  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
+    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
+  }
+  // Structure 3: data.selectedSections (root of invitation)
+  if (data.value.selectedSections && Array.isArray(data.value.selectedSections)) {
+    return data.value.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
+  }
+  return null
+})
+
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
@@ -304,18 +322,18 @@ const allNavItems = [
 
 const navItems = computed(() => {
   // If no sections defined in data, show all as fallback
-  if (!data.value.sections || !data.value.sections.length) return allNavItems
-  
+  if (!activeSections.value) return allNavItems
+
   return allNavItems.filter(item => {
-    const sectionSettings = data.value.sections.find(s => s.key === item.key)
-    return sectionSettings ? sectionSettings.is_enabled : true
+    const sectionSettings = activeSections.value.find(s => s.key === item.key)
+    return sectionSettings ? (sectionSettings.is_enabled !== false) : true
   })
 })
 
 const isSectionEnabled = (key) => {
-  if (!data.value.sections || !data.value.sections.length) return true
-  const section = data.value.sections.find(s => s.key === key)
-  return section ? section.is_enabled : true
+  if (!activeSections.value) return true
+  const section = activeSections.value.find(s => s.key === key)
+  return section ? (section.is_enabled !== false) : true
 }
 
 const activeSection = ref('home')
