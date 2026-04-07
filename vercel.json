@@ -1,8 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://api.satuundangan.id/:1"
+      "source": "/api/:path*",
+      "destination": "https://api.satuundangan.id/:path*"
     },
     {
       "source": "/(.*)",
