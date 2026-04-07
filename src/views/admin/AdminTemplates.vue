@@ -112,10 +112,10 @@
                 required />
             </div>
             <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Preview URL</label>
+              <label class="text-sm font-medium text-slate-600">Preview URL (Opsional)</label>
               <input v-model="form.previewUrl" type="url"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                required />
+                placeholder="https://demo.satuundangan.id/template-a" />
             </div>
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Thumbnail URL</label>
