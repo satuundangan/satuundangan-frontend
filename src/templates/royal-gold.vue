@@ -4,7 +4,7 @@
     <!-- Pattern Overlay (Batik/Heritage Vibe) -->
     <div class="fixed inset-0 pointer-events-none z-0 opacity-10 mix-blend-overlay bg-[url('https://www.transparenttextures.com/patterns/black-paper.png')]"></div>
     <div class="fixed inset-0 pointer-events-none z-0 opacity-20" 
-         style="background-image: url('data:image/svg+xml,%3Csvg width=\"100\" height=\"100\" viewBox=\"0 0 100 100\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cpath d=\"M50 50L0 0M50 50L100 0M50 50L100 100M50 50L0 100\" stroke=\"%23d4af37\" stroke-width=\"0.5\" fill=\"none\"/%3E%3C/svg%3E'); background-size: 60px 60px;"></div>
+         style="background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M50 50L0 0M50 50L100 0M50 50L100 100M50 50L0 100\' stroke=\'%23d4af37\' stroke-width=\'0.5\' fill=\'none\'/%3E%3C/svg%3E'); background-size: 60px 60px;"></div>
 
     <!-- Royal Ornaments (Embedded SVG) -->
     <div class="fixed top-0 left-0 w-32 h-32 md:w-48 md:h-48 z-10 opacity-60 pointer-events-none text-[#d4af37]">
