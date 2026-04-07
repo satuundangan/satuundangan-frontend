@@ -109,72 +109,37 @@
                 required />
             </div>
             <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Thumbnail URL</label>
+              <div class="mt-2 flex gap-2">
+                <input v-model="form.thumbnailUrl" type="url"
+                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  placeholder="https://example.com/image.jpg" />
+                <button type="button" @click="triggerThumbnailUpload"
+                  class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                <input type="file" ref="thumbnailInput" class="hidden" accept="image/*" @change="handleThumbnailUpload" />
+              </div>
+              <div v-if="form.thumbnailUrl" class="mt-2 relative w-32 h-20 rounded-lg overflow-hidden border border-slate-200">
+                <img :src="form.thumbnailUrl" class="w-full h-full object-cover" />
+                <button @click="form.thumbnailUrl = ''" class="absolute top-1 right-1 bg-white/80 rounded-full p-0.5 text-rose-500 hover:text-rose-700">×</button>
+              </div>
+            </div>
+            <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Deskripsi</label>
               <textarea v-model="form.description" rows="3"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
             </div>
 
-            <!-- Tags Input UI -->
-            <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Tags</label>
-              <div
-                class="mt-2 flex flex-wrap gap-2 rounded-lg border border-slate-200 px-3 py-2 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100">
-                <span v-for="(tag, index) in form.tags" :key="index"
-                  class="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
-                  {{ tag }}
-                  <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
-                </span>
-                <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.comma.prevent="addTag" @blur="addTag"
-                  type="text" placeholder="Ketik tag dan enter..."
-                  class="min-w-[120px] flex-1 bg-transparent text-sm outline-none" />
+            <div class="md:col-span-2 flex flex-wrap gap-6">
+              <div class="flex items-center gap-2">
+                <input id="templateActive" v-model="form.isActive" type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                <label for="templateActive" class="text-sm font-medium text-slate-600">Aktifkan template</label>
               </div>
-              <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
-            </div>
-
-            <!-- Palette UI -->
-            <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Palette Warna</label>
-              <div class="mt-2 flex items-center gap-3">
-                <select v-model="form.paletteId"
-                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                  required>
-                  <option value="" disabled>Pilih Palette</option>
-                  <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
-                    {{ pal.name }}
-                  </option>
-                </select>
-                <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
-                </div>
+              <div class="flex items-center gap-2">
+                <input id="templatePremium" v-model="form.isPremium" type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                <label for="templatePremium" class="text-sm font-medium text-slate-600 font-bold text-amber-600">Template Premium</label>
               </div>
-            </div>
-
-            <!-- Section Options UI -->
-            <div class="md:col-span-2">
-              <label class="text-sm font-medium text-slate-600">Section Options</label>
-              <div v-if="availableSections.length" class="mt-2 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                <label v-for="section in availableSections" :key="section.id"
-                  class="flex items-center gap-2 rounded-lg border border-slate-200 p-2 hover:bg-slate-50 cursor-pointer">
-                  <input type="checkbox" :checked="isSectionEnabled(section.id)"
-                    @change="toggleSection(section.id)"
-                    class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-                  <span class="text-sm text-slate-700 capitalize">{{ section.label }}</span>
-                </label>
-              </div>
-              <div v-else class="mt-2 text-sm text-slate-400 italic">
-                Belum ada section yang tersedia. Tambahkan di menu Master Fitur.
-              </div>
-            </div>
-
-            <div class="md:col-span-2 flex items-center gap-2">
-              <input id="templateActive" v-model="form.isActive" type="checkbox"
-                class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-              <label for="templateActive" class="text-sm font-medium text-slate-600">Aktifkan template</label>
             </div>
 
             <div class="md:col-span-2 flex justify-end gap-2 pt-2 text-sm font-medium">
@@ -205,10 +170,12 @@ import {
   fetchAdminPalettes,
 } from '@/api/admin.js'
 import { fetchAdminSections } from '@/api/master.js'
+import { uploadFileApi } from '@/api/file.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
+const thumbnailInput = ref(null)
 const templates = ref([])
 const categories = ref([])
 const palettes = ref([])
@@ -229,11 +196,13 @@ const form = reactive({
   category: '',
   price: 0,
   previewUrl: '',
+  thumbnailUrl: '',
   description: '',
   tags: [],
   paletteId: '',
   sections: [],
   isActive: true,
+  isPremium: false,
 })
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
@@ -302,6 +271,24 @@ function toggleSection(sectionId) {
   }
 }
 
+function triggerThumbnailUpload() {
+  thumbnailInput.value?.click()
+}
+
+async function handleThumbnailUpload(event) {
+  const file = event.target.files[0]
+  if (!file) return
+  try {
+    const res = await uploadFileApi(file)
+    form.thumbnailUrl = res.fileUrl
+    toast.success('Thumbnail berhasil diupload')
+  } catch (error) {
+    toast.error('Gagal mengupload thumbnail')
+  } finally {
+    event.target.value = ''
+  }
+}
+
 function addTag() {
   const val = tagInput.value.trim()
   if (val && !form.tags.includes(val)) {
@@ -323,6 +310,7 @@ function openCreate() {
     category: '',
     price: 0,
     previewUrl: '',
+    thumbnailUrl: '',
     description: '',
     tags: [],
     paletteId: '',
@@ -332,6 +320,7 @@ function openCreate() {
       is_enabled: true
     })),
     isActive: true,
+    isPremium: false,
   })
   showForm.value = true
 }
@@ -364,11 +353,13 @@ function openEdit(template) {
     category: template.category || '',
     price: template.price || 0,
     previewUrl: template.previewUrl || '',
+    thumbnailUrl: template.thumbnailUrl || '',
     description: template.description || '',
     tags: tags,
     paletteId: template.paletteId || (template.palette ? template.palette.id : ''),
     sections: sections,
     isActive: Boolean(template.isActive),
+    isPremium: Boolean(template.isPremium),
   })
   showForm.value = true
 }
@@ -383,10 +374,12 @@ function buildPayload() {
     name: form.name,
     slug: form.slug,
     category: form.category,
-    price: form.price,
+    price: Number(form.price),
     previewUrl: form.previewUrl,
+    thumbnailUrl: form.thumbnailUrl || null,
     description: form.description || null,
     isActive: form.isActive,
+    isPremium: form.isPremium,
     paletteId: form.paletteId,
     sections: form.sections.map(s => ({
       sectionId: s.sectionId,
