@@ -149,22 +149,60 @@
             <!-- Palette UI -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Palette Warna</label>
-              <div class="mt-2 flex items-center gap-3">
-                <select v-model="form.paletteId"
-                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                  required>
-                  <option value="" disabled>Pilih Palette</option>
-                  <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
-                    {{ pal.name }}
-                  </option>
-                </select>
-                <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
-                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
-                    :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
+              <div class="mt-2 space-y-4">
+                <div class="flex items-center gap-4">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" v-model="paletteType" value="preset" class="text-slate-900" />
+                    <span class="text-sm">Gunakan Preset</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" v-model="paletteType" value="custom" class="text-slate-900" />
+                    <span class="text-sm font-bold text-indigo-600">Warna Custom (All-in-One)</span>
+                  </label>
+                </div>
+
+                <!-- Preset Selection -->
+                <div v-if="paletteType === 'preset'" class="flex items-center gap-3">
+                  <select v-model="form.paletteId"
+                    class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                    <option value="" disabled>Pilih Palette</option>
+                    <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
+                      {{ pal.name }}
+                    </option>
+                  </select>
+                  <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
+                    <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                      :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
+                    <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                      :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
+                    <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                      :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
+                  </div>
+                </div>
+
+                <!-- Custom Color Pickers -->
+                <div v-if="paletteType === 'custom'" class="grid grid-cols-3 gap-4 rounded-xl bg-slate-50 p-4 border border-slate-200">
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400">Primary</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" v-model="customPalette.primary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
+                      <input type="text" v-model="customPalette.primary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400">Secondary</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" v-model="customPalette.secondary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
+                      <input type="text" v-model="customPalette.secondary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
+                    </div>
+                  </div>
+                  <div class="space-y-2">
+                    <label class="text-[10px] uppercase font-bold text-slate-400">Accent</label>
+                    <div class="flex items-center gap-2">
+                      <input type="color" v-model="customPalette.accent" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
+                      <input type="text" v-model="customPalette.accent" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -257,6 +295,13 @@ const saving = ref(false)
 const editing = ref(null)
 
 const tagInput = ref('')
+const paletteType = ref('preset') // 'preset' | 'custom'
+const customPalette = reactive({
+  primary: '#0F172A',
+  secondary: '#64748B',
+  accent: '#38BDF8'
+})
+
 const form = reactive({
   name: '',
   slug: '',
@@ -389,6 +434,8 @@ function removeTag(index) {
 function openCreate() {
   editing.value = null
   tagInput.value = ''
+  paletteType.value = 'preset'
+  Object.assign(customPalette, { primary: '#0F172A', secondary: '#64748B', accent: '#38BDF8' })
   Object.assign(form, {
     name: '',
     slug: '',
@@ -413,6 +460,18 @@ function openCreate() {
 function openEdit(template) {
   editing.value = template
   tagInput.value = ''
+
+  // Determine palette type
+  if (template.paletteId || template.palette) {
+    paletteType.value = 'preset'
+  } else if (template.paletteColors && template.paletteColors.length >= 3) {
+    paletteType.value = 'custom'
+    customPalette.primary = template.paletteColors[0]
+    customPalette.secondary = template.paletteColors[1]
+    customPalette.accent = template.paletteColors[2]
+  } else {
+    paletteType.value = 'preset'
+  }
 
   let tags = []
   if (Array.isArray(template.tags)) {
@@ -465,13 +524,20 @@ function buildPayload() {
     description: form.description || null,
     isActive: form.isActive,
     isPremium: form.isPremium,
-    paletteId: form.paletteId,
     sections: form.sections.map(s => ({
       sectionId: s.sectionId,
       order: s.order,
       is_enabled: s.is_enabled
     })),
     tags: form.tags
+  }
+
+  if (paletteType.value === 'preset') {
+    payload.paletteId = form.paletteId
+    payload.paletteColors = null
+  } else {
+    payload.paletteId = null
+    payload.paletteColors = [customPalette.primary, customPalette.secondary, customPalette.accent]
   }
 
   return payload
