@@ -64,6 +64,12 @@ const router = createRouter({
       meta: { title: 'Checkout & Pembayaran' },
     },
     {
+      path: '/payment/finish',
+      name: 'payment-finish',
+      component: () => import('@/views/PaymentFinishPage.vue'),
+      meta: { title: 'Status Pembayaran' },
+    },
+    {
       path: '/auth/callback',
       name: 'auth-callback',
       component: () => import('@/views/AuthCallback.vue'),
