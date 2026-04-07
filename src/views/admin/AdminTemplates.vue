@@ -129,6 +129,73 @@
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
             </div>
 
+            <!-- Tags Input UI -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Tags</label>
+              <div
+                class="mt-2 flex flex-wrap gap-2 rounded-lg border border-slate-200 px-3 py-2 focus-within:border-slate-400 focus-within:ring-2 focus-within:ring-slate-100">
+                <span v-for="(tag, index) in form.tags" :key="index"
+                  class="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
+                  {{ tag }}
+                  <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
+                </span>
+                <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.comma.prevent="addTag" @blur="addTag"
+                  type="text" placeholder="Ketik tag dan enter..."
+                  class="min-w-[120px] flex-1 bg-transparent text-sm outline-none" />
+              </div>
+              <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
+            </div>
+
+            <!-- Palette UI -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Palette Warna</label>
+              <div class="mt-2 flex items-center gap-3">
+                <select v-model="form.paletteId"
+                  class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  required>
+                  <option value="" disabled>Pilih Palette</option>
+                  <option v-for="pal in palettes" :key="pal.id" :value="pal.id">
+                    {{ pal.name }}
+                  </option>
+                </select>
+                <div v-if="selectedPalette" class="flex -space-x-2 shrink-0">
+                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                    :style="{ backgroundColor: selectedPalette.primary }" :title="'Primary: ' + selectedPalette.primary"></span>
+                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                    :style="{ backgroundColor: selectedPalette.secondary }" :title="'Secondary: ' + selectedPalette.secondary"></span>
+                  <span class="block h-9 w-9 rounded-full border-2 border-white shadow-sm"
+                    :style="{ backgroundColor: selectedPalette.accent }" :title="'Accent: ' + selectedPalette.accent"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section Options UI -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Section Options & Urutan</label>
+              <div v-if="availableSections.length" class="mt-2 space-y-2">
+                <div v-for="section in availableSections" :key="section.id"
+                  class="flex items-center gap-4 rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
+                  <input type="checkbox" :checked="isSectionEnabled(section.id)"
+                    @change="toggleSection(section.id)"
+                    class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                  
+                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
+                  
+                  <div class="flex items-center gap-2 ml-auto">
+                    <span class="text-[10px] uppercase text-slate-400 font-bold">Urutan:</span>
+                    <input type="number" 
+                      :value="getSectionOrder(section.id)"
+                      @input="updateSectionOrder(section.id, $event.target.value)"
+                      class="w-16 rounded border border-slate-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
+                      min="1" />
+                  </div>
+                </div>
+              </div>
+              <div v-else class="mt-2 text-sm text-slate-400 italic">
+                Belum ada section yang tersedia. Tambahkan di menu Master Fitur.
+              </div>
+            </div>
+
             <div class="md:col-span-2 flex flex-wrap gap-6">
               <div class="flex items-center gap-2">
                 <input id="templateActive" v-model="form.isActive" type="checkbox"
@@ -255,6 +322,24 @@ function getCategoryColor(categoryName) {
 
 function isSectionEnabled(sectionId) {
   return form.sections.some(s => s.sectionId === sectionId && s.is_enabled)
+}
+
+function getSectionOrder(sectionId) {
+  const s = form.sections.find(s => s.sectionId === sectionId)
+  return s ? s.order : 1
+}
+
+function updateSectionOrder(sectionId, val) {
+  const index = form.sections.findIndex(s => s.sectionId === sectionId)
+  if (index > -1) {
+    form.sections[index].order = Number(val)
+  } else {
+    form.sections.push({
+      sectionId,
+      order: Number(val),
+      is_enabled: false
+    })
+  }
 }
 
 function toggleSection(sectionId) {
