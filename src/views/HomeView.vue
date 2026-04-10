@@ -11,7 +11,7 @@
     </section>
 
     <!-- Steps Section -->
-    <StepsSection />
+    <StepsSection @create-invitation="showModal = true" />
 
     <!-- Template Section (Existing Logic) -->
     <section id="templates" class="section bg-white scroll-mt-20">
@@ -123,10 +123,10 @@
 
     <!-- Modal Pilih Template -->
     <div v-if="showModal"
-      class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center px-4"
+      class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center sm:px-4 md:py-8"
       @click.self="showModal = false">
       <div
-        class="bg-white w-full max-w-6xl h-[90vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-scale-up">
+        class="bg-white w-full h-full sm:h-[90vh] max-w-6xl sm:rounded-2xl shadow-2xl overflow-hidden flex flex-col md:flex-row animate-scale-up">
 
         <!-- Sidebar Filter (Desktop) -->
         <aside class="hidden md:flex md:w-64 bg-gray-50 border-r border-gray-200 flex-col">
@@ -153,9 +153,9 @@
         </aside>
 
         <!-- Main Content -->
-        <div class="flex-1 flex flex-col min-w-0 bg-white relative">
+        <div class="flex-1 flex flex-col min-w-0 min-h-0 bg-white relative">
           <!-- Header Modal -->
-          <div class="p-5 border-b border-gray-200 flex justify-between items-center bg-white z-10 shadow-sm">
+          <div class="shrink-0 p-5 border-b border-gray-200 flex justify-between items-center bg-white z-10 shadow-sm">
             <div>
               <h3 class="text-xl font-bold text-dark font-serif">Pilih Template</h3>
               <p class="text-sm text-muted hidden sm:block">Pilih desain terbaik untuk acaramu.</p>
@@ -167,7 +167,7 @@
           </div>
 
           <!-- Mobile Filter Tabs -->
-          <div class="md:hidden flex overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
+          <div class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
             <button v-for="cat in categories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
               'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
               selectedCategory === cat.id ? 'bg-mocha text-white border-mocha' : 'bg-white text-gray-600 border-gray-200'
@@ -177,18 +177,18 @@
           </div>
 
           <!-- Template Grid -->
-          <div class="flex-1 overflow-y-auto p-6 bg-gray-50/50 custom-scrollbar">
+          <div class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-gray-50/50 custom-scrollbar">
             <div v-if="loading" class="flex items-center justify-center h-full">
               <div class="animate-spin text-mocha text-3xl">⏳</div>
             </div>
             <div v-else-if="filteredTemplates.length > 0"
-              class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
+              class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pb-4">
               <div v-for="(item) in filteredTemplates" :key="item.id" :ref="el => templateRefs[item.id] = el"
                 @click="selectTemplate(item.id)" :class="[
                   selectedTemplate === item.id ? 'ring-2 ring-mocha ring-offset-2 scale-[1.02]' : 'hover:shadow-lg hover:-translate-y-1',
                   'bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-gray-100 flex flex-col group shadow-sm'
                 ]">
-                <div class="relative h-44 overflow-hidden bg-gray-200">
+                <div class="relative h-32 sm:h-44 overflow-hidden bg-gray-200">
                   <img :src="item.thumbnailUrl || item.previewUrl || 'https://via.placeholder.com/400x300'"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   
@@ -263,7 +263,7 @@
 
           <!-- Footer Modal -->
           <div
-            class="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 bg-white flex justify-between items-center z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.05)]">
+            class="shrink-0 p-4 border-t border-gray-200 bg-white flex justify-between items-center z-10 shadow-[0_-5px_20px_rgba(0,0,0,0.05)] mt-auto">
             <div class="hidden sm:block">
               <p v-if="selectedTemplate" class="text-sm text-mocha font-medium">
                 Template terpilih: <span class="font-bold">{{filteredTemplates.find(t => t.id ===
@@ -302,6 +302,15 @@ import { getCategories } from '@/api/category' // Update Import
 
 const router = useRouter()
 const showModal = ref(false)
+
+watch(showModal, (val) => {
+  if (val) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+})
+
 const selectedTemplate = ref(null)
 const selectedCategory = ref('all') // Default to 'all' ID
 const templateRefs = reactive({})
