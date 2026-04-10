@@ -5,34 +5,21 @@
     <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" />
 
     <!-- Bottom Navigation -->
-
     <nav v-if="!showWelcome"
       class="fixed bottom-6 left-0 right-0 mx-auto z-50 bg-black/80 backdrop-blur-xl border border-[#d6b18a]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-2xl shadow-black/50 animate-slide-up w-fit max-w-[95%] md:hidden">
-
-
 
       <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
         class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
         :class="activeSection === item.id ? 'text-[#d6b18a] scale-110' : 'text-white/50 hover:text-white/80'">
 
-
-
         <i :class="[item.icon, 'text-xl mb-0.5']"></i>
-
         <span class="text-[9px] font-medium tracking-wide uppercase">{{ item.label }}</span>
 
-
-
         <!-- Active Indicator Dot -->
-
         <span
           class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#d6b18a] transition-all duration-300"
           :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"></span>
-
       </button>
-
-
-
     </nav>
 
     <!-- Welcome Screen -->
@@ -108,7 +95,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-20 md:py-24 px-6 relative bg-[#1a1a1a]" v-observe>
+      <section v-if="isSectionEnabled('quote')" class="py-20 md:py-24 px-6 relative bg-[#1a1a1a]" v-observe>
         <div class="max-w-3xl mx-auto text-center border-y border-[#d6b18a]/20 py-12">
           <i class="fa-solid fa-quote-left text-3xl md:text-4xl text-[#d6b18a]/20 mb-6 block"></i>
           <p class="text-base md:text-xl text-gray-300 italic leading-relaxed font-light mb-6">
@@ -119,7 +106,7 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
+      <section v-if="isSectionEnabled('couple')" id="couple" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
         <div class="max-w-6xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-12 md:mb-16" v-observe>The Happy
             Couple</h2>
@@ -172,7 +159,7 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" class="py-20 md:py-24 px-6 relative overflow-hidden">
+      <section v-if="isSectionEnabled('event')" id="event" class="py-20 md:py-24 px-6 relative overflow-hidden">
         <!-- Parallax Background -->
         <div class="absolute inset-0 bg-fixed bg-cover bg-center bg-no-repeat opacity-20"
           :style="{ backgroundImage: `url('${backgroundUrl}')` }"></div>
@@ -254,7 +241,7 @@
       </section>
 
       <!-- DENAH LOKASI (FLOOR PLAN) -->
-      <section v-if="data.floorPlanImageUrl" class="py-20 md:py-24 px-6 bg-black" v-observe>
+      <section v-if="data.floorPlanImageUrl && isSectionEnabled('denah')" class="py-20 md:py-24 px-6 bg-black" v-observe>
         <div class="max-w-4xl mx-auto text-center">
           <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Denah Lokasi</h2>
           <div class="relative w-full rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20 group">
@@ -265,7 +252,7 @@
       </section>
 
       <!-- VIDEO PREWEDDING -->
-      <section v-if="data.videoPrewedding" class="py-20 md:py-24 px-6 bg-[#1a1a1a]" v-observe>
+      <section v-if="data.videoPrewedding && isSectionEnabled('video-prewedding')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]" v-observe>
         <div class="max-w-4xl mx-auto text-center">
           <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Video Prewedding</h2>
           <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20">
@@ -276,7 +263,7 @@
       </section>
 
       <!-- MENU MAKANAN -->
-      <section v-if="data.menu?.items?.length" class="py-20 md:py-24 px-6 bg-black">
+      <section v-if="data.menu?.items?.length && isSectionEnabled('foodList')" class="py-20 md:py-24 px-6 bg-black">
         <div class="max-w-3xl mx-auto text-center">
           <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-12">{{ data.menu.title || 'Menu Hidangan' }}</h2>
           <div class="grid gap-6 md:grid-cols-2">
@@ -290,7 +277,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section v-if="data.loveStory?.length" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
+      <section v-if="data.loveStory?.length && isSectionEnabled('loveStory')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-12 md:mb-16" v-observe>Our Journey
           </h2>
@@ -316,7 +303,7 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="galleryImages.length" class="py-20 md:py-24 px-4 bg-black">
+      <section id="gallery" v-if="galleryImages.length && isSectionEnabled('gallery')" class="py-20 md:py-24 px-4 bg-black">
         <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-8 md:mb-12" v-observe>Captured Moments
         </h2>
 
@@ -325,7 +312,7 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" class="py-20 md:py-24 px-6 relative bg-[#1a1a1a]">
+      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="py-20 md:py-24 px-6 relative bg-[#1a1a1a]">
         <div
           class="max-w-2xl mx-auto bg-black/40 backdrop-blur-xl border border-[#d6b18a]/20 rounded-3xl p-6 md:p-12 shadow-2xl"
           v-observe>
@@ -374,7 +361,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length || data.eWalletLink?.length"
+      <section v-if="(data.bankAccounts?.length || data.eWalletLink?.length) && isSectionEnabled('gift')"
         class="py-20 md:py-24 px-6 bg-black text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-[#d6b18a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
@@ -400,7 +387,7 @@
       </section>
 
       <!-- PROTOKOL KESEHATAN -->
-      <section v-if="data.healthProtocol" class="py-16 px-6 bg-[#1a1a1a] text-center border-t border-[#333]">
+      <section v-if="data.healthProtocol && isSectionEnabled('health-protocol')" class="py-16 px-6 bg-[#1a1a1a] text-center border-t border-[#333]">
         <h3 class="text-xl font-serif text-white mb-8">Protokol Kesehatan</h3>
         <div class="flex justify-center gap-8 flex-wrap text-[#d6b18a]">
           <div class="flex flex-col items-center gap-2 w-24">
@@ -419,14 +406,14 @@
       </section>
 
       <!-- TURUT MENGUNDANG -->
-      <section v-if="data.turutMengundang" class="py-16 px-6 bg-black text-center border-t border-[#222]">
+      <section v-if="data.turutMengundang && isSectionEnabled('turut-mengundang')" class="py-16 px-6 bg-black text-center border-t border-[#222]">
         <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
         <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang
           }}</p>
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-12 bg-[#0f0f0f] text-center border-t border-[#222]">
+      <footer v-if="isSectionEnabled('footer')" class="py-12 bg-[#0f0f0f] text-center border-t border-[#222]">
         <h2 class="font-alex text-3xl md:text-4xl text-[#d6b18a] mb-2">{{ data.groomName }} & {{ data.brideName }}</h2>
         <p v-if="data.footerText" class="text-gray-400 text-sm mb-4 max-w-lg mx-auto px-4">{{ data.footerText }}</p>
         <p class="text-gray-500 text-xs tracking-widest uppercase">Created with SatuUndangan</p>
@@ -437,7 +424,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
@@ -459,13 +446,21 @@ const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
 const backgroundUrl = ref('')
 
 // Navigation
-const navItems = [
-  { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
-  { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
-  { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-  { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
-  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
-]
+const navItems = computed(() => {
+  const items = [
+    { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
+    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
+    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
+  ]
+  
+  return items.filter(item => {
+    if (item.id === 'home') return true
+    if (item.id === 'event') return isSectionEnabled('event')
+    return isSectionEnabled(item.id)
+  })
+})
 const activeSection = ref('home')
 
 // Countdown Logic
@@ -493,7 +488,8 @@ const vObserve = {
 function openInvitation() {
   showWelcome.value = false
   setTimeout(() => {
-    document.getElementById('main-content').classList.remove('opacity-0')
+    const el = document.getElementById('main-content')
+    if (el) el.classList.remove('opacity-0')
     initScrollSpy()
   }, 100)
 }
@@ -513,7 +509,7 @@ function initScrollSpy() {
     })
   }, { threshold: 0.5 })
 
-  navItems.forEach(item => {
+  navItems.value.forEach(item => {
     const el = document.getElementById(item.id)
     if (el) observer.observe(el)
   })
@@ -521,18 +517,9 @@ function initScrollSpy() {
 
 function getMusicUrl(choice) {
   if (!choice) return null
-  // If it's a file name, assume local/uploaded path logic, else full URL
   if (choice.includes('/') || choice.includes('http')) return choice
-  if (choice === 'romantic') return '/audio/romantic_music1.mp3'
-  return '/audio/romantic_music1.mp3' // default
+  return '/audio/romantic_music1.mp3'
 }
-
-// function getParentName(parentString, index) {
-//   if (!parentString) return '...'
-//   // Simple split assuming "Father & Mother" format
-//   const parts = parentString.split('&')
-//   return parts[index]?.trim() || (index === 0 ? parentString : '')
-// }
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
@@ -546,6 +533,11 @@ function formatTime(dateStr) {
   const date = new Date(dateStr)
   if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+}
+
+function isSectionEnabled(key) {
+  if (!props.data?.selectedSections || props.data.selectedSections.length === 0) return true
+  return props.data.selectedSections.includes(key)
 }
 
 function formatStoryDate(dateStr) {
@@ -562,7 +554,6 @@ function formatInstagramUrl(handle) {
 
 function getEmbedUrlVideo(url) {
   if (!url) return '';
-  // Convert YouTube watch URL to embed
   if (url.includes('youtube.com/watch')) {
     const videoId = url.split('v=')[1];
     const ampersandPosition = videoId.indexOf('&');
@@ -580,7 +571,7 @@ function getEmbedUrlVideo(url) {
 
 function copyToClipboard(text) {
   navigator.clipboard.writeText(text)
-  alert('Berhasil disalin!')
+  toast.success('Berhasil disalin!')
 }
 
 function addToCalendar() {
@@ -590,7 +581,6 @@ function addToCalendar() {
     duration: [3, "hour"],
     description: "Kami mengundang Anda untuk hadir di pernikahan kami."
   }
-  // Simple Google Calendar Link
   const start = event.start.replace(/-|:|\.\d\d\d/g, "")
   const end = new Date(new Date(event.start).getTime() + 3 * 60 * 60 * 1000).toISOString().replace(/-|:|\.\d\d\d/g, "")
   const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${start}/${end}&details=${encodeURIComponent(event.description)}`
@@ -598,21 +588,12 @@ function addToCalendar() {
 }
 
 async function submitRSVP() {
-  // Validate Name
   if (!rsvp.value.name?.trim()) {
-    alert("Mohon isi nama Anda.")
+    toast.error("Mohon isi nama Anda.")
     return
   }
-
-  // Validate Attendance
   if (!rsvp.value.attendance) {
-    alert("Mohon pilih konfirmasi kehadiran (Hadir/Maaf/Ragu).")
-    return
-  }
-
-  // Validate Message
-  if (!rsvp.value.message?.trim() || rsvp.value.message.trim().length < 3) {
-    alert("Mohon isi ucapan & doa minimal 3 karakter.")
+    toast.error("Mohon pilih konfirmasi kehadiran.")
     return
   }
 
@@ -626,8 +607,6 @@ async function submitRSVP() {
     })
     
     toast.success(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
-    
-    // Reset form
     rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
   } catch (err) {
     console.error('Failed to submit RSVP:', err)
@@ -635,12 +614,9 @@ async function submitRSVP() {
   }
 }
 
-// Initialize Data Helper
 function initData() {
-  console.log(data.value.photoCoupleUrl)
   if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
 
-  // Backfill Event Data if missing (Critical Fix)
   if (!data.value.akadLocation && data.value.dateTime) {
     data.value.akadLocation = {
       dateTime: data.value.dateTime,
@@ -656,10 +632,10 @@ function initData() {
     }
   }
 
-  // Countdown
   if (data.value.akadLocation?.dateTime) {
     const target = new Date(data.value.akadLocation.dateTime).getTime()
     if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
       interval = setInterval(() => {
         const now = new Date().getTime()
         const diff = target - now
@@ -673,30 +649,18 @@ function initData() {
     }
   }
 
-  // Gallery
   if (data.value.galleryImages && data.value.galleryImages.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-  } else {
-    // Placeholder if empty
-    galleryImages.value = [
-      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' },
-      { src: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=400' },
-      { src: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1520854221256-17451cc330e7?q=80&w=400' },
-      { src: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1522673607200-1645062cd958?q=80&w=400' }
-    ]
   }
 }
 
-// --- Lifecycle ---
 onMounted(() => {
-  // If props.data is empty, try localStorage (fallback for direct preview access)
   if (!props.data || Object.keys(props.data).length === 0) {
     const stored = localStorage.getItem('finalPayload')
     if (stored) {
       data.value = JSON.parse(stored)
     }
   }
-
   initData()
 })
 
@@ -704,7 +668,6 @@ onUnmounted(() => {
   if (interval) clearInterval(interval)
 })
 
-// Watch for prop changes (e.g. when InvitationView updates)
 watch(() => props.data, (newVal) => {
   if (newVal && Object.keys(newVal).length > 0) {
     data.value = newVal

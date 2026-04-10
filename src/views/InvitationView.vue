@@ -1,5 +1,6 @@
 <script setup>
 import { getInvitationBySlug } from '@/api/invitation'
+import { demoData } from '@/api/demoData'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -22,58 +23,71 @@ const loading = ref(true)
 const error = ref(null)
 const isPreviewMode = ref(false)
 const isInsideFrame = ref(false)
+const isDemoMode = ref(false)
 
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true'
   // Check if inside iframe or forced via query param
   isInsideFrame.value = window.self !== window.top || route.query.frame === 'true'
+  isDemoMode.value = route.name === 'demo'
   
   try {
-    const response = await getInvitationBySlug(slug)
-    const rawData = response.data || response
-    
-    // Check if invitation is active or if we are in preview mode
-    const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
-    
-    if (!isPublished && !isPreviewMode.value) {
-      error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
-      loading.value = false
-      return
-    }
-    
-    // Flatten the data: merge root properties with content properties
-    const data = {
-      ...(rawData.content || {}),
-      id: rawData.id,
-      title: rawData.title,
-      slug: rawData.slug,
-      template_slug: rawData.template_slug || rawData.templateName,
-      is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
-      is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
-    }
-    
-    // Determine Guest Name
-    let guestName = 'Tamu Undangan'
-    if (route.query.to) {
-      guestName = route.query.to
-    } else if (route.query.e) {
-      try {
-        // Correctly decode UTF-8 from base64
-        const binaryString = atob(route.query.e)
-        const bytes = new Uint8Array(binaryString.length)
-        for (let i = 0; i < binaryString.length; i++) {
-          bytes[i] = binaryString.charCodeAt(i)
-        }
-        guestName = new TextDecoder().decode(bytes)
-      } catch (e) {
-        console.error('Failed to decode guest name', e)
+    let data;
+
+    if (isDemoMode.value) {
+      // Handle Demo Mode
+      const templateSlug = route.params.templateSlug
+      data = {
+        ...demoData,
+        template_slug: templateSlug,
+        guestName: route.query.to || demoData.guestName
       }
+    } else {
+      // Normal Mode: Fetch from API
+      const response = await getInvitationBySlug(slug)
+      const rawData = response.data || response
+      
+      // Check if invitation is active or if we are in preview mode
+      const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+      
+      if (!isPublished && !isPreviewMode.value) {
+        error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
+        loading.value = false
+        return
+      }
+      
+      // Flatten the data: merge root properties with content properties
+      data = {
+        ...(rawData.content || {}),
+        id: rawData.id,
+        title: rawData.title,
+        slug: rawData.slug,
+        template_slug: rawData.template_slug || rawData.templateName,
+        is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
+        is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+      }
+      
+      // Determine Guest Name
+      let guestName = 'Tamu Undangan'
+      if (route.query.to) {
+        guestName = route.query.to
+      } else if (route.query.e) {
+        try {
+          // Correctly decode UTF-8 from base64
+          const binaryString = atob(route.query.e)
+          const bytes = new Uint8Array(binaryString.length)
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+          }
+          guestName = new TextDecoder().decode(bytes)
+        } catch (e) {
+          console.error('Failed to decode guest name', e)
+        }
+      }
+      data.guestName = guestName
     }
     
-    invitationData.value = {
-      ...data,
-      guestName: guestName
-    }
+    invitationData.value = data
 
     // Determine template slug, fallback to dark-elegant if not found
     const templateSlug = (data.template_slug || 'dark-elegant').toLowerCase().replace(/\s+/g, '-')

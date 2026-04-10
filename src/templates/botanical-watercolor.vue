@@ -254,7 +254,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-24 px-6 text-center">
+      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" class="py-24 px-6 text-center">
         <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-12 max-w-md mx-auto text-sm">Doa restu Anda sudah lebih dari cukup bagi kami, namun jika ingin memberikan tanda kasih, silakan melalui:</p>
 
@@ -532,3 +532,5 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
+le>
+

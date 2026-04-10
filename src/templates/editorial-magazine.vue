@@ -269,7 +269,7 @@
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-40 text-center bg-white border-t-8 border-black">
+      <footer v-if="isSectionEnabled('footer')" class="py-40 text-center bg-white border-t-8 border-black">
         <h2 class="font-playfair font-black text-7xl md:text-[12rem] uppercase leading-none tracking-tighter mb-10">{{ data.groomName }} & {{ data.brideName }}</h2>
         <div class="flex flex-col items-center space-y-6">
            <p class="text-gray-400 text-xs uppercase tracking-[0.8em] font-black">All Rights Reserved / 2026</p>

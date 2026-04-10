@@ -275,7 +275,7 @@
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-32 text-center bg-[#030712] relative">
+      <footer v-if="isSectionEnabled('footer')" class="py-32 text-center bg-[#030712] relative">
         <div class="absolute inset-0 bg-gradient-to-t from-[#f3ca40]/5 to-transparent pointer-events-none"></div>
         <h2 class="font-cormorant font-bold text-5xl md:text-7xl text-white mb-6 tracking-wide relative z-10">{{ data.groomName }} <span class="text-[#f3ca40]">&</span> {{ data.brideName }}</h2>
         <p class="text-gray-600 text-[10px] tracking-[0.6em] uppercase font-bold mb-12 relative z-10">Bound by the Heavens</p>
