@@ -159,6 +159,11 @@ const router = createRouter({
     },
     { path: '/guests', name: 'Guests', component: GuestsView },
     {
+      path: '/demo/:templateSlug',
+      name: 'demo',
+      component: Invitation,
+    },
+    {
       path: '/inv/:slug/:guestSlug',
       name: 'invitation.guest',
       component: Invitation,

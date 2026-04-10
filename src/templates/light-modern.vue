@@ -6,27 +6,13 @@
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full px-6 py-3 flex gap-6 shadow-2xl animate-slide-up w-max max-w-[90%] overflow-x-auto no-scrollbar">
-      <a href="#home"
-        class="text-gray-500 hover:text-blue-600 transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-house text-lg"></i>
-        <span class="text-[10px]">Home</span>
-      </a>
-      <a href="#couple"
-        class="text-gray-500 hover:text-blue-600 transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-heart text-lg"></i>
-        <span class="text-[10px]">Couple</span>
-      </a>
-      <a href="#event"
-        class="text-gray-500 hover:text-blue-600 transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-calendar-check text-lg"></i>
-        <span class="text-[10px]">Event</span>
-      </a>
-      <a href="#rsvp"
-        class="text-gray-500 hover:text-blue-600 transition-colors flex flex-col items-center gap-1 min-w-[40px]">
-        <i class="fa-solid fa-envelope text-lg"></i>
-        <span class="text-[10px]">RSVP</span>
-      </a>
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full px-6 py-3 flex gap-6 shadow-2xl animate-slide-up w-max max-w-[90%] overflow-x-auto no-scrollbar">
+      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+        class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
+        :class="activeSection === item.id ? 'text-blue-600 scale-110' : 'text-gray-500 hover:text-blue-600'">
+        <i :class="[item.icon, 'text-lg']"></i>
+        <span class="text-[10px]">{{ item.label }}</span>
+      </button>
     </nav>
 
     <!-- Welcome Screen -->
@@ -391,7 +377,7 @@
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-12 bg-gray-100 text-center border-t border-gray-200">
+      <footer v-if="isSectionEnabled('footer')" class="py-12 bg-gray-100 text-center border-t border-gray-200">
         <h2 class="font-alex text-3xl md:text-4xl text-blue-800 mb-2">{{ data.groomName }} & {{ data.brideName }}</h2>
         <p v-if="data.footerText" class="text-gray-500 text-sm mb-4 max-w-lg mx-auto px-4">{{ data.footerText }}</p>
         <p class="text-gray-400 text-xs tracking-widest uppercase">Created with SatuUndangan</p>
@@ -402,9 +388,11 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import { createGuestMessage } from '@/api/guestMessage'
+import { useToast } from 'vue-toastification'
 
 const props = defineProps({
   data: {
@@ -414,11 +402,34 @@ const props = defineProps({
 })
 
 // Basic Data Init
+const toast = useToast()
 const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
 const backgroundUrl = ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
+
+// Navigation
+const navItems = computed(() => {
+  const items = [
+    { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
+    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
+    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
+  ]
+  return items.filter(item => {
+    if (item.id === 'home') return true
+    if (item.id === 'event') return isSectionEnabled('event')
+    return isSectionEnabled(item.id)
+  })
+})
+const activeSection = ref('home')
+
+function isSectionEnabled(key) {
+  if (!props.data?.selectedSections || props.data.selectedSections.length === 0) return true
+  return props.data.selectedSections.includes(key)
+}
 
 // Countdown Logic
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
@@ -447,7 +458,29 @@ function openInvitation() {
   setTimeout(() => {
     const el = document.getElementById('main-content')
     if(el) el.classList.remove('opacity-0')
+    initScrollSpy()
   }, 100)
+}
+
+function scrollToSection(id) {
+  const el = document.getElementById(id)
+  if (el) el.scrollIntoView({ behavior: 'smooth' })
+  activeSection.value = id
+}
+
+function initScrollSpy() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        activeSection.value = entry.target.id
+      }
+    })
+  }, { threshold: 0.5 })
+
+  navItems.value.forEach(item => {
+    const el = document.getElementById(item.id)
+    if (el) observer.observe(el)
+  })
 }
 
 function getMusicUrl(choice) {
@@ -524,16 +557,31 @@ function addToCalendar() {
   window.open(url, '_blank')
 }
 
-function submitRSVP() {
+async function submitRSVP() {
   if (!rsvp.value.name?.trim()) {
-    alert("Mohon isi nama Anda.")
+    toast.error("Mohon isi nama Anda.")
     return
   }
   if (!rsvp.value.attendance) {
-    alert("Mohon pilih konfirmasi kehadiran.")
+    toast.error("Mohon pilih konfirmasi kehadiran.")
     return
   }
-  alert(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
+
+  try {
+    await createGuestMessage({
+      invitationId: data.value.id,
+      guestName: rsvp.value.name,
+      message: rsvp.value.message,
+      rsvpStatus: rsvp.value.attendance,
+      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+    })
+    
+    toast.success(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
+    rsvp.value = { name: '', attendance: '', totalGuest: '', message: '' }
+  } catch (err) {
+    console.error('Failed to submit RSVP:', err)
+    toast.error("Gagal mengirim RSVP. Silakan coba lagi.")
+  }
 }
 
 function initData() {
@@ -656,3 +704,4 @@ watch(() => props.data, (newVal) => {
   }
 }
 </style>
+tyle>

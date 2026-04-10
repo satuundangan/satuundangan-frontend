@@ -254,7 +254,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center bg-[#f4f1ea]">
+      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" class="py-32 px-6 text-center bg-[#f4f1ea]">
         <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-16 max-w-md mx-auto text-sm leading-relaxed">Your presence is enough for us, but if you wish to give a gift, you can use:</p>
 
@@ -493,3 +493,4 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
+le>

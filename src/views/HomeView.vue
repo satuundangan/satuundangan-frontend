@@ -191,8 +191,17 @@
                 <div class="relative h-44 overflow-hidden bg-gray-200">
                   <img :src="item.thumbnailUrl || item.previewUrl || 'https://via.placeholder.com/400x300'"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  
+                  <!-- Preview Button (Always on top of selection overlay) -->
+                  <div class="absolute top-2 right-2 flex gap-2 z-20">
+                    <a :href="'/demo/' + item.slug" target="_blank" @click.stop
+                       class="bg-white/95 hover:bg-white text-mocha px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-md flex items-center gap-1.5 transition-all hover:scale-105 border border-mocha/10">
+                      <i class="fa-solid fa-eye"></i> Demo
+                    </a>
+                  </div>
+
                   <div v-if="selectedTemplate === item.id"
-                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in">
+                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in z-10">
                     <div class="bg-white rounded-full p-2 shadow-lg scale-110">
                       <svg class="w-6 h-6 text-mocha" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd"
@@ -201,20 +210,42 @@
                       </svg>
                     </div>
                   </div>
+
+                  <!-- Price Tag -->
+                  <div class="absolute bottom-2 left-2 z-20">
+                    <div class="bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-lg text-[10px] font-bold border border-white/10">
+                      {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                    </div>
+                  </div>
                 </div>
                 <div class="p-4 flex flex-col flex-1">
                   <div class="flex justify-between items-start mb-2">
                     <h4 class="font-bold text-dark text-sm line-clamp-1"
                       :class="selectedTemplate === item.id ? 'text-mocha' : ''">{{ item.name }}</h4>
+                    <span v-if="item.isPremium" class="bg-amber-100 text-amber-700 text-[8px] font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">Premium</span>
                   </div>
 
-                  <p class="text-xs text-muted mb-3 line-clamp-2 flex-1 leading-relaxed">{{ item.description }}</p>
+                  <p class="text-[11px] text-muted mb-3 line-clamp-2 flex-1 leading-relaxed">{{ item.description }}</p>
+
+                  <!-- Additional Info: Sections & Tags -->
+                  <div class="flex items-center gap-3 mb-4">
+                    <div class="flex items-center gap-1 text-[10px] text-gray-500">
+                      <i class="fa-solid fa-layer-group text-mocha/50"></i>
+                      <span>{{ item.sections?.length || 0 }} Fitur</span>
+                    </div>
+                    <div class="flex items-center gap-1 text-[10px] text-gray-500">
+                      <i class="fa-solid fa-tag text-mocha/50"></i>
+                      <span class="capitalize">{{ item.category || 'Basic' }}</span>
+                    </div>
+                  </div>
 
                   <div class="pt-3 border-t border-gray-50 mt-auto flex justify-between items-center">
                     <div class="flex gap-1">
-                      <span v-for="color in item.paletteColor" :key="color" class="w-3 h-3 rounded-full border border-gray-100" :style="{ backgroundColor: color }"></span>
+                      <span v-for="color in (item.paletteColors || item.paletteColor)" :key="color" class="w-3 h-3 rounded-full border border-gray-100" :style="{ backgroundColor: color }"></span>
                     </div>
-                    <span v-if="selectedTemplate === item.id" class="text-xs font-bold text-mocha">Terpilih</span>
+                    <span v-if="selectedTemplate === item.id" class="text-xs font-bold text-mocha flex items-center gap-1">
+                      <i class="fa-solid fa-circle-check"></i> Terpilih
+                    </span>
                   </div>
                 </div>
               </div>
@@ -364,6 +395,14 @@ watch(() => showModal.value, async (val) => {
 
 function selectTemplate(id) {
   selectedTemplate.value = id
+}
+
+function formatPrice(price) {
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(price)
 }
 
 function goToCreate() {
