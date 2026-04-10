@@ -84,55 +84,55 @@
         ☰
       </button>
     </div>
-
-    <!-- Mobile Sidebar -->
-    <transition name="slide-fade">
-      <div v-if="sidebarOpen" class="fixed inset-0 z-[60]" @click="sidebarOpen = false">
-         <div class="absolute inset-0 bg-black/20 backdrop-blur-sm"></div>
-         
-         <aside class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white shadow-2xl p-6 flex flex-col" @click.stop>
-            <div class="flex justify-between items-center mb-8">
-               <h3 class="font-serif font-bold text-2xl text-mocha">Menu</h3>
-               <button @click="sidebarOpen = false" class="text-3xl text-gray-400 font-light hover:text-red-500 transition">&times;</button>
-            </div>
-
-            <ul class="space-y-6 flex-1">
-              <li v-for="item in menuItems" :key="item.text">
-                 <a :href="item.href" class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2">
-                   {{ item.text }}
-                 </a>
-              </li>
-            </ul>
-
-            <div class="space-y-4 pt-6 border-t border-gray-100">
-               <template v-if="userName">
-                  <div class="flex items-center gap-3 mb-4">
-                     <div class="w-10 h-10 bg-sage text-white rounded-full flex items-center justify-center font-bold">
-                        {{ userName.charAt(0).toUpperCase() }}
-                     </div>
-                     <div>
-                        <p class="text-sm text-muted">Halo,</p>
-                        <p class="font-bold text-dark">{{ userName }}</p>
-                     </div>
-                  </div>
-                  <a href="/dashboard" class="btn-outline w-full text-center py-3 rounded-xl block">Dashboard</a>
-                  <button @click="handleLogout" class="w-full text-red-500 py-2 text-sm hover:underline">Logout</button>
-               </template>
-               <template v-else>
-                  <button @click="show = true; sidebarOpen = false" class="btn-outline w-full py-3 rounded-xl">Masuk</button>
-                  <button @click="$emit('create-invitation'); sidebarOpen = false" class="btn-primary w-full py-3 rounded-xl shadow-lg shadow-mocha/20">Buat Undangan</button>
-               </template>
-            </div>
-         </aside>
-      </div>
-    </transition>
-    
-    <AuthModal :show="show" :authMode="authMode" @update:authMode="authMode = $event" @close="show = false" />
   </nav>
+
+  <!-- Mobile Sidebar -->
+  <transition name="slide-fade">
+    <div v-if="sidebarOpen" class="fixed inset-0 z-[100]" @click="sidebarOpen = false">
+       <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
+       
+       <aside class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white shadow-2xl p-6 flex flex-col z-10" @click.stop>
+          <div class="flex justify-between items-center mb-8">
+             <h3 class="font-serif font-bold text-2xl text-mocha">Menu</h3>
+             <button @click="sidebarOpen = false" class="text-3xl text-gray-400 font-light hover:text-red-500 transition">&times;</button>
+          </div>
+
+          <ul class="space-y-6 flex-1">
+            <li v-for="item in menuItems" :key="item.text">
+               <a :href="item.href" @click="sidebarOpen = false" class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2">
+                 {{ item.text }}
+               </a>
+            </li>
+          </ul>
+
+          <div class="space-y-4 pt-6 border-t border-gray-100">
+             <template v-if="userName">
+                <div class="flex items-center gap-3 mb-4">
+                   <div class="w-10 h-10 bg-sage text-white rounded-full flex items-center justify-center font-bold">
+                      {{ userName.charAt(0).toUpperCase() }}
+                   </div>
+                   <div>
+                      <p class="text-sm text-muted">Halo,</p>
+                      <p class="font-bold text-dark">{{ userName }}</p>
+                   </div>
+                </div>
+                <a href="/dashboard" class="btn-outline w-full text-center py-3 rounded-xl block">Dashboard</a>
+                <button @click="handleLogout" class="w-full text-red-500 py-2 text-sm hover:underline">Logout</button>
+             </template>
+             <template v-else>
+                <button @click="show = true; sidebarOpen = false" class="btn-outline w-full py-3 rounded-xl">Masuk</button>
+                <button @click="$emit('create-invitation'); sidebarOpen = false" class="btn-primary w-full py-3 rounded-xl shadow-lg shadow-mocha/20">Buat Undangan</button>
+             </template>
+          </div>
+       </aside>
+    </div>
+  </transition>
+  
+  <AuthModal :show="show" :authMode="authMode" @update:authMode="authMode = $event" @close="show = false" />
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
@@ -144,6 +144,14 @@ const show = ref(false)
 const authMode = ref('login')
 const sidebarOpen = ref(false)
 const isScrolled = ref(false)
+
+watch(sidebarOpen, (val) => {
+  if (val) {
+    document.body.style.overflow = 'hidden'
+  } else {
+    document.body.style.overflow = ''
+  }
+})
 
 const auth = useAuthStore()
 const route = useRoute()

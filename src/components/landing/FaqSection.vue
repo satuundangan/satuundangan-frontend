@@ -1,5 +1,5 @@
 <template>
-  <section class="section bg-ivory relative py-24">
+  <section class="section bg-ivory relative py-24 overflow-hidden">
     <!-- Decorative Circle -->
     <div class="absolute top-1/2 left-0 w-64 h-64 bg-sage/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
     <div class="absolute bottom-0 right-0 w-80 h-80 bg-mocha/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/3"></div>

@@ -46,39 +46,85 @@
       <!-- Phone Mockup Image -->
       <div class="relative flex justify-center items-center z-10 mt-10 md:mt-0 perspective-1000">
         <!-- Floating Elements -->
-        <div class="absolute top-1/4 -left-8 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-xl animate-float-slow hidden lg:block z-20 border border-white/50">
-          <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-sage/20 rounded-full flex items-center justify-center text-xl">💌</div>
-            <div>
-              <p class="text-xs text-muted">Status Undangan</p>
-              <p class="text-sm font-bold text-dark">Terkirim Sempurna</p>
+        <!-- Notification 1 -->
+        <div class="absolute top-1/4 -left-12 bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] animate-float-slow hidden lg:block z-20 border border-white/60 hover:scale-105 transition-transform duration-300 w-64 group">
+          <div class="flex items-center gap-4">
+            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white text-lg shadow-inner group-hover:rotate-12 transition-transform duration-300">
+              <i class="fa-solid fa-check-double"></i>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center mb-0.5">
+                 <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Status RSVP</p>
+                 <span class="text-[9px] text-gray-400">Baru saja</span>
+              </div>
+              <p class="text-sm font-bold text-dark leading-tight mb-0.5">Undangan Terkirim</p>
+              <p class="text-xs text-gray-500 truncate">Ke: Keluarga Bp. Budi</p>
             </div>
           </div>
         </div>
 
-        <div class="absolute bottom-1/4 -right-4 bg-white/80 backdrop-blur-md p-4 rounded-2xl shadow-xl animate-float-delayed hidden lg:block z-20 border border-white/50">
-             <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-mocha/20 rounded-full flex items-center justify-center text-xl">💬</div>
-            <div>
-              <p class="text-xs text-muted">Ucapan Masuk</p>
-              <p class="text-sm font-bold text-dark">"Happy Wedding!"</p>
+        <!-- Notification 2 -->
+        <div class="absolute bottom-1/4 -right-12 bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] animate-float-delayed hidden lg:block z-30 border border-white/60 hover:scale-105 transition-transform duration-300 w-64 group">
+          <div class="flex items-center gap-4">
+            <div class="relative">
+              <img src="https://i.pravatar.cc/100?img=32" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
+              <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-mocha rounded-full border-2 border-white flex items-center justify-center text-white text-[8px]">
+                <i class="fa-solid fa-heart"></i>
+              </div>
+            </div>
+            <div class="flex-1">
+              <div class="flex justify-between items-center mb-0.5">
+                 <p class="text-[10px] font-bold text-mocha uppercase tracking-wider">Pesan Baru</p>
+                 <span class="text-[9px] text-gray-400">2m lalu</span>
+              </div>
+              <p class="text-sm font-bold text-dark leading-tight mb-0.5">"Happy Wedding! 🥰"</p>
+              <p class="text-xs text-gray-500 truncate">Dari: Nabila (Sahabat)</p>
             </div>
           </div>
         </div>
 
         <!-- Phone Frame -->
-        <div class="relative w-[300px] h-[600px] bg-dark rounded-[3rem] shadow-2xl border-[8px] border-dark overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-transform duration-700 ring-1 ring-gray-900/50">
-          <!-- Notch -->
-          <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-7 bg-dark rounded-b-xl z-20"></div>
+        <div class="relative w-[300px] h-[600px] bg-dark rounded-[3rem] shadow-2xl border-[8px] border-dark overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-all duration-700 ring-2 ring-gray-800/50 group z-10">
+          <!-- Screen Glare Reflection -->
+          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 z-30 pointer-events-none transform -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out"></div>
+          
+          <!-- Modern Notch (Dynamic Island) -->
+          <div class="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20 flex items-center justify-between px-3 shadow-inner">
+             <div class="flex items-center gap-1.5">
+               <div class="w-3 h-3 rounded-full bg-gray-800 border border-gray-700/50 shadow-[inset_0px_0px_2px_rgba(255,255,255,0.1)]"></div>
+               <div class="w-1.5 h-1.5 rounded-full bg-blue-500/30"></div>
+             </div>
+             <div class="w-1.5 h-1.5 rounded-full bg-green-500 shadow-[0_0_4px_rgba(34,197,94,0.8)]"></div>
+          </div>
           
           <!-- Screen Content -->
-          <div class="w-full h-full bg-white overflow-hidden relative group">
-             <img src="@/assets/template1.png" alt="App Preview" class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" />
+          <div class="w-full h-full bg-white overflow-hidden relative rounded-[2.5rem] isolate">
+             <img src="@/assets/hero_image.png" alt="App Preview" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[1.5s] ease-out rounded-[2.5rem]" />
              
-             <!-- Overlay Gradient -->
-             <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10 flex flex-col justify-end p-8 text-white text-center pb-16">
-                <p class="font-serif text-3xl mb-2 drop-shadow-md">Romeo & Juliet</p>
-                <p class="text-sm tracking-widest opacity-90 uppercase">The Wedding</p>
+             <!-- Overlay Gradient & Content -->
+             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-end items-center p-8 text-white text-center pb-10 z-10">
+                
+                <!-- Play Music Button -->
+                <div class="w-14 h-14 rounded-full border border-white/30 backdrop-blur-md bg-white/10 flex items-center justify-center text-white mb-6 group-hover:bg-white group-hover:text-mocha transition-all duration-500 cursor-pointer shadow-lg transform translate-y-4 group-hover:translate-y-0">
+                   <i class="fa-solid fa-play ml-1 text-lg"></i>
+                </div>
+
+                <div class="overflow-hidden">
+                  <p class="font-serif text-4xl mb-1 drop-shadow-lg transform translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out">
+                    Romeo <span class="italic text-mocha text-3xl font-light">&</span> Juliet
+                  </p>
+                </div>
+                <div class="overflow-hidden mt-2">
+                  <p class="text-[10px] tracking-[0.4em] text-gray-300 uppercase transform translate-y-full group-hover:translate-y-0 transition-transform duration-700 delay-100 ease-out">
+                    The Wedding
+                  </p>
+                </div>
+                
+                <!-- Swipe up indicator -->
+                <div class="mt-8 flex flex-col items-center animate-bounce opacity-70">
+                   <i class="fa-solid fa-angles-up text-[10px] mb-1"></i>
+                   <span class="text-[8px] uppercase tracking-widest font-bold">Buka Undangan</span>
+                </div>
              </div>
           </div>
         </div>
