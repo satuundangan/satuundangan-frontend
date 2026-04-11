@@ -39,12 +39,11 @@
         </div>
 
         <div v-else class="grid md:grid-cols-3 gap-10">
-          <div v-for="(item) in filteredTemplates.slice(0, 9)" :key="item.id"
-            @click="selectTemplate(item.id); showModal = true;"
-            class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 cursor-pointer group border border-gray-100 relative">
+          <div v-for="(item) in filteredTemplates.slice(0, 6)" :key="item.id"
+            class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 relative">
 
-            <div class="relative overflow-hidden h-64 bg-gray-100">
-              <img :src="item.previewUrl || 'https://via.placeholder.com/400x300?text=No+Preview'" :alt="item.name"
+            <div class="relative overflow-hidden h-64 bg-gray-100 cursor-pointer" @click="selectTemplate(item.id); showModal = true;">
+              <img :src="item.thumbnailUrl || item.previewUrl || 'https://via.placeholder.com/400x300?text=No+Preview'" :alt="item.name"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
 
               <!-- Hover Overlay -->
@@ -52,34 +51,44 @@
                 class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <span
                   class="bg-white/90 text-mocha px-4 py-2 rounded-full font-bold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
-                  👁️ Lihat Detail
+                  👁️ Pilih Template
                 </span>
               </div>
 
               <!-- Badge Premium -->
-              <div v-if="item.tags && item.tags.includes('premium')"
-                class="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md tracking-wider uppercase">
+              <div v-if="item.isPremium || (item.tags && item.tags.includes('premium'))"
+                class="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md tracking-wider uppercase z-10">
                 Premium
               </div>
             </div>
 
             <div class="p-5">
-              <h4 class="font-bold text-dark text-lg mb-1 group-hover:text-mocha transition-colors">{{ item.name }}</h4>
+              <div class="flex justify-between items-start mb-2">
+                <h4 class="font-bold text-dark text-lg group-hover:text-mocha transition-colors truncate">{{ item.name }}</h4>
+                <div class="text-mocha font-bold text-sm">
+                  {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                </div>
+              </div>
               <p class="text-sm text-muted line-clamp-2 mb-4">{{ item.description }}</p>
 
-              <div class="flex flex-wrap gap-2">
-                <span v-for="tag in item.tags?.slice(0, 3)" :key="tag"
-                  class="text-[10px] bg-sage/10 text-sage font-medium px-2 py-0.5 rounded-md">
-                  #{{ tag }}
-                </span>
+              <div class="flex items-center justify-between gap-4 mt-auto">
+                 <button @click="selectTemplate(item.id); showModal = true;" 
+                   class="flex-1 bg-mocha text-white py-2 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-md shadow-mocha/10">
+                   Gunakan
+                 </button>
+                 <a :href="'/demo/' + item.slug" target="_blank"
+                   class="flex-1 bg-white border border-mocha text-mocha py-2 rounded-xl text-sm font-bold hover:bg-mocha/5 transition-all text-center">
+                   <i class="fa-solid fa-eye mr-1"></i> Demo
+                 </a>
               </div>
             </div>
           </div>
         </div>
 
         <div class="text-center mt-12">
-          <button @click="showModal = true" class="btn-outline px-8 rounded-full hover:shadow-lg transition-all">Lihat
-            Semua Template</button>
+          <button @click="showModal = true" class="btn-outline px-10 py-3 rounded-full hover:shadow-xl hover:-translate-y-1 transition-all font-bold text-mocha border-2 border-mocha">
+            Lihat Template Lainnya
+          </button>
         </div>
       </div>
     </section>

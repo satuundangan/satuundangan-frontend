@@ -273,6 +273,26 @@ const invitation = ref(null)
 const loading = ref(false)
 const isDevelopment = computed(() => import.meta.env.DEV || window.location.hostname === 'localhost')
 
+const loadSnapScript = () => {
+  return new Promise((resolve, reject) => {
+    if (window.snap) return resolve(true)
+    const script = document.createElement("script")
+    const isProd = !isDevelopment.value && !window.location.hostname.includes('localhost')
+    // Use sandbox or production URL
+    script.src = isProd 
+      ? "https://app.midtrans.com/snap/snap.js"
+      : "https://app.sandbox.midtrans.com/snap/snap.js"
+    
+    // Client key from environment variable
+    const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY || "Mid-client-KK-xRAA_WfaMnsHO"
+    script.setAttribute("data-client-key", clientKey)
+    
+    script.onload = () => resolve(true)
+    script.onerror = () => reject("Snap.js gagal dimuat")
+    document.body.appendChild(script)
+  })
+}
+
 const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
 const planPrice = computed(() => invitation.value?.price || (invitation.value?.is_premium ? 49000 : 19000))
 
@@ -367,6 +387,39 @@ const handleCheckout = async () => {
       return
     }
 
+    // MIDTRANS: Use Snap popup if token is present
+    if (data.token) {
+      try {
+        await loadSnapScript()
+        window.snap.pay(data.token, {
+          onSuccess: (result) => {
+            console.log('Payment success:', result)
+            router.push(`/${invitation.value.slug}`)
+          },
+          onPending: (result) => {
+            console.log('Payment pending:', result)
+            router.push(`/payment/finish?order_id=${result.order_id}`)
+          },
+          onError: (result) => {
+            console.error('Payment error:', result)
+            alert('Pembayaran gagal, silakan coba lagi.')
+          },
+          onClose: () => {
+            console.log('Payment popup closed')
+          }
+        })
+        return
+      } catch (err) {
+        console.error('Snap error:', err)
+        // Fallback to redirect if snap failed to load but redirect is present
+        if (data.redirect_url) {
+          window.location.href = data.redirect_url
+          return
+        }
+      }
+    }
+
+    // FLIP/FALLBACK: Use redirect URL
     if (data.redirect_url) {
       window.location.href = data.redirect_url
       return
