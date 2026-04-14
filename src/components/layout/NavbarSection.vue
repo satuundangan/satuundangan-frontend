@@ -165,6 +165,7 @@ const menuItems = [
   { text: 'Home', href: '#' },
   { text: 'Fitur', href: '#features' },
   { text: 'Katalog', href: '#templates' },
+  { text: 'Harga', href: '#pricing' },
   { text: 'Testimoni', href: '#testimonials' },
 ]
 
