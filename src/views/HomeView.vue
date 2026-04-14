@@ -40,54 +40,86 @@
 
         <div v-else class="grid md:grid-cols-3 gap-10">
           <div v-for="(item) in filteredTemplates.slice(0, 6)" :key="item.id"
-            class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 relative">
+            class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 flex flex-col">
 
+            <!-- Card Image -->
             <div class="relative overflow-hidden h-64 bg-gray-100 cursor-pointer" @click="selectTemplate(item.id); showModal = true;">
-              <img :src="item.thumbnailUrl || item.previewUrl || 'https://via.placeholder.com/400x300?text=No+Preview'" :alt="item.name"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+              <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)" :alt="item.name"
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                @error="(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Preview'" />
 
               <!-- Hover Overlay -->
               <div
-                class="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                <span
-                  class="bg-white/90 text-mocha px-4 py-2 rounded-full font-bold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 flex items-center gap-2">
-                  👁️ Pilih Template
-                </span>
+                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3">
+                <button @click.stop="selectTemplate(item.id); showModal = true;"
+                  class="bg-white text-mocha px-4 py-2 rounded-xl font-bold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-mocha hover:text-white flex items-center gap-2">
+                  <i class="fa-solid fa-wand-magic-sparkles"></i> Pilih
+                </button>
+                <a :href="'/demo/' + item.slug" target="_blank" @click.stop
+                   class="bg-white/20 backdrop-blur-md text-white border border-white/30 px-4 py-2 rounded-xl font-bold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-white hover:text-mocha flex items-center gap-2 delay-75">
+                  <i class="fa-solid fa-eye"></i> Demo
+                </a>
               </div>
 
               <!-- Badge Premium -->
-              <div v-if="item.isPremium || (item.tags && item.tags.includes('premium'))"
-                class="absolute top-3 right-3 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-md tracking-wider uppercase z-10">
+              <div v-if="item.isPremium"
+                class="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-md tracking-wider uppercase z-10">
                 Premium
               </div>
             </div>
 
-            <div class="p-5">
+            <!-- Card Content -->
+            <div class="p-6 flex flex-col flex-1">
               <div class="flex justify-between items-start mb-2">
                 <h4 class="font-bold text-dark text-lg group-hover:text-mocha transition-colors truncate">{{ item.name }}</h4>
-                <div class="text-mocha font-bold text-sm">
+                <div class="text-mocha font-bold">
                   {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
                 </div>
               </div>
-              <p class="text-sm text-muted line-clamp-2 mb-4">{{ item.description }}</p>
+              
+              <p class="text-sm text-muted line-clamp-2 mb-6 flex-1">{{ item.description }}</p>
 
-              <div class="flex items-center justify-between gap-4 mt-auto">
+              <!-- Features Summary -->
+              <div class="flex items-center gap-4 mb-6">
+                 <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                    <i class="fa-solid fa-layer-group text-mocha/40"></i>
+                    <span>{{ item.sections?.length || 0 }} Fitur</span>
+                 </div>
+                 <div class="flex items-center gap-1.5 text-xs text-gray-500">
+                    <i class="fa-solid fa-palette text-mocha/40"></i>
+                    <div class="flex gap-1">
+                       <span v-for="color in (item.paletteColors || []).slice(0, 3)" :key="color" 
+                         class="w-2.5 h-2.5 rounded-full border border-gray-100" :style="{ backgroundColor: color }"></span>
+                    </div>
+                 </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="flex gap-3 mt-auto">
                  <button @click="selectTemplate(item.id); showModal = true;" 
-                   class="flex-1 bg-mocha text-white py-2 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-md shadow-mocha/10">
-                   Gunakan
+                   class="flex-[2] bg-mocha text-white py-3 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-lg shadow-mocha/10 flex items-center justify-center gap-2">
+                   Gunakan Template
                  </button>
                  <a :href="'/demo/' + item.slug" target="_blank"
-                   class="flex-1 bg-white border border-mocha text-mocha py-2 rounded-xl text-sm font-bold hover:bg-mocha/5 transition-all text-center">
-                   <i class="fa-solid fa-eye mr-1"></i> Demo
+                   class="flex-1 bg-gray-50 border border-gray-200 text-gray-600 py-3 rounded-xl text-sm font-bold hover:bg-gray-100 transition-all text-center flex items-center justify-center">
+                   Demo
                  </a>
               </div>
             </div>
           </div>
         </div>
 
+        <!-- Empty State -->
+        <div v-if="!loading && filteredTemplates.length === 0" class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+           <div class="text-4xl mb-4">🎨</div>
+           <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
+           <p class="text-muted text-sm">Coba pilih kategori lain atau kembali beberapa saat lagi.</p>
+        </div>
+
         <div class="text-center mt-12">
-          <button @click="showModal = true" class="btn-outline px-10 py-3 rounded-full hover:shadow-xl hover:-translate-y-1 transition-all font-bold text-mocha border-2 border-mocha">
-            Lihat Template Lainnya
+          <button @click="showModal = true" class="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-mocha border-2 border-mocha hover:bg-mocha hover:text-white transition-all duration-300">
+            <span>Lihat Semua Template</span>
+            <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
           </button>
         </div>
       </div>
@@ -198,8 +230,9 @@
                   'bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-gray-100 flex flex-col group shadow-sm'
                 ]">
                 <div class="relative h-32 sm:h-44 overflow-hidden bg-gray-200">
-                  <img :src="item.thumbnailUrl || item.previewUrl || 'https://via.placeholder.com/400x300'"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    @error="(e) => e.target.src = 'https://via.placeholder.com/400x300?text=No+Preview'" />
                   
                   <!-- Preview Button (Always on top of selection overlay) -->
                   <div class="absolute top-2 right-2 flex gap-2 z-20">
@@ -413,6 +446,14 @@ watch(() => showModal.value, async (val) => {
 
 function selectTemplate(id) {
   selectedTemplate.value = id
+}
+
+function resolveImageUrl(url) {
+  if (!url) return 'https://via.placeholder.com/400x300?text=No+Preview'
+  if (url.startsWith('http')) return url
+  // Handle absolute path from backend
+  const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
+  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
 }
 
 function formatPrice(price) {
