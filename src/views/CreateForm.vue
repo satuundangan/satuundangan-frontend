@@ -1,50 +1,50 @@
 <template>
-   <div class="min-h-screen bg-ivory font-sans pt-24 pb-20 px-4 md:px-8">
+   <div class="min-h-screen bg-ivory font-sans pt-20 md:pt-24 pb-20 md:pb-24 px-4 md:px-8">
       <div class="max-w-5xl mx-auto">
 
          <!-- Stepper -->
-         <div class="flex justify-center mb-10">
-            <div class="flex items-center gap-4">
-               <div class="w-10 h-10 rounded-full bg-sage/20 text-sage font-bold flex items-center justify-center">1
+         <div class="flex justify-center mb-8 md:mb-10">
+            <div class="flex items-center gap-2 md:gap-4">
+               <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sage/20 text-sage text-sm md:text-base font-bold flex items-center justify-center">1
                </div>
-               <div class="w-12 h-1 bg-sage/20 rounded-full"></div>
-               <div class="w-10 h-10 rounded-full bg-sage/20 text-sage font-bold flex items-center justify-center">2
+               <div class="w-8 md:w-12 h-1 bg-sage/20 rounded-full"></div>
+               <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sage/20 text-sage text-sm md:text-base font-bold flex items-center justify-center">2
                </div>
-               <div class="w-12 h-1 bg-sage/20 rounded-full"></div>
+               <div class="w-8 md:w-12 h-1 bg-sage/20 rounded-full"></div>
                <div
-                  class="w-10 h-10 rounded-full bg-mocha text-white font-bold flex items-center justify-center shadow-lg shadow-mocha/20">
+                  class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-mocha text-white text-sm md:text-base font-bold flex items-center justify-center shadow-lg shadow-mocha/20">
                   3</div>
             </div>
          </div>
 
-         <div class="text-center mb-10">
-            <h1 class="text-3xl md:text-4xl font-serif font-bold text-mocha mb-3">Lengkapi Data Undangan</h1>
-            <p class="text-muted text-lg">Isi detail acaramu dengan lengkap agar undangan terlihat sempurna.</p>
+         <div class="text-center mb-8 md:mb-10">
+            <h1 class="text-2xl md:text-4xl font-serif font-bold text-mocha mb-2 md:mb-3">Lengkapi Data Undangan</h1>
+            <p class="text-muted text-sm md:text-lg">Isi detail acaramu dengan lengkap agar undangan terlihat sempurna.</p>
          </div>
 
-         <div class="bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden relative">
+         <div class="bg-white rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 overflow-hidden relative">
             <!-- Progress Bar -->
             <div class="h-1 bg-gray-100 w-full">
                <div class="h-full bg-mocha transition-all duration-500" :style="{ width: progressPercentage + '%' }">
                </div>
             </div>
 
-            <div class="p-8 md:p-12 space-y-12">
+            <div class="p-5 md:p-12 space-y-8 md:space-y-12">
 
                <!-- Section: Data Mempelai -->
-               <section class="space-y-6">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-100">
+               <section class="space-y-4 md:space-y-6">
+                  <div class="flex items-center gap-3 md:gap-4 pb-3 md:pb-4 border-b border-gray-100">
                      <div
-                        class="w-10 h-10 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-xl">
+                        class="w-8 h-8 md:w-10 md:h-10 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-lg md:text-xl">
                         👩‍❤️‍👨</div>
-                     <h2 class="text-xl font-bold text-dark">Data Mempelai</h2>
+                     <h2 class="text-lg md:text-xl font-bold text-dark">Data Mempelai</h2>
                   </div>
 
-                  <div class="grid md:grid-cols-2 gap-10">
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
                      <!-- Wanita -->
                      <div
-                        class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 hover:border-mocha/30 transition-colors">
-                        <h3 class="font-serif font-bold text-lg text-mocha mb-4 flex items-center gap-2">
+                        class="bg-gray-50/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-gray-100 hover:border-mocha/30 transition-colors">
+                        <h3 class="font-serif font-bold text-base md:text-lg text-mocha mb-4 flex items-center gap-2">
                            <span>👰‍♀️</span> Mempelai Wanita
                         </h3>
 
@@ -77,12 +77,12 @@
                                     <img v-if="formData.bridePhoto" :src="formData.bridePhoto"
                                        class="w-full h-full object-cover" />
                                     <div v-else class="flex flex-col items-center text-gray-400">
-                                       <i class="fa-solid fa-cloud-arrow-up text-2xl mb-2"></i>
-                                       <span class="text-xs font-medium">Upload Foto</span>
+                                       <i class="fa-solid fa-cloud-arrow-up text-xl md:text-2xl mb-2"></i>
+                                       <span class="text-[10px] md:text-xs font-medium">Upload Foto</span>
                                     </div>
                                     <div v-if="formData.bridePhoto"
                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                       <span class="text-white text-xs font-bold">Ganti Foto</span>
+                                       <span class="text-white text-[10px] md:text-xs font-bold">Ganti Foto</span>
                                     </div>
                                  </label>
                               </div>
@@ -94,8 +94,8 @@
 
                      <!-- Pria -->
                      <div
-                        class="bg-gray-50/50 p-6 rounded-2xl border border-gray-100 hover:border-mocha/30 transition-colors">
-                        <h3 class="font-serif font-bold text-lg text-mocha mb-4 flex items-center gap-2">
+                        class="bg-gray-50/50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-gray-100 hover:border-mocha/30 transition-colors">
+                        <h3 class="font-serif font-bold text-base md:text-lg text-mocha mb-4 flex items-center gap-2">
                            <span>🤵‍♂️</span> Mempelai Pria
                         </h3>
 
@@ -128,12 +128,12 @@
                                     <img v-if="formData.groomPhoto" :src="formData.groomPhoto"
                                        class="w-full h-full object-cover" />
                                     <div v-else class="flex flex-col items-center text-gray-400">
-                                       <i class="fa-solid fa-cloud-arrow-up text-2xl mb-2"></i>
-                                       <span class="text-xs font-medium">Upload Foto</span>
+                                       <i class="fa-solid fa-cloud-arrow-up text-xl md:text-2xl mb-2"></i>
+                                       <span class="text-[10px] md:text-xs font-medium">Upload Foto</span>
                                     </div>
                                     <div v-if="formData.groomPhoto"
                                        class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                       <span class="text-white text-xs font-bold">Ganti Foto</span>
+                                       <span class="text-white text-[10px] md:text-xs font-bold">Ganti Foto</span>
                                     </div>
                                  </label>
                               </div>
@@ -144,9 +144,9 @@
                      </div>
                   </div>
 
-                  <div data-field="title" class="pt-4">
+                  <div data-field="title" class="pt-2 md:pt-4">
                      <label class="form-label">Judul Undangan (Slug) <span class="text-red-500">*</span></label>
-                     <div class="flex gap-2">
+                     <div class="flex flex-col sm:flex-row gap-2">
                         <div class="flex-1">
                            <input v-model="formData.title" @input="validateField('title')" type="text"
                               placeholder="Contoh: The Wedding of Putri & Pangeran" class="form-input"
@@ -155,7 +155,7 @@
                         </div>
                         <button v-if="suggestedTitle && formData.title !== suggestedTitle"
                            @click="formData.title = suggestedTitle"
-                           class="text-xs bg-mocha/10 text-mocha px-3 rounded-lg font-bold hover:bg-mocha hover:text-white transition whitespace-nowrap h-[46px]">
+                           class="text-xs bg-mocha/10 text-mocha px-3 rounded-lg font-bold hover:bg-mocha hover:text-white transition whitespace-nowrap h-10 md:h-[46px] w-full sm:w-auto">
                            Gunakan Saran
                         </button>
                      </div>

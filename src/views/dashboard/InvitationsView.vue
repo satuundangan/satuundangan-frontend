@@ -1,10 +1,16 @@
 <template>
-  <div class="flex h-screen bg-gray-100">
-    <Sidebar />
-    <div class="flex-1 flex flex-col ml-64 transition-all duration-300">
-      <Topbar title="Invitations" showButton />
-      <main class="p-6 space-y-6 overflow-y-auto">
-        <div v-if="loading" class="text-center py-10 text-gray-500">Memuat data...</div>
+  <div class="flex h-screen bg-gray-50 overflow-hidden">
+    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    
+    <div class="flex-1 flex flex-col md:ml-64 transition-all duration-300 min-w-0">
+      <Topbar title="Invitations" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      
+      <main class="p-4 md:p-6 space-y-6 overflow-y-auto">
+        <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-gray-400">
+           <div class="animate-spin text-3xl mb-4">⏳</div>
+           <p>Memuat data...</p>
+        </div>
+        
         <InvitationsTable 
           v-else 
           :invitations="invitations" 
@@ -30,6 +36,7 @@ const router = useRouter();
 const toast = useToast();
 const invitations = ref([]);
 const loading = ref(true);
+const isSidebarOpen = ref(false);
 
 async function fetchInvitations() {
   loading.value = true;

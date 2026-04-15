@@ -88,19 +88,19 @@ export const deleteAdminCategory = (id) =>
   })
 
 // Promo Codes
-export const fetchAdminPromoCodes = (params) => apiFetch(withParams('/admin/promo-codes', params))
+export const fetchAdminPromoCodes = (params) => apiFetch(withParams('/promo/admin/list', params))
 export const createAdminPromoCode = (payload) =>
-  apiFetch('/admin/promo-codes', {
+  apiFetch('/promo/admin', {
     method: 'POST',
     body: JSON.stringify(payload),
   })
 export const updateAdminPromoCode = (id, payload) =>
-  apiFetch(`/admin/promo-codes/${id}`, {
+  apiFetch(`/promo/admin/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
   })
 export const deleteAdminPromoCode = (id) =>
-  apiFetch(`/admin/promo-codes/${id}`, {
+  apiFetch(`/promo/admin/${id}`, {
     method: 'DELETE',
   })
 
