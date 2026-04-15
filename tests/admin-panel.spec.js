@@ -17,8 +17,6 @@ async function setupAuth(page) {
   const endpoints = [
     '**/admin/users**',
     '**/admin/invitations**',
-    '**/admin/guests**',
-    '**/admin/guest-messages**',
     '**/admin/template-designs**',
     '**/admin/categories**',
     '**/admin/palette-colors**',
