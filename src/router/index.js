@@ -16,8 +16,6 @@ import AdminLogin from '@/views/admin/AdminLogin.vue'
 import AdminDashboard from '@/views/admin/AdminDashboard.vue'
 import AdminUsers from '@/views/admin/AdminUsers.vue'
 import AdminInvitations from '@/views/admin/AdminInvitations.vue'
-import AdminGuests from '@/views/admin/AdminGuests.vue'
-import AdminGuestMessages from '@/views/admin/AdminGuestMessages.vue'
 import AdminTemplates from '@/views/admin/AdminTemplates.vue'
 import AdminAudio from '@/views/admin/AdminAudio.vue'
 import AdminBanks from '@/views/admin/AdminBanks.vue'
@@ -101,18 +99,6 @@ const router = createRouter({
       path: '/admin/invitations',
       name: 'admin-invitations',
       component: AdminInvitations,
-      meta: { requiresAuth: true, requiresAdmin: true },
-    },
-    {
-      path: '/admin/guests',
-      name: 'admin-guests',
-      component: AdminGuests,
-      meta: { requiresAuth: true, requiresAdmin: true },
-    },
-    {
-      path: '/admin/guest-messages',
-      name: 'admin-guest-messages',
-      component: AdminGuestMessages,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {

@@ -109,8 +109,6 @@ const createIcon = (paths) => ({
 const IconDashboard = createIcon(['M3 12l9-9 9 9M4.5 10.5V21h5.25v-4.5h4.5V21H19.5V10.5']);
 const IconUsers = createIcon(['M15 19.128A9.38 9.38 0 0 0 18 15.75c0-2.071-1.5-3.75-3.75-3.75h-4.5C7.5 12 6 13.679 6 15.75c0 1.78.83 3.363 2.13 4.378','m-9.375 5.25a3.375 3.375 0 0 1 6.75 0 3.375 3.375 0 0 1-6.75 0Z']);
 const IconInvitations = createIcon(['M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75']);
-const IconGuests = createIcon(['M15 12a3 3 0 1 0-6 0 3 3 0 0 0 6 0zm-9 8.25a6 6 0 0 1 12 0V21H6v-.75z']);
-const IconMessages = createIcon(['M7.5 8.25h9M7.5 12h5.25M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0z']);
 const IconTemplates = createIcon(['M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.47 2.118L2.25 12.007a.94.94 0 0 1 .134-.739l.417-.646a.94.94 0 0 1 .84-.396h2.953a.94.94 0 0 1 .84.396l.417.646a.94.94 0 0 1 .134.739l-1.03 5.011a2.25 2.25 0 0 1 2.47-2.118 3 3 0 0 0 5.78-1.128zM15.75 1.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75zM12 12.75a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H12zm3 0a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H15zm3 0a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H18z']);
 const IconCategories = createIcon(['M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z', 'M6 6h.008v.008H6V6Z']);
 const IconPalettes = createIcon(['M4.017 10.312l-1.02.51a2.25 2.25 0 000 4.028l1.02.51a2.25 2.25 0 011.208 1.998V18.5a2.25 2.25 0 002.25 2.25h1.656a2.25 2.25 0 011.998 1.208l.51 1.02a2.25 2.25 0 004.028 0l.51-1.02a2.25 2.25 0 011.998-1.208h1.656a2.25 2.25 0 002.25-2.25v-1.152a2.25 2.25 0 011.208-1.998l1.02-.51a2.25 2.25 0 000-4.028l-1.02-.51a2.25 2.25 0 01-1.208-1.998V5.5a2.25 2.25 0 00-2.25-2.25h-1.656a2.25 2.25 0 01-1.998-1.208l-.51-1.02a2.25 2.25 0 00-4.028 0l-.51 1.02a2.25 2.25 0 01-1.998 1.208H6.267a2.25 2.25 0 00-2.25 2.25v1.152a2.25 2.25 0 01-1.208 1.998z']);
@@ -125,8 +123,6 @@ const navItems = [
   { label: 'Dashboard', to: '/admin', icon: IconDashboard },
   { label: 'Users', to: '/admin/users', icon: IconUsers },
   { label: 'Invitations', to: '/admin/invitations', icon: IconInvitations },
-  { label: 'Guests', to: '/admin/guests', icon: IconGuests },
-  { label: 'Guest Messages', to: '/admin/guest-messages', icon: IconMessages },
   { label: 'Template Designs', to: '/admin/templates', icon: IconTemplates },
   { label: 'Master Kategori', to: '/admin/categories', icon: IconCategories },
   { label: 'Master Palette Warna', to: '/admin/palettes', icon: IconPalettes },

@@ -11,7 +11,7 @@
       </div>
     </section>
 
-    <section class="mt-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
+    <section class="mt-8">
       <div class="rounded-2xl border border-slate-200 bg-white">
         <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
           <h2 class="text-base font-semibold text-slate-900">Undangan Terbaru</h2>
@@ -39,22 +39,6 @@
           </table>
         </div>
       </div>
-
-      <div class="rounded-2xl border border-slate-200 bg-white">
-        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-4">
-          <h2 class="text-base font-semibold text-slate-900">Pesan Tamu Terbaru</h2>
-          <RouterLink to="/admin/guest-messages" class="text-sm font-medium text-slate-500 hover:text-slate-900">Lihat semua</RouterLink>
-        </div>
-        <div class="p-5">
-          <ul class="space-y-4">
-            <li v-for="message in recentMessages" :key="message.id" class="rounded-lg border border-slate-100 px-4 py-3">
-              <p class="text-sm font-medium text-slate-900">{{ message.guestName || 'Anonim' }}</p>
-              <p class="mt-1 text-sm text-slate-600">{{ message.message }}</p>
-            </li>
-            <li v-if="!recentMessages.length" class="py-8 text-center text-slate-400">Belum ada data</li>
-          </ul>
-        </div>
-      </div>
     </section>
   </AdminShell>
 </template>
@@ -67,7 +51,6 @@ import {
   fetchAdminUsers,
   fetchAdminInvitations,
   fetchAdminGuests,
-  fetchAdminGuestMessages,
   fetchAdminTemplates,
 } from '@/api/admin.js'
 import { useToast } from 'vue-toastification'
@@ -77,19 +60,16 @@ const stats = ref([
   { label: 'Total Pengguna', value: 0 },
   { label: 'Total Undangan', value: 0 },
   { label: 'Total Tamu', value: 0 },
-  { label: 'Pesan Tamu', value: 0 },
   { label: 'Template Tersedia', value: 0 },
 ])
 const recentInvitations = ref([])
-const recentMessages = ref([])
 
 async function loadDashboard() {
   try {
-    const [users, invitations, guests, messages, templates] = await Promise.all([
+    const [users, invitations, guests, templates] = await Promise.all([
       fetchAdminUsers({ page: 1, limit: 1 }),
       fetchAdminInvitations({ page: 1, limit: 5 }),
       fetchAdminGuests({ page: 1, limit: 1 }),
-      fetchAdminGuestMessages({ page: 1, limit: 5 }),
       fetchAdminTemplates({ page: 1, limit: 1 }),
     ])
 
@@ -97,12 +77,10 @@ async function loadDashboard() {
       { label: 'Total Pengguna', value: users.total },
       { label: 'Total Undangan', value: invitations.total },
       { label: 'Total Tamu', value: guests.total },
-      { label: 'Pesan Tamu', value: messages.total },
       { label: 'Template Tersedia', value: templates.total },
     ]
 
     recentInvitations.value = invitations.data || []
-    recentMessages.value = messages.data || []
   } catch (error) {
     toast.error(error.message || 'Gagal memuat data dashboard')
   }

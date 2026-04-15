@@ -36,22 +36,6 @@ export const deleteAdminInvitation = (id) =>
 
 // Guests
 export const fetchAdminGuests = (params) => apiFetch(withParams('/admin/guests', params))
-export const updateAdminGuest = (id, payload) =>
-  apiFetch(`/admin/guests/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(payload),
-  })
-export const deleteAdminGuest = (id) =>
-  apiFetch(`/admin/guests/${id}`, {
-    method: 'DELETE',
-  })
-
-// Guest Messages
-export const fetchAdminGuestMessages = (params) => apiFetch(withParams('/admin/guest-messages', params))
-export const deleteAdminGuestMessage = (id) =>
-  apiFetch(`/admin/guest-messages/${id}`, {
-    method: 'DELETE',
-  })
 
 // Template Designs
 export const fetchAdminTemplates = (params) => apiFetch(withParams('/admin/template-designs', params))
