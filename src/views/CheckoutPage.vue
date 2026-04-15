@@ -41,10 +41,10 @@
         <div class="lg:col-span-7 space-y-8">
           <div class="card overflow-hidden !p-0 border-none group">
             <div class="relative aspect-[16/10] overflow-hidden">
-              <img 
+              <img
                 :src="invitation?.content?.photoCoupleUrl || invitation?.content?.bridePhotoUrl || invitation?.content?.groomPhotoUrl || '/default-thumbnail.jpg'"
-                class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" 
-                alt="Couple Preview" 
+                class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                alt="Couple Preview"
               />
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60"></div>
               
@@ -216,8 +216,8 @@
 
               <!-- Action -->
               <div class="space-y-4">
-                <button 
-                  :disabled="loading" 
+                <button
+                  :disabled="loading"
                   @click="handleCheckout"
                   class="btn-primary w-full !py-5 flex items-center justify-center gap-3 group text-lg shadow-xl shadow-mocha/20"
                 >
@@ -227,7 +227,7 @@
                 </button>
 
                 <!-- Payment Simulation (Dev only) -->
-                <button 
+                <button
                   v-if="isDevelopment"
                   @click="simulatePaymentSuccess"
                   class="w-full py-3 border-2 border-dashed border-sage text-sage font-bold rounded-xl hover:bg-sage/5 transition-all text-sm"
@@ -244,7 +244,7 @@
           
           <!-- Back Link -->
           <div class="mt-8 text-center animate-fade-in delay-300">
-             <router-link :to="invitation?.id ? `/invitation/${invitation.id}/edit` : '/create/form'" 
+             <router-link :to="invitation?.id ? `/invitation/${invitation.id}/edit` : '/create/form'"
                 class="text-sm font-bold text-mocha/40 hover:text-mocha transition-all flex items-center justify-center gap-2 group">
                 <i class="fa-solid fa-chevron-left text-[10px] transition-transform group-hover:-translate-x-1"></i>
                 <span>Kembali Edit Undangan</span>
@@ -276,17 +276,16 @@ const isDevelopment = computed(() => import.meta.env.DEV || window.location.host
 const loadSnapScript = () => {
   return new Promise((resolve, reject) => {
     if (window.snap) return resolve(true)
+
     const script = document.createElement("script")
     const isProd = !isDevelopment.value && !window.location.hostname.includes('localhost')
-    // Use sandbox or production URL
-    script.src = isProd 
+    script.src = isProd
       ? "https://app.midtrans.com/snap/snap.js"
       : "https://app.sandbox.midtrans.com/snap/snap.js"
-    
-    // Client key from environment variable
+
     const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY || "Mid-client-KK-xRAA_WfaMnsHO"
     script.setAttribute("data-client-key", clientKey)
-    
+
     script.onload = () => resolve(true)
     script.onerror = () => reject("Snap.js gagal dimuat")
     document.body.appendChild(script)
@@ -294,7 +293,17 @@ const loadSnapScript = () => {
 }
 
 const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
-const planPrice = computed(() => invitation.value?.price || (invitation.value?.is_premium ? 49000 : 19000))
+const planPrice = computed(() => {
+  const templatePrice = Number(
+    invitation.value?.price ?? invitation.value?.content?.templatePrice ?? 0,
+  )
+
+  if (Number.isFinite(templatePrice) && templatePrice > 0) {
+    return templatePrice
+  }
+
+  return invitation.value?.is_premium ? 49000 : 19000
+})
 
 // Promo Code
 const promoCode = ref('')
@@ -350,9 +359,8 @@ const simulatePaymentSuccess = async () => {
   if (!invitation.value) return
   loading.value = true
   try {
-    // Manually activate the invitation in backend for simulation
     await updateInvitation(invitation.value.id, { isPublished: true })
-    
+
     loading.value = false
     alert("Simulasi pembayaran berhasil! Undangan Anda kini aktif.")
     router.push(`/${invitation.value.slug}`)
@@ -387,17 +395,14 @@ const handleCheckout = async () => {
       return
     }
 
-    // MIDTRANS: Use Snap popup if token is present
     if (data.token) {
       try {
         await loadSnapScript()
         window.snap.pay(data.token, {
-          onSuccess: (result) => {
-            console.log('Payment success:', result)
+          onSuccess: () => {
             router.push(`/${invitation.value.slug}`)
           },
           onPending: (result) => {
-            console.log('Payment pending:', result)
             router.push(`/payment/finish?order_id=${result.order_id}`)
           },
           onError: (result) => {
@@ -411,7 +416,6 @@ const handleCheckout = async () => {
         return
       } catch (err) {
         console.error('Snap error:', err)
-        // Fallback to redirect if snap failed to load but redirect is present
         if (data.redirect_url) {
           window.location.href = data.redirect_url
           return
@@ -419,7 +423,6 @@ const handleCheckout = async () => {
       }
     }
 
-    // FLIP/FALLBACK: Use redirect URL
     if (data.redirect_url) {
       window.location.href = data.redirect_url
       return
