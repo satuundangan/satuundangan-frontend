@@ -198,3 +198,4 @@ test.describe('Golden Path: Full Flow with Promo Code', () => {
     console.log('🎉 GOLDEN PATH COMPLETE! Promo code fully integrated end-to-end!');
   });
 });
+

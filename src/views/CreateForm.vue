@@ -350,20 +350,31 @@
                      <div class="grid md:grid-cols-2 gap-4">
                         <select v-model="formData.music" class="form-input" @change="handleMusicChange">
                            <option disabled value="">Pilih Musik</option>
-                           <option value="romantic">Romantic Instrumental</option>
-                           <option value="acoustic">Acoustic Vibes</option>
-                           <option value="classic">Classic Wedding</option>
-                           <option value="custom" :disabled="!isPremiumTemplate">Custom (Upload Sendiri) {{
-                              !isPremiumTemplate ? '(Premium Only)' : '' }}</option>
+                           <template v-if="audioList.length">
+                              <optgroup v-for="(tracks, cat) in groupedAudio" :key="cat" :label="cat">
+                                 <option v-for="track in tracks" :key="track.id" :value="track.url">
+                                    {{ track.title }}
+                                 </option>
+                              </optgroup>
+                           </template>
+                           <template v-else>
+                              <option value="/audio/romantic_music1.mp3">Romantic Instrumental</option>
+                           </template>
+                           <option value="youtube" :disabled="!isPremiumTemplate">
+                              🎬 YouTube Link {{ !isPremiumTemplate ? '(Premium Only)' : '' }}
+                           </option>
                         </select>
 
-                        <div v-if="formData.music === 'custom'">
-                           <input type="file" accept="audio/*" @change="handleMusicUpload"
-                              class="form-input text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-mocha/10 file:text-mocha hover:file:bg-mocha/20" />
-                           <p v-if="formData.musicFileName" class="text-xs text-mocha mt-1 font-medium">🎵 {{
-                              formData.musicFileName }}</p>
-                           <p v-if="!isPremiumTemplate" class="text-xs text-red-500 mt-1">* Fitur Premium: Upgrade
-                              template untuk upload musik sendiri.</p>
+                        <div v-if="formData.music === 'youtube'">
+                           <input
+                              v-model="formData.youtubeUrl"
+                              type="url"
+                              placeholder="https://www.youtube.com/watch?v=..."
+                              class="form-input"
+                              @input="validateField('music')"
+                           />
+                           <p class="text-xs text-gray-500 mt-1">Paste link YouTube — musik akan diputar di background undangan.</p>
+                           <p v-if="!isPremiumTemplate" class="text-xs text-red-500 mt-1">* Fitur Premium: Upgrade template untuk pakai YouTube.</p>
                            <p v-if="validationErrors.music" class="form-error">{{ validationErrors.music }}</p>
                         </div>
                      </div>
@@ -548,6 +559,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { uploadFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
+import { fetchPublicAudio } from '@/api/master'
 import QuoteSection from './create-form/components/QuoteSection.vue'
 
 const route = useRoute()
@@ -555,10 +567,26 @@ const route = useRoute()
 const router = useRouter()
 const isUploading = ref(false)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
+const audioList = ref([])
 
 const isPremiumTemplate = computed(() => {
    return selectedTemplateRef.value.isPremium === true || selectedTemplateRef.value.isPremium === 'true'
 })
+
+const groupedAudio = computed(() => {
+   return audioList.value.reduce((acc, track) => {
+      const cat = track.category || 'Lainnya'
+      if (!acc[cat]) acc[cat] = []
+      acc[cat].push(track)
+      return acc
+   }, {})
+})
+
+function extractYouTubeId(url) {
+   if (!url) return null
+   const match = url.match(/(?:v=|youtu\.be\/|embed\/)([A-Za-z0-9_-]{11})/)
+   return match ? match[1] : null
+}
 
 const formData = ref({
    title: '',
@@ -572,6 +600,7 @@ const formData = ref({
    music: '',
    musicFile: null,
    musicFileName: '',
+   youtubeUrl: '',
    bridePhoto: '',
    bridePhotoFile: null,
    groomPhoto: '',
@@ -774,12 +803,16 @@ function generatePayload() {
       })))
          : "",
 
-      musicChoice:
-         formData.value.music === 'custom'
-            ? (formData.value.musicUrl || formData.value.musicFileName)
-            : formData.value.music,
+      musicChoice: (() => {
+         if (formData.value.music === 'youtube') {
+            const ytId = extractYouTubeId(formData.value.youtubeUrl)
+            return ytId ? `yt:${ytId}` : ''
+         }
+         if (formData.value.music === 'custom') return formData.value.musicUrl || formData.value.musicFileName
+         return formData.value.music
+      })(),
       isSingleEvent: formData.value.isSingleEvent,
-      isCustomMusic: formData.value.music === 'custom',
+      isCustomMusic: formData.value.music === 'youtube' || formData.value.music === 'custom',
 
       akadLocation: formData.value.isSingleEvent ? {
          mapUrl: formData.value.map,
@@ -912,7 +945,10 @@ function validateField(field) {
          if (data.isSingleEvent === false && !data.resepsiDateTime) message = 'Waktu Resepsi wajib diisi'
          break
       case 'music':
-         if (data.music === 'custom' && !data.musicFile && !data.musicFileName) message = 'File musik wajib diupload'
+         if (data.music === 'youtube') {
+            if (!data.youtubeUrl?.trim()) message = 'Link YouTube wajib diisi'
+            else if (!extractYouTubeId(data.youtubeUrl)) message = 'Link YouTube tidak valid'
+         }
          break
       default:
          break
@@ -922,8 +958,8 @@ function validateField(field) {
 }
 
 function handleMusicChange() {
-   if (formData.value.music === 'custom' && !isPremiumTemplate.value) {
-      alert("Fitur ini hanya untuk Template Premium. Silakan upgrade atau pilih musik yang tersedia.")
+   if (formData.value.music === 'youtube' && !isPremiumTemplate.value) {
+      alert('Fitur YouTube hanya untuk Template Premium. Silakan upgrade atau pilih musik yang tersedia.')
       formData.value.music = ''
    }
 }
@@ -989,7 +1025,9 @@ async function uploadAllFiles() {
    })
 
    pushUpload(formData.value.denahFile, url => formData.value.denahUrl = url)
-   pushUpload(formData.value.musicFileRaw, url => formData.value.musicUrl = url)
+   if (formData.value.music !== 'youtube') {
+      pushUpload(formData.value.musicFileRaw, url => formData.value.musicUrl = url)
+   }
 
    formData.value.eWalletLink.forEach((wallet, index) => {
       pushUpload(wallet.wallet_imageFile, url => formData.value.eWalletLink[index].wallet_imageUrl = url)
@@ -1077,7 +1115,14 @@ async function saveAndPreview() {
    }
 }
 
-onMounted(() => {
+onMounted(async () => {
+   try {
+      const res = await fetchPublicAudio()
+      audioList.value = Array.isArray(res) ? res : (res?.data || [])
+   } catch {
+      // fallback: dropdown tetap tampilkan opsi default
+   }
+
    const stored = localStorage.getItem('selectedSections')
    const finalPayloadStored = localStorage.getItem('finalPayload')
 
@@ -1155,9 +1200,17 @@ function mapPayloadToFormData(payload) {
    formData.value.quoteSource = payload.quoteSource || ''
    formData.value.quoteType = payload.quoteType || 'default'
    formData.value.dateTime = payload.dateTime || ''
-   formData.value.music = payload.isCustomMusic ? 'custom' : payload.musicChoice || ''
-   formData.value.musicFileName = payload.isCustomMusic ? payload.musicChoice : ''
-   formData.value.musicUrl = payload.isCustomMusic ? payload.musicChoice : ''
+   if (payload.isCustomMusic && payload.musicChoice?.startsWith('yt:')) {
+      formData.value.music = 'youtube'
+      const ytId = payload.musicChoice.slice(3)
+      formData.value.youtubeUrl = `https://www.youtube.com/watch?v=${ytId}`
+   } else if (payload.isCustomMusic) {
+      formData.value.music = 'custom'
+      formData.value.musicFileName = payload.musicChoice || ''
+      formData.value.musicUrl = payload.musicChoice || ''
+   } else {
+      formData.value.music = payload.musicChoice || ''
+   }
    formData.value.photoCouple = payload.photoCoupleUrl || payload.photoCouple || ''
    formData.value.photoCoupleUrl = payload.photoCoupleUrl || payload.photoCouple || ''
 

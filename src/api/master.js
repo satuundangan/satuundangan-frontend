@@ -11,6 +11,7 @@ function withParams(path, params = {}) {
 }
 
 // Audio Tracks
+export const fetchPublicAudio = () => apiFetch('/audio')
 export const fetchAdminAudio = (params) => apiFetch(withParams('/admin/audio', params))
 export const createAdminAudio = (payload) =>
   apiFetch('/admin/audio', {
