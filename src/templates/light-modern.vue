@@ -485,6 +485,7 @@ function initScrollSpy() {
 
 function getMusicUrl(choice) {
   if (!choice) return null
+  if (choice.startsWith('yt:')) return choice
   if (choice.includes('/') || choice.includes('http')) return choice
   if (choice === 'romantic') return '/audio/romantic_music1.mp3'
   return '/audio/romantic_music1.mp3' // default

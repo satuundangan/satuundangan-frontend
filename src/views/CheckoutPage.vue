@@ -35,6 +35,24 @@
         <p class="text-mocha/60 font-medium animate-pulse">Menyiapkan rincian pembayaran...</p>
       </div>
 
+      <div v-else-if="ownershipError" class="flex flex-col items-center justify-center py-20 text-center max-w-md mx-auto">
+        <div class="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-6">
+          <i class="fa-solid fa-lock text-red-400 text-2xl"></i>
+        </div>
+        <h2 class="text-xl font-bold text-mocha mb-3">Akses Ditolak</h2>
+        <p class="text-gray-500 text-sm mb-8 leading-relaxed">{{ ownershipError }}</p>
+        <div class="flex gap-3">
+          <button @click="authStore.logout(); router.push('/')"
+            class="px-6 py-3 bg-mocha text-white rounded-xl font-bold text-sm hover:bg-mocha/90 transition-all">
+            Login Ulang
+          </button>
+          <router-link to="/dashboard"
+            class="px-6 py-3 border border-mocha/20 text-mocha rounded-xl font-bold text-sm hover:bg-mocha/5 transition-all">
+            Dashboard
+          </router-link>
+        </div>
+      </div>
+
       <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         
         <!-- Left Column: Invitation Preview -->
@@ -260,7 +278,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getInvitationBySlug, updateInvitation } from '@/api/invitation'
+import { getMyInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
 import { validatePromoCode } from '@/api/promo'
 import { useAuthStore } from '@/stores/auth'
@@ -271,39 +289,33 @@ const authStore = useAuthStore()
 
 const invitation = ref(null)
 const loading = ref(false)
+const ownershipError = ref('')
 const isDevelopment = computed(() => import.meta.env.DEV || window.location.hostname === 'localhost')
 
 const loadSnapScript = () => {
   return new Promise((resolve, reject) => {
     if (window.snap) return resolve(true)
 
-    const script = document.createElement("script")
-    const isProd = !isDevelopment.value && !window.location.hostname.includes('localhost')
-    script.src = isProd
-      ? "https://app.midtrans.com/snap/snap.js"
-      : "https://app.sandbox.midtrans.com/snap/snap.js"
+    const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY
+    if (!clientKey) {
+      return reject('Konfigurasi pembayaran tidak lengkap. Hubungi admin.')
+    }
 
-    const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY || "Mid-client-KK-xRAA_WfaMnsHO"
-    script.setAttribute("data-client-key", clientKey)
-
+    // Sandbox key Midtrans modern diawali "SB-", production tidak
+    const isSandboxKey = clientKey.startsWith('SB-')
+    const script = document.createElement('script')
+    script.src = isSandboxKey
+      ? 'https://app.sandbox.midtrans.com/snap/snap.js'
+      : 'https://app.midtrans.com/snap/snap.js'
+    script.setAttribute('data-client-key', clientKey)
     script.onload = () => resolve(true)
-    script.onerror = () => reject("Snap.js gagal dimuat")
+    script.onerror = () => reject('Snap.js gagal dimuat')
     document.body.appendChild(script)
   })
 }
 
 const planName = computed(() => invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan')
-const planPrice = computed(() => {
-  const templatePrice = Number(
-    invitation.value?.price ?? invitation.value?.content?.templatePrice ?? 0,
-  )
-
-  if (Number.isFinite(templatePrice) && templatePrice > 0) {
-    return templatePrice
-  }
-
-  return invitation.value?.is_premium ? 49000 : 19000
-})
+const planPrice = computed(() => invitation.value?.price ?? 0)
 
 // Promo Code
 const promoCode = ref('')
@@ -346,9 +358,16 @@ onMounted(async () => {
 
   try {
     loading.value = true
-    const response = await getInvitationBySlug(slug)
+    const response = await getMyInvitationBySlug(slug)
     invitation.value = response.data || response
   } catch (err) {
+    if (err.message?.includes('not the owner') || err.message?.includes('403') || err.message?.includes('Forbidden')) {
+      ownershipError.value = 'Undangan ini bukan milik akun Anda yang sedang aktif. Silakan login dengan akun yang benar.'
+    } else if (err.message?.includes('401') || err.message?.includes('Unauthorized') || err.message?.includes('token')) {
+      ownershipError.value = 'Sesi Anda sudah berakhir. Silakan login ulang untuk melanjutkan pembayaran.'
+    } else {
+      ownershipError.value = 'Gagal memuat undangan. Silakan coba lagi.'
+    }
     console.error('Gagal memuat undangan:', err)
   } finally {
     loading.value = false
@@ -386,11 +405,6 @@ const handleCheckout = async () => {
     const data = await createPayment(payload)
 
     if (data.is_free) {
-      try {
-        await updateInvitation(invitation.value.id, { isPublished: true })
-      } catch (e) {
-        console.error('updateInvitation failed:', e)
-      }
       router.push(`/${invitation.value.slug}`)
       return
     }
@@ -423,6 +437,7 @@ const handleCheckout = async () => {
       }
     }
 
+    // Redirect fallback when Snap popup cannot be used
     if (data.redirect_url) {
       window.location.href = data.redirect_url
       return
