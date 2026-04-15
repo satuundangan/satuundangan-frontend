@@ -1,84 +1,84 @@
 <template>
-  <div class="min-h-screen bg-ivory font-sans pt-24 pb-12 px-4 md:px-8">
+  <div class="min-h-screen bg-ivory font-sans pt-20 md:pt-24 pb-8 md:pb-12 px-4 md:px-8">
     <div class="max-w-4xl mx-auto">
       
       <!-- Stepper -->
-      <div class="flex justify-center mb-10">
-         <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-full bg-sage/20 text-sage font-bold flex items-center justify-center">1</div>
-            <div class="w-12 h-1 bg-sage/20 rounded-full"></div>
-            <div class="w-10 h-10 rounded-full bg-mocha text-white font-bold flex items-center justify-center shadow-lg shadow-mocha/20">2</div>
-            <div class="w-12 h-1 bg-gray-200 rounded-full"></div>
-            <div class="w-10 h-10 rounded-full bg-gray-200 text-gray-500 font-bold flex items-center justify-center">3</div>
+      <div class="flex justify-center mb-8 md:mb-10">
+         <div class="flex items-center gap-2 md:gap-4">
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sage/20 text-sage text-sm md:text-base font-bold flex items-center justify-center">1</div>
+            <div class="w-8 md:w-12 h-1 bg-sage/20 rounded-full"></div>
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-mocha text-white text-sm md:text-base font-bold flex items-center justify-center shadow-lg shadow-mocha/20">2</div>
+            <div class="w-8 md:w-12 h-1 bg-gray-200 rounded-full"></div>
+            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 text-gray-500 text-sm md:text-base font-bold flex items-center justify-center">3</div>
          </div>
       </div>
 
-      <div class="text-center mb-10">
-         <h1 class="text-3xl md:text-4xl font-serif font-bold text-mocha mb-3">Personalisasi Undanganmu</h1>
-         <p class="text-muted text-lg">Pilih fitur yang ingin kamu tampilkan di undangan.</p>
+      <div class="text-center mb-8 md:mb-10">
+         <h1 class="text-2xl md:text-4xl font-serif font-bold text-mocha mb-2 md:mb-3">Personalisasi Undanganmu</h1>
+         <p class="text-muted text-sm md:text-lg">Pilih fitur yang ingin kamu tampilkan di undangan.</p>
       </div>
 
-      <div class="bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
+      <div class="bg-white p-5 md:p-10 rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
         <!-- Decor -->
-        <div class="absolute top-0 right-0 w-64 h-64 bg-sage/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div class="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-sage/5 rounded-full blur-2xl md:blur-3xl -translate-y-1/2 translate-x-1/3"></div>
 
-        <div class="grid md:grid-cols-12 gap-10 relative z-10">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 relative z-10">
            
            <!-- Left: Template Info -->
-           <div class="md:col-span-5 space-y-6">
-              <div class="bg-gray-50 p-6 rounded-2xl border border-gray-100">
-                 <h2 class="text-sm font-bold text-gray-400 uppercase tracking-wider mb-4">Template Terpilih</h2>
+           <div class="md:col-span-5 space-y-4 md:space-y-6">
+              <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-gray-100">
+                 <h2 class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 md:mb-4">Template Terpilih</h2>
                  
-                 <div class="relative rounded-xl overflow-hidden shadow-md mb-4 group cursor-pointer">
-                    <img :src="selectedTemplate.previewUrl || 'https://via.placeholder.com/400x300'" class="w-full h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
+                 <div class="relative rounded-lg md:rounded-xl overflow-hidden shadow-md mb-3 md:mb-4 group cursor-pointer">
+                    <img :src="selectedTemplate.previewUrl || 'https://via.placeholder.com/400x300'" class="w-full h-40 md:h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
                  </div>
 
-                 <h3 class="text-xl font-serif font-bold text-mocha mb-1">{{ selectedTemplate.name }}</h3>
-                 <p class="text-sm text-muted mb-4 leading-relaxed">{{ selectedTemplate.desc || selectedTemplate.description }}</p>
+                 <h3 class="text-lg md:text-xl font-serif font-bold text-mocha mb-1">{{ selectedTemplate.name }}</h3>
+                 <p class="text-xs md:text-sm text-muted mb-4 leading-relaxed line-clamp-3 md:line-clamp-none">{{ selectedTemplate.desc || selectedTemplate.description }}</p>
                  
                  <div class="flex gap-2">
                     <span v-for="color in selectedTemplate.paletteColor" :key="color"
-                      class="w-6 h-6 rounded-full border border-gray-200 shadow-sm" :style="{ backgroundColor: color }"></span>
+                      class="w-5 h-5 md:w-6 md:h-6 rounded-full border border-gray-200 shadow-sm" :style="{ backgroundColor: color }"></span>
                  </div>
               </div>
 
               <!-- Note -->
-              <div class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-3 items-start">
-                 <span class="text-amber-500 text-xl">💡</span>
-                 <p class="text-xs text-amber-800 leading-relaxed">
+              <div class="bg-amber-50 p-3 md:p-4 rounded-xl border border-amber-100 flex gap-2 md:gap-3 items-start">
+                 <span class="text-amber-500 text-lg md:text-xl">💡</span>
+                 <p class="text-[10px] md:text-xs text-amber-800 leading-relaxed">
                     Tips: Jangan khawatir, kamu bisa mengubah pilihan fitur ini nanti di dashboard jika berubah pikiran.
                  </p>
               </div>
            </div>
 
            <!-- Right: Selection -->
-           <div class="md:col-span-7">
-              <h2 class="font-serif font-bold text-2xl text-dark mb-6">Pilih Fitur</h2>
+           <div class="md:col-span-7 flex flex-col">
+              <h2 class="font-serif font-bold text-xl md:text-2xl text-dark mb-4 md:mb-6 text-center md:text-left">Pilih Fitur</h2>
               
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 max-h-[350px] md:max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                 <template v-for="(section, key) in sectionOptions" :key="key">
-                  <label class="group relative flex items-center gap-3 p-4 rounded-xl border-2 cursor-pointer transition-all duration-300"
+                  <label class="group relative flex items-center gap-3 p-3 md:p-4 rounded-lg md:rounded-xl border-2 cursor-pointer transition-all duration-300"
                          :class="selectedSections.includes(key) 
                            ? 'border-mocha bg-mocha/5 shadow-sm' 
                            : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'">
                     
                     <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
                     
-                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors"
+                    <div class="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
                          :class="selectedSections.includes(key) ? 'border-mocha bg-mocha text-white' : 'border-gray-300 text-transparent group-hover:border-gray-400'">
-                       <i class="fa-solid fa-check text-xs"></i>
+                       <i class="fa-solid fa-check text-[10px] md:text-xs"></i>
                     </div>
 
-                    <span class="font-medium text-dark group-hover:text-mocha transition-colors select-none">
+                    <span class="text-sm md:text-base font-medium text-dark group-hover:text-mocha transition-colors select-none">
                        {{ section }}
                     </span>
                   </label>
                 </template>
               </div>
 
-              <div class="mt-8 pt-6 border-t border-gray-100 flex justify-end">
-                 <button @click="goToForm" class="btn-primary px-8 py-3 rounded-xl shadow-lg shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all flex items-center gap-2">
+              <div class="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-end">
+                 <button @click="goToForm" class="w-full md:w-auto btn-primary px-8 py-3.5 md:py-3 rounded-xl shadow-lg shadow-mocha/20 hover:shadow-mocha/40 md:hover:-translate-y-1 transition-all flex items-center justify-center gap-2 font-bold text-sm md:text-base">
                     <span>Lanjut Isi Data</span>
                     <i class="fa-solid fa-arrow-right"></i>
                  </button>

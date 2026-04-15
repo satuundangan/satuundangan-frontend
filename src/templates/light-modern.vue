@@ -611,7 +611,13 @@ function initData() {
       interval = setInterval(() => {
         const now = new Date().getTime()
         const diff = target - now
-        if (diff <= 0) return clearInterval(interval)
+        if (diff <= 0) {
+          if (interval) {
+            clearInterval(interval)
+            interval = null
+          }
+          return
+        }
 
         countdown.value.Hari = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
         countdown.value.Jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
@@ -639,13 +645,18 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  if (interval) clearInterval(interval)
+  if (interval) {
+    clearInterval(interval)
+    interval = null
+  }
 })
 
 watch(() => props.data, (newVal) => {
   if (newVal && Object.keys(newVal).length > 0) {
-    data.value = newVal
-    initData()
+    if (JSON.stringify(newVal) !== JSON.stringify(data.value)) {
+      data.value = { ...newVal }
+      initData()
+    }
   }
 }, { deep: true })
 </script>
