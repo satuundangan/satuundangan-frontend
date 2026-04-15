@@ -27,11 +27,17 @@ export default defineConfig({
     },
     {
       name: 'chromium',
-      use: { 
+      use: {
         ...devices['Desktop Chrome'],
         storageState: STORAGE_STATE,
       },
       dependencies: ['setup'],
+    },
+    // Project for tests that mock all API calls and don't need real auth
+    {
+      name: 'mocked',
+      testMatch: /.*\.mocked\.spec\.js/,
+      use: { ...devices['Desktop Chrome'] },
     },
   ],
 })
