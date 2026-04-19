@@ -131,7 +131,7 @@ function toggleFullscreen() {
   }
 }
 
-import { createInvitation, updateInvitation, getInvitationBySlug } from '@/api/invitation'
+import { getMyInvitationBySlug } from '@/api/invitation'
 
 const handlePublish = async () => {
   if (!userName.value) {
@@ -168,7 +168,7 @@ onMounted(async () => {
   if (slugParam) {
      try {
         // Just verify it exists or get details if needed
-        const res = await getInvitationBySlug(slugParam)
+        const res = await getMyInvitationBySlug(slugParam)
         const data = res.data || res
         iframeUrl.value = `/${data.slug}?preview=true&frame=true`
      } catch (err) {

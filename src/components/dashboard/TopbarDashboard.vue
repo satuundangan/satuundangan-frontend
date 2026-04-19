@@ -14,7 +14,9 @@
       <button v-if="showButton" @click="$router.push('/create')" class="sm:hidden w-8 h-8 bg-mocha text-white rounded-lg shadow flex items-center justify-center font-bold">
         +
       </button>
-      <img class="w-8 h-8 md:w-10 md:h-10 rounded-full object-cover border border-gray-100 shadow-sm" :src="userAvatar" alt="User Avatar" />
+      <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-mocha text-white border border-gray-100 shadow-sm flex items-center justify-center text-sm font-bold">
+        {{ userInitial }}
+      </div>
     </div>
   </header>
 </template>
@@ -31,5 +33,5 @@ const props = defineProps({
 defineEmits(['toggleSidebar']);
 
 const auth = useAuthStore();
-const userAvatar = computed(() => auth.user?.photo || auth.user?.avatar || 'https://i.pravatar.cc/100');
+const userInitial = computed(() => (auth.user?.name || auth.user?.email || 'U').trim().charAt(0).toUpperCase());
 </script>

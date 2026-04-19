@@ -29,16 +29,31 @@
               <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-gray-100">
                  <h2 class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 md:mb-4">Template Terpilih</h2>
                  
-                 <div class="relative rounded-lg md:rounded-xl overflow-hidden shadow-md mb-3 md:mb-4 group cursor-pointer">
-                    <img :src="selectedTemplate.previewUrl || 'https://via.placeholder.com/400x300'" class="w-full h-40 md:h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
+                 <div class="relative rounded-lg md:rounded-xl overflow-hidden shadow-md mb-3 md:mb-4 group cursor-pointer bg-gray-100">
+                    <img :src="templateImageUrl" class="w-full h-40 md:h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
                     <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
+                    <div class="absolute left-3 top-3 flex flex-wrap gap-2">
+                       <span class="rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase text-mocha shadow-sm">
+                          {{ selectedTemplate.isPremium ? 'Premium' : 'Gratis' }}
+                       </span>
+                       <span v-if="selectedTemplate.category" class="rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase text-gray-600 shadow-sm">
+                          {{ selectedTemplate.category }}
+                       </span>
+                    </div>
                  </div>
 
                  <h3 class="text-lg md:text-xl font-serif font-bold text-mocha mb-1">{{ selectedTemplate.name }}</h3>
+                 <p class="text-xs font-bold text-dark mb-2">{{ templatePrice }}</p>
                  <p class="text-xs md:text-sm text-muted mb-4 leading-relaxed line-clamp-3 md:line-clamp-none">{{ selectedTemplate.desc || selectedTemplate.description }}</p>
                  
+                 <div v-if="templateTags.length" class="flex flex-wrap gap-2 mb-4">
+                    <span v-for="tag in templateTags" :key="tag" class="rounded-md bg-mocha/10 px-2 py-1 text-[10px] font-bold uppercase text-mocha">
+                       {{ tag }}
+                    </span>
+                 </div>
+
                  <div class="flex gap-2">
-                    <span v-for="color in selectedTemplate.paletteColor" :key="color"
+                    <span v-for="color in paletteColors" :key="color"
                       class="w-5 h-5 md:w-6 md:h-6 rounded-full border border-gray-200 shadow-sm" :style="{ backgroundColor: color }"></span>
                  </div>
               </div>
@@ -109,6 +124,37 @@ const showLogin = ref(false)
 const auth = useAuthStore()
 const userName = computed(() => auth.user?.name || null)
 const authMode = ref('login')
+
+const templateImageUrl = computed(() => (
+  selectedTemplate.value.thumbnailUrl ||
+  selectedTemplate.value.previewImageUrl ||
+  selectedTemplate.value.previewUrl ||
+  'https://via.placeholder.com/400x300?text=Template'
+))
+
+const paletteColors = computed(() => (
+  selectedTemplate.value.paletteColor ||
+  selectedTemplate.value.paletteColors ||
+  selectedTemplate.value.palette?.colors ||
+  []
+))
+
+const templateTags = computed(() => {
+  const tags = selectedTemplate.value.tags
+  if (Array.isArray(tags)) return tags
+  if (typeof tags === 'string') return tags.split(',').map(tag => tag.trim()).filter(Boolean)
+  return []
+})
+
+const templatePrice = computed(() => {
+  const price = Number(selectedTemplate.value.price || 0)
+  if (!price) return 'Gratis'
+  return new Intl.NumberFormat('id-ID', {
+    style: 'currency',
+    currency: 'IDR',
+    minimumFractionDigits: 0
+  }).format(price)
+})
 
 const sectionOptionsLabelMap = {
   quote: 'Quote Ayat / Mutiara',

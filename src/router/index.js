@@ -73,6 +73,18 @@ const router = createRouter({
       component: () => import('@/views/AuthCallback.vue'),
     },
     {
+      path: '/syarat-ketentuan',
+      name: 'terms',
+      component: () => import('@/views/TermsView.vue'),
+      meta: { title: 'Syarat & Ketentuan' },
+    },
+    {
+      path: '/kebijakan-privasi',
+      name: 'privacy',
+      component: () => import('@/views/PrivacyView.vue'),
+      meta: { title: 'Kebijakan Privasi' },
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
