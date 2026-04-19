@@ -206,6 +206,7 @@ onMounted(async () => {
           localStorage.removeItem('selectedTemplate')
           localStorage.removeItem('selectedSections')
           localStorage.removeItem('finalPayload')
+          localStorage.removeItem('editInvitationId')
           router.push('/')
           return
        }
@@ -293,6 +294,9 @@ function goToForm() {
   if (!userName.value) {
     showLogin.value = true
     return
+  }
+  if (!localStorage.getItem('finalPayload')) {
+    localStorage.removeItem('editInvitationId')
   }
   localStorage.setItem('selectedSections', JSON.stringify(selectedSections.value))
   router.push('/create/form')

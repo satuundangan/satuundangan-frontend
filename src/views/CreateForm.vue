@@ -1220,13 +1220,25 @@ async function saveAndPreview() {
       const payload = generatePayload()
 
       let result
-      // Check if we have an edit ID either from route or localStorage
-      const editId = route.params.id || localStorage.getItem('editInvitationId')
+      const routeEditId = route.params.id
+      const draftEditId = localStorage.getItem('editInvitationId')
+      const editId = routeEditId || draftEditId
 
       if (editId) {
-         const res = await updateInvitation(editId, payload)
-         result = res.data || res
-         localStorage.setItem('editInvitationId', editId)
+         try {
+            const res = await updateInvitation(editId, payload)
+            result = res.data || res
+            localStorage.setItem('editInvitationId', editId)
+         } catch (error) {
+            if (routeEditId || !isInvitationNotFoundError(error)) {
+               throw error
+            }
+
+            localStorage.removeItem('editInvitationId')
+            const res = await createInvitation(payload)
+            result = res.data || res
+            localStorage.setItem('editInvitationId', result.id)
+         }
       } else {
          const res = await createInvitation(payload)
          result = res.data || res
@@ -1247,6 +1259,11 @@ async function saveAndPreview() {
    } finally {
       isUploading.value = false
    }
+}
+
+function isInvitationNotFoundError(error) {
+   const message = String(error?.response?.data?.message || error?.message || '').toLowerCase()
+   return message.includes('invitation not found') || message.includes('not found')
 }
 
 onMounted(async () => {

@@ -148,7 +148,7 @@ test.describe('Checkout – Ownership Guard', () => {
     await expect(page.locator('text=/49/').first()).toBeVisible()
   })
 
-  test('Snap.js loads production CDN for non-SB- key', async ({ page, context }) => {
+  test('Snap.js loads sandbox CDN when env flag disables production', async ({ page, context }) => {
     await context.route('**/api/invitation/my/slug/jatmiko-jamila', (route) =>
       route.fulfill({
         status: 200,
@@ -182,8 +182,7 @@ test.describe('Checkout – Ownership Guard', () => {
     await page.waitForTimeout(1500)
 
     if (scriptUrls[0]) {
-      // Key = Mid-client-... (no SB- prefix) → production CDN
-      expect(scriptUrls[0]).not.toContain('sandbox')
+      expect(scriptUrls[0]).toContain('sandbox')
     }
   })
 })

@@ -301,12 +301,15 @@ const loadSnapScript = () => {
       return reject('Konfigurasi pembayaran tidak lengkap. Hubungi admin.')
     }
 
-    // Sandbox key Midtrans modern diawali "SB-", production tidak
-    const isSandboxKey = clientKey.startsWith('SB-')
+    const isProductionEnv = import.meta.env.VITE_MIDTRANS_IS_PRODUCTION
+    const isProduction =
+      isProductionEnv === undefined
+        ? !clientKey.startsWith('SB-')
+        : isProductionEnv === 'true'
     const script = document.createElement('script')
-    script.src = isSandboxKey
-      ? 'https://app.sandbox.midtrans.com/snap/snap.js'
-      : 'https://app.midtrans.com/snap/snap.js'
+    script.src = isProduction
+      ? 'https://app.midtrans.com/snap/snap.js'
+      : 'https://app.sandbox.midtrans.com/snap/snap.js'
     script.setAttribute('data-client-key', clientKey)
     script.onload = () => resolve(true)
     script.onerror = () => reject('Snap.js gagal dimuat')
