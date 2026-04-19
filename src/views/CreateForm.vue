@@ -631,7 +631,7 @@
 <script setup>
 import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { uploadFileApi } from '@/api/file'
+import { uploadFileApi, deleteFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
 import { fetchPublicAudio } from '@/api/master'
 import QuoteSection from './create-form/components/QuoteSection.vue'
@@ -1129,10 +1129,14 @@ function removeFoodItem(index) {
 
 async function uploadAllFiles() {
    const uploads = []
+   const newlyUploadedUrls = []
 
    const pushUpload = (file, callback) => {
       if (file) {
-         uploads.push(uploadFileToBackend(file).then(callback))
+         uploads.push(uploadFileToBackend(file).then((url) => {
+            newlyUploadedUrls.push(url)
+            callback(url)
+         }))
       }
    }
 
@@ -1162,6 +1166,7 @@ async function uploadAllFiles() {
    })
 
    await Promise.all(uploads)
+   return newlyUploadedUrls
 }
 
 async function uploadFileToBackend(file) {
@@ -1209,8 +1214,9 @@ async function saveAndPreview() {
    }
 
    isUploading.value = true
+   let uploadedUrls = []
    try {
-      await uploadAllFiles()
+      uploadedUrls = await uploadAllFiles()
       const payload = generatePayload()
 
       let result
@@ -1233,6 +1239,10 @@ async function saveAndPreview() {
 
    } catch (error) {
       console.error(error)
+      // Cleanup uploaded files on failure
+      if (uploadedUrls.length > 0) {
+         Promise.all(uploadedUrls.map(url => deleteFileApi(url))).catch(e => console.error('Cleanup failed', e))
+      }
       alert('Gagal menyimpan undangan: ' + (error.response?.data?.message || error.message))
    } finally {
       isUploading.value = false

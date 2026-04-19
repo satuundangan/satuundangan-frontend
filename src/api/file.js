@@ -1,6 +1,6 @@
 import { BASE_URL } from "./client"
 
-const IMAGE_UPLOAD_TARGET_BYTES = 900 * 1024
+const IMAGE_UPLOAD_TARGET_BYTES = 800 * 1024 // Reduced from 900KB to be safer against 1MB limits
 const IMAGE_UPLOAD_MAX_DIMENSION = 1600
 const IMAGE_UPLOAD_QUALITY = 0.8
 
@@ -94,16 +94,52 @@ export const uploadFileApi = async (file) => {
 
     if (!response.ok) {
       const errorText = await response.text()
+      if (response.status === 413) {
+        throw new Error('Ukuran file terlalu besar. Silakan gunakan file yang lebih kecil atau resolusi lebih rendah.')
+      }
       throw new Error(`Upload failed: ${response.status} - ${errorText}`)
     }
 
     return await response.json().catch(() => ({})) // Handle empty response
   } catch (error) {
+    let finalError = error
+    if (error.message === 'Failed to fetch') {
+      finalError = new Error('Gagal mengunggah file. Ini mungkin karena ukuran file terlalu besar (melebihi batas server) atau masalah koneksi internet.')
+    }
+    
     console.error('Upload error:', {
       fileName: file?.name,
       fileSize: file?.size,
       error: error.message,
     })
-    throw error
+    throw finalError
+  }
+}
+
+export const deleteFileApi = async (fileUrl) => {
+  try {
+    if (!fileUrl) return
+
+    const response = await fetch(`${BASE_URL}/upload`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ fileUrl })
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      throw new Error(`Delete failed: ${response.status} - ${errorText}`)
+    }
+
+    return await response.json()
+  } catch (error) {
+    console.error('Delete error:', {
+      fileUrl,
+      error: error.message,
+    })
+    // We don't necessarily want to throw here as this is often a cleanup operation
+    return null
   }
 }
