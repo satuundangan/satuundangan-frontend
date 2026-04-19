@@ -51,9 +51,10 @@
                     <span class="px-2 py-1 rounded-md text-[10px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">{{ guest.group || 'Umum' }}</span>
                  </td>
                  <td class="px-6 py-4">
-                    <a :href="`/${currentInvitationSlug}?to=${encodeURIComponent(guest.name)}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
+                    <a v-if="currentInvitation?.isPublished" :href="`/${currentInvitationSlug}?to=${encodeURIComponent(guest.name)}`" target="_blank" class="text-blue-500 hover:text-blue-700 underline text-xs">
                        Lihat Undangan
                     </a>
+                    <span v-else class="text-xs text-gray-400">Belum dipublikasikan</span>
                  </td>
                  <td class="px-6 py-4">
                     <span :class="guest.statusSend === 'sent' ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-100 text-gray-500 border-gray-200'" class="px-2 py-1 rounded-md text-[10px] font-bold border uppercase">
@@ -66,7 +67,7 @@
                     <span v-else class="text-gray-400 text-xs italic">Menunggu</span>
                  </td>
                  <td class="px-6 py-4 text-right flex justify-end gap-2">
-                    <button @click="openShareModal(guest)" class="text-green-500 hover:text-green-600 bg-green-50 p-2 rounded-lg transition" title="Kirim WA">
+                    <button @click="openShareModal(guest)" :disabled="!currentInvitation?.isPublished" :class="currentInvitation?.isPublished ? 'text-green-500 hover:text-green-600 bg-green-50' : 'text-gray-400 bg-gray-100 cursor-not-allowed'" class="p-2 rounded-lg transition" title="Kirim WA">
                        <i class="fa-brands fa-whatsapp text-lg"></i>
                     </button>
                     <button @click="deleteGuestHandler(guest.id)" class="text-red-400 hover:text-red-600 bg-red-50 p-2 rounded-lg transition" title="Hapus">
@@ -167,9 +168,12 @@ const shareMessage = ref("");
 const selectedGuestForShare = ref(null);
 const loadingMessage = ref(false);
 
+const currentInvitation = computed(() => {
+   return invitations.value.find(i => i.id === selectedInvitationId.value) || null;
+});
+
 const currentInvitationSlug = computed(() => {
-   const inv = invitations.value.find(i => i.id === selectedInvitationId.value);
-   return inv?.slug || "";
+   return currentInvitation.value?.slug || "";
 });
 
 const newGuest = ref({
@@ -263,6 +267,11 @@ async function deleteGuestHandler(id) {
 }
 
 async function openShareModal(guest) {
+  if (!currentInvitation.value?.isPublished) {
+    toast.warning("Undangan belum dipublikasikan");
+    return;
+  }
+
   selectedGuestForShare.value = guest;
   showShareModal.value = true;
   loadingMessage.value = true;

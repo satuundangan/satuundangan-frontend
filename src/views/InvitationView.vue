@@ -1,5 +1,5 @@
 <script setup>
-import { getInvitationBySlug } from '@/api/invitation'
+import { getInvitationBySlug, getMyInvitationBySlug } from '@/api/invitation'
 import { demoData } from '@/api/demoData'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -44,7 +44,9 @@ onMounted(async () => {
       }
     } else {
       // Normal Mode: Fetch from API
-      const response = await getInvitationBySlug(slug)
+      const response = isPreviewMode.value
+        ? await getMyInvitationBySlug(slug)
+        : await getInvitationBySlug(slug)
       const rawData = response.data || response
       
       // Check if invitation is active or if we are in preview mode

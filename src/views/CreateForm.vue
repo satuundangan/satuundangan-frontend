@@ -291,7 +291,7 @@
                      <h2 class="text-xl font-bold text-dark">Galeri & Media</h2>
                   </div>
 
-                  <div v-if="sections.photoCouple" data-field="photoCouple">
+                  <div data-field="photoCouple">
                      <label class="form-label">Foto Sampul Utama (Hero) <span class="text-red-500">*</span></label>
                      <div class="flex gap-4 items-start">
                         <label
@@ -308,6 +308,18 @@
                      </div>
                      <p v-if="validationErrors.photoCouple" class="form-error mt-2">{{ validationErrors.photoCouple }}
                      </p>
+                  </div>
+
+                  <div v-if="sections.denah" data-field="denah">
+                     <label class="form-label">Denah Lokasi / Ruangan</label>
+                     <div class="flex flex-col gap-3 sm:flex-row sm:items-start">
+                        <label
+                           class="flex h-32 w-full cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-white hover:border-mocha hover:bg-mocha/5 sm:w-40">
+                           <input type="file" accept="image/*" @change="handleDenahUpload" class="hidden" />
+                           <span class="text-xs font-bold text-gray-400">Upload Denah</span>
+                        </label>
+                        <img v-if="formData.denah" :src="formData.denah" class="h-32 w-full rounded-xl object-cover shadow-sm sm:w-56" />
+                     </div>
                   </div>
 
                   <div data-field="gallery">
@@ -504,7 +516,37 @@
                      </div>
                   </div>
 
-                  <div class="flex flex-col gap-4">
+                  <div class="grid md:grid-cols-2 gap-4">
+                     <label v-if="sections.encryptedGuest"
+                        class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                        <input type="checkbox" :checked="formData.encryptedGuest === 'ya'" @change="formData.encryptedGuest = $event.target.checked ? 'ya' : 'tidak'"
+                           class="text-mocha focus:ring-mocha w-5 h-5" />
+                        <div>
+                           <span class="font-bold text-dark block">Enkripsi Nama Tamu</span>
+                           <span class="text-xs text-muted">Nama tamu di link dibuat tidak mudah dibaca.</span>
+                        </div>
+                     </label>
+
+                     <label v-if="sections.rsvp"
+                        class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                        <input type="checkbox" :checked="formData.rsvp === 'ya'" @change="formData.rsvp = $event.target.checked ? 'ya' : 'tidak'"
+                           class="text-mocha focus:ring-mocha w-5 h-5" />
+                        <div>
+                           <span class="font-bold text-dark block">Konfirmasi Kehadiran</span>
+                           <span class="text-xs text-muted">Tamu bisa mengisi RSVP di undangan.</span>
+                        </div>
+                     </label>
+
+                     <label v-if="sections.wishes"
+                        class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
+                        <input type="checkbox" :checked="formData.wishes === 'ya'" @change="formData.wishes = $event.target.checked ? 'ya' : 'tidak'"
+                           class="text-mocha focus:ring-mocha w-5 h-5" />
+                        <div>
+                           <span class="font-bold text-dark block">Ucapan & Doa</span>
+                           <span class="text-xs text-muted">Tamu bisa mengirim pesan di halaman undangan.</span>
+                        </div>
+                     </label>
+
                      <!-- Health Protocol -->
                      <label v-if="sections['health-protocol']"
                         class="flex items-center gap-3 p-4 border rounded-xl cursor-pointer hover:bg-gray-50 transition">
@@ -526,6 +568,38 @@
                            <span class="text-xs text-muted">Halaman pembuka sebelum masuk ke undangan utama.</span>
                         </div>
                      </label>
+                  </div>
+
+                  <div v-if="sections.gift || sections['digital-envelope']" class="space-y-4 rounded-2xl border border-gray-100 bg-gray-50 p-4 md:p-6">
+                     <div class="flex flex-col gap-1">
+                        <h3 class="font-bold text-dark">Amplop Digital & Kado</h3>
+                        <p class="text-xs text-muted">Data ini akan tampil di section Wedding Gift pada template yang mendukung.</p>
+                     </div>
+
+                     <div>
+                        <label class="form-label">Alamat Pengiriman Kado</label>
+                        <textarea v-model="giftAddressText" rows="3" class="form-input" placeholder="Nama penerima, alamat lengkap, nomor HP"></textarea>
+                     </div>
+
+                     <div class="space-y-3">
+                        <div v-for="(account, index) in formData.bankAccounts" :key="index"
+                           class="rounded-xl border border-gray-200 bg-white p-4">
+                           <div class="mb-3 flex items-center justify-between">
+                              <h4 class="text-sm font-bold text-dark">Rekening {{ index + 1 }}</h4>
+                              <button @click="removeBankAccount(index)" class="text-xs font-bold text-red-500 hover:text-red-600">Hapus</button>
+                           </div>
+                           <div class="grid gap-3 md:grid-cols-3">
+                              <input v-model="account.bankName" class="form-input" placeholder="Bank, contoh BCA" />
+                              <input v-model="account.accountNumber" class="form-input" placeholder="Nomor rekening" />
+                              <input v-model="account.accountName" class="form-input" placeholder="Atas nama" />
+                           </div>
+                        </div>
+
+                        <button @click="addBankAccount"
+                           class="w-full rounded-xl border-2 border-dashed border-gray-300 py-3 text-sm font-bold text-gray-500 transition hover:border-mocha hover:bg-mocha/5 hover:text-mocha">
+                           <i class="fa-solid fa-plus"></i> Tambah Rekening
+                        </button>
+                     </div>
                   </div>
                </section>
 
@@ -653,6 +727,16 @@ const foodList = ref([])
 const giftAddresses = ref([])
 const finalPayload = ref(null)
 
+const giftAddressText = computed({
+   get: () => giftAddresses.value.join('\n'),
+   set: (value) => {
+      giftAddresses.value = value
+         .split('\n')
+         .map((line) => line.trim())
+         .filter(Boolean)
+   }
+})
+
 const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir. (QS. Ar-Rum: 21)"
 
 const validationErrors = ref({})
@@ -762,6 +846,31 @@ function handleMusicUpload(event) {
    reader.readAsDataURL(file)
 }
 
+function handleDenahUpload(event) {
+   const file = event.target.files?.[0]
+   if (!file) return
+   const reader = new FileReader()
+   reader.onload = () => {
+      formData.value.denah = reader.result
+      formData.value.denahFile = file
+   }
+   reader.readAsDataURL(file)
+}
+
+function addBankAccount() {
+   formData.value.bankAccounts.push({
+      bankName: '',
+      accountNumber: '',
+      accountName: '',
+      bankLogoUrl: '',
+      bankLogoFile: null,
+   })
+}
+
+function removeBankAccount(index) {
+   formData.value.bankAccounts.splice(index, 1)
+}
+
 
 function generatePayload() {
    const selectedTemplate = selectedTemplateRef.value
@@ -802,6 +911,14 @@ function generatePayload() {
          wallet_number: wallet.wallet_number,
       })))
          : "",
+      bankAccounts: formData.value.bankAccounts
+         .filter((account) => account.bankName || account.accountNumber || account.accountName)
+         .map((account) => ({
+            bankName: account.bankName,
+            accountNumber: account.accountNumber,
+            accountName: account.accountName,
+            bankLogoUrl: account.bankLogoUrl || '',
+         })),
 
       musicChoice: (() => {
          if (formData.value.music === 'youtube') {
@@ -912,7 +1029,7 @@ function validateField(field) {
          else if (data.title.trim().length < 3) message = 'Minimal 3 karakter'
          break
       case 'photoCouple':
-         if (sections.value.photoCouple && !data.photoCouple && !data.photoCoupleFile) message = 'Foto utama (Cover) wajib diupload'
+         if (!data.photoCouple && !data.photoCoupleFile) message = 'Foto utama (Cover) wajib diupload'
          break
       case 'isSingleEvent':
          if (data.isSingleEvent === null) message = 'Wajib pilih format acara'
@@ -943,6 +1060,13 @@ function validateField(field) {
          break
       case 'resepsiDateTime':
          if (data.isSingleEvent === false && !data.resepsiDateTime) message = 'Waktu Resepsi wajib diisi'
+         else if (data.isSingleEvent === false && data.akadDateTime && data.resepsiDateTime) {
+            const akadTime = new Date(data.akadDateTime).getTime()
+            const resepsiTime = new Date(data.resepsiDateTime).getTime()
+            if (!Number.isNaN(akadTime) && !Number.isNaN(resepsiTime) && resepsiTime <= akadTime) {
+               message = 'Waktu Resepsi harus setelah Akad'
+            }
+         }
          break
       case 'music':
          if (data.music === 'youtube') {
@@ -1147,6 +1271,7 @@ onMounted(async () => {
       acc[key] = true
       return acc
    }, {})
+   sections.value.photoCouple = true
 
    // Edit Mode Logic
    if (route.params.id) {
@@ -1177,6 +1302,7 @@ async function handleEditMode(id) {
             acc[key] = true
             return acc
          }, {})
+         sections.value.photoCouple = true
          localStorage.setItem('selectedSections', JSON.stringify(data.selectedSections))
       }
 
@@ -1265,6 +1391,20 @@ function mapPayloadToFormData(payload) {
    formData.value.healthProtocol = payload.healthProtocol || false
    formData.value.enableCover = payload.enableCover !== false // Default true
    formData.value.liveStreamingLink = payload.liveStreamingLink || ''
+   formData.value.encryptedGuest = payload.encryptedGuestName === false ? 'tidak' : 'ya'
+   formData.value.wishes = payload.enableGuestMessage === false ? 'tidak' : 'ya'
+   giftAddresses.value = payload.giftDeliveryAddress
+      ? String(payload.giftDeliveryAddress).split('\n').filter(Boolean)
+      : []
+   formData.value.bankAccounts = Array.isArray(payload.bankAccounts)
+      ? payload.bankAccounts.map((account) => ({
+         bankName: account.bankName || '',
+         accountNumber: account.accountNumber || '',
+         accountName: account.accountName || '',
+         bankLogoUrl: account.bankLogoUrl || '',
+         bankLogoFile: null,
+      }))
+      : []
 }
 </script>
 
