@@ -44,10 +44,7 @@ onMounted(async () => {
       }
     } else {
       // Normal Mode: Fetch from API
-      const response = isPreviewMode.value
-        ? await getMyInvitationBySlug(slug)
-        : await getInvitationBySlug(slug)
-      const rawData = response.data || response
+      const rawData = await fetchInvitationData(slug)
       
       // Check if invitation is active or if we are in preview mode
       const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
@@ -109,6 +106,45 @@ onMounted(async () => {
 
 const goToCheckout = () => {
   router.push(`/checkout?slug=${slug}`)
+}
+
+async function fetchInvitationData(slug) {
+  try {
+    const response = isPreviewMode.value
+      ? await getMyInvitationBySlug(slug)
+      : await getInvitationBySlug(slug)
+    return response.data || response
+  } catch (err) {
+    if (isPreviewMode.value) {
+      const fallback = getLocalPreviewPayload(slug)
+      if (fallback) return fallback
+    }
+
+    throw err
+  }
+}
+
+function getLocalPreviewPayload(slug) {
+  const stored = localStorage.getItem('finalPayload')
+  if (!stored) return null
+
+  try {
+    const payload = JSON.parse(stored)
+    if (payload.slug && payload.slug !== slug) return null
+
+    return {
+      id: payload.id || null,
+      title: payload.title,
+      slug: payload.slug || slug,
+      template_slug: payload.template_slug || payload.templateName,
+      content: payload,
+      is_premium: Boolean(payload.isPremium),
+      is_published: false,
+    }
+  } catch (error) {
+    console.error('Failed to load local preview payload', error)
+    return null
+  }
 }
 </script>
 
