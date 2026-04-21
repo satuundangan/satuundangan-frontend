@@ -91,7 +91,7 @@
                  </template>
                </div>
 
-               <!-- Bottom Action (Desktop Static, Mobile Fixed) -->
+               <!-- Bottom Action -->
                <div class="mt-10 pt-6 border-t border-gray-50">
                   <button @click="goToForm" class="w-full py-4 bg-mocha text-white rounded-2xl shadow-xl shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 font-bold text-sm md:text-base">
                      <span>Lanjut Lengkapi Data</span>
@@ -191,6 +191,19 @@ onMounted(async () => {
   if (!template) {
     router.push('/templates')
   } else {
+    // Logic Resume Draft dari Main
+    if (selectedSectionsLocalStorage) {
+       const userWantsResume = confirm("Anda memiliki draft undangan sebelumnya. Lanjutkan edit? \nKlik 'Cancel' untuk buat undangan baru.")
+       if (!userWantsResume) {
+          localStorage.removeItem('selectedTemplate')
+          localStorage.removeItem('selectedSections')
+          localStorage.removeItem('finalPayload')
+          localStorage.removeItem('editInvitationId')
+          router.push('/templates')
+          return
+       }
+    }
+
     try {
        selectedTemplate.value = JSON.parse(template)
        
@@ -236,7 +249,7 @@ onMounted(async () => {
        }
     } catch(e) {
        console.error("Error parsing template data", e)
-       router.push('/')
+       router.push('/templates')
     }
   }
 })
@@ -253,6 +266,9 @@ function goToForm() {
   if (!userName.value) {
     showLogin.value = true
     return
+  }
+  if (!localStorage.getItem('finalPayload')) {
+    localStorage.removeItem('editInvitationId')
   }
   localStorage.setItem('selectedSections', JSON.stringify(selectedSections.value))
   router.push('/create/form')

@@ -297,7 +297,7 @@ async function openShareModal(guest) {
     } else {
       const url = data?.url || '';
       const name = guest.name?.split(' ')[0] || 'Teman';
-      shareMessage.value = `Hai ${name}! Ini undangan pernikahan kami 🎉\nKlik untuk lihat: ${url}`;
+      shareMessage.value = `Hai ${name}! Ini undangan pernikahan kami.\nKlik untuk lihat: ${url}`;
     }
   } catch (error) {
     console.error("Failed to load share message:", error);

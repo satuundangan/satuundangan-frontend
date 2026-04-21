@@ -468,6 +468,9 @@ function goToCreate() {
   const tpl = templates.value.find((t) => t.id === selectedTemplate.value)
 
   if (tpl) {
+    localStorage.removeItem('editInvitationId')
+    localStorage.removeItem('selectedSections')
+    localStorage.removeItem('finalPayload')
     localStorage.setItem('selectedTemplate', JSON.stringify(tpl))
     showModal.value = false;
     router.push('/create')
