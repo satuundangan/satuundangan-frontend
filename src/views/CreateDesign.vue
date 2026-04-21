@@ -1,106 +1,106 @@
 <template>
-  <div class="min-h-screen bg-ivory font-sans pt-20 md:pt-24 pb-8 md:pb-12 px-4 md:px-8">
-    <div class="max-w-4xl mx-auto">
+  <div class="min-h-screen bg-gray-50 font-sans pt-6 md:pt-12 pb-24 px-4 md:px-8">
+    <div class="max-w-5xl mx-auto">
       
-      <!-- Stepper -->
-      <div class="flex justify-center mb-8 md:mb-10">
-         <div class="flex items-center gap-2 md:gap-4">
-            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-sage/20 text-sage text-sm md:text-base font-bold flex items-center justify-center">1</div>
-            <div class="w-8 md:w-12 h-1 bg-sage/20 rounded-full"></div>
-            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-mocha text-white text-sm md:text-base font-bold flex items-center justify-center shadow-lg shadow-mocha/20">2</div>
-            <div class="w-8 md:w-12 h-1 bg-gray-200 rounded-full"></div>
-            <div class="w-8 h-8 md:w-10 md:h-10 rounded-full bg-gray-200 text-gray-500 text-sm md:text-base font-bold flex items-center justify-center">3</div>
+      <!-- Top Navigation / Header -->
+      <div class="flex items-center justify-between mb-8">
+         <button @click="goBackToGallery" class="flex items-center gap-2 text-gray-500 hover:text-dark transition-colors font-bold text-sm">
+            <i class="fa-solid fa-chevron-left text-xs"></i> 
+            <span class="hidden md:inline">Ganti Template</span>
+            <span class="md:hidden">Kembali</span>
+         </button>
+         
+         <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
+            <span class="w-2 h-2 rounded-full bg-mocha animate-pulse"></span>
+            <span class="text-[10px] font-bold text-dark uppercase tracking-widest">Langkah 1/2</span>
          </div>
+
+         <div class="w-20 hidden md:block"></div> <!-- Spacer for balance -->
       </div>
 
-      <div class="text-center mb-8 md:mb-10">
-         <h1 class="text-2xl md:text-4xl font-serif font-bold text-mocha mb-2 md:mb-3">Personalisasi Undanganmu</h1>
-         <p class="text-muted text-sm md:text-lg">Pilih fitur yang ingin kamu tampilkan di undangan.</p>
+      <div class="text-center mb-10 md:mb-12">
+         <h1 class="text-2xl md:text-4xl font-serif font-bold text-dark mb-3">Personalisasi Undanganmu</h1>
+         <p class="text-muted text-sm md:text-lg">Pilih fitur yang ingin kamu tampilkan di halaman undangan.</p>
       </div>
 
-      <div class="bg-white p-5 md:p-10 rounded-2xl md:rounded-3xl shadow-xl border border-gray-100 relative overflow-hidden">
-        <!-- Decor -->
-        <div class="absolute top-0 right-0 w-32 md:w-64 h-32 md:h-64 bg-sage/5 rounded-full blur-2xl md:blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+         
+         <!-- Left Column: Template Summary (Compact on Mobile) -->
+         <div class="lg:col-span-5 space-y-6">
+            <div class="bg-white p-5 md:p-8 rounded-3xl shadow-sm border border-gray-100 relative overflow-hidden group">
+               <div class="absolute -top-12 -right-12 w-40 h-40 bg-mocha/5 rounded-full blur-3xl transition-transform group-hover:scale-125"></div>
+               
+               <h2 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-4">Template Terpilih</h2>
+               
+               <div class="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-lg mb-6 bg-gray-100 ring-4 ring-white">
+                  <img :src="templateImageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+                  <div class="absolute left-4 top-4">
+                     <span class="rounded-xl bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase text-mocha shadow-xl border border-mocha/5">
+                        {{ selectedTemplate.isPremium ? '💎 Premium' : '✨ Gratis' }}
+                     </span>
+                  </div>
+               </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-10 relative z-10">
-           
-           <!-- Left: Template Info -->
-           <div class="md:col-span-5 space-y-4 md:space-y-6">
-              <div class="bg-gray-50 p-4 md:p-6 rounded-xl md:rounded-2xl border border-gray-100">
-                 <h2 class="text-[10px] md:text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 md:mb-4">Template Terpilih</h2>
-                 
-                 <div class="relative rounded-lg md:rounded-xl overflow-hidden shadow-md mb-3 md:mb-4 group cursor-pointer bg-gray-100">
-                    <img :src="templateImageUrl" class="w-full h-40 md:h-56 object-cover group-hover:scale-105 transition-transform duration-500" />
-                    <div class="absolute inset-0 bg-black/10 group-hover:bg-black/20 transition-colors"></div>
-                    <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-                       <span class="rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase text-mocha shadow-sm">
-                          {{ selectedTemplate.isPremium ? 'Premium' : 'Gratis' }}
-                       </span>
-                       <span v-if="selectedTemplate.category" class="rounded-md bg-white/90 px-2 py-1 text-[10px] font-bold uppercase text-gray-600 shadow-sm">
-                          {{ selectedTemplate.category }}
-                       </span>
-                    </div>
-                 </div>
+               <div class="space-y-2 relative z-10">
+                  <h3 class="text-xl md:text-2xl font-serif font-bold text-dark">{{ selectedTemplate.name }}</h3>
+                  <div class="flex items-center justify-between">
+                     <p class="text-sm font-bold text-mocha">{{ templatePrice }}</p>
+                     <div class="flex gap-1.5">
+                        <span v-for="color in paletteColors" :key="color"
+                          class="w-4 h-4 rounded-full border border-white shadow-sm ring-1 ring-gray-100" :style="{ backgroundColor: color }"></span>
+                     </div>
+                  </div>
+               </div>
+            </div>
 
-                 <h3 class="text-lg md:text-xl font-serif font-bold text-mocha mb-1">{{ selectedTemplate.name }}</h3>
-                 <p class="text-xs font-bold text-dark mb-2">{{ templatePrice }}</p>
-                 <p class="text-xs md:text-sm text-muted mb-4 leading-relaxed line-clamp-3 md:line-clamp-none">{{ selectedTemplate.desc || selectedTemplate.description }}</p>
-                 
-                 <div v-if="templateTags.length" class="flex flex-wrap gap-2 mb-4">
-                    <span v-for="tag in templateTags" :key="tag" class="rounded-md bg-mocha/10 px-2 py-1 text-[10px] font-bold uppercase text-mocha">
-                       {{ tag }}
-                    </span>
-                 </div>
+            <!-- Note -->
+            <div class="bg-amber-50/50 p-4 rounded-2xl border border-amber-100 flex gap-3 items-center">
+               <div class="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-500 flex-shrink-0">
+                  <i class="fa-solid fa-lightbulb"></i>
+               </div>
+               <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed font-medium">
+                  Jangan khawatir, kamu bisa mengubah pilihan fitur ini kapan saja melalui dashboard.
+               </p>
+            </div>
+         </div>
 
-                 <div class="flex gap-2">
-                    <span v-for="color in paletteColors" :key="color"
-                      class="w-5 h-5 md:w-6 md:h-6 rounded-full border border-gray-200 shadow-sm" :style="{ backgroundColor: color }"></span>
-                 </div>
-              </div>
+         <!-- Right Column: Section Selection -->
+         <div class="lg:col-span-7">
+            <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100 h-full">
+               <h2 class="font-serif font-bold text-xl md:text-2xl text-dark mb-8">Pilih Fitur Unggulan</h2>
+               
+               <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar p-1">
+                 <template v-for="(section, key) in sectionOptions" :key="key">
+                   <label class="group relative flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
+                          :class="selectedSections.includes(key) 
+                            ? 'border-mocha bg-mocha/5 shadow-md shadow-mocha/5' 
+                            : 'border-gray-50 bg-gray-50/50 hover:border-mocha/20 hover:bg-white'">
+                     
+                     <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
+                     
+                     <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                          :class="selectedSections.includes(key) ? 'border-mocha bg-mocha text-white rotate-0 scale-110' : 'border-gray-200 text-transparent -rotate-12 scale-100 group-hover:border-mocha/30'">
+                        <i class="fa-solid fa-check text-[10px]"></i>
+                     </div>
 
-              <!-- Note -->
-              <div class="bg-amber-50 p-3 md:p-4 rounded-xl border border-amber-100 flex gap-2 md:gap-3 items-start">
-                 <span class="text-amber-500 text-lg md:text-xl">💡</span>
-                 <p class="text-[10px] md:text-xs text-amber-800 leading-relaxed">
-                    Tips: Jangan khawatir, kamu bisa mengubah pilihan fitur ini nanti di dashboard jika berubah pikiran.
-                 </p>
-              </div>
-           </div>
+                     <span class="text-sm font-bold text-dark group-hover:text-mocha transition-colors select-none">
+                        {{ section }}
+                     </span>
+                   </label>
+                 </template>
+               </div>
 
-           <!-- Right: Selection -->
-           <div class="md:col-span-7 flex flex-col">
-              <h2 class="font-serif font-bold text-xl md:text-2xl text-dark mb-4 md:mb-6 text-center md:text-left">Pilih Fitur</h2>
-              
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3 max-h-[350px] md:max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                <template v-for="(section, key) in sectionOptions" :key="key">
-                  <label class="group relative flex items-center gap-3 p-3 md:p-4 rounded-lg md:rounded-xl border-2 cursor-pointer transition-all duration-300"
-                         :class="selectedSections.includes(key) 
-                           ? 'border-mocha bg-mocha/5 shadow-sm' 
-                           : 'border-gray-100 bg-white hover:border-gray-200 hover:bg-gray-50'">
-                    
-                    <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
-                    
-                    <div class="w-5 h-5 md:w-6 md:h-6 rounded-full border-2 flex items-center justify-center transition-colors"
-                         :class="selectedSections.includes(key) ? 'border-mocha bg-mocha text-white' : 'border-gray-300 text-transparent group-hover:border-gray-400'">
-                       <i class="fa-solid fa-check text-[10px] md:text-xs"></i>
-                    </div>
+               <!-- Bottom Action (Desktop Static, Mobile Fixed) -->
+               <div class="mt-10 pt-6 border-t border-gray-50">
+                  <button @click="goToForm" class="w-full py-4 bg-mocha text-white rounded-2xl shadow-xl shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 font-bold text-sm md:text-base">
+                     <span>Lanjut Lengkapi Data</span>
+                     <i class="fa-solid fa-arrow-right"></i>
+                  </button>
+               </div>
+            </div>
+         </div>
 
-                    <span class="text-sm md:text-base font-medium text-dark group-hover:text-mocha transition-colors select-none">
-                       {{ section }}
-                    </span>
-                  </label>
-                </template>
-              </div>
-
-              <div class="mt-6 md:mt-8 pt-4 md:pt-6 border-t border-gray-100 flex flex-col md:flex-row justify-end">
-                 <button @click="goToForm" class="w-full md:w-auto btn-primary px-8 py-3.5 md:py-3 rounded-xl shadow-lg shadow-mocha/20 hover:shadow-mocha/40 md:hover:-translate-y-1 transition-all flex items-center justify-center gap-2 font-bold text-sm md:text-base">
-                    <span>Lanjut Isi Data</span>
-                    <i class="fa-solid fa-arrow-right"></i>
-                 </button>
-              </div>
-           </div>
-
-        </div>
       </div>
     </div>
   </div>
@@ -114,7 +114,7 @@ import AuthModal from '@/components/modal/AuthModal.vue'
 import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { getSections } from '@/api/master' // Import API
+import { getSections } from '@/api/master' 
 
 const router = useRouter()
 const selectedTemplate = ref({})
@@ -139,13 +139,6 @@ const paletteColors = computed(() => (
   []
 ))
 
-const templateTags = computed(() => {
-  const tags = selectedTemplate.value.tags
-  if (Array.isArray(tags)) return tags
-  if (typeof tags === 'string') return tags.split(',').map(tag => tag.trim()).filter(Boolean)
-  return []
-})
-
 const templatePrice = computed(() => {
   const price = Number(selectedTemplate.value.price || 0)
   if (!price) return 'Gratis'
@@ -169,7 +162,6 @@ const sectionOptionsLabelMap = {
   encryptedGuest: 'Enkripsi Nama Tamu',
   foodList: 'Daftar Menu Makanan',
   gift: 'Amplop Digital & Kado',
-  // Additional from API
   cover: 'Halaman Sampul (Cover)',
   gallery: 'Galeri Foto',
   'live-stream': 'Live Streaming Link',
@@ -197,24 +189,11 @@ onMounted(async () => {
   const selectedSectionsLocalStorage = localStorage.getItem('selectedSections')
   
   if (!template) {
-    router.push('/')
+    router.push('/templates')
   } else {
-    // Check for existing draft if coming directly (not just switched template)
-    if (selectedSectionsLocalStorage) {
-       const userWantsResume = confirm("Anda memiliki draft undangan sebelumnya. Lanjutkan edit? \nKlik 'Cancel' untuk buat undangan baru (Pilih Template).")
-       if (!userWantsResume) {
-          localStorage.removeItem('selectedTemplate')
-          localStorage.removeItem('selectedSections')
-          localStorage.removeItem('finalPayload')
-          router.push('/')
-          return
-       }
-    }
-
     try {
        selectedTemplate.value = JSON.parse(template)
        
-       // 1. Determine Section Options based on Template
        if (selectedTemplate.value.sections && Array.isArray(selectedTemplate.value.sections) && selectedTemplate.value.sections.length > 0) {
           const newOptions = {}
           const enabledKeys = []
@@ -227,12 +206,10 @@ onMounted(async () => {
           })
           sectionOptions.value = newOptions
           
-          // Default selection for NEW invitation: all enabled sections from template
           if (!selectedSectionsLocalStorage) {
              selectedSections.value = enabledKeys
           }
        } else {
-          // Fallback to fetch ALL if template doesn't have sections defined (old data)
           try {
              const apiSections = await getSections()
              if (Array.isArray(apiSections) && apiSections.length > 0) {
@@ -254,7 +231,6 @@ onMounted(async () => {
           }
        }
 
-       // 2. Override with localStorage if exists (resuming draft)
        if (selectedSectionsLocalStorage) {
          selectedSections.value = JSON.parse(selectedSectionsLocalStorage)
        }
@@ -265,29 +241,13 @@ onMounted(async () => {
   }
 })
 
-function getKeyFromLabel(input) {
-  if (!input) return null;
-  
-  // 1. Direct key match (case insensitive)
-  const directKey = Object.keys(sectionOptionsLabelMap).find(
-    key => key.toLowerCase() === input.toLowerCase()
-  );
-  if (directKey) return directKey;
-
-  // 2. Normalization (e.g. 'Love Story' -> 'loveStory' or 'love-story' -> 'loveStory')
-  const normalizedInput = input.toLowerCase().replace(/[^a-z0-9]/g, '');
-  const normalizedKey = Object.keys(sectionOptionsLabelMap).find(
-    key => key.toLowerCase().replace(/[^a-z0-9]/g, '') === normalizedInput
-  );
-  if (normalizedKey) return normalizedKey;
-
-  // 3. Label match
-  const labelKey = Object.keys(sectionOptionsLabelMap).find(
-    key => sectionOptionsLabelMap[key].toLowerCase().includes(input.toLowerCase())
-  );
-  return labelKey || null;
+function goBackToGallery() {
+   if (confirm("Ganti template akan mengulang pengaturan fitur. Lanjutkan?")) {
+      localStorage.removeItem('selectedTemplate')
+      localStorage.removeItem('selectedSections')
+      router.back()
+   }
 }
-
 
 function goToForm() {
   if (!userName.value) {
@@ -300,16 +260,14 @@ function goToForm() {
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-
 .custom-scrollbar::-webkit-scrollbar {
-  width: 6px;
+  width: 5px;
 }
 .custom-scrollbar::-webkit-scrollbar-track {
-  background: #f1f1f1;
+  background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #d6d3d1;
-  border-radius: 10px;
+  background: #e5e7eb;
+  border-radius: 20px;
 }
 </style>

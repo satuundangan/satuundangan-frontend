@@ -6,7 +6,7 @@
     <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
       
       <!-- Logo -->
-      <a href="#" class="flex items-center gap-2 group">
+      <router-link to="/" class="flex items-center gap-2 group">
         <div class="bg-mocha text-white font-serif font-bold rounded-lg w-10 h-10 flex items-center justify-center text-xl shadow-lg group-hover:bg-accent-gold transition-colors duration-300">
           S
         </div>
@@ -18,7 +18,7 @@
             Digital Invitation
           </span>
         </div>
-      </a>
+      </router-link>
 
       <!-- Desktop Menu -->
       <ul class="hidden md:flex items-center gap-8">
@@ -54,12 +54,12 @@
                  <p class="text-xs text-muted">Signed in as</p>
                  <p class="text-sm font-bold text-dark truncate">{{ userName }}</p>
               </div>
-              <a href="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
+              <router-link to="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
                  <span>📊</span> Dashboard
-              </a>
-              <a href="/dashboard/settings" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
+              </router-link>
+              <router-link to="/settings" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
                  <span>⚙️</span> Pengaturan
-              </a>
+              </router-link>
               <div class="border-t border-gray-50 my-1"></div>
               <button @click="handleLogout"
                 class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2">
@@ -116,7 +116,8 @@
                       <p class="font-bold text-dark">{{ userName }}</p>
                    </div>
                 </div>
-                <a href="/dashboard" class="btn-outline w-full text-center py-3 rounded-xl block">Dashboard</a>
+                <router-link to="/dashboard" class="btn-outline w-full text-center py-3 rounded-xl block">Dashboard</router-link>
+                <router-link to="/templates" class="btn-primary w-full text-center py-3 rounded-xl block shadow-lg shadow-mocha/20">Buat Undangan</router-link>
                 <button @click="handleLogout" class="w-full text-red-500 py-2 text-sm hover:underline">Logout</button>
              </template>
              <template v-else>
@@ -138,12 +139,13 @@ import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
 import { useToast } from 'vue-toastification'
 import { onClickOutside } from '@vueuse/core'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 
 const show = ref(false)
 const authMode = ref('login')
 const sidebarOpen = ref(false)
 const isScrolled = ref(false)
+const router = useRouter()
 
 watch(sidebarOpen, (val) => {
   if (val) {
@@ -195,6 +197,7 @@ const handleLogout = async () => {
   if (result.isConfirmed) {
     auth.logout()
     toast.success('Berhasil logout 👋')
+    router.push('/')
   }
 }
 
@@ -204,8 +207,6 @@ const handleScroll = () => {
 
 onMounted(() => {
    window.addEventListener('scroll', handleScroll)
-   
-   // Buka modal login otomatis jika ada query parameter login=true
    if (route.query.login === 'true') {
       show.value = true
       authMode.value = 'login'
@@ -215,7 +216,6 @@ onMounted(() => {
 onUnmounted(() => {
    window.removeEventListener('scroll', handleScroll)
 })
-
 </script>
 
 <style scoped>
@@ -223,7 +223,6 @@ onUnmounted(() => {
 .slide-fade-leave-active {
   transition: all 0.3s ease;
 }
-
 .slide-fade-enter-from,
 .slide-fade-leave-to {
   transform: translateX(100%);

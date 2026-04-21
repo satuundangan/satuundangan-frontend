@@ -1,14 +1,12 @@
 <template>
-  <div class="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
-    <div class="flex items-center justify-between gap-4">
-      <div>
-        <h2 class="text-xs font-bold uppercase text-gray-500">{{ label }}</h2>
-        <p class="mt-2 text-3xl font-bold text-dark">{{ value }}</p>
-      </div>
-      <div :class="color" class="flex h-12 w-12 items-center justify-center rounded-xl text-xl">
-        <i v-if="iconClass" :class="iconClass"></i>
-        <span v-else>{{ icon }}</span>
-      </div>
+  <div class="rounded-2xl bg-white p-4 md:p-5 shadow-sm border border-gray-50 flex flex-col justify-between transition-all hover:shadow-md">
+    <div :class="color" class="flex h-10 w-10 md:h-12 md:md:w-12 items-center justify-center rounded-xl text-lg md:text-xl mb-3">
+      <i v-if="iconClass" :class="iconClass"></i>
+      <span v-else>{{ icon }}</span>
+    </div>
+    <div>
+      <h2 class="text-[10px] md:text-xs font-bold uppercase text-gray-400 tracking-wider">{{ label }}</h2>
+      <p class="mt-1 text-2xl md:text-3xl font-bold text-dark">{{ value }}</p>
     </div>
   </div>
 </template>
@@ -22,3 +20,4 @@ defineProps({
   color: { type: String, default: 'bg-mocha/10 text-mocha' },
 });
 </script>
+

@@ -5,7 +5,7 @@
 
     <aside :class="[
       'bg-white border-r border-gray-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64',
-      isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full md:translate-x-0'
+      isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full'
     ]">
       <div class="p-6 cursor-pointer border-b border-gray-100 flex items-center justify-between" @click="goToHome">
          <div class="flex items-center gap-3">
