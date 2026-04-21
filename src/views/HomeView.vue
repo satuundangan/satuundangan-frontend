@@ -46,15 +46,7 @@
             <div class="relative overflow-hidden h-64 bg-gray-100 cursor-pointer" @click="selectTemplate(item.id); showModal = true;">
               <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)" :alt="item.name"
                 class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                @error="(e) => { 
-  const placeholder = 'https://via.placeholder.com/400x300?text=No+Preview';
-  if (e.target.src !== placeholder) {
-    e.target.src = placeholder;
-  } else {
-    // If even placeholder fails, use a transparent data URI to stop the loop
-    e.target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  }
-}" />
+                @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
 
               <!-- Hover Overlay -->
               <div
@@ -240,15 +232,7 @@
                 <div class="relative h-32 sm:h-44 overflow-hidden bg-gray-200">
                   <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    @error="(e) => { 
-  const placeholder = 'https://via.placeholder.com/400x300?text=No+Preview';
-  if (e.target.src !== placeholder) {
-    e.target.src = placeholder;
-  } else {
-    // If even placeholder fails, use a transparent data URI to stop the loop
-    e.target.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-  }
-}" />
+                    @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
                   
                   <!-- Preview Button (Always on top of selection overlay) -->
                   <div class="absolute top-2 right-2 flex gap-2 z-20">

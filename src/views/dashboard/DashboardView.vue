@@ -1,104 +1,149 @@
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden">
+  <div class="flex h-screen bg-gray-50 overflow-hidden pb-20 md:pb-0 font-sans">
+    <!-- Sidebar tetap untuk Desktop -->
     <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
 
-    <div class="flex-1 flex flex-col md:ml-64 transition-all duration-300 min-w-0">
-      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+    <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
+      <!-- Topbar diperkecil untuk Mobile -->
+      <Topbar title="Ringkasan" :showButton="false" @toggleSidebar="isSidebarOpen = !isSidebarOpen" class="md:hidden" />
+      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" class="hidden md:flex" />
 
       <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto">
-        <!-- Welcome Banner -->
-        <div class="rounded-2xl bg-mocha p-6 text-white shadow-lg md:p-8">
-           <div class="flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between">
-              <div>
-                 <p class="text-xs font-bold uppercase text-white/70">Dashboard Undangan</p>
-                 <h2 class="mt-2 text-2xl md:text-3xl font-serif font-bold">Halo, {{ userName }}</h2>
-                 <p class="mt-2 text-sm md:text-base text-white/85">Pantau status undangan, tamu, dan publikasi dari satu tempat.</p>
+        
+        <!-- Header Ringkas (Mobile-First) -->
+        <div class="flex items-center justify-between mb-2">
+           <div>
+              <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Halo, {{ userName.split(' ')[0] }}! 👋</h2>
+              <p class="text-xs md:text-sm text-muted">Selamat datang kembali di Satu Undangan.</p>
+           </div>
+           <div class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-mocha/10 flex items-center justify-center text-mocha font-bold border-2 border-white shadow-sm">
+              {{ userName.charAt(0) }}
+           </div>
+        </div>
+
+        <!-- Progress Undangan / CTA Utama -->
+        <div v-if="invitations.length > 0 && !allPublished" class="bg-white rounded-2xl p-5 shadow-sm border border-mocha/10 overflow-hidden relative">
+           <div class="relative z-10">
+              <span class="bg-mocha/10 text-mocha text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider">Langkah Selanjutnya</span>
+              <h3 class="mt-2 font-bold text-dark text-lg">Selesaikan Undanganmu</h3>
+              <p class="text-xs text-muted mb-4">Lengkapi detail undangan agar siap dipublikasikan.</p>
+              
+              <div class="w-full bg-gray-100 h-2 rounded-full mb-4">
+                 <div class="bg-mocha h-full rounded-full transition-all duration-500" :style="{ width: '70%' }"></div>
               </div>
-              <div class="grid grid-cols-2 gap-3 sm:grid-cols-3">
-                 <div class="rounded-xl bg-white/10 px-4 py-3">
-                    <p class="text-[10px] font-bold uppercase text-white/60">Published</p>
-                    <p class="text-2xl font-bold">{{ publishedCount }}</p>
+              
+              <router-link to="/invitations" class="inline-flex items-center gap-2 px-4 py-2 bg-mocha text-white text-xs font-bold rounded-xl shadow-lg shadow-mocha/20">
+                 Lanjutkan Edit <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              </router-link>
+           </div>
+           <i class="fa-solid fa-wand-magic-sparkles absolute -right-4 -bottom-4 text-mocha/5 text-8xl rotate-12"></i>
+        </div>
+
+        <div v-else-if="invitations.length === 0" class="bg-mocha rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
+           <div class="relative z-10">
+              <h3 class="text-xl font-bold font-serif">Mulai Perjalananmu</h3>
+              <p class="mt-1 text-sm text-white/80">Buat undangan digital impianmu hanya dalam hitungan menit.</p>
+              <router-link to="/create" class="mt-4 inline-block bg-white text-mocha px-6 py-2.5 rounded-xl text-sm font-bold shadow-md">
+                 Buat Undangan Sekarang
+              </router-link>
+           </div>
+           <i class="fa-solid fa-heart absolute -right-6 -top-6 text-white/10 text-9xl"></i>
+        </div>
+
+        <!-- Ringkasan Statistik (Horizontal Scroll on Mobile) -->
+        <div class="flex overflow-x-auto pb-2 gap-4 md:grid md:grid-cols-3 md:pb-0 scrollbar-hide">
+          <StatCard 
+            label="Total Undangan" 
+            :value="stats.total" 
+            iconClass="fa-solid fa-envelope-open-text" 
+            color="bg-white text-blue-600" 
+            class="min-w-[140px] flex-shrink-0 shadow-sm border border-gray-100"
+          />
+          <StatCard 
+            label="Tamu Terundang" 
+            :value="stats.guests" 
+            iconClass="fa-solid fa-users" 
+            color="bg-white text-violet-600" 
+            class="min-w-[140px] flex-shrink-0 shadow-sm border border-gray-100"
+          />
+          <StatCard 
+            label="Ucapan Masuk" 
+            :value="stats.responses" 
+            iconClass="fa-solid fa-message" 
+            color="bg-white text-emerald-600" 
+            class="min-w-[140px] flex-shrink-0 shadow-sm border border-gray-100"
+          />
+        </div>
+
+        <!-- Aksi Cepat (Grid-based on Mobile) -->
+        <div class="space-y-4">
+           <h3 class="font-bold text-dark flex items-center justify-between">
+              <span>⚡ Aksi Cepat</span>
+              <router-link to="/invitations" class="text-[10px] text-mocha font-bold uppercase tracking-widest">Semua Fitur</router-link>
+           </h3>
+           <div class="grid grid-cols-2 gap-3">
+              <router-link to="/create" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
+                 <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-plus text-lg"></i>
                  </div>
-                 <div class="rounded-xl bg-white/10 px-4 py-3">
-                    <p class="text-[10px] font-bold uppercase text-white/60">Draft</p>
-                    <p class="text-2xl font-bold">{{ draftCount }}</p>
+                 <span class="text-xs font-bold text-dark">Buat Baru</span>
+              </router-link>
+              <router-link to="/guests" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
+                 <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-user-plus text-lg"></i>
                  </div>
-                 <router-link to="/create" class="col-span-2 flex items-center justify-center rounded-xl bg-white px-4 py-3 text-sm font-bold text-mocha transition hover:bg-ivory sm:col-span-1">
-                    Buat Baru
+                 <span class="text-xs font-bold text-dark">Tambah Tamu</span>
+              </router-link>
+              <router-link to="/guestbook" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
+                 <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-comment-dots text-lg"></i>
+                 </div>
+                 <span class="text-xs font-bold text-dark">Cek Ucapan</span>
+              </router-link>
+              <router-link to="/settings" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
+                 <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-3">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                 </div>
+                 <span class="text-xs font-bold text-dark">Pengaturan</span>
+              </router-link>
+           </div>
+        </div>
+
+        <!-- Daftar Undangan Terbaru -->
+        <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100">
+           <h3 class="font-bold text-dark mb-4 flex items-center gap-2">
+              <span>🎉</span> Undangan Terakhir
+           </h3>
+           
+           <div v-if="loading" class="py-10 text-center text-gray-400">Loading...</div>
+           <div v-else-if="invitations.length === 0" class="py-10 text-center text-gray-400 italic">
+              Belum ada undangan. <router-link to="/create" class="text-mocha underline">Buat sekarang</router-link>
+           </div>
+           
+           <div v-else class="space-y-3">
+              <div v-for="inv in invitations.slice(0, 3)" :key="inv.id" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
+                 <img :src="getInvitationThumbnail(inv)" class="w-12 h-12 rounded-lg object-cover bg-gray-200" />
+                 <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-2">
+                       <h4 class="font-bold text-dark text-xs truncate">{{ inv.title }}</h4>
+                       <span :class="inv.isPublished ? 'text-green-600' : 'text-gray-400'" class="text-[8px] font-bold uppercase">
+                          • {{ inv.isPublished ? 'Published' : 'Draft' }}
+                       </span>
+                    </div>
+                    <p class="text-[10px] text-muted truncate">satuundangan.com/{{ inv.slug }}</p>
+                 </div>
+                 <router-link :to="inv.isPublished ? `/${inv.slug}` : '/invitations'" target="_blank" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg text-mocha shadow-sm border border-gray-100">
+                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
                  </router-link>
               </div>
            </div>
         </div>
 
-        <!-- Stats -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-          <StatCard label="Total Undangan" :value="stats.total" iconClass="fa-solid fa-envelope-open-text" color="bg-blue-50 text-blue-600" />
-          <StatCard label="Tamu Terundang" :value="stats.guests" iconClass="fa-solid fa-users" color="bg-violet-50 text-violet-600" />
-          <StatCard label="Ucapan Masuk" :value="stats.responses" iconClass="fa-solid fa-message" color="bg-emerald-50 text-emerald-600" />
-        </div>
-
-        <!-- Recent Activity & Quick Share -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 md:gap-8">
-           <!-- Recent Invitations -->
-           <div class="lg:col-span-2 bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100">
-              <h3 class="font-bold text-dark mb-4 flex items-center gap-2">
-                 <span>🎉</span> Undangan Terakhir
-              </h3>
-              
-              <div v-if="loading" class="py-10 text-center text-gray-400">Loading...</div>
-              <div v-else-if="invitations.length === 0" class="py-10 text-center text-gray-400 italic">
-                 Belum ada undangan. <router-link to="/create" class="text-mocha underline">Buat sekarang</router-link>
-              </div>
-              
-              <div v-else class="space-y-3 md:space-y-4">
-                 <div v-for="inv in invitations.slice(0, 4)" :key="inv.id" class="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-gray-50 rounded-xl hover:bg-gray-100 transition gap-4">
-                    <div class="flex min-w-0 items-center gap-3 md:gap-4">
-                       <img :src="getInvitationThumbnail(inv)" class="w-14 h-14 md:w-16 md:h-16 rounded-xl object-cover shadow-sm bg-gray-200" />
-                       <div class="min-w-0">
-                          <div class="flex flex-wrap items-center gap-2">
-                             <h4 class="font-bold text-dark text-sm truncate max-w-[180px] sm:max-w-none">{{ inv.title }}</h4>
-                             <span :class="inv.isPublished ? 'bg-green-50 text-green-600 border-green-100' : 'bg-gray-200 text-gray-500 border-gray-300'" class="rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase">
-                                {{ inv.isPublished ? 'Published' : 'Draft' }}
-                             </span>
-                          </div>
-                          <p class="mt-1 text-[10px] md:text-xs text-muted truncate">/{{ inv.slug }}</p>
-                          <p class="mt-1 text-[10px] text-gray-400">{{ formatDate(inv.akadLocation?.dateTime || inv.dateTime) }}</p>
-                       </div>
-                    </div>
-                    <div class="flex gap-2 w-full sm:w-auto">
-                       <a v-if="inv.isPublished" :href="`/${inv.slug}`" target="_blank" class="flex-1 sm:flex-none text-center px-3 py-1.5 text-xs font-bold text-mocha bg-mocha/10 rounded-lg hover:bg-mocha hover:text-white transition">
-                          Lihat
-                       </a>
-                       <span v-else class="flex-1 sm:flex-none text-center px-3 py-1.5 text-xs font-bold text-gray-500 bg-gray-200 rounded-lg cursor-not-allowed">
-                          Draft
-                       </span>
-                       <router-link :to="`/invitations`" class="flex-1 sm:flex-none text-center px-3 py-1.5 text-xs font-bold text-gray-500 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 transition">
-                          Kelola
-                       </router-link>
-                    </div>
-                 </div>
-              </div>
-           </div>
-
-           <!-- Quick Actions -->
-           <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 flex flex-col justify-center text-center space-y-4">
-              <div class="mx-auto w-12 h-12 md:w-16 md:h-16 bg-sage/20 rounded-xl flex items-center justify-center text-sage text-2xl md:text-3xl mb-2">
-                 <i class="fa-solid fa-bolt"></i>
-              </div>
-              <h3 class="font-bold text-dark">Aksi Cepat</h3>
-              <p class="text-xs text-muted">Kelola workflow undangan yang paling sering dipakai.</p>
-              
-              <router-link to="/create" class="w-full py-3 bg-mocha text-white rounded-xl font-bold shadow-lg shadow-mocha/20 hover:shadow-mocha/40 transition-all hover:-translate-y-1">
-                 + Buat Undangan Baru
-              </router-link>
-              <router-link to="/guests" class="w-full py-3 bg-white border border-gray-200 text-gray-600 rounded-xl font-bold hover:bg-gray-50 transition">
-                 Kelola Tamu
-              </router-link>
-           </div>
-        </div>
-
       </main>
     </div>
+
+    <!-- Bottom Navigation untuk Mobile -->
+    <BottomNav />
   </div>
 </template>
 
@@ -107,6 +152,7 @@ import { onMounted, ref, computed } from "vue";
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
 import Topbar from "@/components/dashboard/TopbarDashboard.vue";
 import StatCard from "@/components/dashboard/StatCard.vue";
+import BottomNav from "@/components/dashboard/BottomNav.vue";
 import { getInvitations, getDashboardStats } from "@/api/invitation";
 import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
@@ -120,7 +166,7 @@ const statsData = ref({
   total_responses: 0
 });
 const loading = ref(true);
-const isSidebarOpen = ref(false);
+const isSidebarOpen = ref(window.innerWidth >= 768);
 
 const userName = computed(() => auth.user?.name || 'User');
 
@@ -132,6 +178,7 @@ const stats = computed(() => {
   };
 });
 
+const allPublished = computed(() => invitations.value.every(inv => inv.isPublished));
 const publishedCount = computed(() => invitations.value.filter((inv) => inv.isPublished).length);
 const draftCount = computed(() => Math.max(0, invitations.value.length - publishedCount.value));
 
@@ -176,3 +223,17 @@ onMounted(async () => {
   }
 });
 </script>
+
+<style>
+/* Hide scrollbar for Chrome, Safari and Opera */
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.scrollbar-hide {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+</style>
+
