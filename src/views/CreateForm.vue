@@ -322,7 +322,8 @@
                   </button>
 
                   <button @click="saveAndPreview" :disabled="isUploading"
-                     class="bg-mocha text-white font-bold py-3 px-8 md:py-4 md:px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all disabled:opacity-70 flex items-center gap-3 text-sm">
+                     class="bg-mocha text-white font-bold py-3 px-8 md:py-4 md:px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 text-sm"
+                     :class="{ 'opacity-50 cursor-not-allowed': isUploading }">
                      <span v-if="isUploading" class="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span>
                      <span v-else>{{ route.params.id ? 'Simpan Perubahan' : 'Lanjut Preview' }}</span>
                      <i v-if="!isUploading" class="fa-solid fa-wand-magic-sparkles"></i>
@@ -342,8 +343,10 @@ import { useRouter, useRoute } from 'vue-router'
 import { uploadFileApi, deleteFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
 import { fetchPublicAudio } from '@/api/master'
+import { useToast } from "vue-toastification"
 import QuoteSection from './create-form/components/QuoteSection.vue'
 
+const toast = useToast()
 const route = useRoute()
 const router = useRouter()
 const isUploading = ref(false)
@@ -423,10 +426,22 @@ async function handleEditMode(id) {
 function mapPayloadToFormData(payload) {
    formData.value.title = payload.title || ''
    formData.value.brideName = payload.brideName || ''
-   formData.value.groomName = payload.groomName || ''
+   formData.value.brideParents = payload.brideParents || ''
    formData.value.bridePhoto = payload.bridePhotoUrl || ''
+   formData.value.groomName = payload.groomName || ''
+   formData.value.groomParents = payload.groomParents || ''
    formData.value.groomPhoto = payload.groomPhotoUrl || ''
    formData.value.photoCouple = payload.photoCoupleUrl || ''
+   formData.value.isSingleEvent = payload.isSingleEvent
+   formData.value.dateTime = payload.dateTime ? payload.dateTime.substring(0, 16) : ''
+   formData.value.map = payload.map || ''
+   formData.value.mapDesc = payload.mapDesc || ''
+   formData.value.akadDateTime = payload.akadDateTime ? payload.akadDateTime.substring(0, 16) : ''
+   formData.value.akadMap = payload.akadMap || ''
+   formData.value.akadDesc = payload.akadDesc || ''
+   formData.value.resepsiDateTime = payload.resepsiDateTime ? payload.resepsiDateTime.substring(0, 16) : ''
+   formData.value.resepsiMap = payload.resepsiMap || ''
+   formData.value.resepsiDesc = payload.resepsiDesc || ''
 }
 
 function validateField(field) {
@@ -434,8 +449,38 @@ function validateField(field) {
    const data = formData.value
    if (field === 'brideName' && !data.brideName?.trim()) message = 'Wajib diisi'
    if (field === 'groomName' && !data.groomName?.trim()) message = 'Wajib diisi'
+   if (field === 'title' && !data.title?.trim()) message = 'Wajib diisi'
    validationErrors.value[field] = message
    return !message
+}
+
+function validateForm() {
+   validationErrors.value = {}
+   const data = formData.value
+   let isValid = true
+
+   if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
+   if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
+   
+   if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
+   if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
+   
+   if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
+   if (data.isSingleEvent === null) { validationErrors.value.isSingleEvent = 'Format acara wajib dipilih'; isValid = false }
+   
+   if (data.isSingleEvent === true) {
+      if (!data.dateTime) { validationErrors.value.dateTime = 'Waktu acara wajib diisi'; isValid = false }
+      if (!data.map) { validationErrors.value.map = 'Link Google Maps wajib diisi'; isValid = false }
+   } else if (data.isSingleEvent === false) {
+      if (!data.akadDateTime) { validationErrors.value.akadDateTime = 'Waktu akad wajib diisi'; isValid = false }
+      if (!data.akadMap) { validationErrors.value.akadMap = 'Link Maps akad wajib diisi'; isValid = false }
+      if (!data.resepsiDateTime) { validationErrors.value.resepsiDateTime = 'Waktu resepsi wajib diisi'; isValid = false }
+      if (!data.resepsiMap) { validationErrors.value.resepsiMap = 'Link Maps resepsi wajib diisi'; isValid = false }
+   }
+   
+   if (!data.photoCouple && !data.photoCoupleFile) { validationErrors.value.photoCouple = 'Foto sampul wajib diisi'; isValid = false }
+
+   return isValid
 }
 
 function handleBridePhotoUpload(e) {
@@ -471,19 +516,74 @@ async function uploadAllFiles() {
    if (formData.value.bridePhotoFile) formData.value.bridePhoto = await pushUpload(formData.value.bridePhotoFile)
    if (formData.value.groomPhotoFile) formData.value.groomPhoto = await pushUpload(formData.value.groomPhotoFile)
    if (formData.value.photoCoupleFile) formData.value.photoCouple = await pushUpload(formData.value.photoCoupleFile)
+   if (formData.value.denahFile) formData.value.denah = await pushUpload(formData.value.denahFile)
+   
+   // Handle gallery
+   for (let i = 0; i < formData.value.gallery.length; i++) {
+      if (formData.value.gallery[i].file) {
+         formData.value.gallery[i].preview = await pushUpload(formData.value.gallery[i].file)
+         delete formData.value.gallery[i].file
+      }
+   }
 }
 
 async function saveAndPreview() {
+   if (!validateForm()) {
+      toast.warning("Mohon lengkapi semua data yang wajib diisi")
+      const firstError = document.querySelector('.form-error')
+      if (firstError) {
+         firstError.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }
+      return
+   }
+
+   if (!selectedTemplateRef.value.id && !route.params.id) {
+      toast.error("Template belum dipilih. Mohon ulangi dari awal.")
+      router.push('/create')
+      return
+   }
+
    isUploading.value = true
    try {
       await uploadAllFiles()
-      const payload = { 
-         ...formData.value, 
+      
+      const payload = {
+         title: formData.value.title,
          slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
-         selectedSections: Object.keys(sections.value).filter(k => sections.value[k]) 
+         brideName: formData.value.brideName,
+         brideParents: formData.value.brideParents,
+         bridePhotoUrl: formData.value.bridePhoto,
+         groomName: formData.value.groomName,
+         groomParents: formData.value.groomParents,
+         groomPhotoUrl: formData.value.groomPhoto,
+         photoCoupleUrl: formData.value.photoCouple,
+         isSingleEvent: formData.value.isSingleEvent,
+         dateTime: formData.value.isSingleEvent ? new Date(formData.value.dateTime).toISOString() : null,
+         map: formData.value.map,
+         mapDesc: formData.value.mapDesc,
+         akadDateTime: !formData.value.isSingleEvent ? new Date(formData.value.akadDateTime).toISOString() : null,
+         akadMap: formData.value.akadMap,
+         akadDesc: formData.value.akadDesc,
+         resepsiDateTime: !formData.value.isSingleEvent ? new Date(formData.value.resepsiDateTime).toISOString() : null,
+         resepsiMap: formData.value.resepsiMap,
+         resepsiDesc: formData.value.resepsiDesc,
+         templateDesignId: selectedTemplateRef.value.id || 1, // Fallback to 1 if editing and no stored template
+         loveStory: [],
+         musicChoice: formData.value.music || 'default',
+         isCustomMusic: !!formData.value.music,
+         mergeEvents: false,
+         encryptedGuestName: formData.value.encryptedGuest === 'ya',
+         galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url.startsWith('http')),
+         giftDeliveryAddress: '',
+         enableCover: true,
+         healthProtocol: true,
+         enableGuestMessage: true,
+         selectedSections: Object.keys(sections.value).filter(k => sections.value[k])
       }
+
       const editId = route.params.id || localStorage.getItem('editInvitationId')
       let result
+      
       if (editId) {
          const res = await updateInvitation(editId, payload)
          result = res.data || res
@@ -492,10 +592,13 @@ async function saveAndPreview() {
          result = res.data || res
          localStorage.setItem('editInvitationId', result.id)
       }
+      
+      toast.success("Berhasil menyimpan!")
       router.push({ path: '/preview', query: { slug: result.slug } })
    } catch (error) {
       console.error(error)
-      alert('Gagal menyimpan!')
+      const errorMsg = error.response?.data?.message || 'Gagal menyimpan!'
+      toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg)
    } finally {
       isUploading.value = false
    }
