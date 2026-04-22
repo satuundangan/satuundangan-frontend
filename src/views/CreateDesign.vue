@@ -68,7 +68,14 @@
          <!-- Right Column: Section Selection -->
          <div class="lg:col-span-7">
             <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100 h-full">
-               <h2 class="font-serif font-bold text-xl md:text-2xl text-dark mb-8">Pilih Fitur Unggulan</h2>
+               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+                  <h2 class="font-serif font-bold text-xl md:text-2xl text-dark">Pilih Fitur Unggulan</h2>
+                  <div class="flex items-center gap-3">
+                     <button @click="selectAll" class="text-[10px] font-bold text-mocha uppercase tracking-widest hover:text-dark transition-colors">Pilih Semua</button>
+                     <div class="w-1 h-1 bg-gray-200 rounded-full"></div>
+                     <button @click="deselectAll" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-dark transition-colors">Hapus Semua</button>
+                  </div>
+               </div>
                
                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar p-1">
                  <template v-for="(section, key) in sectionOptions" :key="key">
@@ -79,24 +86,35 @@
                      
                      <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
                      
-                     <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300"
-                          :class="selectedSections.includes(key) ? 'border-mocha bg-mocha text-white rotate-0 scale-110' : 'border-gray-200 text-transparent -rotate-12 scale-100 group-hover:border-mocha/30'">
-                        <i class="fa-solid fa-check text-[10px]"></i>
+                     <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+                          :class="selectedSections.includes(key) ? 'bg-mocha text-white shadow-lg shadow-mocha/20' : 'bg-white text-gray-400 group-hover:text-mocha border border-gray-100'">
+                        <i :class="['fa-solid', getIcon(key), 'text-sm']"></i>
                      </div>
 
-                     <span class="text-sm font-bold text-dark group-hover:text-mocha transition-colors select-none">
-                        {{ section }}
-                     </span>
+                     <div class="flex-1 min-w-0">
+                        <span class="text-sm font-bold text-dark group-hover:text-mocha transition-colors select-none block truncate">
+                           {{ section }}
+                        </span>
+                     </div>
+
+                     <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                          :class="selectedSections.includes(key) ? 'border-mocha bg-mocha text-white scale-110' : 'border-gray-200 text-transparent scale-90 group-hover:border-mocha/30'">
+                        <i class="fa-solid fa-check text-[8px]"></i>
+                     </div>
                    </label>
                  </template>
                </div>
 
                <!-- Bottom Action -->
                <div class="mt-10 pt-6 border-t border-gray-50">
-                  <button @click="goToForm" class="w-full py-4 bg-mocha text-white rounded-2xl shadow-xl shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 font-bold text-sm md:text-base">
+                  <button @click="goToForm" :disabled="selectedSections.length === 0"
+                     class="w-full py-4 bg-mocha text-white rounded-2xl shadow-xl shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all flex items-center justify-center gap-3 font-bold text-sm md:text-base disabled:opacity-50 disabled:translate-y-0 disabled:shadow-none disabled:cursor-not-allowed">
                      <span>Lanjut Lengkapi Data</span>
                      <i class="fa-solid fa-arrow-right"></i>
                   </button>
+                  <p v-if="selectedSections.length === 0" class="text-center text-[10px] text-red-400 font-bold uppercase tracking-widest mt-3 animate-pulse">
+                     Pilih minimal satu fitur untuk melanjutkan
+                  </p>
                </div>
             </div>
          </div>
@@ -124,6 +142,42 @@ const showLogin = ref(false)
 const auth = useAuthStore()
 const userName = computed(() => auth.user?.name || null)
 const authMode = ref('login')
+
+const selectAll = () => {
+  selectedSections.value = Object.keys(sectionOptions.value)
+}
+
+const deselectAll = () => {
+  selectedSections.value = []
+}
+
+const getIcon = (key) => {
+  const iconMap = {
+    quote: 'fa-quote-left',
+    loveStory: 'fa-book-heart',
+    photoCouple: 'fa-image',
+    music: 'fa-music',
+    map: 'fa-map-location-dot',
+    rsvp: 'fa-clipboard-check',
+    wishes: 'fa-comment-dots',
+    countdown: 'fa-clock',
+    denah: 'fa-map',
+    encryptedGuest: 'fa-user-lock',
+    foodList: 'fa-utensils',
+    gift: 'fa-gift',
+    cover: 'fa-book-open',
+    gallery: 'fa-images',
+    'live-stream': 'fa-video',
+    'health-protocol': 'fa-shield-virus',
+    'digital-envelope': 'fa-wallet',
+    'event-details': 'fa-calendar-day',
+    'likes': 'fa-thumbs-up',
+    'footer': 'fa-scroll',
+    'turut-mengundang': 'fa-users',
+    'video-prewedding': 'fa-clapperboard'
+  }
+  return iconMap[key] || 'fa-star'
+}
 
 const templateImageUrl = computed(() => (
   selectedTemplate.value.thumbnailUrl ||
