@@ -42,8 +42,9 @@
               <h3 class="font-bold text-dark text-xs uppercase tracking-wider">Total: {{ filteredGuests.length }} Tamu</h3>
            </div>
 
-           <div class="overflow-x-auto">
-              <table class="w-full text-left text-sm min-w-[700px]">
+           <!-- Desktop Table -->
+           <div class="hidden md:block overflow-x-auto">
+              <table class="w-full text-left text-sm">
                 <thead class="bg-gray-50 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
                   <tr>
                     <th class="px-6 py-4">Nama Tamu</th>
@@ -81,22 +82,55 @@
                        </div>
                     </td>
                   </tr>
-                  <tr v-if="filteredGuests.length === 0">
-                     <td colspan="4" class="px-6 py-12 text-center">
-                        <div class="text-gray-300 mb-2"><i class="fa-solid fa-users-slash text-3xl"></i></div>
-                        <p class="text-gray-400 text-xs italic">Belum ada tamu atau nama tidak ditemukan.</p>
-                     </td>
-                  </tr>
                 </tbody>
               </table>
+           </div>
+
+           <!-- Mobile Card List -->
+           <div class="md:hidden divide-y divide-gray-50">
+              <div v-for="guest in filteredGuests" :key="guest.id" class="p-4 space-y-3">
+                 <div class="flex justify-between items-start">
+                    <div class="min-w-0 flex-1 pr-4">
+                       <p class="font-bold text-dark truncate">{{ guest.name }}</p>
+                       <p class="text-[10px] text-gray-400 mt-0.5">{{ guest.phoneNumber || 'No phone' }}</p>
+                    </div>
+                    <span class="shrink-0 px-2 py-1 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider">{{ guest.group || 'Umum' }}</span>
+                 </div>
+                 
+                 <div class="flex justify-between items-center">
+                    <div class="text-xs">
+                       <div v-if="guest.rsvpStatus === 'hadir'" class="flex items-center gap-1.5 text-green-600 font-bold">
+                          <i class="fa-solid fa-circle-check"></i> Hadir
+                       </div>
+                       <div v-else-if="guest.rsvpStatus === 'tidak'" class="flex items-center gap-1.5 text-red-400 font-bold">
+                          <i class="fa-solid fa-circle-xmark"></i> Tidak
+                       </div>
+                       <div v-else class="text-gray-300 italic text-[10px]">Menunggu...</div>
+                    </div>
+
+                    <div class="flex gap-2">
+                       <button @click="openShareModal(guest)" :disabled="!currentInvitation?.isPublished" :class="currentInvitation?.isPublished ? 'text-green-500 bg-green-50 active:bg-green-100' : 'text-gray-300 bg-gray-50 cursor-not-allowed'" class="w-10 h-10 flex items-center justify-center rounded-xl transition">
+                          <i class="fa-brands fa-whatsapp text-xl"></i>
+                       </button>
+                       <button @click="deleteGuestHandler(guest.id)" class="w-10 h-10 flex items-center justify-center text-red-400 bg-red-50 active:bg-red-100 rounded-xl transition">
+                          <i class="fa-solid fa-trash-can text-base"></i>
+                       </button>
+                    </div>
+                 </div>
+              </div>
+           </div>
+
+           <div v-if="filteredGuests.length === 0" class="px-6 py-12 text-center">
+              <div class="text-gray-300 mb-2"><i class="fa-solid fa-users-slash text-3xl"></i></div>
+              <p class="text-gray-400 text-xs italic">Belum ada tamu atau nama tidak ditemukan.</p>
            </div>
         </div>
       </main>
     </div>
 
-    <!-- Modals (Add & Share) same as before -->
-    <div v-if="showAddModal" class="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm">
-       <div class="bg-white rounded-t-[2.5rem] md:rounded-3xl w-full max-w-md p-8 shadow-2xl animate-slide-up md:animate-scale-up">
+    <!-- Modals (Add & Share) -->
+    <div v-if="showAddModal" class="fixed inset-0 bg-black/60 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm">
+       <div class="bg-white rounded-t-[2.5rem] md:rounded-3xl w-full max-w-md p-6 md:p-8 shadow-2xl animate-slide-up md:animate-scale-up">
           <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6 md:hidden"></div>
           <h3 class="font-bold text-xl mb-6 text-dark flex items-center gap-2">
              <i class="fa-solid fa-user-plus text-mocha"></i> Tambah Tamu
@@ -131,10 +165,10 @@
        </div>
     </div>
 
-    <div v-if="showShareModal" class="fixed inset-0 bg-black/60 z-50 flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm">
-       <div class="bg-white rounded-t-[2.5rem] md:rounded-3xl w-full max-w-md p-8 shadow-2xl animate-slide-up md:animate-scale-up">
+    <div v-if="showShareModal" class="fixed inset-0 bg-black/60 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm">
+       <div class="bg-white rounded-t-[2.5rem] md:rounded-3xl w-full max-w-md p-6 md:p-8 shadow-2xl animate-slide-up md:animate-scale-up">
           <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6 md:hidden"></div>
-          <h3 class="font-bold text-xl mb-4 text-dark">Kirim Undangan</h3>
+          <h3 class="font-bold text-xl mb-2 text-dark">Kirim Undangan</h3>
           <p class="text-xs text-muted mb-6">Pesan ini akan dikirim melalui WhatsApp.</p>
           
           <div class="space-y-4">
@@ -144,7 +178,7 @@
              </div>
           </div>
 
-          <div class="mt-8 flex gap-3">
+          <div class="mt-8 flex gap-3 pb-4 md:pb-0">
              <button @click="showShareModal = false" class="flex-1 py-3 text-gray-400 font-bold text-sm">Batal</button>
              <button @click="sendWhatsApp" :disabled="loadingMessage" class="flex-[2] py-3 bg-green-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-green-500/20 flex items-center justify-center gap-2">
                 <i class="fa-brands fa-whatsapp text-lg"></i> Kirim WA
