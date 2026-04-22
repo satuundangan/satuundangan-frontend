@@ -416,15 +416,15 @@ const handleCheckout = async () => {
       try {
         await loadSnapScript()
         window.snap.pay(data.token, {
-          onSuccess: () => {
-            router.push(`/${invitation.value.slug}`)
+          onSuccess: (result) => {
+            router.push(buildPaymentResultPath('/payment/finish', result, data.order_id))
           },
           onPending: (result) => {
-            router.push(`/payment/finish?order_id=${result.order_id}`)
+            router.push(buildPaymentResultPath('/payment/pending', result, data.order_id))
           },
           onError: (result) => {
             console.error('Payment error:', result)
-            alert('Pembayaran gagal, silakan coba lagi.')
+            router.push(buildPaymentResultPath('/payment/error', result, data.order_id))
           },
           onClose: () => {
             console.log('Payment popup closed')
@@ -471,6 +471,18 @@ const formatCurrency = (value) => {
     currency: 'IDR',
     minimumFractionDigits: 0
   }).format(value)
+}
+
+function buildPaymentResultPath(path, result = {}, fallbackOrderId = '') {
+  const params = new URLSearchParams()
+  const orderId = result?.order_id || fallbackOrderId
+
+  if (orderId) params.set('order_id', orderId)
+  if (result?.status_code) params.set('status_code', result.status_code)
+  if (result?.transaction_status) params.set('transaction_status', result.transaction_status)
+
+  const query = params.toString()
+  return query ? `${path}?${query}` : path
 }
 </script>
 

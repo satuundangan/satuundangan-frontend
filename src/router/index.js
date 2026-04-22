@@ -68,6 +68,18 @@ const router = createRouter({
       meta: { title: 'Status Pembayaran' },
     },
     {
+      path: '/payment/pending',
+      name: 'payment-pending',
+      component: () => import('@/views/PaymentFinishPage.vue'),
+      meta: { title: 'Status Pembayaran' },
+    },
+    {
+      path: '/payment/error',
+      name: 'payment-error',
+      component: () => import('@/views/PaymentFinishPage.vue'),
+      meta: { title: 'Pembayaran Gagal' },
+    },
+    {
       path: '/auth/callback',
       name: 'auth-callback',
       component: () => import('@/views/AuthCallback.vue'),
