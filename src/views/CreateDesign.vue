@@ -70,10 +70,15 @@
             <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100 h-full">
                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
                   <h2 class="font-serif font-bold text-xl md:text-2xl text-dark">Pilih Fitur Unggulan</h2>
-                  <div class="flex items-center gap-3">
-                     <button @click="selectAll" class="text-[10px] font-bold text-mocha uppercase tracking-widest hover:text-dark transition-colors">Pilih Semua</button>
-                     <div class="w-1 h-1 bg-gray-200 rounded-full"></div>
-                     <button @click="deselectAll" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest hover:text-dark transition-colors">Hapus Semua</button>
+                  <div class="flex items-center gap-2">
+                     <button @click="selectAll" class="px-3 py-1.5 rounded-full bg-mocha/10 text-mocha text-[10px] font-bold uppercase tracking-wider hover:bg-mocha hover:text-white transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-check-double"></i>
+                        Pilih Semua
+                     </button>
+                     <button @click="deselectAll" class="px-3 py-1.5 rounded-full bg-gray-100 text-gray-500 text-[10px] font-bold uppercase tracking-wider hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-1.5">
+                        <i class="fa-solid fa-xmark"></i>
+                        Hapus Semua
+                     </button>
                   </div>
                </div>
                
