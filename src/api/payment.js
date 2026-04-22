@@ -7,4 +7,4 @@ export const createPayment = (data) =>
   })
 
 export const getPaymentStatus = (orderId) =>
-  apiFetch(`/payment/status/${orderId}`)
+  apiFetch(`/payment/status/${encodeURIComponent(orderId)}`)
