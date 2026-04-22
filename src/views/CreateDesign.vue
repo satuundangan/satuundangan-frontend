@@ -20,7 +20,7 @@
 
       <div class="text-center mb-10 md:mb-12">
          <h1 class="text-2xl md:text-4xl font-serif font-bold text-dark mb-3">Personalisasi Undanganmu</h1>
-         <p class="text-muted text-sm md:text-lg">Pilih fitur yang ingin kamu tampilkan di halaman undangan.</p>
+         <p class="text-muted text-sm md:text-lg">Pilih komponen yang ingin kamu tampilkan di halaman undangan.</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
@@ -60,7 +60,7 @@
                   <i class="fa-solid fa-lightbulb"></i>
                </div>
                <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed font-medium">
-                  Jangan khawatir, kamu bisa mengubah pilihan fitur ini kapan saja melalui dashboard.
+                  Jangan khawatir, kamu bisa mengubah pilihan komponen ini kapan saja melalui dashboard.
                </p>
             </div>
          </div>
@@ -69,7 +69,7 @@
          <div class="lg:col-span-7">
             <div class="bg-white p-6 md:p-10 rounded-3xl shadow-sm border border-gray-100 h-full">
                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
-                  <h2 class="font-serif font-bold text-xl md:text-2xl text-dark">Pilih Fitur Unggulan</h2>
+                  <h2 class="font-serif font-bold text-xl md:text-2xl text-dark">Komponen Undangan</h2>
                   <div class="flex items-center gap-2">
                      <button @click="selectAll" class="px-3 py-1.5 rounded-full bg-mocha/10 text-mocha text-[10px] font-bold uppercase tracking-wider hover:bg-mocha hover:text-white transition-all flex items-center gap-1.5">
                         <i class="fa-solid fa-check-double"></i>
@@ -84,25 +84,25 @@
                
                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar p-1">
                  <template v-for="(section, key) in sectionOptions" :key="key">
-                   <label class="group relative flex items-center gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
+                   <label class="group relative flex items-start gap-4 p-4 rounded-2xl border-2 cursor-pointer transition-all duration-300"
                           :class="selectedSections.includes(key) 
                             ? 'border-mocha bg-mocha/5 shadow-md shadow-mocha/5' 
                             : 'border-gray-50 bg-gray-50/50 hover:border-mocha/20 hover:bg-white'">
                      
                      <input type="checkbox" v-model="selectedSections" :value="key" class="hidden" />
                      
-                     <div class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300"
+                     <div class="w-10 h-10 rounded-xl flex items-center justify-center shrink-0 transition-all duration-300"
                           :class="selectedSections.includes(key) ? 'bg-mocha text-white shadow-lg shadow-mocha/20' : 'bg-white text-gray-400 group-hover:text-mocha border border-gray-100'">
                         <i :class="['fa-solid', getIcon(key), 'text-sm']"></i>
                      </div>
 
-                     <div class="flex-1 min-w-0">
-                        <span class="text-sm font-bold text-dark group-hover:text-mocha transition-colors select-none block truncate">
+                     <div class="flex-1 pt-1">
+                        <span class="text-xs md:text-sm font-bold text-dark group-hover:text-mocha transition-colors select-none leading-tight block">
                            {{ section }}
                         </span>
                      </div>
 
-                     <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300"
+                     <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 mt-1"
                           :class="selectedSections.includes(key) ? 'border-mocha bg-mocha text-white scale-110' : 'border-gray-200 text-transparent scale-90 group-hover:border-mocha/30'">
                         <i class="fa-solid fa-check text-[8px]"></i>
                      </div>
@@ -118,7 +118,7 @@
                      <i class="fa-solid fa-arrow-right"></i>
                   </button>
                   <p v-if="selectedSections.length === 0" class="text-center text-[10px] text-red-400 font-bold uppercase tracking-widest mt-3 animate-pulse">
-                     Pilih minimal satu fitur untuk melanjutkan
+                     Pilih minimal satu komponen untuk melanjutkan
                   </p>
                </div>
             </div>
