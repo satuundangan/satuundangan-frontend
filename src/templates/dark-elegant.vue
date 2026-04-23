@@ -105,6 +105,47 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section v-if="isSectionEnabled('love-story') && data.loveStory?.length" id="story" class="py-20 md:py-24 px-6 bg-black">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-12 md:mb-20" v-observe>Our Journey
+          </h2>
+
+          <div class="relative before:absolute before:left-1/2 before:top-0 before:h-full before:w-px before:bg-[#d6b18a]/20 hidden md:block">
+            <div v-for="(story, index) in data.loveStory" :key="index" class="mb-20 relative flex items-center justify-between" v-observe>
+              <div class="w-[45%]" :class="index % 2 === 0 ? 'text-right' : 'order-last text-left'">
+                <div class="space-y-4">
+                  <span class="text-[#d6b18a] font-bold text-sm tracking-widest">{{ story.date }}</span>
+                  <h3 class="text-xl md:text-2xl font-serif text-white">{{ story.title }}</h3>
+                  <p class="text-gray-400 text-sm leading-relaxed">{{ story.description }}</p>
+                </div>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#d6b18a] shadow-[0_0_15px_rgba(214,177,138,0.5)] z-10"></div>
+              <div class="w-[45%]" :class="index % 2 === 0 ? 'order-last' : ''">
+                <div v-if="story.image" class="rounded-3xl overflow-hidden border border-[#d6b18a]/30 shadow-2xl aspect-video grayscale hover:grayscale-0 transition-all duration-700">
+                  <img :src="story.image" class="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Story -->
+          <div class="md:hidden space-y-12">
+            <div v-for="(story, index) in data.loveStory" :key="index" class="space-y-6" v-observe>
+              <div class="aspect-video rounded-2xl overflow-hidden border border-[#d6b18a]/20 grayscale">
+                <img v-if="story.image" :src="story.image" class="w-full h-full object-cover" />
+                <div v-else class="w-full h-full bg-white/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#d6b18a]/20 text-3xl"></i></div>
+              </div>
+              <div class="space-y-2 text-center">
+                <span class="text-[#d6b18a] font-bold text-xs tracking-widest">{{ story.date }}</span>
+                <h3 class="text-xl font-serif text-white">{{ story.title }}</h3>
+                <p class="text-gray-400 text-sm leading-relaxed px-4">{{ story.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section v-if="isSectionEnabled('couple')" id="couple" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
         <div class="max-w-6xl mx-auto">
@@ -155,6 +196,16 @@
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-20 px-6 bg-black text-center">
+        <h3 class="text-2xl font-serif text-[#d6b18a] mb-10" v-observe>Kami Yang Mengundang</h3>
+        <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" v-observe>
+           <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-300 text-sm italic">
+              {{ person }}
+           </div>
         </div>
       </section>
 
@@ -225,11 +276,20 @@
             </div>
           </div>
 
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-12 text-center" v-observe>
+             <h3 class="text-xl font-serif text-[#d6b18a] mb-4">Dress Code</h3>
+             <div class="inline-block p-6 rounded-3xl bg-white/5 border border-white/10 backdrop-blur-sm">
+                <i class="fa-solid fa-shirt text-[#d6b18a] text-2xl mb-3 block"></i>
+                <p class="text-gray-300 text-sm tracking-wide">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
           <!-- Live Stream -->
-          <div v-if="data.liveStreamingLink" class="mt-8" v-observe>
-            <a :href="data.liveStreamingLink" target="_blank"
-              class="inline-flex items-center gap-2 px-6 py-3 bg-red-600/80 hover:bg-red-600 text-white rounded-full transition-all shadow-lg hover:scale-105 font-bold">
-              <i class="fa-solid fa-video"></i> Tonton Live Streaming
+          <div v-if="(data.liveStreamingLink || data.liveStreamingUrl) && isSectionEnabled('live-streaming')" class="mt-12" v-observe>
+            <a :href="data.liveStreamingUrl || data.liveStreamingLink" target="_blank"
+              class="inline-flex items-center gap-2 px-8 py-4 bg-red-600/80 hover:bg-red-600 text-white rounded-full transition-all shadow-lg hover:scale-105 font-bold uppercase text-xs tracking-widest">
+              <i class="fa-solid fa-video animate-pulse"></i> Tonton Live Streaming
             </a>
           </div>
 
@@ -450,6 +510,7 @@ const navItems = computed(() => {
   const items = [
     { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
     { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
@@ -458,6 +519,7 @@ const navItems = computed(() => {
   return items.filter(item => {
     if (item.id === 'home') return true
     if (item.id === 'event') return isSectionEnabled('event')
+    if (item.id === 'story') return isSectionEnabled('love-story')
     return isSectionEnabled(item.id)
   })
 })

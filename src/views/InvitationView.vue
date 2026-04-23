@@ -12,6 +12,11 @@ const templateMap = {
   'minimalist-terra': () => import('../templates/minimalist-terra.vue'),
   'celestial-sparkle': () => import('../templates/celestial-sparkle.vue'),
   'editorial-magazine': () => import('../templates/editorial-magazine.vue'),
+  'zen-tranquility': () => import('../templates/zen-tranquility.vue'),
+  'retro-nostalgia': () => import('../templates/retro-nostalgia.vue'),
+  'modern-noir': () => import('../templates/modern-noir.vue'),
+  'azure-shores': () => import('../templates/azure-shores.vue'),
+  'cyberpunk-neon': () => import('../templates/cyberpunk-neon.vue'),
 }
 
 const route = useRoute()

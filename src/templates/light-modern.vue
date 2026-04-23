@@ -98,6 +98,33 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section v-if="isSectionEnabled('love-story') && data.loveStory?.length" id="story" class="py-20 md:py-24 px-6 bg-white">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl md:text-4xl font-alex text-center text-blue-800 mb-12 md:mb-16" v-observe>Our Journey
+          </h2>
+
+          <div class="space-y-12">
+            <div v-for="(story, index) in data.loveStory" :key="index"
+              class="flex flex-col md:flex-row gap-6 md:gap-12 items-center group" v-observe>
+              <div :class="['w-full md:w-1/2', index % 2 !== 0 ? 'md:order-2' : '']">
+                <div class="relative overflow-hidden rounded-[2.5rem] shadow-xl aspect-video grayscale group-hover:grayscale-0 transition-all duration-700 border-4 border-white ring-1 ring-gray-100">
+                  <img v-if="story.image || story.images" :src="story.image || story.images" class="w-full h-full object-cover" />
+                  <div v-else class="w-full h-full bg-blue-50 flex items-center justify-center">
+                    <i class="fa-solid fa-heart text-blue-200 text-3xl"></i>
+                  </div>
+                </div>
+              </div>
+              <div class="w-full md:w-1/2 text-center md:text-left space-y-3">
+                <div class="text-blue-500 font-bold text-sm tracking-widest uppercase">{{ story.date }}</div>
+                <h3 class="text-2xl font-serif text-gray-800">{{ story.title }}</h3>
+                <p class="text-gray-500 text-sm leading-relaxed">{{ story.description || story.content }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" class="py-20 md:py-24 px-6 bg-white">
         <div class="max-w-6xl mx-auto">
@@ -153,6 +180,16 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-20 px-6 bg-gray-50 text-center border-y border-gray-100">
+         <h3 class="text-2xl font-serif text-blue-800 mb-10" v-observe>Kami Yang Mengundang</h3>
+         <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-4" v-observe>
+            <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="px-6 py-2 bg-white border border-gray-200 rounded-full text-gray-600 text-sm shadow-sm">
+               {{ person }}
+            </div>
+         </div>
       </section>
 
       <!-- EVENTS -->
@@ -217,10 +254,19 @@
             </div>
           </div>
 
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-12 text-center" v-observe>
+             <h3 class="text-xl font-serif text-blue-800 mb-4">Dress Code</h3>
+             <div class="inline-block p-8 rounded-[2rem] bg-white border border-blue-100 shadow-sm">
+                <i class="fa-solid fa-shirt text-blue-600 text-2xl mb-4 block"></i>
+                <p class="text-gray-600 text-sm font-medium">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
           <!-- Live Stream -->
-          <div v-if="data.liveStreamingLink" class="mt-8" v-observe>
-             <a :href="data.liveStreamingLink" target="_blank" class="inline-flex items-center gap-2 px-6 py-3 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all shadow-lg hover:scale-105 font-bold">
-                <i class="fa-solid fa-video"></i> Tonton Live Streaming
+          <div v-if="(data.liveStreamingLink || data.liveStreamingUrl) && isSectionEnabled('live-streaming')" class="mt-8" v-observe>
+             <a :href="data.liveStreamingUrl || data.liveStreamingLink" target="_blank" class="inline-flex items-center gap-3 px-8 py-4 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all shadow-lg hover:scale-105 font-bold uppercase text-xs tracking-widest">
+                <i class="fa-solid fa-video animate-pulse"></i> Tonton Live Streaming
              </a>
           </div>
 
@@ -414,6 +460,7 @@ const navItems = computed(() => {
   const items = [
     { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
     { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
@@ -421,6 +468,7 @@ const navItems = computed(() => {
   return items.filter(item => {
     if (item.id === 'home') return true
     if (item.id === 'event') return isSectionEnabled('event')
+    if (item.id === 'story') return isSectionEnabled('love-story')
     return isSectionEnabled(item.id)
   })
 })
