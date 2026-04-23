@@ -10,7 +10,7 @@ export const demoData = {
   quoteSource: 'Surat Ar-Rum Ayat 21',
   quoteText: 'Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.',
   quoteType: 'default',
-  musicChoice: 'romantic_music1.mp3',
+  musicChoice: '/audio/wedding-acoustic-morning.mp3',
   isCustomMusic: false,
   bridePhotoUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop',
   groomPhotoUrl: 'https://images.unsplash.com/photo-1550005810-350a69771e23?q=80&w=2070&auto=format&fit=crop',
