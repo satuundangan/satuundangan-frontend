@@ -29,9 +29,9 @@
             <div class="w-12 h-1 bg-black mx-auto mb-6 md:mb-10"></div>
             <h1 class="text-[8px] md:text-[9px] tracking-[0.5em] md:tracking-[0.8em] uppercase font-black text-gray-400">Special Editorial Issue</h1>
             <div class="space-y-2">
-              <h2 class="text-5xl md:text-9xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">{{ data.groomName }}</h2>
+              <h2 class="text-5xl md:text-8xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">{{ data.groomName }}</h2>
               <p class="text-lg md:text-xl font-playfair italic text-gray-400">&</p>
-              <h2 class="text-5xl md:text-9xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">{{ data.brideName }}</h2>
+              <h2 class="text-5xl md:text-8xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">{{ data.brideName }}</h2>
             </div>
           </div>
 
@@ -58,12 +58,12 @@
         <div class="w-full max-w-6xl grid md:grid-cols-12 gap-8 md:gap-10 items-center" v-observe>
           <div class="md:col-span-7 space-y-6 md:space-y-8 order-2 md:order-1 text-center md:text-left">
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-gray-300">The Wedding Issue / No. 01</span>
-            <h1 class="text-5xl md:text-[10rem] font-playfair font-black leading-[0.9] md:leading-[0.8] uppercase tracking-tighter">
-              {{ data.groomName }} <br> <span class="text-2xl md:text-6xl text-gray-300 italic">&</span> <br> {{ data.brideName }}
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-playfair font-black leading-[0.9] md:leading-[0.85] uppercase tracking-tighter">
+              {{ data.groomName }} <br> <span class="text-2xl md:text-5xl text-gray-300 italic">&</span> <br> {{ data.brideName }}
             </h1>
             <div class="flex items-center justify-center md:justify-start gap-4 md:gap-6">
                <div class="w-12 md:w-20 h-px bg-black"></div>
-               <p class="text-xs md:text-xl font-bold uppercase tracking-[0.2em] md:tracking-[0.3em]">
+               <p class="text-xs md:text-lg font-bold uppercase tracking-[0.2em] md:tracking-[0.3em]">
                  {{ formatDate(data.akadLocation?.dateTime) }}
                </p>
             </div>
@@ -78,14 +78,14 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-24 md:py-40 px-6 bg-gray-50" v-observe>
+      <section class="py-24 md:py-32 px-6 bg-gray-50" v-observe>
         <div class="max-w-4xl mx-auto text-center md:text-left">
           <div class="grid md:grid-cols-12 gap-6 md:gap-10">
              <div class="md:col-span-2 hidden md:block">
-                <span class="text-6xl font-playfair italic text-gray-200">"</span>
+                <span class="text-5xl font-playfair italic text-gray-200">"</span>
              </div>
              <div class="md:col-span-10">
-                <p class="text-2xl md:text-5xl font-playfair leading-tight mb-8 md:mb-12">
+                <p class="text-2xl md:text-4xl font-playfair leading-tight mb-8 md:mb-12">
                   {{ data.quoteText }}
                 </p>
                 <p class="text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.5em] text-gray-400">— {{ data.quoteSource }}</p>
@@ -95,15 +95,15 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-24 md:py-40 px-6 md:px-20">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-24 md:py-32 px-6 md:px-20">
         <div class="max-w-7xl mx-auto space-y-32 md:space-y-40">
           <!-- Groom -->
           <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center relative" v-observe>
             <div class="space-y-6 md:space-y-10 order-2 md:order-1">
-              <h2 class="text-7xl md:text-[10rem] font-playfair font-black text-gray-50 absolute -top-10 md:-top-20 -left-4 md:-left-10 z-0 select-none">01</h2>
+              <h2 class="text-7xl md:text-9xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -left-4 md:-left-8 z-0 select-none">01</h2>
               <div class="relative z-10 space-y-4 md:space-y-6">
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Gentleman</span>
-                <h3 class="text-4xl md:text-8xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.groomName }}</h3>
+                <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.groomName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black"></div>
                 <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Son of {{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
@@ -126,10 +126,10 @@
                </div>
             </div>
             <div class="order-1 md:order-2 space-y-6 md:space-y-10 text-right md:text-left">
-              <h2 class="text-7xl md:text-[10rem] font-playfair font-black text-gray-50 absolute -top-10 md:-top-20 -right-4 md:-right-10 md:left-auto z-0 select-none">02</h2>
+              <h2 class="text-7xl md:text-9xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -right-4 md:-right-8 md:left-auto z-0 select-none">02</h2>
               <div class="relative z-10 space-y-4 md:space-y-6">
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Lady</span>
-                <h3 class="text-4xl md:text-8xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.brideName }}</h3>
+                <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.brideName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black ml-auto md:ml-0"></div>
                 <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Daughter of {{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
@@ -142,7 +142,7 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-24 md:py-40 px-6 bg-black text-white">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-24 md:py-32 px-6 bg-black text-white">
         <div class="max-w-6xl mx-auto grid md:grid-cols-12 gap-12 md:gap-20">
           <div class="md:col-span-4 space-y-4 md:space-y-6 text-center md:text-left" v-observe>
             <h2 class="text-5xl md:text-6xl font-playfair font-black uppercase leading-none">The <br class="hidden md:block"> Schedule</h2>
@@ -188,10 +188,10 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-24 md:py-40 px-4 bg-white">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-24 md:py-32 px-4 bg-white">
         <div class="max-w-7xl mx-auto space-y-12 md:space-y-20">
           <div class="flex items-end justify-between border-b-2 md:border-b-4 border-black pb-6 md:pb-10" v-observe>
-            <h2 class="text-5xl md:text-9xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">Gallery</h2>
+            <h2 class="text-5xl md:text-7xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">Gallery</h2>
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-gray-300 hidden md:block">Issue No. 01 / Page 12-24</span>
           </div>
           <GalleryInvitation :items="galleryImages" />
@@ -199,10 +199,10 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-24 md:py-40 px-6 bg-gray-50">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-24 md:py-32 px-6 bg-gray-50">
         <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
           <div class="space-y-6 md:space-y-10 text-center md:text-left" v-observe>
-            <h2 class="text-5xl md:text-7xl font-playfair font-black uppercase leading-none">R.S.V.P</h2>
+            <h2 class="text-5xl md:text-6xl font-playfair font-black uppercase leading-none">R.S.V.P</h2>
             <p class="text-gray-500 text-xs md:text-sm leading-relaxed font-medium uppercase tracking-widest">Your confirmation is essential for our editorial planning. Please respond by the indicated date.</p>
             <div class="w-32 md:w-40 h-px bg-black mx-auto md:ml-0"></div>
           </div>
@@ -246,8 +246,8 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-24 md:py-40 px-6 text-center md:px-20">
-        <h2 class="text-5xl md:text-8xl font-playfair font-black uppercase tracking-tighter mb-12 md:mb-20" v-observe>Gifts</h2>
+      <section v-if="data.bankAccounts?.length" class="py-24 md:py-32 px-6 text-center md:px-20">
+        <h2 class="text-5xl md:text-7xl font-playfair font-black uppercase tracking-tighter mb-12 md:mb-20" v-observe>Gifts</h2>
         
         <div class="flex flex-wrap justify-center gap-4 md:gap-6">
           <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
@@ -269,8 +269,8 @@
       </section>
 
       <!-- FOOTER -->
-      <footer v-if="isSectionEnabled('footer')" class="py-24 md:py-40 text-center bg-white border-t-4 md:border-t-8 border-black">
-        <h2 class="font-playfair font-black text-4xl md:text-[12rem] uppercase leading-none tracking-tighter mb-8 md:mb-10 px-4">{{ data.groomName }} & {{ data.brideName }}</h2>
+      <footer v-if="isSectionEnabled('footer')" class="py-24 md:py-32 text-center bg-white border-t-4 md:border-t-8 border-black">
+        <h2 class="font-playfair font-black text-4xl md:text-8xl lg:text-[10rem] uppercase leading-none tracking-tighter mb-8 md:mb-10 px-4">{{ data.groomName }} & {{ data.brideName }}</h2>
         <div class="flex flex-col items-center space-y-4 md:space-y-6 px-4">
            <p class="text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.5em] md:tracking-[0.8em] font-black">All Rights Reserved / 2026</p>
            <p class="text-black text-[8px] md:text-[10px] tracking-[0.3em] md:tracking-[0.4em] uppercase font-black px-6 py-2 border-2 border-black inline-block">SatuUndangan Editorial</p>
