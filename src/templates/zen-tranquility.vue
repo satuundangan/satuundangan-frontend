@@ -69,6 +69,32 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[#f5f5f0]">
+        <div class="max-w-4xl mx-auto space-y-20">
+          <div class="text-center space-y-4" v-observe>
+            <h2 class="text-sm uppercase tracking-[0.5em] text-[#8b9d83]">Cerita Kita</h2>
+            <div class="w-12 h-px bg-[#8b9d83] mx-auto"></div>
+          </div>
+
+          <div class="relative border-l border-[#8b9d83]/30 ml-4 md:ml-auto md:mr-auto space-y-16 pl-8">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative" v-observe>
+              <div class="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-[#f5f5f0] border-2 border-[#8b9d83] flex items-center justify-center">
+                 <div class="w-1.5 h-1.5 rounded-full bg-[#8b9d83]"></div>
+              </div>
+              <div class="space-y-4">
+                <span class="text-[10px] font-bold text-[#8b9d83] uppercase tracking-widest">{{ story.date }}</span>
+                <h3 class="text-2xl font-serif font-light text-[#333333]">{{ story.title }}</h3>
+                <p class="text-sm leading-relaxed text-[#7a7a7a] max-w-2xl">{{ story.description }}</p>
+                <div v-if="story.image" class="aspect-video max-w-md rounded-2xl overflow-hidden shadow-lg grayscale hover:grayscale-0 transition-all duration-700 mt-6">
+                  <img :src="story.image" class="w-full h-full object-cover" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
         <div class="max-w-6xl mx-auto space-y-32">
@@ -97,6 +123,21 @@
               <p class="text-xs font-light text-[#7a7a7a] uppercase tracking-[0.2em]">Putri dari<br><span class="font-medium text-[#4a4a4a]">{{ data.parents?.brideParents }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block text-[10px] uppercase tracking-[0.2em] text-[#8b9d83] border-b border-[#8b9d83] pb-1 hover:text-[#333333] transition-colors pt-4"><i class="fa-brands fa-instagram mr-2"></i>Instagram</a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXTENDED FAMILY (TURUT MENGUNDANG) -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#eaeaea]">
+        <div class="max-w-4xl mx-auto text-center space-y-12" v-observe>
+          <div class="space-y-4">
+             <h2 class="text-sm uppercase tracking-[0.5em] text-[#8b9d83]">Turut Mengundang</h2>
+             <div class="w-12 h-px bg-[#8b9d83] mx-auto"></div>
+          </div>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm text-[#7a7a7a]">
+             <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="italic">
+                {{ person }}
+             </div>
           </div>
         </div>
       </section>
@@ -136,6 +177,23 @@
               </div>
               <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="inline-block px-8 py-3 bg-[#f5f5f0] text-[#8b9d83] hover:bg-[#8b9d83] hover:text-white rounded-full text-[10px] uppercase tracking-[0.2em] transition-all">Lihat Lokasi</a>
             </div>
+          </div>
+
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-20 text-center space-y-6" v-observe>
+             <h3 class="text-sm uppercase tracking-[0.3em] text-[#8b9d83]">Dress Code</h3>
+             <div class="p-8 bg-[#f5f5f0]/50 rounded-[30px] border border-[#8b9d83]/10 inline-block px-12">
+                <i class="fa-solid fa-shirt text-[#8b9d83] text-xl mb-4 block"></i>
+                <p class="text-[#4a4a4a] font-light">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
+          <!-- LIVE STREAMING -->
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 px-12 py-5 bg-[#333333] text-white rounded-full hover:bg-[#8b9d83] transition-all shadow-xl hover:-translate-y-1">
+                <i class="fa-solid fa-video animate-pulse"></i>
+                <span class="text-xs font-bold uppercase tracking-[0.2em]">Saksikan Live Streaming</span>
+             </a>
           </div>
         </div>
       </section>

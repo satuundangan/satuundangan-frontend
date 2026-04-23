@@ -72,6 +72,50 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+        <div class="max-w-5xl mx-auto space-y-20">
+          <div class="text-center" v-observe>
+            <h2 class="text-6xl font-serif font-black uppercase italic">Our Story</h2>
+            <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
+          </div>
+
+          <div class="space-y-24 relative before:absolute before:left-1/2 before:top-0 before:h-full before:w-1 before:bg-[#2c2c2c]/10 before:-translate-x-1/2 hidden md:block">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative flex items-center justify-between" v-observe>
+              <div class="w-[45%]" :class="idx % 2 === 0 ? 'text-right' : 'order-last text-left'">
+                <div class="bg-white p-6 border-2 border-[#2c2c2c] shadow-[6px_6px_0px_0px_rgba(44,44,44,1)] space-y-4" :class="idx % 2 === 0 ? 'rotate-[-1deg]' : 'rotate-[1deg]'">
+                  <span class="text-[#e06d53] font-bold text-xs">{{ story.date }}</span>
+                  <h3 class="text-2xl font-serif font-black uppercase">{{ story.title }}</h3>
+                  <p class="text-sm font-medium text-gray-600 leading-relaxed">{{ story.description }}</p>
+                </div>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#e06d53] border-4 border-[#fdfbf7] z-10"></div>
+              <div class="w-[45%]" :class="idx % 2 === 0 ? 'order-last' : ''">
+                <div v-if="story.image" class="relative group" :class="idx % 2 === 0 ? 'rotate-[3deg]' : 'rotate-[-3deg]'">
+                  <div class="absolute -inset-2 bg-white shadow-lg border border-gray-200"></div>
+                  <img :src="story.image" class="relative z-10 w-full aspect-video object-cover border-4 border-white" />
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Story -->
+          <div class="md:hidden space-y-16">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="space-y-6" v-observe>
+               <div class="bg-white p-6 border-2 border-[#2c2c2c] shadow-[6px_6px_0px_0px_rgba(44,44,44,1)] space-y-4">
+                  <span class="text-[#e06d53] font-bold text-xs">{{ story.date }}</span>
+                  <h3 class="text-2xl font-serif font-black uppercase">{{ story.title }}</h3>
+                  <p class="text-sm font-medium text-gray-600 leading-relaxed">{{ story.description }}</p>
+               </div>
+               <div v-if="story.image" class="relative max-w-[280px] mx-auto rotate-[2deg]">
+                  <div class="absolute -inset-2 bg-white shadow-lg border border-gray-200"></div>
+                  <img :src="story.image" class="relative z-10 w-full aspect-square object-cover border-4 border-white border-b-[30px]" />
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6 relative overflow-hidden">
         <div class="absolute top-20 left-10 w-32 h-32 border-4 border-dashed border-[#e06d53]/20 rounded-full animate-spin-slow"></div>
@@ -101,6 +145,21 @@
               <p class="text-sm font-bold text-gray-500">Putri dari Bpk. {{ data.parents?.brideParents?.split('&')[0] }} <br>& Ibu {{ data.parents?.brideParents?.split('&')[1] }}</p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] hover:text-[#e06d53] underline decoration-2 underline-offset-4"><i class="fa-brands fa-instagram mr-2"></i>@{{ data.socialMediaBrides.instagram }}</a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
+        <div class="max-w-4xl mx-auto space-y-12" v-observe>
+          <div class="text-center">
+             <h2 class="text-4xl font-serif font-black uppercase">Kami Yang Mengundang</h2>
+             <div class="w-16 h-1 bg-[#e06d53] mx-auto mt-4"></div>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-3 gap-8">
+             <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-center font-bold text-sm border border-white/10 py-4 px-2 hover:bg-[#e06d53] hover:border-transparent transition-all duration-300">
+                {{ person }}
+             </div>
           </div>
         </div>
       </section>
@@ -145,6 +204,23 @@
                 View on Map
               </a>
             </div>
+          </div>
+
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-20 text-center space-y-6" v-observe>
+             <h3 class="text-2xl font-serif font-black uppercase underline decoration-4 decoration-[#2c2c2c] underline-offset-8">Dress Code</h3>
+             <div class="p-8 bg-white border-4 border-[#2c2c2c] shadow-[8px_8px_0px_0px_rgba(44,44,44,1)] inline-block px-12 text-[#2c2c2c] font-black uppercase tracking-widest text-xs">
+                <i class="fa-solid fa-shirt text-[#e06d53] text-2xl mb-4 block"></i>
+                <p>{{ data.dressCode }}</p>
+             </div>
+          </div>
+
+          <!-- LIVE STREAMING -->
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-6 px-12 py-5 bg-[#2c2c2c] text-white border-4 border-white shadow-[10px_10px_0px_0px_rgba(255,255,255,0.2)] hover:shadow-none hover:translate-x-1 hover:translate-y-1 transition-all">
+                <i class="fa-solid fa-video text-2xl text-[#e06d53]"></i>
+                <span class="text-sm font-black uppercase tracking-[0.3em]">Watch Virtual Wedding</span>
+             </a>
           </div>
         </div>
       </section>

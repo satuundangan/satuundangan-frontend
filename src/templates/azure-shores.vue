@@ -95,6 +95,31 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 relative">
+        <div class="max-w-7xl mx-auto space-y-20">
+          <div class="text-center" v-observe>
+            <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Our Voyage</h2>
+            <div class="w-16 h-1 bg-[#ffb703] mx-auto rounded-full"></div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="bg-white p-6 rounded-[30px] shadow-lg border border-[#e0f2fe] space-y-6 flex flex-col group hover:-translate-y-2 transition-all duration-500" v-observe>
+               <div v-if="story.image" class="aspect-[4/3] rounded-2xl overflow-hidden relative">
+                  <img :src="story.image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                  <div class="absolute inset-0 bg-[#1e3a8a]/10 group-hover:bg-transparent transition-colors"></div>
+               </div>
+               <div class="space-y-3 flex-1">
+                  <span class="text-[10px] font-black text-[#60a5fa] uppercase tracking-widest">{{ story.date }}</span>
+                  <h3 class="text-2xl font-serif text-[#1e3a8a]">{{ story.title }}</h3>
+                  <p class="text-sm leading-relaxed text-[#64748b]">{{ story.description }}</p>
+               </div>
+               <div class="pt-4 border-t border-[#f0f8ff] text-[#ffb703]"><i class="fa-solid fa-compass"></i></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
         <div class="max-w-5xl mx-auto space-y-32">
@@ -127,6 +152,23 @@
               <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Daughter of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.brideParents }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#1e3a8a]/5">
+        <div class="max-w-4xl mx-auto space-y-16" v-observe>
+          <div class="text-center">
+             <h2 class="text-4xl md:text-5xl font-serif text-[#1e3a8a]">With Love, Our Family</h2>
+             <p class="text-[10px] uppercase tracking-[0.3em] font-bold text-[#60a5fa] mt-2">Kami yang mengundang</p>
+          </div>
+          <div class="bg-white p-12 rounded-[40px] shadow-sm border border-[#e0f2fe]">
+             <div class="grid grid-cols-2 gap-8 text-center">
+                <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-sm font-bold text-[#1e3a8a] uppercase tracking-widest">
+                   {{ person }}
+                </div>
+             </div>
           </div>
         </div>
       </section>
@@ -172,6 +214,23 @@
                 Open Map
               </a>
             </div>
+          </div>
+
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-20 text-center space-y-6" v-observe>
+             <h3 class="text-sm uppercase tracking-[0.3em] font-black text-[#1e3a8a]">Dress Code</h3>
+             <div class="bg-white px-12 py-8 rounded-full border-2 border-[#ffb703] shadow-lg shadow-[#ffb703]/10 inline-flex items-center gap-4">
+                <i class="fa-solid fa-shirt text-[#ffb703]"></i>
+                <p class="text-[#1e3a8a] font-bold uppercase tracking-widest text-xs">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
+          <!-- LIVE STREAMING -->
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 px-12 py-5 bg-[#1e3a8a] text-white rounded-full hover:bg-[#ffb703] hover:text-[#1e3a8a] transition-all shadow-xl hover:-translate-y-1 group">
+                <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/40"><i class="fa-solid fa-video animate-pulse"></i></div>
+                <span class="text-xs font-black uppercase tracking-[0.3em]">Join Celebration Online</span>
+             </a>
           </div>
         </div>
       </section>

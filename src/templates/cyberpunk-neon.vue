@@ -88,6 +88,37 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6">
+        <div class="max-w-6xl mx-auto space-y-24">
+          <div class="text-center space-y-4" v-observe>
+            <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> History.log</p>
+            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white tracking-tighter">Timeline</h2>
+          </div>
+
+          <div class="space-y-12">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative group" v-observe>
+               <div class="absolute left-0 top-0 w-1 h-full bg-[#1e293b] group-hover:bg-[#00f0ff] transition-colors"></div>
+               <div class="pl-8 py-4 space-y-6">
+                  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                     <div class="space-y-1">
+                        <span class="text-[10px] font-mono text-[#00f0ff] font-bold">[{{ story.date }}]</span>
+                        <h3 class="text-2xl md:text-3xl font-mono font-black uppercase text-white group-hover:text-[#00f0ff] transition-colors">{{ story.title }}</h3>
+                     </div>
+                     <div class="h-px flex-1 bg-white/5 mx-4 hidden md:block"></div>
+                  </div>
+                  <div class="grid md:grid-cols-2 gap-8 items-start">
+                     <p class="text-sm font-mono leading-relaxed text-[#94a3b8]">{{ story.description }}</p>
+                     <div v-if="story.image" class="border border-white/10 p-1 bg-[#0a0a12] max-w-md">
+                        <img :src="story.image" class="w-full aspect-video object-cover mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity" />
+                     </div>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
         <div class="max-w-5xl mx-auto space-y-32">

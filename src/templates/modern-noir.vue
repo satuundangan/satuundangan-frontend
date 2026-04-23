@@ -82,6 +82,32 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 border-y border-white/5 bg-[#050505]">
+        <div class="max-w-7xl mx-auto space-y-24">
+          <div class="text-center" v-observe>
+            <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080] mb-4">The Narrative</p>
+            <h2 class="text-5xl md:text-7xl font-serif font-bold uppercase tracking-tighter">Our Story</h2>
+          </div>
+
+          <div class="relative">
+            <div class="hidden md:block absolute top-1/2 left-0 w-full h-px bg-white/10 -translate-y-1/2"></div>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+              <div v-for="(story, idx) in data.loveStory.slice(0, 3)" :key="idx" class="space-y-8 bg-[#0a0a0a] p-8 border border-white/5 group hover:border-white/20 transition-all duration-700" v-observe>
+                <div class="space-y-2">
+                  <span class="text-[8px] font-bold text-[#808080] uppercase tracking-widest">{{ story.date }}</span>
+                  <h3 class="text-2xl font-serif font-bold uppercase tracking-tight text-white group-hover:text-[#808080] transition-colors">{{ story.title }}</h3>
+                </div>
+                <div v-if="story.image" class="aspect-[4/3] overflow-hidden grayscale contrast-125">
+                   <img :src="story.image" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000" />
+                </div>
+                <p class="text-xs leading-relaxed text-gray-500">{{ story.description }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- CAST -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6 border-t border-white/10">
         <div class="max-w-7xl mx-auto space-y-32">
@@ -112,6 +138,21 @@
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[10px] uppercase tracking-widest hover:text-white text-[#808080] transition-colors border-b border-[#808080] pb-1">@{{ data.socialMediaBrides.instagram }}</a>
             </div>
           </div>
+        </div>
+      </section>
+
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-white text-black">
+        <div class="max-w-4xl mx-auto space-y-16" v-observe>
+           <div class="text-center space-y-4">
+              <p class="text-[8px] uppercase tracking-[0.8em] text-gray-400 font-bold">In Appreciation</p>
+              <h2 class="text-4xl md:text-6xl font-serif font-bold uppercase tracking-tighter">Family & Honors</h2>
+           </div>
+           <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-8 text-center border-y border-gray-100 py-16">
+              <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-sm font-serif uppercase tracking-widest font-bold">
+                 {{ person }}
+              </div>
+           </div>
         </div>
       </section>
 
@@ -164,6 +205,23 @@
                   Get Directions
                 </a>
               </div>
+            </div>
+
+            <!-- DRESS CODE -->
+            <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="border border-white/10 p-8 md:p-12 space-y-6 text-center" v-observe>
+               <p class="text-[8px] uppercase tracking-[0.5em] text-[#808080]">Costume Design</p>
+               <h3 class="text-2xl font-serif font-bold uppercase tracking-widest">Dress Code</h3>
+               <div class="w-10 h-px bg-[#808080] mx-auto"></div>
+               <p class="text-sm uppercase tracking-[0.2em] font-bold text-white">{{ data.dressCode }}</p>
+            </div>
+
+            <!-- LIVE STREAMING -->
+            <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="bg-white p-8 md:p-12 text-black text-center space-y-8" v-observe>
+               <p class="text-[8px] uppercase tracking-[0.5em] text-gray-400 font-bold">Virtual Access</p>
+               <h3 class="text-3xl font-serif font-bold uppercase tracking-tighter">Join Premiere</h3>
+               <a :href="data.liveStreamingUrl" target="_blank" class="inline-block px-12 py-5 bg-black text-white text-[10px] font-bold uppercase tracking-[0.4em] hover:bg-[#333333] transition-all">
+                  Watch Live Now
+               </a>
             </div>
           </div>
         </div>
