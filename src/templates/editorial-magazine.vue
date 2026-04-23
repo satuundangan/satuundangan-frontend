@@ -94,6 +94,30 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-24 md:py-32 px-6 border-y-2 border-black">
+        <div class="max-w-7xl mx-auto space-y-20">
+          <div class="flex items-end justify-between border-b border-gray-100 pb-10">
+             <h2 class="text-4xl md:text-7xl font-playfair font-black uppercase leading-none tracking-tighter">Feature<br>Story</h2>
+             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gray-300">Volume 01 / Page 08</span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="space-y-6 group" v-observe>
+               <div class="aspect-square bg-gray-100 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-1000">
+                  <img v-if="story.image" :src="story.image" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[1.5s]" />
+                  <div v-else class="w-full h-full flex items-center justify-center font-playfair italic text-gray-300">Visual Missing</div>
+               </div>
+               <div class="space-y-3">
+                  <span class="text-[8px] font-black uppercase tracking-[0.3em] text-[#b48c5b]">{{ story.date }}</span>
+                  <h3 class="text-2xl font-playfair font-bold uppercase leading-tight">{{ story.title }}</h3>
+                  <p class="text-xs leading-relaxed text-gray-500 line-clamp-4">{{ story.description }}</p>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-24 md:py-32 px-6 md:px-20">
         <div class="max-w-7xl mx-auto space-y-32 md:space-y-40">
@@ -141,6 +165,21 @@
         </div>
       </section>
 
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-24 md:py-32 px-6 bg-white border-y border-gray-100">
+         <div class="max-w-5xl mx-auto space-y-16" v-observe>
+            <div class="text-center space-y-2">
+               <h2 class="text-3xl md:text-5xl font-playfair font-black uppercase tracking-tighter">In Association With</h2>
+               <p class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-gray-300 italic">Turut Mengundang</p>
+            </div>
+            <div class="columns-1 md:columns-2 lg:columns-3 gap-12 space-y-8 text-center md:text-left border-l-2 border-black pl-10 ml-6">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-xs font-bold uppercase tracking-widest leading-loose">
+                  {{ person }}
+               </div>
+            </div>
+         </div>
+      </section>
+
       <!-- EVENTS -->
       <section id="event" v-if="isSectionEnabled('event')" class="py-24 md:py-32 px-6 bg-black text-white">
         <div class="max-w-6xl mx-auto grid md:grid-cols-12 gap-12 md:gap-20">
@@ -182,6 +221,21 @@
                   Open Directions
                 </a>
               </div>
+            </div>
+
+            <!-- DRESS CODE -->
+            <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="border-t border-white/10 pt-10 text-center md:text-left space-y-6" v-observe>
+               <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] text-gray-500 font-black">Wardrobe</span>
+               <h3 class="text-2xl md:text-4xl font-playfair font-bold uppercase tracking-widest italic text-gray-400">Dress Code</h3>
+               <p class="text-xs md:text-lg font-bold uppercase tracking-[0.2em]">{{ data.dressCode }}</p>
+            </div>
+
+            <!-- LIVE STREAMING -->
+            <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="border-t border-white/10 pt-10 text-center" v-observe>
+               <p class="text-[8px] md:text-[10px] uppercase tracking-[0.5em] text-gray-500 font-black mb-6">Online Premiere</p>
+               <a :href="data.liveStreamingUrl" target="_blank" class="inline-block px-12 py-5 bg-white text-black font-black uppercase tracking-[0.4em] text-xs hover:bg-gray-200 transition-all">
+                  Join Virtual Event
+               </a>
             </div>
           </div>
         </div>
@@ -312,6 +366,7 @@ const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-square', key: 'hero' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-user', key: 'couple' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-clock', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-image', key: 'gallery' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-check', key: 'rsvp' }

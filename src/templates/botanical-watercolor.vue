@@ -118,6 +118,41 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-24 px-6">
+        <div class="max-w-4xl mx-auto">
+          <h2 class="text-3xl md:text-5xl font-playfair text-center text-[#4a4a4a] mb-16" v-observe>Cerita Kita</h2>
+          
+          <div class="space-y-20 relative before:absolute before:left-1/2 before:top-0 before:h-full before:w-px before:bg-[#e8d5c4] hidden md:block">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative flex items-center justify-between" v-observe>
+              <div class="w-[42%]" :class="idx % 2 === 0 ? 'text-right' : 'order-last text-left'">
+                 <div class="space-y-3">
+                    <span class="text-[10px] font-bold text-[#b48c5b] uppercase tracking-widest">{{ story.date }}</span>
+                    <h3 class="text-xl md:text-2xl font-playfair text-[#4a4a4a]">{{ story.title }}</h3>
+                    <p class="text-sm text-gray-500 leading-relaxed">{{ story.description }}</p>
+                 </div>
+              </div>
+              <div class="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[#b48c5b] border-4 border-white ring-1 ring-[#e8d5c4] z-10"></div>
+              <div class="w-[42%]" :class="idx % 2 === 0 ? 'order-last' : ''">
+                 <img v-if="story.image" :src="story.image" class="rounded-3xl shadow-lg border-4 border-white aspect-video object-cover" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Mobile Story -->
+          <div class="md:hidden space-y-12">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="space-y-6 text-center" v-observe>
+               <img v-if="story.image" :src="story.image" class="rounded-[2.5rem] shadow-md border-4 border-white w-full aspect-video object-cover" />
+               <div class="px-4">
+                  <span class="text-[10px] font-bold text-[#b48c5b] uppercase tracking-widest">{{ story.date }}</span>
+                  <h3 class="text-xl font-playfair text-[#4a4a4a] mb-2">{{ story.title }}</h3>
+                  <p class="text-sm text-gray-500 leading-relaxed">{{ story.description }}</p>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-24 px-6">
         <div class="max-w-5xl mx-auto text-center">
@@ -163,6 +198,18 @@
         </div>
       </section>
 
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-24 px-6 text-center border-y border-[#e8d5c4]/30 bg-white/20">
+         <div class="max-w-4xl mx-auto space-y-12" v-observe>
+            <h3 class="text-2xl md:text-3xl font-playfair text-[#4a4a4a]">Turut Mengundang</h3>
+            <div class="flex flex-wrap justify-center gap-x-12 gap-y-6">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-sm text-gray-500 italic">
+                  {{ person }}
+               </div>
+            </div>
+         </div>
+      </section>
+
       <!-- EVENTS -->
       <section id="event" v-if="isSectionEnabled('event')" class="py-24 px-6 relative bg-white/50">
         <div class="max-w-4xl mx-auto text-center space-y-12">
@@ -198,6 +245,23 @@
                 Lihat Lokasi
               </a>
             </div>
+          </div>
+
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="pt-8 text-center" v-observe>
+             <h3 class="text-lg md:text-xl font-playfair text-[#4a4a4a] mb-4 italic">Dress Code</h3>
+             <div class="bg-[#fdfaf5] p-6 rounded-[2rem] border border-[#e8d5c4] inline-block px-10">
+                <i class="fa-solid fa-shirt text-[#b48c5b] text-xl mb-3 block"></i>
+                <p class="text-gray-500 text-sm font-medium">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
+          <!-- LIVE STREAMING -->
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="pt-8 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 px-10 py-4 bg-[#4a4a4a] text-white rounded-full hover:bg-[#b48c5b] transition-all shadow-xl hover:-translate-y-1">
+                <i class="fa-solid fa-tower-broadcast animate-pulse"></i>
+                <span class="text-xs font-bold uppercase tracking-widest">Saksikan Virtual Wedding</span>
+             </a>
           </div>
 
           <div v-observe>
@@ -325,6 +389,7 @@ const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }

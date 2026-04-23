@@ -104,6 +104,34 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[#0a1128]">
+        <div class="max-w-5xl mx-auto space-y-24">
+          <div class="text-center space-y-4" v-observe>
+            <h2 class="text-4xl md:text-6xl font-cinzel text-white">Our Heritage</h2>
+            <div class="w-16 h-px bg-[#d4af37] mx-auto"></div>
+          </div>
+
+          <div class="space-y-16">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative group" v-observe>
+               <div class="grid md:grid-cols-12 gap-8 md:gap-16 items-center">
+                  <div class="md:col-span-4" :class="idx % 2 === 0 ? '' : 'md:order-last'">
+                     <div class="relative rounded-lg overflow-hidden border border-[#d4af37]/30 shadow-2xl aspect-[4/5] grayscale hover:grayscale-0 transition-all duration-700">
+                        <img v-if="story.image" :src="story.image" class="w-full h-full object-cover" />
+                        <div v-else class="w-full h-full bg-white/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#d4af37]/20 text-4xl"></i></div>
+                     </div>
+                  </div>
+                  <div class="md:col-span-8 space-y-4" :class="idx % 2 === 0 ? 'text-left' : 'text-left md:text-right'">
+                     <span class="text-[#d4af37] font-cinzel text-xl tracking-widest">{{ story.date }}</span>
+                     <h3 class="text-2xl md:text-4xl font-serif text-white uppercase tracking-tighter">{{ story.title }}</h3>
+                     <p class="text-gray-400 text-sm md:text-lg leading-relaxed font-serif italic">{{ story.description }}</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6 bg-[#0a1128]">
         <div class="max-w-6xl mx-auto">
@@ -155,6 +183,18 @@
         </div>
       </section>
 
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#080e20] text-center">
+         <div class="max-w-4xl mx-auto space-y-12" v-observe>
+            <h3 class="text-2xl md:text-4xl font-cinzel text-[#d4af37] uppercase tracking-widest">Turut Mengundang</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-gray-300 font-serif">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="border-b border-[#d4af37]/10 pb-4">
+                  {{ person }}
+               </div>
+            </div>
+         </div>
+      </section>
+
       <!-- EVENTS -->
       <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 bg-[#080e20]">
         <div class="max-w-5xl mx-auto text-center">
@@ -188,6 +228,23 @@
                 Google Maps
               </a>
             </div>
+          </div>
+
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-20 text-center" v-observe>
+             <h3 class="text-xl font-cinzel text-[#d4af37] mb-6 tracking-widest">Dress Code</h3>
+             <div class="inline-block p-8 border border-[#d4af37]/30 bg-white/5 rounded-full px-16">
+                <i class="fa-solid fa-shirt text-[#d4af37] text-2xl mb-2 block"></i>
+                <p class="text-white text-sm uppercase tracking-widest">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
+          <!-- LIVE STREAMING -->
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-6 px-12 py-5 bg-[#d4af37] text-[#0a1128] font-black rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_30px_rgba(214,177,138,0.3)] group">
+                <i class="fa-solid fa-video text-xl animate-pulse"></i>
+                <span class="text-sm uppercase tracking-[0.3em]">Join Royal Celebration</span>
+             </a>
           </div>
         </div>
       </section>
@@ -302,24 +359,25 @@ const activeSections = computed(() => {
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
-
 // Navigation items with their corresponding keys in backend
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
+  // If no sections defined in data, show all as fallback
   if (!activeSections.value) return allNavItems
+
   return allNavItems.filter(item => {
     const sectionSettings = activeSections.value.find(s => s.key === item.key)
     return sectionSettings ? (sectionSettings.is_enabled !== false) : true
   })
 })
-
 const isSectionEnabled = (key) => {
   if (!activeSections.value) return true
   const section = activeSections.value.find(s => s.key === key)

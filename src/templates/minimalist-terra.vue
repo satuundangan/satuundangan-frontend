@@ -93,6 +93,34 @@
         </div>
       </section>
 
+      <!-- LOVE STORY -->
+      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[#f4f1ea]">
+        <div class="max-w-4xl mx-auto space-y-24">
+          <div class="text-center space-y-4" v-observe>
+            <h2 class="text-3xl md:text-5xl font-playfair italic text-[#3d405b]">Our Voyage</h2>
+            <div class="w-16 h-1 bg-[#81b29a] rounded-full mx-auto"></div>
+          </div>
+
+          <div class="space-y-20">
+            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative" v-observe>
+               <div class="grid md:grid-cols-2 gap-12 items-center">
+                  <div :class="idx % 2 === 0 ? '' : 'md:order-last'">
+                     <div class="rounded-[2rem] overflow-hidden shadow-lg aspect-square grayscale hover:grayscale-0 transition-all duration-700">
+                        <img v-if="story.image" :src="story.image" class="w-full h-full object-cover" />
+                        <div v-else class="w-full h-full bg-[#3d405b]/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#e07a5f]/20 text-4xl"></i></div>
+                     </div>
+                  </div>
+                  <div class="space-y-4" :class="idx % 2 === 0 ? 'text-left' : 'text-left md:text-right'">
+                     <span class="text-[#e07a5f] font-bold text-xs uppercase tracking-[0.2em]">{{ story.date }}</span>
+                     <h3 class="text-2xl md:text-3xl font-playfair italic text-[#3d405b]">{{ story.title }}</h3>
+                     <p class="text-gray-500 text-sm md:text-base leading-relaxed font-light">{{ story.description }}</p>
+                  </div>
+               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- COUPLE -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
         <div class="max-w-5xl mx-auto">
@@ -136,6 +164,18 @@
             </div>
           </div>
         </div>
+      </section>
+
+      <!-- EXTENDED FAMILY -->
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-white/40 text-center border-y border-[#f2cc8f]/20">
+         <div class="max-w-4xl mx-auto space-y-12" v-observe>
+            <h3 class="text-2xl md:text-4xl font-playfair italic text-[#3d405b]">The Family Circle</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="p-6 bg-[#f4f1ea] rounded-[2rem] text-sm text-[#5d4037] font-medium tracking-wide">
+                  {{ person }}
+               </div>
+            </div>
+         </div>
       </section>
 
       <!-- EVENTS -->
@@ -190,6 +230,23 @@
                 Google Maps
               </a>
             </div>
+          </div>
+
+          <!-- DRESS CODE -->
+          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-20 text-center space-y-6" v-observe>
+             <h3 class="text-sm uppercase tracking-[0.3em] font-bold text-[#f2cc8f]">Dress Code</h3>
+             <div class="p-8 border border-white/10 rounded-[3rem] inline-block px-12">
+                <i class="fa-solid fa-shirt text-[#81b29a] text-2xl mb-4 block"></i>
+                <p class="text-white text-sm font-medium">{{ data.dressCode }}</p>
+             </div>
+          </div>
+
+          <!-- LIVE STREAMING -->
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 px-12 py-5 bg-[#f2cc8f] text-[#3d405b] rounded-full hover:bg-white transition-all shadow-2xl hover:-translate-y-1">
+                <i class="fa-solid fa-video animate-pulse"></i>
+                <span class="text-xs font-black uppercase tracking-[0.3em]">Watch Stream</span>
+             </a>
           </div>
 
           <div v-observe>
@@ -319,8 +376,9 @@ const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
-  { id: 'home', label: 'Home', icon: 'fa-solid fa-leaf', key: 'hero' },
+  { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-user-group', key: 'couple' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-location-dot', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-palette', key: 'gallery' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-pen-nib', key: 'rsvp' }
