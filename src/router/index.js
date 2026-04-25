@@ -218,10 +218,6 @@ const router = createRouter({
 
 router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
-  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
-  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
-  const requiresApproval = to.matched.some((record) => record.meta.requiresApproval)
-  const guestOnly = to.matched.some((record) => record.meta.guestOnly)
 
   if (!authStore.user && !authStore.token && localStorage.getItem('token')) {
     authStore.token = localStorage.getItem('token')
@@ -235,6 +231,11 @@ router.beforeEach(async (to, from, next) => {
       authStore.logout()
     }
   }
+
+  const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
+  const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
+  const requiresApproval = to.matched.some((record) => record.meta.requiresApproval)
+  const guestOnly = to.matched.some((record) => record.meta.guestOnly)
 
   if (requiresAuth && !authStore.user) {
     if (requiresAdmin) {
@@ -266,8 +267,6 @@ router.beforeEach(async (to, from, next) => {
   if (to.meta.title) {
     document.title = `${to.meta.title} | Satu Undangan`
   } else if (to.name === 'invitation') {
-    // For dynamic invitation, we let the component handle the specific title,
-    // or set a temporary one here.
     document.title = 'Loading Invitation... | Satu Undangan'
   } else {
     document.title = defaultTitle
