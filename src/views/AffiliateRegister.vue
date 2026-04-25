@@ -9,8 +9,8 @@ const authStore = useAuthStore()
 
 const form = ref({
   bankName: '',
-  accountNumber: '',
-  accountHolderName: '',
+  bankAccountNumber: '',
+  bankAccountName: '',
   whatsappNumber: '',
 })
 
@@ -45,8 +45,8 @@ const submit = async () => {
   error.value = ''
   if (
     !form.value.bankName.trim() ||
-    !form.value.accountNumber.trim() ||
-    !form.value.accountHolderName.trim() ||
+    !form.value.bankAccountNumber.trim() ||
+    !form.value.bankAccountName.trim() ||
     !form.value.whatsappNumber.trim()
   ) {
     error.value = 'Semua field wajib diisi'
@@ -124,7 +124,7 @@ const submit = async () => {
                 >Nomor Rekening</label
               >
               <input
-                v-model="form.accountNumber"
+                v-model="form.bankAccountNumber"
                 type="text"
                 placeholder="1234567890"
                 class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-mocha"
@@ -135,7 +135,7 @@ const submit = async () => {
                 >Nama Pemilik Rekening</label
               >
               <input
-                v-model="form.accountHolderName"
+                v-model="form.bankAccountName"
                 type="text"
                 placeholder="Sesuai buku tabungan"
                 class="w-full px-4 py-3 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-mocha"
