@@ -199,6 +199,41 @@
                   </p>
                 </div>
 
+                <!-- Affiliate Code Input -->
+                <div class="py-4 border-b border-dashed border-gray-100 space-y-3">
+                  <div v-if="!appliedAffiliateCode" class="flex gap-2">
+                    <div class="relative flex-1">
+                      <i class="fa-solid fa-handshake absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                      <input
+                        v-model="affiliateCode"
+                        type="text"
+                        placeholder="Kode Afiliasi (opsional)"
+                        :disabled="affiliateLoading"
+                        @keyup.enter="applyAffiliateCode"
+                        class="w-full pl-8 pr-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-mocha uppercase tracking-wider disabled:opacity-50"
+                      />
+                    </div>
+                    <button
+                      @click="applyAffiliateCode"
+                      :disabled="affiliateLoading || !affiliateCode.trim()"
+                      class="px-4 py-2 bg-gray-100 text-gray-700 text-xs font-bold rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider whitespace-nowrap"
+                    >
+                      {{ affiliateLoading ? '...' : 'Pakai' }}
+                    </button>
+                  </div>
+                  <div v-if="appliedAffiliateCode" class="flex items-center justify-between bg-blue-50 border border-blue-200 rounded-lg px-3 py-2">
+                    <div class="flex items-center gap-2">
+                      <i class="fa-solid fa-circle-check text-blue-500 text-sm"></i>
+                      <span class="text-sm font-bold text-blue-700 uppercase tracking-wider">{{ appliedAffiliateCode.code }}</span>
+                    </div>
+                    <button @click="removeAffiliateCode" class="text-xs text-gray-400 hover:text-red-500 font-medium">Hapus</button>
+                  </div>
+                  <p v-if="affiliateError" class="text-xs text-red-500 flex items-center gap-1">
+                    <i class="fa-solid fa-circle-exclamation"></i>
+                    {{ affiliateError }}
+                  </p>
+                </div>
+
                 <div class="space-y-3">
                   <div class="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
@@ -281,6 +316,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getMyInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
 import { validatePromoCode } from '@/api/promo'
+import { validateAffiliateCode } from '@/api/affiliate'
 import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
@@ -328,6 +364,12 @@ const appliedPromo = ref(null)
 
 const finalPrice = computed(() => appliedPromo.value ? appliedPromo.value.final_price : planPrice.value)
 
+// Affiliate Code
+const affiliateCode = ref('')
+const appliedAffiliateCode = ref(null) // { code: string }
+const affiliateLoading = ref(false)
+const affiliateError = ref('')
+
 async function applyPromo() {
   const code = promoCode.value.trim().toUpperCase()
   if (!code || !invitation.value?.id) return
@@ -355,6 +397,32 @@ function removePromo() {
   promoCode.value = ''
 }
 
+const applyAffiliateCode = async () => {
+  affiliateError.value = ''
+  const code = affiliateCode.value.trim().toUpperCase()
+  if (!code) return
+  affiliateLoading.value = true
+  try {
+    const res = await validateAffiliateCode(code)
+    if (res.valid) {
+      appliedAffiliateCode.value = { code }
+      affiliateCode.value = ''
+    } else {
+      affiliateError.value = res.message || 'Kode afiliasi tidak valid'
+    }
+  } catch (e) {
+    affiliateError.value = e.message || 'Kode afiliasi tidak valid'
+  } finally {
+    affiliateLoading.value = false
+  }
+}
+
+const removeAffiliateCode = () => {
+  appliedAffiliateCode.value = null
+  affiliateError.value = ''
+  sessionStorage.removeItem('affiliateCode')
+}
+
 onMounted(async () => {
   const slug = route.query.slug
   if (!slug) return
@@ -374,6 +442,16 @@ onMounted(async () => {
     console.error('Gagal memuat undangan:', err)
   } finally {
     loading.value = false
+  }
+
+  // Capture affiliate code from URL param ?ref= or sessionStorage
+  const refFromUrl = route.query.ref
+  if (refFromUrl) {
+    affiliateCode.value = String(refFromUrl).toUpperCase()
+    sessionStorage.setItem('affiliateCode', affiliateCode.value)
+  } else {
+    const stored = sessionStorage.getItem('affiliateCode')
+    if (stored) affiliateCode.value = stored
   }
 })
 
@@ -405,6 +483,7 @@ const handleCheckout = async () => {
   try {
     const payload = { invitation_id: invitation.value.id }
     if (appliedPromo.value) payload.promo_code = appliedPromo.value.code
+    if (appliedAffiliateCode.value) payload.affiliate_code = appliedAffiliateCode.value.code
     const data = await createPayment(payload)
 
     if (data.is_free) {
