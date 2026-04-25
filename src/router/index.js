@@ -97,6 +97,12 @@ const router = createRouter({
       meta: { title: 'Kebijakan Privasi' },
     },
     {
+      path: '/affiliate/register',
+      name: 'affiliate-register',
+      component: () => import('@/views/AffiliateRegister.vue'),
+      meta: { requiresAuth: true, title: 'Daftar Reseller' },
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
