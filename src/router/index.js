@@ -109,6 +109,12 @@ const router = createRouter({
       meta: { requiresAuth: true, title: 'Daftar Reseller' },
     },
     {
+      path: '/affiliate/dashboard',
+      name: 'affiliate-dashboard',
+      component: () => import('@/views/dashboard/AffiliateDashboard.vue'),
+      meta: { requiresAuth: true, title: 'Dashboard Reseller' },
+    },
+    {
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
@@ -178,6 +184,18 @@ const router = createRouter({
       name: 'admin-promo-codes',
       component: AdminPromoCodes,
       meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/affiliate/resellers',
+      name: 'admin-resellers',
+      component: () => import('@/views/admin/AdminResellers.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Manajemen Reseller' },
+    },
+    {
+      path: '/admin/affiliate/withdrawals',
+      name: 'admin-withdrawals',
+      component: () => import('@/views/admin/AdminWithdrawals.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Antrean Penarikan' },
     },
     { path: '/guests', name: 'Guests', component: GuestsView },
     {
