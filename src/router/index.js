@@ -277,10 +277,3 @@ router.beforeEach(async (to, from, next) => {
 })
 
 export default router
- = defaultTitle
-  }
-
-  next()
-})
-
-export default router

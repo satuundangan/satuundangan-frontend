@@ -311,7 +311,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getMyInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment } from '@/api/payment'
@@ -423,7 +423,25 @@ const removeAffiliateCode = () => {
   sessionStorage.removeItem('affiliateCode')
 }
 
+// Watch for ref changes (important if entering checkout directly)
+watch(
+  () => route.query.ref,
+  (newRef) => {
+    if (newRef) {
+      affiliateCode.value = String(newRef).toUpperCase()
+      sessionStorage.setItem('affiliateCode', affiliateCode.value)
+    }
+  },
+  { immediate: true }
+)
+
 onMounted(async () => {
+  // Capture from session if not in URL (already handled by watch immediate, but for stored session)
+  if (!affiliateCode.value) {
+    const stored = sessionStorage.getItem('affiliateCode')
+    if (stored) affiliateCode.value = stored
+  }
+
   const slug = route.query.slug
   if (!slug) return
 
@@ -442,16 +460,6 @@ onMounted(async () => {
     console.error('Gagal memuat undangan:', err)
   } finally {
     loading.value = false
-  }
-
-  // Capture affiliate code from URL param ?ref= or sessionStorage
-  const refFromUrl = route.query.ref
-  if (refFromUrl) {
-    affiliateCode.value = String(refFromUrl).toUpperCase()
-    sessionStorage.setItem('affiliateCode', affiliateCode.value)
-  } else {
-    const stored = sessionStorage.getItem('affiliateCode')
-    if (stored) affiliateCode.value = stored
   }
 })
 
