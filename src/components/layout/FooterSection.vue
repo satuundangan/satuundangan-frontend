@@ -29,10 +29,10 @@
         <div>
            <h4 class="font-bold text-lg mb-6">Layanan</h4>
            <ul class="space-y-4 text-sm text-gray-400">
-              <li><a href="#" class="hover:text-mocha transition">Buat Undangan</a></li>
-              <li><a href="#" class="hover:text-mocha transition">Katalog Tema</a></li>
-              <li><a href="#" class="hover:text-mocha transition">Fitur Premium</a></li>
-              <li><a href="#" class="hover:text-mocha transition">Harga</a></li>
+              <li><router-link to="/create" class="hover:text-mocha transition">Buat Undangan</router-link></li>
+              <li><router-link to="/templates" class="hover:text-mocha transition">Katalog Tema</router-link></li>
+              <li><a href="#features" class="hover:text-mocha transition">Fitur Premium</a></li>
+              <li><a href="#pricing" class="hover:text-mocha transition">Harga</a></li>
            </ul>
         </div>
 
@@ -41,8 +41,8 @@
            <ul class="space-y-4 text-sm text-gray-400">
               <li><a href="#" class="hover:text-mocha transition">Tentang Kami</a></li>
               <li><a href="#" class="hover:text-mocha transition">Hubungi Kami</a></li>
-              <li><a href="#" class="hover:text-mocha transition">Syarat & Ketentuan</a></li>
-              <li><a href="#" class="hover:text-mocha transition">Kebijakan Privasi</a></li>
+              <li><router-link to="/syarat-ketentuan" class="hover:text-mocha transition">Syarat & Ketentuan</router-link></li>
+              <li><router-link to="/kebijakan-privasi" class="hover:text-mocha transition">Kebijakan Privasi</router-link></li>
            </ul>
         </div>
 

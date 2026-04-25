@@ -92,6 +92,18 @@
                   </div>
                 </div>
 
+                <div v-if="authMode === 'register'" class="flex items-start gap-2 pt-2">
+                  <input id="terms" v-model="agreedToTerms" type="checkbox"
+                    class="mt-1 h-4 w-4 rounded border-gray-300 text-mocha focus:ring-mocha accent-mocha cursor-pointer" />
+                  <label for="terms" class="text-xs text-gray-500 leading-normal cursor-pointer">
+                    Saya setuju dengan
+                    <router-link to="/terms" target="_blank" class="font-bold text-mocha hover:underline" @click="emit('close')">Syarat & Ketentuan</router-link>
+                    dan
+                    <router-link to="/privacy" target="_blank" class="font-bold text-mocha hover:underline" @click="emit('close')">Kebijakan Privasi</router-link>
+                    SatuUndangan.
+                  </label>
+                </div>
+
                 <button type="submit"
                   class="w-full bg-mocha text-white font-bold py-3.5 rounded-xl hover:bg-mocha/90 hover:shadow-lg hover:shadow-mocha/20 active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-4"
                   :disabled="loading">
@@ -241,13 +253,24 @@ const handleRegister = async () => {
     return
   }
 
+  // Terms agreement validation
+  if (!agreedToTerms.value) {
+    toast.warning('Anda harus menyetujui Syarat dan Ketentuan')
+    return
+  }
+
   loading.value = true
   try {
-    await auth.register({ name: name.value, email: email.value, password: password.value })
+    await auth.register({
+      name: name.value,
+      email: email.value,
+      password: password.value,
+      agreedToTerms: agreedToTerms.value
+    })
     toast.success('Akun berhasil dibuat! Silakan login.')
     emit('update:authMode', 'login')
   } catch (e) {
-    toast.error('Registrasi gagal. Email mungkin sudah terdaftar.')
+    toast.error(e.response?.data?.message || 'Registrasi gagal. Email mungkin sudah terdaftar.')
     console.error(e)
   } finally {
     loading.value = false

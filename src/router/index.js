@@ -80,18 +80,24 @@ const router = createRouter({
       meta: { title: 'Pembayaran Gagal' },
     },
     {
+      path: '/legal-consent',
+      name: 'legal-consent',
+      component: () => import('@/views/LegalConsent.vue'),
+      meta: { title: 'Persetujuan Hukum', requiresAuth: true },
+    },
+    {
       path: '/auth/callback',
       name: 'auth-callback',
       component: () => import('@/views/AuthCallback.vue'),
     },
     {
-      path: '/syarat-ketentuan',
+      path: '/terms',
       name: 'terms',
       component: () => import('@/views/TermsView.vue'),
       meta: { title: 'Syarat & Ketentuan' },
     },
     {
-      path: '/kebijakan-privasi',
+      path: '/privacy',
       name: 'privacy',
       component: () => import('@/views/PrivacyView.vue'),
       meta: { title: 'Kebijakan Privasi' },
@@ -106,12 +112,12 @@ const router = createRouter({
       path: '/dashboard',
       name: 'dashboard',
       component: DashboardView,
-      meta: { requiresAuth: true },
+      meta: { requiresAuth: true, requiresApproval: true },
     },
-    { path: '/invitations', name: 'Invitations', component: InvitationsView, meta: { requiresAuth: true } },
+    { path: '/invitations', name: 'Invitations', component: InvitationsView, meta: { requiresAuth: true, requiresApproval: true } },
     { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
-    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true } },
-    { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true } },
+    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
+    { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },
     { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
     {
       path: '/admin',
@@ -196,6 +202,7 @@ router.beforeEach(async (to, from, next) => {
   const authStore = useAuthStore()
   const requiresAuth = to.matched.some((record) => record.meta.requiresAuth)
   const requiresAdmin = to.matched.some((record) => record.meta.requiresAdmin)
+  const requiresApproval = to.matched.some((record) => record.meta.requiresApproval)
   const guestOnly = to.matched.some((record) => record.meta.guestOnly)
 
   if (!authStore.user && !authStore.token && localStorage.getItem('token')) {
@@ -220,6 +227,12 @@ router.beforeEach(async (to, from, next) => {
     return
   }
 
+  // Legal Consent Check
+  if (requiresApproval && !authStore.isApproved && to.name !== 'legal-consent') {
+    next({ name: 'legal-consent' })
+    return
+  }
+
   if (requiresAdmin && !authStore.user?.isAdmin) {
     next({ name: 'admin-login' })
     return
@@ -240,6 +253,13 @@ router.beforeEach(async (to, from, next) => {
     document.title = 'Loading Invitation... | Satu Undangan'
   } else {
     document.title = defaultTitle
+  }
+
+  next()
+})
+
+export default router
+ = defaultTitle
   }
 
   next()
