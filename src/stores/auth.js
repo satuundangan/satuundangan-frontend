@@ -1,6 +1,6 @@
 // src/store/auth.js
 import { defineStore } from 'pinia'
-import { login, register, getProfile } from '@/api/auth'
+import { login, register, getProfile, recordConsent } from '@/api/auth'
 import axios from 'axios'
 
 export const useAuthStore = defineStore('auth', {
@@ -68,6 +68,12 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('token', token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
       await this.fetchProfile()
+    },
+    async recordConsent(payload) {
+      const res = await recordConsent(payload)
+      // Refresh profile to update consent status if needed
+      await this.fetchProfile()
+      return res
     },
   },
 })

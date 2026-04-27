@@ -22,3 +22,9 @@ export async function getProfile(token) {
     },
   })
 }
+
+export const recordConsent = (data) =>
+  apiFetch('/consent/record', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
