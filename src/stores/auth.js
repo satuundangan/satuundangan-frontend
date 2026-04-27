@@ -9,6 +9,9 @@ export const useAuthStore = defineStore('auth', {
     token: null,
     redirectPath: null,
   }),
+  getters: {
+    isApproved: (state) => state.user?.isApproved || false,
+  },
   actions: {
     setRedirectPath(path) {
       this.redirectPath = path

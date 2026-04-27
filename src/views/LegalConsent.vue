@@ -86,9 +86,10 @@ const submitConsent = async () => {
       tos_version: 'v2026.1',
       privacy_version: 'v2026.1'
     })
-    
+
     toast.success('Persetujuan berhasil dicatat!')
-    router.push({ name: 'home' })
+    router.push({ name: 'dashboard' })
+
   } catch (error) {
     toast.error('Gagal mencatat persetujuan. Silakan coba lagi.')
     console.error(error)
