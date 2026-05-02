@@ -162,6 +162,12 @@
     <Footer />
 
 
+    <!-- Nova AI Floating Button -->
+    <FloatingNovaButton @require-auth="showAuthModal = true" />
+
+    <!-- Auth Modal (triggered by Nova when user not logged in) -->
+    <AuthModal :show="showAuthModal" :authMode="authMode" @update:authMode="authMode = $event" @close="showAuthModal = false" />
+
     <!-- Modal Pilih Template -->
     <div v-if="showModal"
       class="fixed inset-0 bg-black/70 backdrop-blur-sm z-[100] flex items-center justify-center sm:px-4 md:py-8"
@@ -341,9 +347,13 @@ import StepsSection from '@/components/landing/StepsSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getCategories } from '@/api/category' // Update Import
+import FloatingNovaButton from '@/components/nova/FloatingNovaButton.vue'
+import AuthModal from '@/components/modal/AuthModal.vue'
 
 const router = useRouter()
 const showModal = ref(false)
+const showAuthModal = ref(false)
+const authMode = ref('login')
 
 watch(showModal, (val) => {
   if (val) {
