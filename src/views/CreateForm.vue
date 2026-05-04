@@ -609,8 +609,21 @@ async function saveAndPreview() {
       let result
       
       if (editId) {
-         const res = await updateInvitation(editId, payload)
-         result = res.data || res
+         try {
+            const res = await updateInvitation(editId, payload)
+            result = res.data || res
+         } catch (error) {
+            const canRecoverStaleDraft =
+               !route.params.id &&
+               /not found|404/i.test(error?.message || '')
+
+            if (!canRecoverStaleDraft) throw error
+
+            localStorage.removeItem('editInvitationId')
+            const res = await createInvitation(payload)
+            result = res.data || res
+            localStorage.setItem('editInvitationId', result.id)
+         }
       } else {
          const res = await createInvitation(payload)
          result = res.data || res
