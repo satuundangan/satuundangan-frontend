@@ -450,22 +450,39 @@ async function handleEditMode(id) {
 function mapPayloadToFormData(payload) {
    formData.value.title = payload.title || ''
    formData.value.brideName = payload.brideName || ''
-   formData.value.brideParents = payload.brideParents || ''
    formData.value.bridePhoto = payload.bridePhotoUrl || ''
    formData.value.groomName = payload.groomName || ''
-   formData.value.groomParents = payload.groomParents || ''
    formData.value.groomPhoto = payload.groomPhotoUrl || ''
    formData.value.photoCouple = payload.photoCoupleUrl || ''
+   
+   // Handle nested parents
+   if (payload.parents) {
+      formData.value.brideParents = payload.parents.brideParents || ''
+      formData.value.groomParents = payload.parents.groomParents || ''
+   } else {
+      formData.value.brideParents = payload.brideParents || ''
+      formData.value.groomParents = payload.groomParents || ''
+   }
+
    formData.value.isSingleEvent = payload.isSingleEvent
-   formData.value.dateTime = payload.dateTime ? payload.dateTime.substring(0, 16) : ''
-   formData.value.map = payload.map || ''
-   formData.value.mapDesc = payload.mapDesc || ''
-   formData.value.akadDateTime = payload.akadDateTime ? payload.akadDateTime.substring(0, 16) : ''
-   formData.value.akadMap = payload.akadMap || ''
-   formData.value.akadDesc = payload.akadDesc || ''
-   formData.value.resepsiDateTime = payload.resepsiDateTime ? payload.resepsiDateTime.substring(0, 16) : ''
-   formData.value.resepsiMap = payload.resepsiMap || ''
-   formData.value.resepsiDesc = payload.resepsiDesc || ''
+   
+   // Handle nested locations
+   const akad = payload.akadLocation || {}
+   const resepsi = payload.resepsiLocation || {}
+
+   if (payload.isSingleEvent) {
+      formData.value.dateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
+      formData.value.map = akad.mapUrl || ''
+      formData.value.mapDesc = akad.description || ''
+   } else {
+      formData.value.akadDateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
+      formData.value.akadMap = akad.mapUrl || ''
+      formData.value.akadDesc = akad.description || ''
+      
+      formData.value.resepsiDateTime = resepsi.dateTime ? resepsi.dateTime.substring(0, 16) : ''
+      formData.value.resepsiMap = resepsi.mapUrl || ''
+      formData.value.resepsiDesc = resepsi.description || ''
+   }
 }
 
 function validateField(field) {
@@ -575,34 +592,58 @@ async function saveAndPreview() {
          title: formData.value.title,
          slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName,
-         brideParents: formData.value.brideParents,
          bridePhotoUrl: formData.value.bridePhoto,
          groomName: formData.value.groomName,
-         groomParents: formData.value.groomParents,
          groomPhotoUrl: formData.value.groomPhoto,
          photoCoupleUrl: formData.value.photoCouple,
          isSingleEvent: formData.value.isSingleEvent,
-         dateTime: formData.value.isSingleEvent ? new Date(formData.value.dateTime).toISOString() : null,
-         map: formData.value.map,
-         mapDesc: formData.value.mapDesc,
-         akadDateTime: !formData.value.isSingleEvent ? new Date(formData.value.akadDateTime).toISOString() : null,
-         akadMap: formData.value.akadMap,
-         akadDesc: formData.value.akadDesc,
-         resepsiDateTime: !formData.value.isSingleEvent ? new Date(formData.value.resepsiDateTime).toISOString() : null,
-         resepsiMap: formData.value.resepsiMap,
-         resepsiDesc: formData.value.resepsiDesc,
-         templateDesignId: selectedTemplateRef.value.id || 1, // Fallback to 1 if editing and no stored template
+         mergeEvents: formData.value.isSingleEvent === true,
+         
+         // New structure for nested fields
+         parents: {
+            brideParents: formData.value.brideParents || '',
+            groomParents: formData.value.groomParents || ''
+         },
+         akadLocation: formData.value.isSingleEvent 
+            ? { 
+                dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '',
+                mapUrl: formData.value.map || '',
+                description: formData.value.mapDesc || ''
+              }
+            : {
+                dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '',
+                mapUrl: formData.value.akadMap || '',
+                description: formData.value.akadDesc || ''
+              },
+         resepsiLocation: formData.value.isSingleEvent
+            ? {
+                dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '',
+                mapUrl: formData.value.map || '',
+                description: formData.value.mapDesc || ''
+              }
+            : {
+                dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '',
+                mapUrl: formData.value.resepsiMap || '',
+                description: formData.value.resepsiDesc || ''
+              },
+
+         templateDesignId: selectedTemplateRef.value.id || 1, 
          loveStory: [],
          musicChoice: formData.value.music || 'default',
          isCustomMusic: !!formData.value.music,
-         mergeEvents: false,
          encryptedGuestName: formData.value.encryptedGuest === 'ya',
          galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url.startsWith('http')),
          giftDeliveryAddress: '',
          enableCover: true,
          healthProtocol: true,
          enableGuestMessage: true,
-         selectedSections: Object.keys(sections.value).filter(k => sections.value[k])
+         selectedSections: Object.keys(sections.value).filter(k => sections.value[k]),
+         
+         // Required nested objects with defaults
+         menu: { title: 'Menu Makanan', items: [] },
+         socialMedia: {},
+         socialMediaBrides: {},
+         socialMediaGroom: {}
       }
 
       const editId = route.params.id || localStorage.getItem('editInvitationId')
