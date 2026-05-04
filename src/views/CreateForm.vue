@@ -407,6 +407,30 @@ onMounted(async () => {
       sections.value = activeSections.reduce((acc, key) => { acc[key] = true; return acc }, {})
    }
 
+   const novaDraft = localStorage.getItem('nova_draft')
+   if (novaDraft && !route.params.id) {
+      try {
+         const draft = JSON.parse(novaDraft)
+         if (draft.groomName) formData.value.groomName = draft.groomName
+         if (draft.brideName) formData.value.brideName = draft.brideName
+         if (draft.groomParents) formData.value.groomParents = draft.groomParents
+         if (draft.brideParents) formData.value.brideParents = draft.brideParents
+         if (draft.akadDateTime) formData.value.akadDateTime = draft.akadDateTime.substring(0, 16)
+         if (draft.akadLocation) formData.value.akadDesc = draft.akadLocation
+         if (draft.resepsiDateTime) formData.value.resepsiDateTime = draft.resepsiDateTime.substring(0, 16)
+         if (draft.resepsiLocation) formData.value.resepsiDesc = draft.resepsiLocation
+         if (draft.akadDateTime && draft.resepsiDateTime) {
+            formData.value.isSingleEvent = false
+         } else if (draft.akadDateTime) {
+            formData.value.isSingleEvent = true
+            formData.value.dateTime = draft.akadDateTime.substring(0, 16)
+            if (draft.akadLocation) formData.value.mapDesc = draft.akadLocation
+         }
+         localStorage.removeItem('nova_draft')
+         toast.success('Data dari Nova berhasil dimuat! Lengkapi foto dan detail lainnya ya 💍')
+      } catch {}
+   }
+
    if (route.params.id) {
       handleEditMode(route.params.id)
    }
@@ -585,8 +609,21 @@ async function saveAndPreview() {
       let result
       
       if (editId) {
-         const res = await updateInvitation(editId, payload)
-         result = res.data || res
+         try {
+            const res = await updateInvitation(editId, payload)
+            result = res.data || res
+         } catch (error) {
+            const canRecoverStaleDraft =
+               !route.params.id &&
+               /not found|404/i.test(error?.message || '')
+
+            if (!canRecoverStaleDraft) throw error
+
+            localStorage.removeItem('editInvitationId')
+            const res = await createInvitation(payload)
+            result = res.data || res
+            localStorage.setItem('editInvitationId', result.id)
+         }
       } else {
          const res = await createInvitation(payload)
          result = res.data || res

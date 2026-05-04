@@ -10,6 +10,11 @@
     "preview": "vite preview",
     "prerender": "node scripts/prerender.js",
     "test": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:smoke": "playwright test tests/p0-smoke.mocked.spec.js --project=mocked",
+    "test:e2e:mocked": "playwright test --project=mocked",
+    "test:e2e:prod": "node scripts/run-playwright-prod.js",
+    "test:e2e:prod:write": "node scripts/run-playwright-prod-write.js",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
   },
