@@ -475,6 +475,19 @@ function mapPayloadToFormData(payload) {
 
    formData.value.isSingleEvent = payload.isSingleEvent
    
+   // Handle Gallery
+   if (payload.galleryImages && Array.isArray(payload.galleryImages)) {
+      formData.value.gallery = payload.galleryImages.map(url => ({
+         preview: url,
+         file: null
+      }))
+   }
+
+   // Handle Quotes
+   formData.value.quoteType = payload.quoteType || 'default'
+   formData.value.quote = payload.quoteText || ''
+   formData.value.quoteSource = payload.quoteSource || ''
+
    // Handle nested locations
    const akad = payload.akadLocation || {}
    const resepsi = payload.resepsiLocation || {}
