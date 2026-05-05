@@ -443,7 +443,16 @@ async function handleEditMode(id) {
       mapPayloadToFormData(data)
    } catch (error) {
       console.error("Failed to load invitation", error)
-      router.push('/dashboard')
+      if (error.response?.status === 403) {
+         toast.error("Anda tidak memiliki akses ke undangan ini.")
+         router.push('/dashboard')
+      } else if (error.response?.status === 404) {
+         toast.error("Undangan tidak ditemukan.")
+         router.push('/dashboard')
+      } else {
+         toast.error("Gagal memuat data undangan.")
+         router.push('/dashboard')
+      }
    }
 }
 
