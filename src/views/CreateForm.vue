@@ -258,6 +258,117 @@
                   </div>
                </section>
 
+               <!-- Section: Love Story -->
+               <LoveStorySection v-if="sections.loveStory" 
+                  :loveStories="formData.loveStories" 
+                  @add="addLoveStory" 
+                  @remove="removeLoveStory" 
+                  @upload="handleLoveStoryUpload" />
+
+               <!-- Section: Social Media & Live Streaming -->
+               <SocialSection v-if="sections.socialMedia || sections['live-stream']" :formData="formData" />
+
+               <!-- Section: Gift & Food -->
+               <GiftSection v-if="sections.gift || sections.foodList" 
+                  :sections="sections"
+                  :formData="formData"
+                  :foodList="formData.foodList"
+                  :giftAddresses="formData.giftAddresses"
+                  @add-food="addFood" @remove-food="removeFood"
+                  @add-gift="addGiftAddress" @remove-gift="removeGiftAddress"
+                  @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload"
+                  @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
+
+               <!-- Section: Additional Details (Dress Code, Turut Mengundang, etc.) -->
+               <section v-if="sections['dress-code'] || sections['turut-mengundang'] || sections['health-protocol'] || sections.likes" class="space-y-8">
+                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
+                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
+                        <i class="fa-solid fa-plus-circle"></i>
+                     </div>
+                     <div>
+                        <h2 class="text-xl font-bold text-dark">Informasi Tambahan</h2>
+                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Detail Ekstra</p>
+                     </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                     <div v-if="sections['dress-code']">
+                        <label class="form-label">Dress Code</label>
+                        <input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik" class="form-input" />
+                     </div>
+                     <div v-if="sections['health-protocol']">
+                        <label class="form-label">Protokol Kesehatan</label>
+                        <div class="flex items-center gap-4 mt-2">
+                           <label class="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" />
+                              <span class="text-sm font-medium text-dark">Tampilkan Protokol Kesehatan</span>
+                           </label>
+                        </div>
+                     </div>
+                     <div v-if="sections.likes">
+                        <label class="form-label">Fitur Like / Suka</label>
+                        <div class="flex items-center gap-4 mt-2">
+                           <label class="flex items-center gap-2 cursor-pointer">
+                              <input type="checkbox" v-model="formData.likes" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" />
+                              <span class="text-sm font-medium text-dark">Aktifkan Tombol Like</span>
+                           </label>
+                        </div>
+                     </div>
+                  </div>
+
+                  <div v-if="sections['turut-mengundang']">
+                     <label class="form-label">Turut Mengundang (Extended Family)</label>
+                     <textarea v-model="formData.extendedFamilyText" placeholder="Pisahkan nama dengan koma atau baris baru" class="form-input h-24 resize-none"></textarea>
+                     <p class="text-[10px] text-muted mt-1 italic">* Pisahkan tiap nama dengan koma</p>
+                  </div>
+               </section>
+
+               <!-- Section: Music -->
+               <section v-if="sections.music" class="space-y-6">
+                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
+                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
+                        <i class="fa-solid fa-music"></i>
+                     </div>
+                     <div>
+                        <h2 class="text-xl font-bold text-dark">Musik Latar</h2>
+                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Atmosfer Undangan</p>
+                     </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                     <div>
+                        <label class="form-label">Pilih Musik</label>
+                        <select v-model="formData.music" class="form-input">
+                           <option value="">Tanpa Musik</option>
+                           <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
+                              {{ audio.title }}
+                           </option>
+                        </select>
+                     </div>
+                     <div v-if="formData.music" class="flex items-center pt-8">
+                        <audio :src="formData.music" controls class="h-10 w-full"></audio>
+                     </div>
+                  </div>
+               </section>
+
+               <!-- Section: Footer -->
+               <section v-if="sections.footer" class="space-y-6">
+                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
+                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
+                        <i class="fa-solid fa-scroll"></i>
+                     </div>
+                     <div>
+                        <h2 class="text-xl font-bold text-dark">Halaman Penutup</h2>
+                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Kata Penutup</p>
+                     </div>
+                  </div>
+
+                  <div>
+                     <label class="form-label">Teks Penutup</label>
+                     <textarea v-model="formData.footerText" placeholder="Terima kasih atas doa restu Anda..." class="form-input h-24 resize-none"></textarea>
+                  </div>
+               </section>
+
                <!-- Section: Media -->
                <section class="space-y-8">
                   <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
@@ -345,6 +456,9 @@ import { getInvitationById, createInvitation, updateInvitation } from '@/api/inv
 import { fetchPublicAudio } from '@/api/master'
 import { useToast } from "vue-toastification"
 import QuoteSection from './create-form/components/QuoteSection.vue'
+import LoveStorySection from './create-form/components/LoveStorySection.vue'
+import GiftSection from './create-form/components/GiftSection.vue'
+import SocialSection from './create-form/components/SocialSection.vue'
 
 const toast = useToast()
 const route = useRoute()
@@ -364,11 +478,85 @@ const formData = ref({
    akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
    music: '', youtubeUrl: '', denah: '', denahFile: null,
    wishes: 'ya', rsvp: 'ya', encryptedGuest: 'ya',
-   brideParents: '', groomParents: '', bankAccounts: []
+   brideParents: '', groomParents: '', 
+   
+   // Expanded fields
+   loveStories: [],
+   sosmedBride: { instagram: '', tiktok: '', youtube: '', otherSocial: '' },
+   sosmedGroom: { instagram: '', tiktok: '', youtube: '', otherSocial: '' },
+   liveStreamingLink: '',
+   foodList: [],
+   giftAddresses: [],
+   eWalletLink: [],
+   bankAccounts: [],
+   dressCode: '',
+   extendedFamily: [],
+   extendedFamilyText: '',
+   healthProtocol: true,
+   footerText: '',
+   likes: true,
+   quoteType: 'default',
+   quote: '',
+   quoteSource: ''
 })
 
 const sections = ref({})
 const validationErrors = ref({})
+const loveStoryErrors = ref([])
+
+// Helper methods for Dynamic Sections
+function addLoveStory() {
+   formData.value.loveStories.push({ title: '', date: '', description: '', photo: '', photoFile: null, isOpen: true })
+}
+function removeLoveStory(index) {
+   formData.value.loveStories.splice(index, 1)
+}
+async function handleLoveStoryUpload(event, index) {
+   const file = event.target.files?.[0]
+   if (!file) return
+   const reader = new FileReader()
+   reader.onload = () => {
+      formData.value.loveStories[index].photo = reader.result
+      formData.value.loveStories[index].photoFile = file
+   }
+   reader.readAsDataURL(file)
+}
+
+function addFood() { formData.value.foodList.push('') }
+function removeFood(index) { formData.value.foodList.splice(index, 1) }
+
+function addGiftAddress() { formData.value.giftAddresses.push('') }
+function removeGiftAddress(index) { formData.value.giftAddresses.splice(index, 1) }
+
+function addWallet() {
+   formData.value.eWalletLink.push({ wallet_provider: '', wallet_number: '', wallet_image: '', wallet_image_file: null })
+}
+function removeWallet(index) { formData.value.eWalletLink.splice(index, 1) }
+async function handleWalletUpload(event, index) {
+   const file = event.target.files?.[0]
+   if (!file) return
+   const reader = new FileReader()
+   reader.onload = () => {
+      formData.value.eWalletLink[index].wallet_image = reader.result
+      formData.value.eWalletLink[index].wallet_image_file = file
+   }
+   reader.readAsDataURL(file)
+}
+
+function addBank() {
+   formData.value.bankAccounts.push({ bankName: '', accountNumber: '', accountName: '', bankLogo: '', bankLogoFile: null })
+}
+function removeBank(index) { formData.value.bankAccounts.splice(index, 1) }
+async function handleBankUpload(event, index) {
+   const file = event.target.files?.[0]
+   if (!file) return
+   const reader = new FileReader()
+   reader.onload = () => {
+      formData.value.bankAccounts[index].bankLogo = reader.result
+      formData.value.bankAccounts[index].bankLogoFile = file
+   }
+   reader.readAsDataURL(file)
+}
 
 const progressPercentage = computed(() => {
    let filled = 0; const total = 7
@@ -505,6 +693,58 @@ function mapPayloadToFormData(payload) {
       formData.value.resepsiMap = resepsi.mapUrl || ''
       formData.value.resepsiDesc = resepsi.description || ''
    }
+
+   // Handle Love Stories
+   if (payload.loveStory && Array.isArray(payload.loveStory)) {
+      formData.value.loveStories = payload.loveStory.map(s => ({
+         title: s.title || '',
+         date: s.date || '',
+         description: s.description || s.content || '',
+         photo: s.image || s.photo || '',
+         photoFile: null,
+         isOpen: false
+      }))
+   }
+
+   // Handle Social Media
+   formData.value.sosmedBride = {
+      instagram: payload.socialMediaBrides?.instagram || '',
+      tiktok: payload.socialMediaBrides?.tiktok || '',
+      youtube: payload.socialMediaBrides?.youtube || '',
+      otherSocial: payload.socialMediaBrides?.otherSocial || ''
+   }
+   formData.value.sosmedGroom = {
+      instagram: payload.socialMediaGroom?.instagram || '',
+      tiktok: payload.socialMediaGroom?.tiktok || '',
+      youtube: payload.socialMediaGroom?.youtube || '',
+      otherSocial: payload.socialMediaGroom?.otherSocial || ''
+   }
+
+   // Handle Streaming & Gift
+   formData.value.liveStreamingLink = payload.liveStreamingLink || payload.liveStreamingUrl || ''
+   
+   if (payload.menu?.items) {
+      formData.value.foodList = payload.menu.items.map(i => i.name || i)
+   }
+
+   formData.value.giftAddresses = Array.isArray(payload.giftDeliveryAddress) 
+      ? payload.giftDeliveryAddress 
+      : (payload.giftDeliveryAddress ? [payload.giftDeliveryAddress] : [])
+   
+   formData.value.eWalletLink = payload.eWalletLink || []
+   formData.value.bankAccounts = payload.bankAccounts || []
+   
+   // Handle Additional Info
+   formData.value.dressCode = payload.dressCode || ''
+   formData.value.healthProtocol = payload.healthProtocol !== false
+   
+   if (payload.extendedFamily && Array.isArray(payload.extendedFamily)) {
+      formData.value.extendedFamilyText = payload.extendedFamily.join(', ')
+   } else if (typeof payload.extendedFamily === 'string') {
+      formData.value.extendedFamilyText = payload.extendedFamily
+   } else if (payload.turutMengundang) {
+      formData.value.extendedFamilyText = payload.turutMengundang
+   }
 }
 
 function validateField(field) {
@@ -588,6 +828,30 @@ async function uploadAllFiles() {
          delete formData.value.gallery[i].file
       }
    }
+
+   // Handle Love Stories
+   for (let i = 0; i < formData.value.loveStories.length; i++) {
+      if (formData.value.loveStories[i].photoFile) {
+         formData.value.loveStories[i].photo = await pushUpload(formData.value.loveStories[i].photoFile)
+         delete formData.value.loveStories[i].photoFile
+      }
+   }
+
+   // Handle Wallets
+   for (let i = 0; i < formData.value.eWalletLink.length; i++) {
+      if (formData.value.eWalletLink[i].wallet_image_file) {
+         formData.value.eWalletLink[i].wallet_image = await pushUpload(formData.value.eWalletLink[i].wallet_image_file)
+         delete formData.value.eWalletLink[i].wallet_image_file
+      }
+   }
+
+   // Handle Banks
+   for (let i = 0; i < formData.value.bankAccounts.length; i++) {
+      if (formData.value.bankAccounts[i].bankLogoFile) {
+         formData.value.bankAccounts[i].bankLogo = await pushUpload(formData.value.bankAccounts[i].bankLogoFile)
+         delete formData.value.bankAccounts[i].bankLogoFile
+      }
+   }
 }
 
 async function saveAndPreview() {
@@ -650,22 +914,53 @@ async function saveAndPreview() {
               },
 
          templateDesignId: selectedTemplateRef.value.id || 1, 
-         loveStory: [],
+         loveStory: formData.value.loveStories.map(s => ({
+            title: s.title,
+            date: s.date,
+            description: s.description,
+            image: s.photo
+         })),
          musicChoice: formData.value.music || 'default',
          isCustomMusic: !!formData.value.music,
          encryptedGuestName: formData.value.encryptedGuest === 'ya',
          galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url.startsWith('http')),
-         giftDeliveryAddress: '',
+         giftDeliveryAddress: formData.value.giftAddresses,
          enableCover: true,
-         healthProtocol: true,
-         enableGuestMessage: true,
+         healthProtocol: formData.value.healthProtocol,
+         enableGuestMessage: formData.value.wishes === 'ya',
          selectedSections: Object.keys(sections.value).filter(k => sections.value[k]),
          
+         // Extended Info
+         dressCode: formData.value.dressCode,
+         extendedFamily: formData.value.extendedFamilyText ? formData.value.extendedFamilyText.split(',').map(s => s.trim()) : [],
+         turutMengundang: formData.value.extendedFamilyText,
+         liveStreamingLink: formData.value.liveStreamingLink,
+         footerText: formData.value.footerText,
+         likes: formData.value.likes,
+         
          // Required nested objects with defaults
-         menu: { title: 'Menu Makanan', items: [] },
+         menu: { title: 'Menu Makanan', items: formData.value.foodList.map(name => ({ name })) },
          socialMedia: {},
-         socialMediaBrides: {},
-         socialMediaGroom: {}
+         socialMediaBrides: {
+            instagram: formData.value.sosmedBride.instagram,
+            tiktok: formData.value.sosmedBride.tiktok,
+            youtube: formData.value.sosmedBride.youtube,
+            otherSocial: formData.value.sosmedBride.otherSocial
+         },
+         socialMediaGroom: {
+            instagram: formData.value.sosmedGroom.instagram,
+            tiktok: formData.value.sosmedGroom.tiktok,
+            youtube: formData.value.sosmedGroom.youtube,
+            otherSocial: formData.value.sosmedGroom.otherSocial
+         },
+         eWalletLink: formData.value.eWalletLink,
+         bankAccounts: formData.value.bankAccounts,
+         floorPlanImageUrl: formData.value.denah,
+         
+         // Quote
+         quoteType: formData.value.quoteType,
+         quoteText: formData.value.quote,
+         quoteSource: formData.value.quoteSource
       }
 
       const editId = route.params.id || localStorage.getItem('editInvitationId')
