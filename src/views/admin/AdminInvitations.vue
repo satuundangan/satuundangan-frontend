@@ -15,6 +15,7 @@
             <th class="px-4 py-3">Pengguna</th>
             <th class="px-4 py-3">Slug</th>
             <th class="px-4 py-3">Kategori</th>
+            <th class="px-4 py-3">Dibuat</th>
             <th class="px-4 py-3 text-right">Aksi</th>
           </tr>
         </thead>
@@ -24,6 +25,7 @@
             <td class="px-4 py-3 text-slate-600">{{ inv.user?.name || inv.user?.email || '-' }}</td>
             <td class="px-4 py-3 text-slate-600">{{ inv.slug }}</td>
             <td class="px-4 py-3 text-slate-600">{{ inv.category || '-' }}</td>
+            <td class="px-4 py-3 text-slate-600">{{ diffForHumans(inv.createdAt) }}</td>
             <td class="px-4 py-3 text-right">
               <div class="flex justify-end gap-2">
                 <a :href="`/${inv.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50">Lihat</a>
@@ -32,10 +34,10 @@
             </td>
           </tr>
           <tr v-if="!loading && !invitations.length">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
+            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
           </tr>
         </tbody>
       </table>
@@ -68,6 +70,20 @@ const search = ref('')
 const loading = ref(false)
 
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
+
+function diffForHumans(dateString) {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now - date) / 1000)
+  
+  if (diffInSeconds < 60) return `${diffInSeconds} detik yang lalu`
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} hari yang lalu`
+  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} bulan yang lalu`
+  return `${Math.floor(diffInSeconds / 31536000)} tahun yang lalu`
+}
 
 async function loadInvitations() {
   loading.value = true
