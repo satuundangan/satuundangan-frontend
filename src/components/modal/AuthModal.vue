@@ -152,6 +152,7 @@ const emit = defineEmits(['close', 'update:authMode'])
 const email = ref('')
 const password = ref('')
 const name = ref('')
+const agreedToTerms = ref(false)
 const loading = ref(false)
 
 const auth = useAuthStore()
