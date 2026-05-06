@@ -3,7 +3,7 @@
     <!-- Grid Overlay -->
     <div class="fixed inset-0 pointer-events-none z-0" style="background-image: linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px); background-size: 30px 30px; opacity: 0.2;"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
     <!-- Navigation -->
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 transition-all duration-1000 hidden md:flex">

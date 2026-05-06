@@ -6,7 +6,7 @@
       <div class="w-12 h-12 rounded-full overflow-hidden shadow-lg border border-white/20">
         <iframe
           ref="ytIframe"
-          :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1`"
+          :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1${audioStart > 0 ? '&start=' + Math.floor(audioStart) : ''}${audioEnd > 0 ? '&end=' + Math.floor(audioEnd) : ''}`"
           width="48"
           height="48"
           frameborder="0"
@@ -48,6 +48,14 @@ const props = defineProps({
   autoPlay: {
     type: Boolean,
     default: true
+  },
+  audioStart: {
+    type: Number,
+    default: 0
+  },
+  audioEnd: {
+    type: Number,
+    default: 0
   }
 })
 
@@ -78,6 +86,18 @@ const initAudio = () => {
   }
   audio.value = new Audio(props.src)
   audio.value.loop = true
+  
+  audio.value.onloadedmetadata = () => {
+    if (props.audioStart > 0) {
+      audio.value.currentTime = props.audioStart
+    }
+  }
+
+  audio.value.ontimeupdate = () => {
+    if (props.audioEnd > 0 && audio.value.currentTime >= props.audioEnd) {
+      audio.value.currentTime = props.audioStart
+    }
+  }
 }
 
 onMounted(() => {
