@@ -324,28 +324,73 @@
                </section>
 
                <!-- Section: Music -->
-               <section v-if="sections.music" class="space-y-6">
+               <section v-if="sections.music" class="space-y-8">
                   <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
                      <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
                         <i class="fa-solid fa-music"></i>
                      </div>
                      <div>
                         <h2 class="text-xl font-bold text-dark">Musik Latar</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Atmosfer Undangan</p>
+                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Lagu Undangan</p>
                      </div>
                   </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                     <div>
+                  <div class="space-y-6">
+                     <div data-field="music">
                         <label class="form-label">Pilih Musik</label>
-                        <select v-model="formData.music" class="form-input">
-                           <option value="">Tanpa Musik</option>
+                        <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
+                           <option value="">Pilih Musik Preset</option>
                            <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
                               {{ audio.title }}
                            </option>
+                           <option value="custom" v-if="isPremiumTemplate">Upload Musik Sendiri (MP3)</option>
+                           <option value="custom" v-else disabled>Upload Musik Sendiri (Premium)</option>
                         </select>
                      </div>
-                     <div v-if="formData.music" class="flex items-center pt-8">
+
+                     <div v-if="formData.music === 'custom' && isPremiumTemplate" class="bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200 animate-fade-in">
+                        <div v-if="!formData.musicPreview" class="text-center">
+                           <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
+                           <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
+                              <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-mocha text-2xl mb-3">
+                                 <i class="fa-solid fa-cloud-arrow-up"></i>
+                              </div>
+                              <p class="text-sm font-bold text-dark mb-1">Upload File MP3</p>
+                              <p class="text-[10px] text-gray-400 uppercase tracking-widest">Maksimal 5MB</p>
+                           </label>
+                        </div>
+
+                        <div v-else class="space-y-4">
+                           <div class="flex items-center justify-between">
+                              <div class="flex items-center gap-3">
+                                 <div class="w-10 h-10 bg-mocha text-white rounded-xl flex items-center justify-center">
+                                    <i class="fa-solid fa-file-audio"></i>
+                                 </div>
+                                 <div>
+                                    <p class="text-xs font-bold text-dark">Musik Terpilih</p>
+                                    <p class="text-[10px] text-gray-500 truncate max-w-[200px]">{{ formData.musicFile?.name || 'File Musik' }}</p>
+                                 </div>
+                              </div>
+                              <button @click="formData.musicPreview = ''; formData.musicFile = null" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700">Ganti File</button>
+                           </div>
+
+                           <AudioTrimmer
+                              :url="formData.musicPreview"
+                              :initialStart="formData.audioStart"
+                              :initialEnd="formData.audioEnd"
+                              @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
+                           />
+                        </div>
+                     </div>
+
+                     <div v-if="formData.music === 'custom' && !isPremiumTemplate" class="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3">
+                        <i class="fa-solid fa-gem text-amber-500 mt-1"></i>
+                        <p class="text-xs text-amber-900 leading-relaxed">
+                           Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>Template Premium</strong>. Silakan ganti template atau pilih musik yang tersedia.
+                        </p>
+                     </div>
+
+                     <div v-if="formData.music && formData.music !== 'custom'" class="flex items-center">
                         <audio :src="formData.music" controls class="h-10 w-full"></audio>
                      </div>
                   </div>
@@ -456,6 +501,7 @@ import { getInvitationById, createInvitation, updateInvitation } from '@/api/inv
 import { fetchPublicAudio } from '@/api/master'
 import { useToast } from "vue-toastification"
 import QuoteSection from './create-form/components/QuoteSection.vue'
+import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
 import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
@@ -477,6 +523,7 @@ const formData = ref({
    gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
    akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
    music: '', youtubeUrl: '', denah: '', denahFile: null,
+   musicFile: null, musicPreview: '', audioStart: 0, audioEnd: 0,
    wishes: 'ya', rsvp: 'ya', encryptedGuest: 'ya',
    brideParents: '', groomParents: '', 
    
@@ -745,6 +792,16 @@ function mapPayloadToFormData(payload) {
    } else if (payload.turutMengundang) {
       formData.value.extendedFamilyText = payload.turutMengundang
    }
+
+   // Handle Music
+   if (payload.isCustomMusic) {
+      formData.value.music = 'custom'
+      formData.value.musicPreview = payload.musicChoice
+   } else {
+      formData.value.music = payload.musicChoice || ''
+   }
+   formData.value.audioStart = Number(payload.audioStart) || 0
+   formData.value.audioEnd = Number(payload.audioEnd) || 0
 }
 
 function validateField(field) {
@@ -809,6 +866,10 @@ function handleDenahUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = () => { formData.value.denah = reader.result; formData.value.denahFile = file }; reader.readAsDataURL(file)
 }
+function handleMusicUpload(e) {
+   const file = e.target.files?.[0]; if (!file) return
+   const reader = new FileReader(); reader.onload = () => { formData.value.musicPreview = reader.result; formData.value.musicFile = file }; reader.readAsDataURL(file)
+}
 
 async function uploadAllFiles() {
    const pushUpload = async (file) => {
@@ -820,6 +881,7 @@ async function uploadAllFiles() {
    if (formData.value.groomPhotoFile) formData.value.groomPhoto = await pushUpload(formData.value.groomPhotoFile)
    if (formData.value.photoCoupleFile) formData.value.photoCouple = await pushUpload(formData.value.photoCoupleFile)
    if (formData.value.denahFile) formData.value.denah = await pushUpload(formData.value.denahFile)
+   if (formData.value.musicFile) formData.value.music = await pushUpload(formData.value.musicFile)
    
    // Handle gallery
    for (let i = 0; i < formData.value.gallery.length; i++) {
@@ -921,7 +983,9 @@ async function saveAndPreview() {
             image: s.photo
          })),
          musicChoice: formData.value.music || 'default',
-         isCustomMusic: !!formData.value.music,
+         isCustomMusic: formData.value.music === 'custom' || (formData.value.music && !formData.value.music.startsWith('/audio/')),
+         audioStart: formData.value.audioStart,
+         audioEnd: formData.value.audioEnd,
          encryptedGuestName: formData.value.encryptedGuest === 'ya',
          galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url.startsWith('http')),
          giftDeliveryAddress: formData.value.giftAddresses,
