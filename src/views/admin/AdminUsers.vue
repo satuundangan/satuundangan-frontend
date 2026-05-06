@@ -97,7 +97,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import {
@@ -179,6 +179,10 @@ function closeForm() {
   saving.value = false
 }
 
+const handleKeydown = (e) => {
+  if (e.key === 'Escape' && showForm.value) closeForm()
+}
+
 async function submitForm() {
   if (saving.value) return
   saving.value = true
@@ -234,6 +238,11 @@ async function confirmDelete(user) {
 
 onMounted(() => {
   loadUsers()
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 

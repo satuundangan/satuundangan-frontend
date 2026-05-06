@@ -3,7 +3,7 @@
     <!-- Wavy Pattern Overlay -->
     <div class="fixed inset-0 opacity-10 pointer-events-none z-0" style="background-image: radial-gradient(circle at center, #1e3a8a 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
     <!-- Navigation -->
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 transition-all duration-1000 hidden md:flex">

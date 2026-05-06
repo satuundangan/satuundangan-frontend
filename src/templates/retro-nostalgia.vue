@@ -3,7 +3,7 @@
     <!-- Film Grain Overlay -->
     <div class="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay z-[100]" style="background-image: url('https://www.transparenttextures.com/patterns/stardust.png');"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
     <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#2c2c2c] px-6 py-3 rounded-xl flex items-center justify-center gap-6 shadow-[4px_4px_0px_0px_rgba(224,109,83,1)] w-fit max-w-[95%] border-2 border-[#e06d53] transition-all duration-500">
       <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
