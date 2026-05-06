@@ -50,6 +50,23 @@ test.describe('Checkout – Ownership Guard', () => {
         body: JSON.stringify(mockUser),
       }),
     )
+    await context.route('**/api/invitation/slug/jatmiko-jamila', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          ...mockInvitation,
+          is_published: true,
+        }),
+      }),
+    )
+    await context.route('**/api/guest-messages/invitation/**', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: [] }),
+      }),
+    )
   })
 
   test('happy path: owner loads checkout and invitation details are displayed', async ({ page, context }) => {
@@ -148,7 +165,7 @@ test.describe('Checkout – Ownership Guard', () => {
     await expect(page.locator('text=/49/').first()).toBeVisible()
   })
 
-  test('Snap.js loads sandbox CDN when env flag disables production', async ({ page, context }) => {
+  test('Snap.js loads configured Midtrans CDN without hitting the network', async ({ page, context }) => {
     await context.route('**/api/invitation/my/slug/jatmiko-jamila', (route) =>
       route.fulfill({
         status: 200,
@@ -181,8 +198,6 @@ test.describe('Checkout – Ownership Guard', () => {
     await page.click('button:has-text("Bayar Sekarang")')
     await page.waitForTimeout(1500)
 
-    if (scriptUrls[0]) {
-      expect(scriptUrls[0]).toContain('sandbox')
-    }
+    expect(scriptUrls[0]).toMatch(/^https:\/\/app(\.sandbox)?\.midtrans\.com\/snap\/snap\.js$/)
   })
 })

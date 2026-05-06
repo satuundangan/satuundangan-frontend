@@ -46,6 +46,7 @@
             </td>
             <td class="px-4 py-3 text-right">
               <div class="flex justify-end gap-2 text-xs font-medium">
+                <a :href="`/demo/${template.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50">Demo</a>
                 <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50"
                   @click="openEdit(template)">Edit</button>
                 <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50"
@@ -272,9 +273,10 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import slugify from 'slugify'
 import {
   fetchAdminTemplates,
   createAdminTemplate,
@@ -331,6 +333,19 @@ const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 const selectedPalette = computed(() => {
   if (!form.paletteId) return null
   return palettes.value.find(p => p.id === form.paletteId)
+})
+
+watch(() => form.name, (newVal) => {
+  if (!editing.value && newVal) {
+    form.slug = slugify(newVal, { lower: true, strict: true })
+    form.previewUrl = `/demo/${form.slug}`
+  }
+})
+
+watch(() => form.slug, (newVal) => {
+  if (!editing.value && newVal) {
+    form.previewUrl = `/demo/${newVal}`
+  }
 })
 
 async function loadData() {
@@ -594,8 +609,17 @@ async function confirmDelete(template) {
   }
 }
 
+const handleKeydown = (e) => {
+  if (e.key === 'Escape' && showForm.value) closeForm()
+}
+
 onMounted(() => {
   loadData()
+  window.addEventListener('keydown', handleKeydown)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleKeydown)
 })
 </script>
 
