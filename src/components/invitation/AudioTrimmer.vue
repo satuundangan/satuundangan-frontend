@@ -113,7 +113,8 @@ onMounted(() => {
     // Create a region for trimming
     const wsRegions = wavesurfer.value.registerPlugin(RegionsPlugin.create())
     
-    wsRegions.addRegion({
+    const activeRegion = wsRegions.addRegion({
+      id: 'trim-region',
       start: startTime.value,
       end: endTime.value,
       color: 'rgba(139, 69, 19, 0.2)',
@@ -121,10 +122,21 @@ onMounted(() => {
       resize: true
     })
 
-    wavesurfer.value.on('region-updated', (reg) => {
-      startTime.value = reg.start
-      endTime.value = reg.end
+    // FIX: Use wsRegions instead of wavesurfer for region events
+    wsRegions.on('region-updated', (reg) => {
+      startTime.value = Number(reg.start.toFixed(2))
+      endTime.value = Number(reg.end.toFixed(2))
       emitUpdate()
+    })
+
+    // Allow inputs to update the region
+    watch([startTime, endTime], ([newStart, newEnd]) => {
+      if (activeRegion) {
+        activeRegion.setOptions({
+          start: newStart,
+          end: newEnd
+        })
+      }
     })
 
     wavesurfer.value.on('play', () => isPlaying.value = true)
@@ -145,10 +157,6 @@ const emitUpdate = () => {
     end: Number(endTime.value.toFixed(2))
   })
 }
-
-watch([startTime, endTime], () => {
-  emitUpdate()
-})
 
 const togglePlay = () => {
   if (wavesurfer.value.isPlaying()) {
