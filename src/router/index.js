@@ -21,7 +21,6 @@ import AdminAudio from '@/views/admin/AdminAudio.vue'
 import AdminBanks from '@/views/admin/AdminBanks.vue'
 import AdminSections from '@/views/admin/AdminSections.vue'
 import AdminCategories from '@/views/admin/AdminCategories.vue'
-import AdminPalettes from '@/views/admin/AdminPalettes.vue'
 import AdminPromoCodes from '@/views/admin/AdminPromoCodes.vue'
 
 const router = createRouter({
@@ -171,12 +170,6 @@ const router = createRouter({
       path: '/admin/categories',
       name: 'admin-categories',
       component: AdminCategories,
-      meta: { requiresAuth: true, requiresAdmin: true },
-    },
-    {
-      path: '/admin/palettes',
-      name: 'admin-palettes',
-      component: AdminPalettes,
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
