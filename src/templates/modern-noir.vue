@@ -3,7 +3,7 @@
     <!-- Noise Overlay -->
     <div class="fixed inset-0 opacity-[0.05] pointer-events-none mix-blend-screen z-[100]" style="background-image: url('https://www.transparenttextures.com/patterns/black-paper.png');"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6 transition-all duration-1000 hidden md:flex">
       <button v-for="(item, idx) in navItems" :key="item.id" @click="scrollToSection(item.id)"
