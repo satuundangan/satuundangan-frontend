@@ -115,7 +115,17 @@
               <span>🎉</span> Undangan Terakhir
            </h3>
            
-           <div v-if="loading" class="py-10 text-center text-gray-400">Loading...</div>
+           <div v-if="loading" class="space-y-3">
+              <!-- Skeleton Items -->
+              <div v-for="i in 3" :key="i" class="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl animate-pulse border border-gray-100/50">
+                 <div class="w-12 h-12 rounded-lg bg-gray-200 shrink-0"></div>
+                 <div class="flex-1 space-y-2">
+                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
+                    <div class="h-2 bg-gray-100 rounded w-1/2"></div>
+                 </div>
+                 <div class="w-8 h-8 rounded-lg bg-gray-100 shrink-0"></div>
+              </div>
+           </div>
            <div v-else-if="invitations.length === 0" class="py-10 text-center text-gray-400 italic">
               Belum ada undangan. <router-link to="/create" class="text-mocha underline">Buat sekarang</router-link>
            </div>
