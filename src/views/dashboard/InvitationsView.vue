@@ -17,9 +17,23 @@
            </router-link>
         </div>
 
-        <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-gray-400">
-           <div class="animate-spin text-3xl mb-4 text-mocha">⏳</div>
-           <p class="text-sm font-medium">Memuat data...</p>
+        <div v-if="loading" class="space-y-4">
+           <!-- Skeleton Items -->
+           <div v-for="i in 3" :key="i" class="bg-white rounded-3xl p-6 border border-gray-100 flex flex-col md:flex-row gap-6 animate-pulse">
+              <!-- Skeleton Thumbnail -->
+              <div class="w-full md:w-48 h-32 bg-gray-100 rounded-2xl"></div>
+              
+              <!-- Skeleton Details -->
+              <div class="flex-1 space-y-4 py-2">
+                 <div class="h-6 bg-gray-200 rounded-lg w-3/4"></div>
+                 <div class="h-4 bg-gray-100 rounded-lg w-1/2"></div>
+                 
+                 <div class="flex gap-2 pt-2">
+                    <div class="h-8 bg-gray-100 rounded-lg w-20"></div>
+                    <div class="h-8 bg-gray-100 rounded-lg w-20"></div>
+                 </div>
+              </div>
+           </div>
         </div>
         
         <div v-else-if="invitations.length === 0" class="bg-white rounded-3xl p-10 text-center border border-dashed border-gray-200">

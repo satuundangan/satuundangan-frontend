@@ -8,18 +8,18 @@
                   <div class="w-8 h-8 rounded-full border border-slate-100 bg-white flex items-center justify-center group-hover:border-mocha group-hover:text-mocha transition-all shadow-sm">
                      <i class="fa-solid fa-chevron-left text-[10px]"></i>
                   </div>
-                  <span class="hidden sm:inline">{{ currentStep > 1 ? 'Langkah ' + (currentStep - 1) : 'Batal' }}</span>
+                  <span class="hidden sm:inline">{{ currentStep > 1 ? 'Sebelumnya' : 'Batal' }}</span>
                </button>
                
                <div class="flex flex-col items-end">
                   <div class="flex items-center gap-2 mb-1">
-                     <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Progress</span>
-                     <span class="text-xs font-black text-mocha">{{ Math.round((currentStep / 4) * 100) }}%</span>
+                     <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Langkah</span>
+                     <span class="text-xs font-black text-mocha">{{ currentStep }} / 4</span>
                   </div>
                   <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10 flex items-center gap-2">
                      <i v-if="isDraftSaving" class="fa-solid fa-spinner animate-spin text-[8px]"></i>
                      <i v-else class="fa-solid fa-cloud-check text-[8px] text-emerald-500"></i>
-                     {{ isDraftSaving ? 'Menyimpan Draft...' : (['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1]) }}
+                     {{ isDraftSaving ? 'Menyimpan...' : (['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1]) }}
                   </div>
                </div>
             </div>
