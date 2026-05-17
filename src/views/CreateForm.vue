@@ -1,43 +1,38 @@
 <template>
-   <div class="min-h-screen bg-gray-50 font-sans pt-6 md:pt-12 pb-24 px-4 md:px-8">
-      <div class="max-w-5xl mx-auto">
-
-         <!-- Top Navigation & Stepper -->
-         <div class="mb-10">
-            <div class="flex items-center justify-between mb-8">
-               <button @click="currentStep > 1 ? currentStep-- : router.back()" class="flex items-center gap-2 text-gray-500 hover:text-dark transition-colors font-bold text-sm">
-                  <i class="fa-solid fa-chevron-left text-xs"></i> 
-                  <span>{{ currentStep > 1 ? 'Kembali ke Step ' + (currentStep - 1) : 'Batal' }}</span>
+   <div class="min-h-screen bg-gray-50 font-sans pb-24">
+      <!-- Sticky Header Stepper -->
+      <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
+         <div class="max-w-5xl mx-auto">
+            <div class="flex items-center justify-between mb-4">
+               <button @click="currentStep > 1 ? currentStep-- : router.back()" class="group flex items-center gap-3 text-slate-400 hover:text-dark transition-all font-bold text-xs uppercase tracking-widest">
+                  <div class="w-8 h-8 rounded-full border border-slate-100 bg-white flex items-center justify-center group-hover:border-mocha group-hover:text-mocha transition-all shadow-sm">
+                     <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                  </div>
+                  <span class="hidden sm:inline">{{ currentStep > 1 ? 'Langkah ' + (currentStep - 1) : 'Batal' }}</span>
                </button>
                
-               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
-                  <span class="w-2 h-2 rounded-full bg-mocha animate-pulse"></span>
-                  <span class="text-[10px] font-bold text-dark uppercase tracking-widest">Langkah {{ currentStep }}/4</span>
+               <div class="flex flex-col items-end">
+                  <div class="flex items-center gap-2 mb-1">
+                     <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Progress</span>
+                     <span class="text-xs font-black text-mocha">{{ Math.round((currentStep / 4) * 100) }}%</span>
+                  </div>
+                  <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10">
+                     {{ ['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1] }}
+                  </div>
                </div>
-               <div class="w-16 hidden md:block"></div>
             </div>
 
-            <!-- Professional Stepper -->
-            <div class="flex items-center justify-between max-w-2xl mx-auto px-4 relative mb-12">
-               <!-- Connecting Lines -->
-               <div class="absolute top-5 left-8 right-8 h-0.5 bg-gray-100 -z-10">
-                  <div class="h-full bg-mocha transition-all duration-500" :style="{ width: ((currentStep - 1) / 3 * 100) + '%' }"></div>
-               </div>
-
-               <div v-for="step in 4" :key="step" class="flex flex-col items-center gap-3">
-                  <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 border-2"
-                     :class="currentStep >= step ? 'bg-mocha text-white border-mocha' : 'bg-white text-gray-300 border-gray-100'">
-                     <i v-if="currentStep > step" class="fa-solid fa-check text-xs"></i>
-                     <span v-else>{{ step }}</span>
-                  </div>
-                  <span class="text-[9px] font-bold uppercase tracking-widest transition-colors duration-500"
-                     :class="currentStep >= step ? 'text-mocha' : 'text-gray-300'">
-                     {{ ['Mempelai', 'Acara', 'Media', 'Ekstra'][step-1] }}
-                  </span>
+            <!-- Slim Progress Line -->
+            <div class="relative h-1 w-full bg-slate-200/50 rounded-full overflow-hidden shadow-inner">
+               <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-mocha/80 to-mocha transition-all duration-700 ease-out shadow-[0_0_15px_rgba(164,113,72,0.3)]"
+                  :style="{ width: (currentStep / 4 * 100) + '%' }">
+                  <div class="absolute inset-0 bg-white/20 skew-x-12 animate-pulse"></div>
                </div>
             </div>
          </div>
+      </div>
 
+      <div class="max-w-5xl mx-auto px-4 md:px-8">
          <div class="text-center mb-10 md:mb-12">
             <h1 class="text-2xl md:text-4xl font-serif font-bold text-dark mb-3">
                {{ ['Data Mempelai', 'Detail Acara', 'Galeri & Media', 'Informasi Tambahan'][currentStep-1] }}
@@ -72,8 +67,9 @@
                                  <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                               </div>
                               <div data-field="brideParents">
-                                 <label class="form-label">Nama Orang Tua</label>
-                                 <input v-model="formData.brideParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                                 <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                 <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
+                                 <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
                               </div>
                               <div data-field="bridePhoto">
                                  <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
@@ -107,8 +103,9 @@
                                  <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                               </div>
                               <div data-field="groomParents">
-                                 <label class="form-label">Nama Orang Tua</label>
-                                 <input v-model="formData.groomParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                                 <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                 <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
+                                 <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
                               </div>
                               <div data-field="groomPhoto">
                                  <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
@@ -392,7 +389,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch, reactive } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { uploadFileApi, deleteFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
@@ -521,24 +518,49 @@ async function handleBankUpload(event, index) {
    reader.readAsDataURL(file)
 }
 
-function handleBridePhotoUpload(e) {
+// Helper to downscale image before cropping
+async function downscaleImage(dataUrl, maxWidth = 1200) {
+   return new Promise((resolve) => {
+      const img = new Image()
+      img.onload = () => {
+         const canvas = document.createElement('canvas')
+         let width = img.width
+         let height = img.height
+         if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width)
+            width = maxWidth
+         }
+         canvas.width = width
+         canvas.height = height
+         const ctx = canvas.getContext('2d')
+         ctx.drawImage(img, 0, 0, width, height)
+         resolve(canvas.toDataURL('image/jpeg', 0.9))
+      }
+      img.src = dataUrl
+   })
+}
+
+async function handleBridePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { 
-      cropper.value = { show: true, image: reader.result, aspectRatio: 3/4, targetField: 'bride' }
+   const reader = new FileReader(); reader.onload = async () => { 
+      const optimizedImage = await downscaleImage(reader.result)
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/4, targetField: 'bride' }
    }; reader.readAsDataURL(file)
    e.target.value = ''
 }
-function handleGroomPhotoUpload(e) {
+async function handleGroomPhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { 
-      cropper.value = { show: true, image: reader.result, aspectRatio: 3/4, targetField: 'groom' }
+   const reader = new FileReader(); reader.onload = async () => { 
+      const optimizedImage = await downscaleImage(reader.result)
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/4, targetField: 'groom' }
    }; reader.readAsDataURL(file)
    e.target.value = ''
 }
-function handleCouplePhotoUpload(e) {
+async function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { 
-      cropper.value = { show: true, image: reader.result, aspectRatio: 1, targetField: 'couple' }
+   const reader = new FileReader(); reader.onload = async () => { 
+      const optimizedImage = await downscaleImage(reader.result)
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 1, targetField: 'couple' }
    }; reader.readAsDataURL(file)
    e.target.value = ''
 }
@@ -556,6 +578,7 @@ function onCropComplete({ blob, preview }) {
       formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' })
    }
    cropper.value.show = false
+   validateField(field + 'Photo') // Trigger validation refresh
 }
 
 function handleGalleryUpload(e) {
@@ -770,7 +793,9 @@ function validateField(field) {
    let message = ''
    const data = formData.value
    if (field === 'brideName' && !data.brideName?.trim()) message = 'Wajib diisi'
+   if (field === 'brideParents' && !data.brideParents?.trim()) message = 'Wajib diisi'
    if (field === 'groomName' && !data.groomName?.trim()) message = 'Wajib diisi'
+   if (field === 'groomParents' && !data.groomParents?.trim()) message = 'Wajib diisi'
    if (field === 'title' && !data.title?.trim()) message = 'Wajib diisi'
    validationErrors.value[field] = message
    return !message
@@ -783,8 +808,10 @@ function validateStep(step) {
 
    if (step === 1) {
       if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
+      if (!data.brideParents?.trim()) { validationErrors.value.brideParents = 'Nama orang tua wanita wajib diisi'; isValid = false }
       if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
       if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
+      if (!data.groomParents?.trim()) { validationErrors.value.groomParents = 'Nama orang tua pria wajib diisi'; isValid = false }
       if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
       if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
    } else if (step === 2) {
