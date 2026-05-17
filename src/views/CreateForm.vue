@@ -137,11 +137,21 @@
                         <label class="form-label">Judul Undangan (Slug) <span class="text-red-500">*</span></label>
                         <div class="flex flex-col sm:flex-row gap-3">
                            <div class="flex-1">
-                              <input v-model="formData.title" @input="validateField('title')" type="text" placeholder="Contoh: The Wedding of Putri & Pangeran" class="form-input font-bold" :class="{ 'border-red-500': validationErrors.title }" />
+                              <input v-model="formData.title" @input="validateField('title')" type="text" placeholder="Contoh: The Wedding Of Putri & Pangeran" class="form-input font-bold" :class="{ 'border-red-500': validationErrors.title }" />
                               <p v-if="validationErrors.title" class="form-error">{{ validationErrors.title }}</p>
                            </div>
-                           <button v-if="suggestedTitle && formData.title !== suggestedTitle" @click="formData.title = suggestedTitle" class="px-4 py-3 bg-mocha/5 text-mocha rounded-xl font-bold text-xs hover:bg-mocha hover:text-white transition-all whitespace-nowrap">Gunakan Saran</button>
+                           <button
+                              type="button"
+                              :disabled="!suggestedTitle || formData.title === suggestedTitle"
+                              @click="formData.title = suggestedTitle; validateField('title')"
+                              class="inline-flex items-center justify-center gap-2 rounded-2xl border border-mocha/10 bg-mocha/5 px-5 py-3 text-xs font-bold text-mocha transition-all hover:border-mocha/30 hover:bg-mocha hover:text-white disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50 disabled:text-slate-300 sm:min-w-[150px]"
+                           >
+                              <span>{{ suggestedTitle ? 'Gunakan Saran' : 'Isi Nama Dulu' }}</span>
+                           </button>
                         </div>
+                        <p v-if="suggestedTitle && formData.title !== suggestedTitle" class="mt-2 text-[10px] font-semibold text-slate-400">
+                           Saran: <span class="font-serif text-mocha">{{ suggestedTitle }}</span>
+                        </p>
                      </div>
                   </section>
                   <QuoteSection v-if="sections.quote" :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
@@ -245,7 +255,7 @@
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-4">
                            <label class="form-label">Pilih Sumber Musik</label>
-                           <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
+                           <select v-model="formData.music" class="form-input font-semibold" @change="handleMusicSourceChange">
                               <option value="">Pilih Musik Preset</option>
                               <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
                                  {{ audio.title }}
@@ -299,7 +309,16 @@
 
                         <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col justify-center bg-gray-50/50 p-6 rounded-3xl border border-gray-100 animate-fade-in">
                            <span class="text-[10px] font-bold text-mocha uppercase tracking-[0.2em] mb-3 block">Pratinjau Suara:</span>
-                           <audio :src="formData.music" controls class="h-10 w-full rounded-full shadow-sm"></audio>
+                           <AudioTrimmer
+                              :key="formData.music"
+                              :url="formData.music"
+                              :initialStart="formData.audioStart"
+                              :initialEnd="formData.audioEnd"
+                              @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
+                           />
+                           <p class="mt-3 text-[10px] text-gray-500 leading-relaxed">
+                              Rekomendasi: gunakan potongan 45-60 detik agar musik tetap ringan dan nyaman saat undangan dibuka.
+                           </p>
                         </div>
                      </div>
                   </section>
@@ -435,6 +454,8 @@ const uploadProgress = ref({
 const isPremiumTemplate = computed(() => {
    return selectedTemplateRef.value.isPremium === true || selectedTemplateRef.value.isPremium === 'true'
 })
+
+const DEFAULT_AUDIO_CLIP_SECONDS = 60
 
 const formData = ref({
    title: '', brideName: '', groomName: '', bridePhoto: '', bridePhotoFile: null,
@@ -600,6 +621,23 @@ function handleDenahUpload(e) {
    const reader = new FileReader(); reader.onload = () => { formData.value.denah = reader.result; formData.value.denahFile = file }; reader.readAsDataURL(file)
 }
 
+function resetAudioTrim(end = 0) {
+   formData.value.audioStart = 0
+   formData.value.audioEnd = end
+}
+
+function handleMusicSourceChange() {
+   formData.value.musicPreview = ''
+   formData.value.musicFile = null
+
+   if (!formData.value.music) {
+      resetAudioTrim(0)
+      return
+   }
+
+   resetAudioTrim(formData.value.music === 'custom' ? 0 : DEFAULT_AUDIO_CLIP_SECONDS)
+}
+
 async function handleMusicUpload(e) {
    const file = e.target.files?.[0]
    if (!file) return
@@ -611,6 +649,7 @@ async function handleMusicUpload(e) {
    reader.onload = () => {
       formData.value.musicPreview = reader.result
       formData.value.musicFile = file
+      resetAudioTrim(DEFAULT_AUDIO_CLIP_SECONDS)
    }
    reader.readAsDataURL(file)
 }
@@ -630,7 +669,7 @@ const progressPercentage = computed(() => {
 const suggestedTitle = computed(() => {
    const groom = (formData.value.groomName || '').split(' ')[0]
    const bride = (formData.value.brideName || '').split(' ')[0]
-   return groom && bride ? `${groom} & ${bride}` : ''
+   return groom && bride ? `The Wedding Of ${groom} & ${bride}` : ''
 })
 
 const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir. (QS. Ar-Rum: 21)"

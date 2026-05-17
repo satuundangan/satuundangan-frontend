@@ -108,7 +108,10 @@ onMounted(() => {
 
   wavesurfer.value.on('ready', () => {
     duration.value = wavesurfer.value.getDuration()
-    if (endTime.value === 0) endTime.value = duration.value
+    startTime.value = Math.min(Math.max(startTime.value || 0, 0), duration.value)
+    endTime.value = endTime.value === 0
+      ? duration.value
+      : Math.min(Math.max(endTime.value, startTime.value + 0.1), duration.value)
 
     // Create a region for trimming
     const wsRegions = wavesurfer.value.registerPlugin(RegionsPlugin.create())
@@ -121,6 +124,7 @@ onMounted(() => {
       drag: true,
       resize: true
     })
+    emitUpdate()
 
     // FIX: Use wsRegions instead of wavesurfer for region events
     wsRegions.on('region-updated', (reg) => {
@@ -132,10 +136,14 @@ onMounted(() => {
     // Allow inputs to update the region
     watch([startTime, endTime], ([newStart, newEnd]) => {
       if (activeRegion) {
+        const safeStart = Math.min(Math.max(Number(newStart) || 0, 0), duration.value)
+        const safeEnd = Math.min(Math.max(Number(newEnd) || safeStart + 0.1, safeStart + 0.1), duration.value)
+
         activeRegion.setOptions({
-          start: newStart,
-          end: newEnd
+          start: safeStart,
+          end: safeEnd
         })
+        emitUpdate()
       }
     })
 
