@@ -16,8 +16,10 @@
                      <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Progress</span>
                      <span class="text-xs font-black text-mocha">{{ Math.round((currentStep / 4) * 100) }}%</span>
                   </div>
-                  <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10">
-                     {{ ['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1] }}
+                  <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10 flex items-center gap-2">
+                     <i v-if="isDraftSaving" class="fa-solid fa-spinner animate-spin text-[8px]"></i>
+                     <i v-else class="fa-solid fa-cloud-check text-[8px] text-emerald-500"></i>
+                     {{ isDraftSaving ? 'Menyimpan Draft...' : (['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1]) }}
                   </div>
                </div>
             </div>
@@ -407,6 +409,8 @@ import LoveStorySection from './create-form/components/LoveStorySection.vue'
 import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
 import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
+import { get, set, del } from 'idb-keyval'
+import Swal from 'sweetalert2'
 
 const toast = useToast()
 const route = useRoute()
@@ -416,6 +420,7 @@ const musicType = ref('library')
 const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
+const isDraftSaving = ref(false)
 
 // Cropper States
 const cropper = ref({
@@ -469,6 +474,77 @@ const formData = ref({
 const sections = ref({})
 const validationErrors = ref({})
 const loveStoryErrors = ref([])
+
+// Auto-save logic
+const draftKey = computed(() => {
+   const id = route.params.id || 'new_invitation'
+   return `draft_invitation_${id}`
+})
+
+async function saveToDraft() {
+   if (isUploading.value) return
+   isDraftSaving.value = true
+   try {
+      // Simpan snapshot data (termasuk base64 foto hasil crop di IndexedDB)
+      // Kita perlu clone data tanpa file asli (karena File object gak bisa masuk IndexedDB langsung dengan mudah tanpa plugin)
+      const draftData = JSON.parse(JSON.stringify(formData.value))
+      await set(draftKey.value, draftData)
+      setTimeout(() => { isDraftSaving.value = false }, 800)
+   } catch (err) {
+      console.error("Gagal simpan draft", err)
+      isDraftSaving.value = false
+   }
+}
+
+// Watch changes to trigger auto-save (debounced)
+let saveTimeout
+watch(formData, () => {
+   clearTimeout(saveTimeout)
+   saveTimeout = setTimeout(saveToDraft, 2000) 
+}, { deep: true })
+
+async function loadFromDraft() {
+   try {
+      const saved = await get(draftKey.value)
+      if (saved) {
+         if (!route.params.id) {
+            const confirm = await Swal.fire({
+               title: 'Lanjutkan pengerjaan?',
+               text: 'Kami menemukan data yang belum selesai kamu isi terakhir kali. Mau dilanjutkan?',
+               icon: 'info',
+               showCancelButton: true,
+               confirmButtonText: 'Ya, Lanjutkan',
+               cancelButtonText: 'Mulai Baru',
+               confirmButtonColor: '#a47148'
+            })
+            if (confirm.isConfirmed) {
+               // Restore data teks & base64 preview
+               formData.value = { ...formData.value, ...saved }
+               
+               // Restore File objects dari base64 preview (agar upload tetep jalan)
+               const base64ToFile = async (base64, filename) => {
+                  if (!base64 || !base64.startsWith('data:')) return null
+                  const res = await fetch(base64)
+                  const blob = await res.blob()
+                  return new File([blob], filename, { type: blob.type })
+               }
+
+               if (saved.bridePhoto) formData.value.bridePhotoFile = await base64ToFile(saved.bridePhoto, 'bride.jpg')
+               if (saved.groomPhoto) formData.value.groomPhotoFile = await base64ToFile(saved.groomPhoto, 'groom.jpg')
+               if (saved.photoCouple) formData.value.photoCoupleFile = await base64ToFile(saved.photoCouple, 'couple.jpg')
+               
+               toast.success("Draft berhasil dimuat!")
+            } else {
+               await del(draftKey.value)
+            }
+         } else {
+            formData.value = { ...formData.value, ...saved }
+         }
+      }
+   } catch (err) {
+      console.error("Gagal load draft", err)
+   }
+}
 
 // Helper methods for Dynamic Sections
 function addLoveStory() {
@@ -566,7 +642,7 @@ async function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: 1, targetField: 'couple' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/2, targetField: 'couple' }
    }; reader.readAsDataURL(file)
    e.target.value = ''
 }
@@ -584,7 +660,7 @@ function onCropComplete({ blob, preview }) {
       formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' })
    }
    cropper.value.show = false
-   validateField(field + 'Photo') // Trigger validation refresh
+   validateField(field + 'Photo') 
 }
 
 function handleGalleryUpload(e) {
@@ -636,13 +712,14 @@ const suggestedTitle = computed(() => {
 const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir. (QS. Ar-Rum: 21)"
 
 onMounted(async () => {
+   await loadFromDraft()
    try {
       const res = await fetchPublicAudio()
       audioList.value = Array.isArray(res) ? res : (res?.data || [])
    } catch {}
 
    const stored = localStorage.getItem('selectedSections')
-   if (!route.params.id && !stored) {
+   if (!route.params.id && !stored && !formData.value.title) {
       router.push('/create')
       return
    }
@@ -965,6 +1042,8 @@ async function saveAndPreview() {
          result = res.data || res
          localStorage.setItem('editInvitationId', result.id)
       }
+      
+      await del(draftKey.value) // Hapus draft setelah sukses
       toast.success("Berhasil menyimpan!")
       router.push({ path: '/preview', query: { slug: result.slug } })
    } catch (error) {
