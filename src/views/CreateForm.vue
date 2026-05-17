@@ -403,6 +403,7 @@ import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
 import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
+import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
 
 const toast = useToast()
 const route = useRoute()
