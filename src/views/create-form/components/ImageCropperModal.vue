@@ -85,7 +85,7 @@ const cropImage = () => {
         canvas.toBlob((blob) => {
           emit('crop', {
             blob: blob,
-            preview: canvas.toDataURL('image/jpeg', 0.8) // Lower quality slightly for faster processing
+            preview: canvas.toDataURL('image/jpeg', 0.8)
           })
           isProcessing.value = false
         }, 'image/jpeg', 0.8)
@@ -101,8 +101,6 @@ const cropImage = () => {
 </script>
 
 <style scoped>
-/* ... (existing styles) ... */
-</style>
 .modal-enter-active, .modal-leave-active { transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
 .modal-enter-from, .modal-leave-to { opacity: 0; transform: scale(0.95) translateY(20px); }
 </style>

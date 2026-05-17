@@ -67,9 +67,12 @@
                                  <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                               </div>
                               <div data-field="brideParents">
-                                 <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
-                                 <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
-                                 <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
+                                 <label class="form-label flex items-center justify-between">
+                                    <span>Nama Orang Tua</span>
+                                    <span class="text-[9px] text-slate-400 normal-case font-medium">Opsional</span>
+                                 </label>
+                                 <input v-model="formData.brideParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                                 <p class="text-[9px] text-slate-400 mt-1.5 italic">Kosongkan jika ingin tampilan undangan lebih minimalis.</p>
                               </div>
                               <div data-field="bridePhoto">
                                  <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
@@ -103,9 +106,12 @@
                                  <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                               </div>
                               <div data-field="groomParents">
-                                 <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
-                                 <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
-                                 <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
+                                 <label class="form-label flex items-center justify-between">
+                                    <span>Nama Orang Tua</span>
+                                    <span class="text-[9px] text-slate-400 normal-case font-medium">Opsional</span>
+                                 </label>
+                                 <input v-model="formData.groomParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                                 <p class="text-[9px] text-slate-400 mt-1.5 italic">Kosongkan jika ingin tampilan undangan lebih minimalis.</p>
                               </div>
                               <div data-field="groomPhoto">
                                  <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
@@ -793,9 +799,7 @@ function validateField(field) {
    let message = ''
    const data = formData.value
    if (field === 'brideName' && !data.brideName?.trim()) message = 'Wajib diisi'
-   if (field === 'brideParents' && !data.brideParents?.trim()) message = 'Wajib diisi'
    if (field === 'groomName' && !data.groomName?.trim()) message = 'Wajib diisi'
-   if (field === 'groomParents' && !data.groomParents?.trim()) message = 'Wajib diisi'
    if (field === 'title' && !data.title?.trim()) message = 'Wajib diisi'
    validationErrors.value[field] = message
    return !message
@@ -808,10 +812,8 @@ function validateStep(step) {
 
    if (step === 1) {
       if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
-      if (!data.brideParents?.trim()) { validationErrors.value.brideParents = 'Nama orang tua wanita wajib diisi'; isValid = false }
       if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
       if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
-      if (!data.groomParents?.trim()) { validationErrors.value.groomParents = 'Nama orang tua pria wajib diisi'; isValid = false }
       if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
       if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
    } else if (step === 2) {
