@@ -341,6 +341,54 @@
          <div class="h-24 md:hidden"></div>
       </div>
    </div>
+
+   <!-- Image Cropper Modal -->
+   <ImageCropperModal
+      :show="cropper.show"
+      :imageSrc="cropper.image"
+      :stencilAspectRatio="cropper.aspectRatio"
+      @close="cropper.show = false"
+      @crop="onCropComplete"
+   />
+
+   <!-- Global Upload Progress Modal -->
+   <Transition name="modal">
+      <div v-if="uploadProgress.show" class="fixed inset-0 z-[110] flex items-center justify-center p-4">
+         <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-md"></div>
+         <div class="relative w-full max-w-md bg-white rounded-[2.5rem] p-8 text-center shadow-2xl overflow-hidden">
+            <!-- Animated Background Pulse -->
+            <div class="absolute -top-24 -left-24 w-48 h-48 bg-mocha/5 rounded-full blur-3xl animate-pulse"></div>
+            
+            <div class="relative z-10">
+               <div class="mb-6 relative inline-block">
+                  <svg class="w-24 h-24 transform -rotate-90">
+                     <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="8" fill="transparent" class="text-gray-100" />
+                     <circle cx="48" cy="48" r="40" stroke="currentColor" stroke-width="8" fill="transparent" 
+                        :stroke-dasharray="2 * Math.PI * 40"
+                        :stroke-dashoffset="2 * Math.PI * 40 * (1 - uploadProgress.percentage / 100)"
+                        stroke-linecap="round" class="text-mocha transition-all duration-500" />
+                  </svg>
+                  <div class="absolute inset-0 flex items-center justify-center font-black text-dark text-xl">
+                     {{ uploadProgress.percentage }}%
+                  </div>
+               </div>
+               
+               <h3 class="text-xl font-black text-dark mb-2 uppercase tracking-tight">Menyimpan Momen...</h3>
+               <p class="text-sm text-slate-500 font-medium mb-6">{{ uploadProgress.message }}</p>
+               
+               <div class="flex items-center gap-3 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+                  <div class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-mocha shadow-sm">
+                     <i class="fa-solid fa-cloud-arrow-up animate-bounce"></i>
+                  </div>
+                  <div class="text-left flex-1 min-w-0">
+                     <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Current File</p>
+                     <p class="text-xs font-bold text-dark truncate">{{ uploadProgress.currentFile }}</p>
+                  </div>
+               </div>
+            </div>
+         </div>
+      </div>
+   </Transition>
 </template>
 
 <script setup>
@@ -459,16 +507,41 @@ async function handleBankUpload(event, index) {
 
 function handleBridePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.bridePhoto = reader.result; formData.value.bridePhotoFile = file }; reader.readAsDataURL(file)
+   const reader = new FileReader(); reader.onload = () => { 
+      cropper.value = { show: true, image: reader.result, aspectRatio: 3/4, targetField: 'bride' }
+   }; reader.readAsDataURL(file)
+   e.target.value = ''
 }
 function handleGroomPhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.groomPhoto = reader.result; formData.value.groomPhotoFile = file }; reader.readAsDataURL(file)
+   const reader = new FileReader(); reader.onload = () => { 
+      cropper.value = { show: true, image: reader.result, aspectRatio: 3/4, targetField: 'groom' }
+   }; reader.readAsDataURL(file)
+   e.target.value = ''
 }
 function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.photoCouple = reader.result; formData.value.photoCoupleFile = file }; reader.readAsDataURL(file)
+   const reader = new FileReader(); reader.onload = () => { 
+      cropper.value = { show: true, image: reader.result, aspectRatio: 1, targetField: 'couple' }
+   }; reader.readAsDataURL(file)
+   e.target.value = ''
 }
+
+function onCropComplete({ blob, preview }) {
+   const field = cropper.value.targetField
+   if (field === 'bride') {
+      formData.value.bridePhoto = preview
+      formData.value.bridePhotoFile = new File([blob], 'bride.jpg', { type: 'image/jpeg' })
+   } else if (field === 'groom') {
+      formData.value.groomPhoto = preview
+      formData.value.groomPhotoFile = new File([blob], 'groom.jpg', { type: 'image/jpeg' })
+   } else if (field === 'couple') {
+      formData.value.photoCouple = preview
+      formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' })
+   }
+   cropper.value.show = false
+}
+
 function handleGalleryUpload(e) {
    const files = Array.from(e.target.files || [])
    files.forEach(file => {
@@ -725,41 +798,47 @@ function nextStep() {
 }
 
 async function uploadAllFiles() {
-   const pushUpload = async (file) => {
-      if (!file) return null
-      const res = await uploadFileApi(file)
-      return res.fileUrl
-   }
-   if (formData.value.bridePhotoFile) formData.value.bridePhoto = await pushUpload(formData.value.bridePhotoFile)
-   if (formData.value.groomPhotoFile) formData.value.groomPhoto = await pushUpload(formData.value.groomPhotoFile)
-   if (formData.value.photoCoupleFile) formData.value.photoCouple = await pushUpload(formData.value.photoCoupleFile)
-   if (formData.value.denahFile) formData.value.denah = await pushUpload(formData.value.denahFile)
-   if (formData.value.musicFile) formData.value.music = await pushUpload(formData.value.musicFile)
+   const filesToUpload = []
+   if (formData.value.bridePhotoFile) filesToUpload.push({ file: formData.value.bridePhotoFile, setter: (url) => formData.value.bridePhoto = url, name: 'Foto Mempelai Wanita' })
+   if (formData.value.groomPhotoFile) filesToUpload.push({ file: formData.value.groomPhotoFile, setter: (url) => formData.value.groomPhoto = url, name: 'Foto Mempelai Pria' })
+   if (formData.value.photoCoupleFile) filesToUpload.push({ file: formData.value.photoCoupleFile, setter: (url) => formData.value.photoCouple = url, name: 'Foto Sampul' })
+   if (formData.value.denahFile) filesToUpload.push({ file: formData.value.denahFile, setter: (url) => formData.value.denah = url, name: 'Foto Denah' })
+   if (formData.value.musicFile) filesToUpload.push({ file: formData.value.musicFile, setter: (url) => formData.value.music = url, name: 'File Musik' })
    
-   for (let i = 0; i < formData.value.gallery.length; i++) {
-      if (formData.value.gallery[i].file) {
-         formData.value.gallery[i].preview = await pushUpload(formData.value.gallery[i].file)
-         delete formData.value.gallery[i].file
+   formData.value.gallery.forEach((item, i) => {
+      if (item.file) filesToUpload.push({ file: item.file, setter: (url) => formData.value.gallery[i].preview = url, name: `Galeri Foto ${i+1}` })
+   })
+   formData.value.loveStories.forEach((s, i) => {
+      if (s.photoFile) filesToUpload.push({ file: s.photoFile, setter: (url) => formData.value.loveStories[i].photo = url, name: `Love Story Photo ${i+1}` })
+   })
+   formData.value.eWalletLink.forEach((w, i) => {
+      if (w.wallet_image_file) filesToUpload.push({ file: w.wallet_image_file, setter: (url) => formData.value.eWalletLink[i].wallet_image = url, name: `E-Wallet QR ${i+1}` })
+   })
+   formData.value.bankAccounts.forEach((b, i) => {
+      if (b.bankLogoFile) filesToUpload.push({ file: b.bankLogoFile, setter: (url) => formData.value.bankAccounts[i].bankLogo = url, name: `Bank Logo ${i+1}` })
+   })
+
+   if (filesToUpload.length === 0) return
+
+   uploadProgress.value.show = true
+   let uploadedCount = 0
+
+   for (const item of filesToUpload) {
+      uploadProgress.value.currentFile = item.name
+      uploadProgress.value.message = `Mengupload ${item.name}...`
+      try {
+         const res = await uploadFileApi(item.file)
+         item.setter(res.fileUrl)
+         uploadedCount++
+         uploadProgress.value.percentage = Math.round((uploadedCount / filesToUpload.length) * 100)
+      } catch (err) {
+         uploadProgress.value.show = false
+         throw err
       }
    }
-   for (let i = 0; i < formData.value.loveStories.length; i++) {
-      if (formData.value.loveStories[i].photoFile) {
-         formData.value.loveStories[i].photo = await pushUpload(formData.value.loveStories[i].photoFile)
-         delete formData.value.loveStories[i].photoFile
-      }
-   }
-   for (let i = 0; i < formData.value.eWalletLink.length; i++) {
-      if (formData.value.eWalletLink[i].wallet_image_file) {
-         formData.value.eWalletLink[i].wallet_image = await pushUpload(formData.value.eWalletLink[i].wallet_image_file)
-         delete formData.value.eWalletLink[i].wallet_image_file
-      }
-   }
-   for (let i = 0; i < formData.value.bankAccounts.length; i++) {
-      if (formData.value.bankAccounts[i].bankLogoFile) {
-         formData.value.bankAccounts[i].bankLogo = await pushUpload(formData.value.bankAccounts[i].bankLogoFile)
-         delete formData.value.bankAccounts[i].bankLogoFile
-      }
-   }
+   
+   uploadProgress.value.message = 'Semua file berhasil diupload!'
+   setTimeout(() => { uploadProgress.value.show = false }, 1000)
 }
 
 async function saveAndPreview() {
