@@ -1,80 +1,78 @@
 <template>
   <AdminShell
     title="Audio & Musik"
-    description="Kelola starter pack musik latar untuk invitation wedding"
+    description="Kelola katalog musik latar untuk invitation wedding"
     show-search
     :search="search"
     search-placeholder="Cari judul atau kategori musik"
-    action-label="Tambah Musik"
+    action-label="Tambah Satuan"
     @update:search="handleSearch"
     @action="openCreate"
   >
-    <!-- Welcome / Preset Section -->
-    <section class="mb-8 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
-      <div class="flex flex-col lg:flex-row">
-        <div class="flex-1 p-6 md:p-8">
-          <div class="flex items-center gap-3 mb-4">
-            <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
-            </div>
-            <h2 class="text-xl font-bold text-slate-900">Starter Pack Wedding Audio</h2>
-          </div>
-          <p class="max-w-2xl text-slate-600 leading-relaxed">
-            Import katalog musik wedding yang sudah dikelompokkan per nuansa acara. 
-            Mulai dari nuansa <span class="font-semibold text-rose-500">Romantic</span> untuk Aisle, 
-            hingga <span class="font-semibold text-amber-600">Acoustic</span> untuk Garden Party.
-          </p>
+    <!-- Bulk Upload Section -->
+    <section class="mb-8 overflow-hidden rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-white p-2 transition-all hover:border-indigo-300">
+      <div 
+        class="group relative flex flex-col items-center justify-center rounded-[2rem] bg-slate-50/50 py-12 px-6 transition-all hover:bg-indigo-50/30"
+        @dragover.prevent="isDragging = true"
+        @dragleave.prevent="isDragging = false"
+        @drop.prevent="handleBulkDrop"
+      >
+        <input
+          type="file"
+          multiple
+          accept="audio/mpeg, audio/mp3"
+          class="absolute inset-0 z-10 cursor-pointer opacity-0"
+          @change="handleBulkFileChange"
+        />
 
-          <div class="mt-6 flex flex-wrap gap-2">
-            <span
-              v-for="option in categoryOptions"
-              :key="option.value"
-              class="inline-flex items-center rounded-full border px-3 py-1 text-[10px] font-bold uppercase tracking-wider transition-all hover:scale-105"
-              :class="option.badgeClass"
-            >
-              {{ option.label }}
-            </span>
+        <div v-if="bulkQueue.length === 0" class="text-center">
+          <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white text-indigo-500 shadow-sm transition-all group-hover:scale-110 group-hover:shadow-md">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
           </div>
+          <h2 class="text-xl font-black text-slate-900 uppercase tracking-tight">Bulk Upload Musik</h2>
+          <p class="mt-2 text-sm text-slate-500">Drag & drop banyak file MP3 sekaligus ke sini. <br/> Judul otomatis diambil dari nama file.</p>
         </div>
-        <div class="flex items-center justify-center border-t border-slate-100 bg-slate-50/50 p-6 lg:w-72 lg:border-l lg:border-t-0">
-          <button
-            type="button"
-            class="group relative flex w-full items-center justify-center gap-2 overflow-hidden rounded-2xl bg-slate-900 px-6 py-4 text-sm font-bold text-white transition-all hover:bg-slate-800 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
-            :disabled="seeding"
-            @click="importWeddingPresets"
-          >
-            <span v-if="seeding" class="flex items-center gap-2">
-              <svg class="h-4 w-4 animate-spin" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-              Mengimpor…
-            </span>
-            <span v-else class="flex items-center gap-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              Import Presets
-            </span>
-          </button>
+
+        <div v-else class="w-full max-w-2xl space-y-6">
+          <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+             <div>
+                <h3 class="text-lg font-black text-slate-900">{{ bulkQueue.length }} File Siap Diupload</h3>
+                <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Pilih Kategori untuk Batch Ini</p>
+             </div>
+             <div class="flex items-center gap-3">
+                <select v-model="bulkCategory" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100">
+                   <option v-for="opt in categoryOptions" :key="option.value" :value="opt.value">{{ opt.label }}</option>
+                </select>
+                <button 
+                  @click.stop="processBulkUpload" 
+                  :disabled="isBulking"
+                  class="rounded-xl bg-slate-900 px-6 py-2 text-xs font-bold text-white transition-all hover:bg-indigo-600 disabled:opacity-50"
+                >
+                  {{ isBulking ? 'Uploading...' : 'Mulai Upload Semua' }}
+                </button>
+                <button @click.stop="bulkQueue = []" class="text-slate-400 hover:text-rose-500 transition-colors">
+                   <i class="fa-solid fa-times"></i>
+                </button>
+             </div>
+          </div>
+
+          <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+             <div v-for="(item, idx) in bulkQueue" :key="idx" class="mb-2 flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm border border-slate-50">
+                <div class="flex items-center gap-3 min-w-0">
+                   <div class="h-8 w-8 flex items-center justify-center rounded-lg" :class="item.status === 'done' ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-400'">
+                      <i v-if="item.status === 'done'" class="fa-solid fa-check text-xs"></i>
+                      <i v-else-if="item.status === 'uploading'" class="fa-solid fa-spinner animate-spin text-xs"></i>
+                      <i v-else class="fa-solid fa-file-audio text-xs"></i>
+                   </div>
+                   <span class="truncate text-xs font-bold text-slate-700">{{ item.file.name }}</span>
+                </div>
+                <span v-if="item.status === 'done'" class="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Selesai</span>
+                <span v-else-if="item.status === 'error'" class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Gagal</span>
+                <span v-else class="text-[10px] font-bold text-slate-300 uppercase tracking-widest">{{ (item.file.size / 1024 / 1024).toFixed(1) }} MB</span>
+             </div>
+          </div>
         </div>
       </div>
-    </section>
-
-    <!-- Stats Summary -->
-    <section class="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-      <article
-        v-for="option in categoryOptions"
-        :key="option.value"
-        class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:border-slate-300 hover:shadow-sm"
-      >
-        <div class="relative z-10 flex items-center justify-between">
-          <div class="h-8 w-8 rounded-lg flex items-center justify-center" :class="option.badgeClass.split(' ').slice(1, 3).join(' ')">
-             <i class="fa-solid fa-music text-[10px]"></i>
-          </div>
-          <span class="text-xl font-black text-slate-900">{{ categoryCounts[option.value] || 0 }}</span>
-        </div>
-        <div class="mt-3">
-          <h3 class="text-xs font-bold uppercase tracking-widest text-slate-500 group-hover:text-slate-900 transition-colors">{{ option.label }}</h3>
-        </div>
-        <!-- Decorative background icon -->
-        <i class="fa-solid fa-compact-disc absolute -bottom-2 -right-2 text-4xl opacity-[0.03] transition-transform group-hover:rotate-90"></i>
-      </article>
     </section>
 
     <!-- Main List -->
@@ -162,15 +160,8 @@
         </div>
         <h3 class="text-lg font-bold text-slate-900">Belum ada musik</h3>
         <p class="mt-2 max-w-xs text-sm text-slate-500">
-          {{ audios.length ? "Tidak ada musik yang cocok dengan pencarian." : "Gunakan preset wedding atau tambahkan manual musik favoritmu." }}
+          {{ audios.length ? "Tidak ada musik yang cocok dengan pencarian." : "Gunakan area Bulk Upload di atas untuk menambahkan musik." }}
         </p>
-        <button 
-          v-if="!audios.length"
-          @click="importWeddingPresets" 
-          class="mt-6 font-bold text-sm text-indigo-600 hover:text-indigo-800"
-        >
-          Import Preset Sekarang →
-        </button>
       </div>
     </div>
 
@@ -334,15 +325,6 @@ const CATEGORY_OPTIONS = [
   },
 ]
 
-const WEDDING_AUDIO_PRESETS = [
-  { title: 'Romantic Aisle Glow', category: 'romantic', url: '/audio/wedding-romantic-aisle.mp3' },
-  { title: 'Acoustic Morning Promise', category: 'acoustic', url: '/audio/wedding-acoustic-morning.mp3' },
-  { title: 'Elegant First Dance Reverie', category: 'elegant', url: '/audio/wedding-elegant-firstdance.mp3' },
-  { title: 'Sacred Ceremony Bloom', category: 'sacred', url: '/audio/wedding-sacred-ceremony.mp3' },
-  { title: 'Warm Reception Serenade', category: 'warm', url: '/audio/wedding-warm-reception.mp3' },
-  { title: 'Instrumental Garden Breeze', category: 'instrumental', url: '/audio/wedding-instrumental-garden.mp3' },
-]
-
 const toast = useToast()
 const audios = ref([])
 const search = ref('')
@@ -350,8 +332,13 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const uploadingFile = ref(false)
-const seeding = ref(false)
 const currentPlayingAudio = ref(null)
+
+// Bulk Upload States
+const isDragging = ref(false)
+const isBulking = ref(false)
+const bulkCategory = ref('romantic')
+const bulkQueue = ref([])
 
 const form = reactive({ title: '', category: 'romantic', url: '' })
 const categoryOptions = CATEGORY_OPTIONS
@@ -366,14 +353,6 @@ const filteredAudios = computed(() => {
       .some((value) => value.toLowerCase().includes(keyword))
   })
 })
-
-const categoryCounts = computed(() =>
-  audios.value.reduce((acc, track) => {
-    const key = track.category || 'romantic'
-    acc[key] = (acc[key] || 0) + 1
-    return acc
-  }, {}),
-)
 
 function getCategoryMeta(category) {
   return CATEGORY_OPTIONS.find((option) => option.value === category) || {
@@ -415,6 +394,75 @@ function copyLink(url) {
   toast.success("Link berhasil disalin!")
 }
 
+// Bulk Upload Handlers
+function handleBulkDrop(e) {
+  isDragging.value = false
+  const files = Array.from(e.dataTransfer.files).filter(f => f.type.includes('mpeg') || f.type.includes('mp3'))
+  addFilesToQueue(files)
+}
+
+function handleBulkFileChange(e) {
+  const files = Array.from(e.target.files)
+  addFilesToQueue(files)
+}
+
+function addFilesToQueue(files) {
+  const newItems = files.map(file => ({
+    file,
+    status: 'pending' // pending, uploading, done, error
+  }))
+  bulkQueue.value = [...bulkQueue.value, ...newItems]
+}
+
+async function processBulkUpload() {
+  if (isBulking.value || bulkQueue.value.length === 0) return
+  isBulking.value = true
+  
+  let successCount = 0
+  let failCount = 0
+
+  for (let i = 0; i < bulkQueue.value.length; i++) {
+    const item = bulkQueue.value[i]
+    if (item.status === 'done') continue
+
+    item.status = 'uploading'
+    try {
+      // 1. Upload to R2
+      const uploadRes = await uploadFileApi(item.file)
+      const fileUrl = uploadRes.fileUrl
+
+      // 2. Save to DB
+      const title = item.file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ")
+      await createAdminAudio({
+        title: title,
+        category: bulkCategory.value,
+        url: fileUrl
+      })
+
+      item.status = 'done'
+      successCount++
+    } catch (error) {
+      console.error('Bulk upload error:', error)
+      item.status = 'error'
+      failCount++
+    }
+  }
+
+  isBulking.value = false
+  if (successCount > 0) {
+    toast.success(`${successCount} musik berhasil diupload!`)
+    loadAudio()
+  }
+  if (failCount > 0) {
+    toast.error(`${failCount} musik gagal diupload.`)
+  }
+  
+  // Clear done items after a delay
+  setTimeout(() => {
+     bulkQueue.value = bulkQueue.value.filter(item => item.status !== 'done')
+  }, 3000)
+}
+
 async function handleFileChange(event) {
   const file = event.target.files?.[0]
   if (!file) return
@@ -452,35 +500,6 @@ async function submitForm() {
   }
 }
 
-async function importWeddingPresets() {
-  if (seeding.value) return
-  const existingKeys = new Set(audios.value.map((track) => `${track.title}::${track.url}`.toLowerCase()))
-  const missingTracks = WEDDING_AUDIO_PRESETS.filter(t => !existingKeys.has(`${t.title}::${t.url}`.toLowerCase()))
-
-  if (!missingTracks.length) return toast.info('Semua preset sudah tersedia')
-
-  const result = await Swal.fire({
-    title: 'Import preset wedding?',
-    text: `${missingTracks.length} audio preset akan ditambahkan ke katalog.`,
-    icon: 'question',
-    showCancelButton: true,
-    confirmButtonColor: '#4f46e5',
-    cancelButtonColor: '#94a3b8',
-    confirmButtonText: 'Ya, Import',
-    cancelButtonText: 'Batal',
-  })
-  if (!result.isConfirmed) return
-
-  seeding.value = true
-  try {
-    for (const track of missingTracks) { await createAdminAudio(track) }
-    toast.success(`Berhasil mengimport ${missingTracks.length} preset`)
-    await loadAudio()
-  } catch (error) {
-    toast.error('Gagal mengimpor preset')
-  } finally { seeding.value = false }
-}
-
 async function confirmDelete(track) {
   const result = await Swal.fire({
     title: 'Hapus musik?',
@@ -514,4 +533,7 @@ onMounted(() => { loadAudio() })
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+.custom-scrollbar::-webkit-scrollbar { width: 4px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
 </style>
