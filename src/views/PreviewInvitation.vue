@@ -49,7 +49,7 @@
            
            <!-- Content -->
            <div class="w-full h-full overflow-hidden">
-              <iframe v-if="iframeUrl" :src="iframeUrl" class="w-full h-full border-none" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
+              <iframe v-if="iframeUrl" :src="iframeUrl" class="w-full h-full border-none" allow="autoplay" sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-popups-to-escape-sandbox"></iframe>
            </div>
        </div>
     </main>

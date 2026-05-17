@@ -156,7 +156,41 @@ function getLocalPreviewPayload(slug) {
 <template>
   <div class="relative">
 
-    <div v-if="loading" class="min-h-screen text-center flex justify-center items-center">Loading undangan...
+    <div v-if="loading" class="min-h-screen bg-white">
+      <div class="animate-pulse">
+        <!-- Hero Skeleton -->
+        <div class="h-[60vh] bg-gray-50 flex items-center justify-center flex-col px-6">
+           <div class="w-32 h-32 rounded-full bg-gray-200 mb-8"></div>
+           <div class="h-8 w-48 bg-gray-200 rounded-full mb-4"></div>
+           <div class="h-4 w-32 bg-gray-100 rounded-full"></div>
+        </div>
+        <!-- Couple Section Skeleton -->
+        <div class="py-20 px-6 space-y-12">
+           <div class="flex flex-col md:flex-row items-center justify-center gap-12">
+              <div class="w-48 h-48 rounded-full bg-gray-100"></div>
+              <div class="space-y-3 items-center flex flex-col">
+                 <div class="h-6 w-40 bg-gray-200 rounded-full"></div>
+                 <div class="h-4 w-24 bg-gray-100 rounded-full"></div>
+              </div>
+           </div>
+           <div class="flex flex-col md:flex-row-reverse items-center justify-center gap-12">
+              <div class="w-48 h-48 rounded-full bg-gray-100"></div>
+              <div class="space-y-3 items-center flex flex-col">
+                 <div class="h-6 w-40 bg-gray-200 rounded-full"></div>
+                 <div class="h-4 w-24 bg-gray-100 rounded-full"></div>
+              </div>
+           </div>
+        </div>
+        <!-- Event Skeleton -->
+        <div class="bg-gray-50 py-20 px-6">
+           <div class="max-w-md mx-auto h-64 bg-white rounded-[2rem] shadow-sm p-8 space-y-6">
+              <div class="h-6 w-32 bg-gray-100 rounded-full mx-auto"></div>
+              <div class="h-4 w-full bg-gray-50 rounded-full"></div>
+              <div class="h-4 w-2/3 bg-gray-50 rounded-full mx-auto"></div>
+              <div class="h-12 w-full bg-gray-100 rounded-2xl"></div>
+           </div>
+        </div>
+      </div>
     </div>
     <div v-else-if="error" class="min-h-screen text-center flex justify-center items-center text-red-600">{{
       error }}</div>
