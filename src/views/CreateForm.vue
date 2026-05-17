@@ -413,6 +413,21 @@ const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
 
+// Cropper States
+const cropper = ref({
+   show: false,
+   image: '',
+   aspectRatio: 1,
+   targetField: '' // bride, groom, couple
+})
+
+const uploadProgress = ref({
+   show: false,
+   percentage: 0,
+   message: '',
+   currentFile: ''
+})
+
 const isPremiumTemplate = computed(() => {
    return selectedTemplateRef.value.isPremium === true || selectedTemplateRef.value.isPremium === 'true'
 })
