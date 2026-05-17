@@ -1,4 +1,5 @@
-import { apiFetch } from './client.js'
+import { BASE_URL, apiFetch } from './client.js'
+import { uploadFileApi } from './file.js'
 
 function withParams(path, params = {}) {
   const searchParams = new URLSearchParams()
@@ -18,6 +19,39 @@ export const createAdminAudio = (payload) =>
     method: 'POST',
     body: JSON.stringify(payload),
   })
+export const uploadAdminAudio = async (file, payload = {}) => {
+  const token = localStorage.getItem('token')
+  const formData = new FormData()
+  formData.append('file', file)
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== '') {
+      formData.append(key, value)
+    }
+  })
+
+  const res = await fetch(`${BASE_URL}/admin/audio/upload`, {
+    method: 'POST',
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: formData,
+  })
+
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: 'Upload audio failed' }))
+    if (res.status === 404 || res.status === 405) {
+      const upload = await uploadFileApi(file)
+      return createAdminAudio({
+        title: payload.title,
+        category: payload.category,
+        url: upload.fileUrl,
+      })
+    }
+    throw new Error(err.message || 'Upload audio failed')
+  }
+
+  return res.json()
+}
 export const deleteAdminAudio = (id) =>
   apiFetch(`/admin/audio/${id}`, {
     method: 'DELETE',

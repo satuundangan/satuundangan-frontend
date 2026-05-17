@@ -41,7 +41,7 @@
              </div>
              <div class="flex items-center gap-3">
                 <select v-model="bulkCategory" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100">
-                   <option v-for="opt in categoryOptions" :key="option.value" :value="opt.value">{{ opt.label }}</option>
+                   <option v-for="opt in categoryOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
                 </select>
                 <button 
                   @click.stop="processBulkUpload" 
@@ -242,7 +242,7 @@
                       <i class="fa-solid fa-check text-2xl"></i>
                    </div>
                    <p class="text-sm font-black text-emerald-600 uppercase tracking-widest">File Ready</p>
-                   <p class="mt-1 text-[10px] text-slate-400 truncate max-w-[200px]">{{ form.url.split("/").pop() }}</p>
+                   <p class="mt-1 text-[10px] text-slate-400 truncate max-w-[200px]">{{ form.fileName }}</p>
                 </div>
 
                 <div v-else class="text-center">
@@ -265,7 +265,7 @@
               </button>
               <button
                 type="submit"
-                :disabled="saving || uploadingFile || !form.url"
+                :disabled="saving || uploadingFile || !selectedAudioFile"
                 class="flex-[2] rounded-2xl bg-indigo-600 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {{ saving ? 'Menyimpan…' : 'Simpan Musik' }}
@@ -281,8 +281,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import { fetchAdminAudio, createAdminAudio, deleteAdminAudio } from '@/api/master.js'
-import { uploadFileApi } from '@/api/file.js'
+import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
@@ -333,6 +332,7 @@ const showForm = ref(false)
 const saving = ref(false)
 const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
+const selectedAudioFile = ref(null)
 
 // Bulk Upload States
 const isDragging = ref(false)
@@ -340,7 +340,7 @@ const isBulking = ref(false)
 const bulkCategory = ref('romantic')
 const bulkQueue = ref([])
 
-const form = reactive({ title: '', category: 'romantic', url: '' })
+const form = reactive({ title: '', category: 'romantic', url: '', fileName: '' })
 const categoryOptions = CATEGORY_OPTIONS
 
 const filteredAudios = computed(() => {
@@ -377,7 +377,10 @@ async function loadAudio() {
 }
 
 function handleSearch(value) { search.value = value }
-function resetForm() { Object.assign(form, { title: '', category: 'romantic', url: '' }) }
+function resetForm() {
+  selectedAudioFile.value = null
+  Object.assign(form, { title: '', category: 'romantic', url: '', fileName: '' })
+}
 function openCreate() { resetForm(); showForm.value = true }
 function closeForm() { showForm.value = false; resetForm() }
 
@@ -427,16 +430,10 @@ async function processBulkUpload() {
 
     item.status = 'uploading'
     try {
-      // 1. Upload to R2
-      const uploadRes = await uploadFileApi(item.file)
-      const fileUrl = uploadRes.fileUrl
-
-      // 2. Save to DB
       const title = item.file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ")
-      await createAdminAudio({
+      await uploadAdminAudio(item.file, {
         title: title,
         category: bulkCategory.value,
-        url: fileUrl
       })
 
       item.status = 'done'
@@ -463,39 +460,41 @@ async function processBulkUpload() {
   }, 3000)
 }
 
-async function handleFileChange(event) {
+function handleFileChange(event) {
   const file = event.target.files?.[0]
   if (!file) return
+  if (!file.type.includes('mpeg') && !file.type.includes('mp3')) {
+     toast.error("Format file harus MP3")
+     event.target.value = ""
+     return
+  }
   if (file.size > 25 * 1024 * 1024) {
      toast.error("Ukuran file terlalu besar (Maks 25MB)")
      event.target.value = ""
      return
   }
 
-  uploadingFile.value = true
-  try {
-    const res = await uploadFileApi(file)
-    form.url = res.fileUrl
-    toast.success("Audio terupload ke R2!")
-  } catch (error) {
-    toast.error(error.message || 'Gagal mengupload file audio')
-    event.target.value = ''
-  } finally {
-    uploadingFile.value = false
-  }
+  selectedAudioFile.value = file
+  form.fileName = file.name
+  form.url = file.name
 }
 
 async function submitForm() {
-  if (saving.value || !form.url) return
+  if (saving.value || !selectedAudioFile.value) return
   saving.value = true
+  uploadingFile.value = true
   try {
-    await createAdminAudio({ ...form })
+    await uploadAdminAudio(selectedAudioFile.value, {
+      title: form.title,
+      category: form.category,
+    })
     toast.success('Musik ditambahkan ke katalog')
     closeForm()
     await loadAudio()
   } catch (error) {
     toast.error(error.message || 'Gagal menyimpan')
   } finally {
+    uploadingFile.value = false
     saving.value = false
   }
 }
