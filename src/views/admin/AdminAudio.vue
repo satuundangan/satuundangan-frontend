@@ -131,9 +131,6 @@
           <!-- Custom Audio Player Feel -->
           <div class="relative mt-auto">
             <div class="flex items-center gap-3 rounded-2xl bg-slate-50 p-3 ring-1 ring-inset ring-slate-100 transition-all group-hover:bg-white group-hover:ring-slate-200">
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-white shadow-sm transition-transform group-hover:scale-110">
-                <i class="fa-solid fa-play text-slate-400 group-hover:text-indigo-600"></i>
-              </div>
               <div class="flex-1 overflow-hidden">
                 <audio 
                   controls 
