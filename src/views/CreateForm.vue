@@ -2,486 +2,336 @@
    <div class="min-h-screen bg-gray-50 font-sans pt-6 md:pt-12 pb-24 px-4 md:px-8">
       <div class="max-w-5xl mx-auto">
 
-         <!-- Top Navigation -->
-         <div class="flex items-center justify-between mb-8">
-            <button @click="router.back()" class="flex items-center gap-2 text-gray-500 hover:text-dark transition-colors font-bold text-sm">
-               <i class="fa-solid fa-chevron-left text-xs"></i> 
-               <span>Kembali</span>
-            </button>
-            
-            <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
-               <span class="w-2 h-2 rounded-full bg-mocha animate-pulse"></span>
-               <span class="text-[10px] font-bold text-dark uppercase tracking-widest">Langkah 2/2</span>
+         <!-- Top Navigation & Stepper -->
+         <div class="mb-10">
+            <div class="flex items-center justify-between mb-8">
+               <button @click="currentStep > 1 ? currentStep-- : router.back()" class="flex items-center gap-2 text-gray-500 hover:text-dark transition-colors font-bold text-sm">
+                  <i class="fa-solid fa-chevron-left text-xs"></i> 
+                  <span>{{ currentStep > 1 ? 'Kembali ke Step ' + (currentStep - 1) : 'Batal' }}</span>
+               </button>
+               
+               <div class="flex items-center gap-2 bg-white px-3 py-1.5 rounded-full border border-gray-100 shadow-sm">
+                  <span class="w-2 h-2 rounded-full bg-mocha animate-pulse"></span>
+                  <span class="text-[10px] font-bold text-dark uppercase tracking-widest">Langkah {{ currentStep }}/4</span>
+               </div>
+               <div class="w-16 hidden md:block"></div>
             </div>
 
-            <div class="w-16 hidden md:block"></div>
+            <!-- Professional Stepper -->
+            <div class="flex items-center justify-between max-w-2xl mx-auto px-4 relative mb-12">
+               <!-- Connecting Lines -->
+               <div class="absolute top-5 left-8 right-8 h-0.5 bg-gray-100 -z-10">
+                  <div class="h-full bg-mocha transition-all duration-500" :style="{ width: ((currentStep - 1) / 3 * 100) + '%' }"></div>
+               </div>
+
+               <div v-for="step in 4" :key="step" class="flex flex-col items-center gap-3">
+                  <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 border-2"
+                     :class="currentStep >= step ? 'bg-mocha text-white border-mocha' : 'bg-white text-gray-300 border-gray-100'">
+                     <i v-if="currentStep > step" class="fa-solid fa-check text-xs"></i>
+                     <span v-else>{{ step }}</span>
+                  </div>
+                  <span class="text-[9px] font-bold uppercase tracking-widest transition-colors duration-500"
+                     :class="currentStep >= step ? 'text-mocha' : 'text-gray-300'">
+                     {{ ['Mempelai', 'Acara', 'Media', 'Ekstra'][step-1] }}
+                  </span>
+               </div>
+            </div>
          </div>
 
          <div class="text-center mb-10 md:mb-12">
-            <h1 class="text-2xl md:text-4xl font-serif font-bold text-dark mb-3">Lengkapi Data Undangan</h1>
-            <p class="text-muted text-sm md:text-lg">Isi detail acaramu dengan lengkap agar undangan terlihat sempurna.</p>
+            <h1 class="text-2xl md:text-4xl font-serif font-bold text-dark mb-3">
+               {{ ['Data Mempelai', 'Detail Acara', 'Galeri & Media', 'Informasi Tambahan'][currentStep-1] }}
+            </h1>
+            <p class="text-muted text-sm md:text-lg">
+               {{ [
+                  'Isi informasi pasangan agar undangan terlihat personal.',
+                  'Tentukan kapan dan di mana momen bahagiamu berlangsung.',
+                  'Abadikan momen lewat foto, video, dan musik pilihan.',
+                  'Lengkapi fitur pendukung agar tamu merasa nyaman.'
+               ][currentStep-1] }}
+            </p>
          </div>
 
          <div class="bg-white rounded-[2.5rem] shadow-xl shadow-mocha/5 border border-gray-100 overflow-hidden relative">
-            <div class="h-1.5 bg-gray-50 w-full">
-               <div class="h-full bg-mocha transition-all duration-700 ease-out" :style="{ width: progressPercentage + '%' }">
+            <div class="p-6 md:p-12">
+
+               <!-- Step 1: Mempelai -->
+               <div v-if="currentStep === 1" class="space-y-12 animate-fade-in">
+                  <section class="space-y-6">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
+                        <!-- Wanita -->
+                        <div class="space-y-6">
+                           <h3 class="font-serif font-bold text-lg text-mocha flex items-center gap-2">
+                              <span class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sm border border-mocha/10">👰‍♀️</span> 
+                              Mempelai Wanita
+                           </h3>
+                           <div class="space-y-5">
+                              <div data-field="brideName">
+                                 <label class="form-label">Nama Lengkap <span class="text-red-500">*</span></label>
+                                 <input v-model="formData.brideName" @input="validateField('brideName')" type="text" placeholder="Putri Diana" class="form-input" :class="{ 'border-red-500 bg-red-50/30': validationErrors.brideName }" />
+                                 <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
+                              </div>
+                              <div data-field="brideParents">
+                                 <label class="form-label">Nama Orang Tua</label>
+                                 <input v-model="formData.brideParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                              </div>
+                              <div data-field="bridePhoto">
+                                 <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
+                                 <div class="relative group max-w-[200px]">
+                                    <input type="file" accept="image/*" @change="handleBridePhotoUpload" class="hidden" id="bridePhoto" />
+                                    <label for="bridePhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
+                                       <img v-if="formData.bridePhoto" :src="formData.bridePhoto" class="w-full h-full object-cover" />
+                                       <div v-else class="flex flex-col items-center text-gray-400">
+                                          <i class="fa-solid fa-camera text-2xl mb-2"></i>
+                                          <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
+                                       </div>
+                                       <div v-if="formData.bridePhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <span class="text-white text-[10px] font-bold uppercase tracking-widest">Ganti</span>
+                                       </div>
+                                    </label>
+                                 </div>
+                                 <p v-if="validationErrors.bridePhoto" class="form-error">{{ validationErrors.bridePhoto }}</p>
+                              </div>
+                           </div>
+                        </div>
+                        <!-- Pria -->
+                        <div class="space-y-6">
+                           <h3 class="font-serif font-bold text-lg text-mocha flex items-center gap-2">
+                              <span class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sm border border-mocha/10">🤵‍♂️</span> 
+                              Mempelai Pria
+                           </h3>
+                           <div class="space-y-5">
+                              <div data-field="groomName">
+                                 <label class="form-label">Nama Lengkap <span class="text-red-500">*</span></label>
+                                 <input v-model="formData.groomName" @input="validateField('groomName')" type="text" placeholder="Pangeran Charles" class="form-input" :class="{ 'border-red-500 bg-red-50/30': validationErrors.groomName }" />
+                                 <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
+                              </div>
+                              <div data-field="groomParents">
+                                 <label class="form-label">Nama Orang Tua</label>
+                                 <input v-model="formData.groomParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                              </div>
+                              <div data-field="groomPhoto">
+                                 <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
+                                 <div class="relative group max-w-[200px]">
+                                    <input type="file" accept="image/*" @change="handleGroomPhotoUpload" class="hidden" id="groomPhoto" />
+                                    <label for="groomPhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
+                                       <img v-if="formData.groomPhoto" :src="formData.groomPhoto" class="w-full h-full object-cover" />
+                                       <div v-else class="flex flex-col items-center text-gray-400">
+                                          <i class="fa-solid fa-camera text-2xl mb-2"></i>
+                                          <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
+                                       </div>
+                                       <div v-if="formData.groomPhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <span class="text-white text-[10px] font-bold uppercase tracking-widest">Ganti</span>
+                                       </div>
+                                    </label>
+                                 </div>
+                                 <p v-if="validationErrors.groomPhoto" class="form-error">{{ validationErrors.groomPhoto }}</p>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                     <div data-field="title" class="pt-6 border-t border-gray-50">
+                        <label class="form-label">Judul Undangan (Slug) <span class="text-red-500">*</span></label>
+                        <div class="flex flex-col sm:flex-row gap-3">
+                           <div class="flex-1">
+                              <input v-model="formData.title" @input="validateField('title')" type="text" placeholder="Contoh: The Wedding of Putri & Pangeran" class="form-input font-bold" :class="{ 'border-red-500': validationErrors.title }" />
+                              <p v-if="validationErrors.title" class="form-error">{{ validationErrors.title }}</p>
+                           </div>
+                           <button v-if="suggestedTitle && formData.title !== suggestedTitle" @click="formData.title = suggestedTitle" class="px-4 py-3 bg-mocha/5 text-mocha rounded-xl font-bold text-xs hover:bg-mocha hover:text-white transition-all whitespace-nowrap">Gunakan Saran</button>
+                        </div>
+                     </div>
+                  </section>
+                  <QuoteSection v-if="sections.quote" :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
                </div>
-            </div>
 
-            <div class="p-6 md:p-12 space-y-12 md:space-y-16">
-
-               <!-- Section: Data Mempelai -->
-               <section class="space-y-6">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
-                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
-                        <i class="fa-solid fa-heart"></i>
+               <!-- Step 2: Acara -->
+               <div v-if="currentStep === 2" class="space-y-12 animate-fade-in">
+                  <section class="space-y-8">
+                     <div data-field="isSingleEvent">
+                        <label class="form-label mb-4 block">Format Acara <span class="text-red-500">*</span></label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                           <label class="flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer hover:bg-white hover:shadow-md transition-all group" :class="formData.isSingleEvent === true ? 'border-mocha bg-mocha/5' : 'border-gray-50 bg-gray-50/50'">
+                              <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all" :class="formData.isSingleEvent === true ? 'border-mocha bg-mocha text-white scale-110' : 'border-gray-300 bg-white group-hover:border-mocha/30'"><i class="fa-solid fa-check text-[10px]" v-if="formData.isSingleEvent === true"></i></div>
+                              <input type="radio" :value="true" v-model="formData.isSingleEvent" class="hidden" />
+                              <div><span class="font-bold block text-dark text-sm">Satu Lokasi</span><span class="text-[10px] text-muted font-medium">Akad & Resepsi digabung</span></div>
+                           </label>
+                           <label class="flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer hover:bg-white hover:shadow-md transition-all group" :class="formData.isSingleEvent === false ? 'border-mocha bg-mocha/5' : 'border-gray-50 bg-gray-50/50'">
+                              <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all" :class="formData.isSingleEvent === false ? 'border-mocha bg-mocha text-white scale-110' : 'border-gray-300 bg-white group-hover:border-mocha/30'"><i class="fa-solid fa-check text-[10px]" v-if="formData.isSingleEvent === false"></i></div>
+                              <input type="radio" :value="false" v-model="formData.isSingleEvent" class="hidden" />
+                              <div><span class="font-bold block text-dark text-sm">Acara Terpisah</span><span class="text-[10px] text-muted font-medium">Akad & Resepsi beda tempat</span></div>
+                           </label>
+                        </div>
+                        <p v-if="validationErrors.isSingleEvent" class="form-error mt-2">{{ validationErrors.isSingleEvent }}</p>
                      </div>
-                     <div>
-                        <h2 class="text-xl font-bold text-dark">Data Mempelai</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Informasi Pasangan</p>
+
+                     <div v-if="formData.isSingleEvent" class="bg-gray-50/50 p-6 md:p-8 rounded-3xl border border-gray-100 space-y-6 shadow-inner">
+                        <div class="grid md:grid-cols-2 gap-6">
+                           <div data-field="dateTime"><label class="form-label">Tanggal & Waktu <span class="text-red-500">*</span></label><input v-model="formData.dateTime" type="datetime-local" class="form-input" :class="{ 'border-red-500': validationErrors.dateTime }" /><p v-if="validationErrors.dateTime" class="form-error">{{ validationErrors.dateTime }}</p></div>
+                           <div data-field="map"><label class="form-label">Link Google Maps <span class="text-red-500">*</span></label><input v-model="formData.map" @input="validateField('map')" type="text" placeholder="https://maps.app.goo.gl/..." class="form-input" /><p v-if="validationErrors.map" class="form-error">{{ validationErrors.map }}</p></div>
+                        </div>
+                        <div><label class="form-label">Alamat Lengkap Lokasi</label><textarea v-model="formData.mapDesc" placeholder="Gedung Serbaguna, Jl. Mawar No. 1" class="form-input h-24 resize-none"></textarea></div>
                      </div>
-                  </div>
 
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
-                     <!-- Wanita -->
-                     <div class="space-y-6">
-                        <h3 class="font-serif font-bold text-lg text-mocha flex items-center gap-2">
-                           <span class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sm border border-mocha/10">👰‍♀️</span> 
-                           Mempelai Wanita
-                        </h3>
-
-                        <div class="space-y-5">
-                           <div data-field="brideName">
-                              <label class="form-label">Nama Lengkap <span class="text-red-500">*</span></label>
-                              <input v-model="formData.brideName" @input="validateField('brideName')" type="text"
-                                 placeholder="Putri Diana" class="form-input"
-                                 :class="{ 'border-red-500 bg-red-50/30': validationErrors.brideName }" />
-                              <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
+                     <div v-if="formData.isSingleEvent === false" class="grid md:grid-cols-2 gap-8">
+                        <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-gray-50 shadow-sm relative group hover:border-mocha/20 transition-all">
+                           <div class="absolute -top-3 left-6 px-4 py-1 bg-sage text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Akad Nikah</div>
+                           <div class="space-y-5 mt-4">
+                              <div data-field="akadDateTime"><label class="form-label">Waktu Akad <span class="text-red-500">*</span></label><input v-model="formData.akadDateTime" type="datetime-local" class="form-input" /><p v-if="validationErrors.akadDateTime" class="form-error">{{ validationErrors.akadDateTime }}</p></div>
+                              <div data-field="akadMap"><label class="form-label">Maps Akad <span class="text-red-500">*</span></label><input v-model="formData.akadMap" @input="validateField('akadMap')" type="text" class="form-input" /><p v-if="validationErrors.akadMap" class="form-error">{{ validationErrors.akadMap }}</p></div>
+                              <div><label class="form-label">Lokasi Akad</label><input v-model="formData.akadDesc" type="text" class="form-input" /></div>
                            </div>
-
-                           <div data-field="brideParents">
-                              <label class="form-label">Nama Orang Tua</label>
-                              <input v-model="formData.brideParents" type="text"
-                                 placeholder="Bpk. ... & Ibu ..." class="form-input" />
+                        </div>
+                        <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-gray-50 shadow-sm relative group hover:border-mocha/20 transition-all">
+                           <div class="absolute -top-3 left-6 px-4 py-1 bg-mocha text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Resepsi</div>
+                           <div class="space-y-5 mt-4">
+                              <div data-field="resepsiDateTime"><label class="form-label">Waktu Resepsi <span class="text-red-500">*</span></label><input v-model="formData.resepsiDateTime" type="datetime-local" class="form-input" /><p v-if="validationErrors.resepsiDateTime" class="form-error">{{ validationErrors.resepsiDateTime }}</p></div>
+                              <div data-field="resepsiMap"><label class="form-label">Maps Resepsi <span class="text-red-500">*</span></label><input v-model="formData.resepsiMap" @input="validateField('resepsiMap')" type="text" class="form-input" /><p v-if="validationErrors.resepsiMap" class="form-error">{{ validationErrors.resepsiMap }}</p></div>
+                              <div><label class="form-label">Lokasi Resepsi</label><input v-model="formData.resepsiDesc" type="text" class="form-input" /></div>
                            </div>
+                        </div>
+                     </div>
+                  </section>
+               </div>
 
-                           <div data-field="bridePhoto">
-                              <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
-                              <div class="relative group max-w-[200px]">
-                                 <input type="file" accept="image/*" @change="handleBridePhotoUpload" class="hidden" id="bridePhoto" />
-                                 <label for="bridePhoto"
-                                    class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
-                                    <img v-if="formData.bridePhoto" :src="formData.bridePhoto" class="w-full h-full object-cover" />
-                                    <div v-else class="flex flex-col items-center text-gray-400">
-                                       <i class="fa-solid fa-camera text-2xl mb-2"></i>
-                                       <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
+               <!-- Step 3: Media -->
+               <div v-if="currentStep === 3" class="space-y-12 animate-fade-in">
+                  <section class="space-y-8">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div data-field="photoCouple">
+                           <label class="form-label">Foto Sampul Utama (Hero) <span class="text-red-500">*</span></label>
+                           <div class="flex gap-4 items-end">
+                              <label class="w-32 h-32 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group">
+                                 <input type="file" accept="image/*" @change="handleCouplePhotoUpload" class="hidden" /><i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha transition-colors"></i>
+                              </label>
+                              <div v-if="formData.photoCouple" class="relative group"><img :src="formData.photoCouple" class="w-32 h-40 object-cover rounded-2xl shadow-xl ring-4 ring-white" /><button @click="formData.photoCouple = ''; formData.photoCoupleFile = null" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg">×</button></div>
+                           </div>
+                           <p v-if="validationErrors.photoCouple" class="form-error mt-2">{{ validationErrors.photoCouple }}</p>
+                        </div>
+                        <div v-if="sections.denah" data-field="denah">
+                           <label class="form-label">Denah Lokasi / Ruangan</label>
+                           <div class="flex gap-4 items-end">
+                              <label class="w-32 h-32 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group">
+                                 <input type="file" accept="image/*" @change="handleDenahUpload" class="hidden" /><i class="fa-solid fa-map-location-dot text-gray-300 group-hover:text-mocha transition-colors"></i>
+                              </label>
+                              <img v-if="formData.denah" :src="formData.denah" class="h-32 w-40 rounded-2xl object-cover shadow-lg ring-4 ring-white" />
+                           </div>
+                        </div>
+                     </div>
+                     <div data-field="gallery" class="pt-4">
+                        <label class="form-label">Galeri Foto (Maksimal 10)</label>
+                        <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                           <label class="aspect-square border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 transition-all group"><input type="file" accept="image/*" multiple @change="handleGalleryUpload" class="hidden" /><i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha"></i></label>
+                           <div v-for="(img, i) in formData.gallery" :key="i" class="aspect-square relative group"><img :src="img.preview" class="w-full h-full object-cover rounded-2xl shadow-sm border border-white" /><button @click="removeGalleryImage(i)" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg text-[10px]">×</button></div>
+                        </div>
+                     </div>
+                  </section>
+                  <LoveStorySection v-if="sections.loveStory" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" />
+                  
+                  <!-- Unified Music Section -->
+                  <section v-if="sections.music" class="space-y-6">
+                     <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
+                        <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
+                           <i class="fa-solid fa-music"></i>
+                        </div>
+                        <div>
+                           <h2 class="text-xl font-bold text-dark">Musik Latar</h2>
+                           <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Lagu Undangan</p>
+                        </div>
+                     </div>
+
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="space-y-4">
+                           <label class="form-label">Pilih Sumber Musik</label>
+                           <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
+                              <option value="">Pilih Musik Preset</option>
+                              <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
+                                 {{ audio.title }}
+                              </option>
+                              <option value="custom" v-if="isPremiumTemplate">Upload Musik Sendiri (MP3)</option>
+                              <option value="custom" v-else disabled>Upload Musik Sendiri (Premium)</option>
+                           </select>
+
+                           <div v-if="formData.music === 'custom' && isPremiumTemplate" class="bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
+                              <div v-if="!formData.musicPreview" class="text-center">
+                                 <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
+                                 <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-mocha text-2xl mb-3">
+                                       <i class="fa-solid fa-cloud-arrow-up"></i>
                                     </div>
-                                    <div v-if="formData.bridePhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                       <span class="text-white text-[10px] font-bold uppercase tracking-widest">Ganti</span>
-                                    </div>
+                                    <p class="text-sm font-bold text-dark mb-1">Upload File MP3</p>
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Maksimal 10MB</p>
                                  </label>
                               </div>
-                              <p v-if="validationErrors.bridePhoto" class="form-error">{{ validationErrors.bridePhoto }}</p>
-                           </div>
-                        </div>
-                     </div>
 
-                     <!-- Pria -->
-                     <div class="space-y-6">
-                        <h3 class="font-serif font-bold text-lg text-mocha flex items-center gap-2">
-                           <span class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sm border border-mocha/10">🤵‍♂️</span> 
-                           Mempelai Pria
-                        </h3>
-
-                        <div class="space-y-5">
-                           <div data-field="groomName">
-                              <label class="form-label">Nama Lengkap <span class="text-red-500">*</span></label>
-                              <input v-model="formData.groomName" @input="validateField('groomName')" type="text"
-                                 placeholder="Pangeran Charles" class="form-input"
-                                 :class="{ 'border-red-500 bg-red-50/30': validationErrors.groomName }" />
-                              <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
-                           </div>
-
-                           <div data-field="groomParents">
-                              <label class="form-label">Nama Orang Tua</label>
-                              <input v-model="formData.groomParents" type="text"
-                                 placeholder="Bpk. ... & Ibu ..." class="form-input" />
-                           </div>
-
-                           <div data-field="groomPhoto">
-                              <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
-                              <div class="relative group max-w-[200px]">
-                                 <input type="file" accept="image/*" @change="handleGroomPhotoUpload" class="hidden" id="groomPhoto" />
-                                 <label for="groomPhoto"
-                                    class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
-                                    <img v-if="formData.groomPhoto" :src="formData.groomPhoto" class="w-full h-full object-cover" />
-                                    <div v-else class="flex flex-col items-center text-gray-400">
-                                       <i class="fa-solid fa-camera text-2xl mb-2"></i>
-                                       <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
+                              <div v-else class="space-y-4">
+                                 <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                       <div class="w-10 h-10 bg-mocha text-white rounded-xl flex items-center justify-center">
+                                          <i class="fa-solid fa-file-audio"></i>
+                                       </div>
+                                       <div>
+                                          <p class="text-xs font-bold text-dark">Musik Terpilih</p>
+                                          <p class="text-[10px] text-gray-500 truncate max-w-[200px]">{{ formData.musicFile?.name || 'File Musik' }}</p>
+                                       </div>
                                     </div>
-                                    <div v-if="formData.groomPhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                                       <span class="text-white text-[10px] font-bold uppercase tracking-widest">Ganti</span>
-                                    </div>
-                                 </label>
-                              </div>
-                              <p v-if="validationErrors.groomPhoto" class="form-error">{{ validationErrors.groomPhoto }}</p>
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div data-field="title" class="pt-6 border-t border-gray-50">
-                     <label class="form-label">Judul Undangan (Slug) <span class="text-red-500">*</span></label>
-                     <div class="flex flex-col sm:flex-row gap-3">
-                        <div class="flex-1">
-                           <input v-model="formData.title" @input="validateField('title')" type="text"
-                              placeholder="Contoh: The Wedding of Putri & Pangeran" class="form-input font-bold"
-                              :class="{ 'border-red-500': validationErrors.title }" />
-                           <p v-if="validationErrors.title" class="form-error">{{ validationErrors.title }}</p>
-                        </div>
-                        <button v-if="suggestedTitle && formData.title !== suggestedTitle"
-                           @click="formData.title = suggestedTitle"
-                           class="px-4 py-3 bg-mocha/5 text-mocha rounded-xl font-bold text-xs hover:bg-mocha hover:text-white transition-all whitespace-nowrap">
-                           Gunakan Saran
-                        </button>
-                     </div>
-                  </div>
-               </section>
-
-               <!-- Section: Quote -->
-               <QuoteSection v-if="sections.quote" :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
-
-               <!-- Section: Acara -->
-               <section class="space-y-8">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
-                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
-                        <i class="fa-solid fa-calendar-day"></i>
-                     </div>
-                     <div>
-                        <h2 class="text-xl font-bold text-dark">Detail Acara</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Waktu & Lokasi</p>
-                     </div>
-                  </div>
-
-                  <div data-field="isSingleEvent">
-                     <label class="form-label mb-4 block">Format Acara <span class="text-red-500">*</span></label>
-                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <label class="flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer hover:bg-white hover:shadow-md transition-all group"
-                           :class="formData.isSingleEvent === true ? 'border-mocha bg-mocha/5' : 'border-gray-50 bg-gray-50/50'">
-                           <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
-                                :class="formData.isSingleEvent === true ? 'border-mocha bg-mocha text-white scale-110' : 'border-gray-300 bg-white group-hover:border-mocha/30'">
-                              <i class="fa-solid fa-check text-[10px]" v-if="formData.isSingleEvent === true"></i>
-                           </div>
-                           <input type="radio" :value="true" v-model="formData.isSingleEvent" class="hidden" />
-                           <div>
-                              <span class="font-bold block text-dark text-sm">Satu Lokasi</span>
-                              <span class="text-[10px] text-muted font-medium">Akad & Resepsi digabung</span>
-                           </div>
-                        </label>
-                        <label class="flex items-center gap-4 p-5 border-2 rounded-2xl cursor-pointer hover:bg-white hover:shadow-md transition-all group"
-                           :class="formData.isSingleEvent === false ? 'border-mocha bg-mocha/5' : 'border-gray-50 bg-gray-50/50'">
-                           <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all"
-                                :class="formData.isSingleEvent === false ? 'border-mocha bg-mocha text-white scale-110' : 'border-gray-300 bg-white group-hover:border-mocha/30'">
-                              <i class="fa-solid fa-check text-[10px]" v-if="formData.isSingleEvent === false"></i>
-                           </div>
-                           <input type="radio" :value="false" v-model="formData.isSingleEvent" class="hidden" />
-                           <div>
-                              <span class="font-bold block text-dark text-sm">Acara Terpisah</span>
-                              <span class="text-[10px] text-muted font-medium">Akad & Resepsi beda tempat</span>
-                           </div>
-                        </label>
-                     </div>
-                     <p v-if="validationErrors.isSingleEvent" class="form-error mt-2">{{ validationErrors.isSingleEvent }}</p>
-                  </div>
-
-                  <!-- Event Forms -->
-                  <div v-if="formData.isSingleEvent" class="bg-gray-50/50 p-6 md:p-8 rounded-3xl border border-gray-100 space-y-6 animate-fade-in shadow-inner">
-                     <div class="grid md:grid-cols-2 gap-6">
-                        <div data-field="dateTime">
-                           <label class="form-label">Tanggal & Waktu <span class="text-red-500">*</span></label>
-                           <input v-model="formData.dateTime" type="datetime-local" class="form-input"
-                              :class="{ 'border-red-500': validationErrors.dateTime }" />
-                           <p v-if="validationErrors.dateTime" class="form-error">{{ validationErrors.dateTime }}</p>
-                        </div>
-                        <div data-field="map">
-                           <label class="form-label">Link Google Maps <span class="text-red-500">*</span></label>
-                           <input v-model="formData.map" @input="validateField('map')" type="text"
-                              placeholder="https://maps.app.goo.gl/..." class="form-input" />
-                           <p v-if="validationErrors.map" class="form-error">{{ validationErrors.map }}</p>
-                        </div>
-                     </div>
-                     <div>
-                        <label class="form-label">Alamat Lengkap Lokasi</label>
-                        <textarea v-model="formData.mapDesc" placeholder="Gedung Serbaguna, Jl. Mawar No. 1" class="form-input h-24 resize-none"></textarea>
-                     </div>
-                  </div>
-
-                  <div v-if="formData.isSingleEvent === false" class="grid md:grid-cols-2 gap-8 animate-fade-in">
-                     <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-gray-50 shadow-sm relative group hover:border-mocha/20 transition-all">
-                        <div class="absolute -top-3 left-6 px-4 py-1 bg-sage text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Akad Nikah</div>
-                        <div class="space-y-5 mt-4">
-                           <div data-field="akadDateTime">
-                              <label class="form-label">Waktu Akad <span class="text-red-500">*</span></label>
-                              <input v-model="formData.akadDateTime" type="datetime-local" class="form-input" />
-                              <p v-if="validationErrors.akadDateTime" class="form-error">{{ validationErrors.akadDateTime }}</p>
-                           </div>
-                           <div data-field="akadMap">
-                              <label class="form-label">Maps Akad <span class="text-red-500">*</span></label>
-                              <input v-model="formData.akadMap" @input="validateField('akadMap')" type="text" class="form-input" />
-                              <p v-if="validationErrors.akadMap" class="form-error">{{ validationErrors.akadMap }}</p>
-                           </div>
-                           <div>
-                              <label class="form-label">Lokasi Akad</label>
-                              <input v-model="formData.akadDesc" type="text" class="form-input" />
-                           </div>
-                        </div>
-                     </div>
-                     <div class="bg-white p-6 md:p-8 rounded-3xl border-2 border-gray-50 shadow-sm relative group hover:border-mocha/20 transition-all">
-                        <div class="absolute -top-3 left-6 px-4 py-1 bg-mocha text-white text-[10px] font-bold uppercase tracking-widest rounded-full shadow-lg">Resepsi</div>
-                        <div class="space-y-5 mt-4">
-                           <div data-field="resepsiDateTime">
-                              <label class="form-label">Waktu Resepsi <span class="text-red-500">*</span></label>
-                              <input v-model="formData.resepsiDateTime" type="datetime-local" class="form-input" />
-                              <p v-if="validationErrors.resepsiDateTime" class="form-error">{{ validationErrors.resepsiDateTime }}</p>
-                           </div>
-                           <div data-field="resepsiMap">
-                              <label class="form-label">Maps Resepsi <span class="text-red-500">*</span></label>
-                              <input v-model="formData.resepsiMap" @input="validateField('resepsiMap')" type="text" class="form-input" />
-                              <p v-if="validationErrors.resepsiMap" class="form-error">{{ validationErrors.resepsiMap }}</p>
-                           </div>
-                           <div>
-                              <label class="form-label">Lokasi Resepsi</label>
-                              <input v-model="formData.resepsiDesc" type="text" class="form-input" />
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               </section>
-
-               <!-- Section: Love Story -->
-               <LoveStorySection v-if="sections.loveStory" 
-                  :loveStories="formData.loveStories" 
-                  @add="addLoveStory" 
-                  @remove="removeLoveStory" 
-                  @upload="handleLoveStoryUpload" />
-
-               <!-- Section: Social Media & Live Streaming -->
-               <SocialSection v-if="sections.socialMedia || sections['live-stream']" :formData="formData" />
-
-               <!-- Section: Gift & Food -->
-               <GiftSection v-if="sections.gift || sections.foodList" 
-                  :sections="sections"
-                  :formData="formData"
-                  :foodList="formData.foodList"
-                  :giftAddresses="formData.giftAddresses"
-                  @add-food="addFood" @remove-food="removeFood"
-                  @add-gift="addGiftAddress" @remove-gift="removeGiftAddress"
-                  @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload"
-                  @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
-
-               <!-- Section: Additional Details (Dress Code, Turut Mengundang, etc.) -->
-               <section v-if="sections['dress-code'] || sections['turut-mengundang'] || sections['health-protocol'] || sections.likes" class="space-y-8">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
-                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
-                        <i class="fa-solid fa-plus-circle"></i>
-                     </div>
-                     <div>
-                        <h2 class="text-xl font-bold text-dark">Informasi Tambahan</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Detail Ekstra</p>
-                     </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div v-if="sections['dress-code']">
-                        <label class="form-label">Dress Code</label>
-                        <input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik" class="form-input" />
-                     </div>
-                     <div v-if="sections['health-protocol']">
-                        <label class="form-label">Protokol Kesehatan</label>
-                        <div class="flex items-center gap-4 mt-2">
-                           <label class="flex items-center gap-2 cursor-pointer">
-                              <input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" />
-                              <span class="text-sm font-medium text-dark">Tampilkan Protokol Kesehatan</span>
-                           </label>
-                        </div>
-                     </div>
-                     <div v-if="sections.likes">
-                        <label class="form-label">Fitur Like / Suka</label>
-                        <div class="flex items-center gap-4 mt-2">
-                           <label class="flex items-center gap-2 cursor-pointer">
-                              <input type="checkbox" v-model="formData.likes" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" />
-                              <span class="text-sm font-medium text-dark">Aktifkan Tombol Like</span>
-                           </label>
-                        </div>
-                     </div>
-                  </div>
-
-                  <div v-if="sections['turut-mengundang']">
-                     <label class="form-label">Turut Mengundang (Extended Family)</label>
-                     <textarea v-model="formData.extendedFamilyText" placeholder="Pisahkan nama dengan koma atau baris baru" class="form-input h-24 resize-none"></textarea>
-                     <p class="text-[10px] text-muted mt-1 italic">* Pisahkan tiap nama dengan koma</p>
-                  </div>
-               </section>
-
-               <!-- Section: Music -->
-               <section v-if="sections.music" class="space-y-8">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
-                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
-                        <i class="fa-solid fa-music"></i>
-                     </div>
-                     <div>
-                        <h2 class="text-xl font-bold text-dark">Musik Latar</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Lagu Undangan</p>
-                     </div>
-                  </div>
-
-                  <div class="space-y-6">
-                     <div data-field="music">
-                        <label class="form-label">Pilih Musik</label>
-                        <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
-                           <option value="">Pilih Musik Preset</option>
-                           <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
-                              {{ audio.title }}
-                           </option>
-                           <option value="custom" v-if="isPremiumTemplate">Upload Musik Sendiri (MP3)</option>
-                           <option value="custom" v-else disabled>Upload Musik Sendiri (Premium)</option>
-                        </select>
-                     </div>
-
-                     <div v-if="formData.music === 'custom' && isPremiumTemplate" class="bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200 animate-fade-in">
-                        <div v-if="!formData.musicPreview" class="text-center">
-                           <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
-                           <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
-                              <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-mocha text-2xl mb-3">
-                                 <i class="fa-solid fa-cloud-arrow-up"></i>
-                              </div>
-                              <p class="text-sm font-bold text-dark mb-1">Upload File MP3</p>
-                              <p class="text-[10px] text-gray-400 uppercase tracking-widest">Maksimal 5MB</p>
-                           </label>
-                        </div>
-
-                        <div v-else class="space-y-4">
-                           <div class="flex items-center justify-between">
-                              <div class="flex items-center gap-3">
-                                 <div class="w-10 h-10 bg-mocha text-white rounded-xl flex items-center justify-center">
-                                    <i class="fa-solid fa-file-audio"></i>
+                                    <button @click="formData.musicPreview = ''; formData.musicFile = null" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700">Ganti File</button>
                                  </div>
-                                 <div>
-                                    <p class="text-xs font-bold text-dark">Musik Terpilih</p>
-                                    <p class="text-[10px] text-gray-500 truncate max-w-[200px]">{{ formData.musicFile?.name || 'File Musik' }}</p>
-                                 </div>
+
+                                 <AudioTrimmer
+                                    :url="formData.musicPreview"
+                                    :initialStart="formData.audioStart"
+                                    :initialEnd="formData.audioEnd"
+                                    @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
+                                 />
                               </div>
-                              <button @click="formData.musicPreview = ''; formData.musicFile = null" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700">Ganti File</button>
                            </div>
 
-                           <AudioTrimmer
-                              :url="formData.musicPreview"
-                              :initialStart="formData.audioStart"
-                              :initialEnd="formData.audioEnd"
-                              @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
-                           />
-                        </div>
-                     </div>
-
-                     <div v-if="formData.music === 'custom' && !isPremiumTemplate" class="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3">
-                        <i class="fa-solid fa-gem text-amber-500 mt-1"></i>
-                        <p class="text-xs text-amber-900 leading-relaxed">
-                           Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>Template Premium</strong>. Silakan ganti template atau pilih musik yang tersedia.
-                        </p>
-                     </div>
-
-                     <div v-if="formData.music && formData.music !== 'custom'" class="flex items-center">
-                        <audio :src="formData.music" controls class="h-10 w-full"></audio>
-                     </div>
-                  </div>
-               </section>
-
-               <!-- Section: Footer -->
-               <section v-if="sections.footer" class="space-y-6">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
-                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
-                        <i class="fa-solid fa-scroll"></i>
-                     </div>
-                     <div>
-                        <h2 class="text-xl font-bold text-dark">Halaman Penutup</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Kata Penutup</p>
-                     </div>
-                  </div>
-
-                  <div>
-                     <label class="form-label">Teks Penutup</label>
-                     <textarea v-model="formData.footerText" placeholder="Terima kasih atas doa restu Anda..." class="form-input h-24 resize-none"></textarea>
-                  </div>
-               </section>
-
-               <!-- Section: Media -->
-               <section class="space-y-8">
-                  <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
-                     <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
-                        <i class="fa-solid fa-images"></i>
-                     </div>
-                     <div>
-                        <h2 class="text-xl font-bold text-dark">Galeri & Media</h2>
-                        <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Foto & Video</p>
-                     </div>
-                  </div>
-
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                     <div data-field="photoCouple">
-                        <label class="form-label">Foto Sampul Utama (Hero) <span class="text-red-500">*</span></label>
-                        <div class="flex gap-4 items-end">
-                           <label class="w-32 h-32 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group">
-                              <input type="file" accept="image/*" @change="handleCouplePhotoUpload" class="hidden" />
-                              <i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha transition-colors"></i>
-                           </label>
-                           <div v-if="formData.photoCouple" class="relative group">
-                              <img :src="formData.photoCouple" class="w-32 h-40 object-cover rounded-2xl shadow-xl ring-4 ring-white" />
-                              <button @click="formData.photoCouple = ''; formData.photoCoupleFile = null" class="absolute -top-2 -right-2 w-6 h-6 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg">×</button>
+                           <div v-if="formData.music === 'custom' && !isPremiumTemplate" class="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3 mt-4">
+                              <i class="fa-solid fa-gem text-amber-500 mt-1"></i>
+                              <p class="text-xs text-amber-900 leading-relaxed">
+                                 Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>Template Premium</strong>. Silakan ganti template atau pilih musik yang tersedia.
+                              </p>
                            </div>
                         </div>
-                        <p v-if="validationErrors.photoCouple" class="form-error mt-2">{{ validationErrors.photoCouple }}</p>
-                     </div>
 
-                     <div v-if="sections.denah" data-field="denah">
-                        <label class="form-label">Denah Lokasi / Ruangan</label>
-                        <div class="flex gap-4 items-end">
-                           <label class="w-32 h-32 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group">
-                              <input type="file" accept="image/*" @change="handleDenahUpload" class="hidden" />
-                              <i class="fa-solid fa-map-location-dot text-gray-300 group-hover:text-mocha transition-colors"></i>
-                           </label>
-                           <img v-if="formData.denah" :src="formData.denah" class="h-32 w-40 rounded-2xl object-cover shadow-lg ring-4 ring-white" />
+                        <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col justify-center bg-gray-50/50 p-6 rounded-3xl border border-gray-100 animate-fade-in">
+                           <span class="text-[10px] font-bold text-mocha uppercase tracking-[0.2em] mb-3 block">Pratinjau Suara:</span>
+                           <audio :src="formData.music" controls class="h-10 w-full rounded-full shadow-sm"></audio>
                         </div>
                      </div>
-                  </div>
+                  </section>
+               </div>
 
-                  <div data-field="gallery" class="pt-4">
-                     <label class="form-label">Galeri Foto (Maksimal 10)</label>
-                     <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 lg:grid-cols-8 gap-3">
-                        <label class="aspect-square border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 transition-all group">
-                           <input type="file" accept="image/*" multiple @change="handleGalleryUpload" class="hidden" />
-                           <i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha"></i>
-                        </label>
-
-                        <div v-for="(img, i) in formData.gallery" :key="i" class="aspect-square relative group">
-                           <img :src="img.preview" class="w-full h-full object-cover rounded-2xl shadow-sm border border-white" />
-                           <button @click="removeGalleryImage(i)" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-5 h-5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg text-[10px]">×</button>
-                        </div>
+               <!-- Step 4: Ekstra -->
+               <div v-if="currentStep === 4" class="space-y-12 animate-fade-in">
+                  <GiftSection v-if="sections.gift || sections.foodList" :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
+                  <SocialSection v-if="sections.socialMedia || sections['live-stream']" :formData="formData" />
+                  <section v-if="sections['dress-code'] || sections['turut-mengundang'] || sections['health-protocol'] || sections.likes" class="space-y-8">
+                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div v-if="sections['dress-code']"><label class="form-label">Dress Code</label><input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik" class="form-input" /></div>
+                        <div v-if="sections['health-protocol']"><label class="form-label">Protokol Kesehatan</label><div class="flex items-center gap-4 mt-2"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" /><span class="text-sm font-medium text-dark">Tampilkan Protokol Kesehatan</span></label></div></div>
                      </div>
-                     <p v-if="validationErrors.gallery" class="form-error mt-2">{{ validationErrors.gallery }}</p>
-                  </div>
-               </section>
+                     <div v-if="sections['turut-mengundang']"><label class="form-label">Turut Mengundang (Extended Family)</label><textarea v-model="formData.extendedFamilyText" placeholder="Pisahkan nama dengan koma atau baris baru" class="form-input h-24 resize-none"></textarea></div>
+                  </section>
+                  <section v-if="sections.footer" class="space-y-6">
+                     <div><label class="form-label">Teks Penutup</label><textarea v-model="formData.footerText" placeholder="Terima kasih atas doa restu Anda..." class="form-input h-24 resize-none"></textarea></div>
+                  </section>
+               </div>
 
-               <!-- Footer Sticky UI -->
-               <div class="fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-md border-t border-gray-100 z-40 md:static md:border-none md:p-0 md:bg-transparent flex justify-between items-center shadow-[0_-10px_30px_rgba(0,0,0,0.03)] md:shadow-none">
-                  <button @click="router.back()" class="text-gray-400 font-bold hover:text-dark px-6 py-3 transition-colors text-xs uppercase tracking-widest">
-                     <i class="fa-solid fa-arrow-left mr-2"></i> Kembali
+               <!-- Navigation Buttons -->
+               <div class="mt-12 pt-8 border-t border-gray-50 flex justify-between items-center">
+                  <button v-if="currentStep > 1" @click="currentStep--" class="px-8 py-4 rounded-2xl font-bold text-gray-400 hover:text-dark transition-all">
+                     <i class="fa-solid fa-arrow-left mr-2"></i> Sebelumnya
+                  </button>
+                  <div v-else></div>
+
+                  <button v-if="currentStep < 4" @click="nextStep" class="bg-mocha text-white font-bold py-4 px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all flex items-center gap-3">
+                     Lanjut Ke Step {{ currentStep + 1 }} <i class="fa-solid fa-arrow-right"></i>
                   </button>
 
-                  <button @click="saveAndPreview" :disabled="isUploading"
-                     class="bg-mocha text-white font-bold py-3 px-8 md:py-4 md:px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 text-sm"
-                     :class="{ 'opacity-50 cursor-not-allowed': isUploading }">
+                  <button v-else @click="saveAndPreview" :disabled="isUploading" class="bg-mocha text-white font-bold py-4 px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all disabled:opacity-50 flex items-center gap-3">
                      <span v-if="isUploading" class="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span>
-                     <span v-else>{{ route.params.id ? 'Simpan Perubahan' : 'Lanjut Preview' }}</span>
+                     <span>{{ route.params.id ? 'Simpan Perubahan' : 'Lanjut Preview' }}</span>
                      <i v-if="!isUploading" class="fa-solid fa-wand-magic-sparkles"></i>
                   </button>
                </div>
@@ -510,6 +360,8 @@ const toast = useToast()
 const route = useRoute()
 const router = useRouter()
 const isUploading = ref(false)
+const musicType = ref('library')
+const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
 
@@ -601,6 +453,46 @@ async function handleBankUpload(event, index) {
    reader.onload = () => {
       formData.value.bankAccounts[index].bankLogo = reader.result
       formData.value.bankAccounts[index].bankLogoFile = file
+   }
+   reader.readAsDataURL(file)
+}
+
+function handleBridePhotoUpload(e) {
+   const file = e.target.files?.[0]; if (!file) return
+   const reader = new FileReader(); reader.onload = () => { formData.value.bridePhoto = reader.result; formData.value.bridePhotoFile = file }; reader.readAsDataURL(file)
+}
+function handleGroomPhotoUpload(e) {
+   const file = e.target.files?.[0]; if (!file) return
+   const reader = new FileReader(); reader.onload = () => { formData.value.groomPhoto = reader.result; formData.value.groomPhotoFile = file }; reader.readAsDataURL(file)
+}
+function handleCouplePhotoUpload(e) {
+   const file = e.target.files?.[0]; if (!file) return
+   const reader = new FileReader(); reader.onload = () => { formData.value.photoCouple = reader.result; formData.value.photoCoupleFile = file }; reader.readAsDataURL(file)
+}
+function handleGalleryUpload(e) {
+   const files = Array.from(e.target.files || [])
+   files.forEach(file => {
+      const reader = new FileReader(); reader.onload = () => formData.value.gallery.push({ preview: reader.result, file }); reader.readAsDataURL(file)
+   })
+}
+function removeGalleryImage(i) { formData.value.gallery.splice(i, 1) }
+
+function handleDenahUpload(e) {
+   const file = e.target.files?.[0]; if (!file) return
+   const reader = new FileReader(); reader.onload = () => { formData.value.denah = reader.result; formData.value.denahFile = file }; reader.readAsDataURL(file)
+}
+
+async function handleMusicUpload(e) {
+   const file = e.target.files?.[0]
+   if (!file) return
+   if (file.size > 10 * 1024 * 1024) {
+      toast.error("File musik terlalu besar (Maks 10MB)")
+      return
+   }
+   const reader = new FileReader()
+   reader.onload = () => {
+      formData.value.musicPreview = reader.result
+      formData.value.musicFile = file
    }
    reader.readAsDataURL(file)
 }
@@ -699,7 +591,6 @@ function mapPayloadToFormData(payload) {
    formData.value.groomPhoto = payload.groomPhotoUrl || ''
    formData.value.photoCouple = payload.photoCoupleUrl || ''
    
-   // Handle nested parents
    if (payload.parents) {
       formData.value.brideParents = payload.parents.brideParents || ''
       formData.value.groomParents = payload.parents.groomParents || ''
@@ -710,20 +601,14 @@ function mapPayloadToFormData(payload) {
 
    formData.value.isSingleEvent = payload.isSingleEvent
    
-   // Handle Gallery
    if (payload.galleryImages && Array.isArray(payload.galleryImages)) {
-      formData.value.gallery = payload.galleryImages.map(url => ({
-         preview: url,
-         file: null
-      }))
+      formData.value.gallery = payload.galleryImages.map(url => ({ preview: url, file: null }))
    }
 
-   // Handle Quotes
    formData.value.quoteType = payload.quoteType || 'default'
    formData.value.quote = payload.quoteText || ''
    formData.value.quoteSource = payload.quoteSource || ''
 
-   // Handle nested locations
    const akad = payload.akadLocation || {}
    const resepsi = payload.resepsiLocation || {}
 
@@ -735,13 +620,11 @@ function mapPayloadToFormData(payload) {
       formData.value.akadDateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
       formData.value.akadMap = akad.mapUrl || ''
       formData.value.akadDesc = akad.description || ''
-      
       formData.value.resepsiDateTime = resepsi.dateTime ? resepsi.dateTime.substring(0, 16) : ''
       formData.value.resepsiMap = resepsi.mapUrl || ''
       formData.value.resepsiDesc = resepsi.description || ''
    }
 
-   // Handle Love Stories
    if (payload.loveStory && Array.isArray(payload.loveStory)) {
       formData.value.loveStories = payload.loveStory.map(s => ({
          title: s.title || '',
@@ -753,7 +636,6 @@ function mapPayloadToFormData(payload) {
       }))
    }
 
-   // Handle Social Media
    formData.value.sosmedBride = {
       instagram: payload.socialMediaBrides?.instagram || '',
       tiktok: payload.socialMediaBrides?.tiktok || '',
@@ -767,21 +649,12 @@ function mapPayloadToFormData(payload) {
       otherSocial: payload.socialMediaGroom?.otherSocial || ''
    }
 
-   // Handle Streaming & Gift
    formData.value.liveStreamingLink = payload.liveStreamingLink || payload.liveStreamingUrl || ''
-   
-   if (payload.menu?.items) {
-      formData.value.foodList = payload.menu.items.map(i => i.name || i)
-   }
+   if (payload.menu?.items) formData.value.foodList = payload.menu.items.map(i => i.name || i)
 
-   formData.value.giftAddresses = Array.isArray(payload.giftDeliveryAddress) 
-      ? payload.giftDeliveryAddress 
-      : (payload.giftDeliveryAddress ? [payload.giftDeliveryAddress] : [])
-   
+   formData.value.giftAddresses = Array.isArray(payload.giftDeliveryAddress) ? payload.giftDeliveryAddress : (payload.giftDeliveryAddress ? [payload.giftDeliveryAddress] : [])
    formData.value.eWalletLink = payload.eWalletLink || []
    formData.value.bankAccounts = payload.bankAccounts || []
-   
-   // Handle Additional Info
    formData.value.dressCode = payload.dressCode || ''
    formData.value.healthProtocol = payload.healthProtocol !== false
    
@@ -814,61 +687,41 @@ function validateField(field) {
    return !message
 }
 
-function validateForm() {
+function validateStep(step) {
    validationErrors.value = {}
    const data = formData.value
    let isValid = true
 
-   if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
-   if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
-   
-   if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
-   if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
-   
-   if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
-   if (data.isSingleEvent === null) { validationErrors.value.isSingleEvent = 'Format acara wajib dipilih'; isValid = false }
-   
-   if (data.isSingleEvent === true) {
-      if (!data.dateTime) { validationErrors.value.dateTime = 'Waktu acara wajib diisi'; isValid = false }
-      if (!data.map) { validationErrors.value.map = 'Link Google Maps wajib diisi'; isValid = false }
-   } else if (data.isSingleEvent === false) {
-      if (!data.akadDateTime) { validationErrors.value.akadDateTime = 'Waktu akad wajib diisi'; isValid = false }
-      if (!data.akadMap) { validationErrors.value.akadMap = 'Link Maps akad wajib diisi'; isValid = false }
-      if (!data.resepsiDateTime) { validationErrors.value.resepsiDateTime = 'Waktu resepsi wajib diisi'; isValid = false }
-      if (!data.resepsiMap) { validationErrors.value.resepsiMap = 'Link Maps resepsi wajib diisi'; isValid = false }
+   if (step === 1) {
+      if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
+      if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
+      if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
+      if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
+      if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
+   } else if (step === 2) {
+      if (data.isSingleEvent === null) { validationErrors.value.isSingleEvent = 'Format acara wajib dipilih'; isValid = false }
+      if (data.isSingleEvent === true) {
+         if (!data.dateTime) { validationErrors.value.dateTime = 'Waktu acara wajib diisi'; isValid = false }
+         if (!data.map) { validationErrors.value.map = 'Link Google Maps wajib diisi'; isValid = false }
+      } else if (data.isSingleEvent === false) {
+         if (!data.akadDateTime) { validationErrors.value.akadDateTime = 'Waktu akad wajib diisi'; isValid = false }
+         if (!data.akadMap) { validationErrors.value.akadMap = 'Link Maps akad wajib diisi'; isValid = false }
+         if (!data.resepsiDateTime) { validationErrors.value.resepsiDateTime = 'Waktu resepsi wajib diisi'; isValid = false }
+         if (!data.resepsiMap) { validationErrors.value.resepsiMap = 'Link Maps resepsi wajib diisi'; isValid = false }
+      }
+   } else if (step === 3) {
+      if (!data.photoCouple && !data.photoCoupleFile) { validationErrors.value.photoCouple = 'Foto sampul wajib diisi'; isValid = false }
    }
-   
-   if (!data.photoCouple && !data.photoCoupleFile) { validationErrors.value.photoCouple = 'Foto sampul wajib diisi'; isValid = false }
 
+   if (!isValid) toast.warning("Mohon lengkapi data yang wajib diisi")
    return isValid
 }
 
-function handleBridePhotoUpload(e) {
-   const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.bridePhoto = reader.result; formData.value.bridePhotoFile = file }; reader.readAsDataURL(file)
-}
-function handleGroomPhotoUpload(e) {
-   const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.groomPhoto = reader.result; formData.value.groomPhotoFile = file }; reader.readAsDataURL(file)
-}
-function handleCouplePhotoUpload(e) {
-   const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.photoCouple = reader.result; formData.value.photoCoupleFile = file }; reader.readAsDataURL(file)
-}
-function handleGalleryUpload(e) {
-   const files = Array.from(e.target.files || [])
-   files.forEach(file => {
-      const reader = new FileReader(); reader.onload = () => formData.value.gallery.push({ preview: reader.result, file }); reader.readAsDataURL(file)
-   })
-}
-function removeGalleryImage(i) { formData.value.gallery.splice(i, 1) }
-function handleDenahUpload(e) {
-   const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.denah = reader.result; formData.value.denahFile = file }; reader.readAsDataURL(file)
-}
-function handleMusicUpload(e) {
-   const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.musicPreview = reader.result; formData.value.musicFile = file }; reader.readAsDataURL(file)
+function nextStep() {
+   if (validateStep(currentStep.value)) {
+      currentStep.value++
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+   }
 }
 
 async function uploadAllFiles() {
@@ -883,31 +736,24 @@ async function uploadAllFiles() {
    if (formData.value.denahFile) formData.value.denah = await pushUpload(formData.value.denahFile)
    if (formData.value.musicFile) formData.value.music = await pushUpload(formData.value.musicFile)
    
-   // Handle gallery
    for (let i = 0; i < formData.value.gallery.length; i++) {
       if (formData.value.gallery[i].file) {
          formData.value.gallery[i].preview = await pushUpload(formData.value.gallery[i].file)
          delete formData.value.gallery[i].file
       }
    }
-
-   // Handle Love Stories
    for (let i = 0; i < formData.value.loveStories.length; i++) {
       if (formData.value.loveStories[i].photoFile) {
          formData.value.loveStories[i].photo = await pushUpload(formData.value.loveStories[i].photoFile)
          delete formData.value.loveStories[i].photoFile
       }
    }
-
-   // Handle Wallets
    for (let i = 0; i < formData.value.eWalletLink.length; i++) {
       if (formData.value.eWalletLink[i].wallet_image_file) {
          formData.value.eWalletLink[i].wallet_image = await pushUpload(formData.value.eWalletLink[i].wallet_image_file)
          delete formData.value.eWalletLink[i].wallet_image_file
       }
    }
-
-   // Handle Banks
    for (let i = 0; i < formData.value.bankAccounts.length; i++) {
       if (formData.value.bankAccounts[i].bankLogoFile) {
          formData.value.bankAccounts[i].bankLogo = await pushUpload(formData.value.bankAccounts[i].bankLogoFile)
@@ -917,15 +763,7 @@ async function uploadAllFiles() {
 }
 
 async function saveAndPreview() {
-   if (!validateForm()) {
-      toast.warning("Mohon lengkapi semua data yang wajib diisi")
-      const firstError = document.querySelector('.form-error')
-      if (firstError) {
-         firstError.parentElement.scrollIntoView({ behavior: 'smooth', block: 'center' })
-      }
-      return
-   }
-
+   if (!validateStep(4)) return
    if (!selectedTemplateRef.value.id && !route.params.id) {
       toast.error("Template belum dipilih. Mohon ulangi dari awal.")
       router.push('/create')
@@ -946,82 +784,39 @@ async function saveAndPreview() {
          photoCoupleUrl: formData.value.photoCouple,
          isSingleEvent: formData.value.isSingleEvent,
          mergeEvents: formData.value.isSingleEvent === true,
-         
-         // New structure for nested fields
-         parents: {
-            brideParents: formData.value.brideParents || '',
-            groomParents: formData.value.groomParents || ''
-         },
+         parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
          akadLocation: formData.value.isSingleEvent 
-            ? { 
-                dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '',
-                mapUrl: formData.value.map || '',
-                description: formData.value.mapDesc || ''
-              }
-            : {
-                dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '',
-                mapUrl: formData.value.akadMap || '',
-                description: formData.value.akadDesc || ''
-              },
+            ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' }
+            : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
          resepsiLocation: formData.value.isSingleEvent
-            ? {
-                dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '',
-                mapUrl: formData.value.map || '',
-                description: formData.value.mapDesc || ''
-              }
-            : {
-                dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '',
-                mapUrl: formData.value.resepsiMap || '',
-                description: formData.value.resepsiDesc || ''
-              },
-
+            ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' }
+            : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: selectedTemplateRef.value.id || 1, 
-         loveStory: formData.value.loveStories.map(s => ({
-            title: s.title,
-            date: s.date,
-            description: s.description,
-            image: s.photo
-         })),
-         musicChoice: formData.value.music || 'default',
+         loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
+         musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'),
          isCustomMusic: formData.value.music === 'custom' || (formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart,
          audioEnd: formData.value.audioEnd,
          encryptedGuestName: formData.value.encryptedGuest === 'ya',
-         galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url.startsWith('http')),
+         galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
          giftDeliveryAddress: formData.value.giftAddresses,
          enableCover: true,
          healthProtocol: formData.value.healthProtocol,
          enableGuestMessage: formData.value.wishes === 'ya',
          selectedSections: Object.keys(sections.value).filter(k => sections.value[k]),
-         
-         // Extended Info
          dressCode: formData.value.dressCode,
          extendedFamily: formData.value.extendedFamilyText ? formData.value.extendedFamilyText.split(',').map(s => s.trim()) : [],
          turutMengundang: formData.value.extendedFamilyText,
          liveStreamingLink: formData.value.liveStreamingLink,
          footerText: formData.value.footerText,
          likes: formData.value.likes,
-         
-         // Required nested objects with defaults
          menu: { title: 'Menu Makanan', items: formData.value.foodList.map(name => ({ name })) },
          socialMedia: {},
-         socialMediaBrides: {
-            instagram: formData.value.sosmedBride.instagram,
-            tiktok: formData.value.sosmedBride.tiktok,
-            youtube: formData.value.sosmedBride.youtube,
-            otherSocial: formData.value.sosmedBride.otherSocial
-         },
-         socialMediaGroom: {
-            instagram: formData.value.sosmedGroom.instagram,
-            tiktok: formData.value.sosmedGroom.tiktok,
-            youtube: formData.value.sosmedGroom.youtube,
-            otherSocial: formData.value.sosmedGroom.otherSocial
-         },
+         socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
+         socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
          eWalletLink: formData.value.eWalletLink,
          bankAccounts: formData.value.bankAccounts,
          floorPlanImageUrl: formData.value.denah,
-         
-         // Quote
          quoteType: formData.value.quoteType,
          quoteText: formData.value.quote,
          quoteSource: formData.value.quoteSource
@@ -1029,38 +824,30 @@ async function saveAndPreview() {
 
       const editId = route.params.id || localStorage.getItem('editInvitationId')
       let result
-      
       if (editId) {
          try {
             const res = await updateInvitation(editId, payload)
             result = res.data || res
          } catch (error) {
-            const canRecoverStaleDraft =
-               !route.params.id &&
-               /not found|404/i.test(error?.message || '')
-
-            if (!canRecoverStaleDraft) throw error
-
-            localStorage.removeItem('editInvitationId')
-            const res = await createInvitation(payload)
-            result = res.data || res
-            localStorage.setItem('editInvitationId', result.id)
+            if (!route.params.id && /not found|404/i.test(error?.message || '')) {
+               localStorage.removeItem('editInvitationId')
+               const res = await createInvitation(payload)
+               result = res.data || res
+               localStorage.setItem('editInvitationId', result.id)
+            } else throw error
          }
       } else {
          const res = await createInvitation(payload)
          result = res.data || res
          localStorage.setItem('editInvitationId', result.id)
       }
-      
       toast.success("Berhasil menyimpan!")
       router.push({ path: '/preview', query: { slug: result.slug } })
    } catch (error) {
       console.error(error)
       const errorMsg = error.response?.data?.message || 'Gagal menyimpan!'
       toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg)
-   } finally {
-      isUploading.value = false
-   }
+   } finally { isUploading.value = false }
 }
 </script>
 
