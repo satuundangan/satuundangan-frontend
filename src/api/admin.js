@@ -87,20 +87,3 @@ export const deleteAdminPromoCode = (id) =>
   apiFetch(`/promo/admin/${id}`, {
     method: 'DELETE',
   })
-
-// Palette Colors
-export const fetchAdminPalettes = (params) => apiFetch(withParams('/admin/palette-colors', params))
-export const createAdminPalette = (payload) =>
-  apiFetch('/admin/palette-colors', {
-    method: 'POST',
-    body: JSON.stringify(payload),
-  })
-export const updateAdminPalette = (id, payload) =>
-  apiFetch(`/admin/palette-colors/${id}`, {
-    method: 'PATCH',
-    body: JSON.stringify(payload),
-  })
-export const deleteAdminPalette = (id) =>
-  apiFetch(`/admin/palette-colors/${id}`, {
-    method: 'DELETE',
-  })

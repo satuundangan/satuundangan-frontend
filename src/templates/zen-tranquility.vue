@@ -3,7 +3,7 @@
     <!-- Texture Overlay -->
     <div class="fixed inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply" style="background-image: url('https://www.transparenttextures.com/patterns/rice-paper.png');"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
     <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-md px-8 py-4 rounded-full flex items-center justify-center gap-8 shadow-lg shadow-[#8b9d83]/10 w-fit max-w-[95%] border border-[#8b9d83]/20 transition-all duration-1000">
       <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"

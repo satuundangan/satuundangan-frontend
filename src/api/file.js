@@ -3,6 +3,13 @@ import { BASE_URL } from "./client"
 const IMAGE_UPLOAD_TARGET_BYTES = 800 * 1024 // Reduced from 900KB to be safer against 1MB limits
 const IMAGE_UPLOAD_MAX_DIMENSION = 1600
 const IMAGE_UPLOAD_QUALITY = 0.8
+const UPLOAD_MAX_FILE_SIZE_MB = Number(import.meta.env.VITE_UPLOAD_MAX_FILE_SIZE_MB) || 25
+const UPLOAD_MAX_FILE_SIZE_BYTES = UPLOAD_MAX_FILE_SIZE_MB * 1024 * 1024
+
+const formatFileSize = (bytes) => {
+  if (!Number.isFinite(bytes)) return '0 MB'
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`
+}
 
 const isCompressibleImage = (file) => (
   file.type.startsWith('image/') &&
@@ -84,11 +91,22 @@ export const uploadFileApi = async (file) => {
       console.warn('Image compression skipped:', error.message)
       return file
     })
+
+    if (uploadFile.size > UPLOAD_MAX_FILE_SIZE_BYTES) {
+      throw new Error(
+        `Ukuran file ${formatFileSize(uploadFile.size)} melebihi batas upload ${UPLOAD_MAX_FILE_SIZE_MB} MB. Silakan gunakan file yang lebih kecil.`
+      )
+    }
+
     const formData = new FormData()
     formData.append('file', uploadFile, uploadFile.name)
 
+    const token = localStorage.getItem('token')
     const response = await fetch(`${BASE_URL}/upload`,{
       method: 'POST',
+      headers: {
+        ...(token && { Authorization: `Bearer ${token}` }),
+      },
       body: formData
     })
 
@@ -104,7 +122,7 @@ export const uploadFileApi = async (file) => {
   } catch (error) {
     let finalError = error
     if (error.message === 'Failed to fetch') {
-      finalError = new Error('Gagal mengunggah file. Ini mungkin karena ukuran file terlalu besar (melebihi batas server) atau masalah koneksi internet.')
+      finalError = new Error('Gagal mengunggah file. Server kemungkinan menolak ukuran request sebelum aplikasi memprosesnya, atau koneksi internet bermasalah.')
     }
     
     console.error('Upload error:', {

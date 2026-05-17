@@ -85,6 +85,9 @@
                                           <i class="fa-solid fa-camera text-2xl mb-2"></i>
                                           <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
                                        </div>
+                                       <div v-if="formData.bridePhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <span class="text-white text-[10px] font-bold uppercase tracking-widest">Ganti</span>
+                                       </div>
                                     </label>
                                  </div>
                                  <p v-if="validationErrors.bridePhoto" class="form-error">{{ validationErrors.bridePhoto }}</p>
@@ -116,6 +119,9 @@
                                        <div v-else class="flex flex-col items-center text-gray-400">
                                           <i class="fa-solid fa-camera text-2xl mb-2"></i>
                                           <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
+                                       </div>
+                                       <div v-if="formData.groomPhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                          <span class="text-white text-[10px] font-bold uppercase tracking-widest">Ganti</span>
                                        </div>
                                     </label>
                                  </div>
@@ -221,35 +227,74 @@
                   </section>
                   <LoveStorySection v-if="sections.loveStory" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" />
                   
+                  <!-- Unified Music Section -->
                   <section v-if="sections.music" class="space-y-6">
+                     <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
+                        <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
+                           <i class="fa-solid fa-music"></i>
+                        </div>
+                        <div>
+                           <h2 class="text-xl font-bold text-dark">Musik Latar</h2>
+                           <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Lagu Undangan</p>
+                        </div>
+                     </div>
+
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-4">
                            <label class="form-label">Pilih Sumber Musik</label>
-                           <div class="flex gap-4">
-                              <button type="button" @click="musicType = 'library'" class="flex-1 py-3 px-4 rounded-xl border-2 font-bold text-xs transition-all" :class="musicType === 'library' ? 'border-mocha bg-mocha/5 text-mocha' : 'border-gray-100 bg-gray-50 text-gray-400'">Katalog Musik</button>
-                              <button type="button" @click="musicType = 'custom'" class="flex-1 py-3 px-4 rounded-xl border-2 font-bold text-xs transition-all" :class="musicType === 'custom' ? 'border-mocha bg-mocha/5 text-mocha' : 'border-gray-100 bg-gray-50 text-gray-400'">Upload MP3</button>
-                           </div>
-                           <div v-if="musicType === 'library'" class="animate-fade-in">
-                              <label class="text-[10px] font-bold text-muted uppercase tracking-widest mb-2 block">Pilih dari Koleksi</label>
-                              <select v-model="formData.music" class="form-input">
-                                 <option value="">Tanpa Musik</option>
-                                 <optgroup label="Wedding Hits">
-                                    <option v-for="audio in audioList" :key="audio.id" :value="audio.url">{{ audio.title }}</option>
-                                 </optgroup>
-                              </select>
-                           </div>
-                           <div v-if="musicType === 'custom'" class="animate-fade-in space-y-3">
-                              <label class="text-[10px] font-bold text-muted uppercase tracking-widest mb-2 block">Upload File MP3 (Maks 10MB)</label>
-                              <div class="relative group">
-                                 <input type="file" accept="audio/mpeg, audio/mp3" @change="handleMusicUpload" class="hidden" id="customMusic" />
-                                 <label for="customMusic" class="flex flex-col items-center justify-center w-full py-6 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all bg-gray-50">
-                                    <div v-if="!formData.musicFile && !formData.music" class="flex flex-col items-center text-gray-400"><i class="fa-solid fa-cloud-arrow-up text-xl mb-2"></i><span class="text-[10px] font-bold uppercase tracking-widest">Pilih File</span></div>
-                                    <div v-else class="flex items-center gap-3 text-mocha"><i class="fa-solid fa-file-audio text-xl"></i><span class="text-[10px] font-bold uppercase truncate max-w-[150px]">{{ formData.musicFile ? formData.musicFile.name : 'Musik Tersimpan' }}</span><button @click.prevent="formData.music = ''; formData.musicFile = null" class="text-red-500 hover:text-red-700 ml-2"><i class="fa-solid fa-times"></i></button></div>
+                           <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
+                              <option value="">Pilih Musik Preset</option>
+                              <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
+                                 {{ audio.title }}
+                              </option>
+                              <option value="custom" v-if="isPremiumTemplate">Upload Musik Sendiri (MP3)</option>
+                              <option value="custom" v-else disabled>Upload Musik Sendiri (Premium)</option>
+                           </select>
+
+                           <div v-if="formData.music === 'custom' && isPremiumTemplate" class="bg-gray-50 p-6 rounded-3xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
+                              <div v-if="!formData.musicPreview" class="text-center">
+                                 <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
+                                 <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
+                                    <div class="w-16 h-16 bg-white rounded-2xl shadow-sm flex items-center justify-center text-mocha text-2xl mb-3">
+                                       <i class="fa-solid fa-cloud-arrow-up"></i>
+                                    </div>
+                                    <p class="text-sm font-bold text-dark mb-1">Upload File MP3</p>
+                                    <p class="text-[10px] text-gray-400 uppercase tracking-widest">Maksimal 10MB</p>
                                  </label>
                               </div>
+
+                              <div v-else class="space-y-4">
+                                 <div class="flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                       <div class="w-10 h-10 bg-mocha text-white rounded-xl flex items-center justify-center">
+                                          <i class="fa-solid fa-file-audio"></i>
+                                       </div>
+                                       <div>
+                                          <p class="text-xs font-bold text-dark">Musik Terpilih</p>
+                                          <p class="text-[10px] text-gray-500 truncate max-w-[200px]">{{ formData.musicFile?.name || 'File Musik' }}</p>
+                                       </div>
+                                    </div>
+                                    <button @click="formData.musicPreview = ''; formData.musicFile = null" class="text-[10px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700">Ganti File</button>
+                                 </div>
+
+                                 <AudioTrimmer
+                                    :url="formData.musicPreview"
+                                    :initialStart="formData.audioStart"
+                                    :initialEnd="formData.audioEnd"
+                                    @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
+                                 />
+                              </div>
+                           </div>
+
+                           <div v-if="formData.music === 'custom' && !isPremiumTemplate" class="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3 mt-4">
+                              <i class="fa-solid fa-gem text-amber-500 mt-1"></i>
+                              <p class="text-xs text-amber-900 leading-relaxed">
+                                 Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>Template Premium</strong>. Silakan ganti template atau pilih musik yang tersedia.
+                              </p>
                            </div>
                         </div>
-                        <div v-if="formData.music || formData.musicFile" class="flex flex-col justify-center bg-gray-50/50 p-6 rounded-3xl border border-gray-100 animate-fade-in">
+
+                        <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col justify-center bg-gray-50/50 p-6 rounded-3xl border border-gray-100 animate-fade-in">
                            <span class="text-[10px] font-bold text-mocha uppercase tracking-[0.2em] mb-3 block">Pratinjau Suara:</span>
                            <audio :src="formData.music" controls class="h-10 w-full rounded-full shadow-sm"></audio>
                         </div>
@@ -306,6 +351,7 @@ import { getInvitationById, createInvitation, updateInvitation } from '@/api/inv
 import { fetchPublicAudio } from '@/api/master'
 import { useToast } from "vue-toastification"
 import QuoteSection from './create-form/components/QuoteSection.vue'
+import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
 import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
@@ -328,7 +374,8 @@ const formData = ref({
    groomPhoto: '', groomPhotoFile: null, photoCouple: '', photoCoupleFile: null,
    gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
    akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
-   music: '', musicFile: null, youtubeUrl: '', denah: '', denahFile: null,
+   music: '', youtubeUrl: '', denah: '', denahFile: null,
+   musicFile: null, musicPreview: '', audioStart: 0, audioEnd: 0,
    wishes: 'ya', rsvp: 'ya', encryptedGuest: 'ya',
    brideParents: '', groomParents: '', 
    
@@ -444,7 +491,7 @@ async function handleMusicUpload(e) {
    }
    const reader = new FileReader()
    reader.onload = () => {
-      formData.value.music = reader.result
+      formData.value.musicPreview = reader.result
       formData.value.musicFile = file
    }
    reader.readAsDataURL(file)
@@ -618,6 +665,16 @@ function mapPayloadToFormData(payload) {
    } else if (payload.turutMengundang) {
       formData.value.extendedFamilyText = payload.turutMengundang
    }
+
+   // Handle Music
+   if (payload.isCustomMusic) {
+      formData.value.music = 'custom'
+      formData.value.musicPreview = payload.musicChoice
+   } else {
+      formData.value.music = payload.musicChoice || ''
+   }
+   formData.value.audioStart = Number(payload.audioStart) || 0
+   formData.value.audioEnd = Number(payload.audioEnd) || 0
 }
 
 function validateField(field) {
@@ -736,10 +793,12 @@ async function saveAndPreview() {
             : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: selectedTemplateRef.value.id || 1, 
          loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
-         musicChoice: formData.value.music || 'default',
-         isCustomMusic: !!formData.value.music,
+         musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'),
+         isCustomMusic: formData.value.music === 'custom' || (formData.value.music && !formData.value.music.startsWith('/audio/')),
+         audioStart: formData.value.audioStart,
+         audioEnd: formData.value.audioEnd,
          encryptedGuestName: formData.value.encryptedGuest === 'ya',
-         galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url.startsWith('http')),
+         galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
          giftDeliveryAddress: formData.value.giftAddresses,
          enableCover: true,
          healthProtocol: formData.value.healthProtocol,
