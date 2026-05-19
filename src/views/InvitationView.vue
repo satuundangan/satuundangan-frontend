@@ -31,10 +31,40 @@ const isInsideFrame = ref(false)
 const isDemoMode = ref(false)
 
 onMounted(async () => {
-  isPreviewMode.value = route.query.preview === 'true'
+  isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
   // Check if inside iframe or forced via query param
   isInsideFrame.value = window.self !== window.top || route.query.frame === 'true'
   isDemoMode.value = route.name === 'demo'
+  
+  // Listen for LIVE PREVIEW updates from CreateForm
+  window.addEventListener('message', (event) => {
+    if (event.data?.type === 'LIVE_PREVIEW_UPDATE' && isPreviewMode.value) {
+      if (!invitationData.value) {
+        invitationData.value = { content: {} }
+      }
+      
+      const payload = event.data.data
+      
+      // Update template data reactively
+      invitationData.value = {
+        ...invitationData.value,
+        ...payload,
+        id: invitationData.value.id || 'live-preview',
+        title: payload.title || 'Live Preview',
+        slug: payload.slug || 'live-preview',
+        musicChoice: payload.music === 'custom' ? payload.musicPreview : payload.music,
+        audioStart: Number(payload.audioStart) || 0,
+        audioEnd: Number(payload.audioEnd) || 0,
+        template_slug: payload.template_slug || payload.templateDesignId || 'dark-elegant',
+        guestName: invitationData.value.guestName || 'Tamu Undangan',
+      }
+    }
+  })
+
+  // Tell the parent window (CreateForm) that we are ready to receive data
+  if (isInsideFrame.value && window.parent) {
+    window.parent.postMessage({ type: 'PREVIEW_READY' }, '*')
+  }
   
   try {
     let data;
