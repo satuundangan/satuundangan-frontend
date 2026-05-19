@@ -1,9 +1,7 @@
 <template>
-   <div class="min-h-screen bg-gray-50 font-sans pb-24 flex flex-col lg:flex-row">
-      <!-- LEFT PANE: FORM -->
-      <div class="flex-1 lg:max-w-[600px] xl:max-w-[700px] bg-gray-50 w-full overflow-y-auto" :class="{'hidden lg:block': showMobilePreview}">
-         <!-- Sticky Header Stepper -->
-         <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
+   <div class="min-h-screen bg-gray-50 font-sans pb-24">
+      <!-- Sticky Header Stepper -->
+      <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
          <div class="max-w-5xl mx-auto">
             <div class="flex items-center justify-between mb-4">
                <button @click="currentStep > 1 ? currentStep-- : router.back()" class="group flex items-center gap-3 text-slate-400 hover:text-dark transition-all font-bold text-xs uppercase tracking-widest">
@@ -337,75 +335,8 @@
 
             </div>
          </div>
-         <div class="h-32 lg:hidden"></div>
+         <div class="h-24 md:hidden"></div>
       </div>
-
-      <!-- RIGHT PANE: LIVE PREVIEW (Desktop) -->
-      <div class="hidden lg:flex w-[400px] xl:w-[450px] bg-slate-900 shadow-2xl flex-col sticky top-0 h-screen border-l border-slate-800">
-         <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shadow-sm z-10">
-            <div class="flex items-center gap-2 text-white">
-               <i class="fa-solid fa-eye text-mocha text-sm"></i>
-               <span class="font-bold text-sm tracking-wide">Live Preview</span>
-            </div>
-            <div class="flex gap-1">
-               <div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
-               <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-               <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-            </div>
-         </div>
-         <div class="flex-1 bg-black p-4 xl:p-6 flex items-center justify-center overflow-hidden">
-            <!-- Mobile Frame Mockup -->
-            <div class="w-[320px] xl:w-[360px] h-[680px] xl:h-[720px] bg-white rounded-[2.5rem] shadow-2xl ring-[8px] ring-slate-800 overflow-hidden relative transition-all duration-300">
-               <!-- Notch Mockup -->
-               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-20 pointer-events-none"></div>
-               
-               <iframe 
-                  ref="previewIframe"
-                  :src="previewUrl" 
-                  class="w-full h-full border-none"
-                  allow="autoplay"
-               ></iframe>
-               
-               <!-- Loading Overlay for Iframe -->
-               <div v-if="isPreviewLoading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                  <div class="animate-spin text-mocha text-3xl"><i class="fa-solid fa-spinner"></i></div>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      <!-- MOBILE LIVE PREVIEW MODAL -->
-      <Transition name="slide-up">
-         <div v-if="showMobilePreview" class="fixed inset-0 z-[60] bg-black lg:hidden flex flex-col">
-            <div class="p-4 bg-slate-900 flex items-center justify-between">
-               <div class="flex items-center gap-2 text-white">
-                  <i class="fa-solid fa-eye text-mocha text-sm"></i>
-                  <span class="font-bold text-sm">Live Preview</span>
-               </div>
-               <button @click="showMobilePreview = false" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-95 transition-transform">
-                  <i class="fa-solid fa-times"></i>
-               </button>
-            </div>
-            <div class="flex-1 overflow-hidden relative">
-               <iframe 
-                  ref="mobilePreviewIframe"
-                  :src="previewUrl" 
-                  class="w-full h-full border-none bg-white"
-                  allow="autoplay"
-               ></iframe>
-            </div>
-         </div>
-      </Transition>
-
-      <!-- FAB Mobile Toggle Preview -->
-      <button 
-         @click="showMobilePreview = !showMobilePreview"
-         class="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-slate-900 text-white shadow-2xl shadow-slate-900/40 flex items-center justify-center z-50 hover:scale-105 active:scale-95 transition-all"
-         :class="{'rotate-180': showMobilePreview}"
-      >
-         <i v-if="!showMobilePreview" class="fa-solid fa-eye text-xl"></i>
-         <i v-else class="fa-solid fa-times text-xl"></i>
-      </button>
    </div>
 
    <!-- Image Cropper Modal -->
@@ -479,6 +410,71 @@ const musicType = ref('library')
 const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
+
+// Live Preview States
+const showMobilePreview = ref(false)
+const isPreviewLoading = ref(true)
+const previewIframe = ref(null)
+const mobilePreviewIframe = ref(null)
+
+const previewUrl = computed(() => {
+   const templateId = selectedTemplateRef.value.id || 1
+   return `/preview?templateId=${templateId}&mode=live`
+})
+
+// Function to sync data to iframe
+const syncDataToPreview = (data) => {
+   const payload = {
+      type: 'LIVE_PREVIEW_UPDATE',
+      data: {
+         ...data,
+         brideName: data.brideName || 'Nama Wanita',
+         groomName: data.groomName || 'Nama Pria',
+         photoCoupleUrl: data.photoCouple || '/default-couple.jpg',
+         bridePhotoUrl: data.bridePhoto || '/default-bride.jpg',
+         groomPhotoUrl: data.groomPhoto || '/default-groom.jpg',
+         parents: {
+            brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
+            groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
+         },
+         akadLocation: data.isSingleEvent 
+            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
+            : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+         resepsiLocation: data.isSingleEvent
+            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
+            : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+         quoteText: data.quote,
+         quoteSource: data.quoteSource,
+         loveStory: data.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
+         galleryImages: data.gallery.map(img => img.preview),
+         giftDeliveryAddress: data.giftAddresses,
+         bankAccounts: data.bankAccounts,
+         eWalletLink: data.eWalletLink
+      }
+   }
+
+   if (previewIframe.value && previewIframe.value.contentWindow) {
+      previewIframe.value.contentWindow.postMessage(payload, '*')
+   }
+   if (mobilePreviewIframe.value && mobilePreviewIframe.value.contentWindow) {
+      mobilePreviewIframe.value.contentWindow.postMessage(payload, '*')
+   }
+}
+
+// Watch for form changes to trigger sync
+watch(formData, (newVal) => {
+   syncDataToPreview(newVal)
+}, { deep: true })
+
+// Listen for iframe ready event
+onMounted(() => {
+   window.addEventListener('message', (event) => {
+      if (event.data?.type === 'PREVIEW_READY') {
+         isPreviewLoading.value = false
+         syncDataToPreview(formData.value) 
+      }
+   })
+})
 
 // Cropper States
 const cropper = ref({
