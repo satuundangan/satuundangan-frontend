@@ -1,56 +1,59 @@
 <template>
-   <div class="min-h-screen bg-gray-50 font-sans pb-24">
-      <!-- Sticky Header Stepper -->
-      <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
-         <div class="max-w-5xl mx-auto">
-            <div class="flex items-center justify-between mb-4">
-               <button @click="currentStep > 1 ? currentStep-- : router.back()" class="group flex items-center gap-3 text-slate-400 hover:text-dark transition-all font-bold text-xs uppercase tracking-widest">
-                  <div class="w-8 h-8 rounded-full border border-slate-100 bg-white flex items-center justify-center group-hover:border-mocha group-hover:text-mocha transition-all shadow-sm">
-                     <i class="fa-solid fa-chevron-left text-[10px]"></i>
+   <div class="min-h-screen bg-gray-50 font-sans pb-24 flex flex-col lg:flex-row">
+      
+      <!-- LEFT PANE: FORM -->
+      <div class="flex-1 lg:max-w-[600px] xl:max-w-[700px] bg-gray-50 w-full overflow-y-auto" :class="{'hidden lg:block': showMobilePreview}">
+         <!-- Sticky Header Stepper -->
+         <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
+            <div class="max-w-3xl mx-auto">
+               <div class="flex items-center justify-between mb-4">
+                  <button @click="currentStep > 1 ? currentStep-- : router.back()" class="group flex items-center gap-3 text-slate-400 hover:text-dark transition-all font-bold text-xs uppercase tracking-widest">
+                     <div class="w-8 h-8 rounded-full border border-slate-100 bg-white flex items-center justify-center group-hover:border-mocha group-hover:text-mocha transition-all shadow-sm">
+                        <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                     </div>
+                     <span class="hidden sm:inline">{{ currentStep > 1 ? 'Sebelumnya' : 'Batal' }}</span>
+                  </button>
+                  
+                  <div class="flex flex-col items-end">
+                     <div class="flex items-center gap-2 mb-1">
+                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Langkah</span>
+                        <span class="text-xs font-black text-mocha">{{ currentStep }} / 4</span>
+                     </div>
+                     <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10 flex items-center gap-2">
+                        <i v-if="isDraftSaving" class="fa-solid fa-spinner animate-spin text-[8px]"></i>
+                        <i v-else class="fa-solid fa-cloud-check text-[8px] text-emerald-500"></i>
+                        {{ isDraftSaving ? 'Menyimpan...' : (['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1]) }}
+                     </div>
                   </div>
-                  <span class="hidden sm:inline">{{ currentStep > 1 ? 'Sebelumnya' : 'Batal' }}</span>
-               </button>
-               
-               <div class="flex flex-col items-end">
-                  <div class="flex items-center gap-2 mb-1">
-                     <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Langkah</span>
-                     <span class="text-xs font-black text-mocha">{{ currentStep }} / 4</span>
-                  </div>
-                  <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10 flex items-center gap-2">
-                     <i v-if="isDraftSaving" class="fa-solid fa-spinner animate-spin text-[8px]"></i>
-                     <i v-else class="fa-solid fa-cloud-check text-[8px] text-emerald-500"></i>
-                     {{ isDraftSaving ? 'Menyimpan...' : (['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1]) }}
+               </div>
+
+               <!-- Slim Progress Line -->
+               <div class="relative h-1 w-full bg-slate-200/50 rounded-full overflow-hidden shadow-inner">
+                  <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-mocha/80 to-mocha transition-all duration-700 ease-out shadow-[0_0_15px_rgba(164,113,72,0.3)]"
+                     :style="{ width: (currentStep / 4 * 100) + '%' }">
+                     <div class="absolute inset-0 bg-white/20 skew-x-12 animate-pulse"></div>
                   </div>
                </div>
             </div>
+         </div>
 
-            <!-- Slim Progress Line -->
-            <div class="relative h-1 w-full bg-slate-200/50 rounded-full overflow-hidden shadow-inner">
-               <div class="absolute inset-y-0 left-0 bg-gradient-to-r from-mocha/80 to-mocha transition-all duration-700 ease-out shadow-[0_0_15px_rgba(164,113,72,0.3)]"
-                  :style="{ width: (currentStep / 4 * 100) + '%' }">
-                  <div class="absolute inset-0 bg-white/20 skew-x-12 animate-pulse"></div>
-               </div>
+         <div class="max-w-3xl mx-auto px-4 md:px-8">
+            <div class="text-center mb-10 md:mb-12">
+               <h1 class="text-2xl md:text-3xl font-serif font-bold text-dark mb-3">
+                  {{ ['Data Mempelai', 'Detail Acara', 'Galeri & Media', 'Informasi Tambahan'][currentStep-1] }}
+               </h1>
+               <p class="text-muted text-sm">
+                  {{ [
+                     'Isi informasi pasangan agar undangan terlihat personal.',
+                     'Tentukan kapan dan di mana momen bahagiamu berlangsung.',
+                     'Abadikan momen lewat foto, video, dan musik pilihan.',
+                     'Lengkapi fitur pendukung agar tamu merasa nyaman.'
+                  ][currentStep-1] }}
+               </p>
             </div>
-         </div>
-      </div>
 
-      <div class="max-w-5xl mx-auto px-4 md:px-8">
-         <div class="text-center mb-10 md:mb-12">
-            <h1 class="text-2xl md:text-4xl font-serif font-bold text-dark mb-3">
-               {{ ['Data Mempelai', 'Detail Acara', 'Galeri & Media', 'Informasi Tambahan'][currentStep-1] }}
-            </h1>
-            <p class="text-muted text-sm md:text-lg">
-               {{ [
-                  'Isi informasi pasangan agar undangan terlihat personal.',
-                  'Tentukan kapan dan di mana momen bahagiamu berlangsung.',
-                  'Abadikan momen lewat foto, video, dan musik pilihan.',
-                  'Lengkapi fitur pendukung agar tamu merasa nyaman.'
-               ][currentStep-1] }}
-            </p>
-         </div>
-
-         <div class="bg-white rounded-[2.5rem] shadow-xl shadow-mocha/5 border border-gray-100 overflow-hidden relative">
-            <div class="p-6 md:p-12">
+            <div class="bg-white rounded-[2.5rem] shadow-xl shadow-mocha/5 border border-gray-100 overflow-hidden relative">
+               <div class="p-6 md:p-10">
 
                <!-- Step 1: Mempelai -->
                <div v-if="currentStep === 1" class="space-y-12 animate-fade-in">
@@ -343,27 +346,94 @@
                </div>
 
                <!-- Navigation Buttons -->
-               <div class="mt-12 pt-8 border-t border-gray-50 flex justify-between items-center">
-                  <button v-if="currentStep > 1" @click="currentStep--" class="px-8 py-4 rounded-2xl font-bold text-gray-400 hover:text-dark transition-all">
+               <div class="mt-12 pt-8 border-t border-gray-50 flex flex-col sm:flex-row justify-between items-center gap-4">
+                  <button v-if="currentStep > 1" @click="currentStep--" class="w-full sm:w-auto px-8 py-4 rounded-2xl font-bold text-gray-400 hover:text-dark hover:bg-gray-100 transition-all flex items-center justify-center">
                      <i class="fa-solid fa-arrow-left mr-2"></i> Sebelumnya
                   </button>
-                  <div v-else></div>
+                  <div v-else class="hidden sm:block"></div>
 
-                  <button v-if="currentStep < 4" @click="nextStep" class="bg-mocha text-white font-bold py-4 px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all flex items-center gap-3">
-                     Lanjut Ke Step {{ currentStep + 1 }} <i class="fa-solid fa-arrow-right"></i>
+                  <button v-if="currentStep < 4" @click="nextStep" class="w-full sm:w-auto bg-mocha text-white font-bold py-4 px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all flex items-center justify-center gap-3">
+                     Selanjutnya <i class="fa-solid fa-arrow-right"></i>
                   </button>
 
-                  <button v-else @click="saveAndPreview" :disabled="isUploading" class="bg-mocha text-white font-bold py-4 px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all disabled:opacity-50 flex items-center gap-3">
+                  <button v-else @click="saveAndPreview" :disabled="isUploading" class="w-full sm:w-auto bg-mocha text-white font-bold py-4 px-12 rounded-2xl hover:bg-dark shadow-xl shadow-mocha/20 transition-all disabled:opacity-50 flex items-center justify-center gap-3">
                      <span v-if="isUploading" class="animate-spin w-4 h-4 border-2 border-white/30 border-t-white rounded-full"></span>
-                     <span>{{ route.params.id ? 'Simpan Perubahan' : 'Lanjut Preview' }}</span>
-                     <i v-if="!isUploading" class="fa-solid fa-wand-magic-sparkles"></i>
+                     <span>{{ route.params.id ? 'Simpan Perubahan' : 'Selesai & Simpan' }}</span>
+                     <i v-if="!isUploading" class="fa-solid fa-check"></i>
                   </button>
                </div>
 
             </div>
          </div>
-         <div class="h-24 md:hidden"></div>
+         <div class="h-32 lg:hidden"></div>
       </div>
+      
+      <!-- RIGHT PANE: LIVE PREVIEW (Desktop) -->
+      <div class="hidden lg:flex w-[400px] xl:w-[450px] bg-slate-900 shadow-2xl flex-col sticky top-0 h-screen border-l border-slate-800">
+         <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shadow-sm z-10">
+            <div class="flex items-center gap-2 text-white">
+               <i class="fa-solid fa-eye text-mocha text-sm"></i>
+               <span class="font-bold text-sm tracking-wide">Live Preview</span>
+            </div>
+            <div class="flex gap-1">
+               <div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
+               <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
+               <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
+            </div>
+         </div>
+         <div class="flex-1 bg-black p-4 xl:p-6 flex items-center justify-center overflow-hidden">
+            <!-- Mobile Frame Mockup -->
+            <div class="w-[320px] xl:w-[360px] h-[680px] xl:h-[720px] bg-white rounded-[2.5rem] shadow-2xl ring-[8px] ring-slate-800 overflow-hidden relative transition-all duration-300">
+               <!-- Notch Mockup -->
+               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-20 pointer-events-none"></div>
+               
+               <iframe 
+                  ref="previewIframe"
+                  :src="previewUrl" 
+                  class="w-full h-full border-none"
+                  allow="autoplay"
+               ></iframe>
+               
+               <!-- Loading Overlay for Iframe -->
+               <div v-if="isPreviewLoading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
+                  <div class="animate-spin text-mocha text-3xl"><i class="fa-solid fa-spinner"></i></div>
+               </div>
+            </div>
+         </div>
+      </div>
+
+      <!-- MOBILE LIVE PREVIEW MODAL -->
+      <Transition name="slide-up">
+         <div v-if="showMobilePreview" class="fixed inset-0 z-[60] bg-black lg:hidden flex flex-col">
+            <div class="p-4 bg-slate-900 flex items-center justify-between">
+               <div class="flex items-center gap-2 text-white">
+                  <i class="fa-solid fa-eye text-mocha text-sm"></i>
+                  <span class="font-bold text-sm">Live Preview</span>
+               </div>
+               <button @click="showMobilePreview = false" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-95 transition-transform">
+                  <i class="fa-solid fa-times"></i>
+               </button>
+            </div>
+            <div class="flex-1 overflow-hidden relative">
+               <iframe 
+                  ref="mobilePreviewIframe"
+                  :src="previewUrl" 
+                  class="w-full h-full border-none bg-white"
+                  allow="autoplay"
+               ></iframe>
+            </div>
+         </div>
+      </Transition>
+
+      <!-- FAB Mobile Toggle Preview -->
+      <button 
+         @click="showMobilePreview = !showMobilePreview"
+         class="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-slate-900 text-white shadow-2xl shadow-slate-900/40 flex items-center justify-center z-50 hover:scale-105 active:scale-95 transition-all"
+         :class="{'rotate-180': showMobilePreview}"
+      >
+         <i v-if="!showMobilePreview" class="fa-solid fa-eye text-xl"></i>
+         <i v-else class="fa-solid fa-times text-xl"></i>
+      </button>
    </div>
 
    <!-- Image Cropper Modal -->
@@ -440,6 +510,68 @@ const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
 const isDraftSaving = ref(false)
+const isInitialLoading = ref(true)
+
+// Live Preview States
+const showMobilePreview = ref(false)
+const isPreviewLoading = ref(true)
+const previewIframe = ref(null)
+const mobilePreviewIframe = ref(null)
+
+const previewUrl = computed(() => {
+   const templateId = selectedTemplateRef.value.id || 1
+   return `/preview?templateId=${templateId}&mode=live`
+})
+
+// Function to sync data to iframe
+const syncDataToPreview = (data) => {
+   const payload = {
+      type: 'LIVE_PREVIEW_UPDATE',
+      data: {
+         ...data,
+         // Map fields to match what the template expects
+         brideName: data.brideName || 'Nama Wanita',
+         groomName: data.groomName || 'Nama Pria',
+         photoCoupleUrl: data.photoCouple || '/default-couple.jpg',
+         bridePhotoUrl: data.bridePhoto || '/default-bride.jpg',
+         groomPhotoUrl: data.groomPhoto || '/default-groom.jpg',
+         parents: {
+            brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
+            groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
+         },
+         akadLocation: data.isSingleEvent 
+            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
+            : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+         resepsiLocation: data.isSingleEvent
+            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
+            : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+         quoteText: data.quote,
+         quoteSource: data.quoteSource,
+         loveStory: data.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
+         galleryImages: data.gallery.map(img => img.preview),
+         giftDeliveryAddress: data.giftAddresses,
+         bankAccounts: data.bankAccounts,
+         eWalletLink: data.eWalletLink
+      }
+   }
+
+   if (previewIframe.value && previewIframe.value.contentWindow) {
+      previewIframe.value.contentWindow.postMessage(payload, '*')
+   }
+   if (mobilePreviewIframe.value && mobilePreviewIframe.value.contentWindow) {
+      mobilePreviewIframe.value.contentWindow.postMessage(payload, '*')
+   }
+}
+
+// Listen for iframe ready event
+onMounted(() => {
+   window.addEventListener('message', (event) => {
+      if (event.data?.type === 'PREVIEW_READY') {
+         isPreviewLoading.value = false
+         syncDataToPreview(formData.value) 
+      }
+   })
+})
 
 // Cropper States
 const cropper = ref({
@@ -517,11 +649,15 @@ async function saveToDraft() {
    }
 }
 
-// Watch changes to trigger auto-save (debounced)
+// Watch changes to trigger auto-save and live preview
 let saveTimeout
-watch(formData, () => {
-   clearTimeout(saveTimeout)
-   saveTimeout = setTimeout(saveToDraft, 2000) 
+watch(formData, (newVal) => {
+   syncDataToPreview(newVal)
+
+   if (!isInitialLoading.value) {
+      clearTimeout(saveTimeout)
+      saveTimeout = setTimeout(saveToDraft, 2000) 
+   }
 }, { deep: true })
 
 async function loadFromDraft() {
