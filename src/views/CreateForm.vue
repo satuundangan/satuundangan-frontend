@@ -1,27 +1,23 @@
 <template>
-   <div class="min-h-screen bg-gray-50 font-sans pb-24 flex flex-col lg:flex-row">
-      <!-- LEFT PANE: FORM -->
-      <div class="flex-1 lg:max-w-[600px] xl:max-w-[700px] bg-gray-50 w-full overflow-y-auto" :class="{'hidden lg:block': showMobilePreview}">
-         <!-- Sticky Header Stepper -->
-         <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
+   <div class="min-h-screen bg-gray-50 font-sans pb-24">
+      <!-- Sticky Header Stepper -->
+      <div class="sticky top-0 z-40 bg-gray-50/80 backdrop-blur-xl border-b border-gray-100 px-4 md:px-8 py-4 mb-8 md:mb-12">
          <div class="max-w-5xl mx-auto">
             <div class="flex items-center justify-between mb-4">
                <button @click="currentStep > 1 ? currentStep-- : router.back()" class="group flex items-center gap-3 text-slate-400 hover:text-dark transition-all font-bold text-xs uppercase tracking-widest">
                   <div class="w-8 h-8 rounded-full border border-slate-100 bg-white flex items-center justify-center group-hover:border-mocha group-hover:text-mocha transition-all shadow-sm">
                      <i class="fa-solid fa-chevron-left text-[10px]"></i>
                   </div>
-                  <span class="hidden sm:inline">{{ currentStep > 1 ? 'Sebelumnya' : 'Batal' }}</span>
+                  <span class="hidden sm:inline">{{ currentStep > 1 ? 'Langkah ' + (currentStep - 1) : 'Batal' }}</span>
                </button>
                
                <div class="flex flex-col items-end">
                   <div class="flex items-center gap-2 mb-1">
-                     <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Langkah</span>
-                     <span class="text-xs font-black text-mocha">{{ currentStep }} / 4</span>
+                     <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.2em]">Progress</span>
+                     <span class="text-xs font-black text-mocha">{{ Math.round((currentStep / 4) * 100) }}%</span>
                   </div>
-                  <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10 flex items-center gap-2">
-                     <i v-if="isDraftSaving" class="fa-solid fa-spinner animate-spin text-[8px]"></i>
-                     <i v-else class="fa-solid fa-cloud-check text-[8px] text-emerald-500"></i>
-                     {{ isDraftSaving ? 'Menyimpan...' : (['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1]) }}
+                  <div class="text-[9px] font-bold text-dark uppercase tracking-widest bg-mocha/10 px-3 py-1 rounded-full border border-mocha/10">
+                     {{ ['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep-1] }}
                   </div>
                </div>
             </div>
@@ -71,12 +67,9 @@
                                  <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                               </div>
                               <div data-field="brideParents">
-                                 <label class="form-label flex items-center justify-between">
-                                    <span>Nama Orang Tua</span>
-                                    <span class="text-[9px] text-slate-400 normal-case font-medium">Opsional</span>
-                                 </label>
-                                 <input v-model="formData.brideParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
-                                 <p class="text-[9px] text-slate-400 mt-1.5 italic">Kosongkan jika ingin tampilan undangan lebih minimalis.</p>
+                                 <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                 <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
+                                 <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
                               </div>
                               <div data-field="bridePhoto">
                                  <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
@@ -110,12 +103,9 @@
                                  <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                               </div>
                               <div data-field="groomParents">
-                                 <label class="form-label flex items-center justify-between">
-                                    <span>Nama Orang Tua</span>
-                                    <span class="text-[9px] text-slate-400 normal-case font-medium">Opsional</span>
-                                 </label>
-                                 <input v-model="formData.groomParents" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" />
-                                 <p class="text-[9px] text-slate-400 mt-1.5 italic">Kosongkan jika ingin tampilan undangan lebih minimalis.</p>
+                                 <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                 <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
+                                 <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
                               </div>
                               <div data-field="groomPhoto">
                                  <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
@@ -141,21 +131,11 @@
                         <label class="form-label">Judul Undangan (Slug) <span class="text-red-500">*</span></label>
                         <div class="flex flex-col sm:flex-row gap-3">
                            <div class="flex-1">
-                              <input v-model="formData.title" @input="validateField('title')" type="text" placeholder="Contoh: The Wedding Of Putri & Pangeran" class="form-input font-bold" :class="{ 'border-red-500': validationErrors.title }" />
+                              <input v-model="formData.title" @input="validateField('title')" type="text" placeholder="Contoh: The Wedding of Putri & Pangeran" class="form-input font-bold" :class="{ 'border-red-500': validationErrors.title }" />
                               <p v-if="validationErrors.title" class="form-error">{{ validationErrors.title }}</p>
                            </div>
-                           <button
-                              type="button"
-                              :disabled="!suggestedTitle || formData.title === suggestedTitle"
-                              @click="formData.title = suggestedTitle; validateField('title')"
-                              class="inline-flex items-center justify-center gap-2 rounded-2xl border border-mocha/10 bg-mocha/5 px-5 py-3 text-xs font-bold text-mocha transition-all hover:border-mocha/30 hover:bg-mocha hover:text-white disabled:cursor-not-allowed disabled:border-slate-100 disabled:bg-slate-50 disabled:text-slate-300 sm:min-w-[150px]"
-                           >
-                              <span>{{ suggestedTitle ? 'Gunakan Saran' : 'Isi Nama Dulu' }}</span>
-                           </button>
+                           <button v-if="suggestedTitle && formData.title !== suggestedTitle" @click="formData.title = suggestedTitle" class="px-4 py-3 bg-mocha/5 text-mocha rounded-xl font-bold text-xs hover:bg-mocha hover:text-white transition-all whitespace-nowrap">Gunakan Saran</button>
                         </div>
-                        <p v-if="suggestedTitle && formData.title !== suggestedTitle" class="mt-2 text-[10px] font-semibold text-slate-400">
-                           Saran: <span class="font-serif text-mocha">{{ suggestedTitle }}</span>
-                        </p>
                      </div>
                   </section>
                   <QuoteSection v-if="sections.quote" :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
@@ -259,7 +239,7 @@
                      <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-4">
                            <label class="form-label">Pilih Sumber Musik</label>
-                           <select v-model="formData.music" class="form-input font-semibold" @change="handleMusicSourceChange">
+                           <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
                               <option value="">Pilih Musik Preset</option>
                               <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
                                  {{ audio.title }}
@@ -313,16 +293,7 @@
 
                         <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col justify-center bg-gray-50/50 p-6 rounded-3xl border border-gray-100 animate-fade-in">
                            <span class="text-[10px] font-bold text-mocha uppercase tracking-[0.2em] mb-3 block">Pratinjau Suara:</span>
-                           <AudioTrimmer
-                              :key="formData.music"
-                              :url="formData.music"
-                              :initialStart="formData.audioStart"
-                              :initialEnd="formData.audioEnd"
-                              @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
-                           />
-                           <p class="mt-3 text-[10px] text-gray-500 leading-relaxed">
-                              Rekomendasi: gunakan potongan 45-60 detik agar musik tetap ringan dan nyaman saat undangan dibuka.
-                           </p>
+                           <audio :src="formData.music" controls class="h-10 w-full rounded-full shadow-sm"></audio>
                         </div>
                      </div>
                   </section>
@@ -364,75 +335,8 @@
 
             </div>
          </div>
-         <div class="h-32 lg:hidden"></div>
+         <div class="h-24 md:hidden"></div>
       </div>
-
-      <!-- RIGHT PANE: LIVE PREVIEW (Desktop) -->
-      <div class="hidden lg:flex w-[400px] xl:w-[450px] bg-slate-900 shadow-2xl flex-col sticky top-0 h-screen border-l border-slate-800">
-         <div class="p-4 bg-slate-900 border-b border-slate-800 flex items-center justify-between shadow-sm z-10">
-            <div class="flex items-center gap-2 text-white">
-               <i class="fa-solid fa-eye text-mocha text-sm"></i>
-               <span class="font-bold text-sm tracking-wide">Live Preview</span>
-            </div>
-            <div class="flex gap-1">
-               <div class="w-2.5 h-2.5 rounded-full bg-rose-500"></div>
-               <div class="w-2.5 h-2.5 rounded-full bg-amber-500"></div>
-               <div class="w-2.5 h-2.5 rounded-full bg-emerald-500"></div>
-            </div>
-         </div>
-         <div class="flex-1 bg-black p-4 xl:p-6 flex items-center justify-center overflow-hidden">
-            <!-- Mobile Frame Mockup -->
-            <div class="w-[320px] xl:w-[360px] h-[680px] xl:h-[720px] bg-white rounded-[2.5rem] shadow-2xl ring-[8px] ring-slate-800 overflow-hidden relative transition-all duration-300">
-               <!-- Notch Mockup -->
-               <div class="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-800 rounded-b-xl z-20 pointer-events-none"></div>
-               
-               <iframe 
-                  ref="previewIframe"
-                  :src="previewUrl" 
-                  class="w-full h-full border-none"
-                  allow="autoplay"
-               ></iframe>
-               
-               <!-- Loading Overlay for Iframe -->
-               <div v-if="isPreviewLoading" class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex items-center justify-center">
-                  <div class="animate-spin text-mocha text-3xl"><i class="fa-solid fa-spinner"></i></div>
-               </div>
-            </div>
-         </div>
-      </div>
-
-      <!-- MOBILE LIVE PREVIEW MODAL -->
-      <Transition name="slide-up">
-         <div v-if="showMobilePreview" class="fixed inset-0 z-[60] bg-black lg:hidden flex flex-col">
-            <div class="p-4 bg-slate-900 flex items-center justify-between">
-               <div class="flex items-center gap-2 text-white">
-                  <i class="fa-solid fa-eye text-mocha text-sm"></i>
-                  <span class="font-bold text-sm">Live Preview</span>
-               </div>
-               <button @click="showMobilePreview = false" class="w-8 h-8 rounded-full bg-white/10 text-white flex items-center justify-center active:scale-95 transition-transform">
-                  <i class="fa-solid fa-times"></i>
-               </button>
-            </div>
-            <div class="flex-1 overflow-hidden relative">
-               <iframe 
-                  ref="mobilePreviewIframe"
-                  :src="previewUrl" 
-                  class="w-full h-full border-none bg-white"
-                  allow="autoplay"
-               ></iframe>
-            </div>
-         </div>
-      </Transition>
-
-      <!-- FAB Mobile Toggle Preview -->
-      <button 
-         @click="showMobilePreview = !showMobilePreview"
-         class="lg:hidden fixed bottom-6 right-6 w-14 h-14 rounded-full bg-slate-900 text-white shadow-2xl shadow-slate-900/40 flex items-center justify-center z-50 hover:scale-105 active:scale-95 transition-all"
-         :class="{'rotate-180': showMobilePreview}"
-      >
-         <i v-if="!showMobilePreview" class="fa-solid fa-eye text-xl"></i>
-         <i v-else class="fa-solid fa-times text-xl"></i>
-      </button>
    </div>
 
    <!-- Image Cropper Modal -->
@@ -497,8 +401,6 @@ import LoveStorySection from './create-form/components/LoveStorySection.vue'
 import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
 import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
-import { get, set, del } from 'idb-keyval'
-import Swal from 'sweetalert2'
 
 const toast = useToast()
 const route = useRoute()
@@ -508,7 +410,6 @@ const musicType = ref('library')
 const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
-const isDraftSaving = ref(false)
 
 // Cropper States
 const cropper = ref({
@@ -528,8 +429,6 @@ const uploadProgress = ref({
 const isPremiumTemplate = computed(() => {
    return selectedTemplateRef.value.isPremium === true || selectedTemplateRef.value.isPremium === 'true'
 })
-
-const DEFAULT_AUDIO_CLIP_SECONDS = 60
 
 const formData = ref({
    title: '', brideName: '', groomName: '', bridePhoto: '', bridePhotoFile: null,
@@ -564,77 +463,6 @@ const formData = ref({
 const sections = ref({})
 const validationErrors = ref({})
 const loveStoryErrors = ref([])
-
-// Auto-save logic
-const draftKey = computed(() => {
-   const id = route.params.id || 'new_invitation'
-   return `draft_invitation_${id}`
-})
-
-async function saveToDraft() {
-   if (isUploading.value) return
-   isDraftSaving.value = true
-   try {
-      // Simpan snapshot data (termasuk base64 foto hasil crop di IndexedDB)
-      // Kita perlu clone data tanpa file asli (karena File object gak bisa masuk IndexedDB langsung dengan mudah tanpa plugin)
-      const draftData = JSON.parse(JSON.stringify(formData.value))
-      await set(draftKey.value, draftData)
-      setTimeout(() => { isDraftSaving.value = false }, 800)
-   } catch (err) {
-      console.error("Gagal simpan draft", err)
-      isDraftSaving.value = false
-   }
-}
-
-// Watch changes to trigger auto-save (debounced)
-let saveTimeout
-watch(formData, () => {
-   clearTimeout(saveTimeout)
-   saveTimeout = setTimeout(saveToDraft, 2000) 
-}, { deep: true })
-
-async function loadFromDraft() {
-   try {
-      const saved = await get(draftKey.value)
-      if (saved) {
-         if (!route.params.id) {
-            const confirm = await Swal.fire({
-               title: 'Lanjutkan pengerjaan?',
-               text: 'Kami menemukan data yang belum selesai kamu isi terakhir kali. Mau dilanjutkan?',
-               icon: 'info',
-               showCancelButton: true,
-               confirmButtonText: 'Ya, Lanjutkan',
-               cancelButtonText: 'Mulai Baru',
-               confirmButtonColor: '#a47148'
-            })
-            if (confirm.isConfirmed) {
-               // Restore data teks & base64 preview
-               formData.value = { ...formData.value, ...saved }
-               
-               // Restore File objects dari base64 preview (agar upload tetep jalan)
-               const base64ToFile = async (base64, filename) => {
-                  if (!base64 || !base64.startsWith('data:')) return null
-                  const res = await fetch(base64)
-                  const blob = await res.blob()
-                  return new File([blob], filename, { type: blob.type })
-               }
-
-               if (saved.bridePhoto) formData.value.bridePhotoFile = await base64ToFile(saved.bridePhoto, 'bride.jpg')
-               if (saved.groomPhoto) formData.value.groomPhotoFile = await base64ToFile(saved.groomPhoto, 'groom.jpg')
-               if (saved.photoCouple) formData.value.photoCoupleFile = await base64ToFile(saved.photoCouple, 'couple.jpg')
-               
-               toast.success("Draft berhasil dimuat!")
-            } else {
-               await del(draftKey.value)
-            }
-         } else {
-            formData.value = { ...formData.value, ...saved }
-         }
-      }
-   } catch (err) {
-      console.error("Gagal load draft", err)
-   }
-}
 
 // Helper methods for Dynamic Sections
 function addLoveStory() {
@@ -732,7 +560,7 @@ async function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/2, targetField: 'couple' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 1, targetField: 'couple' }
    }; reader.readAsDataURL(file)
    e.target.value = ''
 }
@@ -750,7 +578,7 @@ function onCropComplete({ blob, preview }) {
       formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' })
    }
    cropper.value.show = false
-   validateField(field + 'Photo') 
+   validateField(field + 'Photo') // Trigger validation refresh
 }
 
 function handleGalleryUpload(e) {
@@ -766,23 +594,6 @@ function handleDenahUpload(e) {
    const reader = new FileReader(); reader.onload = () => { formData.value.denah = reader.result; formData.value.denahFile = file }; reader.readAsDataURL(file)
 }
 
-function resetAudioTrim(end = 0) {
-   formData.value.audioStart = 0
-   formData.value.audioEnd = end
-}
-
-function handleMusicSourceChange() {
-   formData.value.musicPreview = ''
-   formData.value.musicFile = null
-
-   if (!formData.value.music) {
-      resetAudioTrim(0)
-      return
-   }
-
-   resetAudioTrim(formData.value.music === 'custom' ? 0 : DEFAULT_AUDIO_CLIP_SECONDS)
-}
-
 async function handleMusicUpload(e) {
    const file = e.target.files?.[0]
    if (!file) return
@@ -794,7 +605,6 @@ async function handleMusicUpload(e) {
    reader.onload = () => {
       formData.value.musicPreview = reader.result
       formData.value.musicFile = file
-      resetAudioTrim(DEFAULT_AUDIO_CLIP_SECONDS)
    }
    reader.readAsDataURL(file)
 }
@@ -814,20 +624,19 @@ const progressPercentage = computed(() => {
 const suggestedTitle = computed(() => {
    const groom = (formData.value.groomName || '').split(' ')[0]
    const bride = (formData.value.brideName || '').split(' ')[0]
-   return groom && bride ? `The Wedding Of ${groom} & ${bride}` : ''
+   return groom && bride ? `${groom} & ${bride}` : ''
 })
 
 const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir. (QS. Ar-Rum: 21)"
 
 onMounted(async () => {
-   await loadFromDraft()
    try {
       const res = await fetchPublicAudio()
       audioList.value = Array.isArray(res) ? res : (res?.data || [])
    } catch {}
 
    const stored = localStorage.getItem('selectedSections')
-   if (!route.params.id && !stored && !formData.value.title) {
+   if (!route.params.id && !stored) {
       router.push('/create')
       return
    }
@@ -984,7 +793,9 @@ function validateField(field) {
    let message = ''
    const data = formData.value
    if (field === 'brideName' && !data.brideName?.trim()) message = 'Wajib diisi'
+   if (field === 'brideParents' && !data.brideParents?.trim()) message = 'Wajib diisi'
    if (field === 'groomName' && !data.groomName?.trim()) message = 'Wajib diisi'
+   if (field === 'groomParents' && !data.groomParents?.trim()) message = 'Wajib diisi'
    if (field === 'title' && !data.title?.trim()) message = 'Wajib diisi'
    validationErrors.value[field] = message
    return !message
@@ -997,8 +808,10 @@ function validateStep(step) {
 
    if (step === 1) {
       if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
+      if (!data.brideParents?.trim()) { validationErrors.value.brideParents = 'Nama orang tua wanita wajib diisi'; isValid = false }
       if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
       if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
+      if (!data.groomParents?.trim()) { validationErrors.value.groomParents = 'Nama orang tua pria wajib diisi'; isValid = false }
       if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
       if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
    } else if (step === 2) {
@@ -1029,23 +842,23 @@ function nextStep() {
 
 async function uploadAllFiles() {
    const filesToUpload = []
-   if (formData.value.bridePhotoFile instanceof File) filesToUpload.push({ file: formData.value.bridePhotoFile, setter: (url) => formData.value.bridePhoto = url, name: 'Foto Mempelai Wanita' })
-   if (formData.value.groomPhotoFile instanceof File) filesToUpload.push({ file: formData.value.groomPhotoFile, setter: (url) => formData.value.groomPhoto = url, name: 'Foto Mempelai Pria' })
-   if (formData.value.photoCoupleFile instanceof File) filesToUpload.push({ file: formData.value.photoCoupleFile, setter: (url) => formData.value.photoCouple = url, name: 'Foto Sampul' })
-   if (formData.value.denahFile instanceof File) filesToUpload.push({ file: formData.value.denahFile, setter: (url) => formData.value.denah = url, name: 'Foto Denah' })
-   if (formData.value.musicFile instanceof File) filesToUpload.push({ file: formData.value.musicFile, setter: (url) => formData.value.music = url, name: 'File Musik' })
+   if (formData.value.bridePhotoFile) filesToUpload.push({ file: formData.value.bridePhotoFile, setter: (url) => formData.value.bridePhoto = url, name: 'Foto Mempelai Wanita' })
+   if (formData.value.groomPhotoFile) filesToUpload.push({ file: formData.value.groomPhotoFile, setter: (url) => formData.value.groomPhoto = url, name: 'Foto Mempelai Pria' })
+   if (formData.value.photoCoupleFile) filesToUpload.push({ file: formData.value.photoCoupleFile, setter: (url) => formData.value.photoCouple = url, name: 'Foto Sampul' })
+   if (formData.value.denahFile) filesToUpload.push({ file: formData.value.denahFile, setter: (url) => formData.value.denah = url, name: 'Foto Denah' })
+   if (formData.value.musicFile) filesToUpload.push({ file: formData.value.musicFile, setter: (url) => formData.value.music = url, name: 'File Musik' })
    
    formData.value.gallery.forEach((item, i) => {
-      if (item.file instanceof File) filesToUpload.push({ file: item.file, setter: (url) => formData.value.gallery[i].preview = url, name: `Galeri Foto ${i+1}` })
+      if (item.file) filesToUpload.push({ file: item.file, setter: (url) => formData.value.gallery[i].preview = url, name: `Galeri Foto ${i+1}` })
    })
    formData.value.loveStories.forEach((s, i) => {
-      if (s.photoFile instanceof File) filesToUpload.push({ file: s.photoFile, setter: (url) => formData.value.loveStories[i].photo = url, name: `Love Story Photo ${i+1}` })
+      if (s.photoFile) filesToUpload.push({ file: s.photoFile, setter: (url) => formData.value.loveStories[i].photo = url, name: `Love Story Photo ${i+1}` })
    })
    formData.value.eWalletLink.forEach((w, i) => {
-      if (w.wallet_image_file instanceof File) filesToUpload.push({ file: w.wallet_image_file, setter: (url) => formData.value.eWalletLink[i].wallet_image = url, name: `E-Wallet QR ${i+1}` })
+      if (w.wallet_image_file) filesToUpload.push({ file: w.wallet_image_file, setter: (url) => formData.value.eWalletLink[i].wallet_image = url, name: `E-Wallet QR ${i+1}` })
    })
    formData.value.bankAccounts.forEach((b, i) => {
-      if (b.bankLogoFile instanceof File) filesToUpload.push({ file: b.bankLogoFile, setter: (url) => formData.value.bankAccounts[i].bankLogo = url, name: `Bank Logo ${i+1}` })
+      if (b.bankLogoFile) filesToUpload.push({ file: b.bankLogoFile, setter: (url) => formData.value.bankAccounts[i].bankLogo = url, name: `Bank Logo ${i+1}` })
    })
 
    if (filesToUpload.length === 0) return
@@ -1150,8 +963,6 @@ async function saveAndPreview() {
          result = res.data || res
          localStorage.setItem('editInvitationId', result.id)
       }
-      
-      await del(draftKey.value) // Hapus draft setelah sukses
       toast.success("Berhasil menyimpan!")
       router.push({ path: '/preview', query: { slug: result.slug } })
    } catch (error) {
