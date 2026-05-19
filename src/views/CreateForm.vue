@@ -422,60 +422,6 @@ const previewUrl = computed(() => {
    return `/preview?templateId=${templateId}&mode=live`
 })
 
-// Function to sync data to iframe
-const syncDataToPreview = (data) => {
-   const payload = {
-      type: 'LIVE_PREVIEW_UPDATE',
-      data: {
-         ...data,
-         brideName: data.brideName || 'Nama Wanita',
-         groomName: data.groomName || 'Nama Pria',
-         photoCoupleUrl: data.photoCouple || '/default-couple.jpg',
-         bridePhotoUrl: data.bridePhoto || '/default-bride.jpg',
-         groomPhotoUrl: data.groomPhoto || '/default-groom.jpg',
-         parents: {
-            brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
-            groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
-         },
-         akadLocation: data.isSingleEvent 
-            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-            : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
-         resepsiLocation: data.isSingleEvent
-            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-            : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
-         quoteText: data.quote,
-         quoteSource: data.quoteSource,
-         loveStory: data.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
-         galleryImages: data.gallery.map(img => img.preview),
-         giftDeliveryAddress: data.giftAddresses,
-         bankAccounts: data.bankAccounts,
-         eWalletLink: data.eWalletLink
-      }
-   }
-
-   if (previewIframe.value && previewIframe.value.contentWindow) {
-      previewIframe.value.contentWindow.postMessage(payload, '*')
-   }
-   if (mobilePreviewIframe.value && mobilePreviewIframe.value.contentWindow) {
-      mobilePreviewIframe.value.contentWindow.postMessage(payload, '*')
-   }
-}
-
-// Watch for form changes to trigger sync
-watch(formData, (newVal) => {
-   syncDataToPreview(newVal)
-}, { deep: true })
-
-// Listen for iframe ready event
-onMounted(() => {
-   window.addEventListener('message', (event) => {
-      if (event.data?.type === 'PREVIEW_READY') {
-         isPreviewLoading.value = false
-         syncDataToPreview(formData.value) 
-      }
-   })
-})
-
 // Cropper States
 const cropper = ref({
    show: false,
@@ -528,6 +474,58 @@ const formData = ref({
 const sections = ref({})
 const validationErrors = ref({})
 const loveStoryErrors = ref([])
+
+// Live Preview Sync Logic
+const syncDataToPreview = (data) => {
+   const payload = {
+      type: 'LIVE_PREVIEW_UPDATE',
+      data: {
+         ...data,
+         brideName: data.brideName || 'Nama Wanita',
+         groomName: data.groomName || 'Nama Pria',
+         photoCoupleUrl: data.photoCouple || '/default-couple.jpg',
+         bridePhotoUrl: data.bridePhoto || '/default-bride.jpg',
+         groomPhotoUrl: data.groomPhoto || '/default-groom.jpg',
+         parents: {
+            brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
+            groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
+         },
+         akadLocation: data.isSingleEvent 
+            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
+            : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+         resepsiLocation: data.isSingleEvent
+            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
+            : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+         quoteText: data.quote,
+         quoteSource: data.quoteSource,
+         loveStory: data.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
+         galleryImages: data.gallery.map(img => img.preview),
+         giftDeliveryAddress: data.giftAddresses,
+         bankAccounts: data.bankAccounts,
+         eWalletLink: data.eWalletLink
+      }
+   }
+
+   if (previewIframe.value && previewIframe.value.contentWindow) {
+      previewIframe.value.contentWindow.postMessage(payload, '*')
+   }
+   if (mobilePreviewIframe.value && mobilePreviewIframe.value.contentWindow) {
+      mobilePreviewIframe.value.contentWindow.postMessage(payload, '*')
+   }
+}
+
+watch(formData, (newVal) => {
+   syncDataToPreview(newVal)
+}, { deep: true })
+
+onMounted(() => {
+   window.addEventListener('message', (event) => {
+      if (event.data?.type === 'PREVIEW_READY') {
+         isPreviewLoading.value = false
+         syncDataToPreview(formData.value) 
+      }
+   })
+})
 
 // Helper methods for Dynamic Sections
 function addLoveStory() {
