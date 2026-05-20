@@ -1,7 +1,7 @@
 <script setup>
 import { getInvitationBySlug, getMyInvitationBySlug } from '@/api/invitation'
 import { demoData } from '@/api/demoData'
-import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h } from 'vue'
+import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
 const templateMap = {
@@ -30,6 +30,8 @@ const isPreviewMode = ref(false)
 const isInsideFrame = ref(false)
 const isDemoMode = ref(false)
 
+const isLiveSyncActive = ref(false)
+
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
   // Check if inside iframe or forced via query param
@@ -39,33 +41,58 @@ onMounted(async () => {
   // Listen for LIVE PREVIEW updates from CreateForm
   window.addEventListener('message', (event) => {
     if (event.data?.type === 'LIVE_PREVIEW_UPDATE' && isPreviewMode.value) {
-      if (!invitationData.value) {
-        invitationData.value = { content: {} }
-      }
-      
+      isLiveSyncActive.value = true // Mark that we are using live data
       const payload = event.data.data
       
       // Update template data reactively
-      invitationData.value = {
-        ...invitationData.value,
+      const newData = {
+        ...(invitationData.value || {}),
         ...payload,
-        id: invitationData.value.id || 'live-preview',
+        id: invitationData.value?.id || 'live-preview',
         title: payload.title || 'Live Preview',
         slug: payload.slug || 'live-preview',
         musicChoice: payload.music === 'custom' ? payload.musicPreview : payload.music,
         audioStart: Number(payload.audioStart) || 0,
         audioEnd: Number(payload.audioEnd) || 0,
         template_slug: payload.template_slug || payload.templateDesignId || 'dark-elegant',
-        guestName: invitationData.value.guestName || 'Tamu Undangan',
+        guestName: payload.guestName || invitationData.value?.guestName || 'Tamu Undangan',
       }
+      
+      invitationData.value = newData
+      loading.value = false // Ensure we stop loading when data is received
     }
   })
+
+  // Watch for invitationData changes to update TemplateComponent
+  watch(() => invitationData.value?.template_slug, (newSlug) => {
+    if (!newSlug) return
+    
+    const normalizedSlug = newSlug.toLowerCase().replace(/\s+/g, '-')
+    const loader = templateMap[normalizedSlug] || templateMap['dark-elegant']
+
+    TemplateComponent.value = markRaw(defineAsyncComponent({
+      loader,
+      errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
+    }))
+  }, { immediate: true })
 
   // Tell the parent window (CreateForm) that we are ready to receive data
   if (isInsideFrame.value && window.parent) {
     window.parent.postMessage({ type: 'PREVIEW_READY' }, '*')
   }
   
+  // Skip fetching if virtual live-preview slug
+  if (slug === 'live-preview' && isPreviewMode.value) {
+    if (!invitationData.value) {
+       invitationData.value = {
+          template_slug: route.query.templateId || 'dark-elegant',
+          guestName: 'Tamu Undangan'
+       }
+    }
+    loading.value = false
+    return
+  }
+
   try {
     let data;
 
@@ -78,34 +105,54 @@ onMounted(async () => {
         guestName: route.query.to || demoData.guestName
       }
     } else {
-      // Normal Mode: Fetch from API
-      const rawData = await fetchInvitationData(slug)
-      
-      // Check if invitation is active or if we are in preview mode
-      const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
-      
-      if (!isPublished && !isPreviewMode.value) {
-        error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
-        loading.value = false
-        return
-      }
-      
-      // Flatten the data: merge root properties with content properties
-      data = {
-        ...(rawData.content || {}),
-        id: rawData.id,
-        title: rawData.title,
-        slug: rawData.slug,
-        musicChoice: rawData.musicChoice,
-        audioStart: Number(rawData.audioStart) || 0,
-        audioEnd: Number(rawData.audioEnd) || 0,
-        template_slug: rawData.template_slug || rawData.templateName,
-        is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
-        is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+      try {
+        // Normal Mode: Fetch from API
+        const rawData = await fetchInvitationData(slug)
+        
+        // If live sync already started, don't overwrite with old API data
+        if (isLiveSyncActive.value) {
+           return
+        }
+
+        // Check if invitation is active or if we are in preview mode
+        const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+        
+        if (!isPublished && !isPreviewMode.value) {
+          error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
+          loading.value = false
+          return
+        }
+        
+        // Flatten the data: merge root properties with content properties
+        data = {
+          ...(rawData.content || {}),
+          id: rawData.id,
+          title: rawData.title,
+          slug: rawData.slug,
+          musicChoice: rawData.musicChoice,
+          audioStart: Number(rawData.audioStart) || 0,
+          audioEnd: Number(rawData.audioEnd) || 0,
+          template_slug: rawData.template_slug || rawData.templateName,
+          is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
+          is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+        }
+      } catch (err) {
+        // If live sync already started, ignore error
+        if (isLiveSyncActive.value) return
+
+        if (isPreviewMode.value) {
+          data = {
+            content: {},
+            template_slug: route.query.templateId || 'dark-elegant',
+            guestName: 'Tamu Undangan'
+          }
+        } else {
+          throw err
+        }
       }
       
       // Determine Guest Name
-      let guestName = 'Tamu Undangan'
+      let guestName = data.guestName || 'Tamu Undangan'
       if (route.query.to) {
         guestName = route.query.to
       } else if (route.query.e) {
@@ -124,21 +171,19 @@ onMounted(async () => {
       data.guestName = guestName
     }
     
-    invitationData.value = data
-
-    // Determine template slug, fallback to dark-elegant if not found
-    const templateSlug = (data.template_slug || 'dark-elegant').toLowerCase().replace(/\s+/g, '-')
-    const loader = templateMap[templateSlug] || templateMap['dark-elegant']
-
-    TemplateComponent.value = markRaw(defineAsyncComponent({
-      loader,
-      errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
-    }))
+    // Final check before setting data
+    if (!isLiveSyncActive.value) {
+       invitationData.value = data
+    }
   } catch (err) {
-    error.value = 'Undangan tidak ditemukan atau terjadi kesalahan.'
-    console.error(err)
+    if (!isLiveSyncActive.value) {
+       error.value = 'Undangan tidak ditemukan atau terjadi kesalahan.'
+       console.error(err)
+    }
   } finally {
-    loading.value = false
+    if (!isLiveSyncActive.value) {
+       loading.value = false
+    }
   }
 })
 
