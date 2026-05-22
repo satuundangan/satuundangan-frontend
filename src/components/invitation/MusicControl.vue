@@ -1,37 +1,44 @@
 <template>
-  <div class="fixed bottom-24 right-4 z-50">
-
-    <!-- YouTube mode: mini visible player with mute toggle (required by YouTube ToS) -->
-    <div v-if="isYoutube" class="relative w-12 h-12">
-      <div class="w-12 h-12 rounded-full overflow-hidden shadow-lg border border-white/20">
-        <iframe
-          ref="ytIframe"
-          :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1${audioStart > 0 ? '&start=' + Math.floor(audioStart) : ''}${audioEnd > 0 ? '&end=' + Math.floor(audioEnd) : ''}`"
-          width="48"
-          height="48"
-          frameborder="0"
-          allow="autoplay; encrypted-media"
-          title="Background music player"
-        />
-      </div>
-      <button
-        @click="toggleYoutubeMute"
-        class="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 hover:bg-black/30 transition-all duration-300 hover:scale-110"
-        :title="isMuted ? 'Unmute musik' : 'Mute musik'"
-      >
-        <i :class="isMuted ? 'fa-solid fa-volume-xmark' : 'fa-solid fa-compact-disc animate-spin-slow'" class="text-white text-lg" />
-      </button>
+  <div class="fixed bottom-24 right-4 md:right-8 z-50 animate-fade-in">
+    
+    <!-- YouTube mode: mini visible player with mute toggle -->
+    <div v-if="isYoutube" class="relative group">
+       <div class="w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden shadow-2xl border border-[#d4af37]/30 ring-1 ring-white/10">
+          <iframe
+            ref="ytIframe"
+            :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1${audioStart > 0 ? '&start=' + Math.floor(audioStart) : ''}${audioEnd > 0 ? '&end=' + Math.floor(audioEnd) : ''}`"
+            class="w-full h-full pointer-events-none"
+            frameborder="0"
+            allow="autoplay; encrypted-media"
+          />
+       </div>
+       <button
+         @click="toggleYoutubeMute"
+         class="absolute inset-0 flex items-center justify-center rounded-full bg-[#022b1d]/60 backdrop-blur-md hover:bg-[#022b1d]/40 transition-all duration-500"
+       >
+         <i :class="isMuted ? 'fa-solid fa-volume-xmark text-white/50' : 'fa-solid fa-compact-disc text-[#d4af37] animate-spin-slow'" class="text-base md:text-xl" />
+       </button>
     </div>
 
-    <!-- Regular audio mode -->
+    <!-- Regular audio mode (The Premium Redesign) -->
     <button
       v-else
       @click="toggleAudio"
-      class="w-12 h-12 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-all duration-300 backdrop-blur-md border border-white/20"
-      :class="isPlaying ? 'bg-mocha/80 text-white animate-spin-slow' : 'bg-black/50 text-white/70'"
+      class="relative group w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-110 active:scale-95 border border-[#d4af37]/30 backdrop-blur-xl bg-[#043927]/60"
     >
-      <i v-if="isPlaying" class="fa-solid fa-compact-disc text-xl" />
-      <i v-else class="fa-solid fa-play text-lg ml-1" />
+      <!-- Animated Music Waves -->
+      <div v-if="isPlaying" class="absolute inset-0 flex items-center justify-center gap-[2px] opacity-40">
+         <span v-for="i in 3" :key="i" class="w-[2px] h-3 bg-[#d4af37] rounded-full animate-music-bar" :style="{ animationDelay: `${i * 0.2}s` }"></span>
+      </div>
+
+      <!-- Icon Container -->
+      <div class="relative z-10 flex items-center justify-center transition-transform duration-500" :class="{ 'rotate-[360deg]': isPlaying }">
+         <i v-if="isPlaying" class="fa-solid fa-compact-disc text-[#d4af37] text-lg md:text-2xl animate-spin-slow" />
+         <i v-else class="fa-solid fa-play text-white/40 text-sm md:text-lg ml-1" />
+      </div>
+
+      <!-- Pulsing Glow Effect -->
+      <div v-if="isPlaying" class="absolute inset-0 rounded-full bg-[#d4af37]/20 animate-ping-slow pointer-events-none"></div>
     </button>
 
   </div>
@@ -150,11 +157,40 @@ watch(() => props.src, () => {
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 
 .animate-spin-slow {
-  animation: spin 4s linear infinite;
+  animation: spin 6s linear infinite;
+}
+
+.animate-ping-slow {
+  animation: ping-custom 3s cubic-bezier(0, 0, 0.2, 1) infinite;
 }
 
 @keyframes spin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes ping-custom {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+@keyframes music-bar {
+  0%, 100% { height: 4px; }
+  50% { height: 16px; }
+}
+
+.animate-music-bar {
+  animation: music-bar 0.8s ease-in-out infinite;
+}
+
+.animate-fade-in {
+  animation: fadeIn 1s ease-out forwards;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 </style>

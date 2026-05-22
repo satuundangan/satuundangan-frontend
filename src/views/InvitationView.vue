@@ -17,6 +17,7 @@ const templateMap = {
   'modern-noir': () => import('../templates/modern-noir.vue'),
   'azure-shores': () => import('../templates/azure-shores.vue'),
   'cyberpunk-neon': () => import('../templates/cyberpunk-neon.vue'),
+  'royal-emerald': () => import('../templates/royal-emerald.vue'),
 }
 
 const route = useRoute()
