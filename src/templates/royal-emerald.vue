@@ -45,7 +45,7 @@
            </div>
            <div class="space-y-6 md:space-y-8 animate-fade-in-up" style="animation-delay: 0.3s">
               <h1 class="text-6xl md:text-[8rem] font-alex text-white leading-none drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
-                {{ data.groomName?.split(' ')[1] || 'Saputra' }} <span class="text-3xl md:text-5xl font-serif italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || 'Afifah' }}
+                {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-3xl md:text-5xl font-serif italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
               </h1>
               <p class="text-lg md:text-2xl font-cormorant tracking-[0.3em] text-white/70 font-light uppercase">{{ formatDate(data.akadLocation?.dateTime) }}</p>
            </div>
@@ -113,7 +113,7 @@
           <div class="space-y-4">
              <p class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black">The Halal Journey Of</p>
              <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
-               {{ data.groomName?.split(' ')[1] || 'Saputra' }} <span class="text-2xl md:text-4xl font-cormorant italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || 'Afifah' }}
+               {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-2xl md:text-4xl font-cormorant italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
              </h1>
           </div>
           <div class="flex flex-col items-center gap-4">
@@ -511,7 +511,7 @@
               <div class="space-y-3 pt-6">
                  <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">Kami yang berbahagia,</p>
                  <h2 class="font-alex text-5xl md:text-8xl text-white drop-shadow-2xl leading-none">
-                    {{ data.groomName?.split(' ')[1] || 'Saputra' }} & {{ data.brideName?.split(' ')[1] || 'Afifah' }}
+                    {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} & {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
                  </h2>
               </div>
            </div>
@@ -544,23 +544,11 @@ const isPreviewMode = computed(() => props.data?.id === 'live-preview' || props.
 // Illustration Path
 const illustrationUrl = '/assets/images/foto_pengantin_afifah_saputra_animasi.png'
 
-const data = ref({
-  id: 0, title: 'Pernikahan Safira & Syahreza', slug: 'safira-syahreza',
-  groomName: 'Syahreza', brideName: 'Safira',
-  groomOrder: 'pertama', brideOrder: 'ketiga',
-  parents: { groomParents: "Bpk. Fulan & Ibu Fulanah", brideParents: "Bpk. Abdullah & Ibu Aminah" },
-  socialMediaGroom: { instagram: 'syahreza' }, socialMediaBrides: { instagram: 'safira' },
-  akadLocation: { dateTime: '2026-06-11T08:00:00', description: 'KUA Kebon Jeruk Jakarta Barat', mapUrl: 'https://maps.app.goo.gl/...' },
-  resepsiLocation: { dateTime: '2026-06-13T08:00:00', description: 'Gedung Darul Aitam Aqshal Ghayat, Jakarta Barat', mapUrl: 'https://maps.app.goo.gl/...' },
-  musicChoice: 'https://cdn.satuundangan.id/1779461591716-LeeHi - ONLY (Lyrics) - (128 Kbps).mp3',
-  bankAccounts: [
-    { bankName: 'BCA', accountNumber: '7025221338', accountName: 'Syahreza' },
-    { bankName: 'BCA', accountNumber: '4910401969', accountName: 'Safira' }
-  ],
-  giftDeliveryAddress: 'Jl FF No 29 RT 007/005 Sukabumi Selatan Kebon Jeruk Jakarta Barat 11560',
-  loveStory: [], dressCode: 'Pakaian Formal / Batik',
-  ...props.data
-})
+const data = ref(props.data || {})
+
+watch(() => props.data, (newVal) => {
+  data.value = { ...newVal }
+}, { deep: true, immediate: true })
 
 const mockStories = [
   { title: 'Pertama Bertemu', date: 'Januari 2024', description: 'Kisah cinta kami bermula dari pertemuan tak terduga yang menumbuhkan benih-benih kasih di hati.' },
