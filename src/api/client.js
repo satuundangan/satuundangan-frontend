@@ -19,7 +19,9 @@ export async function apiFetch(path, options = {}) {
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: 'Something went wrong' }))
-    throw new Error(err.message || 'Something went wrong')
+    const errorObject = new Error(err.message || 'Something went wrong')
+    errorObject.status = res.status
+    throw errorObject
   }
 
   // Handle empty response

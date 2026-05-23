@@ -70,8 +70,10 @@ const fetchDashboard = async () => {
   } catch (err) {
     if (err.status === 404) {
       router.push('/affiliate/register')
+      throw err
     } else {
       toast.error('Gagal memuat dashboard')
+      throw err
     }
   }
 }
@@ -135,13 +137,18 @@ const handleWithdraw = async () => {
 
 onMounted(async () => {
   loading.value = true
-  await Promise.allSettled([
-    fetchDashboard(),
-    fetchCommissions(),
-    fetchWithdrawals(),
-    fetchProfile()
-  ])
-  loading.value = false
+  try {
+    await fetchDashboard()
+    await Promise.allSettled([
+      fetchCommissions(),
+      fetchWithdrawals(),
+      fetchProfile()
+    ])
+  } catch (err) {
+    // Expected on 404
+  } finally {
+    loading.value = false
+  }
 })
 </script>
 
