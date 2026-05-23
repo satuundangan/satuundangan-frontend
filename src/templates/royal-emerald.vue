@@ -28,7 +28,16 @@
            <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 rounded-full blur-[120px] animate-pulse-slow"></div>
            <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
         </div>
-        <div class="absolute inset-6 md:inset-12 border border-[#d4af37]/20 rounded-[3rem] md:rounded-[5rem] pointer-events-none"></div>
+        <div class="absolute inset-4 md:inset-8 pointer-events-none border border-[#d4af37]/20 rounded-[3rem] md:rounded-[5rem] m-2 md:m-4 overflow-hidden">
+            <!-- Top Left Ornament -->
+            <svg class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70" viewBox="0 0 100 100" fill="currentColor">
+               <path d="M0,0 L100,0 C100,55.23 55.23,100 0,100 L0,0 Z M10,10 L80,10 C80,48.66 48.66,80 10,80 L10,10 Z M20,20 L60,20 C60,42.09 42.09,60 20,60 L20,20 Z"/>
+            </svg>
+            <!-- Bottom Right Ornament -->
+            <svg class="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70 transform rotate-180" viewBox="0 0 100 100" fill="currentColor">
+               <path d="M0,0 L100,0 C100,55.23 55.23,100 0,100 L0,0 Z M10,10 L80,10 C80,48.66 48.66,80 10,80 L10,10 Z M20,20 L60,20 C60,42.09 42.09,60 20,60 L20,20 Z"/>
+            </svg>
+        </div>
         <div class="relative z-10 w-full max-w-xl flex flex-col items-center justify-center space-y-12 md:space-y-16 py-10">
            <div class="space-y-4 animate-fade-in">
               <p class="text-[10px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase">The Wedding Of</p>
@@ -66,6 +75,31 @@
 
       <!-- 1. HERO SECTION -->
       <section id="home" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden">
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
+               <g transform="translate(30, 20) scale(0.3)">
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
+               </g>
+               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
+               <g transform="translate(30, 20) scale(0.3)">
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
+               </g>
+               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
+            </svg>
+         </div>
+
         <div class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-transparent to-[#022b1d]"></div>
         <div class="relative z-10 w-full max-w-5xl mx-auto space-y-10" v-observe>
           <div class="relative mx-auto w-56 h-[22rem] md:w-80 md:h-[32rem]">
@@ -83,14 +117,41 @@
              </h1>
           </div>
           <div class="flex flex-col items-center gap-4">
-             <div class="h-[1px] w-16 bg-[#d4af37]/30"></div>
-             <p class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+             <div class="flex items-center justify-center gap-3 opacity-80">
+                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#d4af37]"></div>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-[#d4af37] animate-spin-slow w-4 h-4 md:w-6 md:h-6">
+                   <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
+                </svg>
+                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#d4af37]"></div>
+             </div>
+             <p class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2">{{ formatDate(data.akadLocation?.dateTime) }}</p>
           </div>
         </div>
       </section>
 
       <!-- 2. QUOTE SECTION -->
       <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10" v-observe>
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+               <g transform="translate(10, 10) scale(0.5)">
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+               </g>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+               <g transform="translate(10, 10) scale(0.5)">
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+               </g>
+            </svg>
+         </div>
+
         <div class="max-w-4xl mx-auto space-y-10">
           <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#d4af37] opacity-20"></i>
           <p class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg">
@@ -105,12 +166,40 @@
 
       <!-- 3. GROOM SECTION -->
       <section v-if="isSectionEnabled('couple')" id="couple" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <circle cx="80" cy="40" r="3" fill="#ffffff"/>
+               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <circle cx="80" cy="40" r="3" fill="#ffffff"/>
+               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
+            </svg>
+         </div>
+
          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
             <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
                <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"></div>
                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"></div>
                <div class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl flex items-end justify-center">
                   <img :src="data.groomPhotoUrl || illustrationUrl" class="w-[140%] h-[140%] object-contain mb-[-10%] scale-x-[-1] object-right" />
+                  <!-- Sparkles -->
+                  <div class="absolute inset-0 z-20 pointer-events-none">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 right-1/4 text-[#d4af37] animate-pulse-slow">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
+                     </svg>
+                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" class="absolute top-1/2 left-1/4 text-[#d4af37] animate-ping-slow">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
+                     </svg>
+                  </div>
                </div>
             </div>
             <div class="space-y-4">
@@ -124,11 +213,35 @@
 
       <!-- 4. BRIDE SECTION -->
       <section v-if="isSectionEnabled('couple')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+            </svg>
+         </div>
+
          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
             <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"></div>
                <div class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
                   <img :src="data.bridePhotoUrl || illustrationUrl" class="w-[140%] h-[140%] object-contain mb-[-10%] object-left" />
+                  <!-- Sparkles -->
+                  <div class="absolute inset-0 z-20 pointer-events-none">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 left-1/4 text-[#d4af37] animate-pulse-slow">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
+                     </svg>
+                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" class="absolute top-1/2 right-1/4 text-[#d4af37] animate-ping-slow">
+                        <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
+                     </svg>
+                  </div>
                </div>
             </div>
             <div class="space-y-4">
@@ -142,6 +255,31 @@
 
       <!-- 5. LOVE STORY SECTION -->
       <section v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)" id="story" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6">
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
+               <g transform="translate(30, 20) scale(0.3)">
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
+               </g>
+               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
+               <g transform="translate(30, 20) scale(0.3)">
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
+               </g>
+               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
+            </svg>
+         </div>
+
          <div class="max-w-4xl mx-auto w-full space-y-10">
             <div class="text-center space-y-3" v-observe>
                <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Chapter</h2>
@@ -160,13 +298,42 @@
 
       <!-- 6. UNIFIED EVENT SECTION (Performance Optimized) -->
       <section v-if="isSectionEnabled('event')" id="event" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+               <g transform="translate(10, 10) scale(0.5)">
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+               </g>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+               <g transform="translate(10, 10) scale(0.5)">
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+               </g>
+            </svg>
+         </div>
+
          <!-- Cinematic Infinity Backdrop -->
          <div class="absolute inset-0 pointer-events-none overflow-hidden">
             <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-10"></div>
             <div class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-[#011a12] to-[#022b1d]"></div>
-            <!-- Rotating Infinity Circles (Simplified) -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] md:w-[800px] md:h-[800px] border border-[#d4af37]/5 rounded-full animate-spin-slow opacity-20"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] md:w-[600px] md:h-[600px] border border-[#d4af37]/5 rounded-full animate-spin-reverse-slow opacity-10"></div>
+            <!-- Golden Snowfall Magic -->
+            <div class="absolute inset-0 w-full h-full opacity-60">
+               <div class="absolute top-[-10%] left-[10%] w-2 h-2 bg-[#ffffff] rounded-full blur-[1px] animate-snow-1"></div>
+               <div class="absolute top-[-10%] left-[30%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2"></div>
+               <div class="absolute top-[-10%] left-[50%] w-1.5 h-1.5 bg-[#ffffff] rounded-full animate-snow-3"></div>
+               <div class="absolute top-[-10%] left-[70%] w-4 h-4 bg-[#d4af37] rounded-full blur-[3px] animate-snow-1" style="animation-delay: 2s;"></div>
+               <div class="absolute top-[-10%] left-[90%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-2" style="animation-delay: 4s;"></div>
+               <div class="absolute top-[-10%] left-[20%] w-2.5 h-2.5 bg-[#d4af37] rounded-full blur-[1px] animate-snow-3" style="animation-delay: 1.5s;"></div>
+               <div class="absolute top-[-10%] left-[60%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-1" style="animation-delay: 3s;"></div>
+               <div class="absolute top-[-10%] left-[80%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2" style="animation-delay: 5s;"></div>
+            </div>
          </div>
 
          <div class="relative z-10 max-w-5xl w-full flex flex-col items-center space-y-4 md:space-y-4 h-full justify-center max-h-screen py-8 md:py-8">
@@ -237,6 +404,25 @@
 
       <!-- 8. GIFT SECTION -->
       <section v-if="isSectionEnabled('gift')" id="gift" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <circle cx="80" cy="40" r="3" fill="#ffffff"/>
+               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <circle cx="80" cy="40" r="3" fill="#ffffff"/>
+               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
+            </svg>
+         </div>
+
          <div class="max-w-4xl mx-auto w-full space-y-4 md:space-y-10 overflow-y-auto no-scrollbar max-h-[90vh] py-6">
             <div class="text-center space-y-2">
                <h2 class="text-3xl md:text-7xl font-alex text-[#d4af37]">Wedding Gift</h2>
@@ -260,6 +446,21 @@
 
       <!-- 9. RSVP & WISHES -->
       <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]">
+         <!-- Floral Corner Top Left -->
+         <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+            </svg>
+         </div>
+         <!-- Floral Corner Bottom Right -->
+         <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180">
+            <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+            </svg>
+         </div>
+
          <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
             <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
                <h2 class="text-5xl md:text-8xl font-alex text-[#d4af37] leading-none">RSVP <br/> <span class="text-white">& Wishes</span></h2>
