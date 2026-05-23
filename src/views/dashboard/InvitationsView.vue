@@ -8,7 +8,12 @@
       <main class="p-4 md:p-8 space-y-6 overflow-y-auto">
         <!-- Header Page -->
         <div class="flex items-center justify-between">
-           <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Undangan Saya</h2>
+           <div class="flex items-center gap-3">
+              <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Undangan Saya</h2>
+              <button @click="showHelpModal = true" class="w-6 h-6 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xs hover:bg-blue-100 transition-colors" title="Cara Pakai">
+                 <i class="fa-solid fa-question"></i>
+              </button>
+           </div>
            <router-link to="/templates" class="md:hidden w-10 h-10 rounded-xl bg-mocha text-white flex items-center justify-center shadow-lg shadow-mocha/20">
               <i class="fa-solid fa-plus"></i>
            </router-link>
@@ -59,6 +64,42 @@
 
     <!-- Bottom Navigation untuk Mobile -->
     <BottomNav />
+
+    <!-- Help Modal -->
+    <div v-if="showHelpModal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+       <div class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-10 shadow-2xl animate-scale-up">
+          <h3 class="font-bold text-2xl mb-2 text-dark">Panduan Undangan</h3>
+          <p class="text-sm text-gray-500 mb-8">Kelola undangan pernikahan Anda dengan mudah.</p>
+          
+          <div class="space-y-6">
+             <div class="flex gap-4">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-mocha text-white flex items-center justify-center font-bold">1</div>
+                <div>
+                   <h4 class="font-bold text-dark text-sm">Status Draft</h4>
+                   <p class="text-xs text-gray-500 leading-relaxed">Undangan baru berstatus <b>Draft</b>. Anda bisa mengedit data, foto, dan musik sepuasnya tanpa biaya.</p>
+                </div>
+             </div>
+             <div class="flex gap-4">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-mocha text-white flex items-center justify-center font-bold">2</div>
+                <div>
+                   <h4 class="font-bold text-dark text-sm">Publish Undangan</h4>
+                   <p class="text-xs text-gray-500 leading-relaxed">Klik tombol <b>Publish</b> (icon roket) untuk memproses pembayaran. Setelah aktif, status berubah jadi <b>Published</b>.</p>
+                </div>
+             </div>
+             <div class="flex gap-4">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-mocha text-white flex items-center justify-center font-bold">3</div>
+                <div>
+                   <h4 class="font-bold text-dark text-sm">Sebarkan</h4>
+                   <p class="text-xs text-gray-500 leading-relaxed">Setelah berstatus Published, buka menu <b>Daftar Tamu</b> untuk mulai mengirimkan link undangan via WhatsApp.</p>
+                </div>
+             </div>
+          </div>
+
+          <div class="mt-10">
+             <button @click="showHelpModal = false" class="w-full py-4 bg-mocha text-white rounded-2xl font-bold text-sm shadow-lg shadow-mocha/20">Saya Mengerti</button>
+          </div>
+       </div>
+    </div>
   </div>
 </template>
 
@@ -77,6 +118,7 @@ const toast = useToast();
 const invitations = ref([]);
 const loading = ref(true);
 const isSidebarOpen = ref(window.innerWidth >= 768);
+const showHelpModal = ref(false);
 
 async function fetchInvitations() {
   loading.value = true;
@@ -116,3 +158,13 @@ async function handleDelete(id) {
   }
 }
 </script>
+
+<style scoped>
+.animate-scale-up {
+  animation: scaleUp 0.2s ease-out;
+}
+@keyframes scaleUp {
+  from { opacity: 0; transform: scale(0.98); }
+  to { opacity: 1; transform: scale(1); }
+}
+</style>

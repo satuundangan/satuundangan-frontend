@@ -354,7 +354,7 @@
               </label>
             </div>
 
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuest"
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
               class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-800 focus:outline-none focus:border-blue-400 transition-colors text-sm md:text-base">
               <option value="" disabled class="text-gray-400">Jumlah Tamu</option>
               <option v-for="n in 5" :key="n" :value="n" class="text-gray-800">{{ n }} Orang</option>
@@ -452,7 +452,7 @@ const toast = useToast()
 const data = ref(props.data || {})
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: '', message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: '', message: '' })
 const backgroundUrl = ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
 
 // Navigation
@@ -622,11 +622,11 @@ async function submitRSVP() {
       guestName: rsvp.value.name,
       message: rsvp.value.message,
       rsvpStatus: rsvp.value.attendance,
-      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     
     toast.success(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah terkirim!`)
-    rsvp.value = { name: '', attendance: '', totalGuest: '', message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: '', message: '' }
   } catch (err) {
     console.error('Failed to submit RSVP:', err)
     toast.error("Gagal mengirim RSVP. Silakan coba lagi.")

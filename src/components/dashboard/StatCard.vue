@@ -1,12 +1,12 @@
 <template>
-  <div class="rounded-2xl bg-white p-4 md:p-5 shadow-sm border border-gray-50 flex flex-col justify-between transition-all hover:shadow-md">
-    <div :class="color" class="flex h-10 w-10 md:h-12 md:md:w-12 items-center justify-center rounded-xl text-lg md:text-xl mb-3">
+  <div class="rounded-3xl bg-white p-5 border border-gray-100 flex flex-col justify-between transition-all hover:border-mocha/20">
+    <div :class="color" class="flex h-9 w-9 items-center justify-center rounded-xl text-base mb-4">
       <i v-if="iconClass" :class="iconClass"></i>
       <span v-else>{{ icon }}</span>
     </div>
     <div>
-      <h2 class="text-[10px] md:text-xs font-bold uppercase text-gray-400 tracking-wider">{{ label }}</h2>
-      <p class="mt-1 text-2xl md:text-3xl font-bold text-dark">{{ value }}</p>
+      <h2 class="text-[10px] font-black uppercase text-gray-400 tracking-widest">{{ label }}</h2>
+      <p class="mt-1 text-2xl font-bold text-dark tracking-tight">{{ value }}</p>
     </div>
   </div>
 </template>

@@ -5,12 +5,12 @@
 
     <aside :class="[
       'bg-white border-r border-gray-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64',
-      isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full'
+      isOpen ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'
     ]">
-      <div class="p-6 cursor-pointer border-b border-gray-100 flex items-center justify-between" @click="goToHome">
+      <div class="p-6 cursor-pointer border-b border-gray-50 flex items-center justify-between" @click="goToHome">
          <div class="flex items-center gap-3">
-            <div class="w-8 h-8 bg-mocha text-white rounded-lg flex items-center justify-center font-serif font-bold">S</div>
-            <span class="font-serif font-bold text-lg text-mocha tracking-tight">SatuUndangan</span>
+            <div class="w-7 h-7 bg-mocha text-white rounded-lg flex items-center justify-center font-serif font-bold text-sm">S</div>
+            <span class="font-bold text-sm text-mocha tracking-tight uppercase tracking-widest">SatuUndangan</span>
          </div>
          <button @click.stop="$emit('close')" class="md:hidden p-2 text-gray-400 hover:text-mocha">
             <i class="fa-solid fa-times text-xl"></i>
@@ -21,11 +21,11 @@
         <ul class="space-y-1">
           <li v-for="item in menu" :key="item.name">
             <router-link :to="item.to" 
-              class="flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group"
-              active-class="bg-mocha/10 text-mocha font-semibold shadow-sm"
-              :class="$route.path === item.to ? '' : 'text-gray-600 hover:bg-gray-50 hover:text-dark'">
-              <span class="text-xl group-hover:scale-110 transition-transform duration-200">{{ item.icon }}</span>
-              <span class="text-sm">{{ item.name }}</span>
+              class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group"
+              active-class="bg-gray-50 text-mocha font-bold"
+              :class="$route.path === item.to ? '' : 'text-gray-500 hover:bg-gray-50 hover:text-dark'">
+              <span class="text-lg group-hover:scale-110 transition-transform duration-200 opacity-70 group-hover:opacity-100">{{ item.icon }}</span>
+              <span class="text-xs">{{ item.name }}</span>
             </router-link>
           </li>
         </ul>

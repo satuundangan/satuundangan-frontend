@@ -229,7 +229,7 @@
                 <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden"><i class="fa-solid fa-xmark"></i><span class="text-xs">Tidak Hadir</span>
               </label>
             </div>
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuest" class="w-full bg-transparent border-b border-[#eaeaea] py-3 text-sm focus:border-[#8b9d83] outline-none">
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests" class="w-full bg-transparent border-b border-[#eaeaea] py-3 text-sm focus:border-[#8b9d83] outline-none">
               <option value="" disabled>Jumlah Tamu</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
             </select>
@@ -288,7 +288,7 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 const allNavItems = [
   { id: 'home', label: 'Utama', icon: 'fa-solid fa-leaf', key: 'hero' },
@@ -384,10 +384,10 @@ async function submitRSVP() {
   try {
     await createGuestMessage({
       invitationId: data.value.id, guestName: rsvp.value.name, message: rsvp.value.message,
-      rsvpStatus: rsvp.value.attendance, totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success("Terima kasih atas konfirmasinya")
-    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) { toast.error("Gagal mengirim konfirmasi") }
 }
 

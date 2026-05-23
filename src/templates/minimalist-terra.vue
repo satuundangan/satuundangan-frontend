@@ -293,7 +293,7 @@
               </label>
             </div>
 
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuest"
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
               class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-6 py-4 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none font-bold text-xs">
               <option value="" disabled>Number of Guests</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} People</option>
@@ -372,7 +372,7 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
@@ -520,10 +520,10 @@ async function submitRSVP() {
       guestName: rsvp.value.name,
       message: rsvp.value.message,
       rsvpStatus: rsvp.value.attendance,
-      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Confirmation sent!`)
-    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
     toast.error("Failed to send RSVP.")
   }

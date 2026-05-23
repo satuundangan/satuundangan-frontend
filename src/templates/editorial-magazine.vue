@@ -282,7 +282,7 @@
                </div>
             </div>
 
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuest"
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
               class="w-full bg-gray-50 border-0 py-4 px-6 text-[10px] font-black uppercase tracking-widest outline-none">
               <option value="" disabled>Number of Guests</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} Person(s)</option>
@@ -360,7 +360,7 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
@@ -508,10 +508,10 @@ async function submitRSVP() {
       guestName: rsvp.value.name,
       message: rsvp.value.message,
       rsvpStatus: rsvp.value.attendance,
-      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Registry Updated`)
-    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
     toast.error("Process failed.")
   }

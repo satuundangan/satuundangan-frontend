@@ -28,6 +28,11 @@
               {{ formatDate(invite.akadLocation?.dateTime || invite.dateTime) }}
             </td>
             <td class="px-6 py-4 text-right flex justify-end gap-2">
+              <!-- Action: Publish -->
+              <router-link v-if="!invite.isPublished" :to="`/checkout?slug=${invite.slug}`" class="flex items-center gap-1.5 px-3 py-1.5 bg-mocha text-white rounded-lg text-[10px] font-bold shadow-lg shadow-mocha/20 hover:bg-dark transition-all" title="Publish Undangan">
+                <i class="fa-solid fa-rocket text-[9px]"></i> Publish
+              </router-link>
+
               <button @click="$emit('preview', invite.slug)" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg transition" title="Preview">
                 <i class="fa-solid fa-eye"></i>
               </button>
@@ -73,16 +78,19 @@
         </div>
 
         <div class="flex items-center justify-between pt-1">
-           <div class="flex gap-2">
+           <div class="flex gap-2 items-center">
+              <router-link v-if="!invite.isPublished" :to="`/checkout?slug=${invite.slug}`" class="flex items-center gap-1.5 px-3 py-1.5 bg-mocha text-white rounded-lg text-[9px] font-bold shadow-lg shadow-mocha/20 active:scale-95 transition-all">
+                <i class="fa-solid fa-rocket text-[8px]"></i> Publish
+              </router-link>
               <button @click="$emit('preview', invite.slug)" class="w-9 h-9 flex items-center justify-center text-blue-500 bg-blue-50 rounded-lg transition" title="Preview">
-                <i class="fa-solid fa-eye"></i>
+                <i class="fa-solid fa-eye text-sm"></i>
               </button>
               <button @click="$emit('edit', invite.id)" class="w-9 h-9 flex items-center justify-center text-amber-500 bg-amber-50 rounded-lg transition" title="Edit">
-                <i class="fa-solid fa-pen-to-square"></i>
+                <i class="fa-solid fa-pen-to-square text-sm"></i>
               </button>
            </div>
-           <button @click="$emit('delete', invite.id)" class="w-9 h-9 flex items-center justify-center text-red-400 bg-red-50 rounded-lg transition" title="Delete">
-              <i class="fa-solid fa-trash-can"></i>
+           <button @click="$emit('delete', invite.id)" class="w-9 h-9 flex items-center justify-center text-red-400 bg-red-50 active:bg-red-100 rounded-lg transition" title="Delete">
+              <i class="fa-solid fa-trash-can text-sm"></i>
            </button>
         </div>
       </div>

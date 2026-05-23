@@ -318,15 +318,17 @@ import { createPayment } from '@/api/payment'
 import { validatePromoCode } from '@/api/promo'
 import { validateAffiliateCode } from '@/api/affiliate'
 import { useAuthStore } from '@/stores/auth'
+import { useToast } from 'vue-toastification'
 
 const router = useRouter()
 const route = useRoute()
 const authStore = useAuthStore()
+const toast = useToast()
 
 const invitation = ref(null)
 const loading = ref(false)
 const ownershipError = ref('')
-const isDevelopment = computed(() => import.meta.env.DEV || window.location.hostname === 'localhost')
+const isDevelopment = computed(() => import.meta.env.DEV)
 
 const loadSnapScript = () => {
   return new Promise((resolve, reject) => {
@@ -448,7 +450,16 @@ onMounted(async () => {
   try {
     loading.value = true
     const response = await getMyInvitationBySlug(slug)
-    invitation.value = response.data || response
+    const invData = response.data || response
+    
+    // Safety Guard: If already published, redirect away
+    if (invData.is_published || invData.isPublished) {
+      toast.info("Undangan Anda sudah aktif/published.")
+      router.push('/invitations')
+      return
+    }
+
+    invitation.value = invData
   } catch (err) {
     if (err.message?.includes('not the owner') || err.message?.includes('403') || err.message?.includes('Forbidden')) {
       ownershipError.value = 'Undangan ini bukan milik akun Anda yang sedang aktif. Silakan login dengan akun yang benar.'
@@ -467,14 +478,18 @@ const simulatePaymentSuccess = async () => {
   if (!invitation.value) return
   loading.value = true
   try {
-    await updateInvitation(invitation.value.id, { isPublished: true })
+    // Sending both to be 100% sure about backend compatibility
+    await updateInvitation(invitation.value.id, { 
+       isPublished: true,
+       is_published: true 
+    })
 
     loading.value = false
-    alert("Simulasi pembayaran berhasil! Undangan Anda kini aktif.")
-    router.push(`/${invitation.value.slug}`)
+    toast.success("Simulasi pembayaran berhasil! Undangan Anda kini aktif.")
+    router.push('/invitations')
   } catch (err) {
     console.error("Gagal aktivasi simulasi:", err)
-    alert("Simulasi pembayaran gagal di sisi server")
+    toast.error("Simulasi pembayaran gagal di sisi server")
     loading.value = false
   }
 }

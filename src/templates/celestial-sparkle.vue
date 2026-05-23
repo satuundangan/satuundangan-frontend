@@ -293,7 +293,7 @@
               </label>
             </div>
 
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuest"
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
               class="w-full bg-[#0a192f] border border-white/10 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-[#f3ca40] text-center uppercase tracking-widest text-xs">
               <option value="" disabled>Party Size</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} Guest(s)</option>
@@ -371,7 +371,7 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
@@ -535,10 +535,10 @@ async function submitRSVP() {
       guestName: rsvp.value.name,
       message: rsvp.value.message,
       rsvpStatus: rsvp.value.attendance,
-      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`See you there!`)
-    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
     toast.error("Failed to confirm.")
   }

@@ -477,7 +477,7 @@
                         <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Hadir?</label>
                         <select v-model="rsvp.attendance" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-2 py-2 md:px-4 md:py-4 text-white text-xs md:text-base outline-none">
                            <option value="hadir">Hadir</option>
-                           <option value="tidak hadir">Absen</option>
+                           <option value="tidak">Absen</option>
                         </select>
                      </div>
                   </div>
@@ -569,7 +569,7 @@ const mockStories = [
 
 const galleryImages = ref([])
 const guestMessages = ref([])
-const rsvp = ref({ name: '', attendance: 'hadir', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 const activeSection = ref('home')
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
 let interval = null
@@ -664,8 +664,8 @@ function timeAgo(date) {
 async function submitRSVP() {
   if (!rsvp.value.name?.trim()) { toast.error("Isi nama Anda."); return }
   try {
-    await createGuestMessage({ invitationId: data.value.id, guestName: rsvp.value.name, message: rsvp.value.message, rsvpStatus: rsvp.value.attendance, totalGuest: Number(rsvp.value.totalGuest) })
-    toast.success(`Konfirmasi terkirim!`); rsvp.value = { name: '', attendance: 'hadir', totalGuest: 1, message: '' }; loadWishes()
+    await createGuestMessage({ invitationId: data.value.id, guestName: rsvp.value.name, message: rsvp.value.message, rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0 })
+    toast.success(`Konfirmasi terkirim!`); rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }; loadWishes()
   } catch (err) { toast.error("Gagal mengirim RSVP.") }
 }
 

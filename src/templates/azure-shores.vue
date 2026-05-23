@@ -277,7 +277,7 @@
 
             <div v-if="rsvp.attendance === 'hadir'" class="space-y-2">
               <label class="text-[10px] uppercase tracking-[0.2em] font-bold text-[#60a5fa] px-4">Number of Guests</label>
-              <select v-model="rsvp.totalGuest" class="w-full bg-[#f0f8ff] border border-[#e0f2fe] rounded-2xl py-4 px-6 text-sm font-bold focus:border-[#3b82f6] outline-none appearance-none">
+              <select v-model="rsvp.totalGuests" class="w-full bg-[#f0f8ff] border border-[#e0f2fe] rounded-2xl py-4 px-6 text-sm font-bold focus:border-[#3b82f6] outline-none appearance-none">
                 <option v-for="n in 5" :key="n" :value="n">{{ n }} Person(s)</option>
               </select>
             </div>
@@ -344,7 +344,7 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
@@ -440,10 +440,10 @@ async function submitRSVP() {
   try {
     await createGuestMessage({
       invitationId: data.value.id, guestName: rsvp.value.name, message: rsvp.value.message,
-      rsvpStatus: rsvp.value.attendance, totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success("Thank you for confirming!")
-    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) { toast.error("Something went wrong") }
 }
 

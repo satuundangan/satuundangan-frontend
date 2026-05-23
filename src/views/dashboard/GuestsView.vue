@@ -7,13 +7,35 @@
 
       <main class="p-4 md:p-8 flex-1 overflow-y-auto space-y-6">
         
-        <!-- Header & Filter -->
+        <!-- Header & Main Actions -->
         <div class="space-y-4">
            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Manajemen Tamu</h2>
-              <button @click="showAddModal = true" :disabled="!selectedInvitationId" class="w-full md:w-auto bg-mocha text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-mocha/90 flex items-center justify-center gap-2 shadow-lg shadow-mocha/20 disabled:opacity-50">
-                 <i class="fa-solid fa-plus text-xs"></i> Tambah Tamu
-              </button>
+              <div class="flex items-center gap-3">
+                 <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Manajemen Tamu</h2>
+                 <button @click="showHelpModal = true" class="w-6 h-6 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xs hover:bg-blue-100 transition-colors" title="Cara Pakai">
+                    <i class="fa-solid fa-question"></i>
+                 </button>
+              </div>
+              <div class="flex flex-wrap gap-2 md:gap-3">
+                 <button @click="showAddModal = true" :disabled="!selectedInvitationId" class="flex-1 md:flex-none bg-mocha text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-mocha/90 flex items-center justify-center gap-2 shadow-lg shadow-mocha/20 disabled:opacity-50 transition-all">
+                    <i class="fa-solid fa-user-plus"></i> Tambah
+                 </button>
+                 <button @click="showBulkModal = true" :disabled="!selectedInvitationId" class="flex-1 md:flex-none bg-white text-mocha border border-mocha/20 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all">
+                    <i class="fa-solid fa-users"></i> Massal
+                 </button>
+                 <button @click="pickFromContacts" :disabled="!selectedInvitationId" class="flex-1 md:flex-none bg-white text-blue-600 border border-blue-100 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all">
+                    <i class="fa-solid fa-address-book"></i> Kontak
+                 </button>
+                 <div class="flex gap-1">
+                    <button @click="triggerExcelImport" :disabled="!selectedInvitationId" class="flex-1 md:flex-none bg-white text-green-600 border border-green-100 px-5 py-2.5 rounded-l-xl text-xs font-bold hover:bg-green-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all border-r-0">
+                       <i class="fa-solid fa-file-excel"></i> Import
+                    </button>
+                    <button @click="downloadTemplate" :disabled="!selectedInvitationId" class="bg-white text-green-600 border border-green-100 px-3 py-2.5 rounded-r-xl text-xs font-bold hover:bg-green-50 flex items-center justify-center disabled:opacity-50 transition-all" title="Download Template Excel">
+                       <i class="fa-solid fa-download"></i>
+                    </button>
+                 </div>
+                 <input type="file" ref="excelInput" class="hidden" accept=".xlsx, .xls" @change="handleExcelImport" />
+              </div>
            </div>
 
            <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4">
@@ -42,7 +64,6 @@
               <h3 class="font-bold text-dark text-xs uppercase tracking-wider">Total: {{ filteredGuests.length }} Tamu</h3>
            </div>
 
-           <!-- Desktop Table -->
            <div class="hidden md:block overflow-x-auto">
               <table class="w-full text-left text-sm">
                 <thead class="bg-gray-50 text-gray-400 uppercase text-[10px] font-bold tracking-widest">
@@ -73,7 +94,7 @@
                     </td>
                     <td class="px-6 py-4 text-right">
                        <div class="flex justify-end gap-2">
-                          <button @click="openShareModal(guest)" :disabled="!currentInvitation?.isPublished" :class="currentInvitation?.isPublished ? 'text-green-500 hover:text-green-600 bg-green-50 hover:bg-green-100' : 'text-gray-300 bg-gray-50 cursor-not-allowed'" class="w-9 h-9 flex items-center justify-center rounded-xl transition" title="Kirim WA">
+                          <button @click="openShareModal(guest)" :class="currentInvitation?.isPublished ? 'text-green-500 hover:text-green-600 bg-green-50 hover:bg-green-100' : 'text-gray-300 bg-gray-50'" class="w-9 h-9 flex items-center justify-center rounded-xl transition" title="Kirim WA">
                              <i class="fa-brands fa-whatsapp text-lg"></i>
                           </button>
                           <button @click="deleteGuestHandler(guest.id)" class="w-9 h-9 flex items-center justify-center text-red-400 hover:text-red-500 bg-red-50 hover:bg-red-100 rounded-xl transition" title="Hapus">
@@ -86,7 +107,6 @@
               </table>
            </div>
 
-           <!-- Mobile Card List -->
            <div class="md:hidden divide-y divide-gray-50">
               <div v-for="guest in filteredGuests" :key="guest.id" class="p-4 space-y-3">
                  <div class="flex justify-between items-start">
@@ -109,7 +129,7 @@
                     </div>
 
                     <div class="flex gap-2">
-                       <button @click="openShareModal(guest)" :disabled="!currentInvitation?.isPublished" :class="currentInvitation?.isPublished ? 'text-green-500 bg-green-50 active:bg-green-100' : 'text-gray-300 bg-gray-50 cursor-not-allowed'" class="w-10 h-10 flex items-center justify-center rounded-xl transition">
+                       <button @click="openShareModal(guest)" :class="currentInvitation?.isPublished ? 'text-green-500 bg-green-50 active:bg-green-100' : 'text-gray-300 bg-gray-50'" class="w-10 h-10 flex items-center justify-center rounded-xl transition">
                           <i class="fa-brands fa-whatsapp text-xl"></i>
                        </button>
                        <button @click="deleteGuestHandler(guest.id)" class="w-10 h-10 flex items-center justify-center text-red-400 bg-red-50 active:bg-red-100 rounded-xl transition">
@@ -128,14 +148,12 @@
       </main>
     </div>
 
-    <!-- Modals (Add & Share) -->
-    <div v-if="showAddModal" class="fixed inset-0 bg-black/60 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm">
-       <div class="bg-white rounded-t-[2.5rem] md:rounded-3xl w-full max-w-md p-6 md:p-8 shadow-2xl animate-slide-up md:animate-scale-up">
-          <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6 md:hidden"></div>
+    <!-- Modals -->
+    <div v-if="showAddModal" class="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4">
+       <div class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 shadow-xl animate-scale-up">
           <h3 class="font-bold text-xl mb-6 text-dark flex items-center gap-2">
              <i class="fa-solid fa-user-plus text-mocha"></i> Tambah Tamu
           </h3>
-          
           <div class="space-y-4">
              <div>
                 <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Nama Tamu</label>
@@ -155,34 +173,79 @@
                 <input v-model="newGuest.phoneNumber" type="text" class="w-full border border-gray-100 rounded-xl p-3 bg-gray-50 focus:ring-2 focus:ring-mocha/20 outline-none text-sm" placeholder="08123456789">
              </div>
           </div>
-
           <div class="mt-8 flex gap-3">
              <button @click="showAddModal = false" class="flex-1 py-3 text-gray-400 font-bold text-sm">Batal</button>
-             <button @click="submitGuest" :disabled="isSubmitting" class="flex-[2] py-3 bg-mocha text-white rounded-xl text-sm font-bold shadow-lg shadow-mocha/20 disabled:opacity-50">
+             <button @click="submitGuest" :disabled="isSubmitting" class="flex-[2] py-3 bg-mocha text-white rounded-xl text-sm font-bold disabled:opacity-50">
                 {{ isSubmitting ? 'Menyimpan...' : 'Simpan Tamu' }}
              </button>
           </div>
        </div>
     </div>
 
-    <div v-if="showShareModal" class="fixed inset-0 bg-black/60 z-[100] flex items-end md:items-center justify-center p-0 md:p-4 backdrop-blur-sm">
-       <div class="bg-white rounded-t-[2.5rem] md:rounded-3xl w-full max-w-md p-6 md:p-8 shadow-2xl animate-slide-up md:animate-scale-up">
-          <div class="w-12 h-1.5 bg-gray-100 rounded-full mx-auto mb-6 md:hidden"></div>
+    <!-- Bulk Add Modal -->
+    <div v-if="showBulkModal" class="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4">
+       <div class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-xl animate-scale-up">
+          <h3 class="font-bold text-xl mb-2 text-dark">Tambah Tamu Massal</h3>
+          <p class="text-xs text-muted mb-6 italic">Format: "Nama NomorHP" (per baris). Contoh: "Budi Santoso 08123456789"</p>
+          <textarea v-model="bulkText" class="w-full border border-gray-100 rounded-2xl p-4 bg-gray-50 h-64 text-sm focus:ring-2 focus:ring-mocha/20 outline-none" placeholder="Budi Santoso 08123456789&#10;Ani Wijaya 081388889999"></textarea>
+          <div class="mt-8 flex gap-3">
+             <button @click="showBulkModal = false" class="flex-1 py-3 text-gray-400 font-bold text-sm">Batal</button>
+             <button @click="processBulkAdd" :disabled="!bulkText.trim() || isSubmitting" class="flex-[2] py-3 bg-mocha text-white rounded-xl text-sm font-bold disabled:opacity-50">
+                {{ isSubmitting ? 'Memproses...' : 'Proses Massal' }}
+             </button>
+          </div>
+       </div>
+    </div>
+
+    <!-- Share Modal -->
+    <div v-if="showShareModal" class="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4">
+       <div class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 shadow-xl animate-scale-up">
           <h3 class="font-bold text-xl mb-2 text-dark">Kirim Undangan</h3>
           <p class="text-xs text-muted mb-6">Pesan ini akan dikirim melalui WhatsApp.</p>
+          <textarea v-if="loadingMessage" disabled class="w-full border border-gray-100 rounded-2xl p-4 bg-gray-50 h-40 text-sm italic">Memuat pesan template...</textarea>
+          <textarea v-else v-model="shareMessage" class="w-full border border-gray-100 rounded-2xl p-4 bg-gray-50 focus:ring-2 focus:ring-mocha/20 outline-none h-40 text-sm"></textarea>
+          <div class="mt-8 flex gap-3">
+             <button @click="showShareModal = false" class="flex-1 py-3 text-gray-400 font-bold text-sm">Batal</button>
+             <button @click="sendWhatsApp" :disabled="loadingMessage" class="flex-[2] py-3 bg-green-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2">
+                <i class="fa-brands fa-whatsapp text-lg"></i> Kirim WA
+             </button>
+          </div>
+       </div>
+    </div>
+
+
+    <!-- Help Modal -->
+    <div v-if="showHelpModal" class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-sm">
+       <div class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-10 shadow-2xl animate-scale-up">
+          <h3 class="font-bold text-2xl mb-2 text-dark">Panduan Manajemen Tamu</h3>
+          <p class="text-sm text-gray-500 mb-8">Cara mudah mengelola dan mengirim undangan.</p>
           
-          <div class="space-y-4">
-             <div class="relative">
-                <textarea v-if="loadingMessage" disabled class="w-full border border-gray-100 rounded-2xl p-4 bg-gray-50 h-40 text-sm italic">Memuat pesan template...</textarea>
-                <textarea v-else v-model="shareMessage" class="w-full border border-gray-100 rounded-2xl p-4 bg-gray-50 focus:ring-2 focus:ring-mocha/20 outline-none h-40 text-sm" placeholder="Tulis pesan..."></textarea>
+          <div class="space-y-6">
+             <div class="flex gap-4">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-mocha text-white flex items-center justify-center font-bold">1</div>
+                <div>
+                   <h4 class="font-bold text-dark text-sm">Input Tamu</h4>
+                   <p class="text-xs text-gray-500 leading-relaxed">Gunakan tombol <b>Tambah</b> untuk satu orang, atau <b>Massal</b> untuk copy-paste list banyak orang sekaligus.</p>
+                </div>
+             </div>
+             <div class="flex gap-4">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-mocha text-white flex items-center justify-center font-bold">2</div>
+                <div>
+                   <h4 class="font-bold text-dark text-sm">Pilih dari Kontak</h4>
+                   <p class="text-xs text-gray-500 leading-relaxed">Klik tombol <b>Kontak</b> (saat buka web di HP) untuk memilih tamu langsung dari buku telepon Anda.</p>
+                </div>
+             </div>
+             <div class="flex gap-4">
+                <div class="w-10 h-10 shrink-0 rounded-full bg-mocha text-white flex items-center justify-center font-bold">3</div>
+                <div>
+                   <h4 class="font-bold text-dark text-sm">Kirim Undangan</h4>
+                   <p class="text-xs text-gray-500 leading-relaxed">Klik icon <b>WhatsApp</b> untuk mengirim pesan undangan profesional (Assalamu'alaikum, dll) secara otomatis.</p>
+                </div>
              </div>
           </div>
 
-          <div class="mt-8 flex gap-3 pb-4 md:pb-0">
-             <button @click="showShareModal = false" class="flex-1 py-3 text-gray-400 font-bold text-sm">Batal</button>
-             <button @click="sendWhatsApp" :disabled="loadingMessage" class="flex-[2] py-3 bg-green-500 text-white rounded-xl text-sm font-bold shadow-lg shadow-green-500/20 flex items-center justify-center gap-2">
-                <i class="fa-brands fa-whatsapp text-lg"></i> Kirim WA
-             </button>
+          <div class="mt-10">
+             <button @click="showHelpModal = false" class="w-full py-4 bg-mocha text-white rounded-2xl font-bold text-sm shadow-lg shadow-mocha/20">Saya Mengerti</button>
           </div>
        </div>
     </div>
@@ -197,8 +260,9 @@ import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
 import Topbar from "@/components/dashboard/TopbarDashboard.vue";
 import BottomNav from "@/components/dashboard/BottomNav.vue";
 import { getInvitations } from "@/api/invitation";
-import { getGuestsByInvitationId, createGuest, deleteGuest, getGuestShareLink } from "@/api/guest";
+import { getGuestsByInvitationId, createGuest, deleteGuest, getGuestShareLink, importGuests } from "@/api/guest";
 import { useToast } from "vue-toastification";
+import * as XLSX from "xlsx";
 
 const toast = useToast();
 const invitations = ref([]);
@@ -206,29 +270,43 @@ const selectedInvitationId = ref(null);
 const guests = ref([]);
 const loading = ref(false);
 const showAddModal = ref(false);
+const showBulkModal = ref(false);
+const showHelpModal = ref(false);
+const bulkText = ref("");
 const isSubmitting = ref(false);
 const searchQuery = ref("");
 const isSidebarOpen = ref(window.innerWidth >= 768);
+const excelInput = ref(null);
 
-// Share Modal State
 const showShareModal = ref(false);
 const shareMessage = ref("");
 const selectedGuestForShare = ref(null);
 const loadingMessage = ref(false);
 
-const currentInvitation = computed(() => {
-   return invitations.value.find(i => i.id === selectedInvitationId.value) || null;
+const isContactPickerSupported = computed(() => {
+  return !!(navigator.contacts && window.ContactsManager);
 });
 
-const currentInvitationSlug = computed(() => {
-   return currentInvitation.value?.slug || "";
-});
+function downloadTemplate() {
+  try {
+    const data = [
+      ["Nama", "Nomor HP", "Kategori", "Gelar"],
+      ["Budi Santoso", "08123456789", "Keluarga", "S.Kom"],
+      ["Ani Wijaya", "081388889999", "Teman", "M.BA"]
+    ];
+    const worksheet = XLSX.utils.aoa_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Daftar Tamu");
+    XLSX.writeFile(workbook, "template_tamu_satuundangan.xlsx");
+    toast.info("Template Excel (.xlsx) berhasil di-download.");
+  } catch (err) {
+    toast.error("Gagal men-download template Excel");
+  }
+}
 
-const newGuest = ref({
-  name: "",
-  group: "",
-  phoneNumber: "",
-});
+const currentInvitation = computed(() => invitations.value.find(i => i.id === selectedInvitationId.value) || null);
+
+const newGuest = ref({ name: "", group: "", phoneNumber: "" });
 
 const filteredGuests = computed(() => {
    if(!searchQuery.value) return guests.value;
@@ -249,12 +327,8 @@ async function fetchInvitations() {
       const res = await getInvitations();
       const data = Array.isArray(res) ? res : (res.data || []);
       invitations.value = data;
-      if(data.length > 0) {
-         selectedInvitationId.value = data[0].id;
-      }
-   } catch (e) {
-      console.error(e);
-   }
+      if(data.length > 0) selectedInvitationId.value = data[0].id;
+   } catch (e) { console.error(e); }
 }
 
 async function fetchGuests(invId) {
@@ -262,116 +336,119 @@ async function fetchGuests(invId) {
    try {
       const res = await getGuestsByInvitationId(invId);
       guests.value = Array.isArray(res) ? res : (res.data || []);
-   } catch (e) {
-      toast.error("Gagal memuat tamu");
-   } finally {
-      loading.value = false;
-   }
+   } catch (e) { toast.error("Gagal memuat tamu"); }
+   finally { loading.value = false; }
 }
 
 async function submitGuest() {
-   if(!newGuest.value.name?.trim()) {
-      toast.warning("Nama tamu wajib diisi");
-      return;
-   }
-   
-   if (newGuest.value.phoneNumber) {
-      const phoneRegex = /^(\+62|62|08)[0-9]{6,15}$/; 
-      if (!phoneRegex.test(newGuest.value.phoneNumber)) {
-         toast.warning("Nomor HP tidak valid. Gunakan format 08... atau 62...");
-         return;
-      }
-   }
-
+   if(!newGuest.value.name?.trim()) { toast.warning("Nama tamu wajib diisi"); return; }
    isSubmitting.value = true;
    try {
-      await createGuest({
-         ...newGuest.value,
-         invitationId: selectedInvitationId.value
-      });
+      await createGuest({ ...newGuest.value, invitationId: selectedInvitationId.value });
       toast.success("Tamu berhasil ditambahkan");
       showAddModal.value = false;
       newGuest.value = { name: "", group: "", phoneNumber: "" };
       await fetchGuests(selectedInvitationId.value);
-   } catch (e) {
-      toast.error("Gagal menambah tamu");
-   } finally {
-      isSubmitting.value = false;
-   }
+   } catch (e) { toast.error("Gagal menambah tamu"); }
+   finally { isSubmitting.value = false; }
+}
+
+async function processBulkAdd() {
+   const lines = bulkText.value.split('\n').filter(l => l.trim());
+   if(lines.length === 0) return;
+   isSubmitting.value = true;
+   let count = 0;
+   try {
+      for(const line of lines) {
+         const parts = line.trim().match(/^(.*?)\s+([\+0-9]{8,15})$/);
+         if(parts) {
+            await createGuest({ name: parts[1].trim(), phoneNumber: parts[2].trim(), invitationId: selectedInvitationId.value });
+            count++;
+         }
+      }
+      toast.success(`${count} Tamu berhasil ditambahkan massal`);
+      showBulkModal.value = false;
+      bulkText.value = "";
+      await fetchGuests(selectedInvitationId.value);
+   } catch (e) { toast.error("Terjadi kesalahan"); }
+   finally { isSubmitting.value = false; }
+}
+
+async function pickFromContacts() {
+  if (!isContactPickerSupported.value) return;
+  try {
+    const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
+    if (contacts.length > 0) {
+      isSubmitting.value = true;
+      for (const contact of contacts) {
+        if (contact.tel[0]) {
+          await createGuest({ name: contact.name[0] || 'Tamu', phoneNumber: contact.tel[0], invitationId: selectedInvitationId.value });
+        }
+      }
+      toast.success(`${contacts.length} Kontak ditambahkan`);
+      await fetchGuests(selectedInvitationId.value);
+    }
+  } catch (ex) { console.error(ex); }
+  finally { isSubmitting.value = false; }
+}
+
+function triggerExcelImport() { excelInput.value.click(); }
+async function handleExcelImport(event) {
+   const file = event.target.files[0];
+   if(!file) return;
+   const formData = new FormData();
+   formData.append('file', file);
+   formData.append('invitationId', selectedInvitationId.value);
+   loading.value = true;
+   try {
+      await importGuests(formData);
+      toast.success("Import Excel sukses");
+      await fetchGuests(selectedInvitationId.value);
+   } catch (e) { toast.error(e.message || "Import gagal"); }
+   finally { loading.value = false; event.target.value = ''; }
 }
 
 async function deleteGuestHandler(id) {
-   if(!confirm("Yakin hapus tamu ini?")) return;
+   if(!confirm("Hapus tamu?")) return;
    try {
       await deleteGuest(id);
-      toast.success("Tamu dihapus");
+      toast.success("Dihapus");
       await fetchGuests(selectedInvitationId.value);
-   } catch(e) {
-      toast.error("Gagal hapus");
-   }
+   } catch(e) { toast.error("Gagal hapus"); }
 }
 
 async function openShareModal(guest) {
-  if (!currentInvitation.value?.isPublished) {
-    toast.warning("Undangan belum dipublikasikan");
-    return;
-  }
-
+  if (!currentInvitation.value?.isPublished) { toast.warning("Undangan belum dipublikasikan"); return; }
   selectedGuestForShare.value = guest;
   showShareModal.value = true;
   loadingMessage.value = true;
-  shareMessage.value = "";
-
   try {
-    const response = await getGuestShareLink(guest.id);
-    const data = response?.data || response;
-    
+    const res = await getGuestShareLink(guest.id);
+    // Support both direct response or response.data wrapping
+    const data = res?.data || res;
     if (data?.message) {
       shareMessage.value = data.message;
     } else {
-      const url = data?.url || '';
-      const name = guest.name?.split(' ')[0] || 'Teman';
-      shareMessage.value = `Hai ${name}! Ini undangan pernikahan kami.\nKlik untuk lihat: ${url}`;
+      const couple = currentInvitation.value?.coupleName || `${currentInvitation.value?.groomName} & ${currentInvitation.value?.brideName}`;
+      shareMessage.value = `Assalamu'alaikum Wr. Wb.\n\nYth. *${guest.name}*\n\nTanpa mengurangi rasa hormat, perkenankan kami mengundang Bapak/Ibu/Saudara/i untuk menghadiri acara pernikahan kami:\n\n*${couple}*\n\nDetail Undangan:\n${data?.url || ''}\n\nTerima kasih.`;
     }
-  } catch (error) {
-    console.error("Failed to load share message:", error);
-    toast.error("Gagal memuat pesan template");
-    shareMessage.value = `Halo ${guest.name}, mohon maaf link undangan belum dapat dimuat.`;
-  } finally {
-    loadingMessage.value = false;
+  } catch (error) { 
+    shareMessage.value = `Hai ${guest.name}! Mohon maaf terjadi kesalahan teknis.`; 
   }
+  finally { loadingMessage.value = false; }
 }
 
 function sendWhatsApp() {
   if (!selectedGuestForShare.value) return;
-
   const guest = selectedGuestForShare.value;
   const phone = (guest.phoneNumber || '').replace(/[^0-9]/g, '');
   const waNumber = phone.startsWith('0') ? `62${phone.slice(1)}` : phone;
-  const encodedMessage = encodeURIComponent(shareMessage.value);
-  const waLink = `https://wa.me/${waNumber}?text=${encodedMessage}`;
-  
-  window.open(waLink, '_blank');
+  window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(shareMessage.value)}`, '_blank');
   showShareModal.value = false;
 }
 </script>
 
 <style scoped>
-.animate-scale-up {
-  animation: scaleUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.animate-slide-up {
-  animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-@keyframes scaleUp {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
+.animate-scale-up { animation: scaleUp 0.2s ease-out; }
+@keyframes scaleUp { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
 </style>

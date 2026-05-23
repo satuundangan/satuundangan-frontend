@@ -11,43 +11,38 @@
       <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto">
         
         <!-- Header Ringkas (Mobile-First) -->
-        <div class="flex items-center justify-between mb-2">
+        <div class="flex items-center justify-between">
            <div>
-              <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Halo, {{ userName.split(' ')[0] }}! 👋</h2>
-              <p class="text-xs md:text-sm text-muted">Selamat datang kembali di Satu Undangan.</p>
-           </div>
-           <div class="h-10 w-10 md:h-12 md:w-12 rounded-full bg-mocha/10 flex items-center justify-center text-mocha font-bold border-2 border-white shadow-sm">
-              {{ userName.charAt(0) }}
+              <h2 class="text-xl md:text-3xl font-bold text-dark tracking-tight">Halo, {{ userName.split(' ')[0] }}!</h2>
+              <p class="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wider mt-1">Selamat datang di Satu Undangan</p>
            </div>
         </div>
 
         <!-- Progress Undangan / CTA Utama -->
-        <div v-if="invitations.length > 0 && !allPublished" class="bg-white rounded-2xl p-5 shadow-sm border border-mocha/10 overflow-hidden relative">
+        <div v-if="invitations.length > 0 && !allPublished" class="bg-mocha rounded-2xl p-5 md:p-6 text-white overflow-hidden relative shadow-sm">
            <div class="relative z-10">
-              <span class="bg-mocha/10 text-mocha text-[10px] font-bold px-2 py-1 rounded-lg uppercase tracking-wider">Langkah Selanjutnya</span>
-              <h3 class="mt-2 font-bold text-dark text-lg">Selesaikan Undanganmu</h3>
-              <p class="text-xs text-muted mb-4">Lengkapi detail undangan agar siap dipublikasikan.</p>
+              <h3 class="font-bold text-lg">Selesaikan Undanganmu</h3>
+              <p class="text-xs text-white/80 mb-4">Lengkapi detail agar siap dipublikasikan.</p>
               
-              <div class="w-full bg-gray-100 h-2 rounded-full mb-4">
-                 <div class="bg-mocha h-full rounded-full transition-all duration-500" :style="{ width: '70%' }"></div>
+              <div class="w-full bg-white/20 h-1.5 rounded-full mb-5">
+                 <div class="bg-white h-full rounded-full transition-all duration-500" :style="{ width: '70%' }"></div>
               </div>
               
-              <router-link to="/invitations" class="inline-flex items-center gap-2 px-4 py-2 bg-mocha text-white text-xs font-bold rounded-xl shadow-lg shadow-mocha/20">
-                 Lanjutkan Edit <i class="fa-solid fa-arrow-right text-[10px]"></i>
+              <router-link to="/invitations" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-mocha text-[11px] font-bold rounded-xl shadow-sm hover:scale-105 transition-transform">
+                 Lanjutkan Edit <i class="fa-solid fa-arrow-right"></i>
               </router-link>
            </div>
-           <i class="fa-solid fa-wand-magic-sparkles absolute -right-4 -bottom-4 text-mocha/5 text-8xl rotate-12"></i>
+           <i class="fa-solid fa-wand-magic-sparkles absolute -right-6 -bottom-6 text-white/10 text-9xl rotate-12"></i>
         </div>
 
-        <div v-else-if="invitations.length === 0" class="bg-mocha rounded-2xl p-6 text-white shadow-lg overflow-hidden relative">
+        <div v-else-if="invitations.length === 0" class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm overflow-hidden relative">
            <div class="relative z-10">
-              <h3 class="text-xl font-bold font-serif">Mulai Perjalananmu</h3>
-              <p class="mt-1 text-sm text-white/80">Buat undangan digital impianmu hanya dalam hitungan menit.</p>
-              <router-link to="/create" class="mt-4 inline-block bg-white text-mocha px-6 py-2.5 rounded-xl text-sm font-bold shadow-md">
+              <h3 class="text-lg font-bold text-dark">Mulai Perjalananmu</h3>
+              <p class="mt-1 text-xs text-gray-400">Buat undangan digital impianmu hanya dalam hitungan menit.</p>
+              <router-link to="/create" class="mt-5 inline-block bg-mocha text-white px-6 py-3 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all">
                  Buat Undangan Sekarang
               </router-link>
            </div>
-           <i class="fa-solid fa-heart absolute -right-6 -top-6 text-white/10 text-9xl"></i>
         </div>
 
         <!-- Ringkasan Statistik (Horizontal Scroll on Mobile) -->
@@ -56,63 +51,62 @@
             label="Total Undangan" 
             :value="stats.total" 
             iconClass="fa-solid fa-envelope-open-text" 
-            color="bg-white text-blue-600" 
-            class="min-w-[140px] flex-shrink-0 shadow-sm border border-gray-100"
+            color="bg-blue-50 text-blue-500" 
+            class="min-w-[140px] flex-shrink-0"
           />
           <StatCard 
             label="Tamu Terundang" 
             :value="stats.guests" 
             iconClass="fa-solid fa-users" 
-            color="bg-white text-violet-600" 
-            class="min-w-[140px] flex-shrink-0 shadow-sm border border-gray-100"
+            color="bg-violet-50 text-violet-500" 
+            class="min-w-[140px] flex-shrink-0"
           />
           <StatCard 
             label="Ucapan Masuk" 
             :value="stats.responses" 
             iconClass="fa-solid fa-message" 
-            color="bg-white text-emerald-600" 
-            class="min-w-[140px] flex-shrink-0 shadow-sm border border-gray-100"
+            color="bg-emerald-50 text-emerald-500" 
+            class="min-w-[140px] flex-shrink-0"
           />
         </div>
 
         <!-- Aksi Cepat (Grid-based on Mobile) -->
         <div class="space-y-4">
-           <h3 class="font-bold text-dark flex items-center justify-between">
+           <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center justify-between px-1">
               <span>⚡ Aksi Cepat</span>
-              <router-link to="/invitations" class="text-[10px] text-mocha font-bold uppercase tracking-widest">Semua Fitur</router-link>
            </h3>
-           <div class="grid grid-cols-2 gap-3">
-              <router-link to="/create" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
-                 <div class="w-10 h-10 rounded-xl bg-orange-50 text-orange-500 flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-plus text-lg"></i>
+           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+              <router-link to="/create" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
+                 <div class="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-plus text-sm"></i>
                  </div>
                  <span class="text-xs font-bold text-dark">Buat Baru</span>
               </router-link>
-              <router-link to="/guests" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
-                 <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-user-plus text-lg"></i>
+              <router-link to="/guests" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
+                 <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-user-plus text-sm"></i>
                  </div>
-                 <span class="text-xs font-bold text-dark">Tambah Tamu</span>
+                 <span class="text-xs font-bold text-dark">Tamu</span>
               </router-link>
-              <router-link to="/guestbook" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
-                 <div class="w-10 h-10 rounded-xl bg-green-50 text-green-500 flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-comment-dots text-lg"></i>
+              <router-link to="/guestbook" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
+                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-comment-dots text-sm"></i>
                  </div>
-                 <span class="text-xs font-bold text-dark">Cek Ucapan</span>
+                 <span class="text-xs font-bold text-dark">Ucapan</span>
               </router-link>
-              <router-link to="/settings" class="flex flex-col items-center justify-center p-4 bg-white rounded-2xl border border-gray-100 shadow-sm hover:border-mocha/30 transition-all">
-                 <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-500 flex items-center justify-center mb-3">
-                    <i class="fa-solid fa-gear text-lg"></i>
+              <router-link to="/settings" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
+                 <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center flex-shrink-0">
+                    <i class="fa-solid fa-gear text-sm"></i>
                  </div>
-                 <span class="text-xs font-bold text-dark">Pengaturan</span>
+                 <span class="text-xs font-bold text-dark">Setelan</span>
               </router-link>
            </div>
         </div>
 
         <!-- Daftar Undangan Terbaru -->
-        <div class="bg-white rounded-2xl p-5 md:p-6 shadow-sm border border-gray-100">
-           <h3 class="font-bold text-dark mb-4 flex items-center gap-2">
-              <span>🎉</span> Undangan Terakhir
+        <div class="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100">
+           <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">
+              Terakhir Dibuat
            </h3>
            
            <div v-if="loading" class="space-y-3">

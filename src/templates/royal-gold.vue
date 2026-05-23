@@ -278,7 +278,7 @@
               </label>
             </div>
 
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuest"
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
               class="w-full bg-[#0a1128] border border-[#d4af37]/30 rounded-lg px-6 py-4 text-[#d4af37] focus:outline-none focus:border-[#d4af37] font-cinzel uppercase tracking-widest text-xs">
               <option value="" disabled>Jumlah Tamu</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
@@ -358,7 +358,7 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuest: 1, message: '' })
+const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 // Navigation items with their corresponding keys in backend
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
@@ -496,10 +496,10 @@ async function submitRSVP() {
       guestName: rsvp.value.name,
       message: rsvp.value.message,
       rsvpStatus: rsvp.value.attendance,
-      totalGuest: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuest) : 0
+      totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Konfirmasi terkirim!`)
-    rsvp.value = { name: '', attendance: '', totalGuest: 1, message: '' }
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
     toast.error("Gagal mengirim RSVP.")
   }
