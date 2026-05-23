@@ -5,7 +5,7 @@
     <canvas ref="particleCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
 
     <!-- Subtle Texture Overlay -->
-    <div class="fixed inset-0 opacity-10 pointer-events-none z-0 bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')]"></div>
+    <div class="fixed inset-0 opacity-20 mix-blend-overlay pointer-events-none z-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
 
     <!-- Music Control -->
     <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
@@ -59,13 +59,20 @@
     <div v-if="isOpened" id="main-content" 
          class="opacity-0 transition-opacity duration-[1500ms] h-full overflow-y-auto snap-y snap-mandatory no-scrollbar scroll-smooth">
       
+      <!-- Watermark Background -->
+      <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 mix-blend-screen opacity-[0.03]">
+          <h1 class="text-[50vh] font-alex text-[#d4af37] leading-none whitespace-nowrap">{{ data.groomName?.[0] }} & {{ data.brideName?.[0] }}</h1>
+      </div>
+
       <!-- 1. HERO SECTION -->
-      <section id="home" class="snap-start relative h-screen w-full flex flex-col items-center justify-center text-center px-6 overflow-hidden">
+      <section id="home" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden">
         <div class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-transparent to-[#022b1d]"></div>
         <div class="relative z-10 w-full max-w-5xl mx-auto space-y-10" v-observe>
           <div class="relative mx-auto w-56 h-[22rem] md:w-80 md:h-[32rem]">
-             <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[3rem] translate-x-3 translate-y-3"></div>
-             <div class="absolute inset-0 bg-[#043927] rounded-t-[10rem] rounded-b-[3rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
+             <!-- Double Frame Effect -->
+             <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"></div>
+             <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"></div>
+             <div class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
                 <img :src="data.photoCoupleUrl || illustrationUrl" class="w-[120%] h-[120%] object-contain mb-[-10%]" />
              </div>
           </div>
@@ -83,7 +90,7 @@
       </section>
 
       <!-- 2. QUOTE SECTION -->
-      <section v-if="isSectionEnabled('quote')" class="snap-start relative h-screen w-full flex flex-col items-center justify-center text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10" v-observe>
+      <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10" v-observe>
         <div class="max-w-4xl mx-auto space-y-10">
           <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#d4af37] opacity-20"></i>
           <p class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg">
@@ -97,17 +104,18 @@
       </section>
 
       <!-- 3. GROOM SECTION -->
-      <section v-if="isSectionEnabled('couple')" id="couple" class="snap-start relative h-screen w-full flex flex-col items-center justify-center text-center px-6 bg-[#022b1d]" v-observe>
-         <div class="w-full max-w-4xl flex flex-col items-center space-y-10 md:space-y-16">
-            <div class="w-56 h-[20rem] md:w-80 md:h-[28rem] relative">
-               <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] -translate-x-3 translate-y-3"></div>
-               <div class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-2xl flex items-end justify-center">
+      <section v-if="isSectionEnabled('couple')" id="couple" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
+         <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
+            <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
+               <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"></div>
+               <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"></div>
+               <div class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl flex items-end justify-center">
                   <img :src="data.groomPhotoUrl || illustrationUrl" class="w-[140%] h-[140%] object-contain mb-[-10%] scale-x-[-1] object-right" />
                </div>
             </div>
             <div class="space-y-4">
                <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
-               <h3 class="text-4xl md:text-7xl font-alex text-white">{{ data.groomName }}</h3>
+               <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
                <p class="text-white/50 text-sm md:text-xl font-serif italic">Putra ke-{{ data.groomOrder || 'dua' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.groomParents }}</p>
             </div>
@@ -115,9 +123,9 @@
       </section>
 
       <!-- 4. BRIDE SECTION -->
-      <section v-if="isSectionEnabled('couple')" class="snap-start relative h-screen w-full flex flex-col items-center justify-center text-center px-6 bg-[#022b1d]" v-observe>
-         <div class="w-full max-w-4xl flex flex-col items-center space-y-10 md:space-y-16">
-            <div class="w-56 h-[20rem] md:w-80 md:h-[28rem] relative">
+      <section v-if="isSectionEnabled('couple')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
+         <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
+            <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"></div>
                <div class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
                   <img :src="data.bridePhotoUrl || illustrationUrl" class="w-[140%] h-[140%] object-contain mb-[-10%] object-left" />
@@ -125,7 +133,7 @@
             </div>
             <div class="space-y-4">
                <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
-               <h3 class="text-4xl md:text-7xl font-alex text-white">{{ data.brideName }}</h3>
+               <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.brideName }}</h3>
                <p class="text-white/50 text-sm md:text-xl font-serif italic">Putri ke-{{ data.brideOrder || 'dua' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.brideParents }}</p>
             </div>
@@ -133,10 +141,10 @@
       </section>
 
       <!-- 5. LOVE STORY SECTION -->
-      <section v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)" id="story" class="snap-start relative h-screen w-full flex flex-col items-center justify-center bg-[#022b1d] px-6">
+      <section v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)" id="story" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6">
          <div class="max-w-4xl mx-auto w-full space-y-10">
             <div class="text-center space-y-3" v-observe>
-               <h2 class="text-4xl md:text-7xl font-alex text-[#d4af37]">Our Chapter</h2>
+               <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Chapter</h2>
                <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">Journey to Eternity</p>
             </div>
             <div class="space-y-6 h-[60vh] overflow-y-auto no-scrollbar py-4 px-2" v-observe>
@@ -150,84 +158,77 @@
          </div>
       </section>
 
-      <!-- 6. UNIFIED EVENT SECTION (Ultra-Responsive & Cinematic) -->
-      <section v-if="isSectionEnabled('event')" id="event" class="snap-start relative h-screen w-full flex flex-col items-center justify-center px-4 bg-[#011a12] overflow-hidden" v-observe>
+      <!-- 6. UNIFIED EVENT SECTION (Performance Optimized) -->
+      <section v-if="isSectionEnabled('event')" id="event" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
          <!-- Cinematic Infinity Backdrop -->
          <div class="absolute inset-0 pointer-events-none overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-20"></div>
+            <div class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-10"></div>
             <div class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-[#011a12] to-[#022b1d]"></div>
-            <!-- Rotating Infinity Circles -->
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] md:w-[800px] md:h-[800px] border border-[#d4af37]/5 rounded-full animate-spin-slow opacity-30"></div>
-            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] md:w-[600px] md:h-[600px] border border-[#d4af37]/10 rounded-full animate-spin-reverse-slow opacity-20"></div>
+            <!-- Rotating Infinity Circles (Simplified) -->
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120vw] h-[120vw] md:w-[800px] md:h-[800px] border border-[#d4af37]/5 rounded-full animate-spin-slow opacity-20"></div>
+            <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100vw] h-[100vw] md:w-[600px] md:h-[600px] border border-[#d4af37]/5 rounded-full animate-spin-reverse-slow opacity-10"></div>
          </div>
 
-         <div class="relative z-10 max-w-5xl w-full flex flex-col items-center space-y-4 md:space-y-12 h-full justify-center max-h-screen py-8 md:py-10">
+         <div class="relative z-10 max-w-5xl w-full flex flex-col items-center space-y-4 md:space-y-4 h-full justify-center max-h-screen py-8 md:py-8">
             <div class="text-center space-y-1 md:space-y-2">
                <p class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60">The Halal Rituals</p>
-               <h2 class="text-4xl md:text-[6rem] font-alex text-white leading-none">Acara Bahagia</h2>
+               <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
                <div class="flex items-center gap-4 justify-center pt-1">
-                  <div class="h-[1px] w-8 md:w-10 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></div>
+                  <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
                   <i class="fa-solid fa-moon text-[#d4af37]/40 text-[10px] md:text-xs"></i>
-                  <div class="h-[1px] w-8 md:w-10 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></div>
+                  <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-10 w-full px-2 max-w-[360px] md:max-w-none mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full px-2 max-w-[360px] md:max-w-none mx-auto">
                <!-- Akad Nikah Card (Horizontal Mobile) -->
-               <div class="relative group">
-                  <div class="absolute inset-0 bg-[#d4af37]/5 blur-2xl rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                  <div class="relative bg-white/[0.02] backdrop-blur-2xl p-4 md:p-14 rounded-[2rem] md:rounded-[3.5rem] border border-[#d4af37]/20 shadow-2xl flex flex-col space-y-3 md:space-y-8 transition-all duration-700 hover:border-[#d4af37]/50 hover:-translate-y-1">
-                     <div class="flex items-center md:flex-col gap-4 md:gap-6">
-                        <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927]/60 rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center shadow-inner">
-                           <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#d4af37]"></i>
-                        </div>
-                        <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
-                           <h3 class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]">Akad Nikah</h3>
-                           <div class="flex items-center gap-2 md:flex-col md:gap-1">
-                              <p class="text-white font-bold text-[11px] md:text-2xl">{{ formatDate(data.akadLocation?.dateTime) }}</p>
-                              <span class="text-[#d4af37] md:hidden">|</span>
-                              <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">{{ formatTime(data.akadLocation?.dateTime) }} WIB</p>
-                           </div>
+               <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
+                  <div class="flex items-center md:flex-col gap-4 md:gap-6">
+                     <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center">
+                        <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#d4af37]"></i>
+                     </div>
+                     <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
+                        <h3 class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]">Akad Nikah</h3>
+                        <div class="flex items-center gap-2 md:flex-col md:gap-1">
+                           <p class="text-white font-bold text-[11px] md:text-2xl">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+                           <span class="text-[#d4af37] md:hidden">|</span>
+                           <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">{{ formatTime(data.akadLocation?.dateTime) }} WIB</p>
                         </div>
                      </div>
-                     <p class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center">{{ data.akadLocation?.description }}</p>
-                     <div class="pt-1 md:pt-4">
-                        <a :href="data.akadLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 bg-gradient-to-r from-[#d4af37] to-[#f1c40f] text-[#022b1d] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-xl active:scale-95 transition-all">
-                           <i class="fa-solid fa-location-dot"></i> Google Maps
-                        </a>
-                     </div>
+                  </div>
+                  <p class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center">{{ data.akadLocation?.description }}</p>
+                  <div class="pt-1 md:pt-4">
+                     <a :href="data.akadLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-md active:scale-95 transition-transform">
+                        <i class="fa-solid fa-location-dot"></i> Google Maps
+                     </a>
                   </div>
                </div>
 
                <!-- Resepsi Card (Horizontal Mobile) -->
-               <div class="relative group">
-                  <div class="absolute inset-0 bg-[#d4af37]/5 blur-2xl rounded-[2rem] opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
-                  <div class="relative bg-white/[0.02] backdrop-blur-2xl p-4 md:p-14 rounded-[2rem] md:rounded-[3.5rem] border border-[#d4af37]/20 shadow-2xl flex flex-col space-y-3 md:space-y-8 transition-all duration-700 hover:border-[#d4af37]/50 hover:-translate-y-1">
-                     <div class="flex items-center md:flex-col gap-4 md:gap-6">
-                        <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927]/60 rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center shadow-inner">
-                           <i class="fa-solid fa-champagne-glasses text-xl md:text-4xl text-[#d4af37]"></i>
-                        </div>
-                        <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
-                           <h3 class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]">Resepsi</h3>
-                           <div class="flex items-center gap-2 md:flex-col md:gap-1">
-                              <p class="text-white font-bold text-[11px] md:text-2xl">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>
-                              <span class="text-[#d4af37] md:hidden">|</span>
-                              <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">08:00 - 20:00 WIB</p>
-                           </div>
+               <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
+                  <div class="flex items-center md:flex-col gap-4 md:gap-6">
+                     <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center">
+                        <i class="fa-solid fa-champagne-glasses text-xl md:text-4xl text-[#d4af37]"></i>
+                     </div>
+                     <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
+                        <h3 class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]">Resepsi</h3>
+                        <div class="flex items-center gap-2 md:flex-col md:gap-1">
+                           <p class="text-white font-bold text-[11px] md:text-2xl">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>
+                           <span class="text-[#d4af37] md:hidden">|</span>
+                           <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">08:00 - 20:00 WIB</p>
                         </div>
                      </div>
-                     <p class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center">{{ data.resepsiLocation?.description }}</p>
-                     <div class="pt-1 md:pt-4">
-                        <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 border border-[#d4af37] text-[#d4af37] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest hover:bg-[#d4af37] hover:text-[#022b1d] active:scale-95 transition-all">
-                           <i class="fa-solid fa-map-pin"></i> Lihat Lokasi
-                        </a>
-                     </div>
+                  </div>
+                  <p class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center">{{ data.resepsiLocation?.description }}</p>
+                  <div class="pt-1 md:pt-4">
+                     <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 border-2 border-[#d4af37] text-[#d4af37] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest active:scale-95 transition-transform">
+                        <i class="fa-solid fa-map-pin"></i> Lihat Lokasi
+                     </a>
                   </div>
                </div>
             </div>
 
-            <div v-if="data.dressCode" class="mt-2 text-center bg-white/[0.03] backdrop-blur-md px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-white/10 shadow-2xl relative overflow-hidden group hover:border-[#d4af37]/40 transition-all w-full max-w-[360px] md:max-w-none mx-auto">
-               <div class="absolute inset-0 bg-[#d4af37]/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+            <div v-if="data.dressCode" class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#d4af37]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto">
                <p class="text-[#d4af37] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10">The Dress Code</p>
                <p class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">"{{ data.dressCode }}"</p>
             </div>
@@ -235,7 +236,7 @@
       </section>
 
       <!-- 8. GIFT SECTION -->
-      <section v-if="isSectionEnabled('gift')" id="gift" class="snap-start relative h-screen w-full flex flex-col items-center justify-center px-4 bg-[#011a12] overflow-hidden" v-observe>
+      <section v-if="isSectionEnabled('gift')" id="gift" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
          <div class="max-w-4xl mx-auto w-full space-y-4 md:space-y-10 overflow-y-auto no-scrollbar max-h-[90vh] py-6">
             <div class="text-center space-y-2">
                <h2 class="text-3xl md:text-7xl font-alex text-[#d4af37]">Wedding Gift</h2>
@@ -258,37 +259,37 @@
       </section>
 
       <!-- 9. RSVP & WISHES -->
-      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="snap-start relative h-screen w-full flex flex-col items-center justify-center px-6 bg-[#022b1d]">
-         <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-            <div class="space-y-4 text-center lg:text-left" v-observe>
+      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]">
+         <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
+            <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
                <h2 class="text-5xl md:text-8xl font-alex text-[#d4af37] leading-none">RSVP <br/> <span class="text-white">& Wishes</span></h2>
-               <p class="text-white/60 text-xs md:text-base font-light max-w-xs mx-auto lg:mx-0">Mohon konfirmasikan kehadiran Anda.</p>
+               <p class="text-white/60 text-xs md:text-xl font-light max-w-xs md:max-w-md mx-auto lg:mx-0">Mohon konfirmasikan kehadiran Anda.</p>
             </div>
-            <div class="bg-white/[0.03] p-6 rounded-[3rem] border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[50vh] flex flex-col" v-observe>
-               <form @submit.prevent="submitRSVP" class="space-y-3 flex-shrink-0">
-                  <div class="grid grid-cols-2 gap-3">
-                     <div class="space-y-1">
-                        <label class="text-[8px] uppercase tracking-widest text-[#d4af37] font-black">Nama</label>
-                        <input v-model="rsvp.name" type="text" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 text-white text-xs outline-none" />
+            <div class="bg-white/[0.03] p-6 md:p-10 rounded-[3rem] md:rounded-[4rem] border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[50vh] md:h-[65vh] flex flex-col" v-observe>
+               <form @submit.prevent="submitRSVP" class="space-y-3 md:space-y-6 flex-shrink-0">
+                  <div class="grid grid-cols-2 gap-3 md:gap-6">
+                     <div class="space-y-1 md:space-y-2">
+                        <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Nama</label>
+                        <input v-model="rsvp.name" type="text" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base outline-none" />
                      </div>
-                     <div class="space-y-1">
-                        <label class="text-[8px] uppercase tracking-widest text-[#d4af37] font-black">Hadir?</label>
-                        <select v-model="rsvp.attendance" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-2 py-2 text-white text-xs outline-none">
+                     <div class="space-y-1 md:space-y-2">
+                        <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Hadir?</label>
+                        <select v-model="rsvp.attendance" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-2 py-2 md:px-4 md:py-4 text-white text-xs md:text-base outline-none">
                            <option value="hadir">Hadir</option>
                            <option value="tidak hadir">Absen</option>
                         </select>
                      </div>
                   </div>
-                  <div class="space-y-1">
-                     <label class="text-[8px] uppercase tracking-widest text-[#d4af37] font-black">Ucapan</label>
-                     <textarea v-model="rsvp.message" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 text-white text-xs h-14 outline-none"></textarea>
+                  <div class="space-y-1 md:space-y-2">
+                     <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Ucapan</label>
+                     <textarea v-model="rsvp.message" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base h-14 md:h-28 outline-none"></textarea>
                   </div>
-                  <button type="submit" class="w-full py-3 bg-[#d4af37] text-[#022b1d] rounded-lg font-black uppercase text-[9px] shadow-xl">Kirim</button>
+                  <button type="submit" class="w-full py-3 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-lg md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all">Kirim</button>
                </form>
-               <div class="mt-4 space-y-3 overflow-y-auto no-scrollbar flex-1 pt-3 border-t border-white/5">
-                  <div v-for="(msg, i) in guestMessages" :key="i" class="bg-white/[0.04] p-3 rounded-xl border border-white/5">
-                     <div class="flex justify-between items-center"><h4 class="text-[10px] font-bold text-white">{{ msg.guestName }}</h4><span class="text-[6px] text-[#d4af37]">{{ timeAgo(msg.createdAt) }}</span></div>
-                     <p class="text-[9px] text-white/60 leading-relaxed truncate">"{{ msg.message }}"</p>
+               <div class="mt-4 md:mt-6 space-y-3 md:space-y-4 overflow-y-auto no-scrollbar flex-1 pt-3 md:pt-6 border-t border-white/5">
+                  <div v-for="(msg, i) in guestMessages" :key="i" class="bg-white/[0.04] p-3 md:p-5 rounded-xl md:rounded-2xl border border-white/5">
+                     <div class="flex justify-between items-center"><h4 class="text-[10px] md:text-base font-bold text-white">{{ msg.guestName }}</h4><span class="text-[6px] md:text-[9px] text-[#d4af37]">{{ timeAgo(msg.createdAt) }}</span></div>
+                     <p class="text-[9px] md:text-sm text-white/60 leading-relaxed truncate md:whitespace-normal md:line-clamp-3 mt-1">"{{ msg.message }}"</p>
                   </div>
                </div>
             </div>
@@ -296,7 +297,7 @@
       </section>
 
       <!-- 10. FOOTER -->
-      <footer class="snap-start relative h-screen w-full flex flex-col items-center justify-center text-center px-8 bg-[#022b1d] overflow-hidden">
+      <footer class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#022b1d] overflow-hidden">
         <div class="space-y-10 relative z-10 max-w-2xl mx-auto" v-observe>
            <div class="w-24 h-[1.5px] bg-[#d4af37] mx-auto mb-6"></div>
            <div class="space-y-6">
@@ -343,17 +344,17 @@ const isPreviewMode = computed(() => props.data?.id === 'live-preview' || props.
 const illustrationUrl = '/assets/images/foto_pengantin_afifah_saputra_animasi.png'
 
 const data = ref({
-  id: 0, title: 'Pernikahan Afifah & Saputra', slug: 'afifah-saputra',
-  groomName: 'Randi Saputra', brideName: 'Nur Afifah',
-  groomOrder: 'dua', brideOrder: 'dua',
-  parents: { groomParents: "Bpk. Ma'mun & Ibu Marlinah", brideParents: "Bpk. Hasanudin & Ibu Eulis" },
-  socialMediaGroom: { instagram: 'randysaputra01' }, socialMediaBrides: { instagram: 'afifah2799' },
+  id: 0, title: 'Pernikahan Safira & Syahreza', slug: 'safira-syahreza',
+  groomName: 'Syahreza', brideName: 'Safira',
+  groomOrder: 'pertama', brideOrder: 'ketiga',
+  parents: { groomParents: "Bpk. Fulan & Ibu Fulanah", brideParents: "Bpk. Abdullah & Ibu Aminah" },
+  socialMediaGroom: { instagram: 'syahreza' }, socialMediaBrides: { instagram: 'safira' },
   akadLocation: { dateTime: '2026-06-11T08:00:00', description: 'KUA Kebon Jeruk Jakarta Barat', mapUrl: 'https://maps.app.goo.gl/...' },
   resepsiLocation: { dateTime: '2026-06-13T08:00:00', description: 'Gedung Darul Aitam Aqshal Ghayat, Jakarta Barat', mapUrl: 'https://maps.app.goo.gl/...' },
   musicChoice: 'https://cdn.satuundangan.id/1779461591716-LeeHi - ONLY (Lyrics) - (128 Kbps).mp3',
   bankAccounts: [
-    { bankName: 'BCA', accountNumber: '7025221338', accountName: 'Randi Saputra' },
-    { bankName: 'BCA', accountNumber: '4910401969', accountName: 'Nur Apipah' }
+    { bankName: 'BCA', accountNumber: '7025221338', accountName: 'Syahreza' },
+    { bankName: 'BCA', accountNumber: '4910401969', accountName: 'Safira' }
   ],
   giftDeliveryAddress: 'Jl FF No 29 RT 007/005 Sukabumi Selatan Kebon Jeruk Jakarta Barat 11560',
   loveStory: [], dressCode: 'Pakaian Formal / Batik',
