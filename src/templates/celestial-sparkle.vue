@@ -419,7 +419,7 @@ const vObserve = {
   }
 }
 
-function getStarStyle(n) {
+function getStarStyle(_n) {
   const top = Math.random() * 100
   const left = Math.random() * 100
   const delay = Math.random() * 5
@@ -538,8 +538,8 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`See you there!`)
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
+    console.error(err)
     toast.error("Failed to confirm.")
   }
 }
@@ -577,3 +577,4 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
+tyle>

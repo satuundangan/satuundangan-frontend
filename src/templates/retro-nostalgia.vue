@@ -313,7 +313,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
@@ -432,8 +432,10 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success("RSVP Received!")
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
-  } catch (err) { toast.error("Failed to send RSVP") }
+  } catch (err) {
+    console.error(err)
+    toast.error("Failed to send RSVP.")
+  }
 }
 
 onMounted(() => { initData() })

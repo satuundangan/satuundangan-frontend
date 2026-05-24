@@ -104,13 +104,13 @@ const router = createRouter({
     {
       path: '/affiliate/register',
       name: 'affiliate-register',
-      component: () => import('@/views/AffiliateRegister.vue'),
+      redirect: '/',
       meta: { requiresAuth: true, title: 'Daftar Reseller' },
     },
     {
       path: '/affiliate/dashboard',
       name: 'affiliate-dashboard',
-      component: () => import('@/views/dashboard/AffiliateDashboard.vue'),
+      redirect: '/dashboard',
       meta: { requiresAuth: true, title: 'Dashboard Reseller' },
     },
     {
@@ -181,13 +181,13 @@ const router = createRouter({
     {
       path: '/admin/affiliate/resellers',
       name: 'admin-resellers',
-      component: () => import('@/views/admin/AdminResellers.vue'),
+      redirect: '/admin',
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Manajemen Reseller' },
     },
     {
       path: '/admin/affiliate/withdrawals',
       name: 'admin-withdrawals',
-      component: () => import('@/views/admin/AdminWithdrawals.vue'),
+      redirect: '/admin',
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Antrean Penarikan' },
     },
     { path: '/guests', name: 'Guests', component: GuestsView },
@@ -209,7 +209,7 @@ const router = createRouter({
   ],
 })
 
-router.beforeEach(async (to, from, next) => {
+router.beforeEach(async (to, _from, next) => {
   const authStore = useAuthStore()
 
   if (!authStore.user && !authStore.token && localStorage.getItem('token')) {

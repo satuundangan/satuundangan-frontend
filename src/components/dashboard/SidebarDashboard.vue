@@ -44,7 +44,7 @@
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 
-const props = defineProps({
+defineProps({
   isOpen: { type: Boolean, default: false }
 });
 
@@ -65,7 +65,6 @@ function handleLogout() {
 const menu = [
   { name: "Dashboard", to: "/dashboard", icon: "📊" },
   { name: "Undangan Saya", to: "/invitations", icon: "💌" },
-  { name: "Dashboard Reseller", to: "/affiliate/dashboard", icon: "🤝" },
   { name: "Daftar Tamu", to: "/guests", icon: "👥" },
   { name: "Buku Tamu", to: "/guestbook", icon: "📖" },
   { name: "Pengaturan", to: "/settings", icon: "⚙️" },

@@ -268,7 +268,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
@@ -387,8 +387,10 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success("Terima kasih atas konfirmasinya")
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
-  } catch (err) { toast.error("Gagal mengirim konfirmasi") }
+  } catch (err) {
+    console.error(err)
+    toast.error("Gagal mengirim RSVP.")
+  }
 }
 
 onMounted(() => { initData() })
@@ -407,3 +409,4 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 ::-webkit-scrollbar-track { background: #f5f5f0; }
 ::-webkit-scrollbar-thumb { background: #8b9d83; border-radius: 10px; }
 </style>
+style>

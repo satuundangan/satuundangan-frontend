@@ -303,7 +303,7 @@
             <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
               class="w-full bg-[#fdfaf5] border border-[#e8d5c4] rounded-2xl px-6 py-4 text-[#4a4a4a] focus:outline-none focus:border-[#b48c5b]">
               <option value="" disabled>Jumlah Tamu</option>
-              <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
+              <option v-for="_ in 5" :key="_" :value="_">{{ _ }} Orang</option>
             </select>
 
             <textarea v-model="rsvp.message" rows="4" placeholder="Ucapan & Doa Terbaik"
@@ -433,7 +433,7 @@ const vObserve = {
   }
 }
 
-function getPetalStyle(n) {
+function getPetalStyle(_n) {
   const left = Math.random() * 100
   const duration = 5 + Math.random() * 10
   const delay = Math.random() * 10
@@ -527,8 +527,8 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Konfirmasi terkirim!`)
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
+    console.error(err)
     toast.error("Gagal mengirim RSVP.")
   }
 }
@@ -598,5 +598,3 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
-le>
-

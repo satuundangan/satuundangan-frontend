@@ -487,16 +487,6 @@ function initData() {
   }
 }
 
-function addToCalendar() {
-  const event = {
-    title: `THE WEDDING OF ${data.value.groomName} & ${data.value.brideName}`,
-    start: new Date(data.value.akadLocation?.dateTime || Date.now()).toISOString().replace(/-|:|\.\d\d\d/g, ""),
-    description: "THE EDITORIAL WEDDING ISSUE"
-  }
-  const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.start}&details=${encodeURIComponent(event.description)}`
-  window.open(url, '_blank')
-}
-
 async function submitRSVP() {
   if (!rsvp.value.name?.trim() || !rsvp.value.attendance) {
     toast.error("Information missing.")
@@ -511,8 +501,8 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Registry Updated`)
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
+    console.error(err)
     toast.error("Process failed.")
   }
 }

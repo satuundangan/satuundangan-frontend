@@ -499,8 +499,8 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Konfirmasi terkirim!`)
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
   } catch (err) {
+    console.error(err)
     toast.error("Gagal mengirim RSVP.")
   }
 }

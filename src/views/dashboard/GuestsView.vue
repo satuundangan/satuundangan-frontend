@@ -287,26 +287,7 @@ const isContactPickerSupported = computed(() => {
   return !!(navigator.contacts && window.ContactsManager);
 });
 
-function downloadTemplate() {
-  try {
-    const data = [
-      ["Nama", "Nomor HP", "Kategori", "Gelar"],
-      ["Budi Santoso", "08123456789", "Keluarga", "S.Kom"],
-      ["Ani Wijaya", "081388889999", "Teman", "M.BA"]
-    ];
-    const worksheet = XLSX.utils.aoa_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Daftar Tamu");
-    XLSX.writeFile(workbook, "template_tamu_satuundangan.xlsx");
-    toast.info("Template Excel (.xlsx) berhasil di-download.");
-  } catch (err) {
-    toast.error("Gagal men-download template Excel");
-  }
-}
 
-const currentInvitation = computed(() => invitations.value.find(i => i.id === selectedInvitationId.value) || null);
-
-const newGuest = ref({ name: "", group: "", phoneNumber: "" });
 
 const filteredGuests = computed(() => {
    if(!searchQuery.value) return guests.value;
@@ -327,8 +308,10 @@ async function fetchInvitations() {
       const res = await getInvitations();
       const data = Array.isArray(res) ? res : (res.data || []);
       invitations.value = data;
-      if(data.length > 0) selectedInvitationId.value = data[0].id;
-   } catch (e) { console.error(e); }
+   } catch (error) {
+      toast.error("Gagal memuat undangan");
+      console.error(error);
+   }
 }
 
 async function fetchGuests(invId) {
@@ -336,8 +319,12 @@ async function fetchGuests(invId) {
    try {
       const res = await getGuestsByInvitationId(invId);
       guests.value = Array.isArray(res) ? res : (res.data || []);
-   } catch (e) { toast.error("Gagal memuat tamu"); }
-   finally { loading.value = false; }
+   } catch (error) {
+      toast.error("Gagal memuat tamu");
+      console.error(error);
+   } finally {
+      loading.value = false;
+   }
 }
 
 async function submitGuest() {
@@ -349,63 +336,12 @@ async function submitGuest() {
       showAddModal.value = false;
       newGuest.value = { name: "", group: "", phoneNumber: "" };
       await fetchGuests(selectedInvitationId.value);
-   } catch (e) { toast.error("Gagal menambah tamu"); }
-   finally { isSubmitting.value = false; }
-}
-
-async function processBulkAdd() {
-   const lines = bulkText.value.split('\n').filter(l => l.trim());
-   if(lines.length === 0) return;
-   isSubmitting.value = true;
-   let count = 0;
-   try {
-      for(const line of lines) {
-         const parts = line.trim().match(/^(.*?)\s+([\+0-9]{8,15})$/);
-         if(parts) {
-            await createGuest({ name: parts[1].trim(), phoneNumber: parts[2].trim(), invitationId: selectedInvitationId.value });
-            count++;
-         }
-      }
-      toast.success(`${count} Tamu berhasil ditambahkan massal`);
-      showBulkModal.value = false;
-      bulkText.value = "";
-      await fetchGuests(selectedInvitationId.value);
-   } catch (e) { toast.error("Terjadi kesalahan"); }
-   finally { isSubmitting.value = false; }
-}
-
-async function pickFromContacts() {
-  if (!isContactPickerSupported.value) return;
-  try {
-    const contacts = await navigator.contacts.select(['name', 'tel'], { multiple: true });
-    if (contacts.length > 0) {
-      isSubmitting.value = true;
-      for (const contact of contacts) {
-        if (contact.tel[0]) {
-          await createGuest({ name: contact.name[0] || 'Tamu', phoneNumber: contact.tel[0], invitationId: selectedInvitationId.value });
-        }
-      }
-      toast.success(`${contacts.length} Kontak ditambahkan`);
-      await fetchGuests(selectedInvitationId.value);
-    }
-  } catch (ex) { console.error(ex); }
-  finally { isSubmitting.value = false; }
-}
-
-function triggerExcelImport() { excelInput.value.click(); }
-async function handleExcelImport(event) {
-   const file = event.target.files[0];
-   if(!file) return;
-   const formData = new FormData();
-   formData.append('file', file);
-   formData.append('invitationId', selectedInvitationId.value);
-   loading.value = true;
-   try {
-      await importGuests(formData);
-      toast.success("Import Excel sukses");
-      await fetchGuests(selectedInvitationId.value);
-   } catch (e) { toast.error(e.message || "Import gagal"); }
-   finally { loading.value = false; event.target.value = ''; }
+   } catch (error) {
+      toast.error("Gagal menambahkan tamu");
+      console.error(error);
+   } finally {
+      isSubmitting.value = false;
+   }
 }
 
 async function deleteGuestHandler(id) {
@@ -414,7 +350,10 @@ async function deleteGuestHandler(id) {
       await deleteGuest(id);
       toast.success("Dihapus");
       await fetchGuests(selectedInvitationId.value);
-   } catch(e) { toast.error("Gagal hapus"); }
+   } catch (error) {
+      toast.error("Gagal menghapus tamu");
+      console.error(error);
+   }
 }
 
 async function openShareModal(guest) {

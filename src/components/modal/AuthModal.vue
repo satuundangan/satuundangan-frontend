@@ -282,7 +282,7 @@ const handleRegister = async () => {
 const handleGoogleLogin = () => {
   // Simpan path saat ini agar bisa kembali setelah login Google
   localStorage.setItem('redirect_after_login', router.currentRoute.value.fullPath)
-  window.location.href = `${BASE_URL}/auth/google`
+  window.location.href = import.meta.env.VITE_GOOGLE_AUTH_URL || `${BASE_URL}/auth/google`
 }
 
 const toggleAuthMode = () => {

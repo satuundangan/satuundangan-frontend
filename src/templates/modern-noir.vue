@@ -6,7 +6,7 @@
     <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-6 transition-all duration-1000 hidden md:flex">
-      <button v-for="(item, idx) in navItems" :key="item.id" @click="scrollToSection(item.id)"
+      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
         class="group relative flex items-center justify-end w-32"
         :class="activeSection === item.id ? 'text-white' : 'text-[#404040] hover:text-white'">
         <span class="text-[8px] font-bold uppercase tracking-widest mr-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300" :class="{ 'opacity-100': activeSection === item.id }">{{ item.label }}</span>
@@ -318,7 +318,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
@@ -437,8 +437,10 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success("Reservation Confirmed")
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
-  } catch (err) { toast.error("Transmission Failed") }
+  } catch (err) {
+    console.error(err)
+    toast.error("Reservation failed.")
+  }
 }
 
 onMounted(() => { initData() })
@@ -469,3 +471,4 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 ::-webkit-scrollbar-track { background: #0a0a0a; }
 ::-webkit-scrollbar-thumb { background: #404040; }
 </style>
+style>
