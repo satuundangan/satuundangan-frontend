@@ -16,11 +16,20 @@ export default defineConfig([
     languageOptions: {
       globals: {
         ...globals.browser,
+        ...globals.node,
+        ...globals.playwright,
+        dataLayer: 'readonly',
       },
     },
   },
 
   js.configs.recommended,
   ...pluginVue.configs['flat/essential'],
+  {
+    files: ['**/*.{js,mjs,jsx,vue}'],
+    rules: {
+      'no-unused-vars': ['error', { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+    },
+  },
   skipFormatting,
 ])

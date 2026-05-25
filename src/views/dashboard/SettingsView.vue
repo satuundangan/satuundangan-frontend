@@ -134,7 +134,7 @@ async function handleUpdateProfile() {
   try {
     await new Promise(resolve => setTimeout(resolve, 800));
     toast.success("Profil berhasil diperbarui");
-  } catch (error) {
+  } catch {
     toast.error("Gagal memperbarui profil");
   } finally {
     loadingProfile.value = false;
@@ -155,7 +155,7 @@ async function handleUpdatePassword() {
     await new Promise(resolve => setTimeout(resolve, 1000));
     toast.success("Password berhasil diganti");
     passwordForm.value = { newPassword: '', confirmPassword: '' };
-  } catch (error) {
+  } catch {
     toast.error("Gagal mengganti password");
   } finally {
     loadingPassword.value = false;

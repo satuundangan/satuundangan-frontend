@@ -149,7 +149,7 @@
                   {{ tag }}
                   <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
                 </span>
-                <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.comma.prevent="addTag" @blur="addTag"
+                <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.,.prevent="addTag" @blur="addTag"
                   type="text" placeholder="Ketik tag dan enter..."
                   class="min-w-[120px] flex-1 bg-transparent text-sm outline-none" />
               </div>
@@ -319,8 +319,8 @@ async function loadData() {
 
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
-  } catch (error) {
-    toast.error(error.message || 'Gagal memuat data')
+  } catch {
+    toast.error('Gagal memuat data')
   } finally {
     loading.value = false
   }
@@ -391,7 +391,7 @@ async function handleThumbnailUpload(event) {
     const res = await uploadFileApi(file)
     form.thumbnailUrl = res.fileUrl
     toast.success('Thumbnail berhasil diupload')
-  } catch (error) {
+  } catch {
     toast.error('Gagal mengupload thumbnail')
   } finally {
     event.target.value = ''
@@ -524,8 +524,8 @@ async function submitForm() {
     }
     showForm.value = false
     loadData()
-  } catch (error) {
-    toast.error(error.message || 'Gagal menyimpan template')
+  } catch {
+    toast.error('Gagal menyimpan template')
   } finally {
     saving.value = false
   }
@@ -547,8 +547,8 @@ async function confirmDelete(template) {
     await deleteAdminTemplate(template.id)
     toast.success('Template dihapus')
     loadData()
-  } catch (error) {
-    toast.error(error.message || 'Gagal menghapus template')
+  } catch {
+    toast.error('Gagal menghapus template')
   }
 }
 

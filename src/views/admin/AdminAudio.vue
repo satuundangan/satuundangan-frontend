@@ -366,8 +366,8 @@ async function loadAudio() {
     const res = await fetchAdminAudio()
     const data = Array.isArray(res) ? res : (res.data || [])
     audios.value = data
-  } catch (error) {
-    toast.error(error.message || 'Gagal memuat musik')
+  } catch {
+    toast.error('Gagal memuat musik')
   } finally {
     loading.value = false
   }
@@ -512,7 +512,7 @@ async function confirmDelete(track) {
     await deleteAdminAudio(track.id)
     toast.success('Musik dihapus')
     await loadAudio()
-  } catch (error) {
+  } catch {
     toast.error('Gagal menghapus')
   }
 }

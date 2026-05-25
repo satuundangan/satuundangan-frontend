@@ -9,7 +9,7 @@ describe('Invitation Name Decoding Logic', () => {
         bytes[i] = binaryString.charCodeAt(i)
       }
       return new TextDecoder().decode(bytes)
-    } catch (e) {
+    } catch {
       return 'Tamu Undangan'
     }
   }

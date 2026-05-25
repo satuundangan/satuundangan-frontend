@@ -134,7 +134,7 @@ async function handleFileChange(event) {
   try {
     const res = await uploadFileApi(file)
     form.logo = res.fileUrl
-  } catch (error) {
+  } catch {
     toast.error('Gagal mengupload logo')
     event.target.value = '' 
   } finally {

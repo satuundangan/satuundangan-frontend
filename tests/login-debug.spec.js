@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test } from '@playwright/test';
 
 test.describe('Login Debugger', () => {
   const email = 'fauzan@gmail.com';
@@ -18,7 +18,7 @@ test.describe('Login Debugger', () => {
             try {
                 const body = await response.json();
                 console.log('📦 RESPONSE DATA:', JSON.stringify(body));
-            } catch (e) {
+            } catch {
                 console.log('📦 RESPONSE IS NOT JSON');
             }
         }

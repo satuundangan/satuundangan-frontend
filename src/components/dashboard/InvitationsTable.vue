@@ -120,7 +120,7 @@ function formatDate(date) {
     const d = new Date(date);
     if (isNaN(d.getTime())) return '-';
     return d.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' });
-  } catch (e) {
+  } catch {
     return '-';
   }
 }

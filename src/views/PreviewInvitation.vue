@@ -145,7 +145,6 @@ const handlePublish = async () => {
     isPublishing.value = true
     // In preview mode, the invitation is already saved as draft in backend
     // So 'publish' just means proceeding to checkout for that specific invitation
-    const editId = localStorage.getItem('editInvitationId')
     const slug = route.query.slug
     
     if (!slug) {

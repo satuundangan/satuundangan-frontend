@@ -18,7 +18,7 @@ const fetchResellers = async () => {
     const res = await getAdminResellers({ page: page.value, limit: 10, search: search.value })
     resellers.value = res.data
     total.value = res.total
-  } catch (err) {
+  } catch {
     toast.error('Gagal memuat data reseller')
   } finally {
     loading.value = false
@@ -42,7 +42,7 @@ const handleUpdateStatus = async (reseller, newStatus) => {
       await updateResellerStatus(reseller.id, newStatus)
       toast.success('Status berhasil diperbarui')
       fetchResellers()
-    } catch (err) {
+    } catch {
       toast.error('Gagal memperbarui status')
     }
   }
@@ -89,9 +89,11 @@ onMounted(fetchResellers)
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
-            <tr v-if="loading" v-for="i in 5" :key="i" class="animate-pulse">
-              <td colspan="6" class="px-6 py-4 h-16 bg-slate-50/50"></td>
-            </tr>
+            <template v-if="loading">
+              <tr v-for="i in 5" :key="i" class="animate-pulse">
+                <td colspan="6" class="px-6 py-4 h-16 bg-slate-50/50"></td>
+              </tr>
+            </template>
             <tr v-for="r in resellers" :key="r.id" class="hover:bg-slate-50 transition-colors">
               <td class="px-6 py-4">
                 <div class="font-bold text-slate-800">{{ r.user?.name }}</div>

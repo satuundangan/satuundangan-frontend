@@ -60,7 +60,7 @@ import { ref } from 'vue'
 import { Cropper } from 'vue-advanced-cropper'
 import 'vue-advanced-cropper/dist/style.css'
 
-const props = defineProps({
+defineProps({
   show: Boolean,
   imageSrc: String,
   stencilAspectRatio: {

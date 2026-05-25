@@ -126,11 +126,9 @@ test.describe('Midtrans Real Integration', () => {
     // 1. Get Snap Token first (similar to Scenario 1)
     await page.goto(`${BASE_URL}/checkout?slug=${INVITATION_SLUG}`);
     
-    let orderId = null;
     await page.route(`${API_BASE}/payment/create`, async (route) => {
         const response = await route.fetch();
         const json = await response.json();
-        orderId = json.order_id;
         route.fulfill({ response, json });
     });
 

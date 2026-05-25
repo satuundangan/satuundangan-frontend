@@ -27,7 +27,6 @@ const isTyping = ref(false)
 const credits = ref(0)
 const currentData = ref({})
 const isComplete = ref(false)
-const snapToken = ref(null)
 const scrollContainer = ref(null)
 const isPurchasing = ref(false)
 

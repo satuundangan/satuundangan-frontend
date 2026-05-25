@@ -465,9 +465,9 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref, watch, reactive } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import { uploadFileApi, deleteFileApi } from '@/api/file'
+import { uploadFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
 import { fetchPublicAudio } from '@/api/master'
 import { useToast } from "vue-toastification"
@@ -482,7 +482,6 @@ const toast = useToast()
 const route = useRoute()
 const router = useRouter()
 const isUploading = ref(false)
-const musicType = ref('library')
 const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
 const audioList = ref([])
@@ -560,7 +559,6 @@ const formData = ref({
 
 const sections = ref({})
 const validationErrors = ref({})
-const loveStoryErrors = ref([])
 
 // Live Preview Sync Logic
 const syncDataToPreview = (data) => {
@@ -637,7 +635,9 @@ onMounted(async () => {
    try {
       const res = await fetchPublicAudio()
       audioList.value = Array.isArray(res) ? res : (res?.data || [])
-   } catch {}
+   } catch {
+      // ignore
+   }
 
    const stored = localStorage.getItem('selectedSections')
    if (!route.params.id && !stored) {
@@ -685,7 +685,9 @@ onMounted(async () => {
          }
          localStorage.removeItem('nova_draft')
          toast.success('Data dari Nova berhasil dimuat! Lengkapi foto dan detail lainnya ya 💍')
-      } catch {}
+      } catch {
+         // ignore
+      }
    }
 
    if (route.params.id) { handleEditMode(route.params.id) }

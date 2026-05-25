@@ -43,7 +43,7 @@ export default defineConfig({
     },
     {
       name: 'production-readonly',
-      testMatch: /production-readonly\.production\.spec\.js/,
+      testMatch: /.*\.production\.spec\.js/,
       retries: 1,
       use: { ...devices['Desktop Chrome'] },
     },

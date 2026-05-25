@@ -58,7 +58,7 @@ const copyToClipboard = async (text) => {
   try {
     await navigator.clipboard.writeText(text)
     toast.success('Disalin ke clipboard!')
-  } catch (err) {
+  } catch {
     toast.error('Gagal menyalin')
   }
 }

@@ -177,7 +177,7 @@ onClickOutside(dropdownRef, () => {
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value
 }
-const emit = defineEmits(['create-invitation'])
+defineEmits(['create-invitation'])
 
 const handleLogout = async () => {
   const result = await Swal.fire({

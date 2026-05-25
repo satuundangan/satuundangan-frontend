@@ -23,7 +23,7 @@
 import { computed } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 
-const props = defineProps({
+defineProps({
   title: { type: String, required: true },
   showButton: { type: Boolean, default: false },
 });

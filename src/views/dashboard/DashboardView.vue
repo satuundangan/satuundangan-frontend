@@ -183,8 +183,6 @@ const stats = computed(() => {
 });
 
 const allPublished = computed(() => invitations.value.every(inv => inv.isPublished));
-const publishedCount = computed(() => invitations.value.filter((inv) => inv.isPublished).length);
-const draftCount = computed(() => Math.max(0, invitations.value.length - publishedCount.value));
 
 function getInvitationThumbnail(inv) {
   return (
@@ -196,13 +194,6 @@ function getInvitationThumbnail(inv) {
     inv.templateDesign?.previewUrl ||
     '/default-thumbnail.jpg'
   );
-}
-
-function formatDate(date) {
-  if (!date) return 'Tanggal belum diatur';
-  const parsed = new Date(date);
-  if (Number.isNaN(parsed.getTime())) return 'Tanggal belum diatur';
-  return parsed.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
 }
 
 onMounted(async () => {

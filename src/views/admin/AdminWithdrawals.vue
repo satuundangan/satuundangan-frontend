@@ -22,7 +22,7 @@ const fetchWithdrawals = async () => {
     })
     withdrawals.value = res.data
     total.value = res.total
-  } catch (err) {
+  } catch {
     toast.error('Gagal memuat data penarikan')
   } finally {
     loading.value = false
@@ -53,7 +53,7 @@ const handleApprove = async (item) => {
       await approveWithdrawal(item.id, { proofUrl: formValues[0], adminNote: formValues[1] })
       toast.success('Penarikan disetujui')
       fetchWithdrawals()
-    } catch (err) {
+    } catch {
       toast.error('Gagal menyetujui penarikan')
     }
   }
@@ -78,7 +78,7 @@ const handleReject = async (item) => {
       await rejectWithdrawal(item.id, { adminNote: reason })
       toast.success('Penarikan ditolak')
       fetchWithdrawals()
-    } catch (err) {
+    } catch {
       toast.error('Gagal menolak penarikan')
     }
   }
@@ -146,9 +146,11 @@ onMounted(fetchWithdrawals)
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-50">
-            <tr v-if="loading" v-for="i in 5" :key="i" class="animate-pulse">
-              <td colspan="5" class="px-6 py-4 h-16 bg-slate-50/50"></td>
-            </tr>
+            <template v-if="loading">
+              <tr v-for="i in 5" :key="i" class="animate-pulse">
+                <td colspan="5" class="px-6 py-4 h-16 bg-slate-50/50"></td>
+              </tr>
+            </template>
             <tr v-for="w in withdrawals" :key="w.id" class="hover:bg-slate-50 transition-colors">
               <td class="px-6 py-4">
                 <div class="font-bold text-slate-800">{{ w.affiliateProfile?.user?.name }}</div>
