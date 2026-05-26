@@ -27,7 +27,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#050b1a] transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#050b1a] transition-all duration-1000">
         
         <div class="relative z-10 space-y-12 animate-fade-in-up">
           <div class="space-y-6">
@@ -64,7 +64,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 relative">
         <div class="space-y-8 max-w-2xl mx-auto" v-observe>
           <span class="inline-block py-1 px-6 rounded-full border border-white/10 bg-white/5 text-[9px] uppercase tracking-[0.5em] text-[#f3ca40] font-bold">You are invited to witness</span>
           <h1 class="text-5xl md:text-9xl font-cormorant font-bold leading-tight text-white">

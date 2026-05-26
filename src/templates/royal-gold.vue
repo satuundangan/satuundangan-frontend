@@ -37,7 +37,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#0a1128] transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#0a1128] transition-all duration-1000">
         
         <div class="relative z-10 space-y-10 animate-fade-in-up">
           <div class="space-y-4">
@@ -67,7 +67,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 relative">
         <div class="space-y-8 max-w-3xl mx-auto" v-observe>
           <div class="flex items-center justify-center gap-4">
              <div class="w-12 h-px bg-[#d4af37]/50"></div>

@@ -16,7 +16,7 @@
 
     <!-- Welcome Screen -->
     <transition name="retro-slide">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#2c2c2c] text-[#fdfbf7]">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#2c2c2c] text-[#fdfbf7]">
         <div class="absolute inset-4 border-2 border-dashed border-[#e06d53]/30 rounded-3xl pointer-events-none"></div>
         <div class="relative z-10 space-y-12 w-full max-w-sm bg-[#fdfbf7] text-[#2c2c2c] p-10 rounded-2xl shadow-[8px_8px_0px_0px_rgba(224,109,83,1)] border-2 border-[#2c2c2c] rotate-[-2deg]">
           
@@ -42,7 +42,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative py-20 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 px-6 md:px-20 relative py-20 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="w-full max-w-4xl text-center space-y-12" v-observe>
           
           <div class="relative inline-block rotate-[3deg] hover:rotate-0 transition-transform duration-500">

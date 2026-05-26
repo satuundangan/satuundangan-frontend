@@ -29,7 +29,7 @@
 
     <!-- Welcome Screen -->
     <transition name="float-up">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#1e3a8a] text-white">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#1e3a8a] text-white">
         <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-b from-[#3b82f6]/20 to-transparent"></div>
         <div class="absolute bottom-0 left-0 w-full h-32 bg-gradient-to-t from-[#1e40af]/50 to-transparent"></div>
         

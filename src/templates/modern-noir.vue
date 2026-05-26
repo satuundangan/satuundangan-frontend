@@ -25,7 +25,7 @@
 
     <!-- Welcome Screen -->
     <transition name="fade-slow">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#0a0a0a] text-white">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#0a0a0a] text-white">
         <div class="relative z-10 space-y-16 w-full max-w-lg">
           <div class="space-y-4">
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080]">A Cinematic Wedding</p>

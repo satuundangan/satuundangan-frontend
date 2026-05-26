@@ -18,7 +18,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="absolute inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-cover bg-center transition-all duration-1000"
+        class="absolute inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-cover bg-center transition-all duration-1000"
         :style="{ backgroundImage: `url(${backgroundUrl})` }">
 
         <div class="absolute inset-0 bg-white/70 backdrop-blur-sm"></div>
@@ -60,7 +60,7 @@
 
       <!-- HERO -->
       <section id="home"
-        class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 bg-fixed bg-cover bg-center"
+        class="relative min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-fixed bg-cover bg-center"
         :style="{ backgroundImage: `url(${backgroundUrl})` }">
         <div class="absolute inset-0 bg-white/80"></div>
 

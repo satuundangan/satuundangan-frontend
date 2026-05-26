@@ -23,7 +23,7 @@
 
     <!-- Welcome Screen -->
     <transition name="fade-welcome">
-      <div v-if="!isOpened" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#022b1d] text-center px-6">
+      <div v-if="!isOpened" class="fixed inset-0 z-[100] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 bg-[#022b1d] text-center px-6">
         <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
            <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#af8f2c]/10 rounded-full blur-[120px] animate-pulse-slow"></div>
            <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#af8f2c]/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
@@ -41,7 +41,7 @@
             </svg>
         </div>
 
-        <div class="relative z-10 w-full max-w-xl flex flex-col items-center justify-center space-y-12 md:space-y-16 py-10">
+        <div class="relative z-10 w-full max-w-xl flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 space-y-12 md:space-y-16 py-10">
            <div class="space-y-4 animate-fade-in">
               <p class="text-[10px] md:text-xs tracking-[0.8em] text-[#af8f2c] font-black uppercase">The Wedding Of</p>
               <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#af8f2c] to-transparent mx-auto"></div>
@@ -77,7 +77,7 @@
       </div>
 
       <!-- 1. HERO SECTION -->
-      <section id="home" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden">
+      <section id="home" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden">
          <!-- Floral Corner Top Left (V1) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -128,7 +128,7 @@
       </section>
 
       <!-- 2. QUOTE SECTION -->
-      <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#af8f2c]/10" v-observe>
+      <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#af8f2c]/10" v-observe>
          <!-- Floral Corner (V2 Style - Ornate Lotus) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -161,7 +161,7 @@
       </section>
 
       <!-- 3. GROOM SECTION -->
-      <section v-if="isSectionEnabled('couple')" id="couple" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
+      <section v-if="isSectionEnabled('couple')" id="couple" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
          <!-- Floral Corner (V3 Style - Minimalist Branch) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -214,7 +214,7 @@
       </section>
 
       <!-- 4. BRIDE SECTION -->
-      <section v-if="isSectionEnabled('couple')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
+      <section v-if="isSectionEnabled('couple')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
          <!-- Floral Corner (V4 Style - Classic Royal) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -255,7 +255,7 @@
       </section>
 
       <!-- 5. LOVE STORY SECTION -->
-      <section v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)" id="story" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6">
+      <section v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)" id="story" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6">
          <!-- Floral Corner (V1 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -293,7 +293,7 @@
       </section>
 
       <!-- 6. UNIFIED EVENT SECTION (Snowfall) -->
-      <section v-if="isSectionEnabled('event')" id="event" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
+      <section v-if="isSectionEnabled('event')" id="event" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
          <!-- Floral Corner (V2 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -394,7 +394,7 @@
       </section>
 
       <!-- 8. GIFT SECTION -->
-      <section v-if="isSectionEnabled('gift')" id="gift" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
+      <section v-if="isSectionEnabled('gift')" id="gift" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
          <!-- Floral Corner (V3 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -441,7 +441,7 @@
       </section>
 
       <!-- 9. RSVP & WISHES -->
-      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]">
+      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]">
          <!-- Floral Corner (V4 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -493,7 +493,7 @@
       </section>
 
       <!-- 10. FOOTER -->
-      <footer class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#022b1d] overflow-hidden">
+      <footer class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-start md:justify-center pt-20 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#022b1d] overflow-hidden">
         <div class="space-y-10 relative z-10 max-w-2xl mx-auto" v-observe>
            <div class="w-24 h-[1.5px] bg-[#af8f2c] mx-auto mb-6"></div>
            <div class="space-y-6">

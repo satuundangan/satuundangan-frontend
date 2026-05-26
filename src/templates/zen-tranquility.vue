@@ -16,7 +16,7 @@
 
     <!-- Welcome Screen -->
     <transition name="slow-fade">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#f5f5f0] transition-all duration-[1.5s] ease-in-out">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#f5f5f0] transition-all duration-[1.5s] ease-in-out">
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply" style="background-image: url('https://www.transparenttextures.com/patterns/rice-paper.png');"></div>
         <div class="relative z-10 space-y-16 w-full max-w-lg animate-fade-in-slow">
           <div class="w-px h-24 bg-[#8b9d83] mx-auto opacity-50"></div>
@@ -39,7 +39,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-[1.5s] h-screen overflow-y-auto scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative py-20">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 px-6 md:px-20 relative py-20">
         <div class="w-full max-w-5xl flex flex-col md:flex-row items-center gap-16" v-observe>
           <div class="w-full md:w-1/2 relative group">
             <div class="absolute -inset-4 bg-[#8b9d83]/10 rotate-[-3deg] rounded-tl-[100px] rounded-br-[100px] transition-transform duration-[2s] group-hover:rotate-0"></div>

@@ -28,7 +28,7 @@
 
     <!-- Welcome Screen -->
     <transition name="glitch-out">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#0a0a12]">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#0a0a12]">
         <div class="relative z-10 w-full max-w-sm p-10 border border-[#ff003c]/30 bg-[#0a0a12]/80 backdrop-blur-sm shadow-[0_0_30px_rgba(255,0,60,0.1)] before:absolute before:-inset-[1px] before:bg-gradient-to-r before:from-[#ff003c] before:to-[#00f0ff] before:z-[-1] before:opacity-50">
           
           <div class="space-y-8 animate-glitch">

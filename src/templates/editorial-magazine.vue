@@ -22,7 +22,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-white transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-white transition-all duration-1000">
         
         <div class="relative z-10 space-y-12 md:space-y-16 w-full max-w-lg">
           <div class="space-y-4">
@@ -54,7 +54,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative pt-10 md:pt-0">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 px-6 md:px-20 relative pt-10 md:pt-0">
         <div class="w-full max-w-6xl grid md:grid-cols-12 gap-8 md:gap-10 items-center" v-observe>
           <div class="md:col-span-7 space-y-6 md:space-y-8 order-2 md:order-1 text-center md:text-left">
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-gray-300">The Wedding Issue / No. 01</span>
