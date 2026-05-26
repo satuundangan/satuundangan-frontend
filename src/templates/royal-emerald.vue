@@ -179,14 +179,6 @@
             </svg>
          </div>
 
-         <!-- Bismillah Calligraphy -->
-         <div class="absolute top-10 md:top-20 left-1/2 -translate-x-1/2 w-48 md:w-64 opacity-30">
-            <svg viewBox="0 0 100 30" fill="#af8f2c" xmlns="http://www.w3.org/2000/svg">
-               <path d="M50 15 Q40 5 30 15 T10 15 M50 15 Q60 25 70 15 T90 15" stroke="#af8f2c" stroke-width="0.5" fill="none"/>
-               <text x="50" y="22" font-family="Arial" font-size="12" text-anchor="middle" font-style="italic">Bismillah</text>
-            </svg>
-         </div>
-
          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
             <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
                <div class="absolute -inset-4 border border-[#af8f2c]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"></div>
