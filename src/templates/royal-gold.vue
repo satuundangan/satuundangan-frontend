@@ -301,7 +301,7 @@
         <p class="text-[#d4af37] mb-16 max-w-md mx-auto text-xs uppercase tracking-widest">Tanda Kasih Digital</p>
 
         <div class="flex flex-wrap justify-center gap-10 max-w-5xl mx-auto">
-          <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
+          <div v-for="(bank, idx) in data.bankAccounts" :key="'bank'+idx"
             class="bg-[#080e20] border border-[#d4af37]/30 p-10 rounded-2xl w-full sm:w-[350px] shadow-2xl relative overflow-hidden" v-observe>
             <div class="absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl">🏦</div>
             <div class="mb-8 text-[#d4af37] font-bold text-2xl tracking-widest uppercase font-cinzel">
@@ -312,6 +312,23 @@
             <button @click="copyToClipboard(bank.accountNumber)"
               class="w-full bg-transparent border border-[#d4af37] text-[#d4af37] py-3 rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all font-bold uppercase text-[10px] tracking-widest">
               Salin Rekening
+            </button>
+          </div>
+
+          <!-- E-Wallets -->
+          <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet'+idx"
+            class="bg-[#080e20] border border-[#d4af37]/30 p-10 rounded-2xl w-full sm:w-[350px] shadow-2xl relative overflow-hidden" v-observe>
+            <div class="absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl">📱</div>
+            <div class="mb-8 text-[#d4af37] font-bold text-2xl tracking-widest uppercase font-cinzel">
+              {{ wallet.wallet_provider }}
+            </div>
+            <div v-if="wallet.wallet_image" class="mb-6 flex justify-center">
+               <img :src="wallet.wallet_image" class="h-48 object-contain rounded-xl shadow-lg border border-[#d4af37]/20" />
+            </div>
+            <p class="text-2xl text-white font-mono mb-8 tracking-tighter">{{ wallet.wallet_number }}</p>
+            <button @click="copyToClipboard(wallet.wallet_number)"
+              class="w-full bg-transparent border border-[#d4af37] text-[#d4af37] py-3 rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all font-bold uppercase text-[10px] tracking-widest">
+              Salin Nomor
             </button>
           </div>
         </div>

@@ -285,7 +285,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center border-t border-white/10">
+      <section v-if="data.bankAccounts?.length || data.eWalletLink?.length" class="py-32 px-6 text-center border-t border-white/10">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080] mb-4">Registry</p>
@@ -293,7 +293,8 @@
           </div>
           
           <div class="flex flex-wrap justify-center gap-8">
-            <div v-for="(bank, idx) in data.bankAccounts" :key="idx" class="p-10 border border-white/10 bg-[#0a0a0a] w-full sm:w-[400px] text-left hover:border-white/30 transition-colors" v-observe>
+            <!-- Bank Accounts -->
+            <div v-for="(bank, idx) in data.bankAccounts" :key="'bank' + idx" class="p-10 border border-white/10 bg-[#0a0a0a] w-full sm:w-[400px] text-left hover:border-white/30 transition-colors" v-observe>
               <div class="flex justify-between items-center mb-10">
                  <p class="text-xl font-bold uppercase tracking-widest text-[#808080]">{{ bank.bankName }}</p>
                  <i class="fa-solid fa-building-columns text-2xl text-white"></i>
@@ -301,6 +302,19 @@
               <p class="text-3xl font-serif font-bold tracking-tighter mb-2 text-white">{{ bank.accountNumber }}</p>
               <p class="text-[10px] font-bold text-[#808080] uppercase tracking-widest mb-10">{{ bank.accountName }}</p>
               <button @click="copyToClipboard(bank.accountNumber)" class="w-full py-4 border border-white/20 text-white text-[8px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-colors">Copy Details</button>
+            </div>
+
+            <!-- E-Wallets -->
+            <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx" class="p-10 border border-white/10 bg-[#0a0a0a] w-full sm:w-[400px] text-left hover:border-white/30 transition-colors" v-observe>
+              <div class="flex justify-between items-center mb-10">
+                 <p class="text-xl font-bold uppercase tracking-widest text-[#808080]">{{ wallet.wallet_provider }}</p>
+                 <i class="fa-solid fa-wallet text-2xl text-white"></i>
+              </div>
+              <div v-if="wallet.wallet_image" class="mb-8 flex justify-center">
+                 <img :src="wallet.wallet_image" class="h-48 object-contain rounded-lg border border-white/10" />
+              </div>
+              <p class="text-3xl font-serif font-bold tracking-tighter mb-10 text-white">{{ wallet.wallet_number }}</p>
+              <button @click="copyToClipboard(wallet.wallet_number)" class="w-full py-4 border border-white/20 text-white text-[8px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-colors">Copy Number</button>
             </div>
           </div>
         </div>

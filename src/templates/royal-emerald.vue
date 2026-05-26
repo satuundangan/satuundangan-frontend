@@ -429,11 +429,21 @@
                <p class="text-white/50 text-[8px] md:text-sm font-light italic max-w-xs mx-auto">Tanda kasih dapat dikirim melalui:</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-               <div v-for="(bank, index) in data.bankAccounts" :key="index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
+               <!-- Bank Accounts -->
+               <div v-for="(bank, index) in data.bankAccounts" :key="'bank-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
                   <p class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ bank.bankName }}</p>
                   <p class="text-base md:text-3xl font-bold text-white tracking-widest">{{ bank.accountNumber }}</p>
                   <p class="text-white/60 text-[7px] md:text-[9px] uppercase font-bold">A.N {{ bank.accountName }}</p>
                   <button @click="copyToClipboard(bank.accountNumber)" class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase">Salin No. Rekening</button>
+               </div>
+               <!-- E-Wallets -->
+               <div v-for="(wallet, index) in data.eWalletLink" :key="'wallet-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
+                  <p class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ wallet.wallet_provider }}</p>
+                  <div v-if="wallet.wallet_image" class="flex justify-center py-2">
+                     <img :src="wallet.wallet_image" class="h-24 md:h-32 object-contain rounded-lg" />
+                  </div>
+                  <p class="text-base md:text-3xl font-bold text-white tracking-widest">{{ wallet.wallet_number }}</p>
+                  <button @click="copyToClipboard(wallet.wallet_number)" class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase">Salin Nomor</button>
                </div>
             </div>
             <div v-if="data.giftDeliveryAddress" class="p-5 md:p-8 bg-white/[0.02] border border-[#d4af37]/10 rounded-[2rem] text-center space-y-3">

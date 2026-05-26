@@ -240,20 +240,31 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 bg-white text-center">
+      <section v-if="data.bankAccounts?.length || data.eWalletLink?.length" class="py-32 px-6 bg-white text-center">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-sm uppercase tracking-[0.5em] text-[#8b9d83]">Tanda Kasih</h2>
             <div class="w-12 h-px bg-[#8b9d83] mx-auto"></div>
             <p class="text-xs text-[#7a7a7a] max-w-md mx-auto pt-4 leading-relaxed">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda bermaksud memberikan tanda kasih, Anda dapat melalui fitur di bawah ini.</p>
           </div>
-          
+
           <div class="flex flex-wrap justify-center gap-6">
-            <div v-for="(bank, idx) in data.bankAccounts" :key="idx" class="p-8 border border-[#eaeaea] rounded-3xl w-full sm:w-[350px] hover:shadow-xl hover:border-[#8b9d83]/20 transition-all duration-500" v-observe>
+            <!-- Bank Accounts -->
+            <div v-for="(bank, idx) in data.bankAccounts" :key="'bank' + idx" class="p-8 border border-[#eaeaea] rounded-3xl w-full sm:w-[350px] hover:shadow-xl hover:border-[#8b9d83]/20 transition-all duration-500" v-observe>
               <p class="text-sm font-bold text-[#333333] uppercase tracking-wider mb-6">{{ bank.bankName }}</p>
               <p class="text-2xl font-light text-[#4a4a4a] tracking-widest mb-2">{{ bank.accountNumber }}</p>
               <p class="text-xs text-[#7a7a7a] mb-8">a.n {{ bank.accountName }}</p>
               <button @click="copyToClipboard(bank.accountNumber)" class="px-6 py-2 bg-[#f5f5f0] text-[#8b9d83] text-[10px] uppercase tracking-[0.1em] rounded-full hover:bg-[#8b9d83] hover:text-white transition-all"><i class="fa-regular fa-copy mr-2"></i>Salin Nomor</button>
+            </div>
+
+            <!-- E-Wallets -->
+            <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx" class="p-8 border border-[#eaeaea] rounded-3xl w-full sm:w-[350px] hover:shadow-xl hover:border-[#8b9d83]/20 transition-all duration-500" v-observe>
+              <p class="text-sm font-bold text-[#333333] uppercase tracking-wider mb-6">{{ wallet.wallet_provider }}</p>
+              <div v-if="wallet.wallet_image" class="mb-6 flex justify-center">
+                 <img :src="wallet.wallet_image" class="h-48 object-contain rounded-xl shadow-sm border border-gray-100" />
+              </div>
+              <p class="text-2xl font-light text-[#4a4a4a] tracking-widest mb-8">{{ wallet.wallet_number }}</p>
+              <button @click="copyToClipboard(wallet.wallet_number)" class="px-6 py-2 bg-[#f5f5f0] text-[#8b9d83] text-[10px] uppercase tracking-[0.1em] rounded-full hover:bg-[#8b9d83] hover:text-white transition-all"><i class="fa-regular fa-copy mr-2"></i>Salin Nomor</button>
             </div>
           </div>
         </div>

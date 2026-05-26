@@ -443,6 +443,24 @@
               <i class="fa-regular fa-copy mr-1"></i> Salin
             </button>
           </div>
+
+          <!-- E-Wallet Cards -->
+          <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx"
+            class="bg-[#1a1a1a] border border-[#333] p-6 rounded-2xl w-full sm:w-72 hover:border-[#d6b18a]/50 transition-all"
+            v-observe>
+            <div
+              class="h-12 flex items-center justify-center mb-4 text-[#d6b18a] font-bold text-xl uppercase tracking-wider">
+              {{ wallet.wallet_provider }}
+            </div>
+            <div v-if="wallet.wallet_image" class="mb-4 flex justify-center">
+               <img :src="wallet.wallet_image" class="h-40 object-contain rounded-lg shadow-lg" />
+            </div>
+            <p class="text-lg text-white font-mono mb-1">{{ wallet.wallet_number }}</p>
+            <button @click="copyToClipboard(wallet.wallet_number)"
+              class="text-xs text-[#d6b18a] border border-[#d6b18a] px-4 py-1.5 rounded-full hover:bg-[#d6b18a] hover:text-black transition-colors">
+              <i class="fa-regular fa-copy mr-1"></i> Salin
+            </button>
+          </div>
         </div>
       </section>
 
