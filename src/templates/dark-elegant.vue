@@ -77,8 +77,7 @@
             {{ data.groomName }} <br> <span class="text-4xl text-[#d6b18a]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="text-base md:text-lg text-gray-200 font-light tracking-wide">{{
-            formatDate(data.akadLocation?.dateTime) }}</p>
-
+            formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
           <!-- Countdown Box -->
           <div class="flex flex-wrap justify-center gap-3 md:gap-4 mt-8">
             <div v-for="(val, label) in countdown" :key="label"
