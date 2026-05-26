@@ -1,5 +1,5 @@
 <template>
-  <div class="relative h-screen bg-[#022b1d] overflow-hidden font-sans font-montserrat text-[#e0e0e0] selection:bg-[#d4af37] selection:text-[#022b1d]">
+  <div class="relative h-screen bg-[#022b1d] overflow-hidden font-sans font-montserrat text-[#e0e0e0] selection:bg-[#af8f2c] selection:text-[#022b1d]">
     
     <!-- Ultra-Smooth Gold Particle Canvas -->
     <canvas ref="particleCanvas" class="fixed inset-0 pointer-events-none z-0 opacity-40"></canvas>
@@ -12,10 +12,10 @@
 
     <!-- Bottom Navigation (Refined Glassmorphism) -->
     <nav v-if="isOpened"
-      class="fixed bottom-6 left-0 right-0 mx-auto z-[80] bg-[#043927]/60 backdrop-blur-xl border border-[#d4af37]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-fade-in w-fit max-w-[95%]">
+      class="fixed bottom-6 left-0 right-0 mx-auto z-[80] bg-[#043927]/60 backdrop-blur-xl border border-[#af8f2c]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-fade-in w-fit max-w-[95%]">
       <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
         class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[42px]"
-        :class="activeSection === item.id ? 'text-[#d4af37] scale-110' : 'text-white/30 hover:text-white/60'">
+        :class="activeSection === item.id ? 'text-[#af8f2c] scale-110' : 'text-white/30 hover:text-white/60'">
         <i :class="[item.icon, 'text-lg md:text-xl']"></i>
         <span class="text-[6px] font-black uppercase tracking-tighter">{{ item.label }}</span>
       </button>
@@ -25,17 +25,17 @@
     <transition name="fade-welcome">
       <div v-if="!isOpened" class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-[#022b1d] text-center px-6">
         <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-40">
-           <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 rounded-full blur-[120px] animate-pulse-slow"></div>
-           <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
+           <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#af8f2c]/10 rounded-full blur-[120px] animate-pulse-slow"></div>
+           <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#af8f2c]/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
         </div>
         
         <!-- Welcome Corner Ornaments (V4 Style) -->
-        <div class="absolute inset-4 md:inset-8 pointer-events-none border border-[#d4af37]/20 rounded-[3rem] md:rounded-[5rem] m-2 md:m-4 overflow-hidden">
-            <svg class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70" viewBox="0 0 100 100" fill="currentColor">
+        <div class="absolute inset-4 md:inset-8 pointer-events-none border border-[#af8f2c]/20 rounded-[3rem] md:rounded-[5rem] m-2 md:m-4 overflow-hidden">
+            <svg class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#af8f2c]/40 opacity-70" viewBox="0 0 100 100" fill="currentColor">
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill-opacity="0.05" stroke-width="1"/>
                <path d="M20,20 L20,80 Q50,80 80,20 Z" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
-            <svg class="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70 transform rotate-180" viewBox="0 0 100 100" fill="currentColor">
+            <svg class="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 text-[#af8f2c]/40 opacity-70 transform rotate-180" viewBox="0 0 100 100" fill="currentColor">
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill-opacity="0.05" stroke-width="1"/>
                <path d="M20,20 L20,80 Q50,80 80,20 Z" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
@@ -43,22 +43,22 @@
 
         <div class="relative z-10 w-full max-w-xl flex flex-col items-center justify-center space-y-12 md:space-y-16 py-10">
            <div class="space-y-4 animate-fade-in">
-              <p class="text-[10px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase">The Wedding Of</p>
-              <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#d4af37] to-transparent mx-auto"></div>
+              <p class="text-[10px] md:text-xs tracking-[0.8em] text-[#af8f2c] font-black uppercase">The Wedding Of</p>
+              <div class="h-[1px] w-12 bg-gradient-to-r from-transparent via-[#af8f2c] to-transparent mx-auto"></div>
            </div>
            <div class="space-y-6 md:space-y-8 animate-fade-in-up" style="animation-delay: 0.3s">
               <h1 class="text-6xl md:text-[8rem] font-alex text-white leading-none drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
-                {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-3xl md:text-5xl font-serif italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
+                {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-3xl md:text-5xl font-serif italic text-[#af8f2c]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
               </h1>
               <p class="text-lg md:text-2xl font-cormorant tracking-[0.3em] text-white/70 font-light uppercase">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
            </div>
            <div class="w-full space-y-10 animate-fade-in-up" style="animation-delay: 0.6s">
               <div class="space-y-3">
-                 <p class="text-[9px] md:text-[10px] text-[#d4af37]/60 uppercase tracking-[0.5em] font-black">Yth. Bapak/Ibu/Saudara/i</p>
+                 <p class="text-[9px] md:text-[10px] text-[#af8f2c]/60 uppercase tracking-[0.5em] font-black">Yth. Bapak/Ibu/Saudara/i</p>
                  <h3 class="text-2xl md:text-4xl font-serif font-black text-white tracking-tight drop-shadow-md px-4 truncate">{{ data.guestName || 'Tamu Undangan' }}</h3>
               </div>
               <button @click="openInvitation"
-                class="group relative z-[110] w-full max-w-[280px] mx-auto py-5 md:py-6 bg-gradient-to-r from-[#d4af37] via-[#f1c40f] to-[#d4af37] bg-[length:200%_auto] animate-gradient-gold text-[#022b1d] font-black rounded-full transition-all transform hover:scale-[1.05] active:scale-95 shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex items-center justify-center gap-4 text-xs md:text-sm uppercase tracking-[0.3em] cursor-pointer">
+                class="group relative z-[110] w-full max-w-[280px] mx-auto py-5 md:py-6 bg-gradient-to-r from-[#af8f2c] via-[#8e6d1c] to-[#af8f2c] bg-[length:200%_auto] animate-gradient-gold text-[#022b1d] font-black rounded-full transition-all transform hover:scale-[1.05] active:scale-95 shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex items-center justify-center gap-4 text-xs md:text-sm uppercase tracking-[0.3em] cursor-pointer">
                 <i class="fa-solid fa-envelope-open-text text-xl transition-transform group-hover:-rotate-12"></i> 
                 <span>Buka Undangan</span>
               </button>
@@ -73,7 +73,7 @@
       
       <!-- Watermark Background -->
       <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 mix-blend-screen opacity-[0.03]">
-          <h1 class="text-[50vh] font-alex text-[#d4af37] leading-none whitespace-nowrap">{{ data.groomName?.[0] }} & {{ data.brideName?.[0] }}</h1>
+          <h1 class="text-[50vh] font-alex text-[#af8f2c] leading-none whitespace-nowrap">{{ data.groomName?.[0] }} & {{ data.brideName?.[0] }}</h1>
       </div>
 
       <!-- 1. HERO SECTION -->
@@ -81,19 +81,19 @@
          <!-- Floral Corner Top Left (V1) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q100,0 160,160" stroke="#af8f2c" stroke-width="1.5" fill="none" opacity="0.6"/>
                <g transform="translate(30, 20) scale(0.3)">
-                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#af8f2c" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
-               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
+               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#af8f2c" opacity="0.5"/>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q100,0 160,160" stroke="#af8f2c" stroke-width="1.5" fill="none" opacity="0.6"/>
                <g transform="translate(30, 20) scale(0.3)">
-                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#af8f2c" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
             </svg>
@@ -102,25 +102,25 @@
         <div class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-transparent to-[#022b1d]"></div>
         <div class="relative z-10 w-full max-w-5xl mx-auto space-y-10" v-observe>
           <div class="relative mx-auto w-56 h-[22rem] md:w-80 md:h-[32rem]">
-             <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"></div>
-             <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"></div>
-             <div class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
+             <div class="absolute -inset-4 border border-[#af8f2c]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"></div>
+             <div class="absolute inset-0 border border-[#af8f2c]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"></div>
+             <div class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#af8f2c]/50 shadow-3xl flex items-end justify-center">
                 <img :src="data.photoCoupleUrl || illustrationUrl" class="w-full h-full object-cover" />
              </div>
           </div>
           <div class="space-y-4">
-             <p class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black">The Halal Journey Of</p>
+             <p class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#af8f2c] font-black">The Halal Journey Of</p>
              <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
-               {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-2xl md:text-4xl font-cormorant italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
+               {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-2xl md:text-4xl font-cormorant italic text-[#af8f2c]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
              </h1>
           </div>
           <div class="flex flex-col items-center gap-4">
              <div class="flex items-center justify-center gap-3 opacity-80">
-                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#d4af37]"></div>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-[#d4af37] animate-spin-slow w-4 h-4 md:w-6 md:h-6">
+                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#af8f2c]"></div>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" class="text-[#af8f2c] animate-spin-slow w-4 h-4 md:w-6 md:h-6">
                    <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
                 </svg>
-                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#d4af37]"></div>
+                <div class="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#af8f2c]"></div>
              </div>
              <p class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
           </div>
@@ -128,12 +128,12 @@
       </section>
 
       <!-- 2. QUOTE SECTION -->
-      <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10" v-observe>
+      <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#af8f2c]/10" v-observe>
          <!-- Floral Corner (V2 Style - Ornate Lotus) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
-               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
+               <path d="M0,0 C60,20 80,60 0,120" stroke="#af8f2c" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
@@ -141,7 +141,7 @@
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
@@ -149,13 +149,13 @@
          </div>
 
         <div class="max-w-4xl mx-auto space-y-10">
-          <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#d4af37] opacity-20"></i>
+          <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#af8f2c] opacity-20"></i>
           <p class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg">
             "{{ data.quoteText || 'Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.' }}"
           </p>
           <div class="flex flex-col items-center gap-4">
-             <div class="h-10 md:h-16 w-[1px] bg-[#d4af37]/40"></div>
-             <p class="text-[10px] md:text-sm font-black text-[#d4af37] tracking-[0.3em] uppercase">{{ data.quoteSource || 'QS. AR-RUM: 21' }}</p>
+             <div class="h-10 md:h-16 w-[1px] bg-[#af8f2c]/40"></div>
+             <p class="text-[10px] md:text-sm font-black text-[#af8f2c] tracking-[0.3em] uppercase">{{ data.quoteSource || 'QS. AR-RUM: 21' }}</p>
           </div>
         </div>
       </section>
@@ -165,47 +165,47 @@
          <!-- Floral Corner (V3 Style - Minimalist Branch) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <path d="M0,0 Q80,20 140,140" stroke="#af8f2c" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
-               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="120" cy="90" r="4" fill="#af8f2c"/>
                <circle cx="40" cy="80" r="2" fill="#ffffff"/>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <path d="M0,0 Q80,20 140,140" stroke="#af8f2c" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
-               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="120" cy="90" r="4" fill="#af8f2c"/>
             </svg>
          </div>
 
          <!-- Bismillah Calligraphy -->
          <div class="absolute top-10 md:top-20 left-1/2 -translate-x-1/2 w-48 md:w-64 opacity-30">
-            <svg viewBox="0 0 100 30" fill="#d4af37" xmlns="http://www.w3.org/2000/svg">
-               <path d="M50 15 Q40 5 30 15 T10 15 M50 15 Q60 25 70 15 T90 15" stroke="#d4af37" stroke-width="0.5" fill="none"/>
+            <svg viewBox="0 0 100 30" fill="#af8f2c" xmlns="http://www.w3.org/2000/svg">
+               <path d="M50 15 Q40 5 30 15 T10 15 M50 15 Q60 25 70 15 T90 15" stroke="#af8f2c" stroke-width="0.5" fill="none"/>
                <text x="50" y="22" font-family="Arial" font-size="12" text-anchor="middle" font-style="italic">Bismillah</text>
             </svg>
          </div>
 
          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
             <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
-               <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"></div>
-               <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"></div>
-               <div class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl flex items-end justify-center">
+               <div class="absolute -inset-4 border border-[#af8f2c]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"></div>
+               <div class="absolute inset-0 border border-[#af8f2c]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"></div>
+               <div class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#af8f2c]/50 shadow-2xl flex items-end justify-center">
                   <img :src="data.groomPhotoUrl || illustrationUrl" class="w-full h-full object-cover scale-x-[-1] object-center" />
                   <!-- Sparkles -->
                   <div class="absolute inset-0 z-20 pointer-events-none">
-                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 right-1/4 text-[#d4af37] animate-pulse-slow">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 right-1/4 text-[#af8f2c] animate-pulse-slow">
                         <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
                      </svg>
-                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" class="absolute top-1/2 left-1/4 text-[#d4af37] animate-ping-slow">
+                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" class="absolute top-1/2 left-1/4 text-[#af8f2c] animate-ping-slow">
                         <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
                      </svg>
                   </div>
                </div>
             </div>
             <div class="space-y-4">
-               <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
+               <p class="text-[#af8f2c] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
                <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
                <p class="text-white/50 text-sm md:text-xl font-serif italic">Putra ke-{{ data.groomOrder || 'dua' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.groomParents }}</p>
@@ -218,35 +218,35 @@
          <!-- Floral Corner (V4 Style - Classic Royal) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
-               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#af8f2c" fill-opacity="0.05" stroke="#af8f2c" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#af8f2c" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
-               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#af8f2c" fill-opacity="0.05" stroke="#af8f2c" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#af8f2c" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
          </div>
 
          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
             <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
-               <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"></div>
-               <div class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
+               <div class="absolute inset-0 border border-[#af8f2c]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"></div>
+               <div class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#af8f2c]/50 shadow-3xl flex items-end justify-center">
                   <img :src="data.bridePhotoUrl || illustrationUrl" class="w-full h-full object-cover object-center" />
                   <!-- Sparkles -->
                   <div class="absolute inset-0 z-20 pointer-events-none">
-                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 left-1/4 text-[#d4af37] animate-pulse-slow">
+                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 left-1/4 text-[#af8f2c] animate-pulse-slow">
                         <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
                      </svg>
-                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" class="absolute top-1/2 right-1/4 text-[#d4af37] animate-ping-slow">
+                     <svg width="10" height="10" viewBox="0 0 24 24" fill="none" class="absolute top-1/2 right-1/4 text-[#af8f2c] animate-ping-slow">
                         <path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z" fill="currentColor"/>
                      </svg>
                   </div>
                </div>
             </div>
             <div class="space-y-4">
-               <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
+               <p class="text-[#af8f2c] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
                <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.brideName }}</h3>
                <p class="text-white/50 text-sm md:text-xl font-serif italic">Putri ke-{{ data.brideOrder || 'dua' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.brideParents }}</p>
@@ -259,18 +259,18 @@
          <!-- Floral Corner (V1 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q100,0 160,160" stroke="#af8f2c" stroke-width="1.5" fill="none" opacity="0.6"/>
                <g transform="translate(30, 20) scale(0.3)">
-                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#af8f2c" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
+               <path d="M0,0 Q100,0 160,160" stroke="#af8f2c" stroke-width="1.5" fill="none" opacity="0.6"/>
                <g transform="translate(30, 20) scale(0.3)">
-                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
+                  <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#af8f2c" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
             </svg>
@@ -278,13 +278,13 @@
 
          <div class="max-w-4xl mx-auto w-full space-y-10">
             <div class="text-center space-y-3" v-observe>
-               <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Chapter</h2>
+               <h2 class="text-4xl md:text-6xl font-alex text-[#af8f2c]">Our Chapter</h2>
                <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">Journey to Eternity</p>
             </div>
             <div class="space-y-6 h-[60vh] overflow-y-auto no-scrollbar py-4 px-2" v-observe>
                <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" 
-                    class="bg-white/5 p-6 rounded-[2rem] border border-[#d4af37]/20 shadow-xl transition-all">
-                  <div class="text-[#d4af37] font-black text-[9px] uppercase tracking-widest mb-1">{{ story.date }}</div>
+                    class="bg-white/5 p-6 rounded-[2rem] border border-[#af8f2c]/20 shadow-xl transition-all">
+                  <div class="text-[#af8f2c] font-black text-[9px] uppercase tracking-widest mb-1">{{ story.date }}</div>
                   <h3 class="text-lg md:text-2xl font-serif font-bold text-white mb-2">{{ story.title }}</h3>
                   <p class="text-white/60 text-xs md:text-sm leading-relaxed font-light">{{ story.description }}</p>
                </div>
@@ -297,7 +297,7 @@
          <!-- Floral Corner (V2 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
@@ -305,7 +305,7 @@
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
+               <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
@@ -319,75 +319,75 @@
             <!-- Golden Snowfall Magic -->
             <div class="absolute inset-0 w-full h-full opacity-60">
                <div class="absolute top-[-10%] left-[10%] w-2 h-2 bg-[#ffffff] rounded-full blur-[1px] animate-snow-1"></div>
-               <div class="absolute top-[-10%] left-[30%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2"></div>
+               <div class="absolute top-[-10%] left-[30%] w-3 h-3 bg-[#af8f2c] rounded-full blur-[2px] animate-snow-2"></div>
                <div class="absolute top-[-10%] left-[50%] w-1.5 h-1.5 bg-[#ffffff] rounded-full animate-snow-3"></div>
-               <div class="absolute top-[-10%] left-[70%] w-4 h-4 bg-[#d4af37] rounded-full blur-[3px] animate-snow-1" style="animation-delay: 2s;"></div>
+               <div class="absolute top-[-10%] left-[70%] w-4 h-4 bg-[#af8f2c] rounded-full blur-[3px] animate-snow-1" style="animation-delay: 2s;"></div>
                <div class="absolute top-[-10%] left-[90%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-2" style="animation-delay: 4s;"></div>
-               <div class="absolute top-[-10%] left-[20%] w-2.5 h-2.5 bg-[#d4af37] rounded-full blur-[1px] animate-snow-3" style="animation-delay: 1.5s;"></div>
+               <div class="absolute top-[-10%] left-[20%] w-2.5 h-2.5 bg-[#af8f2c] rounded-full blur-[1px] animate-snow-3" style="animation-delay: 1.5s;"></div>
                <div class="absolute top-[-10%] left-[60%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-1" style="animation-delay: 3s;"></div>
-               <div class="absolute top-[-10%] left-[80%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2" style="animation-delay: 5s;"></div>
+               <div class="absolute top-[-10%] left-[80%] w-3 h-3 bg-[#af8f2c] rounded-full blur-[2px] animate-snow-2" style="animation-delay: 5s;"></div>
             </div>
          </div>
 
          <div class="relative z-10 max-w-5xl w-full flex flex-col items-center space-y-4 md:space-y-4 h-full justify-center max-h-screen py-8 md:py-8">
             <div class="text-center space-y-1 md:space-y-2">
-               <p class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60">The Halal Rituals</p>
+               <p class="text-[8px] md:text-xs tracking-[0.8em] text-[#af8f2c] font-black uppercase opacity-60">The Halal Rituals</p>
                <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
                <div class="flex items-center gap-4 justify-center pt-1">
-                  <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
-                  <i class="fa-solid fa-moon text-[#d4af37]/40 text-[10px] md:text-xs"></i>
-                  <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
+                  <div class="h-[1px] w-8 md:w-10 bg-[#af8f2c]/30"></div>
+                  <i class="fa-solid fa-moon text-[#af8f2c]/40 text-[10px] md:text-xs"></i>
+                  <div class="h-[1px] w-8 md:w-10 bg-[#af8f2c]/30"></div>
                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full px-2 max-w-[360px] md:max-w-none mx-auto">
-               <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
+               <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#af8f2c]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
                   <div class="flex items-center md:flex-col gap-4 md:gap-6">
-                     <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center">
-                        <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#d4af37]"></i>
+                     <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#af8f2c]/30 flex flex-shrink-0 items-center justify-center">
+                        <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#af8f2c]"></i>
                      </div>
                      <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
                         <h3 class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]">Akad Nikah</h3>
                         <div class="flex items-center gap-2 md:flex-col md:gap-1">
                            <p class="text-white font-bold text-[11px] md:text-2xl">{{ formatDate(data.akadLocation?.dateTime) }}</p>
-                           <span class="text-[#d4af37] md:hidden">|</span>
-                           <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">{{ formatTime(data.akadLocation?.dateTime) }} WIB</p>
+                           <span class="text-[#af8f2c] md:hidden">|</span>
+                           <p class="text-[#af8f2c] text-[10px] md:text-lg font-black tracking-widest">{{ formatTime(data.akadLocation?.dateTime) }} WIB</p>
                         </div>
                      </div>
                   </div>
                   <p class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center">{{ data.akadLocation?.description }}</p>
                   <div class="pt-1 md:pt-4">
-                     <a :href="data.akadLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-md active:scale-95 transition-transform">
+                     <a :href="data.akadLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 bg-[#af8f2c] text-[#022b1d] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-md active:scale-95 transition-transform">
                         <i class="fa-solid fa-location-dot"></i> Google Maps
                      </a>
                   </div>
                </div>
 
-               <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
+               <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#af8f2c]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
                   <div class="flex items-center md:flex-col gap-4 md:gap-6">
-                     <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center">
-                        <i class="fa-solid fa-champagne-glasses text-xl md:text-4xl text-[#d4af37]"></i>
+                     <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#af8f2c]/30 flex flex-shrink-0 items-center justify-center">
+                        <i class="fa-solid fa-champagne-glasses text-xl md:text-4xl text-[#af8f2c]"></i>
                      </div>
                      <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
                         <h3 class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]">Resepsi</h3>
                         <div class="flex items-center gap-2 md:flex-col md:gap-1">
                            <p class="text-white font-bold text-[11px] md:text-2xl">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>
-                           <span class="text-[#d4af37] md:hidden">|</span>
-                           <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">08:00 - 20:00 WIB</p>
+                           <span class="text-[#af8f2c] md:hidden">|</span>
+                           <p class="text-[#af8f2c] text-[10px] md:text-lg font-black tracking-widest">08:00 - 20:00 WIB</p>
                         </div>
                      </div>
                   </div>
                   <p class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center">{{ data.resepsiLocation?.description }}</p>
                   <div class="pt-1 md:pt-4">
-                     <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 border-2 border-[#d4af37] text-[#d4af37] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest active:scale-95 transition-transform">
+                     <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 border-2 border-[#af8f2c] text-[#af8f2c] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest active:scale-95 transition-transform">
                         <i class="fa-solid fa-map-pin"></i> Lihat Lokasi
                      </a>
                   </div>
                </div>
             </div>
 
-            <div v-if="data.dressCode" class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#d4af37]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto">
-               <p class="text-[#d4af37] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10">The Dress Code</p>
+            <div v-if="data.dressCode" class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#af8f2c]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto">
+               <p class="text-[#af8f2c] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10">The Dress Code</p>
                <p class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">"{{ data.dressCode }}"</p>
             </div>
          </div>
@@ -398,44 +398,44 @@
          <!-- Floral Corner (V3 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <path d="M0,0 Q80,20 140,140" stroke="#af8f2c" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
-               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="120" cy="90" r="4" fill="#af8f2c"/>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
+               <path d="M0,0 Q80,20 140,140" stroke="#af8f2c" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
-               <circle cx="120" cy="90" r="4" fill="#d4af37"/>
+               <circle cx="120" cy="90" r="4" fill="#af8f2c"/>
             </svg>
          </div>
 
          <div class="max-w-4xl mx-auto w-full space-y-4 md:space-y-10 overflow-y-auto no-scrollbar max-h-[90vh] py-6">
             <div class="text-center space-y-2">
-               <h2 class="text-3xl md:text-7xl font-alex text-[#d4af37]">Wedding Gift</h2>
+               <h2 class="text-3xl md:text-7xl font-alex text-[#af8f2c]">Wedding Gift</h2>
                <p class="text-white/50 text-[8px] md:text-sm font-light italic max-w-xs mx-auto">Tanda kasih dapat dikirim melalui:</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-               <div v-for="(bank, index) in data.bankAccounts" :key="'bank-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
-                  <p class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ bank.bankName }}</p>
+               <div v-for="(bank, index) in data.bankAccounts" :key="'bank-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#af8f2c]/20 text-center space-y-2">
+                  <p class="text-[#af8f2c] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ bank.bankName }}</p>
                   <p class="text-base md:text-3xl font-bold text-white tracking-widest">{{ bank.accountNumber }}</p>
                   <p class="text-white/60 text-[7px] md:text-[9px] uppercase font-bold">A.N {{ bank.accountName }}</p>
-                  <button @click="copyToClipboard(bank.accountNumber)" class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase">Salin No. Rekening</button>
+                  <button @click="copyToClipboard(bank.accountNumber)" class="px-4 py-1.5 bg-white/5 border border-[#af8f2c]/30 rounded-lg text-[7px] md:text-[9px] text-[#af8f2c] font-black uppercase">Salin No. Rekening</button>
                </div>
-               <div v-for="(wallet, index) in data.eWalletLink" :key="'wallet-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
-                  <p class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ wallet.wallet_provider }}</p>
+               <div v-for="(wallet, index) in data.eWalletLink" :key="'wallet-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#af8f2c]/20 text-center space-y-2">
+                  <p class="text-[#af8f2c] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ wallet.wallet_provider }}</p>
                   <div v-if="wallet.wallet_image" class="flex justify-center py-2">
                      <img :src="wallet.wallet_image" class="h-24 md:h-32 object-contain rounded-lg" />
                   </div>
                   <p class="text-base md:text-3xl font-bold text-white tracking-widest">{{ wallet.wallet_number }}</p>
-                  <button @click="copyToClipboard(wallet.wallet_number)" class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase">Salin Nomor</button>
+                  <button @click="copyToClipboard(wallet.wallet_number)" class="px-4 py-1.5 bg-white/5 border border-[#af8f2c]/30 rounded-lg text-[7px] md:text-[9px] text-[#af8f2c] font-black uppercase">Salin Nomor</button>
                </div>
             </div>
-            <div v-if="data.giftDeliveryAddress" class="p-5 md:p-8 bg-white/[0.02] border border-[#d4af37]/10 rounded-[2rem] text-center space-y-3">
+            <div v-if="data.giftDeliveryAddress" class="p-5 md:p-8 bg-white/[0.02] border border-[#af8f2c]/10 rounded-[2rem] text-center space-y-3">
                <h3 class="text-sm md:text-2xl font-serif font-black text-white uppercase tracking-widest">Kirim Kado Fisik</h3>
                <p class="text-white/60 text-[9px] md:text-base leading-relaxed italic line-clamp-2 px-2">"{{ Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress }}"</p>
-               <button @click="copyToClipboard(Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress)" class="inline-flex items-center gap-2 px-6 py-2 border border-[#d4af37]/30 rounded-full text-[8px] md:text-[10px] font-black text-[#d4af37] uppercase">Salin Alamat</button>
+               <button @click="copyToClipboard(Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress)" class="inline-flex items-center gap-2 px-6 py-2 border border-[#af8f2c]/30 rounded-full text-[8px] md:text-[10px] font-black text-[#af8f2c] uppercase">Salin Alamat</button>
             </div>
          </div>
       </section>
@@ -445,46 +445,46 @@
          <!-- Floral Corner (V4 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
-               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#af8f2c" fill-opacity="0.05" stroke="#af8f2c" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#af8f2c" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
-               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#af8f2c" fill-opacity="0.05" stroke="#af8f2c" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#af8f2c" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
          </div>
 
          <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
             <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
-               <h2 class="text-5xl md:text-8xl font-alex text-[#d4af37] leading-none">RSVP <br/> <span class="text-white">& Wishes</span></h2>
+               <h2 class="text-5xl md:text-8xl font-alex text-[#af8f2c] leading-none">RSVP <br/> <span class="text-white">& Wishes</span></h2>
                <p class="text-white/60 text-xs md:text-xl font-light max-w-xs md:max-w-md mx-auto lg:mx-0">Mohon konfirmasikan kehadiran Anda.</p>
             </div>
-            <div class="bg-white/[0.03] p-6 md:p-10 rounded-[3rem] md:rounded-[4rem] border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[50vh] md:h-[65vh] flex flex-col" v-observe>
+            <div class="bg-white/[0.03] p-6 md:p-10 rounded-[3rem] md:rounded-[4rem] border border-[#af8f2c]/30 shadow-3xl overflow-hidden h-[50vh] md:h-[65vh] flex flex-col" v-observe>
                <form @submit.prevent="submitRSVP" class="space-y-3 md:space-y-6 flex-shrink-0">
                   <div class="grid grid-cols-2 gap-3 md:gap-6">
                      <div class="space-y-1 md:space-y-2">
-                        <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Nama</label>
-                        <input v-model="rsvp.name" type="text" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base outline-none" />
+                        <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#af8f2c] font-black">Nama</label>
+                        <input v-model="rsvp.name" type="text" class="w-full bg-[#043927] border border-[#af8f2c]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base outline-none" />
                      </div>
                      <div class="space-y-1 md:space-y-2">
-                        <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Hadir?</label>
-                        <select v-model="rsvp.attendance" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-2 py-2 md:px-4 md:py-4 text-white text-xs md:text-base outline-none">
+                        <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#af8f2c] font-black">Hadir?</label>
+                        <select v-model="rsvp.attendance" class="w-full bg-[#043927] border border-[#af8f2c]/20 rounded-lg md:rounded-2xl px-2 py-2 md:px-4 md:py-4 text-white text-xs md:text-base outline-none">
                            <option value="hadir">Hadir</option>
                            <option value="tidak">Absen</option>
                         </select>
                      </div>
                   </div>
                   <div class="space-y-1 md:space-y-2">
-                     <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black">Ucapan</label>
-                     <textarea v-model="rsvp.message" class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base h-14 md:h-28 outline-none"></textarea>
+                     <label class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#af8f2c] font-black">Ucapan</label>
+                     <textarea v-model="rsvp.message" class="w-full bg-[#043927] border border-[#af8f2c]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base h-14 md:h-28 outline-none"></textarea>
                   </div>
-                  <button type="submit" class="w-full py-3 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-lg md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all">Kirim</button>
+                  <button type="submit" class="w-full py-3 md:py-4 bg-[#af8f2c] text-[#022b1d] rounded-lg md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all">Kirim</button>
                </form>
                <div class="mt-4 md:mt-6 space-y-3 md:space-y-4 overflow-y-auto no-scrollbar flex-1 pt-3 md:pt-6 border-t border-white/5">
                   <div v-for="(msg, i) in guestMessages" :key="i" class="bg-white/[0.04] p-3 md:p-5 rounded-xl md:rounded-2xl border border-white/5">
-                     <div class="flex justify-between items-center"><h4 class="text-[10px] md:text-base font-bold text-white">{{ msg.guestName }}</h4><span class="text-[6px] md:text-[9px] text-[#d4af37]">{{ timeAgo(msg.createdAt) }}</span></div>
+                     <div class="flex justify-between items-center"><h4 class="text-[10px] md:text-base font-bold text-white">{{ msg.guestName }}</h4><span class="text-[6px] md:text-[9px] text-[#af8f2c]">{{ timeAgo(msg.createdAt) }}</span></div>
                      <p class="text-[9px] md:text-sm text-white/60 leading-relaxed truncate md:whitespace-normal md:line-clamp-3 mt-1">"{{ msg.message }}"</p>
                   </div>
                </div>
@@ -495,13 +495,13 @@
       <!-- 10. FOOTER -->
       <footer class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#022b1d] overflow-hidden">
         <div class="space-y-10 relative z-10 max-w-2xl mx-auto" v-observe>
-           <div class="w-24 h-[1.5px] bg-[#d4af37] mx-auto mb-6"></div>
+           <div class="w-24 h-[1.5px] bg-[#af8f2c] mx-auto mb-6"></div>
            <div class="space-y-6">
               <p class="text-sm md:text-xl text-white/80 leading-relaxed font-light font-serif">
                 Merupakan sebuah kehormatan dan kebahagiaan bagi kami, apabila Bapak/Ibu/Saudara/i berkenan hadir untuk memberikan do'a restu kepada kami.
               </p>
               <div class="space-y-3 py-6 border-y border-white/5">
-                 <p class="text-xs md:text-base text-[#d4af37] font-black uppercase tracking-[0.2em]">Wassalamu'alaikum Warahmatullahi Wabarakatuh</p>
+                 <p class="text-xs md:text-base text-[#af8f2c] font-black uppercase tracking-[0.2em]">Wassalamu'alaikum Warahmatullahi Wabarakatuh</p>
               </div>
               <div class="space-y-3 pt-6">
                  <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">Kami yang berbahagia,</p>
@@ -511,8 +511,8 @@
               </div>
            </div>
            <div class="pt-16 space-y-3 opacity-30">
-              <p class="text-[8px] text-[#d4af37] tracking-[0.4em] uppercase font-black">Official Invitation By</p>
-              <h3 class="font-serif text-white font-bold text-lg md:text-2xl tracking-tighter">SatuUndangan<span class="text-[#d4af37]">.id</span></h3>
+              <p class="text-[8px] text-[#af8f2c] tracking-[0.4em] uppercase font-black">Official Invitation By</p>
+              <h3 class="font-serif text-white font-bold text-lg md:text-2xl tracking-tighter">SatuUndangan<span class="text-[#af8f2c]">.id</span></h3>
            </div>
         </div>
       </footer>
@@ -597,7 +597,7 @@ function initParticleEngine() {
    const resize = () => { width = canvas.width = window.innerWidth; height = canvas.height = window.innerHeight }
    class Particle {
       constructor() { this.reset(); this.y = Math.random() * height }
-      reset() { this.x = Math.random() * width; this.y = -50; this.size = 3 + Math.random() * 10; this.speed = 0.2 + Math.random() * 0.5; this.swing = Math.random() * 1.5; this.swingStep = Math.random() * 100; this.opacity = 0.05 + Math.random() * 0.2; this.flip = Math.random() * Math.PI; this.flipSpeed = 0.005 + Math.random() * 0.01; this.color = ['#ffd700', '#d4af37', '#f1c40f'][Math.floor(Math.random() * 3)] }
+      reset() { this.x = Math.random() * width; this.y = -50; this.size = 3 + Math.random() * 10; this.speed = 0.2 + Math.random() * 0.5; this.swing = Math.random() * 1.5; this.swingStep = Math.random() * 100; this.opacity = 0.05 + Math.random() * 0.2; this.flip = Math.random() * Math.PI; this.flipSpeed = 0.005 + Math.random() * 0.01; this.color = ['#ffd700', '#af8f2c', '#8e6d1c'][Math.floor(Math.random() * 3)] }
       update() { this.y += this.speed; this.swingStep += 0.005; this.x += Math.sin(this.swingStep) * this.swing; this.flip += this.flipSpeed; if (this.y > height + 50) this.reset() }
       draw() { ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.flip); ctx.scale(Math.sin(this.flip), 1); ctx.globalAlpha = this.opacity; ctx.fillStyle = this.color; ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(this.size, -this.size/2, this.size, this.size, 0, this.size); ctx.bezierCurveTo(-this.size, this.size, -this.size, -this.size/2, 0, 0); ctx.fill(); ctx.restore() }
    }
