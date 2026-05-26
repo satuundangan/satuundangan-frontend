@@ -73,8 +73,7 @@ const initAudio = () => {
   
   // Encode URI to handle spaces and special characters in the URL
   const encodedSrc = props.src.includes(' ') ? encodeURI(props.src) : props.src
-  console.log("Initializing audio with src:", encodedSrc)
-  audio.value = new Audio(encodedSrc)
+    audio.value = new Audio(encodedSrc)
   audio.value.loop = true
   
   audio.value.onloadedmetadata = () => {
@@ -91,7 +90,7 @@ const initAudio = () => {
 const tryPlay = () => {
   if (!audio.value) return
   audio.value.play()
-    .then(() => { isPlaying.value = true; console.log("Audio playing successfully") })
+    .then(() => { isPlaying.value = true;  })
     .catch((err) => { 
        console.warn("Autoplay block detected, waiting for interaction...", err)
        isPlaying.value = false 
@@ -121,15 +120,13 @@ const toggleAudio = () => {
 }
 
 watch(() => props.src, (newSrc) => {
-  console.log('DEBUG: MusicControl Source Changed:', newSrc)
-  if (isYoutube.value || !newSrc) return
+    if (isYoutube.value || !newSrc) return
   initAudio()
   if (props.autoPlay && props.isOpened) tryPlay()
 })
 
 watch(() => props.isOpened, (newVal) => {
-  console.log('DEBUG: Invitation Opened Status:', newVal)
-  if (newVal && props.autoPlay) {
+    if (newVal && props.autoPlay) {
     if (isYoutube.value) {
        if (isMuted.value) toggleYoutubeMute()
     } else {

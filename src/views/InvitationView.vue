@@ -109,8 +109,7 @@ onMounted(async () => {
       try {
         // Normal Mode: Fetch from API
         const rawData = await fetchInvitationData(slug)
-        console.log('DEBUG: Invitation Raw Data from BE:', rawData)
-
+        
         // If live sync already started, don't overwrite with old API data
         if (isLiveSyncActive.value) {
            return
@@ -138,7 +137,7 @@ onMounted(async () => {
           is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
-        console.log('DEBUG: Flattened Invitation Data for Template:', data)      } catch (err) {
+              } catch (err) {
         // If live sync already started, ignore error
         if (isLiveSyncActive.value) return
 
