@@ -540,7 +540,7 @@ watch(() => props.data, (newVal) => {
 
 const mockStories = [
   { title: 'Pertama Bertemu', date: 'Januari 2024', description: 'Kisah cinta kami bermula dari pertemuan tak terduga yang menumbuhkan benih-benih kasih di hati.' },
-  { title: 'Lamaran', date: 'Februari 2026', description: 'Momen sakral dimana kami berkomitmen untuk melangkah ke jenjang yang lebih serius.' }
+  { title: 'Lamaran', date: 'Februari 2026', description: 'Momen sakral dimana kami berkomitmen untuk melangkah ke jenjang yang lebih serius.' }    
 ]
 
 const galleryImages = ref([])
@@ -646,7 +646,6 @@ async function loadWishes() {
       console.error("Failed to load wishes:", err)
     }
   } else {
-    // Mock data for preview mode
     guestMessages.value = [
       { guestName: "Fauzan & Keluarga", message: "Barakallahu lakuma wa baraka alaikuma wa jamaa bainakuma fii khair.", rsvpStatus: "hadir", createdAt: new Date() },
       { guestName: "Siti Aminah", message: "MasyaAllah cantik banget!", rsvpStatus: "hadir", createdAt: new Date() }
@@ -664,43 +663,12 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance,
       totalGuests: rsvp.value.attendance === "hadir" ? Number(rsvp.value.totalGuests) : 0
     }
+    await createGuestMessage(payload)
+    toast.success("Konfirmasi terkirim!")
     
-    await createGuestMessage(payload)
-    toast.success("Konfirmasi terkirim!")
-
-    // Optimistic update for better UX
-    guestMessages.value.unshift({
-      guestName: payload.guestName,
-      message: payload.message,
-      rsvpStatus: payload.rsvpStatus,
-      createdAt: new Date()
-    })
-
-    // Reset form
+    // Optimistic update
+    guestMessages.value.unshift({ guestName: payload.guestName, message: payload.message, rsvpStatus: payload.rsvpStatus, createdAt: new Date() })
     rsvp.value = { name: "", attendance: "hadir", totalGuests: 1, message: "" }
-
-    // Fetch fresh data from server
-    await loadWishes()
-  } catch (err) {
-    console.error("RSVP Error:", err)
-    toast.error("Gagal mengirim RSVP.")
-  }
-}
-  try {
-    const payload = {
-      invitationId: data.value.id,
-      guestName: rsvp.value.name,
-      message: rsvp.value.message,
-      rsvpStatus: rsvp.value.attendance,
-      totalGuests: rsvp.value.attendance === "hadir" ? Number(rsvp.value.totalGuests) : 0
-    }
-    await createGuestMessage(payload)
-    toast.success("Konfirmasi terkirim!")
-
-    // Reset form
-    rsvp.value = { name: "", attendance: "hadir", totalGuests: 1, message: "" }
-
-    // Force refresh
     await loadWishes()
   } catch (err) {
     toast.error("Gagal mengirim RSVP.")
