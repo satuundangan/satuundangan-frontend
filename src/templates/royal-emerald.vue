@@ -107,7 +107,7 @@
              <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"></div>
              <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"></div>
              <div class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
-                <img :src="data.photoCoupleUrl || illustrationUrl" class="w-[120%] h-[120%] object-contain mb-[-10%]" />
+                <img :src="data.photoCoupleUrl || illustrationUrl" class="w-full h-full object-cover" />
              </div>
           </div>
           <div class="space-y-4">
@@ -190,7 +190,7 @@
                <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"></div>
                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"></div>
                <div class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl flex items-end justify-center">
-                  <img :src="data.groomPhotoUrl || illustrationUrl" class="w-[140%] h-[140%] object-contain mb-[-10%] scale-x-[-1] object-right" />
+                  <img :src="data.groomPhotoUrl || illustrationUrl" class="w-full h-full object-cover scale-x-[-1] object-center" />
                   <!-- Sparkles -->
                   <div class="absolute inset-0 z-20 pointer-events-none">
                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 right-1/4 text-[#d4af37] animate-pulse-slow">
@@ -232,7 +232,7 @@
             <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
                <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"></div>
                <div class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
-                  <img :src="data.bridePhotoUrl || illustrationUrl" class="w-[140%] h-[140%] object-contain mb-[-10%] object-left" />
+                  <img :src="data.bridePhotoUrl || illustrationUrl" class="w-full h-full object-cover object-center" />
                   <!-- Sparkles -->
                   <div class="absolute inset-0 z-20 pointer-events-none">
                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" class="absolute top-1/4 left-1/4 text-[#d4af37] animate-pulse-slow">

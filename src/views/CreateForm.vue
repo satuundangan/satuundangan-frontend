@@ -509,6 +509,21 @@ const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menci
 
 
 // Cropper States
+
+const templateAspectRatios = {
+  "royal-emerald": { bride: 3/4, groom: 3/4, couple: 16/10 },
+  "dark-elegant": { bride: 3/4, groom: 3/4, couple: 1 },
+  "modern-noir": { bride: 1, groom: 1, couple: 16/9 },
+  "zen-tranquility": { bride: 3/4, groom: 3/4, couple: 4/3 },
+  "default": { bride: 3/4, groom: 3/4, couple: 1 }
+};
+
+const getAspectRatio = (field) => {
+  const slug = selectedTemplateRef.value.slug || "default";
+  const map = templateAspectRatios[slug] || templateAspectRatios["default"];
+  return map[field] || templateAspectRatios["default"][field];
+};
+
 const cropper = ref({
    show: false,
    image: '',
@@ -871,21 +886,21 @@ async function handleBridePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/4, targetField: 'bride' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: getAspectRatio('bride'), targetField: 'bride' }
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 async function handleGroomPhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/4, targetField: 'groom' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: getAspectRatio('groom'), targetField: 'groom' }
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 async function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: 1, targetField: 'couple' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: getAspectRatio('couple'), targetField: 'couple' }
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 
