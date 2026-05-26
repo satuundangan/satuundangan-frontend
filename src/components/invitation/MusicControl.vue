@@ -119,13 +119,14 @@ const toggleAudio = () => {
 }
 
 watch(() => props.src, (newSrc) => {
+  console.log('DEBUG: MusicControl Source Changed:', newSrc)
   if (isYoutube.value || !newSrc) return
   initAudio()
   if (props.autoPlay && props.isOpened) tryPlay()
 })
 
 watch(() => props.isOpened, (newVal) => {
-  console.log("Invitation opened status changed:", newVal)
+  console.log('DEBUG: Invitation Opened Status:', newVal)
   if (newVal && props.autoPlay) {
     if (isYoutube.value) {
        if (isMuted.value) toggleYoutubeMute()

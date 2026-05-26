@@ -109,7 +109,8 @@ onMounted(async () => {
       try {
         // Normal Mode: Fetch from API
         const rawData = await fetchInvitationData(slug)
-        
+        console.log('DEBUG: Invitation Raw Data from BE:', rawData)
+
         // If live sync already started, don't overwrite with old API data
         if (isLiveSyncActive.value) {
            return
@@ -117,13 +118,13 @@ onMounted(async () => {
 
         // Check if invitation is active or if we are in preview mode
         const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
-        
+
         if (!isPublished && !isPreviewMode.value) {
           error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
           loading.value = false
           return
         }
-        
+
         // Flatten the data: merge root properties with content properties
         data = {
           ...(rawData.content || {}),
@@ -137,7 +138,7 @@ onMounted(async () => {
           is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
-      } catch (err) {
+        console.log('DEBUG: Flattened Invitation Data for Template:', data)      } catch (err) {
         // If live sync already started, ignore error
         if (isLiveSyncActive.value) return
 
