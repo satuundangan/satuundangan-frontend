@@ -490,6 +490,22 @@ import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
 import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
 
+// Helper to format ISO UTC string from API to Local Datetime-Local format (YYYY-MM-DDTHH:mm)
+const formatISOToLocalInput = (isoString) => {
+   if (!isoString) return ''
+   const d = new Date(isoString)
+   if (isNaN(d.getTime())) return ''
+   
+   const pad = (n) => n.toString().padStart(2, '0')
+   const year = d.getFullYear()
+   const month = pad(d.getMonth() + 1)
+   const day = pad(d.getDate())
+   const hours = pad(d.getHours())
+   const minutes = pad(d.getMinutes())
+   
+   return `${year}-${month}-${day}T${hours}:${minutes}`
+}
+
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
@@ -777,18 +793,17 @@ function mapPayloadToFormData(payload) {
    const akad = payload.akadLocation || {}
    const resepsi = payload.resepsiLocation || {}
    if (payload.isSingleEvent) {
-      formData.value.dateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
+      formData.value.dateTime = formatISOToLocalInput(akad.dateTime)
       formData.value.map = akad.mapUrl || ''
       formData.value.mapDesc = akad.description || ''
    } else {
-      formData.value.akadDateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
+      formData.value.akadDateTime = formatISOToLocalInput(akad.dateTime)
       formData.value.akadMap = akad.mapUrl || ''
       formData.value.akadDesc = akad.description || ''
-      formData.value.resepsiDateTime = resepsi.dateTime ? resepsi.dateTime.substring(0, 16) : ''
+      formData.value.resepsiDateTime = formatISOToLocalInput(resepsi.dateTime)
       formData.value.resepsiMap = resepsi.mapUrl || ''
       formData.value.resepsiDesc = resepsi.description || ''
-   }
-   if (payload.loveStory && Array.isArray(payload.loveStory)) {
+   }   if (payload.loveStory && Array.isArray(payload.loveStory)) {
       formData.value.loveStories = payload.loveStory.map(s => ({ title: s.title || '', date: s.date || '', description: s.description || s.content || '', photo: s.image || s.photo || '', photoFile: null, isOpen: false }))
    }
    formData.value.sosmedBride = { instagram: payload.socialMediaBrides?.instagram || '', tiktok: payload.socialMediaBrides?.tiktok || '', youtube: payload.socialMediaBrides?.youtube || '', otherSocial: payload.socialMediaBrides?.otherSocial || '' }
