@@ -134,7 +134,7 @@
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[#60a5fa]">The Groom</span>
               <h3 class="text-4xl md:text-6xl font-serif text-[#1e3a8a]">{{ data.groomName }}</h3>
-              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Son of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">The {{ data.parents?.groomOrder || "1st" }} Son of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.groomParents }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
           </div>
@@ -149,7 +149,7 @@
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[#60a5fa]">The Bride</span>
               <h3 class="text-4xl md:text-6xl font-serif text-[#1e3a8a]">{{ data.brideName }}</h3>
-              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Daughter of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">The {{ data.parents?.brideOrder || "1st" }} Daughter of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.brideParents }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
           </div>

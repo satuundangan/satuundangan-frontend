@@ -119,7 +119,7 @@
             <div class="order-2 md:order-1 p-10 md:p-0 space-y-6 text-center md:text-right transition-all duration-700 md:group-hover:-translate-x-4">
               <span class="text-[8px] uppercase tracking-[0.5em] text-[#808080]">Leading Man</span>
               <h3 class="text-4xl md:text-6xl font-serif font-bold uppercase tracking-tighter">{{ data.groomName }}</h3>
-              <p class="text-[10px] uppercase tracking-widest text-[#666666]">Son of <br><span class="text-white">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-[10px] uppercase tracking-widest text-[#666666]">The {{ data.parents?.groomOrder || "1st" }} Son of <br><span class="text-white">{{ data.parents?.groomParents }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-[10px] uppercase tracking-widest hover:text-white text-[#808080] transition-colors border-b border-[#808080] pb-1">@{{ data.socialMediaGroom.instagram }}</a>
             </div>
             <div class="order-1 md:order-2 overflow-hidden aspect-[3/4] md:aspect-square w-full transition-all duration-700 md:group-hover:translate-x-4">
@@ -134,7 +134,7 @@
             <div class="p-10 md:p-0 space-y-6 text-center md:text-left transition-all duration-700 md:group-hover:translate-x-4">
               <span class="text-[8px] uppercase tracking-[0.5em] text-[#808080]">Leading Lady</span>
               <h3 class="text-4xl md:text-6xl font-serif font-bold uppercase tracking-tighter">{{ data.brideName }}</h3>
-              <p class="text-[10px] uppercase tracking-widest text-[#666666]">Daughter of <br><span class="text-white">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-[10px] uppercase tracking-widest text-[#666666]">The {{ data.parents?.brideOrder || "1st" }} Daughter of <br><span class="text-white">{{ data.parents?.brideParents }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[10px] uppercase tracking-widest hover:text-white text-[#808080] transition-colors border-b border-[#808080] pb-1">@{{ data.socialMediaBrides.instagram }}</a>
             </div>
           </div>

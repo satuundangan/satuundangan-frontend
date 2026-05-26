@@ -150,7 +150,7 @@
               <div class="text-center space-y-2">
                 <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.groomName }}</h3>
                 <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putra Dari</p>
-                <p class="text-gray-400 font-serif">{{ data.parents?.groomParents }}</p>
+                <p class="text-gray-400 font-serif">Putra ke-{{ data.parents?.groomOrder || 'pertama' }} dari {{ data.parents?.groomParents }}</p>
                 <div class="pt-4 flex justify-center">
                    <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
                      <i class="fa-brands fa-instagram"></i>
@@ -171,7 +171,7 @@
               <div class="text-center space-y-2">
                 <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.brideName }}</h3>
                 <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putri Dari</p>
-                <p class="text-gray-400 font-serif">{{ data.parents?.brideParents }}</p>
+                <p class="text-gray-400 font-serif">Putri ke-{{ data.parents?.brideOrder || 'pertama' }} dari {{ data.parents?.brideParents }}</p>
                 <div class="pt-4 flex justify-center">
                    <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
                      <i class="fa-brands fa-instagram"></i>

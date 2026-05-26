@@ -169,7 +169,7 @@
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putra Dari</p>
-                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.groomParents }}</p>
+                <p class="text-sm text-gray-500 mt-1">Putra ke-{{ data.parents?.groomOrder || 'pertama' }} dari {{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
                   <i class="fa-brands fa-instagram text-xl"></i>
@@ -187,7 +187,7 @@
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putri Dari</p>
-                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.brideParents }}</p>
+                <p class="text-sm text-gray-500 mt-1">Putri ke-{{ data.parents?.brideOrder || 'pertama' }} dari {{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
                   <i class="fa-brands fa-instagram text-xl"></i>

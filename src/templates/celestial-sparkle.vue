@@ -144,7 +144,7 @@
               <div class="pt-4">
                 <h3 class="text-3xl md:text-5xl font-cormorant font-bold text-white tracking-wide">{{ data.groomName }}</h3>
                 <p class="text-[#f3ca40] text-[10px] uppercase tracking-[0.4em] font-bold mt-2">The Groom</p>
-                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved The {{ data.parents?.groomOrder || "1st" }} Son of {{ data.parents?.groomParents }}</p>
                 <div class="flex justify-center gap-4 mt-6">
                    <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#f3ca40] hover:text-[#050b1a] transition-all">
                      <i class="fa-brands fa-instagram text-xl"></i>
@@ -164,7 +164,7 @@
               <div class="pt-4">
                 <h3 class="text-3xl md:text-5xl font-cormorant font-bold text-white tracking-wide">{{ data.brideName }}</h3>
                 <p class="text-[#f3ca40] text-[10px] uppercase tracking-[0.4em] font-bold mt-2">The Bride</p>
-                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved The {{ data.parents?.brideOrder || "1st" }} Daughter of {{ data.parents?.brideParents }}</p>
                 <div class="flex justify-center gap-4 mt-6">
                    <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#f3ca40] hover:text-[#050b1a] transition-all">
                      <i class="fa-brands fa-instagram text-xl"></i>

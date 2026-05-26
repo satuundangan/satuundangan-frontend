@@ -129,7 +129,7 @@
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Gentleman</span>
                 <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.groomName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black"></div>
-                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">The {{ data.parents?.groomOrder || "1st" }} Son of {{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
                   Follow Journey
                 </a>
@@ -155,7 +155,7 @@
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Lady</span>
                 <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.brideName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black ml-auto md:ml-0"></div>
-                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">The {{ data.parents?.brideOrder || "1st" }} Daughter of {{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
                   View Profile
                 </a>

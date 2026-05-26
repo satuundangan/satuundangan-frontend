@@ -199,7 +199,7 @@
             <div class="space-y-4">
                <p class="text-[#af8f2c] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
                <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
-               <p class="text-white/50 text-sm md:text-xl font-serif italic">Putra ke-{{ data.groomOrder || 'pertama' }} dari:</p>
+               <p class="text-white/50 text-sm md:text-xl font-serif italic">Putra ke-{{ data.parents?.groomOrder || 'pertama' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.groomParents }}</p>
             </div>
          </div>
@@ -240,7 +240,7 @@
             <div class="space-y-4">
                <p class="text-[#af8f2c] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
                <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.brideName }}</h3>
-               <p class="text-white/50 text-sm md:text-xl font-serif italic">Putri ke-{{ data.brideOrder || 'dua' }} dari:</p>
+               <p class="text-white/50 text-sm md:text-xl font-serif italic">Putri ke-{{ data.parents?.brideOrder || 'kedua' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.brideParents }}</p>
             </div>
          </div>

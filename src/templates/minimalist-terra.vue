@@ -138,7 +138,7 @@
               <div class="space-y-2">
                 <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Groom</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-sm text-gray-500 leading-relaxed pt-2">The {{ data.parents?.groomOrder || "1st" }} Son of {{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
                   <i class="fa-brands fa-instagram text-2xl"></i>
                 </a>
@@ -156,7 +156,7 @@
               <div class="space-y-2 md:text-right">
                 <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Bride</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-sm text-gray-500 leading-relaxed pt-2">The {{ data.parents?.brideOrder || "1st" }} Daughter of {{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
                   <i class="fa-brands fa-instagram text-2xl"></i>
                 </a>

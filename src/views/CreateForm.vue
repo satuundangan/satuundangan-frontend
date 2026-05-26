@@ -68,10 +68,16 @@
                                     <input v-model="formData.brideName" @input="validateField('brideName')" type="text" placeholder="Putri Diana" class="form-input" :class="{ 'border-red-500 bg-red-50/30': validationErrors.brideName }" />
                                     <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                                  </div>
-                                 <div data-field="brideParents">
-                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
-                                    <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
-                                    <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
+                                 <div class="grid grid-cols-2 gap-4">
+                                    <div data-field="brideParents">
+                                       <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                       <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
+                                       <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
+                                    </div>
+                                    <div data-field="brideOrder">
+                                       <label class="form-label">Anak Ke- (Urutan)</label>
+                                       <input v-model="formData.brideOrder" type="text" placeholder="pertama / kedua / bungsu" class="form-input" />
+                                    </div>
                                  </div>
                                  <div data-field="bridePhoto">
                                     <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
@@ -104,10 +110,16 @@
                                     <input v-model="formData.groomName" @input="validateField('groomName')" type="text" placeholder="Pangeran Charles" class="form-input" :class="{ 'border-red-500 bg-red-50/30': validationErrors.groomName }" />
                                     <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                                  </div>
-                                 <div data-field="groomParents">
-                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
-                                    <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
-                                    <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
+                                 <div class="grid grid-cols-2 gap-4">
+                                    <div data-field="groomParents">
+                                       <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                       <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
+                                       <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
+                                    </div>
+                                    <div data-field="groomOrder">
+                                       <label class="form-label">Anak Ke- (Urutan)</label>
+                                       <input v-model="formData.groomOrder" type="text" placeholder="pertama / kedua / bungsu" class="form-input" />
+                                    </div>
                                  </div>
                                  <div data-field="groomPhoto">
                                     <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
@@ -550,8 +562,8 @@ const formData = ref({
    music: '', youtubeUrl: '', denah: '', denahFile: null,
    musicFile: null, musicPreview: '', audioStart: 0, audioEnd: 0,
    wishes: 'ya', rsvp: 'ya', encryptedGuest: 'ya',
-   brideParents: '', groomParents: '', 
-   
+   brideParents: '', groomParents: '',
+   brideOrder: 'pertama', groomOrder: 'pertama',   
    // Expanded fields
    loveStories: [],
    sosmedBride: { instagram: '', tiktok: '', youtube: '', otherSocial: '' },
@@ -590,7 +602,9 @@ const syncDataToPreview = (data) => {
             groomPhotoUrl: data.groomPhoto || '/default-groom.jpg',
             parents: {
                brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
-               groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
+               brideOrder: data.brideOrder || 'pertama',
+               groomParents: data.groomParents || 'Bpk. ... & Ibu ...',
+               groomOrder: data.groomOrder || 'pertama'
             },
             isSingleEvent: data.isSingleEvent,
             akadLocation: data.isSingleEvent 
@@ -744,10 +758,14 @@ function mapPayloadToFormData(payload) {
    formData.value.photoCouple = payload.photoCoupleUrl || ''
    if (payload.parents) {
       formData.value.brideParents = payload.parents.brideParents || ''
+      formData.value.brideOrder = payload.parents.brideOrder || 'pertama'
       formData.value.groomParents = payload.parents.groomParents || ''
+      formData.value.groomOrder = payload.parents.groomOrder || 'pertama'
    } else {
       formData.value.brideParents = payload.brideParents || ''
+      formData.value.brideOrder = payload.brideOrder || 'pertama'
       formData.value.groomParents = payload.groomParents || ''
+      formData.value.groomOrder = payload.groomOrder || 'pertama'
    }
    formData.value.isSingleEvent = payload.isSingleEvent
    if (payload.galleryImages && Array.isArray(payload.galleryImages)) {
@@ -959,7 +977,12 @@ async function saveAndPreview() {
       const payload = {
          title: formData.value.title, slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
-         parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
+         parents: { 
+            brideParents: formData.value.brideParents || '', 
+            brideOrder: formData.value.brideOrder || 'pertama',
+            groomParents: formData.value.groomParents || '',
+            groomOrder: formData.value.groomOrder || 'pertama'
+         },
          akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
          resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: selectedTemplateRef.value.id || 1, loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),

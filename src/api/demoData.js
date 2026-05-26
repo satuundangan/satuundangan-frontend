@@ -31,7 +31,9 @@ export const demoData = {
   },
   parents: {
     brideParents: 'Bpk. Ahmad Safira & Ibu Siti Aminah',
+    brideOrder: 'pertama',
     groomParents: 'Bpk. Yusuf Syahreza & Ibu Fatimah',
+    groomOrder: 'kedua',
   },
   bankAccounts: [
     {
