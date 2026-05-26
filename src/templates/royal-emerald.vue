@@ -28,10 +28,10 @@
            <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#af8f2c]/10 rounded-full blur-[120px] animate-pulse-slow"></div>
            <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#af8f2c]/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
         </div>
-        
+
         <!-- Welcome Corner Ornaments (V4 Style) -->
         <div class="absolute inset-4 md:inset-8 pointer-events-none border border-[#af8f2c]/20 rounded-[3rem] md:rounded-[5rem] m-2 md:m-4 overflow-hidden">
-            <svg class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#af8f2c]/40 opacity-70" viewBox="0 0 100 100" fill="currentColor">
+            <svg class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#af8f2c]/40 opacity-70" viewBox="0 0 100 100" fill="currentColor">    
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill-opacity="0.05" stroke-width="1"/>
                <path d="M20,20 L20,80 Q50,80 80,20 Z" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
@@ -135,7 +135,7 @@
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <path d="M0,0 C60,20 80,60 0,120" stroke="#af8f2c" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
                <g transform="translate(10, 10) scale(0.5)">
-                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>    
                </g>
             </svg>
          </div>
@@ -143,7 +143,7 @@
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <g transform="translate(10, 10) scale(0.5)">
-                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>    
                </g>
             </svg>
          </div>
@@ -199,7 +199,7 @@
             <div class="space-y-4">
                <p class="text-[#af8f2c] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
                <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
-               <p class="text-white/50 text-sm md:text-xl font-serif italic">Putra ke-{{ data.groomOrder || 'dua' }} dari:</p>
+               <p class="text-white/50 text-sm md:text-xl font-serif italic">Putra ke-{{ data.groomOrder || 'pertama' }} dari:</p>
                <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">{{ data.parents?.groomParents }}</p>
             </div>
          </div>
@@ -291,7 +291,7 @@
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <g transform="translate(10, 10) scale(0.5)">
-                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>    
                </g>
             </svg>
          </div>
@@ -299,7 +299,7 @@
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#af8f2c" stroke-width="2" fill="#af8f2c" fill-opacity="0.1"/>
                <g transform="translate(10, 10) scale(0.5)">
-                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
+                  <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>    
                </g>
             </svg>
          </div>
@@ -379,7 +379,7 @@
             </div>
 
             <div v-if="data.dressCode" class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#af8f2c]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto">
-               <p class="text-[#af8f2c] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10">The Dress Code</p>
+               <p class="text-[#af8f2c] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10">The Dress Code</p>      
                <p class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">"{{ data.dressCode }}"</p>
             </div>
          </div>
@@ -393,6 +393,7 @@
                <path d="M0,0 Q80,20 140,140" stroke="#af8f2c" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
                <circle cx="120" cy="90" r="4" fill="#af8f2c"/>
+               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
             </svg>
          </div>
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
@@ -450,8 +451,8 @@
 
          <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
             <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
-               <h2 class="text-5xl md:text-8xl font-alex text-[#af8f2c] leading-none">RSVP <br/> <span class="text-white">& Wishes</span></h2>
-               <p class="text-white/60 text-xs md:text-xl font-light max-w-xs md:max-w-md mx-auto lg:mx-0">Mohon konfirmasikan kehadiran Anda.</p>
+               <h2 class="text-5xl md:text-8xl font-alex text-[#af8f2c] leading-none">RSVP <br/> <span class="text-white">& Wishes</span></h2>      
+               <p class="text-white/60 text-xs md:text-xl font-light max-w-xs md:max-w-md mx-auto lg:mx-0">Mohon konfirmasikan kehadiran Anda.</p>  
             </div>
             <div class="bg-white/[0.03] p-6 md:p-10 rounded-[3rem] md:rounded-[4rem] border border-[#af8f2c]/30 shadow-3xl overflow-hidden h-[50vh] md:h-[65vh] flex flex-col" v-observe>
                <form @submit.prevent="submitRSVP" class="space-y-3 md:space-y-6 flex-shrink-0">
@@ -635,36 +636,6 @@ function timeAgo(date) {
    return "Baru saja"
 }
 
-async function submitRSVP() {
-  if (!rsvp.value.name?.trim()) { toast.error("Isi nama Anda."); return }
-  try {
-    const payload = { 
-      invitationId: data.value.id, 
-      guestName: rsvp.value.name, 
-      message: rsvp.value.message, 
-      rsvpStatus: rsvp.value.attendance, 
-      totalGuests: rsvp.value.attendance === "hadir" ? Number(rsvp.value.totalGuests) : 0 
-    }
-    await createGuestMessage(payload)
-    toast.success("Konfirmasi terkirim!")
-    
-    // Reset form
-    const submittedName = rsvp.value.name
-    const submittedMsg = rsvp.value.message
-    rsvp.value = { name: "", attendance: "hadir", totalGuests: 1, message: "" }
-    
-    // Force refresh
-    await loadWishes()
-  } catch (err) { 
-    toast.error("Gagal mengirim RSVP.") 
-  }
-}
-  try {
-    await createGuestMessage({ invitationId: data.value.id, guestName: rsvp.value.name, message: rsvp.value.message, rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0 })
-    toast.success(`Konfirmasi terkirim!`); rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }; loadWishes()
-  } catch (err) { toast.error("Gagal mengirim RSVP.") }
-}
-
 async function loadWishes() {
   const invId = data.value.id
   if (invId && invId !== "live-preview" && invId !== 0) {
@@ -681,13 +652,59 @@ async function loadWishes() {
       { guestName: "Siti Aminah", message: "MasyaAllah cantik banget!", rsvpStatus: "hadir", createdAt: new Date() }
     ]
   }
-} catch (err) {}
-   } else {
-      guestMessages.value = [
-         { guestName: 'Fauzan & Keluarga', message: 'Barakallahu lakuma wa baraka alaikuma wa jamaa bainakuma fii khair.', rsvpStatus: 'hadir', createdAt: new Date() },
-         { guestName: 'Siti Aminah', message: 'MasyaAllah cantik banget!', rsvpStatus: 'hadir', createdAt: new Date() }
-      ]
-   }
+}
+
+async function submitRSVP() {
+  if (!rsvp.value.name?.trim()) { toast.error("Isi nama Anda."); return }
+  try {
+    const payload = {
+      invitationId: data.value.id,
+      guestName: rsvp.value.name,
+      message: rsvp.value.message,
+      rsvpStatus: rsvp.value.attendance,
+      totalGuests: rsvp.value.attendance === "hadir" ? Number(rsvp.value.totalGuests) : 0
+    }
+    
+    await createGuestMessage(payload)
+    toast.success("Konfirmasi terkirim!")
+
+    // Optimistic update for better UX
+    guestMessages.value.unshift({
+      guestName: payload.guestName,
+      message: payload.message,
+      rsvpStatus: payload.rsvpStatus,
+      createdAt: new Date()
+    })
+
+    // Reset form
+    rsvp.value = { name: "", attendance: "hadir", totalGuests: 1, message: "" }
+
+    // Fetch fresh data from server
+    await loadWishes()
+  } catch (err) {
+    console.error("RSVP Error:", err)
+    toast.error("Gagal mengirim RSVP.")
+  }
+}
+  try {
+    const payload = {
+      invitationId: data.value.id,
+      guestName: rsvp.value.name,
+      message: rsvp.value.message,
+      rsvpStatus: rsvp.value.attendance,
+      totalGuests: rsvp.value.attendance === "hadir" ? Number(rsvp.value.totalGuests) : 0
+    }
+    await createGuestMessage(payload)
+    toast.success("Konfirmasi terkirim!")
+
+    // Reset form
+    rsvp.value = { name: "", attendance: "hadir", totalGuests: 1, message: "" }
+
+    // Force refresh
+    await loadWishes()
+  } catch (err) {
+    toast.error("Gagal mengirim RSVP.")
+  }
 }
 
 function initData() {
@@ -730,7 +747,7 @@ watch(() => props.data, (newVal) => { if (newVal && Object.keys(newVal).length >
 .animate-spin-reverse-slow { animation: spin-reverse 45s linear infinite; }
 .animate-pulse-slow { animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
 
-@keyframes gradient-gold { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+@keyframes gradient-gold { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }       
 .animate-gradient-gold { animation: gradient-gold 3s ease infinite; }
 
 @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
@@ -753,7 +770,7 @@ watch(() => props.data, (newVal) => { if (newVal && Object.keys(newVal).length >
 
 @keyframes snow-1 { 0% { transform: translate(0, 0) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-20px, 120vh) rotate(360deg); opacity: 0; } }
 @keyframes snow-2 { 0% { transform: translate(0, 0) scale(1); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translate(30px, 120vh) scale(0.5); opacity: 0; } }
-@keyframes snow-3 { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translate(-10px, 120vh); opacity: 0; } }
+@keyframes snow-3 { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translate(-10px, 120vh); opacity: 0; } } 
 .animate-snow-1 { animation: snow-1 10s linear infinite; }
 .animate-snow-2 { animation: snow-2 14s linear infinite; }
 .animate-snow-3 { animation: snow-3 12s linear infinite; }
