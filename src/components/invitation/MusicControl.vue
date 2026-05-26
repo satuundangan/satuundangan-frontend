@@ -71,8 +71,10 @@ const initAudio = () => {
   if (audio.value) { audio.value.pause(); audio.value = null }
   if (!props.src) return
   
-  console.log("Initializing audio with src:", props.src)
-  audio.value = new Audio(props.src)
+  // Encode URI to handle spaces and special characters in the URL
+  const encodedSrc = props.src.includes(' ') ? encodeURI(props.src) : props.src
+  console.log("Initializing audio with src:", encodedSrc)
+  audio.value = new Audio(encodedSrc)
   audio.value.loop = true
   
   audio.value.onloadedmetadata = () => {

@@ -52,7 +52,7 @@ onMounted(async () => {
         id: invitationData.value?.id || 'live-preview',
         title: payload.title || 'Live Preview',
         slug: payload.slug || 'live-preview',
-        musicChoice: payload.music === 'custom' ? payload.musicPreview : payload.music,
+        musicChoice: payload.musicChoice,
         audioStart: Number(payload.audioStart) || 0,
         audioEnd: Number(payload.audioEnd) || 0,
         template_slug: payload.template_slug || payload.templateDesignId || 'dark-elegant',
@@ -131,10 +131,10 @@ onMounted(async () => {
           id: rawData.id,
           title: rawData.title,
           slug: rawData.slug,
-          musicChoice: rawData.musicChoice,
-          audioStart: Number(rawData.audioStart) || 0,
-          audioEnd: Number(rawData.audioEnd) || 0,
-          template_slug: rawData.template_slug || rawData.templateName,
+          musicChoice: rawData.content?.musicChoice || rawData.musicChoice,
+          audioStart: Number(rawData.content?.audioStart || rawData.audioStart) || 0,
+          audioEnd: Number(rawData.content?.audioEnd || rawData.audioEnd) || 0,
+          template_slug: rawData.template_slug || rawData.templateName || rawData.content?.templateName,
           is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
