@@ -50,7 +50,7 @@
               <h1 class="text-6xl md:text-[8rem] font-alex text-white leading-none drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]">
                 {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} <span class="text-3xl md:text-5xl font-serif italic text-[#d4af37]/80">&</span> {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
               </h1>
-              <p class="text-lg md:text-2xl font-cormorant tracking-[0.3em] text-white/70 font-light uppercase">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+              <p class="text-lg md:text-2xl font-cormorant tracking-[0.3em] text-white/70 font-light uppercase">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
            </div>
            <div class="w-full space-y-10 animate-fade-in-up" style="animation-delay: 0.6s">
               <div class="space-y-3">
@@ -122,7 +122,7 @@
                 </svg>
                 <div class="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#d4af37]"></div>
              </div>
-             <p class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+             <p class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
           </div>
         </div>
       </section>

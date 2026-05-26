@@ -89,7 +89,7 @@
             {{ data.groomName }} <br> <span class="text-3xl italic text-[#b48c5b]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="text-sm md:text-base text-gray-500 font-medium tracking-[0.2em] uppercase">
-            {{ formatDate(data.akadLocation?.dateTime) }}
+            {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
           </p>
 
           <!-- Countdown -->

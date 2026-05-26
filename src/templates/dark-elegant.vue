@@ -45,7 +45,7 @@
           </div>
 
           <div class="flex items-center justify-center gap-4 text-xs md:text-sm text-gray-300">
-            <span>{{ formatDate(data.akadLocation?.dateTime) }}</span>
+            <span>{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</span>
             <span>•</span>
             <span>{{ data.akadLocation?.description || 'Lokasi Acara' }}</span>
           </div>
