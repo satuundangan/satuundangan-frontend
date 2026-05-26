@@ -8,7 +8,7 @@
     <div class="fixed inset-0 opacity-20 mix-blend-overlay pointer-events-none z-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"></div>
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" :isOpened="isOpened" />
 
     <!-- Bottom Navigation (Refined Glassmorphism) -->
     <nav v-if="isOpened"
@@ -28,16 +28,19 @@
            <div class="absolute top-[-10%] left-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 rounded-full blur-[120px] animate-pulse-slow"></div>
            <div class="absolute bottom-[-10%] right-[-10%] w-[60%] h-[60%] bg-[#d4af37]/10 rounded-full blur-[120px] animate-pulse-slow" style="animation-delay: 2s"></div>
         </div>
+        
+        <!-- Welcome Corner Ornaments (V4 Style) -->
         <div class="absolute inset-4 md:inset-8 pointer-events-none border border-[#d4af37]/20 rounded-[3rem] md:rounded-[5rem] m-2 md:m-4 overflow-hidden">
-            <!-- Top Left Ornament -->
             <svg class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70" viewBox="0 0 100 100" fill="currentColor">
-               <path d="M0,0 L100,0 C100,55.23 55.23,100 0,100 L0,0 Z M10,10 L80,10 C80,48.66 48.66,80 10,80 L10,10 Z M20,20 L60,20 C60,42.09 42.09,60 20,60 L20,20 Z"/>
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill-opacity="0.05" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
-            <!-- Bottom Right Ornament -->
             <svg class="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70 transform rotate-180" viewBox="0 0 100 100" fill="currentColor">
-               <path d="M0,0 L100,0 C100,55.23 55.23,100 0,100 L0,0 Z M10,10 L80,10 C80,48.66 48.66,80 10,80 L10,10 Z M20,20 L60,20 C60,42.09 42.09,60 20,60 L20,20 Z"/>
+               <path d="M0,0 L0,100 Q50,100 100,0 Z" fill-opacity="0.05" stroke-width="1"/>
+               <path d="M20,20 L20,80 Q50,80 80,20 Z" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
         </div>
+
         <div class="relative z-10 w-full max-w-xl flex flex-col items-center justify-center space-y-12 md:space-y-16 py-10">
            <div class="space-y-4 animate-fade-in">
               <p class="text-[10px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase">The Wedding Of</p>
@@ -52,7 +55,7 @@
            <div class="w-full space-y-10 animate-fade-in-up" style="animation-delay: 0.6s">
               <div class="space-y-3">
                  <p class="text-[9px] md:text-[10px] text-[#d4af37]/60 uppercase tracking-[0.5em] font-black">Yth. Bapak/Ibu/Saudara/i</p>
-                 <h3 class="text-2xl md:text-4xl font-serif font-black text-white tracking-tight drop-shadow-md px-4 truncate">{{ data.guestName }}</h3>
+                 <h3 class="text-2xl md:text-4xl font-serif font-black text-white tracking-tight drop-shadow-md px-4 truncate">{{ data.guestName || 'Tamu Undangan' }}</h3>
               </div>
               <button @click="openInvitation"
                 class="group relative z-[110] w-full max-w-[280px] mx-auto py-5 md:py-6 bg-gradient-to-r from-[#d4af37] via-[#f1c40f] to-[#d4af37] bg-[length:200%_auto] animate-gradient-gold text-[#022b1d] font-black rounded-full transition-all transform hover:scale-[1.05] active:scale-95 shadow-[0_20px_40px_rgba(0,0,0,0.4)] flex items-center justify-center gap-4 text-xs md:text-sm uppercase tracking-[0.3em] cursor-pointer">
@@ -75,11 +78,10 @@
 
       <!-- 1. HERO SECTION -->
       <section id="home" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden">
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner Top Left (V1) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
-               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
                <g transform="translate(30, 20) scale(0.3)">
                   <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
@@ -87,23 +89,19 @@
                <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
-               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
                <g transform="translate(30, 20) scale(0.3)">
                   <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
-               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
             </svg>
          </div>
 
         <div class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-transparent to-[#022b1d]"></div>
         <div class="relative z-10 w-full max-w-5xl mx-auto space-y-10" v-observe>
           <div class="relative mx-auto w-56 h-[22rem] md:w-80 md:h-[32rem]">
-             <!-- Double Frame Effect -->
              <div class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"></div>
              <div class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"></div>
              <div class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-3xl flex items-end justify-center">
@@ -131,7 +129,7 @@
 
       <!-- 2. QUOTE SECTION -->
       <section v-if="isSectionEnabled('quote')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10" v-observe>
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V2 Style - Ornate Lotus) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
@@ -141,11 +139,9 @@
                </g>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
-               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
@@ -155,7 +151,7 @@
         <div class="max-w-4xl mx-auto space-y-10">
           <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#d4af37] opacity-20"></i>
           <p class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg">
-            "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang."
+            "{{ data.quoteText || 'Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.' }}"
           </p>
           <div class="flex flex-col items-center gap-4">
              <div class="h-10 md:h-16 w-[1px] bg-[#d4af37]/40"></div>
@@ -166,7 +162,7 @@
 
       <!-- 3. GROOM SECTION -->
       <section v-if="isSectionEnabled('couple')" id="couple" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V3 Style - Minimalist Branch) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
@@ -175,13 +171,19 @@
                <circle cx="40" cy="80" r="2" fill="#ffffff"/>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
                <circle cx="120" cy="90" r="4" fill="#d4af37"/>
-               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
+            </svg>
+         </div>
+
+         <!-- Bismillah Calligraphy -->
+         <div class="absolute top-10 md:top-20 left-1/2 -translate-x-1/2 w-48 md:w-64 opacity-30">
+            <svg viewBox="0 0 100 30" fill="#d4af37" xmlns="http://www.w3.org/2000/svg">
+               <path d="M50 15 Q40 5 30 15 T10 15 M50 15 Q60 25 70 15 T90 15" stroke="#d4af37" stroke-width="0.5" fill="none"/>
+               <text x="50" y="22" font-family="Arial" font-size="12" text-anchor="middle" font-style="italic">Bismillah</text>
             </svg>
          </div>
 
@@ -213,14 +215,13 @@
 
       <!-- 4. BRIDE SECTION -->
       <section v-if="isSectionEnabled('couple')" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]" v-observe>
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V4 Style - Classic Royal) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
                <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
@@ -255,28 +256,23 @@
 
       <!-- 5. LOVE STORY SECTION -->
       <section v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)" id="story" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6">
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V1 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
-               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
                <g transform="translate(30, 20) scale(0.3)">
                   <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
-               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q100,0 160,160" stroke="#d4af37" stroke-width="1.5" fill="none" opacity="0.6"/>
-               <path d="M0,0 Q0,100 160,160" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.4"/>
                <g transform="translate(30, 20) scale(0.3)">
                   <path d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z" fill="#d4af37" opacity="0.8"/>
                   <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9"/>
                </g>
-               <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5"/>
             </svg>
          </div>
 
@@ -296,23 +292,20 @@
          </div>
       </section>
 
-      <!-- 6. UNIFIED EVENT SECTION (Performance Optimized) -->
+      <!-- 6. UNIFIED EVENT SECTION (Snowfall) -->
       <section v-if="isSectionEnabled('event')" id="event" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V2 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
-               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L80,0 C80,40 40,80 0,80 Z" stroke="#d4af37" stroke-width="2" fill="#d4af37" fill-opacity="0.1"/>
-               <path d="M0,0 C60,20 80,60 0,120" stroke="#d4af37" stroke-width="1" fill="none" stroke-dasharray="4 4"/>
                <g transform="translate(10, 10) scale(0.5)">
                   <path d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z" fill="#ffffff" opacity="0.7"/>
                </g>
@@ -348,7 +341,6 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full px-2 max-w-[360px] md:max-w-none mx-auto">
-               <!-- Akad Nikah Card (Horizontal Mobile) -->
                <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
                   <div class="flex items-center md:flex-col gap-4 md:gap-6">
                      <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center">
@@ -371,7 +363,6 @@
                   </div>
                </div>
 
-               <!-- Resepsi Card (Horizontal Mobile) -->
                <div class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8">
                   <div class="flex items-center md:flex-col gap-4 md:gap-6">
                      <div class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center">
@@ -404,22 +395,19 @@
 
       <!-- 8. GIFT SECTION -->
       <section v-if="isSectionEnabled('gift')" id="gift" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden" v-observe>
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V3 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
                <circle cx="120" cy="90" r="4" fill="#d4af37"/>
-               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="2" fill="none"/>
                <circle cx="80" cy="40" r="3" fill="#ffffff"/>
                <circle cx="120" cy="90" r="4" fill="#d4af37"/>
-               <circle cx="40" cy="80" r="2" fill="#ffffff"/>
             </svg>
          </div>
 
@@ -429,14 +417,12 @@
                <p class="text-white/50 text-[8px] md:text-sm font-light italic max-w-xs mx-auto">Tanda kasih dapat dikirim melalui:</p>
             </div>
             <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-               <!-- Bank Accounts -->
                <div v-for="(bank, index) in data.bankAccounts" :key="'bank-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
                   <p class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ bank.bankName }}</p>
                   <p class="text-base md:text-3xl font-bold text-white tracking-widest">{{ bank.accountNumber }}</p>
                   <p class="text-white/60 text-[7px] md:text-[9px] uppercase font-bold">A.N {{ bank.accountName }}</p>
                   <button @click="copyToClipboard(bank.accountNumber)" class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase">Salin No. Rekening</button>
                </div>
-               <!-- E-Wallets -->
                <div v-for="(wallet, index) in data.eWalletLink" :key="'wallet-'+index" class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2">
                   <p class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]">{{ wallet.wallet_provider }}</p>
                   <div v-if="wallet.wallet_image" class="flex justify-center py-2">
@@ -456,14 +442,13 @@
 
       <!-- 9. RSVP & WISHES -->
       <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]">
-         <!-- Floral Corner Top Left -->
+         <!-- Floral Corner (V4 Style) -->
          <div class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
                <path d="M20,20 L20,80 Q50,80 80,20 Z" fill="#d4af37" fill-opacity="0.1" stroke="#ffffff" stroke-width="0.5"/>
             </svg>
          </div>
-         <!-- Floral Corner Bottom Right -->
          <div class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180">
             <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
                <path d="M0,0 L0,100 Q50,100 100,0 Z" fill="#d4af37" fill-opacity="0.05" stroke="#d4af37" stroke-width="1"/>
@@ -580,7 +565,6 @@ const navItems = computed(() => {
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
     { id: 'story', label: 'Story', icon: 'fa-solid fa-feather' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-    // Gallery hidden as requested
     { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
   ]
@@ -644,7 +628,7 @@ function initScrollSpy() {
   navItems.value.forEach(item => { const el = document.getElementById(item.id); if (el) observer.observe(el) })
 }
 
-function getMusicUrl(choice) { if (!choice) return null; return choice.includes('/') ? choice : '/audio/romantic_emerald.mp3' }
+function getMusicUrl(choice) { if (!choice) return null; return choice.includes('/') ? choice : '/audio/romantic_music1.mp3' }
 function formatDate(dateStr) { if (!dateStr) return '-'; const date = new Date(dateStr); return isNaN(date.getTime()) ? '-' : date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }) }
 function formatTime(dateStr) { if (!dateStr) return '-'; const date = new Date(dateStr); return isNaN(date.getTime()) ? '-' : date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) }
 function isSectionEnabled(key) { if (!data.value.selectedSections || data.value.selectedSections.length === 0) return true; return data.value.selectedSections.includes(key) }
@@ -673,7 +657,7 @@ async function loadWishes() {
    } else {
       guestMessages.value = [
          { guestName: 'Fauzan & Keluarga', message: 'Barakallahu lakuma wa baraka alaikuma wa jamaa bainakuma fii khair.', rsvpStatus: 'hadir', createdAt: new Date() },
-         { guestName: 'Siti Aminah', message: 'MasyaAllah cantik banget Afifah!', rsvpStatus: 'hadir', createdAt: new Date() }
+         { guestName: 'Siti Aminah', message: 'MasyaAllah cantik banget!', rsvpStatus: 'hadir', createdAt: new Date() }
       ]
    }
 }
@@ -693,7 +677,6 @@ function initData() {
       }, 1000)
     }
   }
-  if (data.value.galleryImages?.length > 0) { galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src })) }
   loadWishes()
 }
 
@@ -739,6 +722,13 @@ watch(() => props.data, (newVal) => { if (newVal && Object.keys(newVal).length >
 .shadow-3xl { box-shadow: 0 40px 100px -20px rgba(0, 0, 0, 0.7); }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes snow-1 { 0% { transform: translate(0, 0) rotate(0deg); opacity: 0; } 20% { opacity: 1; } 100% { transform: translate(-20px, 120vh) rotate(360deg); opacity: 0; } }
+@keyframes snow-2 { 0% { transform: translate(0, 0) scale(1); opacity: 0; } 20% { opacity: 0.8; } 100% { transform: translate(30px, 120vh) scale(0.5); opacity: 0; } }
+@keyframes snow-3 { 0% { transform: translate(0, 0); opacity: 0; } 20% { opacity: 0.6; } 100% { transform: translate(-10px, 120vh); opacity: 0; } }
+.animate-snow-1 { animation: snow-1 10s linear infinite; }
+.animate-snow-2 { animation: snow-2 14s linear infinite; }
+.animate-snow-3 { animation: snow-3 12s linear infinite; }
 
 select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23d4af37'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 1.5rem center; background-size: 1.2em; }
 </style>
