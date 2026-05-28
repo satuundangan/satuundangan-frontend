@@ -52,7 +52,7 @@ onMounted(async () => {
         id: invitationData.value?.id || 'live-preview',
         title: payload.title || 'Live Preview',
         slug: payload.slug || 'live-preview',
-        musicChoice: payload.musicChoice,
+        musicChoice: payload.music === 'custom' ? payload.musicPreview : payload.music,
         audioStart: Number(payload.audioStart) || 0,
         audioEnd: Number(payload.audioEnd) || 0,
         template_slug: payload.template_slug || payload.templateDesignId || 'dark-elegant',
@@ -117,27 +117,27 @@ onMounted(async () => {
 
         // Check if invitation is active or if we are in preview mode
         const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
-
+        
         if (!isPublished && !isPreviewMode.value) {
           error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
           loading.value = false
           return
         }
-
+        
         // Flatten the data: merge root properties with content properties
         data = {
           ...(rawData.content || {}),
           id: rawData.id,
           title: rawData.title,
           slug: rawData.slug,
-          musicChoice: rawData.content?.musicChoice || rawData.musicChoice,
-          audioStart: Number(rawData.content?.audioStart || rawData.audioStart) || 0,
-          audioEnd: Number(rawData.content?.audioEnd || rawData.audioEnd) || 0,
-          template_slug: rawData.template_slug || rawData.templateName || rawData.content?.templateName,
+          musicChoice: rawData.musicChoice,
+          audioStart: Number(rawData.audioStart) || 0,
+          audioEnd: Number(rawData.audioEnd) || 0,
+          template_slug: rawData.template_slug || rawData.templateName,
           is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
-              } catch (err) {
+      } catch (err) {
         // If live sync already started, ignore error
         if (isLiveSyncActive.value) return
 

@@ -16,7 +16,7 @@
 
     <!-- Welcome Screen -->
     <transition name="slow-fade">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#f5f5f0] transition-all duration-[1.5s] ease-in-out">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#f5f5f0] transition-all duration-[1.5s] ease-in-out">
         <div class="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-multiply" style="background-image: url('https://www.transparenttextures.com/patterns/rice-paper.png');"></div>
         <div class="relative z-10 space-y-16 w-full max-w-lg animate-fade-in-slow">
           <div class="w-px h-24 bg-[#8b9d83] mx-auto opacity-50"></div>
@@ -39,7 +39,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-[1.5s] h-screen overflow-y-auto scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 px-6 md:px-20 relative py-20">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative py-20">
         <div class="w-full max-w-5xl flex flex-col md:flex-row items-center gap-16" v-observe>
           <div class="w-full md:w-1/2 relative group">
             <div class="absolute -inset-4 bg-[#8b9d83]/10 rotate-[-3deg] rounded-tl-[100px] rounded-br-[100px] transition-transform duration-[2s] group-hover:rotate-0"></div>
@@ -52,7 +52,7 @@
               <h1 class="text-6xl md:text-8xl font-serif font-light text-[#333333] leading-tight">
                 {{ data.groomName }} <br><span class="text-3xl md:text-5xl italic text-[#8b9d83]">&</span><br> {{ data.brideName }}
               </h1>
-              <p class="text-xs font-light uppercase tracking-[0.3em] text-[#7a7a7a]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
+              <p class="text-xs font-light uppercase tracking-[0.3em] text-[#7a7a7a]">{{ formatDate(data.akadLocation?.dateTime) }}</p>
             </div>
             <div class="w-24 h-px bg-[#8b9d83] mx-auto md:mx-0"></div>
           </div>
@@ -240,31 +240,20 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length || data.eWalletLink?.length" class="py-32 px-6 bg-white text-center">
+      <section v-if="data.bankAccounts?.length" class="py-32 px-6 bg-white text-center">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-sm uppercase tracking-[0.5em] text-[#8b9d83]">Tanda Kasih</h2>
             <div class="w-12 h-px bg-[#8b9d83] mx-auto"></div>
             <p class="text-xs text-[#7a7a7a] max-w-md mx-auto pt-4 leading-relaxed">Doa restu Anda merupakan karunia yang sangat berarti bagi kami. Namun jika Anda bermaksud memberikan tanda kasih, Anda dapat melalui fitur di bawah ini.</p>
           </div>
-
+          
           <div class="flex flex-wrap justify-center gap-6">
-            <!-- Bank Accounts -->
-            <div v-for="(bank, idx) in data.bankAccounts" :key="'bank' + idx" class="p-8 border border-[#eaeaea] rounded-3xl w-full sm:w-[350px] hover:shadow-xl hover:border-[#8b9d83]/20 transition-all duration-500" v-observe>
+            <div v-for="(bank, idx) in data.bankAccounts" :key="idx" class="p-8 border border-[#eaeaea] rounded-3xl w-full sm:w-[350px] hover:shadow-xl hover:border-[#8b9d83]/20 transition-all duration-500" v-observe>
               <p class="text-sm font-bold text-[#333333] uppercase tracking-wider mb-6">{{ bank.bankName }}</p>
               <p class="text-2xl font-light text-[#4a4a4a] tracking-widest mb-2">{{ bank.accountNumber }}</p>
               <p class="text-xs text-[#7a7a7a] mb-8">a.n {{ bank.accountName }}</p>
               <button @click="copyToClipboard(bank.accountNumber)" class="px-6 py-2 bg-[#f5f5f0] text-[#8b9d83] text-[10px] uppercase tracking-[0.1em] rounded-full hover:bg-[#8b9d83] hover:text-white transition-all"><i class="fa-regular fa-copy mr-2"></i>Salin Nomor</button>
-            </div>
-
-            <!-- E-Wallets -->
-            <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx" class="p-8 border border-[#eaeaea] rounded-3xl w-full sm:w-[350px] hover:shadow-xl hover:border-[#8b9d83]/20 transition-all duration-500" v-observe>
-              <p class="text-sm font-bold text-[#333333] uppercase tracking-wider mb-6">{{ wallet.wallet_provider }}</p>
-              <div v-if="wallet.wallet_image" class="mb-6 flex justify-center">
-                 <img :src="wallet.wallet_image" class="h-48 object-contain rounded-xl shadow-sm border border-gray-100" />
-              </div>
-              <p class="text-2xl font-light text-[#4a4a4a] tracking-widest mb-8">{{ wallet.wallet_number }}</p>
-              <button @click="copyToClipboard(wallet.wallet_number)" class="px-6 py-2 bg-[#f5f5f0] text-[#8b9d83] text-[10px] uppercase tracking-[0.1em] rounded-full hover:bg-[#8b9d83] hover:text-white transition-all"><i class="fa-regular fa-copy mr-2"></i>Salin Nomor</button>
             </div>
           </div>
         </div>

@@ -25,7 +25,7 @@
 
     <!-- Welcome Screen -->
     <transition name="fade-slow">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#0a0a0a] text-white">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#0a0a0a] text-white">
         <div class="relative z-10 space-y-16 w-full max-w-lg">
           <div class="space-y-4">
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080]">A Cinematic Wedding</p>
@@ -67,7 +67,7 @@
             </h1>
           </div>
           <div class="text-left md:text-right space-y-2">
-            <p class="text-sm font-bold uppercase tracking-[0.4em]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
+            <p class="text-sm font-bold uppercase tracking-[0.4em]">{{ formatDate(data.akadLocation?.dateTime) }}</p>
             <p class="text-[10px] text-[#808080] uppercase tracking-widest">Directed by Destiny</p>
           </div>
         </div>
@@ -119,7 +119,7 @@
             <div class="order-2 md:order-1 p-10 md:p-0 space-y-6 text-center md:text-right transition-all duration-700 md:group-hover:-translate-x-4">
               <span class="text-[8px] uppercase tracking-[0.5em] text-[#808080]">Leading Man</span>
               <h3 class="text-4xl md:text-6xl font-serif font-bold uppercase tracking-tighter">{{ data.groomName }}</h3>
-              <p class="text-[10px] uppercase tracking-widest text-[#666666]">The {{ data.parents?.groomOrder || "1st" }} Son of <br><span class="text-white">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-[10px] uppercase tracking-widest text-[#666666]">Son of <br><span class="text-white">{{ data.parents?.groomParents }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-[10px] uppercase tracking-widest hover:text-white text-[#808080] transition-colors border-b border-[#808080] pb-1">@{{ data.socialMediaGroom.instagram }}</a>
             </div>
             <div class="order-1 md:order-2 overflow-hidden aspect-[3/4] md:aspect-square w-full transition-all duration-700 md:group-hover:translate-x-4">
@@ -134,7 +134,7 @@
             <div class="p-10 md:p-0 space-y-6 text-center md:text-left transition-all duration-700 md:group-hover:translate-x-4">
               <span class="text-[8px] uppercase tracking-[0.5em] text-[#808080]">Leading Lady</span>
               <h3 class="text-4xl md:text-6xl font-serif font-bold uppercase tracking-tighter">{{ data.brideName }}</h3>
-              <p class="text-[10px] uppercase tracking-widest text-[#666666]">The {{ data.parents?.brideOrder || "1st" }} Daughter of <br><span class="text-white">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-[10px] uppercase tracking-widest text-[#666666]">Daughter of <br><span class="text-white">{{ data.parents?.brideParents }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[10px] uppercase tracking-widest hover:text-white text-[#808080] transition-colors border-b border-[#808080] pb-1">@{{ data.socialMediaBrides.instagram }}</a>
             </div>
           </div>
@@ -285,7 +285,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length || data.eWalletLink?.length" class="py-32 px-6 text-center border-t border-white/10">
+      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center border-t border-white/10">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080] mb-4">Registry</p>
@@ -293,8 +293,7 @@
           </div>
           
           <div class="flex flex-wrap justify-center gap-8">
-            <!-- Bank Accounts -->
-            <div v-for="(bank, idx) in data.bankAccounts" :key="'bank' + idx" class="p-10 border border-white/10 bg-[#0a0a0a] w-full sm:w-[400px] text-left hover:border-white/30 transition-colors" v-observe>
+            <div v-for="(bank, idx) in data.bankAccounts" :key="idx" class="p-10 border border-white/10 bg-[#0a0a0a] w-full sm:w-[400px] text-left hover:border-white/30 transition-colors" v-observe>
               <div class="flex justify-between items-center mb-10">
                  <p class="text-xl font-bold uppercase tracking-widest text-[#808080]">{{ bank.bankName }}</p>
                  <i class="fa-solid fa-building-columns text-2xl text-white"></i>
@@ -302,19 +301,6 @@
               <p class="text-3xl font-serif font-bold tracking-tighter mb-2 text-white">{{ bank.accountNumber }}</p>
               <p class="text-[10px] font-bold text-[#808080] uppercase tracking-widest mb-10">{{ bank.accountName }}</p>
               <button @click="copyToClipboard(bank.accountNumber)" class="w-full py-4 border border-white/20 text-white text-[8px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-colors">Copy Details</button>
-            </div>
-
-            <!-- E-Wallets -->
-            <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx" class="p-10 border border-white/10 bg-[#0a0a0a] w-full sm:w-[400px] text-left hover:border-white/30 transition-colors" v-observe>
-              <div class="flex justify-between items-center mb-10">
-                 <p class="text-xl font-bold uppercase tracking-widest text-[#808080]">{{ wallet.wallet_provider }}</p>
-                 <i class="fa-solid fa-wallet text-2xl text-white"></i>
-              </div>
-              <div v-if="wallet.wallet_image" class="mb-8 flex justify-center">
-                 <img :src="wallet.wallet_image" class="h-48 object-contain rounded-lg border border-white/10" />
-              </div>
-              <p class="text-3xl font-serif font-bold tracking-tighter mb-10 text-white">{{ wallet.wallet_number }}</p>
-              <button @click="copyToClipboard(wallet.wallet_number)" class="w-full py-4 border border-white/20 text-white text-[8px] uppercase tracking-[0.4em] font-bold hover:bg-white hover:text-black transition-colors">Copy Number</button>
             </div>
           </div>
         </div>

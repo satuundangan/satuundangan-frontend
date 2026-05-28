@@ -22,7 +22,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-white transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-white transition-all duration-1000">
         
         <div class="relative z-10 space-y-12 md:space-y-16 w-full max-w-lg">
           <div class="space-y-4">
@@ -54,7 +54,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 px-6 md:px-20 relative pt-10 md:pt-0">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative pt-10 md:pt-0">
         <div class="w-full max-w-6xl grid md:grid-cols-12 gap-8 md:gap-10 items-center" v-observe>
           <div class="md:col-span-7 space-y-6 md:space-y-8 order-2 md:order-1 text-center md:text-left">
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-gray-300">The Wedding Issue / No. 01</span>
@@ -64,7 +64,7 @@
             <div class="flex items-center justify-center md:justify-start gap-4 md:gap-6">
                <div class="w-12 md:w-20 h-px bg-black"></div>
                <p class="text-xs md:text-lg font-bold uppercase tracking-[0.2em] md:tracking-[0.3em]">
-                 {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
+                 {{ formatDate(data.akadLocation?.dateTime) }}
                </p>
             </div>
           </div>
@@ -129,7 +129,7 @@
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Gentleman</span>
                 <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.groomName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black"></div>
-                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">The {{ data.parents?.groomOrder || "1st" }} Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Son of {{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
                   Follow Journey
                 </a>
@@ -155,7 +155,7 @@
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Lady</span>
                 <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.brideName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black ml-auto md:ml-0"></div>
-                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">The {{ data.parents?.brideOrder || "1st" }} Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Daughter of {{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
                   View Profile
                 </a>

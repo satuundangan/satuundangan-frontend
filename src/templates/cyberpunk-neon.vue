@@ -28,7 +28,7 @@
 
     <!-- Welcome Screen -->
     <transition name="glitch-out">
-      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#0a0a12]">
+      <div v-if="showWelcome" class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#0a0a12]">
         <div class="relative z-10 w-full max-w-sm p-10 border border-[#ff003c]/30 bg-[#0a0a12]/80 backdrop-blur-sm shadow-[0_0_30px_rgba(255,0,60,0.1)] before:absolute before:-inset-[1px] before:bg-gradient-to-r before:from-[#ff003c] before:to-[#00f0ff] before:z-[-1] before:opacity-50">
           
           <div class="space-y-8 animate-glitch">
@@ -64,7 +64,7 @@
             <h1 class="text-6xl md:text-[5rem] font-mono font-black uppercase leading-[1] text-white drop-shadow-[2px_2px_0px_#ff003c,-2px_-2px_0px_#00f0ff]">
               {{ data.groomName }} <br><span class="text-5xl md:text-7xl text-[#facc15] drop-shadow-none">&</span><br> {{ data.brideName }}
             </h1>
-            <p class="text-xs md:text-sm font-mono font-bold uppercase tracking-[0.5em] text-[#00f0ff]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
+            <p class="text-xs md:text-sm font-mono font-bold uppercase tracking-[0.5em] text-[#00f0ff]">{{ formatDate(data.akadLocation?.dateTime) }}</p>
           </div>
           
           <div class="order-1 md:order-2 relative">
@@ -134,7 +134,7 @@
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#ff003c]">Player 1</span>
               <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.groomName }}</h3>
-              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">The {{ data.parents?.groomOrder || "1st" }} Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#ff003c] text-[10px] uppercase font-mono tracking-widest font-bold text-[#ff003c] hover:bg-[#ff003c] hover:text-white transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
           </div>
@@ -150,7 +150,7 @@
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#00f0ff]">Player 2</span>
               <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.brideName }}</h3>
-              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">The {{ data.parents?.brideOrder || "1st" }} Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#00f0ff] text-[10px] uppercase font-mono tracking-widest font-bold text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
           </div>

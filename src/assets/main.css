@@ -79,22 +79,3 @@
 .animate-spin-slow {
   animation: spin-slow 5s linear infinite;
 }
-/* Global Responsive & Zoom Fixes */
-@media (max-height: 600px) {
-  /* Disable mandatory snap on very short viewports (high zoom) to prevent content jumping */
-  .snap-y {
-    scroll-snap-type: y proximity !important;
-  }
-}
-
-/* Fluid Typography Base */
-html {
-  font-size: 16px;
-}
-
-@media (max-width: 380px) {
-  html {
-    font-size: 14px; /* Scale down everything slightly for tiny phones */
-  }
-}
-

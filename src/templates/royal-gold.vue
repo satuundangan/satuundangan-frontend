@@ -37,7 +37,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#0a1128] transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#0a1128] transition-all duration-1000">
         
         <div class="relative z-10 space-y-10 animate-fade-in-up">
           <div class="space-y-4">
@@ -67,7 +67,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 relative">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
         <div class="space-y-8 max-w-3xl mx-auto" v-observe>
           <div class="flex items-center justify-center gap-4">
              <div class="w-12 h-px bg-[#d4af37]/50"></div>
@@ -78,7 +78,7 @@
             {{ data.groomName }} <br> <span class="text-4xl text-[#d4af37]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="text-lg md:text-2xl text-[#d4af37] font-medium tracking-[0.3em] uppercase">
-            {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
+            {{ formatDate(data.akadLocation?.dateTime) }}
           </p>
 
           <!-- Countdown -->
@@ -150,7 +150,7 @@
               <div class="text-center space-y-2">
                 <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.groomName }}</h3>
                 <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putra Dari</p>
-                <p class="text-gray-400 font-serif">Putra ke-{{ data.parents?.groomOrder || 'pertama' }} dari {{ data.parents?.groomParents }}</p>
+                <p class="text-gray-400 font-serif">{{ data.parents?.groomParents }}</p>
                 <div class="pt-4 flex justify-center">
                    <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
                      <i class="fa-brands fa-instagram"></i>
@@ -171,7 +171,7 @@
               <div class="text-center space-y-2">
                 <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.brideName }}</h3>
                 <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putri Dari</p>
-                <p class="text-gray-400 font-serif">Putri ke-{{ data.parents?.brideOrder || 'pertama' }} dari {{ data.parents?.brideParents }}</p>
+                <p class="text-gray-400 font-serif">{{ data.parents?.brideParents }}</p>
                 <div class="pt-4 flex justify-center">
                    <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
                      <i class="fa-brands fa-instagram"></i>
@@ -301,7 +301,7 @@
         <p class="text-[#d4af37] mb-16 max-w-md mx-auto text-xs uppercase tracking-widest">Tanda Kasih Digital</p>
 
         <div class="flex flex-wrap justify-center gap-10 max-w-5xl mx-auto">
-          <div v-for="(bank, idx) in data.bankAccounts" :key="'bank'+idx"
+          <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
             class="bg-[#080e20] border border-[#d4af37]/30 p-10 rounded-2xl w-full sm:w-[350px] shadow-2xl relative overflow-hidden" v-observe>
             <div class="absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl">🏦</div>
             <div class="mb-8 text-[#d4af37] font-bold text-2xl tracking-widest uppercase font-cinzel">
@@ -312,23 +312,6 @@
             <button @click="copyToClipboard(bank.accountNumber)"
               class="w-full bg-transparent border border-[#d4af37] text-[#d4af37] py-3 rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all font-bold uppercase text-[10px] tracking-widest">
               Salin Rekening
-            </button>
-          </div>
-
-          <!-- E-Wallets -->
-          <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet'+idx"
-            class="bg-[#080e20] border border-[#d4af37]/30 p-10 rounded-2xl w-full sm:w-[350px] shadow-2xl relative overflow-hidden" v-observe>
-            <div class="absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl">📱</div>
-            <div class="mb-8 text-[#d4af37] font-bold text-2xl tracking-widest uppercase font-cinzel">
-              {{ wallet.wallet_provider }}
-            </div>
-            <div v-if="wallet.wallet_image" class="mb-6 flex justify-center">
-               <img :src="wallet.wallet_image" class="h-48 object-contain rounded-xl shadow-lg border border-[#d4af37]/20" />
-            </div>
-            <p class="text-2xl text-white font-mono mb-8 tracking-tighter">{{ wallet.wallet_number }}</p>
-            <button @click="copyToClipboard(wallet.wallet_number)"
-              class="w-full bg-transparent border border-[#d4af37] text-[#d4af37] py-3 rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all font-bold uppercase text-[10px] tracking-widest">
-              Salin Nomor
             </button>
           </div>
         </div>

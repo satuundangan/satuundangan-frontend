@@ -68,16 +68,10 @@
                                     <input v-model="formData.brideName" @input="validateField('brideName')" type="text" placeholder="Putri Diana" class="form-input" :class="{ 'border-red-500 bg-red-50/30': validationErrors.brideName }" />
                                     <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                                  </div>
-                                 <div class="grid grid-cols-2 gap-4">
-                                    <div data-field="brideParents">
-                                       <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
-                                       <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
-                                       <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
-                                    </div>
-                                    <div data-field="brideOrder">
-                                       <label class="form-label">Anak Ke- (Urutan)</label>
-                                       <input v-model="formData.brideOrder" type="text" placeholder="pertama / kedua / bungsu" class="form-input" />
-                                    </div>
+                                 <div data-field="brideParents">
+                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                    <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
+                                    <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
                                  </div>
                                  <div data-field="bridePhoto">
                                     <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
@@ -110,16 +104,10 @@
                                     <input v-model="formData.groomName" @input="validateField('groomName')" type="text" placeholder="Pangeran Charles" class="form-input" :class="{ 'border-red-500 bg-red-50/30': validationErrors.groomName }" />
                                     <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                                  </div>
-                                 <div class="grid grid-cols-2 gap-4">
-                                    <div data-field="groomParents">
-                                       <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
-                                       <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
-                                       <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
-                                    </div>
-                                    <div data-field="groomOrder">
-                                       <label class="form-label">Anak Ke- (Urutan)</label>
-                                       <input v-model="formData.groomOrder" type="text" placeholder="pertama / kedua / bungsu" class="form-input" />
-                                    </div>
+                                 <div data-field="groomParents">
+                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                    <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
+                                    <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
                                  </div>
                                  <div data-field="groomPhoto">
                                     <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
@@ -490,22 +478,6 @@ import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
 import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
 
-// Helper to format ISO UTC string from API to Local Datetime-Local format (YYYY-MM-DDTHH:mm)
-const formatISOToLocalInput = (isoString) => {
-   if (!isoString) return ''
-   const d = new Date(isoString)
-   if (isNaN(d.getTime())) return ''
-   
-   const pad = (n) => n.toString().padStart(2, '0')
-   const year = d.getFullYear()
-   const month = pad(d.getMonth() + 1)
-   const day = pad(d.getDate())
-   const hours = pad(d.getHours())
-   const minutes = pad(d.getMinutes())
-   
-   return `${year}-${month}-${day}T${hours}:${minutes}`
-}
-
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
@@ -537,21 +509,6 @@ const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menci
 
 
 // Cropper States
-
-const templateAspectRatios = {
-  "royal-emerald": { bride: 3/4, groom: 3/4, couple: 16/10 },
-  "dark-elegant": { bride: 3/4, groom: 3/4, couple: 1 },
-  "modern-noir": { bride: 1, groom: 1, couple: 16/9 },
-  "zen-tranquility": { bride: 3/4, groom: 3/4, couple: 4/3 },
-  "default": { bride: 3/4, groom: 3/4, couple: 1 }
-};
-
-const getAspectRatio = (field) => {
-  const slug = selectedTemplateRef.value.slug || "default";
-  const map = templateAspectRatios[slug] || templateAspectRatios["default"];
-  return map[field] || templateAspectRatios["default"][field];
-};
-
 const cropper = ref({
    show: false,
    image: '',
@@ -578,8 +535,8 @@ const formData = ref({
    music: '', youtubeUrl: '', denah: '', denahFile: null,
    musicFile: null, musicPreview: '', audioStart: 0, audioEnd: 0,
    wishes: 'ya', rsvp: 'ya', encryptedGuest: 'ya',
-   brideParents: '', groomParents: '',
-   brideOrder: 'pertama', groomOrder: 'pertama',   
+   brideParents: '', groomParents: '', 
+   
    // Expanded fields
    loveStories: [],
    sosmedBride: { instagram: '', tiktok: '', youtube: '', otherSocial: '' },
@@ -618,9 +575,7 @@ const syncDataToPreview = (data) => {
             groomPhotoUrl: data.groomPhoto || '/default-groom.jpg',
             parents: {
                brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
-               brideOrder: data.brideOrder || 'pertama',
-               groomParents: data.groomParents || 'Bpk. ... & Ibu ...',
-               groomOrder: data.groomOrder || 'pertama'
+               groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
             },
             isSingleEvent: data.isSingleEvent,
             akadLocation: data.isSingleEvent 
@@ -774,14 +729,10 @@ function mapPayloadToFormData(payload) {
    formData.value.photoCouple = payload.photoCoupleUrl || ''
    if (payload.parents) {
       formData.value.brideParents = payload.parents.brideParents || ''
-      formData.value.brideOrder = payload.parents.brideOrder || 'pertama'
       formData.value.groomParents = payload.parents.groomParents || ''
-      formData.value.groomOrder = payload.parents.groomOrder || 'pertama'
    } else {
       formData.value.brideParents = payload.brideParents || ''
-      formData.value.brideOrder = payload.brideOrder || 'pertama'
       formData.value.groomParents = payload.groomParents || ''
-      formData.value.groomOrder = payload.groomOrder || 'pertama'
    }
    formData.value.isSingleEvent = payload.isSingleEvent
    if (payload.galleryImages && Array.isArray(payload.galleryImages)) {
@@ -793,17 +744,18 @@ function mapPayloadToFormData(payload) {
    const akad = payload.akadLocation || {}
    const resepsi = payload.resepsiLocation || {}
    if (payload.isSingleEvent) {
-      formData.value.dateTime = formatISOToLocalInput(akad.dateTime)
+      formData.value.dateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
       formData.value.map = akad.mapUrl || ''
       formData.value.mapDesc = akad.description || ''
    } else {
-      formData.value.akadDateTime = formatISOToLocalInput(akad.dateTime)
+      formData.value.akadDateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
       formData.value.akadMap = akad.mapUrl || ''
       formData.value.akadDesc = akad.description || ''
-      formData.value.resepsiDateTime = formatISOToLocalInput(resepsi.dateTime)
+      formData.value.resepsiDateTime = resepsi.dateTime ? resepsi.dateTime.substring(0, 16) : ''
       formData.value.resepsiMap = resepsi.mapUrl || ''
       formData.value.resepsiDesc = resepsi.description || ''
-   }   if (payload.loveStory && Array.isArray(payload.loveStory)) {
+   }
+   if (payload.loveStory && Array.isArray(payload.loveStory)) {
       formData.value.loveStories = payload.loveStory.map(s => ({ title: s.title || '', date: s.date || '', description: s.description || s.content || '', photo: s.image || s.photo || '', photoFile: null, isOpen: false }))
    }
    formData.value.sosmedBride = { instagram: payload.socialMediaBrides?.instagram || '', tiktok: payload.socialMediaBrides?.tiktok || '', youtube: payload.socialMediaBrides?.youtube || '', otherSocial: payload.socialMediaBrides?.otherSocial || '' }
@@ -919,21 +871,21 @@ async function handleBridePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: getAspectRatio('bride'), targetField: 'bride' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/4, targetField: 'bride' }
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 async function handleGroomPhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: getAspectRatio('groom'), targetField: 'groom' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 3/4, targetField: 'groom' }
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 async function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: getAspectRatio('couple'), targetField: 'couple' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: 1, targetField: 'couple' }
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 
@@ -992,12 +944,7 @@ async function saveAndPreview() {
       const payload = {
          title: formData.value.title, slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
-         parents: { 
-            brideParents: formData.value.brideParents || '', 
-            brideOrder: formData.value.brideOrder || 'pertama',
-            groomParents: formData.value.groomParents || '',
-            groomOrder: formData.value.groomOrder || 'pertama'
-         },
+         parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
          akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
          resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: selectedTemplateRef.value.id || 1, loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),

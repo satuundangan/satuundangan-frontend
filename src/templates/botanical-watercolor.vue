@@ -46,7 +46,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#fdfaf5] transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#fdfaf5] transition-all duration-1000">
         <div class="absolute inset-0 z-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/paper-fibers.png')]"></div>
         
         <div class="relative z-10 space-y-8 animate-fade-in-up">
@@ -82,14 +82,14 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO SECTION -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 relative">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
         <div class="space-y-6 max-w-2xl mx-auto" v-observe>
           <span class="inline-block px-4 py-1 border-y border-[#e8d5c4] text-[10px] uppercase tracking-[0.4em] text-[#b48c5b] font-bold">Save The Date</span>
           <h1 class="text-5xl md:text-8xl font-playfair leading-tight text-[#4a4a4a]">
             {{ data.groomName }} <br> <span class="text-3xl italic text-[#b48c5b]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="text-sm md:text-base text-gray-500 font-medium tracking-[0.2em] uppercase">
-            {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
+            {{ formatDate(data.akadLocation?.dateTime) }}
           </p>
 
           <!-- Countdown -->
@@ -169,7 +169,7 @@
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putra Dari</p>
-                <p class="text-sm text-gray-500 mt-1">Putra ke-{{ data.parents?.groomOrder || 'pertama' }} dari {{ data.parents?.groomParents }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
                   <i class="fa-brands fa-instagram text-xl"></i>
@@ -187,7 +187,7 @@
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putri Dari</p>
-                <p class="text-sm text-gray-500 mt-1">Putri ke-{{ data.parents?.brideOrder || 'pertama' }} dari {{ data.parents?.brideParents }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
                   <i class="fa-brands fa-instagram text-xl"></i>

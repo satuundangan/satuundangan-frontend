@@ -25,7 +25,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="absolute inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-cover bg-center bg-no-repeat transition-all duration-1000"
+        class="absolute inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat transition-all duration-1000"
         :style="{ backgroundImage: `url('${backgroundUrl}')` }">
 
         <div class="absolute inset-0 bg-black/40"></div>
@@ -45,7 +45,7 @@
           </div>
 
           <div class="flex items-center justify-center gap-4 text-xs md:text-sm text-gray-300">
-            <span>{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</span>
+            <span>{{ formatDate(data.akadLocation?.dateTime) }}</span>
             <span>•</span>
             <span>{{ data.akadLocation?.description || 'Lokasi Acara' }}</span>
           </div>
@@ -67,7 +67,7 @@
 
       <!-- HERO -->
       <section id="home"
-        class="relative min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-cover bg-center bg-no-repeat"
+        class="relative min-h-screen flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
         :style="{ backgroundImage: `url('${backgroundUrl}')` }">
         <div class="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-black/90"></div>
 
@@ -77,7 +77,8 @@
             {{ data.groomName }} <br> <span class="text-4xl text-[#d6b18a]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="text-base md:text-lg text-gray-200 font-light tracking-wide">{{
-            formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}</p>
+            formatDate(data.akadLocation?.dateTime) }}</p>
+
           <!-- Countdown Box -->
           <div class="flex flex-wrap justify-center gap-3 md:gap-4 mt-8">
             <div v-for="(val, label) in countdown" :key="label"
@@ -164,7 +165,7 @@
                 <div
                   class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-6 md:p-8 text-center">
                   <h3 class="text-2xl md:text-3xl font-alex text-[#d6b18a]">{{ data.groomName }}</h3>
-                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putra ke-{{ data.parents?.groomOrder || "pertama" }} dari {{ data.parents?.groomParents }}</p>
+                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putra dari {{ data.parents?.groomParents }}</p>
                   <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)"
                     target="_blank" class="inline-block mt-4 text-[#d6b18a] hover:text-white transition-colors">
                     <i class="fa-brands fa-instagram text-xl"></i>
@@ -185,7 +186,7 @@
                 <div
                   class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black to-transparent p-6 md:p-8 text-center">
                   <h3 class="text-2xl md:text-3xl font-alex text-[#d6b18a]">{{ data.brideName }}</h3>
-                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putri ke-{{ data.parents?.brideOrder || "pertama" }} dari {{ data.parents?.brideParents }}</p>
+                  <p class="text-xs md:text-sm text-gray-400 mt-2">Putri dari {{ data.parents?.brideParents }}</p>
                   <a v-if="data.socialMediaBrides?.instagram"
                     :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank"
                     class="inline-block mt-4 text-[#d6b18a] hover:text-white transition-colors">
@@ -438,24 +439,6 @@
             <p class="text-lg text-white font-mono mb-1">{{ bank.accountNumber }}</p>
             <p class="text-sm text-gray-500 mb-4">a.n {{ bank.accountName }}</p>
             <button @click="copyToClipboard(bank.accountNumber)"
-              class="text-xs text-[#d6b18a] border border-[#d6b18a] px-4 py-1.5 rounded-full hover:bg-[#d6b18a] hover:text-black transition-colors">
-              <i class="fa-regular fa-copy mr-1"></i> Salin
-            </button>
-          </div>
-
-          <!-- E-Wallet Cards -->
-          <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx"
-            class="bg-[#1a1a1a] border border-[#333] p-6 rounded-2xl w-full sm:w-72 hover:border-[#d6b18a]/50 transition-all"
-            v-observe>
-            <div
-              class="h-12 flex items-center justify-center mb-4 text-[#d6b18a] font-bold text-xl uppercase tracking-wider">
-              {{ wallet.wallet_provider }}
-            </div>
-            <div v-if="wallet.wallet_image" class="mb-4 flex justify-center">
-               <img :src="wallet.wallet_image" class="h-40 object-contain rounded-lg shadow-lg" />
-            </div>
-            <p class="text-lg text-white font-mono mb-1">{{ wallet.wallet_number }}</p>
-            <button @click="copyToClipboard(wallet.wallet_number)"
               class="text-xs text-[#d6b18a] border border-[#d6b18a] px-4 py-1.5 rounded-full hover:bg-[#d6b18a] hover:text-black transition-colors">
               <i class="fa-regular fa-copy mr-1"></i> Salin
             </button>

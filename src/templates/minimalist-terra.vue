@@ -30,7 +30,7 @@
     <!-- Welcome Screen -->
     <transition name="fade">
       <div v-if="showWelcome"
-        class="fixed inset-0 z-[60] flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 bg-[#f4f1ea] transition-all duration-1000">
+        class="fixed inset-0 z-[60] flex flex-col items-center justify-center text-center px-6 bg-[#f4f1ea] transition-all duration-1000">
         
         <div class="relative z-10 space-y-12 animate-fade-in-up">
           <div class="space-y-4">
@@ -61,7 +61,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-start md:justify-center pt-20 md:pt-0 text-center px-6 relative">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
         <div class="space-y-8 max-w-2xl mx-auto" v-observe>
           <div class="w-16 h-16 mx-auto bg-[#f2cc8f] rounded-full flex items-center justify-center mb-4">
              <i class="fa-solid fa-heart text-[#3d405b]"></i>
@@ -70,7 +70,7 @@
             {{ data.groomName }} <br> <span class="text-3xl italic text-[#e07a5f]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="text-sm md:text-base text-[#81b29a] font-bold tracking-[0.3em] uppercase">
-            {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
+            {{ formatDate(data.akadLocation?.dateTime) }}
           </p>
 
           <!-- Countdown -->
@@ -138,7 +138,7 @@
               <div class="space-y-2">
                 <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Groom</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">The {{ data.parents?.groomOrder || "1st" }} Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-sm text-gray-500 leading-relaxed pt-2">Son of {{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
                   <i class="fa-brands fa-instagram text-2xl"></i>
                 </a>
@@ -156,7 +156,7 @@
               <div class="space-y-2 md:text-right">
                 <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Bride</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">The {{ data.parents?.brideOrder || "1st" }} Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-sm text-gray-500 leading-relaxed pt-2">Daughter of {{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
                   <i class="fa-brands fa-instagram text-2xl"></i>
                 </a>
