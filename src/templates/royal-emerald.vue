@@ -10,12 +10,17 @@
       class="fixed inset-0 opacity-20 mix-blend-overlay pointer-events-none z-0 bg-[url('https://www.transparenttextures.com/patterns/arabesque.png')]"
     ></div>
 
-    <!-- Botanical Line Art Overlay -->
+    <!-- Elegant Inner Frame (Addresses "Too Empty") -->
+    <div
+      class="fixed inset-4 md:inset-8 border border-[#d4af37]/15 rounded-[2rem] md:rounded-[4rem] pointer-events-none z-[2]"
+    ></div>
+
+    <!-- Botanical Line Art Overlay (Animated & Refined for "Simpler" look) -->
     <img
       src="/assets/images/royal-emerald-floral-overlay.png"
       alt=""
       aria-hidden="true"
-      class="fixed inset-0 z-[1] w-full h-full object-cover pointer-events-none opacity-100 [filter:drop-shadow(0_0_10px_rgba(212,175,55,0.5))_drop-shadow(0_0_4px_rgba(212,175,55,0.8))_brightness(1.5)_contrast(1.2)]"
+      class="fixed inset-0 z-[1] w-full h-full object-cover pointer-events-none opacity-40 animate-slow-float [filter:brightness(1.2)_contrast(1.1)]"
     />
 
     <!-- Music Control -->
@@ -29,7 +34,7 @@
     <!-- Bottom Navigation (Refined Glassmorphism) -->
     <nav
       v-if="isOpened"
-      class="fixed bottom-6 left-0 right-0 mx-auto z-[80] bg-[#043927]/60 backdrop-blur-xl border border-[#d4af37]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] animate-fade-in w-fit max-w-[95%]"
+      class="fixed bottom-0 left-0 right-0 z-[80] bg-[#043927]/60 backdrop-blur-xl border-t border-[#d4af37]/30 rounded-t-2xl px-5 py-3 flex items-center justify-center gap-5 shadow-[0_-10px_30px_rgba(0,0,0,0.4)] animate-fade-in w-full"
     >
       <button
         v-for="item in navItems"
@@ -65,26 +70,6 @@
         <div
           class="absolute inset-4 md:inset-8 pointer-events-none border border-[#d4af37]/20 rounded-[3rem] md:rounded-[5rem] m-2 md:m-4 overflow-hidden"
         >
-          <!-- Top Left Ornament -->
-          <svg
-            class="absolute top-0 left-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70"
-            viewBox="0 0 100 100"
-            fill="currentColor"
-          >
-            <path
-              d="M0,0 L100,0 C100,55.23 55.23,100 0,100 L0,0 Z M10,10 L80,10 C80,48.66 48.66,80 10,80 L10,10 Z M20,20 L60,20 C60,42.09 42.09,60 20,60 L20,20 Z"
-            />
-          </svg>
-          <!-- Bottom Right Ornament -->
-          <svg
-            class="absolute bottom-0 right-0 w-20 h-20 md:w-32 md:h-32 text-[#d4af37]/40 opacity-70 transform rotate-180"
-            viewBox="0 0 100 100"
-            fill="currentColor"
-          >
-            <path
-              d="M0,0 L100,0 C100,55.23 55.23,100 0,100 L0,0 Z M10,10 L80,10 C80,48.66 48.66,80 10,80 L10,10 Z M20,20 L60,20 C60,42.09 42.09,60 20,60 L20,20 Z"
-            />
-          </svg>
         </div>
         <div
           class="relative z-10 w-full max-w-xl flex flex-col items-center justify-center space-y-12 md:space-y-16 py-10"
@@ -162,61 +147,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 Q100,0 160,160"
-              stroke="#d4af37"
-              stroke-width="2.5"
-              fill="none"
-              opacity="0.8"
-            />
-            <path
-              d="M0,0 Q0,100 160,160"
-              stroke="#d4af37"
-              stroke-width="1.2"
-              fill="none"
-              opacity="0.6"
-            />
-            <g transform="translate(30, 20) scale(0.3)">
-              <path
-                d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z"
-                fill="#d4af37"
-                opacity="0.8"
-              />
-              <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9" />
-            </g>
-            <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5" />
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 Q100,0 160,160"
-              stroke="#d4af37"
-              stroke-width="2.5"
-              fill="none"
-              opacity="0.8"
-            />
-            <path
-              d="M0,0 Q0,100 160,160"
-              stroke="#d4af37"
-              stroke-width="1.2"
-              fill="none"
-              opacity="0.6"
-            />
-            <g transform="translate(30, 20) scale(0.3)">
-              <path
-                d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z"
-                fill="#d4af37"
-                opacity="0.8"
-              />
-              <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9" />
-            </g>
-            <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5" />
-          </svg>
         </div>
 
         <div
@@ -293,57 +228,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L80,0 C80,40 40,80 0,80 Z"
-              stroke="#d4af37"
-              stroke-width="3"
-              fill="#d4af37"
-              fill-opacity="0.2"
-            />
-            <path
-              d="M0,0 C60,20 80,60 0,120"
-              stroke="#d4af37"
-              stroke-width="2"
-              fill="none"
-              stroke-dasharray="4 4"
-            />
-            <g transform="translate(10, 10) scale(0.5)">
-              <path
-                d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z"
-                fill="#ffffff"
-                opacity="0.7"
-              />
-            </g>
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L80,0 C80,40 40,80 0,80 Z"
-              stroke="#d4af37"
-              stroke-width="3"
-              fill="#d4af37"
-              fill-opacity="0.2"
-            />
-            <path
-              d="M0,0 C60,20 80,60 0,120"
-              stroke="#d4af37"
-              stroke-width="2"
-              fill="none"
-              stroke-dasharray="4 4"
-            />
-            <g transform="translate(10, 10) scale(0.5)">
-              <path
-                d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z"
-                fill="#ffffff"
-                opacity="0.7"
-              />
-            </g>
-          </svg>
         </div>
 
         <div class="max-w-4xl mx-auto space-y-10">
@@ -375,23 +264,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="3" fill="none" opacity="0.8" />
-            <circle cx="80" cy="40" r="3" fill="#ffffff" />
-            <circle cx="120" cy="90" r="4" fill="#d4af37" />
-            <circle cx="40" cy="80" r="2" fill="#ffffff" />
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="3" fill="none" opacity="0.8" />
-            <circle cx="80" cy="40" r="3" fill="#ffffff" />
-            <circle cx="120" cy="90" r="4" fill="#d4af37" />
-            <circle cx="40" cy="80" r="2" fill="#ffffff" />
-          </svg>
         </div>
 
         <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
@@ -461,43 +338,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L0,100 Q50,100 100,0 Z"
-              fill="#d4af37"
-              fill-opacity="0.15"
-              stroke="#d4af37"
-              stroke-width="2"
-            />
-            <path
-              d="M20,20 L20,80 Q50,80 80,20 Z"
-              fill="#d4af37"
-              fill-opacity="0.2"
-              stroke="#ffffff"
-              stroke-width="1.2"
-            />
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L0,100 Q50,100 100,0 Z"
-              fill="#d4af37"
-              fill-opacity="0.15"
-              stroke="#d4af37"
-              stroke-width="2"
-            />
-            <path
-              d="M20,20 L20,80 Q50,80 80,20 Z"
-              fill="#d4af37"
-              fill-opacity="0.2"
-              stroke="#ffffff"
-              stroke-width="1.2"
-            />
-          </svg>
         </div>
 
         <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
@@ -564,61 +409,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 Q100,0 160,160"
-              stroke="#d4af37"
-              stroke-width="2.5"
-              fill="none"
-              opacity="0.8"
-            />
-            <path
-              d="M0,0 Q0,100 160,160"
-              stroke="#d4af37"
-              stroke-width="1.2"
-              fill="none"
-              opacity="0.6"
-            />
-            <g transform="translate(30, 20) scale(0.3)">
-              <path
-                d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z"
-                fill="#d4af37"
-                opacity="0.8"
-              />
-              <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9" />
-            </g>
-            <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5" />
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 Q100,0 160,160"
-              stroke="#d4af37"
-              stroke-width="2.5"
-              fill="none"
-              opacity="0.8"
-            />
-            <path
-              d="M0,0 Q0,100 160,160"
-              stroke="#d4af37"
-              stroke-width="1.2"
-              fill="none"
-              opacity="0.6"
-            />
-            <g transform="translate(30, 20) scale(0.3)">
-              <path
-                d="M50 20 C60 0 90 20 50 50 C90 20 100 60 50 50 C100 60 70 90 50 50 C70 90 30 90 50 50 C30 90 0 60 50 50 C0 60 10 20 50 50 C10 20 40 0 50 20 Z"
-                fill="#d4af37"
-                opacity="0.8"
-              />
-              <circle cx="50" cy="50" r="8" fill="#ffffff" opacity="0.9" />
-            </g>
-            <path d="M30,70 Q45,50 60,75 Q35,95 30,70" fill="#d4af37" opacity="0.5" />
-          </svg>
         </div>
 
         <div class="max-w-4xl mx-auto w-full space-y-10">
@@ -659,57 +454,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L80,0 C80,40 40,80 0,80 Z"
-              stroke="#d4af37"
-              stroke-width="3"
-              fill="#d4af37"
-              fill-opacity="0.2"
-            />
-            <path
-              d="M0,0 C60,20 80,60 0,120"
-              stroke="#d4af37"
-              stroke-width="2"
-              fill="none"
-              stroke-dasharray="4 4"
-            />
-            <g transform="translate(10, 10) scale(0.5)">
-              <path
-                d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z"
-                fill="#ffffff"
-                opacity="0.7"
-              />
-            </g>
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L80,0 C80,40 40,80 0,80 Z"
-              stroke="#d4af37"
-              stroke-width="3"
-              fill="#d4af37"
-              fill-opacity="0.2"
-            />
-            <path
-              d="M0,0 C60,20 80,60 0,120"
-              stroke="#d4af37"
-              stroke-width="2"
-              fill="none"
-              stroke-dasharray="4 4"
-            />
-            <g transform="translate(10, 10) scale(0.5)">
-              <path
-                d="M50 100 C50 50 10 50 10 50 C10 50 50 50 50 0 C50 50 90 50 90 50 C90 50 50 50 50 100 Z"
-                fill="#ffffff"
-                opacity="0.7"
-              />
-            </g>
-          </svg>
         </div>
 
         <!-- Cinematic Infinity Backdrop -->
@@ -888,23 +637,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="3" fill="none" opacity="0.8" />
-            <circle cx="80" cy="40" r="3" fill="#ffffff" />
-            <circle cx="120" cy="90" r="4" fill="#d4af37" />
-            <circle cx="40" cy="80" r="2" fill="#ffffff" />
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0,0 Q80,20 140,140" stroke="#d4af37" stroke-width="3" fill="none" opacity="0.8" />
-            <circle cx="80" cy="40" r="3" fill="#ffffff" />
-            <circle cx="120" cy="90" r="4" fill="#d4af37" />
-            <circle cx="40" cy="80" r="2" fill="#ffffff" />
-          </svg>
         </div>
 
         <div
@@ -985,43 +722,11 @@
         <div
           class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L0,100 Q50,100 100,0 Z"
-              fill="#d4af37"
-              fill-opacity="0.15"
-              stroke="#d4af37"
-              stroke-width="2"
-            />
-            <path
-              d="M20,20 L20,80 Q50,80 80,20 Z"
-              fill="#d4af37"
-              fill-opacity="0.2"
-              stroke="#ffffff"
-              stroke-width="1.2"
-            />
-          </svg>
         </div>
         <!-- Floral Corner Bottom Right -->
         <div
           class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180"
         >
-          <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path
-              d="M0,0 L0,100 Q50,100 100,0 Z"
-              fill="#d4af37"
-              fill-opacity="0.15"
-              stroke="#d4af37"
-              stroke-width="2"
-            />
-            <path
-              d="M20,20 L20,80 Q50,80 80,20 Z"
-              fill="#d4af37"
-              fill-opacity="0.2"
-              stroke="#ffffff"
-              stroke-width="1.2"
-            />
-          </svg>
         </div>
 
         <div
@@ -1214,7 +919,7 @@ const navItems = computed(() => {
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
   ]
   return items.filter((item) => {
-    if (['home', 'couple', 'event', 'rsvp'].includes(item.id)) return true
+    if (['home', 'couple', 'event'].includes(item.id)) return true
     if (item.id === 'story') return isSectionEnabled('loveStory')
     return isSectionEnabled(item.id)
   })
@@ -1291,7 +996,7 @@ function initParticleEngine() {
   }
   const init = () => {
     resize()
-    particles = Array.from({ length: 20 }, () => new Particle())
+    particles = Array.from({ length: 40 }, () => new Particle())
   }
   const animate = () => {
     ctx.clearRect(0, 0, width, height)
@@ -1511,6 +1216,14 @@ watch(
 }
 .animate-pulse-slow {
   animation: pulse 6s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes slow-float {
+  0%, 100% { transform: scale(1.02) translateY(0); }
+  50% { transform: scale(1.05) translateY(-10px); }
+}
+.animate-slow-float {
+  animation: slow-float 15s ease-in-out infinite;
 }
 
 @keyframes gradient-gold {
