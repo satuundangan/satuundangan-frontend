@@ -16,6 +16,8 @@ test-results/
 qodana
 .qodana
 *.local
+.env.dev
+.env.*.local
 
 /cypress/videos/
 /cypress/screenshots/
