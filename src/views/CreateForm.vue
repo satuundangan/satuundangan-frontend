@@ -645,7 +645,7 @@ onMounted(async () => {
       return
    }
 
-   if (stored) {
+   if (stored && !route.params.id) {
       const activeSections = JSON.parse(stored)
       sections.value = activeSections.reduce((acc, key) => { acc[key] = true; return acc }, {})
    }
@@ -721,6 +721,24 @@ async function handleEditMode(id) {
 }
 
 function mapPayloadToFormData(payload) {
+   const invitationTemplate = resolveInvitationTemplate(payload)
+   if (invitationTemplate.id || invitationTemplate.slug) {
+      selectedTemplateRef.value = invitationTemplate
+   }
+
+   const selectedSections = Array.isArray(payload.selectedSections)
+      ? payload.selectedSections
+      : Array.isArray(payload.content?.selectedSections)
+         ? payload.content.selectedSections
+         : null
+
+   if (selectedSections) {
+      sections.value = selectedSections.reduce((acc, key) => {
+         acc[key] = true
+         return acc
+      }, {})
+   }
+
    formData.value.title = payload.title || ''
    formData.value.brideName = payload.brideName || ''
    formData.value.bridePhoto = payload.bridePhotoUrl || ''
@@ -780,6 +798,32 @@ function mapPayloadToFormData(payload) {
    } else { formData.value.music = payload.musicChoice || '' }
    formData.value.audioStart = Number(payload.audioStart) || 0
    formData.value.audioEnd = Number(payload.audioEnd) || 0
+}
+
+function resolveInvitationTemplate(payload) {
+   const template = payload.templateDesign || payload.content?.templateDesign || {}
+   const content = payload.content || {}
+   const templateDesignId = payload.templateDesignId || content.templateDesignId || template.id || selectedTemplateRef.value.id
+   const templateName = template.name || payload.templateName || content.templateName || selectedTemplateRef.value.name || ''
+   const fallbackSlug = route.params.id ? normalizeTemplateSlug(templateName) : selectedTemplateRef.value.slug
+   const slug = template.slug || payload.template_slug || content.template_slug || fallbackSlug || ''
+
+   return {
+      ...selectedTemplateRef.value,
+      ...template,
+      id: templateDesignId,
+      slug,
+      name: templateName,
+      isPremium: template.isPremium ?? payload.is_premium ?? payload.isPremium ?? selectedTemplateRef.value.isPremium,
+   }
+}
+
+function normalizeTemplateSlug(name) {
+   return String(name || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+}
+
+function getSelectedTemplateDesignId() {
+   return selectedTemplateRef.value.id || selectedTemplateRef.value.templateDesignId || null
 }
 
 function validateField(field) {
@@ -947,7 +991,7 @@ async function saveAndPreview() {
          parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
          akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
          resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
-         templateDesignId: selectedTemplateRef.value.id || 1, loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
+         templateDesignId: getSelectedTemplateDesignId(), loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
          musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'), isCustomMusic: formData.value.music === 'custom' || (formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart, audioEnd: formData.value.audioEnd, encryptedGuestName: formData.value.encryptedGuest === 'ya', galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
          giftDeliveryAddress: formData.value.giftAddresses, enableCover: true, healthProtocol: formData.value.healthProtocol, enableGuestMessage: formData.value.wishes === 'ya', selectedSections: Object.keys(sections.value).filter(k => sections.value[k]),

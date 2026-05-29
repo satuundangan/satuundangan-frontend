@@ -3,6 +3,73 @@ import { test, expect } from '@playwright/test'
 const BASE_URL = 'http://localhost:5173'
 
 test.describe('Create Form stale draft recovery', () => {
+  test('edit mode uses the invitation template instead of stale selectedTemplate', async ({ page, context }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('token', 'fake-jwt-token')
+      localStorage.setItem(
+        'selectedTemplate',
+        JSON.stringify({ id: 1, name: 'Dark Elegant', slug: 'dark-elegant', isPremium: false }),
+      )
+      localStorage.setItem('selectedSections', JSON.stringify(['cover']))
+    })
+
+    await context.route('**/api/user/me', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 1, name: 'Tester', email: 'tester@example.com', isApproved: true }),
+      }),
+    )
+    await context.route('**/api/admin/audio/public**', (route) =>
+      route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify([]) }),
+    )
+    await context.route('**/api/invitation/42', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          id: 42,
+          title: 'Edit Wedding',
+          slug: 'edit-wedding',
+          templateDesignId: 2,
+          templateDesign: {
+            id: 2,
+            name: 'Light Modern',
+            slug: 'light-modern',
+            isPremium: true,
+          },
+          selectedSections: ['cover', 'music', 'footer'],
+          brideName: 'Putri',
+          groomName: 'Putra',
+          bridePhotoUrl: 'https://example.com/bride.jpg',
+          groomPhotoUrl: 'https://example.com/groom.jpg',
+          photoCoupleUrl: 'https://example.com/couple.jpg',
+          parents: {
+            brideParents: 'Bpk. Bride & Ibu Bride',
+            groomParents: 'Bpk. Groom & Ibu Groom',
+          },
+          isSingleEvent: true,
+          akadLocation: {
+            dateTime: '2026-06-01T08:00:00.000Z',
+            mapUrl: 'https://maps.app.goo.gl/example',
+            description: 'Gedung',
+          },
+          resepsiLocation: {
+            dateTime: '2026-06-01T08:00:00.000Z',
+            mapUrl: 'https://maps.app.goo.gl/example',
+            description: 'Gedung',
+          },
+        }),
+      }),
+    )
+
+    await page.goto(`${BASE_URL}/invitation/42/edit`)
+
+    await expect(page.locator('iframe[src*="templateId=light-modern"]').first()).toBeVisible({
+      timeout: 10000,
+    })
+  })
+
   test('falls back to create when local draft edit id no longer exists', async ({ page, context }) => {
     let updateCalled = false
     let createCalled = false
