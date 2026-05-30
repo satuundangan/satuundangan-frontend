@@ -919,8 +919,8 @@ const navItems = computed(() => {
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
   ]
   return items.filter((item) => {
-    if (['home', 'couple', 'event'].includes(item.id)) return true
-    if (item.id === 'story') return isSectionEnabled('loveStory')
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('loveStory') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
     return isSectionEnabled(item.id)
   })
 })
