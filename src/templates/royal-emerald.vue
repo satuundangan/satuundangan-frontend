@@ -1047,7 +1047,7 @@ function initScrollSpy() {
 
 function getMusicUrl(choice) {
   if (!choice) return null
-  return choice.includes('/') ? choice : '/audio/romantic_emerald.mp3'
+  return choice.includes('/') ? choice : '/audio/romantic_music1.mp3'
 }
 function formatDate(dateStr) {
   if (!dateStr) return '-'
