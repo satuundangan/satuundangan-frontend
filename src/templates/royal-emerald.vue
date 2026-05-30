@@ -171,7 +171,7 @@
             >
               <img
                 :src="data.photoCoupleUrl || illustrationUrl"
-                class="w-[120%] h-[120%] object-contain mb-[-10%]"
+                class="w-full h-full object-cover object-top"
               />
             </div>
           </div>
@@ -284,7 +284,7 @@
             >
               <img
                 :src="data.groomPhotoUrl || illustrationUrl"
-                class="w-[140%] h-[140%] object-contain mb-[-10%] scale-x-[-1] object-right"
+                class="w-full h-full object-cover object-top scale-x-[-1]"
               />
               <!-- Sparkles -->
               <div class="absolute inset-0 z-20 pointer-events-none">
@@ -355,7 +355,7 @@
             >
               <img
                 :src="data.bridePhotoUrl || illustrationUrl"
-                class="w-[140%] h-[140%] object-contain mb-[-10%] object-left"
+                class="w-full h-full object-cover object-top"
               />
               <!-- Sparkles -->
               <div class="absolute inset-0 z-20 pointer-events-none">
