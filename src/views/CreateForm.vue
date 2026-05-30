@@ -481,6 +481,16 @@ import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
 const toast = useToast()
 const route = useRoute()
 const router = useRouter()
+
+// Format ISO UTC string from API to local datetime-local input (YYYY-MM-DDTHH:mm)
+const formatISOToLocalInput = (isoString) => {
+   if (!isoString) return ''
+   const d = new Date(isoString)
+   if (isNaN(d.getTime())) return ''
+   const pad = (n) => n.toString().padStart(2, '0')
+   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 const isUploading = ref(false)
 const currentStep = ref(1)
 const selectedTemplateRef = ref(JSON.parse(localStorage.getItem('selectedTemplate') || '{}'))
@@ -762,14 +772,14 @@ function mapPayloadToFormData(payload) {
    const akad = payload.akadLocation || {}
    const resepsi = payload.resepsiLocation || {}
    if (payload.isSingleEvent) {
-      formData.value.dateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
+      formData.value.dateTime = formatISOToLocalInput(akad.dateTime)
       formData.value.map = akad.mapUrl || ''
       formData.value.mapDesc = akad.description || ''
    } else {
-      formData.value.akadDateTime = akad.dateTime ? akad.dateTime.substring(0, 16) : ''
+      formData.value.akadDateTime = formatISOToLocalInput(akad.dateTime)
       formData.value.akadMap = akad.mapUrl || ''
       formData.value.akadDesc = akad.description || ''
-      formData.value.resepsiDateTime = resepsi.dateTime ? resepsi.dateTime.substring(0, 16) : ''
+      formData.value.resepsiDateTime = formatISOToLocalInput(resepsi.dateTime)
       formData.value.resepsiMap = resepsi.mapUrl || ''
       formData.value.resepsiDesc = resepsi.description || ''
    }
