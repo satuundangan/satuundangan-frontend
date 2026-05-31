@@ -67,7 +67,7 @@
             </h1>
           </div>
           <div class="text-left md:text-right space-y-2">
-            <p class="text-sm font-bold uppercase tracking-[0.4em]">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+            <p class="text-sm font-bold uppercase tracking-[0.4em]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
             <p class="text-[10px] text-[#808080] uppercase tracking-widest">Directed by Destiny</p>
           </div>
         </div>
