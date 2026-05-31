@@ -2,6 +2,7 @@
 import { defineStore } from 'pinia'
 import { login, register, getProfile, recordConsent } from '@/api/auth'
 import axios from 'axios'
+import { analytics } from '@/api/analytics'
 
 export const useAuthStore = defineStore('auth', {
   state: () => ({
@@ -25,6 +26,15 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('token', res.access_token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.access_token}`
       await this.fetchProfile()
+      
+      if (this.user) {
+        analytics.identify(this.user.id, {
+          $email: this.user.email,
+          $name: this.user.name,
+          role: this.user.isAdmin ? 'admin' : 'user'
+        })
+        analytics.trackAction('Login Success')
+      }
     },
     async register(payload) {
       const res = await register(payload)
@@ -32,6 +42,19 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('token', res.access_token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.access_token}`
       await this.fetchProfile()
+
+      if (this.user) {
+        analytics.alias(this.user.id)
+        analytics.identify(this.user.id, {
+          $email: this.user.email,
+          $name: this.user.name,
+          role: 'user'
+        })
+        analytics.setOnce({
+          'Signup Date': new Date().toISOString()
+        })
+        analytics.trackAction('Registration Success')
+      }
     },
     async fetchProfile() {
       if (!this.token) return
@@ -47,6 +70,8 @@ export const useAuthStore = defineStore('auth', {
       }
     },
     logout() {
+      analytics.trackAction('Logout')
+      analytics.reset()
       this.token = null
       this.user = null
       localStorage.removeItem('token')

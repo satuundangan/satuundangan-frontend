@@ -471,6 +471,7 @@ import { uploadFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
 import { fetchPublicAudio } from '@/api/master'
 import { useToast } from "vue-toastification"
+import { analytics } from '@/api/analytics'
 import QuoteSection from './create-form/components/QuoteSection.vue'
 import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
@@ -880,6 +881,11 @@ function validateStep(step) {
 
 function nextStep() {
    if (validateStep(currentStep.value)) {
+      analytics.trackAction('Create Form - Step Completed', {
+         step: currentStep.value,
+         step_name: ['Mempelai', 'Acara', 'Media', 'Ekstra'][currentStep.value - 1],
+         invitation_title: formData.value.title
+      })
       currentStep.value++
       window.scrollTo({ top: 0, behavior: 'smooth' })
    }
@@ -1016,6 +1022,14 @@ async function saveAndPreview() {
          try { const res = await updateInvitation(editId, payload); result = res.data || res }
          catch (error) { if (!route.params.id && /not found|404/i.test(error?.message || '')) { localStorage.removeItem('editInvitationId'); const res = await createInvitation(payload); result = res.data || res; localStorage.setItem('editInvitationId', result.id) } else throw error }
       } else { const res = await createInvitation(payload); result = res.data || res; localStorage.setItem('editInvitationId', result.id) }
+      
+      analytics.trackAction('Create Form - Submitted', {
+         invitation_id: result.id,
+         invitation_title: result.title,
+         template_id: result.templateDesignId,
+         is_edit: !!editId
+      })
+
       clearDraft(); toast.success("Berhasil menyimpan!"); router.push({ path: '/preview', query: { slug: result.slug } })
    } catch (error) { console.error(error); const errorMsg = error.response?.data?.message || 'Gagal menyimpan!'; toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg) }
    finally { isUploading.value = false }

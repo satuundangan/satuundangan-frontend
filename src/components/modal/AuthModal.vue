@@ -26,7 +26,7 @@
                 class="w-12 h-12 bg-white text-mocha rounded-xl flex items-center justify-center font-serif font-bold text-2xl mb-6 shadow-lg">
                 S</div>
               <h2 class="font-serif text-3xl font-bold leading-tight mb-4">
-                {{ authMode === 'login' ? 'Selamat Datang Kembali.' : 'Mulai Perjalanan Barumu.' }}
+                {{ heroTitle }}
               </h2>
               <p class="text-white/80 text-sm leading-relaxed">
                 Buat undangan pernikahan digital impianmu dengan fitur premium dan desain eksklusif hanya di
@@ -43,19 +43,19 @@
           <div class="flex-1 p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
             <div class="max-w-sm mx-auto w-full">
               <h2 class="text-2xl font-bold text-dark mb-1 md:hidden">
-                {{ authMode === 'login' ? 'Masuk Akun' : 'Daftar Baru' }}
+                {{ mobileTitle }}
               </h2>
-              <p class="text-muted text-sm mb-8 md:hidden">Silakan masuk untuk melanjutkan.</p>
+              <p class="text-muted text-sm mb-8 md:hidden">{{ mobileSubtitle }}</p>
 
               <!-- Google Login -->
-              <button @click="handleGoogleLogin"
+              <button v-if="authMode !== 'forgot'" @click="handleGoogleLogin"
                 class="w-full border border-gray-300 rounded-xl py-2.5 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors font-medium text-dark text-sm mb-6 group">
                 <img src="https://www.svgrepo.com/show/475656/google-color.svg"
                   class="h-5 w-5 group-hover:scale-110 transition-transform" />
                 <span>Lanjutkan dengan Google</span>
               </button>
 
-              <div class="relative mb-6">
+              <div v-if="authMode !== 'forgot'" class="relative mb-6">
                 <div class="absolute inset-0 flex items-center">
                   <div class="w-full border-t border-gray-200"></div>
                 </div>
@@ -65,7 +65,7 @@
               </div>
 
               <!-- Form -->
-              <form @submit.prevent="authMode === 'login' ? handleLogin() : handleRegister()" class="space-y-4">
+              <form @submit.prevent="handleSubmit" class="space-y-4">
 
                 <div v-if="authMode === 'register'" class="space-y-1">
                   <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Nama Lengkap</label>
@@ -79,7 +79,7 @@
                     class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white" />
                 </div>
 
-                <div class="space-y-1">
+                <div v-if="authMode !== 'forgot'" class="space-y-1">
                   <label class="text-xs font-bold text-gray-500 uppercase tracking-wide">Password</label>
                   <div class="relative">
                     <input v-model="password" :type="showPassword ? 'text' : 'password'" placeholder="••••••••"
@@ -90,6 +90,13 @@
                       <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                     </button>
                   </div>
+                </div>
+
+                <div v-if="devResetUrl" class="rounded-xl border border-mocha/10 bg-mocha/5 p-3 text-xs leading-relaxed text-gray-600">
+                  <p class="font-bold text-mocha">Development reset link:</p>
+                  <router-link :to="devResetRoute" class="break-all font-semibold text-mocha hover:underline" @click="emit('close')">
+                    {{ devResetUrl }}
+                  </router-link>
                 </div>
 
                 <div v-if="authMode === 'register'" class="flex items-start gap-2 pt-2">
@@ -112,18 +119,24 @@
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
                     <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
                   </svg>
-                  <span>{{ loading ? 'Memproses...' : authMode === 'login' ? 'Masuk Sekarang' : 'Daftar Gratis'
-                    }}</span>
+                  <span>{{ submitLabel }}</span>
                 </button>
 
               </form>
 
-              <p class="text-center text-sm mt-8 text-muted">
-                {{ authMode === 'login' ? 'Belum punya akun?' : 'Sudah punya akun?' }}
-                <a href="#" class="font-bold text-mocha hover:underline" @click.prevent="toggleAuthMode">
-                  {{ authMode === 'login' ? 'Daftar disini' : 'Masuk disini' }}
-                </a>
-              </p>
+              <div class="mt-8 space-y-3 text-center text-sm text-muted">
+                <p v-if="authMode === 'login'">
+                  <a href="#" class="font-bold text-mocha hover:underline" @click.prevent="setAuthMode('forgot')">
+                    Lupa password?
+                  </a>
+                </p>
+                <p>
+                  {{ authMode === 'login' ? 'Belum punya akun?' : authMode === 'register' ? 'Sudah punya akun?' : 'Ingat password?' }}
+                  <a href="#" class="font-bold text-mocha hover:underline" @click.prevent="toggleAuthMode">
+                    {{ authMode === 'login' ? 'Daftar disini' : 'Masuk disini' }}
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -133,11 +146,12 @@
 </template>
 
 <script setup>
-import { ref, watch, onUnmounted } from 'vue'
+import { computed, ref, watch, onUnmounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import { BASE_URL } from '@/api/client'
 import { useRouter } from 'vue-router'
+import { forgotPassword } from '@/api/auth'
 
 
 const props = defineProps({
@@ -154,12 +168,44 @@ const password = ref('')
 const name = ref('')
 const agreedToTerms = ref(false)
 const loading = ref(false)
+const devResetUrl = ref('')
 
 const auth = useAuthStore()
 const toast = useToast()
 const router = useRouter()
 
 const showPassword = ref(false)
+
+const heroTitle = computed(() => {
+  if (props.authMode === 'forgot') return 'Pulihkan Akses Akun.'
+  return props.authMode === 'login' ? 'Selamat Datang Kembali.' : 'Mulai Perjalanan Barumu.'
+})
+
+const mobileTitle = computed(() => {
+  if (props.authMode === 'forgot') return 'Lupa Password'
+  return props.authMode === 'login' ? 'Masuk Akun' : 'Daftar Baru'
+})
+
+const mobileSubtitle = computed(() => {
+  if (props.authMode === 'forgot') return 'Masukkan email akun untuk menerima instruksi reset password.'
+  return 'Silakan masuk untuk melanjutkan.'
+})
+
+const submitLabel = computed(() => {
+  if (loading.value) return 'Memproses...'
+  if (props.authMode === 'forgot') return 'Kirim Link Reset'
+  return props.authMode === 'login' ? 'Masuk Sekarang' : 'Daftar Gratis'
+})
+
+const devResetRoute = computed(() => {
+  if (!devResetUrl.value) return '/'
+  try {
+    const url = new URL(devResetUrl.value)
+    return `${url.pathname}${url.search}`
+  } catch {
+    return devResetUrl.value
+  }
+})
 
 watch(() => props.show, (val) => {
   if (val) {
@@ -175,6 +221,12 @@ onUnmounted(() => {
 
 function togglePassword() {
   showPassword.value = !showPassword.value
+}
+
+function handleSubmit() {
+  if (props.authMode === 'login') return handleLogin()
+  if (props.authMode === 'forgot') return handleForgotPassword()
+  return handleRegister()
 }
 
 const handleLogin = async () => {
@@ -278,6 +330,31 @@ const handleRegister = async () => {
   }
 }
 
+const handleForgotPassword = async () => {
+  if (!email.value) {
+    toast.warning('Email wajib diisi')
+    return
+  }
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(email.value)) {
+    toast.warning('Format email tidak valid (contoh: nama@email.com)')
+    return
+  }
+
+  loading.value = true
+  devResetUrl.value = ''
+  try {
+    const res = await forgotPassword({ email: email.value })
+    devResetUrl.value = res.resetUrl || ''
+    toast.success(res.message || 'Jika email terdaftar, instruksi reset password akan dikirim.')
+  } catch (e) {
+    toast.error(e.message || 'Gagal meminta reset password.')
+    console.error(e)
+  } finally {
+    loading.value = false
+  }
+}
 
 const handleGoogleLogin = () => {
   // Simpan path saat ini agar bisa kembali setelah login Google
@@ -286,11 +363,15 @@ const handleGoogleLogin = () => {
 }
 
 const toggleAuthMode = () => {
-  emit('update:authMode', props.authMode === 'login' ? 'register' : 'login')
-  // Reset form
+  setAuthMode(props.authMode === 'login' ? 'register' : 'login')
+}
+
+const setAuthMode = (mode) => {
+  emit('update:authMode', mode)
   email.value = ''
   password.value = ''
   name.value = ''
+  devResetUrl.value = ''
 }
 </script>
 
