@@ -24,6 +24,7 @@
     "@vueuse/core": "^13.4.0",
     "axios": "^1.11.0",
     "idb-keyval": "^6.2.2",
+    "mixpanel-browser": "^2.80.0",
     "pinia": "^3.0.3",
     "slugify": "^1.6.9",
     "sweetalert2": "^11.22.2",
