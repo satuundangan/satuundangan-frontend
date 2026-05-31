@@ -30,7 +30,6 @@ export const analytics = {
   setOnce(properties = {}) {
     mixpanel.people.set_once(properties)
   },
-...
 
   // Track page view
   trackPage(pageName, properties = {}) {
