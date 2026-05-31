@@ -4,7 +4,7 @@
     isScrolled ? 'bg-white/90 backdrop-blur-md shadow-sm border-gray-200 py-3' : 'bg-transparent border-transparent py-5'
   ]">
     <div class="max-w-7xl mx-auto px-6 flex justify-between items-center">
-      
+
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-2 group">
         <div class="bg-mocha text-white font-serif font-bold rounded-lg w-10 h-10 flex items-center justify-center text-xl shadow-lg group-hover:bg-accent-gold transition-colors duration-300">
@@ -23,7 +23,7 @@
       <!-- Desktop Menu -->
       <ul class="hidden md:flex items-center gap-8">
         <li v-for="item in menuItems" :key="item.text">
-          <a :href="item.href" 
+          <a :href="item.href"
              :class="[
                'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
                isScrolled ? 'text-dark' : 'text-dark/80'
@@ -38,7 +38,7 @@
       <div class="hidden md:flex items-center gap-4">
         <template v-if="userName">
           <div class="relative">
-             <button @click="toggleDropdown" 
+             <button @click="toggleDropdown"
                 class="flex items-center gap-3 pl-3 pr-2 py-1.5 rounded-full border border-gray-200 bg-white hover:border-mocha transition-colors shadow-sm">
                 <div class="w-8 h-8 bg-sage/20 text-sage font-bold rounded-full flex items-center justify-center text-sm">
                    {{ userName.charAt(0).toUpperCase() }}
@@ -68,7 +68,7 @@
             </div>
           </div>
         </template>
-        
+
         <template v-else>
           <button @click="show = true" class="text-sm font-semibold hover:text-mocha transition" :class="isScrolled ? 'text-dark' : 'text-dark/80'">
              Masuk
@@ -90,7 +90,7 @@
   <transition name="slide-fade">
     <div v-if="sidebarOpen" class="fixed inset-0 z-[100]" @click="sidebarOpen = false">
        <div class="absolute inset-0 bg-black/40 backdrop-blur-sm transition-opacity"></div>
-       
+
        <aside class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white shadow-2xl p-6 flex flex-col z-10" @click.stop>
           <div class="flex justify-between items-center mb-8">
              <h3 class="font-serif font-bold text-2xl text-mocha">Menu</h3>
@@ -128,7 +128,7 @@
        </aside>
     </div>
   </transition>
-  
+
   <AuthModal :show="show" :authMode="authMode" @update:authMode="authMode = $event" @close="show = false" />
 </template>
 
@@ -167,7 +167,6 @@ const menuItems = [
   { text: 'Home', href: '#' },
   { text: 'Fitur', href: '#features' },
   { text: 'Katalog', href: '#templates' },
-  { text: 'Harga', href: '#pricing' },
   { text: 'Testimoni', href: '#testimonials' },
 ]
 

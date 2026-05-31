@@ -171,7 +171,7 @@
             >
               <img
                 :src="data.photoCoupleUrl || illustrationUrl"
-                class="w-[120%] h-[120%] object-contain mb-[-10%]"
+                class="w-full h-full object-cover object-top"
               />
             </div>
           </div>
@@ -284,7 +284,7 @@
             >
               <img
                 :src="data.groomPhotoUrl || illustrationUrl"
-                class="w-[140%] h-[140%] object-contain mb-[-10%] scale-x-[-1] object-right"
+                class="w-full h-full object-cover object-top scale-x-[-1]"
               />
               <!-- Sparkles -->
               <div class="absolute inset-0 z-20 pointer-events-none">
@@ -355,7 +355,7 @@
             >
               <img
                 :src="data.bridePhotoUrl || illustrationUrl"
-                class="w-[140%] h-[140%] object-contain mb-[-10%] object-left"
+                class="w-full h-full object-cover object-top"
               />
               <!-- Sparkles -->
               <div class="absolute inset-0 z-20 pointer-events-none">
@@ -744,71 +744,91 @@
             </p>
           </div>
           <div
-            class="bg-white/[0.03] p-6 md:p-10 rounded-[3rem] md:rounded-[4rem] border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[50vh] md:h-[65vh] flex flex-col"
+            class="bg-white/[0.03] p-4 md:p-8 rounded-2xl md:rounded-3xl border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[55vh] md:h-[62vh] flex flex-col"
             v-observe
           >
-            <form @submit.prevent="submitRSVP" class="space-y-3 md:space-y-6 flex-shrink-0">
-              <div class="grid grid-cols-2 gap-3 md:gap-6">
-                <div class="space-y-1 md:space-y-2">
+            <form @submit.prevent="submitRSVP" class="space-y-2 md:space-y-4 flex-shrink-0">
+              <div class="grid grid-cols-2 gap-2 md:gap-4">
+                <div class="space-y-1">
                   <label
-                    class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black"
+                    class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
                     >Nama</label
                   >
                   <input
                     v-model="rsvp.name"
                     type="text"
-                    class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base outline-none"
+                    class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
                   />
                 </div>
-                <div class="space-y-1 md:space-y-2">
+                <div class="space-y-1">
                   <label
-                    class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black"
+                    class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
                     >Hadir?</label
                   >
                   <select
                     v-model="rsvp.attendance"
-                    class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-2 py-2 md:px-4 md:py-4 text-white text-xs md:text-base outline-none"
+                    class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-2 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
                   >
                     <option value="hadir">Hadir</option>
                     <option value="tidak">Absen</option>
                   </select>
                 </div>
               </div>
-              <div class="space-y-1 md:space-y-2">
+              <div v-if="rsvp.attendance === 'hadir'" class="space-y-1">
                 <label
-                  class="text-[8px] md:text-[11px] uppercase tracking-widest text-[#d4af37] font-black"
+                  class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
+                  >Jumlah Tamu</label
+                >
+                <input
+                  v-model.number="rsvp.totalGuests"
+                  type="number"
+                  min="1"
+                  max="20"
+                  class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
+                />
+              </div>
+              <div class="space-y-1">
+                <label
+                  class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
                   >Ucapan</label
                 >
                 <textarea
                   v-model="rsvp.message"
-                  class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg md:rounded-2xl px-3 py-2 md:px-5 md:py-4 text-white text-xs md:text-base h-14 md:h-28 outline-none"
+                  class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm h-12 md:h-20 outline-none"
                 ></textarea>
               </div>
               <button
                 type="submit"
-                class="w-full py-3 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-lg md:rounded-2xl font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all"
+                class="w-full py-2 md:py-3 bg-[#d4af37] text-[#022b1d] rounded-lg font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all"
               >
                 Kirim
               </button>
             </form>
             <div
-              class="mt-4 md:mt-6 space-y-3 md:space-y-4 overflow-y-auto no-scrollbar flex-1 pt-3 md:pt-6 border-t border-white/5"
+              class="mt-3 md:mt-4 space-y-2 md:space-y-3 overflow-y-auto no-scrollbar flex-1 pt-3 md:pt-4 border-t border-white/5"
             >
               <div
                 v-for="(msg, i) in guestMessages"
                 :key="i"
-                class="bg-white/[0.04] p-3 md:p-5 rounded-xl md:rounded-2xl border border-white/5"
+                class="bg-white/[0.04] p-2.5 md:p-4 rounded-xl border border-white/5"
               >
-                <div class="flex justify-between items-center">
-                  <h4 class="text-[10px] md:text-base font-bold text-white">{{ msg.guestName }}</h4>
-                  <span class="text-[6px] md:text-[9px] text-[#d4af37]">{{
+                <div class="flex justify-between items-start gap-2">
+                  <h4 class="text-[10px] md:text-sm font-bold text-white leading-tight">{{ msg.guestName }}</h4>
+                  <span class="text-[6px] md:text-[9px] text-[#d4af37] shrink-0">{{
                     timeAgo(msg.createdAt)
                   }}</span>
                 </div>
+                <div class="flex items-center gap-2 mt-1">
+                  <span
+                    class="text-[6px] md:text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+                    :class="msg.rsvpStatus === 'hadir' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'"
+                  >{{ msg.rsvpStatus === 'hadir' ? '✓ Hadir' : '✗ Absen' }}</span>
+                  <span v-if="msg.rsvpStatus === 'hadir' && msg.totalGuests > 0" class="text-[6px] md:text-[8px] text-white/40">{{ msg.totalGuests }} orang</span>
+                </div>
                 <p
-                  class="text-[9px] md:text-sm text-white/60 leading-relaxed truncate md:whitespace-normal md:line-clamp-3 mt-1"
+                  class="text-[9px] md:text-xs text-white/60 leading-relaxed line-clamp-2 mt-1"
                 >
-                  "{{ msg.message }}"
+                  {{ msg.message ? `"${msg.message}"` : '' }}
                 </p>
               </div>
             </div>
@@ -919,8 +939,8 @@ const navItems = computed(() => {
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
   ]
   return items.filter((item) => {
-    if (['home', 'couple', 'event'].includes(item.id)) return true
-    if (item.id === 'story') return isSectionEnabled('loveStory')
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('loveStory') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
     return isSectionEnabled(item.id)
   })
 })
@@ -1047,7 +1067,7 @@ function initScrollSpy() {
 
 function getMusicUrl(choice) {
   if (!choice) return null
-  return choice.includes('/') ? choice : '/audio/romantic_emerald.mp3'
+  return choice.includes('/') ? choice : '/audio/romantic_music1.mp3'
 }
 function formatDate(dateStr) {
   if (!dateStr) return '-'

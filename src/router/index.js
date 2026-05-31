@@ -6,6 +6,7 @@ import Invitation from '@/views/InvitationView.vue'
 import PreviewInvitation from '@/views/PreviewInvitation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import { analytics } from '@/api/analytics.js'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import InvitationsView from '@/views/dashboard/InvitationsView.vue'
 import TemplatesView from '@/views/dashboard/TemplatesView.vue'
@@ -88,6 +89,12 @@ const router = createRouter({
       path: '/auth/callback',
       name: 'auth-callback',
       component: () => import('@/views/AuthCallback.vue'),
+    },
+    {
+      path: '/reset-password',
+      name: 'reset-password',
+      component: () => import('@/views/ResetPasswordView.vue'),
+      meta: { title: 'Reset Password' },
     },
     {
       path: '/terms',
@@ -266,6 +273,38 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   next()
+})
+
+router.afterEach((to, from) => {
+  const authStore = useAuthStore()
+
+  // Identify user if logged in
+  if (authStore.user) {
+    analytics.identify(authStore.user.id, {
+      $email: authStore.user.email,
+      $name: authStore.user.name,
+      role: authStore.user.isAdmin ? 'admin' : 'user',
+    })
+  }
+
+  // Track page view with title and duration tracking
+  const pageTitle = to.meta.title || to.name || 'Untitled'
+  analytics.startTimer('Time on Page')
+  analytics.trackPage(pageTitle, {
+    path: to.fullPath,
+    name: to.name,
+    from_path: from.fullPath,
+  })
+
+  // When leaving the page (on the next transition), the 'Time on Page' for the PREVIOUS page should be captured.
+  // Note: Mixpanel's time_event works by calling track() later with the same name.
+  if (from.name) {
+    const prevTitle = from.meta.title || from.name || 'Untitled'
+    analytics.stopTimer('Time on Page', {
+      page: prevTitle,
+      path: from.fullPath,
+    })
+  }
 })
 
 export default router

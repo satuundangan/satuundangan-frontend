@@ -138,6 +138,7 @@ import { useAuthStore } from '@/stores/auth'
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { getSections } from '@/api/master' 
+import { analytics } from '@/api/analytics'
 
 const router = useRouter()
 const selectedTemplate = ref({})
@@ -150,10 +151,17 @@ const authMode = ref('login')
 
 const selectAll = () => {
   selectedSections.value = Object.keys(sectionOptions.value)
+  analytics.trackAction('Template Personalization - Select All', {
+    template_name: selectedTemplate.value.name,
+    sections_count: selectedSections.value.length
+  })
 }
 
 const deselectAll = () => {
   selectedSections.value = []
+  analytics.trackAction('Template Personalization - Deselect All', {
+    template_name: selectedTemplate.value.name
+  })
 }
 
 const getIcon = (key) => {
@@ -315,6 +323,9 @@ onMounted(async () => {
 
 function goBackToGallery() {
    if (confirm("Ganti template akan mengulang pengaturan fitur. Lanjutkan?")) {
+      analytics.trackAction('Template Personalization - Change Template', {
+        from_template: selectedTemplate.value.name
+      })
       localStorage.removeItem('selectedTemplate')
       localStorage.removeItem('selectedSections')
       router.back()
@@ -323,6 +334,9 @@ function goBackToGallery() {
 
 function goToForm() {
   if (!userName.value) {
+    analytics.trackAction('Template Personalization - Login Required', {
+      template_name: selectedTemplate.value.name
+    })
     showLogin.value = true
     return
   }
@@ -330,6 +344,13 @@ function goToForm() {
     localStorage.removeItem('editInvitationId')
   }
   localStorage.setItem('selectedSections', JSON.stringify(selectedSections.value))
+  
+  analytics.trackAction('Template Personalization - Continue', {
+    template_name: selectedTemplate.value.name,
+    selected_sections: selectedSections.value,
+    sections_count: selectedSections.value.length
+  })
+
   router.push('/create/form')
 }
 </script>

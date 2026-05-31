@@ -12,6 +12,18 @@ export const register = (data) =>
     body: JSON.stringify(data),
   })
 
+export const forgotPassword = (data) =>
+  apiFetch('/auth/forgot-password', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
+export const resetPassword = (data) =>
+  apiFetch('/auth/reset-password', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
 export async function getProfile(token) {
   return await apiFetch('/user/me', {
     method: 'GET',
