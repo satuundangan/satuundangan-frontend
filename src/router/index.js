@@ -150,6 +150,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin/invitations/:id/edit',
+      name: 'admin-invitation-edit',
+      component: () => import('@/views/admin/AdminInvitationEdit.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Edit Undangan' },
+    },
+    {
       path: '/admin/templates',
       name: 'admin-templates',
       component: AdminTemplates,
