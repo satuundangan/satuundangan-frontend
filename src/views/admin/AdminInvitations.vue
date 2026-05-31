@@ -28,6 +28,10 @@
             <td class="px-4 py-3 text-slate-600">{{ diffForHumans(inv.createdAt) }}</td>
             <td class="px-4 py-3 text-right">
               <div class="flex justify-end gap-2">
+                <RouterLink
+                  :to="`/admin/invitations/${inv.id}/edit`"
+                  class="rounded-lg border border-amber-200 px-3 py-1 text-xs font-medium text-amber-600 hover:bg-amber-50"
+                >Edit</RouterLink>
                 <a :href="`/preview?slug=${inv.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50">Lihat</a>
                 <button class="rounded-lg border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50" @click="confirmDelete(inv)">Hapus</button>
               </div>
@@ -55,6 +59,7 @@
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { RouterLink } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import { fetchAdminInvitations, deleteAdminInvitation } from '@/api/admin.js'
