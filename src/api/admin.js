@@ -29,6 +29,12 @@ export const deleteAdminUser = (id) =>
 
 // Invitations
 export const fetchAdminInvitations = (params) => apiFetch(withParams('/admin/invitations', params))
+export const fetchAdminInvitation = (id) => apiFetch(`/admin/invitations/${id}`)
+export const updateAdminInvitation = (id, payload) =>
+  apiFetch(`/admin/invitations/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
 export const deleteAdminInvitation = (id) =>
   apiFetch(`/admin/invitations/${id}`, {
     method: 'DELETE',
