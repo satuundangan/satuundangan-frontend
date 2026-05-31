@@ -93,7 +93,7 @@
             <p
               class="text-lg md:text-2xl font-cormorant tracking-[0.3em] text-white/70 font-light uppercase"
             >
-              {{ formatDate(data.akadLocation?.dateTime) }}
+              {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
             </p>
           </div>
           <div class="w-full space-y-10 animate-fade-in-up" style="animation-delay: 0.6s">
@@ -212,7 +212,7 @@
             <p
               class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2"
             >
-              {{ formatDate(data.akadLocation?.dateTime) }}
+              {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
             </p>
           </div>
         </div>

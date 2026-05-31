@@ -57,7 +57,7 @@
             <h1 class="text-6xl md:text-8xl font-serif font-black uppercase leading-none text-center">
               {{ data.groomName }} <br><span class="text-[#e06d53]">&</span><br> {{ data.brideName }}
             </h1>
-            <p class="text-sm font-bold uppercase tracking-[0.3em] text-[#e06d53]">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+            <p class="text-sm font-bold uppercase tracking-[0.3em] text-[#e06d53]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
           </div>
         </div>
       </section>

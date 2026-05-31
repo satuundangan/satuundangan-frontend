@@ -64,7 +64,7 @@
             <div class="flex items-center justify-center md:justify-start gap-4 md:gap-6">
                <div class="w-12 md:w-20 h-px bg-black"></div>
                <p class="text-xs md:text-lg font-bold uppercase tracking-[0.2em] md:tracking-[0.3em]">
-                 {{ formatDate(data.akadLocation?.dateTime) }}
+                 {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
                </p>
             </div>
           </div>

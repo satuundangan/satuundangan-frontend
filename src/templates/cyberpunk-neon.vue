@@ -64,7 +64,7 @@
             <h1 class="text-6xl md:text-[5rem] font-mono font-black uppercase leading-[1] text-white drop-shadow-[2px_2px_0px_#ff003c,-2px_-2px_0px_#00f0ff]">
               {{ data.groomName }} <br><span class="text-5xl md:text-7xl text-[#facc15] drop-shadow-none">&</span><br> {{ data.brideName }}
             </h1>
-            <p class="text-xs md:text-sm font-mono font-bold uppercase tracking-[0.5em] text-[#00f0ff]">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+            <p class="text-xs md:text-sm font-mono font-bold uppercase tracking-[0.5em] text-[#00f0ff]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
           </div>
           
           <div class="order-1 md:order-2 relative">
