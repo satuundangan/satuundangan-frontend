@@ -7,53 +7,35 @@
     search-placeholder="Cari judul, pasangan, atau slug"
     @update:search="handleSearch"
   >
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left font-medium text-slate-500">
-          <tr>
-            <th class="px-4 py-3">Judul</th>
-            <th class="px-4 py-3">Pengguna</th>
-            <th class="px-4 py-3">Slug</th>
-            <th class="px-4 py-3">Kategori</th>
-            <th class="px-4 py-3">Dibuat</th>
-            <th class="px-4 py-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200">
-          <tr v-for="inv in invitations" :key="inv.id">
-            <td class="px-4 py-3 font-medium text-slate-900">{{ inv.title }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ inv.user?.name || inv.user?.email || '-' }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ inv.slug }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ inv.category || '-' }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ diffForHumans(inv.createdAt) }}</td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex justify-end gap-2">
-                <RouterLink
-                  :to="`/admin/invitations/${inv.id}/edit`"
-                  class="rounded-lg border border-amber-200 px-3 py-1 text-xs font-medium text-amber-600 hover:bg-amber-50"
-                >Edit</RouterLink>
-                <a :href="`/preview?slug=${inv.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50">Lihat</a>
-                <button class="rounded-lg border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50" @click="confirmDelete(inv)">Hapus</button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!loading && !invitations.length">
-            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
-          </tr>
-          <tr v-if="loading">
-            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="total > limit" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-      <p>Menampilkan halaman {{ page }} dari {{ totalPages }}</p>
-      <div class="flex items-center gap-2">
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40" :disabled="page === 1" @click="setPage(page - 1)">Sebelumnya</button>
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40" :disabled="page === totalPages" @click="setPage(page + 1)">Berikutnya</button>
-      </div>
-    </div>
+    <DataTable
+      :headers="headers"
+      :items="invitations"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      :limit="limit"
+      @update:page="setPage"
+    >
+      <template #cell(title)="{ item }">
+        <span class="font-medium text-slate-900">{{ item.title }}</span>
+      </template>
+      <template #cell(user)="{ item }">
+        <span class="text-slate-600">{{ item.user?.name || item.user?.email || '-' }}</span>
+      </template>
+      <template #cell(createdAt)="{ item }">
+        <span class="text-slate-600 text-xs">{{ diffForHumans(item.createdAt) }}</span>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end gap-2">
+          <RouterLink
+            :to="`/admin/invitations/${item.id}/edit`"
+            class="rounded-lg border border-amber-200 px-3 py-1 text-xs font-medium text-amber-600 hover:bg-amber-50 transition-colors"
+          >Edit</RouterLink>
+          <a :href="`/preview?slug=${item.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-xs font-medium text-blue-600 hover:bg-blue-50 transition-colors">Lihat</a>
+          <button class="rounded-lg border border-rose-200 px-3 py-1 text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors" @click="confirmDelete(item)">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
   </AdminShell>
 </template>
 
@@ -62,6 +44,7 @@ import { computed, onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminInvitations, deleteAdminInvitation } from '@/api/admin.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -74,7 +57,14 @@ const limit = 10
 const search = ref('')
 const loading = ref(false)
 
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
+const headers = [
+  { label: 'Judul', key: 'title' },
+  { label: 'Pengguna', key: 'user' },
+  { label: 'Slug', key: 'slug' },
+  { label: 'Kategori', key: 'category' },
+  { label: 'Dibuat', key: 'createdAt' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
 
 function diffForHumans(dateString) {
   if (!dateString) return '-'

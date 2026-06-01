@@ -9,8 +9,28 @@
     @update:search="handleSearch"
     @action="openCreate"
   >
+    <!-- View Switcher -->
+    <div class="mb-6 flex justify-between items-center">
+      <div class="flex bg-slate-100 p-1 rounded-xl">
+        <button 
+          @click="viewType = 'grid'"
+          class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+        >
+          Cards
+        </button>
+        <button 
+          @click="viewType = 'table'"
+          class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+        >
+          Table
+        </button>
+      </div>
+    </div>
+
     <!-- Bulk Upload Section -->
-    <section class="mb-8 overflow-hidden rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-white p-2 transition-all hover:border-indigo-300">
+    <section v-if="viewType === 'grid'" class="mb-8 overflow-hidden rounded-[2.5rem] border-2 border-dashed border-slate-200 bg-white p-2 transition-all hover:border-indigo-300">
       <div 
         class="group relative flex flex-col items-center justify-center rounded-[2rem] bg-slate-50/50 py-12 px-6 transition-all hover:bg-indigo-50/30"
         @dragover.prevent="isDragging = true"
@@ -75,8 +95,8 @@
       </div>
     </section>
 
-    <!-- Main List -->
-    <div class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+    <!-- Main List (Grid) -->
+    <div v-if="viewType === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       <!-- Loading Skeleton -->
       <template v-if="loading">
         <div v-for="i in 6" :key="i" class="animate-pulse rounded-3xl border border-slate-100 bg-white p-6 shadow-sm">
@@ -161,6 +181,44 @@
         </p>
       </div>
     </div>
+
+    <!-- Main List (Table) -->
+    <DataTable
+      v-else
+      :headers="headers"
+      :items="filteredAudios"
+      :loading="loading"
+    >
+      <template #cell(title)="{ item }">
+        <div class="flex flex-col">
+          <span class="font-bold text-slate-900">{{ item.title }}</span>
+          <span class="text-[10px] font-mono text-slate-400 truncate max-w-xs">{{ item.url }}</span>
+        </div>
+      </template>
+      <template #cell(category)="{ item }">
+        <span
+          class="inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+          :class="getCategoryMeta(item.category).badgeClass"
+        >
+          {{ getCategoryMeta(item.category).label }}
+        </span>
+      </template>
+      <template #cell(player)="{ item }">
+        <audio 
+          controls 
+          class="h-8 w-full opacity-80 scale-90 origin-left"
+          @play="handlePlay($event)"
+        >
+          <source :src="item.url" type="audio/mpeg">
+        </audio>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end gap-3">
+          <button @click="copyLink(item.url)" class="text-[10px] font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-700">Link</button>
+          <button @click="confirmDelete(item)" class="text-[10px] font-bold uppercase tracking-widest text-rose-600 hover:text-rose-700">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
 
     <!-- Create Modal -->
     <Transition name="modal">
@@ -278,6 +336,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -330,6 +389,14 @@ const saving = ref(false)
 const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
 const selectedAudioFile = ref(null)
+const viewType = ref('grid') // 'grid' or 'table'
+
+const headers = [
+  { label: 'Judul', key: 'title' },
+  { label: 'Kategori', key: 'category' },
+  { label: 'Player', key: 'player', class: 'w-48' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
 
 // Bulk Upload States
 const isDragging = ref(false)

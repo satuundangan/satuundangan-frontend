@@ -9,74 +9,57 @@
     @update:search="handleSearch"
     @action="openCreate"
   >
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left font-medium text-slate-500">
-          <tr>
-            <th class="px-4 py-3">Kode</th>
-            <th class="px-4 py-3">Tipe</th>
-            <th class="px-4 py-3">Nilai</th>
-            <th class="px-4 py-3">Pemakaian</th>
-            <th class="px-4 py-3">Berlaku Hingga</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200">
-          <tr v-for="promo in promoCodes" :key="promo.id" class="hover:bg-slate-50/50">
-            <td class="px-4 py-3 font-mono font-bold text-slate-900 tracking-wider">{{ promo.code }}</td>
-            <td class="px-4 py-3 text-slate-600">
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
-                :class="promo.discount_type === 'percentage' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'">
-                {{ promo.discount_type === 'percentage' ? 'Persentase' : 'Fixed' }}
-              </span>
-            </td>
-            <td class="px-4 py-3 font-medium text-slate-700">
-              {{ promo.discount_type === 'percentage' ? `${promo.discount_value}%` : formatCurrency(promo.discount_value) }}
-            </td>
-            <td class="px-4 py-3 text-slate-600">
-              {{ promo.used_count ?? 0 }}{{ promo.max_uses ? ` / ${promo.max_uses}` : ' / ∞' }}
-            </td>
-            <td class="px-4 py-3 text-slate-600">
-              {{ promo.valid_until ? formatDate(promo.valid_until) : '—' }}
-            </td>
-            <td class="px-4 py-3">
-              <button
-                @click="toggleActive(promo)"
-                class="px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors"
-                :class="promo.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'"
-              >
-                {{ promo.is_active ? 'Aktif' : 'Nonaktif' }}
-              </button>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex justify-end gap-2 text-xs font-medium">
-                <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50"
-                  @click="openEdit(promo)">Edit</button>
-                <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50"
-                  @click="confirmDelete(promo)">Hapus</button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!loading && !promoCodes.length">
-            <td colspan="7" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
-          </tr>
-          <tr v-if="loading">
-            <td colspan="7" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="total > limit" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-      <p>Menampilkan halaman {{ page }} dari {{ totalPages }}</p>
-      <div class="flex items-center gap-2">
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="page === 1" @click="setPage(page - 1)">Sebelumnya</button>
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="page === totalPages" @click="setPage(page + 1)">Berikutnya</button>
-      </div>
-    </div>
+    <DataTable
+      :headers="headers"
+      :items="promoCodes"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      :limit="limit"
+      @update:page="setPage"
+    >
+      <template #cell(code)="{ item }">
+        <span class="font-mono font-bold text-slate-900 tracking-wider">{{ item.code }}</span>
+      </template>
+      <template #cell(discount_type)="{ item }">
+        <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
+          :class="item.discount_type === 'percentage' ? 'bg-blue-50 text-blue-600' : 'bg-purple-50 text-purple-600'">
+          {{ item.discount_type === 'percentage' ? 'Persentase' : 'Fixed' }}
+        </span>
+      </template>
+      <template #cell(discount_value)="{ item }">
+        <span class="font-medium text-slate-700">
+          {{ item.discount_type === 'percentage' ? `${item.discount_value}%` : formatCurrency(item.discount_value) }}
+        </span>
+      </template>
+      <template #cell(usage)="{ item }">
+        <span class="text-slate-600">
+          {{ item.used_count ?? 0 }}{{ item.max_uses ? ` / ${item.max_uses}` : ' / ∞' }}
+        </span>
+      </template>
+      <template #cell(valid_until)="{ item }">
+        <span class="text-slate-600">
+          {{ item.valid_until ? formatDate(item.valid_until) : '—' }}
+        </span>
+      </template>
+      <template #cell(is_active)="{ item }">
+        <button
+          @click="toggleActive(item)"
+          class="px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors"
+          :class="item.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'"
+        >
+          {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
+        </button>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end gap-2 text-xs font-medium">
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+            @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
+            @click="confirmDelete(item)">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
@@ -160,6 +143,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import {
   fetchAdminPromoCodes,
   createAdminPromoCode,
@@ -180,6 +164,16 @@ const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
+const headers = [
+  { label: 'Kode', key: 'code' },
+  { label: 'Tipe', key: 'discount_type' },
+  { label: 'Nilai', key: 'discount_value' },
+  { label: 'Pemakaian', key: 'usage' },
+  { label: 'Berlaku Hingga', key: 'valid_until' },
+  { label: 'Status', key: 'is_active' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
+
 const form = reactive({
   code: '',
   discount_type: 'percentage',
@@ -189,8 +183,6 @@ const form = reactive({
   valid_until: '',
   is_active: true,
 })
-
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 
 async function loadData() {
   loading.value = true

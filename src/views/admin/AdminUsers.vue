@@ -9,45 +9,30 @@
     @update:search="handleSearch"
     @action="openCreate"
   >
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left font-medium text-slate-500">
-          <tr>
-            <th class="px-4 py-3">Nama</th>
-            <th class="px-4 py-3">Email</th>
-            <th class="px-4 py-3">Role</th>
-            <th class="px-4 py-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200">
-          <tr v-for="user in users" :key="user.id">
-            <td class="px-4 py-3 font-medium text-slate-900">{{ user.name || '-' }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ user.email }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ user.isAdmin ? 'Admin' : 'User' }}</td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex justify-end gap-2 text-xs font-medium">
-                <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50" @click="openEdit(user)">Edit</button>
-                <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50" @click="confirmDelete(user)">Hapus</button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!loading && !users.length">
-            <td colspan="4" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
-          </tr>
-          <tr v-if="loading">
-            <td colspan="4" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="total > limit" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-      <p>Menampilkan halaman {{ page }} dari {{ totalPages }}</p>
-      <div class="flex items-center gap-2">
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40" :disabled="page === 1" @click="setPage(page - 1)">Sebelumnya</button>
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40" :disabled="page === totalPages" @click="setPage(page + 1)">Berikutnya</button>
-      </div>
-    </div>
+    <DataTable
+      :headers="headers"
+      :items="users"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      :limit="limit"
+      @update:page="setPage"
+    >
+      <template #cell(name)="{ item }">
+        <span class="font-medium text-slate-900">{{ item.name || '-' }}</span>
+      </template>
+      <template #cell(role)="{ item }">
+        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" :class="item.isAdmin ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-600'">
+          {{ item.isAdmin ? 'Admin' : 'User' }}
+        </span>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end gap-2 text-xs font-medium">
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors" @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors" @click="confirmDelete(item)">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
@@ -100,6 +85,7 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import {
   fetchAdminUsers,
   createAdminUser,
@@ -120,14 +106,19 @@ const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
+const headers = [
+  { label: 'Nama', key: 'name' },
+  { label: 'Email', key: 'email' },
+  { label: 'Role', key: 'role' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
+
 const form = reactive({
   name: '',
   email: '',
   isAdmin: false,
   password: '',
 })
-
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 
 async function loadUsers() {
   loading.value = true

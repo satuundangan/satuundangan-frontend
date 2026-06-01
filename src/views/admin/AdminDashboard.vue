@@ -18,25 +18,18 @@
           <RouterLink to="/admin/invitations" class="text-sm font-medium text-slate-500 hover:text-slate-900">Lihat semua</RouterLink>
         </div>
         <div class="p-5">
-          <table class="w-full text-left text-sm">
-            <thead>
-              <tr class="text-slate-500">
-                <th class="pb-3 font-medium">Judul</th>
-                <th class="pb-3 font-medium">Pemilik</th>
-                <th class="pb-3 font-medium">Slug</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="inv in recentInvitations" :key="inv.id" class="border-t border-slate-100">
-                <td class="py-3">{{ inv.title }}</td>
-                <td class="py-3">{{ inv.user?.name || '-' }}</td>
-                <td class="py-3 text-slate-500">{{ inv.slug }}</td>
-              </tr>
-              <tr v-if="!recentInvitations.length">
-                <td colspan="3" class="py-8 text-center text-slate-400">Belum ada data</td>
-              </tr>
-            </tbody>
-          </table>
+          <DataTable
+            :headers="headers"
+            :items="recentInvitations"
+            :loading="false"
+          >
+            <template #cell(user)="{ item }">
+              <span class="text-slate-600">{{ item.user?.name || '-' }}</span>
+            </template>
+            <template #cell(slug)="{ item }">
+              <span class="text-slate-500 font-mono text-xs">{{ item.slug }}</span>
+            </template>
+          </DataTable>
         </div>
       </div>
     </section>
@@ -47,6 +40,7 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import {
   fetchAdminUsers,
   fetchAdminInvitations,
@@ -63,6 +57,12 @@ const stats = ref([
   { label: 'Template Tersedia', value: 0 },
 ])
 const recentInvitations = ref([])
+
+const headers = [
+  { label: 'Judul', key: 'title' },
+  { label: 'Pemilik', key: 'user' },
+  { label: 'Slug', key: 'slug' },
+]
 
 async function loadDashboard() {
   try {

@@ -9,7 +9,26 @@
     @update:search="handleSearch"
     @action="openCreate"
   >
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+    <div class="mb-6 flex justify-between items-center">
+      <div class="flex bg-slate-100 p-1 rounded-xl">
+        <button 
+          @click="viewType = 'grid'"
+          class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+        >
+          Grid
+        </button>
+        <button 
+          @click="viewType = 'table'"
+          class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
+          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+        >
+          Table
+        </button>
+      </div>
+    </div>
+
+    <div v-if="viewType === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
       <div v-for="bank in banks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md">
         <button @click="confirmDelete(bank)" class="absolute top-2 right-2 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-rose-500 transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
@@ -31,6 +50,31 @@
         Belum ada data bank.
       </div>
     </div>
+
+    <DataTable
+      v-else
+      :headers="headers"
+      :items="banks"
+      :loading="loading"
+    >
+      <template #cell(logo)="{ item }">
+        <div class="h-10 w-16 flex items-center justify-center bg-white rounded border border-slate-100 overflow-hidden p-1">
+          <img v-if="item.logo" :src="item.logo" :alt="item.name" class="max-h-full max-w-full object-contain" />
+          <span v-else class="text-[10px] text-slate-300 font-bold uppercase">No Logo</span>
+        </div>
+      </template>
+      <template #cell(name)="{ item }">
+        <span class="font-bold text-slate-900">{{ item.name }}</span>
+      </template>
+      <template #cell(code)="{ item }">
+        <span class="font-mono text-xs text-slate-500">{{ item.code || '-' }}</span>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end">
+          <button @click="confirmDelete(item)" class="text-[11px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-700">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
 
     <!-- Modal Form -->
     <Transition name="fade">
@@ -79,6 +123,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminBanks, createAdminBank, deleteAdminBank } from '@/api/master.js'
 import { uploadFileApi } from '@/api/file.js'
 import { useToast } from 'vue-toastification'
@@ -91,6 +136,14 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const uploadingFile = ref(false)
+const viewType = ref('grid') // 'grid' or 'table'
+
+const headers = [
+  { label: 'Logo', key: 'logo', class: 'w-20' },
+  { label: 'Nama Bank / E-Wallet', key: 'name' },
+  { label: 'Kode', key: 'code' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
 
 const form = reactive({
   name: '',

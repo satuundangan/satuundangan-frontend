@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import { getAdminWithdrawals, approveWithdrawal, rejectWithdrawal } from '@/api/adminAffiliate'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -10,7 +11,16 @@ const withdrawals = ref([])
 const total = ref(0)
 const loading = ref(true)
 const page = ref(1)
+const limit = 10
 const statusFilter = ref('pending')
+
+const headers = [
+  { label: 'Reseller & Rekening', key: 'reseller' },
+  { label: 'Nominal', key: 'requestedAmount', class: 'text-right' },
+  { label: 'Tanggal', key: 'createdAt' },
+  { label: 'Status', key: 'status' },
+  { label: 'Aksi', key: 'actions' },
+]
 
 const fetchWithdrawals = async () => {
   loading.value = true
@@ -18,7 +28,7 @@ const fetchWithdrawals = async () => {
     const res = await getAdminWithdrawals({ 
       status: statusFilter.value, 
       page: page.value, 
-      limit: 10 
+      limit
     })
     withdrawals.value = res.data
     total.value = res.total
@@ -27,6 +37,11 @@ const fetchWithdrawals = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const setPage = (p) => {
+  page.value = p
+  fetchWithdrawals()
 }
 
 const handleApprove = async (item) => {
@@ -106,112 +121,77 @@ onMounted(fetchWithdrawals)
 
 <template>
   <AdminShell title="Antrean Penarikan Dana" description="Persetujuan dan pencairan komisi reseller">
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
-      <div class="p-6 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <h3 class="text-lg font-bold text-slate-800">Permintaan Withdraw</h3>
-        <div class="flex bg-slate-100 p-1 rounded-xl">
-          <button 
-            @click="statusFilter = 'pending'; page = 1; fetchWithdrawals()"
-            class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all"
-            :class="statusFilter === 'pending' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-          >
-            Pending
-          </button>
-          <button 
-            @click="statusFilter = 'approved'; page = 1; fetchWithdrawals()"
-            class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all"
-            :class="statusFilter === 'approved' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-          >
-            Berhasil
-          </button>
-          <button 
-            @click="statusFilter = 'rejected'; page = 1; fetchWithdrawals()"
-            class="px-4 py-1.5 rounded-lg text-sm font-bold transition-all"
-            :class="statusFilter === 'rejected' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
-          >
-            Ditolak
-          </button>
-        </div>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm">
-          <thead class="bg-slate-50 text-slate-500 uppercase text-xs tracking-wider">
-            <tr>
-              <th class="px-6 py-4 font-semibold">Reseller & Rekening</th>
-              <th class="px-6 py-4 font-semibold text-right">Nominal</th>
-              <th class="px-6 py-4 font-semibold">Tanggal</th>
-              <th class="px-6 py-4 font-semibold">Status</th>
-              <th class="px-6 py-4 font-semibold">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-50">
-            <template v-if="loading">
-              <tr v-for="i in 5" :key="i" class="animate-pulse">
-                <td colspan="5" class="px-6 py-4 h-16 bg-slate-50/50"></td>
-              </tr>
-            </template>
-            <tr v-for="w in withdrawals" :key="w.id" class="hover:bg-slate-50 transition-colors">
-              <td class="px-6 py-4">
-                <div class="font-bold text-slate-800">{{ w.affiliateProfile?.user?.name }}</div>
-                <div class="text-xs text-slate-500">
-                  {{ w.affiliateProfile?.bankName }} - {{ w.affiliateProfile?.bankAccountNumber }} 
-                  ({{ w.affiliateProfile?.bankAccountName }})
-                </div>
-              </td>
-              <td class="px-6 py-4 text-right font-bold text-slate-800">
-                {{ formatCurrency(w.requestedAmount) }}
-              </td>
-              <td class="px-6 py-4 text-slate-500">
-                {{ formatDate(w.createdAt) }}
-              </td>
-              <td class="px-6 py-4">
-                <span 
-                  class="px-2.5 py-1 rounded-lg text-xs font-bold"
-                  :class="{
-                    'bg-amber-100 text-amber-700': w.status === 'pending',
-                    'bg-green-100 text-green-700': w.status === 'approved',
-                    'bg-red-100 text-red-700': w.status === 'rejected'
-                  }"
-                >
-                  {{ w.status === 'pending' ? 'Diproses' : w.status === 'approved' ? 'Berhasil' : 'Ditolak' }}
-                </span>
-              </td>
-              <td class="px-6 py-4">
-                <div v-if="w.status === 'pending'" class="flex gap-2">
-                  <button @click="handleApprove(w)" class="text-xs font-bold text-green-600 hover:underline">Setujui</button>
-                  <button @click="handleReject(w)" class="text-xs font-bold text-red-600 hover:underline">Tolak</button>
-                </div>
-                <div v-else class="text-xs text-slate-400 max-w-[150px] truncate">
-                  {{ w.adminNote || 'No note' }}
-                </div>
-              </td>
-            </tr>
-            <tr v-if="!loading && withdrawals.length === 0">
-              <td colspan="5" class="px-6 py-12 text-center text-slate-400">
-                Tidak ada permintaan penarikan dana.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-center gap-2">
-        <button 
-          :disabled="page === 1"
-          @click="page--; fetchWithdrawals()"
-          class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold disabled:opacity-50"
-        >
-          Prev
-        </button>
-        <button 
-          :disabled="withdrawals.length < 10"
-          @click="page++; fetchWithdrawals()"
-          class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-sm font-bold disabled:opacity-50"
-        >
-          Next
-        </button>
-      </div>
+    <div class="mb-6 flex bg-slate-100 p-1 rounded-xl w-fit">
+      <button 
+        @click="statusFilter = 'pending'; page = 1; fetchWithdrawals()"
+        class="px-6 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all"
+        :class="statusFilter === 'pending' ? 'bg-white text-blue-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+      >
+        Pending
+      </button>
+      <button 
+        @click="statusFilter = 'approved'; page = 1; fetchWithdrawals()"
+        class="px-6 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all"
+        :class="statusFilter === 'approved' ? 'bg-white text-green-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+      >
+        Berhasil
+      </button>
+      <button 
+        @click="statusFilter = 'rejected'; page = 1; fetchWithdrawals()"
+        class="px-6 py-1.5 rounded-lg text-xs font-black uppercase tracking-widest transition-all"
+        :class="statusFilter === 'rejected' ? 'bg-white text-red-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+      >
+        Ditolak
+      </button>
     </div>
+
+    <DataTable
+      :headers="headers"
+      :items="withdrawals"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      :limit="limit"
+      @update:page="setPage"
+    >
+      <template #cell(reseller)="{ item }">
+        <div class="font-bold text-slate-800">{{ item.affiliateProfile?.user?.name }}</div>
+        <div class="text-[10px] text-slate-500 leading-tight">
+          {{ item.affiliateProfile?.bankName }} - {{ item.affiliateProfile?.bankAccountNumber }} 
+          <span class="opacity-60">({{ item.affiliateProfile?.bankAccountName }})</span>
+        </div>
+      </template>
+
+      <template #cell(requestedAmount)="{ item }">
+        <span class="font-bold text-slate-900">{{ formatCurrency(item.requestedAmount) }}</span>
+      </template>
+
+      <template #cell(createdAt)="{ item }">
+        <span class="text-slate-500 text-xs">{{ formatDate(item.createdAt) }}</span>
+      </template>
+
+      <template #cell(status)="{ item }">
+        <span 
+          class="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider"
+          :class="{
+            'bg-amber-50 text-amber-700': item.status === 'pending',
+            'bg-green-50 text-green-700': item.status === 'approved',
+            'bg-red-50 text-red-700': item.status === 'rejected'
+          }"
+        >
+          {{ item.status === 'pending' ? 'Diproses' : item.status === 'approved' ? 'Berhasil' : 'Ditolak' }}
+        </span>
+      </template>
+
+      <template #cell(actions)="{ item }">
+        <div v-if="item.status === 'pending'" class="flex gap-4">
+          <button @click="handleApprove(item)" class="text-[11px] font-black uppercase tracking-widest text-green-600 hover:text-green-700">Setujui</button>
+          <button @click="handleReject(item)" class="text-[11px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-700">Tolak</button>
+        </div>
+        <div v-else class="text-[10px] text-slate-400 max-w-[150px] truncate italic" :title="item.adminNote">
+          {{ item.adminNote || 'Tanpa catatan' }}
+        </div>
+      </template>
+    </DataTable>
   </AdminShell>
 </template>

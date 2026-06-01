@@ -2,44 +2,32 @@
   <AdminShell title="Master Fitur (Sections)" description="Kelola daftar fitur/section yang tersedia untuk template"
     show-search :search="search" search-placeholder="Cari label atau key" action-label="Tambah Section"
     @update:search="handleSearch" @action="openCreate">
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left font-medium text-slate-500">
-          <tr>
-            <th class="px-4 py-3">Label (Nama Fitur)</th>
-            <th class="px-4 py-3">Key (Kode Sistem)</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200">
-          <tr v-for="section in sections" :key="section.id">
-            <td class="px-4 py-3 font-medium text-slate-900">{{ section.label }}</td>
-            <td class="px-4 py-3 font-mono text-slate-600">{{ section.key }}</td>
-            <td class="px-4 py-3">
-              <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-                :class="section.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
-                {{ section.is_active ? 'Aktif' : 'Nonaktif' }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex justify-end gap-2 text-xs font-medium">
-                <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50"
-                  @click="openEdit(section)">Edit</button>
-                <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50"
-                  @click="confirmDelete(section)">Hapus</button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!loading && !sections.length">
-            <td colspan="4" class="px-4 py-8 text-center text-slate-400">Belum ada data section.</td>
-          </tr>
-          <tr v-if="loading">
-            <td colspan="4" class="px-4 py-8 text-center text-slate-400">Memuat data...</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      :headers="headers"
+      :items="sections"
+      :loading="loading"
+    >
+      <template #cell(label)="{ item }">
+        <span class="font-medium text-slate-900">{{ item.label }}</span>
+      </template>
+      <template #cell(key)="{ item }">
+        <span class="font-mono text-slate-600">{{ item.key }}</span>
+      </template>
+      <template #cell(is_active)="{ item }">
+        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+          :class="item.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+          {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
+        </span>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end gap-2 text-xs font-medium">
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+            @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
+            @click="confirmDelete(item)">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
 
     <!-- Modal Form -->
     <Transition name="fade">
@@ -92,6 +80,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminSections, createAdminSection, updateAdminSection, deleteAdminSection } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -103,6 +92,13 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
+
+const headers = [
+  { label: 'Label (Nama Fitur)', key: 'label' },
+  { label: 'Key (Kode Sistem)', key: 'key' },
+  { label: 'Status', key: 'is_active' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
 
 const form = reactive({
   label: '',

@@ -2,77 +2,55 @@
   <AdminShell title="Template Desain" description="Kelola daftar template undangan" show-search :search="search"
     search-placeholder="Cari nama, slug, atau kategori" action-label="Tambah Template" @update:search="handleSearch"
     @action="openCreate">
-    <div class="overflow-hidden rounded-2xl border border-slate-200 bg-white">
-      <table class="min-w-full divide-y divide-slate-200 text-sm">
-        <thead class="bg-slate-50 text-left font-medium text-slate-500">
-          <tr>
-            <th class="px-4 py-3 w-16">Preview</th>
-            <th class="px-4 py-3">Nama</th>
-            <th class="px-4 py-3">Slug</th>
-            <th class="px-4 py-3">Kategori</th>
-            <th class="px-4 py-3">Harga</th>
-            <th class="px-4 py-3">Status</th>
-            <th class="px-4 py-3 text-right">Aksi</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-200">
-          <tr v-for="template in templates" :key="template.id">
-            <td class="px-4 py-3">
-              <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden">
-                <img :src="template.thumbnailUrl || template.previewUrl" class="h-full w-full object-cover" v-if="template.thumbnailUrl || template.previewUrl" />
-                <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
-                  <i class="fa-solid fa-image text-xs"></i>
-                </div>
-              </div>
-            </td>
-            <td class="px-4 py-3 font-medium text-slate-900">{{ template.name }}</td>
-            <td class="px-4 py-3 text-slate-600">{{ template.slug }}</td>
-            <td class="px-4 py-3 text-slate-600 capitalize">
-              <span
-                class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-xs font-medium bg-slate-100 text-slate-700">
-                <span class="h-2 w-2 rounded-full"
-                  :style="{ backgroundColor: getCategoryColor(template.category) }"></span>
-                {{ template.category }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-slate-600">
-              {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR' }).format(template.price || 0) }}
-            </td>
-            <td class="px-4 py-3">
-              <span class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-medium"
-                :class="template.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
-                {{ template.isActive ? 'Aktif' : 'Nonaktif' }}
-              </span>
-            </td>
-            <td class="px-4 py-3 text-right">
-              <div class="flex justify-end gap-2 text-xs font-medium">
-                <a :href="`/demo/${template.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50">Demo</a>
-                <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50"
-                  @click="openEdit(template)">Edit</button>
-                <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50"
-                  @click="confirmDelete(template)">Hapus</button>
-              </div>
-            </td>
-          </tr>
-          <tr v-if="!loading && !templates.length">
-            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Tidak ada data</td>
-          </tr>
-          <tr v-if="loading">
-            <td colspan="6" class="px-4 py-8 text-center text-slate-400">Memuat data…</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div v-if="total > limit" class="mt-4 flex items-center justify-between text-sm text-slate-600">
-      <p>Menampilkan halaman {{ page }} dari {{ totalPages }}</p>
-      <div class="flex items-center gap-2">
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="page === 1" @click="setPage(page - 1)">Sebelumnya</button>
-        <button class="rounded-lg border border-slate-200 px-3 py-1 disabled:cursor-not-allowed disabled:opacity-40"
-          :disabled="page === totalPages" @click="setPage(page + 1)">Berikutnya</button>
-      </div>
-    </div>
+    <DataTable
+      :headers="headers"
+      :items="templates"
+      :loading="loading"
+      :total="total"
+      v-model:page="page"
+      :limit="limit"
+      @update:page="setPage"
+    >
+      <template #cell(preview)="{ item }">
+        <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+          <img :src="item.thumbnailUrl || item.previewUrl" class="h-full w-full object-cover" v-if="item.thumbnailUrl || item.previewUrl" />
+          <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
+            <i class="fa-solid fa-image text-xs"></i>
+          </div>
+        </div>
+      </template>
+      <template #cell(name)="{ item }">
+        <span class="font-medium text-slate-900">{{ item.name }}</span>
+      </template>
+      <template #cell(category)="{ item }">
+        <span
+          class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
+          <span class="h-1.5 w-1.5 rounded-full"
+            :style="{ backgroundColor: getCategoryColor(item.category) }"></span>
+          {{ item.category }}
+        </span>
+      </template>
+      <template #cell(price)="{ item }">
+        <span class="text-slate-700 font-medium">
+          {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.price || 0) }}
+        </span>
+      </template>
+      <template #cell(isActive)="{ item }">
+        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+          :class="item.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+          {{ item.isActive ? 'Aktif' : 'Nonaktif' }}
+        </span>
+      </template>
+      <template #cell(actions)="{ item }">
+        <div class="flex justify-end gap-2 text-xs font-medium">
+          <a :href="`/demo/${item.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50 transition-colors">Demo</a>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+            @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
+            @click="confirmDelete(item)">Hapus</button>
+        </div>
+      </template>
+    </DataTable>
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
@@ -242,6 +220,7 @@
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import DataTable from '@/components/admin/DataTable.vue'
 import slugify from 'slugify'
 import {
   fetchAdminTemplates,
@@ -269,6 +248,16 @@ const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
+const headers = [
+  { label: 'Preview', key: 'preview', class: 'w-16' },
+  { label: 'Nama', key: 'name' },
+  { label: 'Slug', key: 'slug' },
+  { label: 'Kategori', key: 'category' },
+  { label: 'Harga', key: 'price' },
+  { label: 'Status', key: 'isActive' },
+  { label: 'Aksi', key: 'actions', class: 'text-right' },
+]
+
 const tagInput = ref('')
 const customPalette = reactive({
   primary: '#0F172A',
@@ -289,8 +278,6 @@ const form = reactive({
   isActive: true,
   isPremium: false,
 })
-
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
 
 watch(() => form.name, (newVal) => {
   if (!editing.value && newVal) {
