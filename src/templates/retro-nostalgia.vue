@@ -282,6 +282,29 @@
         </div>
       </section>
 
+      <!-- VIDEO PREWEDDING -->
+      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-32 px-6 bg-[#fdfbf7]">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-4xl font-serif font-black uppercase text-[#2c2c2c] mb-10" v-observe>Video Prewedding</h2>
+          <div class="relative w-full aspect-video overflow-hidden border-4 border-[#2c2c2c] shadow-[8px_8px_0px_0px_rgba(224,109,83,1)]">
+            <iframe :src="getEmbedUrlVideo(data.videoPrewedding)" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU -->
+      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-32 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-4xl font-serif font-black uppercase text-[#fdfbf7] mb-10" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div v-for="(item, idx) in data.menu.items" :key="idx"
+              class="p-6 border-4 border-[#fdfbf7] transform hover:-translate-y-1 transition-transform text-left" v-observe>
+              <h4 class="text-base font-bold text-[#fdfbf7]">{{ item.name || item }}</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- GIFT -->
       <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-4xl mx-auto space-y-16">
@@ -350,6 +373,17 @@ const navItems = computed(() => {
     return s ? (s.is_enabled !== false) : true
   })
 })
+
+function getEmbedUrlVideo(url) {
+  if (!url) return ''
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1]
+    const ampPos = videoId.indexOf('&')
+    return `https://www.youtube.com/embed/${ampPos !== -1 ? videoId.substring(0, ampPos) : videoId}`
+  }
+  if (url.includes('youtu.be')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1]}`
+  return url
+}
 
 const isSectionEnabled = (key) => {
   if (!activeSections.value) return true

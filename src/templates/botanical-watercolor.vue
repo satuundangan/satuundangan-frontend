@@ -317,6 +317,29 @@
         </div>
       </section>
 
+      <!-- VIDEO PREWEDDING -->
+      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-24 px-6 bg-[#fdfaf5]">
+        <div class="max-w-4xl mx-auto text-center">
+          <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-10" v-observe>Video Prewedding</h2>
+          <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#e8d5c4]/30">
+            <iframe :src="getEmbedUrlVideo(data.videoPrewedding)" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU -->
+      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-24 px-6 bg-white">
+        <div class="max-w-3xl mx-auto text-center">
+          <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-10" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
+          <div class="grid gap-4 md:grid-cols-2">
+            <div v-for="(item, idx) in data.menu.items" :key="idx"
+              class="bg-[#fdfaf5] p-6 rounded-2xl border border-[#e8d5c4]/40 hover:border-[#b48c5b]/40 transition-colors text-left" v-observe>
+              <h4 class="text-base font-playfair text-[#4a4a4a]">{{ item.name || item }}</h4>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- GIFT -->
       <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" class="py-24 px-6 text-center">
         <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-4" v-observe>Wedding Gift</h2>
@@ -404,6 +427,17 @@ const navItems = computed(() => {
     return sectionSettings ? (sectionSettings.is_enabled !== false) : true
   })
 })
+
+function getEmbedUrlVideo(url) {
+  if (!url) return ''
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1]
+    const ampPos = videoId.indexOf('&')
+    return `https://www.youtube.com/embed/${ampPos !== -1 ? videoId.substring(0, ampPos) : videoId}`
+  }
+  if (url.includes('youtu.be')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1]}`
+  return url
+}
 
 const isSectionEnabled = (key) => {
   if (!activeSections.value) return true
