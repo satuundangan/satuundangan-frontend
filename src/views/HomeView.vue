@@ -125,6 +125,30 @@
       </div>
     </section>
 
+    <!-- Custom Theme CTA Section -->
+    <section class="py-16 px-6 bg-gradient-to-br from-stone-50 to-amber-50/40">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 bg-amber-100/80 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 border border-amber-200/60">
+          <i class="fa-solid fa-palette"></i> Custom Design
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-dark mb-3 font-serif leading-snug">
+          Ga ketemu tema undangan<br class="hidden sm:block" /> yang kamu mau?
+        </h2>
+        <p class="text-muted text-base mb-2">
+          Chat kami untuk request desain custom sesuai keinginanmu.
+        </p>
+        <p class="text-xs text-gray-400 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
+        <a
+          href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20request%20desain%20undangan%20custom%20%F0%9F%92%8C"
+          target="_blank"
+          class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-300 hover:-translate-y-0.5"
+        >
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          Chat Kami Sekarang
+        </a>
+      </div>
+    </section>
+
     <!-- Testimonials Section -->
     <section id="testimonials" class="section bg-ivory relative overflow-hidden">
       <!-- Decor -->
