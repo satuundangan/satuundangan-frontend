@@ -19,7 +19,7 @@
               <a href="#" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
                  <i class="fab fa-tiktok"></i>
               </a>
-              <a href="#" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+              <a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
                  <i class="fab fa-whatsapp"></i>
               </a>
            </div>
