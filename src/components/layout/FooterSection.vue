@@ -38,10 +38,10 @@
         <div>
            <h4 class="font-bold text-lg mb-6">Perusahaan</h4>
            <ul class="space-y-4 text-sm text-gray-400">
-              <li><a href="#" class="hover:text-mocha transition">Tentang Kami</a></li>
-              <li><a href="#" class="hover:text-mocha transition">Hubungi Kami</a></li>
-              <li><router-link to="/syarat-ketentuan" class="hover:text-mocha transition">Syarat & Ketentuan</router-link></li>
-              <li><router-link to="/kebijakan-privasi" class="hover:text-mocha transition">Kebijakan Privasi</router-link></li>
+              <li><router-link to="/tentang-kami" class="hover:text-mocha transition">Tentang Kami</router-link></li>
+              <li><a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" class="hover:text-mocha transition">Hubungi Kami</a></li>
+              <li><router-link to="/terms" class="hover:text-mocha transition">Syarat & Ketentuan</router-link></li>
+              <li><router-link to="/privacy" class="hover:text-mocha transition">Kebijakan Privasi</router-link></li>
            </ul>
         </div>
       </div>

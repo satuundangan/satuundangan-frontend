@@ -109,6 +109,12 @@ const router = createRouter({
       meta: { title: 'Kebijakan Privasi' },
     },
     {
+      path: '/tentang-kami',
+      name: 'tentang-kami',
+      component: () => import('@/views/TentangKamiView.vue'),
+      meta: { title: 'Tentang Kami' },
+    },
+    {
       path: '/affiliate/register',
       name: 'affiliate-register',
       redirect: '/',
