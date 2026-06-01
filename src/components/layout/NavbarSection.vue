@@ -209,6 +209,9 @@ onMounted(() => {
    if (route.query.login === 'true') {
       show.value = true
       authMode.value = 'login'
+   } else if (route.query.register === 'true') {
+      show.value = true
+      authMode.value = 'register'
    }
 })
 
