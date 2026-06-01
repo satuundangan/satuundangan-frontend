@@ -24,6 +24,11 @@ export const resetPassword = (data) =>
     body: JSON.stringify(data),
   })
 
+export const resendVerification = () =>
+  apiFetch('/auth/resend-verification', {
+    method: 'POST',
+  })
+
 export async function getProfile(token) {
   return await apiFetch('/user/me', {
     method: 'GET',
