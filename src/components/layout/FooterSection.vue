@@ -2,7 +2,7 @@
   <footer class="bg-[#1c1917] text-white pt-20 pb-10 font-sans">
     <div class="max-w-7xl mx-auto px-6">
       <div class="grid md:grid-cols-3 gap-12 border-b border-white/10 pb-12">
-        
+
         <!-- Brand -->
         <div class="md:col-span-1 space-y-6">
            <div class="flex items-center gap-3">
@@ -32,7 +32,6 @@
               <li><router-link to="/create" class="hover:text-mocha transition">Buat Undangan</router-link></li>
               <li><router-link to="/templates" class="hover:text-mocha transition">Katalog Tema</router-link></li>
               <li><a href="#features" class="hover:text-mocha transition">Fitur Premium</a></li>
-              <li><a href="#pricing" class="hover:text-mocha transition">Harga</a></li>
            </ul>
         </div>
 
