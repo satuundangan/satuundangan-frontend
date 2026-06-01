@@ -26,12 +26,12 @@ export const useAuthStore = defineStore('auth', {
       localStorage.setItem('token', res.access_token)
       axios.defaults.headers.common['Authorization'] = `Bearer ${res.access_token}`
       await this.fetchProfile()
-      
+
       if (this.user) {
         analytics.identify(this.user.id, {
           $email: this.user.email,
           $name: this.user.name,
-          role: this.user.isAdmin ? 'admin' : 'user'
+          role: this.user.isAdmin ? 'admin' : 'user',
         })
         analytics.trackAction('Login Success')
       }
@@ -48,13 +48,15 @@ export const useAuthStore = defineStore('auth', {
         analytics.identify(this.user.id, {
           $email: this.user.email,
           $name: this.user.name,
-          role: 'user'
+          role: 'user',
         })
         analytics.setOnce({
-          'Signup Date': new Date().toISOString()
+          'Signup Date': new Date().toISOString(),
         })
         analytics.trackAction('Registration Success')
       }
+
+      return res
     },
     async fetchProfile() {
       if (!this.token) return

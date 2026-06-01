@@ -10,13 +10,15 @@ import {
   getAffiliateCommissions,
   getAffiliateWithdrawals,
   submitWithdraw,
-  getAffiliateProfile
+  getAffiliateProfile,
 } from '@/api/affiliate'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
 
 const router = useRouter()
 const toast = useToast()
+const authStore = useAuthStore()
 
 const loading = ref(true)
 const dashboardData = ref(null)
@@ -25,12 +27,15 @@ const withdrawals = ref([])
 const profile = ref(null)
 const withdrawAmount = ref(0)
 const isSubmittingWithdraw = ref(false)
+const isEmailVerified = computed(
+  () => authStore.user?.provider === 'google' || Boolean(authStore.user?.emailVerifiedAt),
+)
 
 const formatCurrency = (amount) => {
   return new Intl.NumberFormat('id-ID', {
     style: 'currency',
     currency: 'IDR',
-    minimumFractionDigits: 0
+    minimumFractionDigits: 0,
   }).format(amount)
 }
 
@@ -41,7 +46,7 @@ const formatDate = (dateString) => {
     month: 'short',
     year: 'numeric',
     hour: '2-digit',
-    minute: '2-digit'
+    minute: '2-digit',
   })
 }
 
@@ -105,6 +110,12 @@ const fetchProfile = async () => {
 }
 
 const handleWithdraw = async () => {
+  if (!isEmailVerified.value) {
+    toast.warning('Verifikasi email dulu sebelum mengajukan penarikan')
+    router.push('/dashboard/settings')
+    return
+  }
+
   if (withdrawAmount.value < 100000) {
     toast.warning('Minimal penarikan adalah Rp 100.000')
     return
@@ -117,7 +128,7 @@ const handleWithdraw = async () => {
     showCancelButton: true,
     confirmButtonText: 'Ya, Tarik Dana',
     cancelButtonText: 'Batal',
-    confirmButtonColor: '#3B82F6'
+    confirmButtonColor: '#3B82F6',
   })
 
   if (result.isConfirmed) {
@@ -139,11 +150,7 @@ onMounted(async () => {
   loading.value = true
   try {
     await fetchDashboard()
-    await Promise.allSettled([
-      fetchCommissions(),
-      fetchWithdrawals(),
-      fetchProfile()
-    ])
+    await Promise.allSettled([fetchCommissions(), fetchWithdrawals(), fetchProfile()])
   } catch (err) {
     // Expected on 404
   } finally {
@@ -199,7 +206,9 @@ onMounted(async () => {
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
               <h3 class="text-lg font-bold text-slate-800 mb-4">Link Afiliasi Anda</h3>
               <div class="space-y-4">
-                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 break-all text-sm font-mono text-slate-600">
+                <div
+                  class="p-3 bg-slate-50 rounded-xl border border-slate-200 break-all text-sm font-mono text-slate-600"
+                >
                   {{ affiliateLink }}
                 </div>
                 <div class="flex gap-2">
@@ -217,7 +226,8 @@ onMounted(async () => {
                   </button>
                 </div>
                 <p class="text-xs text-slate-500 italic">
-                  * Bagikan link atau kode ini. Setiap pembelian yang menggunakan kode Anda akan memberikan komisi otomatis.
+                  * Bagikan link atau kode ini. Setiap pembelian yang menggunakan kode Anda akan
+                  memberikan komisi otomatis.
                 </p>
               </div>
             </div>
@@ -225,30 +235,50 @@ onMounted(async () => {
             <!-- Tier Progress Card -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
               <div class="flex justify-between items-start mb-4">
-                <h3 class="text-lg font-bold text-slate-800">Status Tier: <span class="capitalize text-blue-600">{{ dashboardData.tier.current }}</span></h3>
-                <span class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wider">
+                <h3 class="text-lg font-bold text-slate-800">
+                  Status Tier:
+                  <span class="capitalize text-blue-600">{{ dashboardData.tier.current }}</span>
+                </h3>
+                <span
+                  class="px-3 py-1 bg-blue-50 text-blue-700 text-xs font-bold rounded-full uppercase tracking-wider"
+                >
                   {{ dashboardData.tier.current }}
                 </span>
               </div>
-              
+
               <div v-if="dashboardData.tier.nextTier" class="space-y-4">
                 <div class="flex justify-between text-sm mb-1">
-                  <span class="text-slate-600">Progres ke Tier {{ dashboardData.tier.nextTier }}</span>
-                  <span class="font-bold text-slate-800">{{ dashboardData.tier.totalSales }} / {{ dashboardData.tier.nextTierMinSales }} Penjualan</span>
+                  <span class="text-slate-600"
+                    >Progres ke Tier {{ dashboardData.tier.nextTier }}</span
+                  >
+                  <span class="font-bold text-slate-800"
+                    >{{ dashboardData.tier.totalSales }} /
+                    {{ dashboardData.tier.nextTierMinSales }} Penjualan</span
+                  >
                 </div>
                 <div class="w-full bg-slate-100 rounded-full h-2.5">
-                  <div 
-                    class="bg-blue-600 h-2.5 rounded-full transition-all duration-500" 
-                    :style="{ width: `${Math.min(100, (dashboardData.tier.totalSales / dashboardData.tier.nextTierMinSales) * 100)}%` }"
+                  <div
+                    class="bg-blue-600 h-2.5 rounded-full transition-all duration-500"
+                    :style="{
+                      width: `${Math.min(100, (dashboardData.tier.totalSales / dashboardData.tier.nextTierMinSales) * 100)}%`,
+                    }"
                   ></div>
                 </div>
                 <p class="text-sm text-slate-600">
-                  Butuh <span class="font-bold text-blue-600">{{ dashboardData.tier.salesNeededForNextTier }}</span> penjualan lagi untuk naik ke tier <span class="capitalize font-bold">{{ dashboardData.tier.nextTier }}</span> dan mendapatkan rate komisi lebih tinggi!
+                  Butuh
+                  <span class="font-bold text-blue-600">{{
+                    dashboardData.tier.salesNeededForNextTier
+                  }}</span>
+                  penjualan lagi untuk naik ke tier
+                  <span class="capitalize font-bold">{{ dashboardData.tier.nextTier }}</span> dan
+                  mendapatkan rate komisi lebih tinggi!
                 </p>
               </div>
               <div v-else class="p-4 bg-yellow-50 rounded-xl border border-yellow-100">
                 <p class="text-sm text-yellow-800 font-medium">
-                  🎉 Anda telah mencapai Tier tertinggi ({{ dashboardData.tier.current.toUpperCase() }}). Terus tingkatkan penjualan Anda!
+                  🎉 Anda telah mencapai Tier tertinggi ({{
+                    dashboardData.tier.current.toUpperCase()
+                  }}). Terus tingkatkan penjualan Anda!
                 </p>
               </div>
             </div>
@@ -258,7 +288,9 @@ onMounted(async () => {
           <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
             <div class="p-6 border-b border-slate-50 flex justify-between items-center">
               <h3 class="text-lg font-bold text-slate-800">Riwayat Komisi Terakhir</h3>
-              <router-link to="#" class="text-blue-600 text-sm font-semibold hover:underline">Lihat Semua</router-link>
+              <router-link to="#" class="text-blue-600 text-sm font-semibold hover:underline"
+                >Lihat Semua</router-link
+              >
             </div>
             <div class="overflow-x-auto">
               <table class="w-full text-left">
@@ -272,7 +304,11 @@ onMounted(async () => {
                   </tr>
                 </thead>
                 <tbody class="divide-y divide-slate-50">
-                  <tr v-for="item in commissions" :key="item.id" class="hover:bg-slate-50 transition-colors">
+                  <tr
+                    v-for="item in commissions"
+                    :key="item.id"
+                    class="hover:bg-slate-50 transition-colors"
+                  >
                     <td class="px-6 py-4">
                       <div class="font-medium text-slate-800">{{ item.buyerName }}</div>
                       <div class="text-xs text-slate-400 capitalize">{{ item.tier }} Tier</div>
@@ -284,16 +320,24 @@ onMounted(async () => {
                       {{ formatCurrency(item.commissionAmount) }}
                     </td>
                     <td class="px-6 py-4">
-                      <span 
+                      <span
                         class="px-2.5 py-1 rounded-lg text-xs font-bold"
                         :class="{
                           'bg-amber-100 text-amber-700': item.status === 'pending',
                           'bg-green-100 text-green-700': item.status === 'cleared',
                           'bg-blue-100 text-blue-700': item.status === 'withdrawn',
-                          'bg-red-100 text-red-700': item.status === 'reversed'
+                          'bg-red-100 text-red-700': item.status === 'reversed',
                         }"
                       >
-                        {{ item.status === 'pending' ? 'Tertunda' : item.status === 'cleared' ? 'Siap Cair' : item.status === 'withdrawn' ? 'Ditarik' : 'Batal' }}
+                        {{
+                          item.status === 'pending'
+                            ? 'Tertunda'
+                            : item.status === 'cleared'
+                              ? 'Siap Cair'
+                              : item.status === 'withdrawn'
+                                ? 'Ditarik'
+                                : 'Batal'
+                        }}
                       </span>
                     </td>
                     <td class="px-6 py-4 text-sm text-slate-500">
@@ -315,19 +359,27 @@ onMounted(async () => {
             <!-- Withdraw Form -->
             <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100 h-fit">
               <h3 class="text-lg font-bold text-slate-800 mb-4">Tarik Dana</h3>
-              
-              <div v-if="hasPendingWithdrawal" class="p-4 bg-amber-50 rounded-xl border border-amber-100 mb-4">
+
+              <div
+                v-if="hasPendingWithdrawal"
+                class="p-4 bg-amber-50 rounded-xl border border-amber-100 mb-4"
+              >
                 <p class="text-sm text-amber-800">
-                  ⚠️ Anda memiliki permintaan penarikan yang sedang diproses. Mohon tunggu hingga selesai sebelum mengajukan kembali.
+                  ⚠️ Anda memiliki permintaan penarikan yang sedang diproses. Mohon tunggu hingga
+                  selesai sebelum mengajukan kembali.
                 </p>
               </div>
-              
+
               <div v-else class="space-y-4">
                 <div>
-                  <label class="block text-sm font-semibold text-slate-700 mb-1">Nominal Penarikan</label>
+                  <label class="block text-sm font-semibold text-slate-700 mb-1"
+                    >Nominal Penarikan</label
+                  >
                   <div class="relative">
-                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold">Rp</span>
-                    <input 
+                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 font-bold"
+                      >Rp</span
+                    >
+                    <input
                       v-model.number="withdrawAmount"
                       type="number"
                       class="w-full pl-10 pr-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
@@ -336,7 +388,7 @@ onMounted(async () => {
                   </div>
                   <div class="flex justify-between mt-2 text-xs text-slate-500">
                     <span>Minimal Rp 100.000</span>
-                    <button 
+                    <button
                       @click="withdrawAmount = dashboardData.balance.availableToWithdraw"
                       class="text-blue-600 font-bold hover:underline"
                     >
@@ -346,20 +398,29 @@ onMounted(async () => {
                 </div>
 
                 <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                  <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">Rekening Tujuan</p>
+                  <p class="text-xs text-slate-500 uppercase font-bold tracking-wider">
+                    Rekening Tujuan
+                  </p>
                   <div v-if="profile" class="text-sm">
                     <div class="font-bold text-slate-800">{{ profile.bankName }}</div>
                     <div class="text-slate-600">{{ profile.bankAccountNumber }}</div>
                     <div class="text-slate-600">a.n. {{ profile.bankAccountName }}</div>
                   </div>
-                  <router-link to="/dashboard/settings" class="text-xs text-blue-600 font-bold hover:underline inline-block mt-2">
+                  <router-link
+                    to="/dashboard/settings"
+                    class="text-xs text-blue-600 font-bold hover:underline inline-block mt-2"
+                  >
                     Ubah Rekening
                   </router-link>
                 </div>
 
-                <button 
+                <button
                   @click="handleWithdraw"
-                  :disabled="isSubmittingWithdraw || withdrawAmount < 100000 || withdrawAmount > dashboardData.balance.availableToWithdraw"
+                  :disabled="
+                    isSubmittingWithdraw ||
+                    withdrawAmount < 100000 ||
+                    withdrawAmount > dashboardData.balance.availableToWithdraw
+                  "
                   class="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-bold py-3 rounded-xl transition-all shadow-md shadow-blue-100"
                 >
                   {{ isSubmittingWithdraw ? 'Memproses...' : 'Ajukan Penarikan' }}
@@ -368,7 +429,9 @@ onMounted(async () => {
             </div>
 
             <!-- Withdrawal History -->
-            <div class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+            <div
+              class="lg:col-span-2 bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden"
+            >
               <div class="p-6 border-b border-slate-50">
                 <h3 class="text-lg font-bold text-slate-800">Riwayat Penarikan Dana</h3>
               </div>
@@ -383,20 +446,30 @@ onMounted(async () => {
                     </tr>
                   </thead>
                   <tbody class="divide-y divide-slate-50">
-                    <tr v-for="w in withdrawals" :key="w.id" class="hover:bg-slate-50 transition-colors">
+                    <tr
+                      v-for="w in withdrawals"
+                      :key="w.id"
+                      class="hover:bg-slate-50 transition-colors"
+                    >
                       <td class="px-6 py-4 font-bold text-slate-800">
                         {{ formatCurrency(w.requestedAmount) }}
                       </td>
                       <td class="px-6 py-4">
-                        <span 
+                        <span
                           class="px-2.5 py-1 rounded-lg text-xs font-bold"
                           :class="{
                             'bg-amber-100 text-amber-700': w.status === 'pending',
                             'bg-green-100 text-green-700': w.status === 'approved',
-                            'bg-red-100 text-red-700': w.status === 'rejected'
+                            'bg-red-100 text-red-700': w.status === 'rejected',
                           }"
                         >
-                          {{ w.status === 'pending' ? 'Diproses' : w.status === 'approved' ? 'Berhasil' : 'Ditolak' }}
+                          {{
+                            w.status === 'pending'
+                              ? 'Diproses'
+                              : w.status === 'approved'
+                                ? 'Berhasil'
+                                : 'Ditolak'
+                          }}
                         </span>
                       </td>
                       <td class="px-6 py-4 text-slate-500">
@@ -433,7 +506,7 @@ input::-webkit-inner-spin-button {
 }
 
 /* Firefox */
-input[type=number] {
+input[type='number'] {
   -moz-appearance: textfield;
 }
 </style>
