@@ -1,7 +1,7 @@
 <template>
   <footer class="bg-[#1c1917] text-white pt-20 pb-10 font-sans">
     <div class="max-w-7xl mx-auto px-6">
-      <div class="grid md:grid-cols-4 gap-12 border-b border-white/10 pb-12">
+      <div class="grid md:grid-cols-3 gap-12 border-b border-white/10 pb-12">
         
         <!-- Brand -->
         <div class="md:col-span-1 space-y-6">
@@ -44,18 +44,6 @@
               <li><router-link to="/syarat-ketentuan" class="hover:text-mocha transition">Syarat & Ketentuan</router-link></li>
               <li><router-link to="/kebijakan-privasi" class="hover:text-mocha transition">Kebijakan Privasi</router-link></li>
            </ul>
-        </div>
-
-        <!-- Newsletter -->
-        <div>
-           <h4 class="font-bold text-lg mb-6">Berlangganan</h4>
-           <p class="text-gray-400 text-sm mb-4">Dapatkan info promo dan update desain terbaru.</p>
-           <form @submit.prevent class="flex flex-col gap-3">
-              <input type="email" placeholder="Email kamu" class="bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition text-white placeholder-gray-600">
-              <button class="bg-mocha text-white font-bold text-sm py-3 rounded-lg hover:bg-accent-gold transition-colors">
-                 Subscribe
-              </button>
-           </form>
         </div>
       </div>
 
