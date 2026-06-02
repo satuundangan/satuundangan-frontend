@@ -401,7 +401,7 @@
 
       <!-- 5. LOVE STORY SECTION -->
       <section
-        v-if="isSectionEnabled('loveStory') && (data.loveStory?.length || isPreviewMode)"
+        v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)"
         id="story"
         class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6"
       >
@@ -940,7 +940,7 @@ const navItems = computed(() => {
   ]
   return items.filter((item) => {
     if (item.id === 'home') return true
-    if (item.id === 'story') return isSectionEnabled('loveStory') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
     return isSectionEnabled(item.id)
   })
 })

@@ -312,7 +312,7 @@
       </section>
 
       <!-- VIDEO PREWEDDING -->
-      <section v-if="data.videoPrewedding && isSectionEnabled('video-prewedding')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]" v-observe>
+      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]" v-observe>
         <div class="max-w-4xl mx-auto text-center">
           <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-8">Video Prewedding</h2>
           <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#d6b18a]/20">
@@ -323,7 +323,7 @@
       </section>
 
       <!-- MENU MAKANAN -->
-      <section v-if="data.menu?.items?.length && isSectionEnabled('foodList')" class="py-20 md:py-24 px-6 bg-black">
+      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-20 md:py-24 px-6 bg-black">
         <div class="max-w-3xl mx-auto text-center">
           <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-12">{{ data.menu.title || 'Menu Hidangan' }}</h2>
           <div class="grid gap-6 md:grid-cols-2">
@@ -337,7 +337,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section v-if="data.loveStory?.length && isSectionEnabled('loveStory')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
+      <section v-if="data.loveStory?.length && isSectionEnabled('love-story')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-12 md:mb-16" v-observe>Our Journey
           </h2>
@@ -447,7 +447,7 @@
       </section>
 
       <!-- PROTOKOL KESEHATAN -->
-      <section v-if="data.healthProtocol && isSectionEnabled('health-protocol')" class="py-16 px-6 bg-[#1a1a1a] text-center border-t border-[#333]">
+      <section v-if="data.healthProtocol && isSectionEnabled('prokes')" class="py-16 px-6 bg-[#1a1a1a] text-center border-t border-[#333]">
         <h3 class="text-xl font-serif text-white mb-8">Protokol Kesehatan</h3>
         <div class="flex justify-center gap-8 flex-wrap text-[#d6b18a]">
           <div class="flex flex-col items-center gap-2 w-24">
@@ -466,7 +466,7 @@
       </section>
 
       <!-- TURUT MENGUNDANG -->
-      <section v-if="data.turutMengundang && isSectionEnabled('turut-mengundang')" class="py-16 px-6 bg-black text-center border-t border-[#222]">
+      <section v-if="data.turutMengundang && isSectionEnabled('extended-family')" class="py-16 px-6 bg-black text-center border-t border-[#222]">
         <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
         <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang
           }}</p>

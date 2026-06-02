@@ -167,7 +167,7 @@ const deselectAll = () => {
 const getIcon = (key) => {
   const iconMap = {
     quote: 'fa-quote-left',
-    loveStory: 'fa-book-heart',
+    'love-story': 'fa-book-heart',
     photoCouple: 'fa-image',
     music: 'fa-music',
     map: 'fa-map-location-dot',
@@ -176,17 +176,17 @@ const getIcon = (key) => {
     countdown: 'fa-clock',
     denah: 'fa-map',
     encryptedGuest: 'fa-user-lock',
-    foodList: 'fa-utensils',
+    menu: 'fa-utensils',
     gift: 'fa-gift',
     cover: 'fa-book-open',
     gallery: 'fa-images',
-    'live-stream': 'fa-video',
-    'health-protocol': 'fa-shield-virus',
+    'live-streaming': 'fa-video',
+    prokes: 'fa-shield-virus',
     'event-details': 'fa-calendar-day',
     'likes': 'fa-thumbs-up',
     'footer': 'fa-scroll',
-    'turut-mengundang': 'fa-users',
-    'video-prewedding': 'fa-clapperboard'
+    'extended-family': 'fa-users',
+    video: 'fa-clapperboard'
   }
   return iconMap[key] || 'fa-star'
 }
@@ -217,7 +217,7 @@ const templatePrice = computed(() => {
 
 const sectionOptionsLabelMap = {
   quote: 'Quote Ayat / Mutiara',
-  loveStory: 'Love Story (Cerita Cinta)',
+  'love-story': 'Love Story (Cerita Cinta)',
   photoCouple: 'Foto Utama Pasangan',
   music: 'Musik Latar',
   map: 'Peta Lokasi (Google Maps)',
@@ -226,23 +226,23 @@ const sectionOptionsLabelMap = {
   countdown: 'Hitung Mundur Acara',
   denah: 'Denah Lokasi / Ruangan',
   encryptedGuest: 'Enkripsi Nama Tamu',
-  foodList: 'Daftar Menu Makanan',
+  menu: 'Daftar Menu Makanan',
   gift: 'Amplop Digital & Kado',
   cover: 'Halaman Sampul (Cover)',
   gallery: 'Galeri Foto',
-  'live-stream': 'Live Streaming Link',
-  'health-protocol': 'Protokol Kesehatan',
+  'live-streaming': 'Live Streaming Link',
+  prokes: 'Protokol Kesehatan',
   'event-details': 'Detail Acara Lengkap',
   'likes': 'Fitur Like / Suka',
-  'footer': 'Halaman Penutup',
-  'turut-mengundang': 'Turut Mengundang',
-  'video-prewedding': 'Video Prewedding'
+  footer: 'Halaman Penutup',
+  'extended-family': 'Turut Mengundang',
+  video: 'Video Prewedding'
 }
 
 const defaultCommonSections = [
   'quote',
   'photoCouple',
-  'loveStory',
+  'love-story',
   'countdown',
   'rsvp',
   'wishes',

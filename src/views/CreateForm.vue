@@ -224,8 +224,24 @@
                            </div>
                         </div>
                      </section>
-                     <LoveStorySection v-if="sections.loveStory" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" />
+                     <LoveStorySection v-if="sections['love-story']" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" />
                      
+                     <section v-if="sections.video" class="space-y-4">
+                        <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
+                           <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
+                              <i class="fa-solid fa-clapperboard"></i>
+                           </div>
+                           <div>
+                              <h2 class="text-xl font-bold text-dark">Video Prewedding</h2>
+                              <p class="text-[10px] text-muted uppercase tracking-widest font-bold mt-1">Link YouTube</p>
+                           </div>
+                        </div>
+                        <div>
+                           <label class="form-label">URL Video YouTube</label>
+                           <input v-model="formData.youtubeUrl" type="text" placeholder="https://www.youtube.com/watch?v=..." class="form-input" />
+                        </div>
+                     </section>
+
                      <!-- Unified Music Section -->
                      <section v-if="sections.music" class="space-y-6">
                         <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
@@ -304,13 +320,13 @@
                   <!-- Step 4: Ekstra -->
                   <div v-if="currentStep === 4" class="space-y-12 animate-fade-in">
                      <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
-                     <SocialSection v-if="sections.socialMedia || sections['live-stream']" :formData="formData" />
-                     <section v-if="sections['dress-code'] || sections['turut-mengundang'] || sections['health-protocol'] || sections.likes" class="space-y-8">
+                     <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
+                     <section v-if="sections['dress-code'] || sections['extended-family'] || sections.prokes || sections.likes" class="space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                            <div v-if="sections['dress-code']"><label class="form-label">Dress Code</label><input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik" class="form-input" /></div>
-                           <div v-if="sections['health-protocol']"><label class="form-label">Protokol Kesehatan</label><div class="flex items-center gap-4 mt-2"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" /><span class="text-sm font-medium text-dark">Tampilkan Protokol Kesehatan</span></label></div></div>
+                           <div v-if="sections.prokes"><label class="form-label">Protokol Kesehatan</label><div class="flex items-center gap-4 mt-2"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" /><span class="text-sm font-medium text-dark">Tampilkan Protokol Kesehatan</span></label></div></div>
                         </div>
-                        <div v-if="sections['turut-mengundang']"><label class="form-label">Turut Mengundang (Extended Family)</label><textarea v-model="formData.extendedFamilyText" placeholder="Pisahkan nama dengan koma atau baris baru" class="form-input h-24 resize-none"></textarea></div>
+                        <div v-if="sections['extended-family']"><label class="form-label">Turut Mengundang (Extended Family)</label><textarea v-model="formData.extendedFamilyText" placeholder="Pisahkan nama dengan koma atau baris baru" class="form-input h-24 resize-none"></textarea></div>
                      </section>
                      <section v-if="sections.footer" class="space-y-6">
                         <div><label class="form-label">Teks Penutup</label><textarea v-model="formData.footerText" placeholder="Terima kasih atas doa restu Anda..." class="form-input h-24 resize-none"></textarea></div>
@@ -749,10 +765,22 @@ function mapPayloadToFormData(payload) {
          return acc
       }, {})
 
-      // Normalize digital-envelope to gift for backward compatibility with templates
-      if (sections.value['digital-envelope']) {
-         sections.value.gift = true
+      // Normalize keys for backward compatibility and alignment with admin master list
+      const normalizationMap = {
+         'digital-envelope': 'gift',
+         'loveStory': 'love-story',
+         'foodList': 'menu',
+         'health-protocol': 'prokes',
+         'turut-mengundang': 'extended-family',
+         'video-prewedding': 'video',
+         'live-stream': 'live-streaming'
       }
+
+      Object.keys(normalizationMap).forEach(oldKey => {
+         if (sections.value[oldKey]) {
+            sections.value[normalizationMap[oldKey]] = true
+         }
+      })
    }
 
    formData.value.title = payload.title || ''
@@ -792,6 +820,7 @@ function mapPayloadToFormData(payload) {
    if (payload.loveStory && Array.isArray(payload.loveStory)) {
       formData.value.loveStories = payload.loveStory.map(s => ({ title: s.title || '', date: s.date || '', description: s.description || s.content || '', photo: s.image || s.photo || '', photoFile: null, isOpen: false }))
    }
+   formData.value.youtubeUrl = payload.videoPrewedding || ''
    formData.value.sosmedBride = { instagram: payload.socialMediaBrides?.instagram || '', tiktok: payload.socialMediaBrides?.tiktok || '', youtube: payload.socialMediaBrides?.youtube || '', otherSocial: payload.socialMediaBrides?.otherSocial || '' }
    formData.value.sosmedGroom = { instagram: payload.socialMediaGroom?.instagram || '', tiktok: payload.socialMediaGroom?.tiktok || '', youtube: payload.socialMediaGroom?.youtube || '', otherSocial: payload.socialMediaGroom?.otherSocial || '' }
    formData.value.liveStreamingLink = payload.liveStreamingLink || payload.liveStreamingUrl || ''
@@ -1021,9 +1050,10 @@ async function saveAndPreview() {
          templateDesignId: getSelectedTemplateDesignId(), loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
          musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'), isCustomMusic: formData.value.music === 'custom' || (formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart, audioEnd: formData.value.audioEnd, encryptedGuestName: formData.value.encryptedGuest === 'ya', galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
+         videoPrewedding: formData.value.youtubeUrl,
          giftDeliveryAddress: formData.value.giftAddresses, enableCover: true, healthProtocol: formData.value.healthProtocol, enableGuestMessage: formData.value.wishes === 'ya', selectedSections: Object.keys(sections.value).filter(k => sections.value[k]),
          dressCode: formData.value.dressCode, extendedFamily: formData.value.extendedFamilyText ? formData.value.extendedFamilyText.split(',').map(s => s.trim()) : [], turutMengundang: formData.value.extendedFamilyText, liveStreamingLink: formData.value.liveStreamingLink,
-         footerText: formData.value.footerText, likes: formData.value.likes, menu: { title: 'Menu Makanan', items: formData.value.foodList.map(name => ({ name })) },
+         footerText: formData.value.footerText, likes: formData.value.likes, menu: { title: 'Menu Makanan', items: formData.value.foodList.filter(n => n.trim()) },
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
          eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource
