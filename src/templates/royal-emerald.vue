@@ -1156,6 +1156,10 @@ async function loadWishes() {
 }
 
 function initData() {
+  if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
+    rsvp.value.name = data.value.guestName
+  }
+
   if (data.value.akadLocation?.dateTime) {
     const target = new Date(data.value.akadLocation.dateTime).getTime()
     if (!isNaN(target)) {

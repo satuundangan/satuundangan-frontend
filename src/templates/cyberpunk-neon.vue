@@ -409,6 +409,10 @@ function formatInstagramUrl(handle) { return `https://instagram.com/${handle.rep
 function copyToClipboard(text) { navigator.clipboard.writeText(text); toast.success('Data Copied') }
 
 function initData() {
+  if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
+    rsvp.value.name = data.value.guestName
+  }
+
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
   }

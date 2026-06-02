@@ -496,6 +496,10 @@ function copyToClipboard(text) {
 }
 
 function initData() {
+  if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
+    rsvp.value.name = data.value.guestName
+  }
+
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
   } else {

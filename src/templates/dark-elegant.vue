@@ -678,6 +678,10 @@ async function submitRSVP() {
 }
 
 function initData() {
+  if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
+    rsvp.value.name = data.value.guestName
+  }
+
   if (data.value.photoCoupleUrl) backgroundUrl.value = data.value.photoCoupleUrl
 
   if (!data.value.akadLocation && data.value.dateTime) {
