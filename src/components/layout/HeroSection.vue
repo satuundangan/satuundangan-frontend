@@ -38,7 +38,7 @@
             <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
               <i class="fa-solid fa-shield-heart text-mocha text-xs"></i>
             </div>
-            <span>Aktif Selamanya</span>
+            <span>Aktif 1 Tahun</span>
           </div>
         </div>
         

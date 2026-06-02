@@ -57,7 +57,7 @@ const faqs = [
   },
   {
     question: 'Berapa lama undangan akan aktif?',
-    answer: 'Undangan kamu akan aktif selamanya tanpa ada batasan waktu. Kami menjamin kenangan hari bahagiamu tersimpan aman dan bisa diakses kapanpun.'
+    answer: 'Masa aktif undangan adalah selama <strong>1 tahun</strong> setelah pembuatan. Kami memastikan link undanganmu tetap bisa diakses oleh tamu selama masa tersebut.'
   },
   {
     question: 'Bagaimana cara menyebarkan undangannya?',
