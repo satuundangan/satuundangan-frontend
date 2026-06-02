@@ -500,7 +500,7 @@ const currentInvitation = computed(() => {
 })
 
 const isContactPickerSupported = computed(() => {
-  return !!(navigator.contacts && window.ContactsSelect)
+  return !!(navigator.contacts && navigator.contacts.select)
 })
 
 const filteredGuests = computed(() => {
@@ -614,7 +614,7 @@ async function processBulkAdd() {
 
 async function pickFromContacts() {
   if (!isContactPickerSupported.value) {
-    toast.info('Fitur ini hanya tersedia di browser mobile yang mendukung (Chrome Android/Safari iOS)')
+    toast.info('Browser Anda belum mendukung fitur ambil kontak. Gunakan Google Chrome di Android atau Safari di iOS.')
     return
   }
 
@@ -623,7 +623,7 @@ async function pickFromContacts() {
     const opts = { multiple: true }
     const contacts = await navigator.contacts.select(props, opts)
     
-    if (contacts.length > 0) {
+    if (contacts && contacts.length > 0) {
       isSubmitting.value = true
       let added = 0
       for (const contact of contacts) {
@@ -632,13 +632,18 @@ async function pickFromContacts() {
         try {
           await createGuest({ name, phoneNumber: phone, invitationId: selectedInvitationId.value })
           added++
-        } catch (e) { console.error(e) }
+        } catch (e) { 
+          console.error('Failed to add contact:', name, e) 
+        }
       }
       toast.success(`${added} kontak berhasil ditambahkan`)
       await fetchGuests(selectedInvitationId.value)
     }
   } catch (err) {
-    console.error('Contact picker error:', err)
+    if (err.name !== 'AbortError') {
+      console.error('Contact picker error:', err)
+      toast.error('Gagal mengambil kontak: ' + err.message)
+    }
   } finally {
     isSubmitting.value = false
   }
