@@ -303,7 +303,7 @@
 
                   <!-- Step 4: Ekstra -->
                   <div v-if="currentStep === 4" class="space-y-12 animate-fade-in">
-                     <GiftSection v-if="sections.gift || sections.foodList" :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
+                     <GiftSection v-if="sections.gift || sections['digital-envelope'] || sections.foodList" :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
                      <SocialSection v-if="sections.socialMedia || sections['live-stream']" :formData="formData" />
                      <section v-if="sections['dress-code'] || sections['turut-mengundang'] || sections['health-protocol'] || sections.likes" class="space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -748,6 +748,11 @@ function mapPayloadToFormData(payload) {
          acc[key] = true
          return acc
       }, {})
+
+      // Normalize digital-envelope to gift for backward compatibility with templates
+      if (sections.value['digital-envelope']) {
+         sections.value.gift = true
+      }
    }
 
    formData.value.title = payload.title || ''
