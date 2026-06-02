@@ -5,6 +5,9 @@
     <!-- Hero Section -->
     <HeroSection @create-invitation="showModal = true" />
 
+    <!-- Comparison Section -->
+    <ComparisonSection />
+
     <!-- Features Section -->
     <section id="features">
       <FeaturesSection />
@@ -366,6 +369,7 @@ import { useRouter } from 'vue-router'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
 import HeroSection from '@/components/layout/HeroSection.vue'
+import ComparisonSection from '@/components/landing/ComparisonSection.vue'
 import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import StepsSection from '@/components/landing/StepsSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
