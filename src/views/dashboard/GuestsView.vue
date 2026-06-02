@@ -500,7 +500,7 @@ const currentInvitation = computed(() => {
 })
 
 const isContactPickerSupported = computed(() => {
-  return !!(navigator.contacts && navigator.contacts.select)
+  return 'contacts' in navigator && !!navigator.contacts.select
 })
 
 const filteredGuests = computed(() => {
@@ -614,12 +614,31 @@ async function processBulkAdd() {
 
 async function pickFromContacts() {
   if (!isContactPickerSupported.value) {
-    toast.info('Browser Anda belum mendukung fitur ambil kontak. Gunakan Google Chrome di Android atau Safari di iOS.')
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1)
+    const isInstagram = /Instagram/.test(navigator.userAgent)
+    const isWhatsApp = /WhatsApp/.test(navigator.userAgent)
+    
+    if (isInstagram || isWhatsApp) {
+      toast.info('Browser di dalam aplikasi (Instagram/WA) membatasi fitur ini. Silakan klik titik tiga di pojok kanan atas lalu "Buka di Chrome/Safari".')
+    } else if (isIOS) {
+      toast.info('Maaf, Apple (Safari iOS) belum mendukung fitur ambil kontak otomatis demi privasi. Silakan gunakan Tambah Manual atau Massal.')
+    } else {
+      toast.info('Browser Anda belum mendukung fitur ambil kontak. Pastikan Anda menggunakan Chrome di Android.')
+    }
     return
   }
 
   try {
-    const props = ['name', 'tel']
+    const supportedProperties = await navigator.contacts.getProperties()
+    const props = []
+    if (supportedProperties.includes('name')) props.push('name')
+    if (supportedProperties.includes('tel')) props.push('tel')
+    
+    if (props.length === 0) {
+      toast.warning('Perangkat Anda tidak mengizinkan akses nama atau nomor telepon.')
+      return
+    }
+
     const opts = { multiple: true }
     const contacts = await navigator.contacts.select(props, opts)
     
@@ -640,7 +659,9 @@ async function pickFromContacts() {
       await fetchGuests(selectedInvitationId.value)
     }
   } catch (err) {
-    if (err.name !== 'AbortError') {
+    if (err.name === 'SecurityError') {
+      toast.error('Gagal: Fitur ini tidak bisa dijalankan di dalam frame atau mode tertentu.')
+    } else if (err.name !== 'AbortError') {
       console.error('Contact picker error:', err)
       toast.error('Gagal mengambil kontak: ' + err.message)
     }
