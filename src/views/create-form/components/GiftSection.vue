@@ -1,6 +1,6 @@
 <template>
   <section class="space-y-8">
-    <div v-if="sections.foodList" class="space-y-2">
+    <div class="space-y-2">
       <label class="block text-mocha font-semibold">Daftar Menu Makanan</label>
       <div v-for="(item, index) in foodList" :key="`food-${index}`" class="flex items-center gap-2">
         <input
