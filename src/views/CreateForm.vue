@@ -1072,7 +1072,7 @@ async function saveAndPreview() {
       })
 
       clearDraft(); toast.success("Berhasil menyimpan!"); router.push({ path: '/preview', query: { slug: result.slug } })
-   } catch (error) { console.error(error); const errorMsg = error.response?.data?.message || 'Gagal menyimpan!'; toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg) }
+   } catch (error) { console.error(error); const errorMsg = error.message || 'Gagal menyimpan!'; toast.error(Array.isArray(errorMsg) ? errorMsg[0] : errorMsg) }
    finally { isUploading.value = false }
 }
 </script>
