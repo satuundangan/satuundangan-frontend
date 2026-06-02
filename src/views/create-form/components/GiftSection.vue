@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div v-if="sections.gift || sections['digital-envelope']" class="space-y-6">
+    <div class="space-y-6">
       <div class="space-y-4">
         <label class="block text-mocha font-semibold">QRIS / E-Wallet</label>
         <div v-for="(wallet, index) in formData.eWalletLink" :key="`wallet-${index}`" class="relative space-y-3 rounded-xl border border-gray-300 bg-white p-4">

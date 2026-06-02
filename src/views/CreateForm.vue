@@ -303,7 +303,7 @@
 
                   <!-- Step 4: Ekstra -->
                   <div v-if="currentStep === 4" class="space-y-12 animate-fade-in">
-                     <GiftSection v-if="sections.gift || sections['digital-envelope'] || sections.foodList" :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
+                     <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
                      <SocialSection v-if="sections.socialMedia || sections['live-stream']" :formData="formData" />
                      <section v-if="sections['dress-code'] || sections['turut-mengundang'] || sections['health-protocol'] || sections.likes" class="space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -1006,6 +1006,12 @@ async function saveAndPreview() {
    isUploading.value = true
    try {
       await uploadAllFiles()
+
+      // Auto-enable gift section if data is present
+      if (formData.value.eWalletLink?.length > 0 || formData.value.bankAccounts?.length > 0 || formData.value.giftAddresses?.length > 0) {
+         sections.value.gift = true
+      }
+
       const payload = {
          title: formData.value.title, slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
