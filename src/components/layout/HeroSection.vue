@@ -17,8 +17,30 @@
           Dengan Elegan.
         </h1>
         <p class="text-dark/70 text-lg md:text-xl max-w-lg mx-auto md:mx-0 leading-relaxed font-light">
-          Buat undangan pernikahan digital yang eksklusif, modern, dan penuh makna. Desain premium untuk momen sekali seumur hidup.
+          Buat undangan pernikahan digital yang eksklusif, modern, dan penuh makna. 
+          <span class="font-bold text-dark/90 block mt-2">Edit sendiri sesukamu, revisi sepuasnya tanpa batas!</span>
         </p>
+
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-8 text-sm font-bold text-dark/60 pt-2">
+          <div class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
+              <i class="fa-solid fa-infinity text-mocha text-xs"></i>
+            </div>
+            <span>Unlimited Revisi</span>
+          </div>
+          <div class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
+              <i class="fa-solid fa-bolt text-mocha text-xs"></i>
+            </div>
+            <span>Proses Instan</span>
+          </div>
+          <div class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
+              <i class="fa-solid fa-shield-heart text-mocha text-xs"></i>
+            </div>
+            <span>Aktif Selamanya</span>
+          </div>
+        </div>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6">
           <button @click="$emit('create-invitation')" class="btn-primary text-lg px-8 py-3.5 shadow-xl shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all duration-300 rounded-full">

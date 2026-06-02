@@ -71,6 +71,11 @@ const features = [
     description: 'Ceritakan perjalanan cintamu dari awal bertemu hingga pelaminan.'
   },
   {
+    icon: 'fa-solid fa-infinity',
+    title: 'Revisi Sepuasnya',
+    description: 'Kamu bebas mengedit isi undanganmu kapan saja tanpa ada batasan revisi.'
+  },
+  {
     icon: 'fa-solid fa-mobile-screen',
     title: 'Responsive & Cepat',
     description: 'Tampilan undangan yang sempurna dan loading cepat di semua ukuran layar.'
