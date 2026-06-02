@@ -493,9 +493,14 @@ const showShareModal = ref(false)
 const shareMessage = ref('')
 const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
+const newGuest = ref({ name: '', group: '', phoneNumber: '' })
+
+const currentInvitation = computed(() => {
+  return invitations.value.find(inv => inv.id === selectedInvitationId.value) || null
+})
 
 const isContactPickerSupported = computed(() => {
-  return !!(navigator.contacts && window.ContactsManager)
+  return !!(navigator.contacts && window.ContactsSelect)
 })
 
 const filteredGuests = computed(() => {
@@ -517,6 +522,9 @@ async function fetchInvitations() {
     const res = await getInvitations()
     const data = Array.isArray(res) ? res : res.data || []
     invitations.value = data
+    if (data.length > 0 && !selectedInvitationId.value) {
+      selectedInvitationId.value = data[0].id
+    }
   } catch (error) {
     toast.error('Gagal memuat undangan')
     console.error(error)
@@ -554,6 +562,145 @@ async function submitGuest() {
   } finally {
     isSubmitting.value = false
   }
+}
+
+async function processBulkAdd() {
+  const lines = bulkText.value.split('\n').filter(l => l.trim())
+  if (lines.length === 0) return
+
+  isSubmitting.value = true
+  let successCount = 0
+  let failCount = 0
+
+  for (const line of lines) {
+    try {
+      // Logic: Nama bisa ber spasi, nomor hp biasanya di akhir
+      const parts = line.trim().split(/\s+/)
+      let name = ''
+      let phone = ''
+
+      if (parts.length > 1) {
+        const lastPart = parts[parts.length - 1]
+        if (/^[0-9+]+$/.test(lastPart)) {
+          phone = lastPart
+          name = parts.slice(0, -1).join(' ')
+        } else {
+          name = parts.join(' ')
+        }
+      } else {
+        name = parts[0]
+      }
+
+      await createGuest({ 
+        name, 
+        phoneNumber: phone, 
+        invitationId: selectedInvitationId.value 
+      })
+      successCount++
+    } catch (err) {
+      console.error('Failed to add guest:', line, err)
+      failCount++
+    }
+  }
+
+  toast.success(`${successCount} tamu berhasil ditambahkan`)
+  if (failCount > 0) toast.error(`${failCount} tamu gagal ditambahkan`)
+  
+  bulkText.value = ''
+  showBulkModal.value = false
+  isSubmitting.value = false
+  await fetchGuests(selectedInvitationId.value)
+}
+
+async function pickFromContacts() {
+  if (!isContactPickerSupported.value) {
+    toast.info('Fitur ini hanya tersedia di browser mobile yang mendukung (Chrome Android/Safari iOS)')
+    return
+  }
+
+  try {
+    const props = ['name', 'tel']
+    const opts = { multiple: true }
+    const contacts = await navigator.contacts.select(props, opts)
+    
+    if (contacts.length > 0) {
+      isSubmitting.value = true
+      let added = 0
+      for (const contact of contacts) {
+        const name = contact.name?.[0] || 'Tamu'
+        const phone = contact.tel?.[0] || ''
+        try {
+          await createGuest({ name, phoneNumber: phone, invitationId: selectedInvitationId.value })
+          added++
+        } catch (e) { console.error(e) }
+      }
+      toast.success(`${added} kontak berhasil ditambahkan`)
+      await fetchGuests(selectedInvitationId.value)
+    }
+  } catch (err) {
+    console.error('Contact picker error:', err)
+  } finally {
+    isSubmitting.value = false
+  }
+}
+
+function triggerExcelImport() {
+  excelInput.value?.click()
+}
+
+async function handleExcelImport(event) {
+  const file = event.target.files[0]
+  if (!file) return
+
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    try {
+      const data = new Uint8Array(e.target.result)
+      const workbook = XLSX.read(data, { type: 'array' })
+      const firstSheet = workbook.SheetNames[0]
+      const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[firstSheet])
+
+      if (jsonData.length === 0) {
+        toast.warning('File Excel kosong')
+        return
+      }
+
+      isSubmitting.value = true
+      let success = 0
+      for (const row of jsonData) {
+        // Map common columns
+        const name = row.Nama || row.nama || row.Name || row.name
+        const phone = row.WhatsApp || row.whatsapp || row.NoHP || row.phone || row.telp
+        const group = row.Kategori || row.group || row.category
+
+        if (name) {
+          try {
+            await createGuest({ name, phoneNumber: String(phone || ''), group, invitationId: selectedInvitationId.value })
+            success++
+          } catch (err) { console.error(err) }
+        }
+      }
+      toast.success(`${success} tamu berhasil diimport`)
+      await fetchGuests(selectedInvitationId.value)
+    } catch (err) {
+      toast.error('Gagal membaca file Excel')
+      console.error(err)
+    } finally {
+      isSubmitting.value = false
+      if (excelInput.value) excelInput.value.value = ''
+    }
+  }
+  reader.readAsArrayBuffer(file)
+}
+
+function downloadTemplate() {
+  const ws = XLSX.utils.json_to_sheet([
+    { Nama: 'Budi Santoso', WhatsApp: '08123456789', Kategori: 'Keluarga' },
+    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman' }
+  ])
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Template Tamu')
+  XLSX.writeFile(wb, 'Template_Tamu_SatuUndangan.xlsx')
 }
 
 async function deleteGuestHandler(id) {
