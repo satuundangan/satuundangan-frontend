@@ -73,12 +73,7 @@ const features = [
   {
     icon: 'fa-solid fa-infinity',
     title: 'Revisi Sepuasnya',
-    description: 'Kamu bebas mengedit isi undanganmu kapan saja tanpa ada batasan revisi.'
-  },
-  {
-    icon: 'fa-solid fa-mobile-screen',
-    title: 'Responsive & Cepat',
-    description: 'Tampilan undangan yang sempurna dan loading cepat di semua ukuran layar.'
+    description: 'Bebas edit isi undanganmu kapan saja tanpa batasan revisi, proses instan dan cepat.'
   }
 ]
 </script>
