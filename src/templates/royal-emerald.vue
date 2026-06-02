@@ -129,752 +129,752 @@
       id="main-content"
       class="opacity-0 transition-opacity duration-[1500ms] h-full overflow-y-auto snap-y snap-mandatory no-scrollbar scroll-smooth"
     >
-      <!-- Watermark Background -->
-      <div
-        class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 mix-blend-screen opacity-[0.03]"
-      >
-        <h1 class="text-[50vh] font-alex text-[#d4af37] leading-none whitespace-nowrap">
-          {{ data.groomName?.[0] }} & {{ data.brideName?.[0] }}
-        </h1>
-      </div>
-
-      <!-- 1. HERO SECTION -->
-      <section
-        id="home"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden"
-      >
-        <!-- Floral Corner Top Left -->
+      <div class="relative w-full max-w-[500px] mx-auto bg-[#022b1d] shadow-[0_0_100px_rgba(0,0,0,0.8)] min-h-screen">
+        <!-- Watermark Background -->
         <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
+          class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 mix-blend-screen opacity-[0.03]"
         >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
-        >
+          <h1 class="text-[50vh] font-alex text-[#d4af37] leading-none whitespace-nowrap">
+            {{ data.groomName?.[0] }} & {{ data.brideName?.[0] }}
+          </h1>
         </div>
 
-        <div
-          class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-transparent to-[#022b1d]"
-        ></div>
-        <div class="relative z-10 w-full max-w-5xl mx-auto space-y-10" v-observe>
-          <div class="relative mx-auto w-56 h-[22rem] md:w-80 md:h-[32rem]">
-            <!-- Double Frame Effect -->
-            <div
-              class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"
-            ></div>
-            <div
-              class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"
-            ></div>
-            <div
-              class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-3xl flex items-end justify-center"
-            >
-              <img
-                :src="data.photoCoupleUrl || illustrationUrl"
-                class="w-full h-full object-cover object-top"
-              />
-            </div>
+        <!-- 1. HERO SECTION -->
+        <section
+          id="home"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 overflow-hidden"
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
+          >
           </div>
-          <div class="space-y-4">
-            <p
-              class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black"
-            >
-              The Halal Journey Of
-            </p>
-            <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
-              {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
-              <span class="text-2xl md:text-4xl font-cormorant italic text-[#d4af37]/80">&</span>
-              {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
-            </h1>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
+          >
           </div>
-          <div class="flex flex-col items-center gap-4">
-            <div class="flex items-center justify-center gap-3 opacity-80">
+
+          <div
+            class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-transparent to-[#022b1d]"
+          ></div>
+          <div class="relative z-10 w-full max-w-5xl mx-auto space-y-10" v-observe>
+            <div class="relative mx-auto w-56 h-[22rem] md:w-80 md:h-[32rem]">
+              <!-- Double Frame Effect -->
               <div
-                class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#d4af37]"
+                class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[4rem] hidden md:block"
               ></div>
-              <svg
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                class="text-[#d4af37] animate-spin-slow w-4 h-4 md:w-6 md:h-6"
+              <div
+                class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl translate-x-3 translate-y-3"
+              ></div>
+              <div
+                class="absolute inset-0 bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-3xl flex items-end justify-center"
               >
-                <path
-                  d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
-                  fill="currentColor"
+                <img
+                  :src="data.photoCoupleUrl || illustrationUrl"
+                  class="w-full h-full object-cover object-top"
                 />
-              </svg>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <p
+                class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black"
+              >
+                The Halal Journey Of
+              </p>
+              <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
+                {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
+                <span class="text-2xl md:text-4xl font-cormorant italic text-[#d4af37]/80">&</span>
+                {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
+              </h1>
+            </div>
+            <div class="flex flex-col items-center gap-4">
+              <div class="flex items-center justify-center gap-3 opacity-80">
+                <div
+                  class="h-[1px] w-12 md:w-20 bg-gradient-to-r from-transparent to-[#d4af37]"
+                ></div>
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="text-[#d4af37] animate-spin-slow w-4 h-4 md:w-6 md:h-6"
+                >
+                  <path
+                    d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
+                    fill="currentColor"
+                  />
+                </svg>
+                <div
+                  class="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#d4af37]"
+                ></div>
+              </div>
+              <p
+                class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2"
+              >
+                {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. QUOTE SECTION -->
+        <section
+          v-if="isSectionEnabled('quote')"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10"
+          v-observe
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div class="max-w-4xl mx-auto space-y-10">
+            <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#d4af37] opacity-20"></i>
+            <p
+              class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg"
+            >
+              "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu
+              dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia
+              menjadikan di antaramu rasa kasih dan sayang."
+            </p>
+            <div class="flex flex-col items-center gap-4">
+              <div class="h-10 md:h-16 w-[1px] bg-[#d4af37]/40"></div>
+              <p class="text-[10px] md:text-sm font-black text-[#d4af37] tracking-[0.3em] uppercase">
+                {{ data.quoteSource || 'QS. AR-RUM: 21' }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 3. GROOM SECTION -->
+        <section
+          v-if="isSectionEnabled('couple')"
+          id="couple"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]"
+          v-observe
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
+            <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
               <div
-                class="h-[1px] w-12 md:w-20 bg-gradient-to-l from-transparent to-[#d4af37]"
+                class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"
+              ></div>
+              <div
+                class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"
+              ></div>
+              <div
+                class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl flex items-end justify-center"
+              >
+                <img
+                  :src="data.groomPhotoUrl || illustrationUrl"
+                  class="w-full h-full object-cover object-top scale-x-[-1]"
+                />
+                <!-- Sparkles -->
+                <div class="absolute inset-0 z-20 pointer-events-none">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    class="absolute top-1/4 right-1/4 text-[#d4af37] animate-pulse-slow"
+                  >
+                    <path
+                      d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    class="absolute top-1/2 left-1/4 text-[#d4af37] animate-ping-slow"
+                  >
+                    <path
+                      d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
+              <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
+              <p class="text-white/50 text-sm md:text-xl font-serif italic">
+                Putra ke-{{ data.groomOrder || 'dua' }} dari:
+              </p>
+              <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">
+                {{ data.parents?.groomParents }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 4. BRIDE SECTION -->
+        <section
+          v-if="isSectionEnabled('couple')"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]"
+          v-observe
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
+            <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
+              <div
+                class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"
+              ></div>
+              <div
+                class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center"
+              >
+                <img
+                  :src="data.bridePhotoUrl || illustrationUrl"
+                  class="w-full h-full object-cover object-top"
+                />
+                <!-- Sparkles -->
+                <div class="absolute inset-0 z-20 pointer-events-none">
+                  <svg
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    class="absolute top-1/4 left-1/4 text-[#d4af37] animate-pulse-slow"
+                  >
+                    <path
+                      d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    class="absolute top-1/2 right-1/4 text-[#d4af37] animate-ping-slow"
+                  >
+                    <path
+                      d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
+                      fill="currentColor"
+                    />
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <div class="space-y-4">
+              <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
+              <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.brideName }}</h3>
+              <p class="text-white/50 text-sm md:text-xl font-serif italic">
+                Putri ke-{{ data.brideOrder || 'dua' }} dari:
+              </p>
+              <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">
+                {{ data.parents?.brideParents }}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 5. LOVE STORY SECTION -->
+        <section
+          v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)"
+          id="story"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6"
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div class="max-w-4xl mx-auto w-full space-y-10">
+            <div class="text-center space-y-3" v-observe>
+              <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Chapter</h2>
+              <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">
+                Journey to Eternity
+              </p>
+            </div>
+            <div class="space-y-6 h-[60vh] overflow-y-auto no-scrollbar py-4 px-2" v-observe>
+              <div
+                v-for="(story, idx) in data.loveStory?.length ? data.loveStory : mockStories"
+                :key="idx"
+                class="bg-white/5 p-6 rounded-[2rem] border border-[#d4af37]/20 shadow-xl transition-all"
+              >
+                <div class="text-[#d4af37] font-black text-[9px] uppercase tracking-widest mb-1">
+                  {{ story.date }}
+                </div>
+                <h3 class="text-lg md:text-2xl font-serif font-bold text-white mb-2">
+                  {{ story.title }}
+                </h3>
+                <p class="text-white/60 text-xs md:text-sm leading-relaxed font-light">
+                  {{ story.description }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 6. UNIFIED EVENT SECTION (Performance Optimized) -->
+        <section
+          v-if="isSectionEnabled('event')"
+          id="event"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden"
+          v-observe
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180"
+          >
+          </div>
+
+          <!-- Cinematic Infinity Backdrop -->
+          <div class="absolute inset-0 pointer-events-none overflow-hidden">
+            <div
+              class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-10"
+            ></div>
+            <div
+              class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-[#011a12] to-[#022b1d]"
+            ></div>
+            <!-- Golden Snowfall Magic -->
+            <div class="absolute inset-0 w-full h-full opacity-60">
+              <div
+                class="absolute top-[-10%] left-[10%] w-2 h-2 bg-[#ffffff] rounded-full blur-[1px] animate-snow-1"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[30%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[50%] w-1.5 h-1.5 bg-[#ffffff] rounded-full animate-snow-3"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[70%] w-4 h-4 bg-[#d4af37] rounded-full blur-[3px] animate-snow-1"
+                style="animation-delay: 2s"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[90%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-2"
+                style="animation-delay: 4s"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[20%] w-2.5 h-2.5 bg-[#d4af37] rounded-full blur-[1px] animate-snow-3"
+                style="animation-delay: 1.5s"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[60%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-1"
+                style="animation-delay: 3s"
+              ></div>
+              <div
+                class="absolute top-[-10%] left-[80%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2"
+                style="animation-delay: 5s"
               ></div>
             </div>
-            <p
-              class="text-lg md:text-3xl font-cormorant tracking-[0.3em] text-white/90 font-light uppercase mt-2"
-            >
-              {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
-            </p>
           </div>
-        </div>
-      </section>
 
-      <!-- 2. QUOTE SECTION -->
-      <section
-        v-if="isSectionEnabled('quote')"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#011a12] border-y border-[#d4af37]/10"
-        v-observe
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
-        >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180"
-        >
-        </div>
-
-        <div class="max-w-4xl mx-auto space-y-10">
-          <i class="fa-solid fa-quote-left text-3xl md:text-5xl text-[#d4af37] opacity-20"></i>
-          <p
-            class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg"
+          <div
+            class="relative z-10 max-w-5xl w-full flex flex-col items-center space-y-4 md:space-y-4 h-full justify-center max-h-screen py-8 md:py-8"
           >
-            "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu
-            dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia
-            menjadikan di antaramu rasa kasih dan sayang."
-          </p>
-          <div class="flex flex-col items-center gap-4">
-            <div class="h-10 md:h-16 w-[1px] bg-[#d4af37]/40"></div>
-            <p class="text-[10px] md:text-sm font-black text-[#d4af37] tracking-[0.3em] uppercase">
-              {{ data.quoteSource || 'QS. AR-RUM: 21' }}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 3. GROOM SECTION -->
-      <section
-        v-if="isSectionEnabled('couple')"
-        id="couple"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]"
-        v-observe
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
-        >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
-        >
-        </div>
-
-        <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
-          <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
-            <div
-              class="absolute -inset-4 border border-[#d4af37]/10 rounded-t-[12rem] rounded-b-[3rem] hidden md:block"
-            ></div>
-            <div
-              class="absolute inset-0 border border-[#d4af37]/30 rounded-t-full rounded-b-3xl -translate-x-3 translate-y-3"
-            ></div>
-            <div
-              class="w-full h-full bg-gradient-to-t from-[#043927] to-[#022b1d] rounded-t-full rounded-b-3xl overflow-hidden border-2 border-[#d4af37]/50 shadow-2xl flex items-end justify-center"
-            >
-              <img
-                :src="data.groomPhotoUrl || illustrationUrl"
-                class="w-full h-full object-cover object-top scale-x-[-1]"
-              />
-              <!-- Sparkles -->
-              <div class="absolute inset-0 z-20 pointer-events-none">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  class="absolute top-1/4 right-1/4 text-[#d4af37] animate-pulse-slow"
-                >
-                  <path
-                    d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  class="absolute top-1/2 left-1/4 text-[#d4af37] animate-ping-slow"
-                >
-                  <path
-                    d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
-                    fill="currentColor"
-                  />
-                </svg>
+            <div class="text-center space-y-1 md:space-y-2">
+              <p
+                class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60"
+              >
+                The Halal Rituals
+              </p>
+              <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
+              <div class="flex items-center gap-4 justify-center pt-1">
+                <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
+                <i class="fa-solid fa-moon text-[#d4af37]/40 text-[10px] md:text-xs"></i>
+                <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
               </div>
             </div>
-          </div>
-          <div class="space-y-4">
-            <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
-            <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
-            <p class="text-white/50 text-sm md:text-xl font-serif italic">
-              Putra ke-{{ data.groomOrder || 'dua' }} dari:
-            </p>
-            <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">
-              {{ data.parents?.groomParents }}
-            </p>
-          </div>
-        </div>
-      </section>
 
-      <!-- 4. BRIDE SECTION -->
-      <section
-        v-if="isSectionEnabled('couple')"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-6 bg-[#022b1d]"
-        v-observe
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
-        >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180"
-        >
-        </div>
-
-        <div class="w-full max-w-4xl flex flex-col items-center space-y-8 md:space-y-8">
-          <div class="w-56 h-[20rem] md:w-64 md:h-[22rem] relative">
             <div
-              class="absolute inset-0 border border-[#d4af37]/30 rounded-t-[10rem] rounded-b-[2rem] translate-x-3 translate-y-3"
-            ></div>
-            <div
-              class="w-full h-full bg-[#043927] rounded-t-[10rem] rounded-b-[2rem] overflow-hidden border border-[#d4af37]/50 shadow-3xl flex items-end justify-center"
+              class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full px-2 max-w-[360px] md:max-w-none mx-auto"
             >
-              <img
-                :src="data.bridePhotoUrl || illustrationUrl"
-                class="w-full h-full object-cover object-top"
-              />
-              <!-- Sparkles -->
-              <div class="absolute inset-0 z-20 pointer-events-none">
-                <svg
-                  width="16"
-                  height="16"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  class="absolute top-1/4 left-1/4 text-[#d4af37] animate-pulse-slow"
+              <!-- Akad Nikah Card (Horizontal Mobile) -->
+              <div
+                class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8"
+              >
+                <div class="flex items-center md:flex-col gap-4 md:gap-6">
+                  <div
+                    class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center"
+                  >
+                    <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#d4af37]"></i>
+                  </div>
+                  <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
+                    <h3
+                      class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]"
+                    >
+                      Akad Nikah
+                    </h3>
+                    <div class="flex items-center gap-2 md:flex-col md:gap-1">
+                      <p class="text-white font-bold text-[11px] md:text-2xl">
+                        {{ formatDate(data.akadLocation?.dateTime) }}
+                      </p>
+                      <span class="text-[#d4af37] md:hidden">|</span>
+                      <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">
+                        {{ formatTime(data.akadLocation?.dateTime) }} WIB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p
+                  class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center"
                 >
-                  <path
-                    d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
-                    fill="currentColor"
-                  />
-                </svg>
-                <svg
-                  width="10"
-                  height="10"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  class="absolute top-1/2 right-1/4 text-[#d4af37] animate-ping-slow"
+                  {{ data.akadLocation?.description }}
+                </p>
+                <div class="pt-1 md:pt-4">
+                  <a
+                    :href="data.akadLocation?.mapUrl"
+                    target="_blank"
+                    class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-md active:scale-95 transition-transform"
+                  >
+                    <i class="fa-solid fa-location-dot"></i> Google Maps
+                  </a>
+                </div>
+              </div>
+
+              <!-- Resepsi Card (Horizontal Mobile) -->
+              <div
+                class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8"
+              >
+                <div class="flex items-center md:flex-col gap-4 md:gap-6">
+                  <div
+                    class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center"
+                  >
+                    <i class="fa-solid fa-champagne-glasses text-xl md:text-4xl text-[#d4af37]"></i>
+                  </div>
+                  <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
+                    <h3
+                      class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]"
+                    >
+                      Resepsi
+                    </h3>
+                    <div class="flex items-center gap-2 md:flex-col md:gap-1">
+                      <p class="text-white font-bold text-[11px] md:text-2xl">
+                        {{ formatDate(data.resepsiLocation?.dateTime) }}
+                      </p>
+                      <span class="text-[#d4af37] md:hidden">|</span>
+                      <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">
+                        08:00 - 20:00 WIB
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <p
+                  class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center"
                 >
-                  <path
-                    d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z"
-                    fill="currentColor"
-                  />
-                </svg>
+                  {{ data.resepsiLocation?.description }}
+                </p>
+                <div class="pt-1 md:pt-4">
+                  <a
+                    :href="data.resepsiLocation?.mapUrl"
+                    target="_blank"
+                    class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 border-2 border-[#d4af37] text-[#d4af37] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest active:scale-95 transition-transform"
+                  >
+                    <i class="fa-solid fa-map-pin"></i> Lihat Lokasi
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="space-y-4">
-            <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
-            <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.brideName }}</h3>
-            <p class="text-white/50 text-sm md:text-xl font-serif italic">
-              Putri ke-{{ data.brideOrder || 'dua' }} dari:
-            </p>
-            <p class="text-white text-lg md:text-2xl font-bold tracking-tight px-4">
-              {{ data.parents?.brideParents }}
-            </p>
-          </div>
-        </div>
-      </section>
 
-      <!-- 5. LOVE STORY SECTION -->
-      <section
-        v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)"
-        id="story"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 bg-[#022b1d] px-6"
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
-        >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
-        >
-        </div>
-
-        <div class="max-w-4xl mx-auto w-full space-y-10">
-          <div class="text-center space-y-3" v-observe>
-            <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Chapter</h2>
-            <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">
-              Journey to Eternity
-            </p>
-          </div>
-          <div class="space-y-6 h-[60vh] overflow-y-auto no-scrollbar py-4 px-2" v-observe>
             <div
-              v-for="(story, idx) in data.loveStory?.length ? data.loveStory : mockStories"
-              :key="idx"
-              class="bg-white/5 p-6 rounded-[2rem] border border-[#d4af37]/20 shadow-xl transition-all"
+              v-if="data.dressCode"
+              class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#d4af37]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto"
             >
-              <div class="text-[#d4af37] font-black text-[9px] uppercase tracking-widest mb-1">
-                {{ story.date }}
+              <p
+                class="text-[#d4af37] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10"
+              >
+                The Dress Code
+              </p>
+              <p class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">
+                "{{ data.dressCode }}"
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <!-- 8. GIFT SECTION -->
+        <section
+          v-if="isSectionEnabled('gift')"
+          id="gift"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden"
+          v-observe
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div
+            class="max-w-4xl mx-auto w-full space-y-4 md:space-y-10 overflow-y-auto no-scrollbar max-h-[90vh] py-6"
+          >
+            <div class="text-center space-y-2">
+              <h2 class="text-3xl md:text-7xl font-alex text-[#d4af37]">Wedding Gift</h2>
+              <p class="text-white/50 text-[8px] md:text-sm font-light italic max-w-xs mx-auto">
+                Tanda kasih dapat dikirim melalui:
+              </p>
+            </div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
+              <div
+                v-for="(bank, index) in data.bankAccounts"
+                :key="index"
+                class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2"
+              >
+                <p
+                  class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]"
+                >
+                  {{ bank.bankName }}
+                </p>
+                <p class="text-base md:text-3xl font-bold text-white tracking-widest">
+                  {{ bank.accountNumber }}
+                </p>
+                <p class="text-white/60 text-[7px] md:text-[9px] uppercase font-bold">
+                  A.N {{ bank.accountName }}
+                </p>
+                <button
+                  @click="copyToClipboard(bank.accountNumber)"
+                  class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase"
+                >
+                  Salin No. Rekening
+                </button>
               </div>
-              <h3 class="text-lg md:text-2xl font-serif font-bold text-white mb-2">
-                {{ story.title }}
+            </div>
+            <div
+              v-if="data.giftDeliveryAddress"
+              class="p-5 md:p-8 bg-white/[0.02] border border-[#d4af37]/10 rounded-[2rem] text-center space-y-3"
+            >
+              <h3
+                class="text-sm md:text-2xl font-serif font-black text-white uppercase tracking-widest"
+              >
+                Kirim Kado Fisik
               </h3>
-              <p class="text-white/60 text-xs md:text-sm leading-relaxed font-light">
-                {{ story.description }}
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 6. UNIFIED EVENT SECTION (Performance Optimized) -->
-      <section
-        v-if="isSectionEnabled('event')"
-        id="event"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden"
-        v-observe
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
-        >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-40 z-0 transform rotate-180"
-        >
-        </div>
-
-        <!-- Cinematic Infinity Backdrop -->
-        <div class="absolute inset-0 pointer-events-none overflow-hidden">
-          <div
-            class="absolute top-0 left-0 w-full h-full bg-[url('https://www.transparenttextures.com/patterns/dark-leather.png')] opacity-10"
-          ></div>
-          <div
-            class="absolute inset-0 bg-gradient-to-b from-[#022b1d] via-[#011a12] to-[#022b1d]"
-          ></div>
-          <!-- Golden Snowfall Magic -->
-          <div class="absolute inset-0 w-full h-full opacity-60">
-            <div
-              class="absolute top-[-10%] left-[10%] w-2 h-2 bg-[#ffffff] rounded-full blur-[1px] animate-snow-1"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[30%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[50%] w-1.5 h-1.5 bg-[#ffffff] rounded-full animate-snow-3"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[70%] w-4 h-4 bg-[#d4af37] rounded-full blur-[3px] animate-snow-1"
-              style="animation-delay: 2s"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[90%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-2"
-              style="animation-delay: 4s"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[20%] w-2.5 h-2.5 bg-[#d4af37] rounded-full blur-[1px] animate-snow-3"
-              style="animation-delay: 1.5s"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[60%] w-2 h-2 bg-[#ffffff] rounded-full animate-snow-1"
-              style="animation-delay: 3s"
-            ></div>
-            <div
-              class="absolute top-[-10%] left-[80%] w-3 h-3 bg-[#d4af37] rounded-full blur-[2px] animate-snow-2"
-              style="animation-delay: 5s"
-            ></div>
-          </div>
-        </div>
-
-        <div
-          class="relative z-10 max-w-5xl w-full flex flex-col items-center space-y-4 md:space-y-4 h-full justify-center max-h-screen py-8 md:py-8"
-        >
-          <div class="text-center space-y-1 md:space-y-2">
-            <p
-              class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60"
-            >
-              The Halal Rituals
-            </p>
-            <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
-            <div class="flex items-center gap-4 justify-center pt-1">
-              <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
-              <i class="fa-solid fa-moon text-[#d4af37]/40 text-[10px] md:text-xs"></i>
-              <div class="h-[1px] w-8 md:w-10 bg-[#d4af37]/30"></div>
-            </div>
-          </div>
-
-          <div
-            class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full px-2 max-w-[360px] md:max-w-none mx-auto"
-          >
-            <!-- Akad Nikah Card (Horizontal Mobile) -->
-            <div
-              class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8"
-            >
-              <div class="flex items-center md:flex-col gap-4 md:gap-6">
-                <div
-                  class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center"
-                >
-                  <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#d4af37]"></i>
-                </div>
-                <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
-                  <h3
-                    class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]"
-                  >
-                    Akad Nikah
-                  </h3>
-                  <div class="flex items-center gap-2 md:flex-col md:gap-1">
-                    <p class="text-white font-bold text-[11px] md:text-2xl">
-                      {{ formatDate(data.akadLocation?.dateTime) }}
-                    </p>
-                    <span class="text-[#d4af37] md:hidden">|</span>
-                    <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">
-                      {{ formatTime(data.akadLocation?.dateTime) }} WIB
-                    </p>
-                  </div>
-                </div>
-              </div>
               <p
-                class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center"
+                class="text-white/60 text-[9px] md:text-base leading-relaxed italic line-clamp-2 px-2"
               >
-                {{ data.akadLocation?.description }}
-              </p>
-              <div class="pt-1 md:pt-4">
-                <a
-                  :href="data.akadLocation?.mapUrl"
-                  target="_blank"
-                  class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 bg-[#d4af37] text-[#022b1d] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest shadow-md active:scale-95 transition-transform"
-                >
-                  <i class="fa-solid fa-location-dot"></i> Google Maps
-                </a>
-              </div>
-            </div>
-
-            <!-- Resepsi Card (Horizontal Mobile) -->
-            <div
-              class="bg-[#022b1d] p-5 md:p-6 rounded-[2rem] md:rounded-[2rem] border border-[#d4af37]/20 shadow-xl flex flex-col space-y-3 md:space-y-8"
-            >
-              <div class="flex items-center md:flex-col gap-4 md:gap-6">
-                <div
-                  class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center"
-                >
-                  <i class="fa-solid fa-champagne-glasses text-xl md:text-4xl text-[#d4af37]"></i>
-                </div>
-                <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
-                  <h3
-                    class="text-xl md:text-4xl font-serif font-black text-white uppercase tracking-[0.1em]"
-                  >
-                    Resepsi
-                  </h3>
-                  <div class="flex items-center gap-2 md:flex-col md:gap-1">
-                    <p class="text-white font-bold text-[11px] md:text-2xl">
-                      {{ formatDate(data.resepsiLocation?.dateTime) }}
-                    </p>
-                    <span class="text-[#d4af37] md:hidden">|</span>
-                    <p class="text-[#d4af37] text-[10px] md:text-lg font-black tracking-widest">
-                      08:00 - 20:00 WIB
-                    </p>
-                  </div>
-                </div>
-              </div>
-              <p
-                class="text-white/60 text-[9px] md:text-sm leading-relaxed font-light italic line-clamp-2 md:line-clamp-none text-left md:text-center"
-              >
-                {{ data.resepsiLocation?.description }}
-              </p>
-              <div class="pt-1 md:pt-4">
-                <a
-                  :href="data.resepsiLocation?.mapUrl"
-                  target="_blank"
-                  class="flex md:inline-flex justify-center items-center gap-2 w-full px-4 py-2.5 md:px-10 md:py-4 border-2 border-[#d4af37] text-[#d4af37] rounded-xl md:rounded-2xl font-black text-[9px] md:text-[10px] uppercase tracking-widest active:scale-95 transition-transform"
-                >
-                  <i class="fa-solid fa-map-pin"></i> Lihat Lokasi
-                </a>
-              </div>
-            </div>
-          </div>
-
-          <div
-            v-if="data.dressCode"
-            class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#d4af37]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto"
-          >
-            <p
-              class="text-[#d4af37] text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] mb-1 relative z-10"
-            >
-              The Dress Code
-            </p>
-            <p class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">
-              "{{ data.dressCode }}"
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- 8. GIFT SECTION -->
-      <section
-        v-if="isSectionEnabled('gift')"
-        id="gift"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-4 bg-[#011a12] overflow-hidden"
-        v-observe
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
-        >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
-        >
-        </div>
-
-        <div
-          class="max-w-4xl mx-auto w-full space-y-4 md:space-y-10 overflow-y-auto no-scrollbar max-h-[90vh] py-6"
-        >
-          <div class="text-center space-y-2">
-            <h2 class="text-3xl md:text-7xl font-alex text-[#d4af37]">Wedding Gift</h2>
-            <p class="text-white/50 text-[8px] md:text-sm font-light italic max-w-xs mx-auto">
-              Tanda kasih dapat dikirim melalui:
-            </p>
-          </div>
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6">
-            <div
-              v-for="(bank, index) in data.bankAccounts"
-              :key="index"
-              class="bg-white/[0.04] p-5 md:p-8 rounded-[2rem] border border-[#d4af37]/20 text-center space-y-2"
-            >
-              <p
-                class="text-[#d4af37] text-[7px] md:text-[9px] font-black uppercase tracking-[0.3em]"
-              >
-                {{ bank.bankName }}
-              </p>
-              <p class="text-base md:text-3xl font-bold text-white tracking-widest">
-                {{ bank.accountNumber }}
-              </p>
-              <p class="text-white/60 text-[7px] md:text-[9px] uppercase font-bold">
-                A.N {{ bank.accountName }}
+                "{{
+                  Array.isArray(data.giftDeliveryAddress)
+                    ? data.giftDeliveryAddress[0]
+                    : data.giftDeliveryAddress
+                }}"
               </p>
               <button
-                @click="copyToClipboard(bank.accountNumber)"
-                class="px-4 py-1.5 bg-white/5 border border-[#d4af37]/30 rounded-lg text-[7px] md:text-[9px] text-[#d4af37] font-black uppercase"
+                @click="
+                  copyToClipboard(
+                    Array.isArray(data.giftDeliveryAddress)
+                      ? data.giftDeliveryAddress[0]
+                      : data.giftDeliveryAddress,
+                  )
+                "
+                class="inline-flex items-center gap-2 px-6 py-2 border border-[#d4af37]/30 rounded-full text-[8px] md:text-[10px] font-black text-[#d4af37] uppercase"
               >
-                Salin No. Rekening
+                Salin Alamat
               </button>
             </div>
           </div>
-          <div
-            v-if="data.giftDeliveryAddress"
-            class="p-5 md:p-8 bg-white/[0.02] border border-[#d4af37]/10 rounded-[2rem] text-center space-y-3"
-          >
-            <h3
-              class="text-sm md:text-2xl font-serif font-black text-white uppercase tracking-widest"
-            >
-              Kirim Kado Fisik
-            </h3>
-            <p
-              class="text-white/60 text-[9px] md:text-base leading-relaxed italic line-clamp-2 px-2"
-            >
-              "{{
-                Array.isArray(data.giftDeliveryAddress)
-                  ? data.giftDeliveryAddress[0]
-                  : data.giftDeliveryAddress
-              }}"
-            </p>
-            <button
-              @click="
-                copyToClipboard(
-                  Array.isArray(data.giftDeliveryAddress)
-                    ? data.giftDeliveryAddress[0]
-                    : data.giftDeliveryAddress,
-                )
-              "
-              class="inline-flex items-center gap-2 px-6 py-2 border border-[#d4af37]/30 rounded-full text-[8px] md:text-[10px] font-black text-[#d4af37] uppercase"
-            >
-              Salin Alamat
-            </button>
-          </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 9. RSVP & WISHES -->
-      <section
-        v-if="isSectionEnabled('rsvp')"
-        id="rsvp"
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]"
-      >
-        <!-- Floral Corner Top Left -->
-        <div
-          class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
+        <!-- 9. RSVP & WISHES -->
+        <section
+          v-if="isSectionEnabled('rsvp')"
+          id="rsvp"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d]"
         >
-        </div>
-        <!-- Floral Corner Bottom Right -->
-        <div
-          class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180"
-        >
-        </div>
-
-        <div
-          class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center"
-        >
-          <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
-            <h2 class="text-5xl md:text-8xl font-alex text-[#d4af37] leading-none">
-              RSVP <br />
-              <span class="text-white">& Wishes</span>
-            </h2>
-            <p
-              class="text-white/60 text-xs md:text-xl font-light max-w-xs md:max-w-md mx-auto lg:mx-0"
-            >
-              Mohon konfirmasikan kehadiran Anda.
-            </p>
-          </div>
+          <!-- Floral Corner Top Left -->
           <div
-            class="bg-white/[0.03] p-4 md:p-8 rounded-2xl md:rounded-3xl border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[55vh] md:h-[62vh] flex flex-col"
-            v-observe
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-80 z-0"
           >
-            <form @submit.prevent="submitRSVP" class="space-y-2 md:space-y-4 flex-shrink-0">
-              <div class="grid grid-cols-2 gap-2 md:gap-4">
-                <div class="space-y-1">
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-60 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div
+            class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center"
+          >
+            <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
+              <h2 class="text-5xl md:text-8xl font-alex text-[#d4af37] leading-none">
+                RSVP <br />
+                <span class="text-white">& Wishes</span>
+              </h2>
+              <p
+                class="text-white/60 text-xs md:text-xl font-light max-w-xs md:max-w-md mx-auto lg:mx-0"
+              >
+                Mohon konfirmasikan kehadiran Anda.
+              </p>
+            </div>
+            <div
+              class="bg-white/[0.03] p-4 md:p-8 rounded-2xl md:rounded-3xl border border-[#d4af37]/30 shadow-3xl overflow-hidden h-[55vh] md:h-[62vh] flex flex-col"
+              v-observe
+            >
+              <form @submit.prevent="submitRSVP" class="space-y-2 md:space-y-4 flex-shrink-0">
+                <div class="grid grid-cols-2 gap-2 md:gap-4">
+                  <div class="space-y-1">
+                    <label
+                      class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
+                      >Nama</label
+                    >
+                    <input
+                      v-model="rsvp.name"
+                      type="text"
+                      class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
+                    />
+                  </div>
+                  <div class="space-y-1">
+                    <label
+                      class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
+                      >Hadir?</label
+                    >
+                    <select
+                      v-model="rsvp.attendance"
+                      class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-2 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
+                    >
+                      <option value="hadir">Hadir</option>
+                      <option value="tidak">Absen</option>
+                    </select>
+                  </div>
+                </div>
+                <div v-if="rsvp.attendance === 'hadir'" class="space-y-1">
                   <label
                     class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
-                    >Nama</label
+                    >Jumlah Tamu</label
                   >
                   <input
-                    v-model="rsvp.name"
-                    type="text"
+                    v-model.number="rsvp.totalGuests"
+                    type="number"
+                    min="1"
+                    max="20"
                     class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
                   />
                 </div>
                 <div class="space-y-1">
                   <label
                     class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
-                    >Hadir?</label
+                    >Ucapan</label
                   >
-                  <select
-                    v-model="rsvp.attendance"
-                    class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-2 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
-                  >
-                    <option value="hadir">Hadir</option>
-                    <option value="tidak">Absen</option>
-                  </select>
+                  <textarea
+                    v-model="rsvp.message"
+                    class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm h-12 md:h-20 outline-none"
+                  ></textarea>
                 </div>
-              </div>
-              <div v-if="rsvp.attendance === 'hadir'" class="space-y-1">
-                <label
-                  class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
-                  >Jumlah Tamu</label
+                <button
+                  type="submit"
+                  class="w-full py-2 md:py-3 bg-[#d4af37] text-[#022b1d] rounded-lg font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all"
                 >
-                <input
-                  v-model.number="rsvp.totalGuests"
-                  type="number"
-                  min="1"
-                  max="20"
-                  class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm outline-none"
-                />
-              </div>
-              <div class="space-y-1">
-                <label
-                  class="text-[8px] md:text-[10px] uppercase tracking-widest text-[#d4af37] font-black"
-                  >Ucapan</label
-                >
-                <textarea
-                  v-model="rsvp.message"
-                  class="w-full bg-[#043927] border border-[#d4af37]/20 rounded-lg px-3 py-2 md:px-4 md:py-3 text-white text-xs md:text-sm h-12 md:h-20 outline-none"
-                ></textarea>
-              </div>
-              <button
-                type="submit"
-                class="w-full py-2 md:py-3 bg-[#d4af37] text-[#022b1d] rounded-lg font-black uppercase text-[9px] md:text-[11px] shadow-xl hover:scale-[1.02] transition-all"
-              >
-                Kirim
-              </button>
-            </form>
-            <div
-              class="mt-3 md:mt-4 space-y-2 md:space-y-3 overflow-y-auto no-scrollbar flex-1 pt-3 md:pt-4 border-t border-white/5"
-            >
+                  Kirim
+                </button>
+              </form>
               <div
-                v-for="(msg, i) in guestMessages"
-                :key="i"
-                class="bg-white/[0.04] p-2.5 md:p-4 rounded-xl border border-white/5"
+                class="mt-3 md:mt-4 space-y-2 md:space-y-3 overflow-y-auto no-scrollbar flex-1 pt-3 md:pt-4 border-t border-white/5"
               >
-                <div class="flex justify-between items-start gap-2">
-                  <h4 class="text-[10px] md:text-sm font-bold text-white leading-tight">{{ msg.guestName }}</h4>
-                  <span class="text-[6px] md:text-[9px] text-[#d4af37] shrink-0">{{
-                    timeAgo(msg.createdAt)
-                  }}</span>
-                </div>
-                <div class="flex items-center gap-2 mt-1">
-                  <span
-                    class="text-[6px] md:text-[8px] px-1.5 py-0.5 rounded-full font-bold"
-                    :class="msg.rsvpStatus === 'hadir' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'"
-                  >{{ msg.rsvpStatus === 'hadir' ? '✓ Hadir' : '✗ Absen' }}</span>
-                  <span v-if="msg.rsvpStatus === 'hadir' && msg.totalGuests > 0" class="text-[6px] md:text-[8px] text-white/40">{{ msg.totalGuests }} orang</span>
-                </div>
-                <p
-                  class="text-[9px] md:text-xs text-white/60 leading-relaxed line-clamp-2 mt-1"
+                <div
+                  v-for="(msg, i) in guestMessages"
+                  :key="i"
+                  class="bg-white/[0.04] p-2.5 md:p-4 rounded-xl border border-white/5"
                 >
-                  {{ msg.message ? `"${msg.message}"` : '' }}
+                  <div class="flex justify-between items-start gap-2">
+                    <h4 class="text-[10px] md:text-sm font-bold text-white leading-tight">{{ msg.guestName }}</h4>
+                    <span class="text-[6px] md:text-[9px] text-[#d4af37] shrink-0">{{
+                      timeAgo(msg.createdAt)
+                    }}</span>
+                  </div>
+                  <div class="flex items-center gap-2 mt-1">
+                    <span
+                      class="text-[6px] md:text-[8px] px-1.5 py-0.5 rounded-full font-bold"
+                      :class="msg.rsvpStatus === 'hadir' ? 'bg-emerald-500/20 text-emerald-300' : 'bg-red-500/20 text-red-300'"
+                    >{{ msg.rsvpStatus === 'hadir' ? '✓ Hadir' : '✗ Absen' }}</span>
+                    <span v-if="msg.rsvpStatus === 'hadir' && msg.totalGuests > 0" class="text-[6px] md:text-[8px] text-white/40">{{ msg.totalGuests }} orang</span>
+                  </div>
+                  <p
+                    class="text-[9px] md:text-xs text-white/60 leading-relaxed line-clamp-2 mt-1"
+                  >
+                    {{ msg.message ? `"${msg.message}"` : '' }}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 10. FOOTER -->
+        <footer
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#022b1d] overflow-hidden"
+        >
+          <div class="space-y-10 relative z-10 max-w-2xl mx-auto" v-observe>
+            <div class="w-24 h-[1.5px] bg-[#d4af37] mx-auto mb-6"></div>
+            <div class="space-y-6">
+              <p class="text-sm md:text-xl text-white/80 leading-relaxed font-light font-serif">
+                Merupakan sebuah kehormatan dan kebahagiaan bagi kami, apabila Bapak/Ibu/Saudara/i
+                berkenan hadir untuk memberikan do'a restu kepada kami.
+              </p>
+              <div class="space-y-3 py-6 border-y border-white/5">
+                <p class="text-xs md:text-base text-[#d4af37] font-black uppercase tracking-[0.2em]">
+                  Wassalamu'alaikum Warahmatullahi Wabarakatuh
                 </p>
               </div>
+              <div class="space-y-3 pt-6">
+                <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">
+                  Kami yang berbahagia,
+                </p>
+                <h2 class="font-alex text-5xl md:text-8xl text-white drop-shadow-2xl leading-none">
+                  {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} &
+                  {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
+                </h2>
+              </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- 10. FOOTER -->
-      <footer
-        class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 text-center px-8 bg-[#022b1d] overflow-hidden"
-      >
-        <div class="space-y-10 relative z-10 max-w-2xl mx-auto" v-observe>
-          <div class="w-24 h-[1.5px] bg-[#d4af37] mx-auto mb-6"></div>
-          <div class="space-y-6">
-            <p class="text-sm md:text-xl text-white/80 leading-relaxed font-light font-serif">
-              Merupakan sebuah kehormatan dan kebahagiaan bagi kami, apabila Bapak/Ibu/Saudara/i
-              berkenan hadir untuk memberikan do'a restu kepada kami.
-            </p>
-            <div class="space-y-3 py-6 border-y border-white/5">
-              <p class="text-xs md:text-base text-[#d4af37] font-black uppercase tracking-[0.2em]">
-                Wassalamu'alaikum Warahmatullahi Wabarakatuh
+            <div class="pt-16 space-y-3 opacity-30">
+              <p class="text-[8px] text-[#d4af37] tracking-[0.4em] uppercase font-black">
+                Official Invitation By
               </p>
-            </div>
-            <div class="space-y-3 pt-6">
-              <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">
-                Kami yang berbahagia,
-              </p>
-              <h2 class="font-alex text-5xl md:text-8xl text-white drop-shadow-2xl leading-none">
-                {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} &
-                {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
-              </h2>
+              <h3 class="font-serif text-white font-bold text-lg md:text-2xl tracking-tighter">
+                SatuUndangan<span class="text-[#d4af37]">.id</span>
+              </h3>
             </div>
           </div>
-          <div class="pt-16 space-y-3 opacity-30">
-            <p class="text-[8px] text-[#d4af37] tracking-[0.4em] uppercase font-black">
-              Official Invitation By
-            </p>
-            <h3 class="font-serif text-white font-bold text-lg md:text-2xl tracking-tighter">
-              SatuUndangan<span class="text-[#d4af37]">.id</span>
-            </h3>
-          </div>
-        </div>
-      </footer>
+        </footer>
+      </div>
     </div>
-  </div>
-</template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
