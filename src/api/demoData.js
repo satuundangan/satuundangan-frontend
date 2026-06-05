@@ -13,7 +13,7 @@ export const demoData = {
   musicChoice: '/audio/wedding-acoustic-morning.mp3',
   isCustomMusic: false,
   bridePhotoUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop',
-  groomPhotoUrl: 'https://images.unsplash.com/photo-1550005810-350a69771e23?q=80&w=2070&auto=format&fit=crop',
+  groomPhotoUrl: 'https://cdn.satuundangan.id/1780000002-groom-photo.jpeg',
   photoCoupleUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974&auto=format&fit=crop',
   videoPrewedding: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
   dateTime: '2026-12-12T09:00:00.000Z',
@@ -61,7 +61,7 @@ export const demoData = {
       date: '20 Agustus 2022',
       title: 'Menyatakan Komitmen',
       description: 'Setelah dua tahun berbagi cerita, tawa, dan tantangan sebagai sahabat, kami menyadari bahwa kehadiran satu sama lain adalah pelengkap jiwa. Kami memutuskan untuk melangkah bersama dengan komitmen yang lebih dalam.',
-      image: 'https://images.unsplash.com/photo-1516589174184-c685266e480c?q=80&w=1974&auto=format&fit=crop',
+      image: 'https://cdn.satuundangan.id/1780000001-lovestory-commitment.png',
     },
     {
       date: '10 Oktober 2025',
