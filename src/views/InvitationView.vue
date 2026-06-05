@@ -1,6 +1,7 @@
 <script setup>
 import { getInvitationBySlug, getMyInvitationBySlug } from '@/api/invitation'
 import { demoData } from '@/api/demoData'
+import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -98,7 +99,13 @@ onMounted(async () => {
   try {
     let data;
 
-    if (isDemoMode.value) {
+    if (slug === 'jennifer-hayato') {
+      data = {
+        ...orangutanData,
+        template_slug: route.query.templateId || 'zen-tranquility',
+        guestName: route.query.to || orangutanData.guestName,
+      }
+    } else if (isDemoMode.value) {
       // Handle Demo Mode
       const templateSlug = route.params.templateSlug
       let templateDefaultMusic = null
