@@ -129,7 +129,7 @@
       id="main-content"
       class="opacity-0 transition-opacity duration-[1500ms] h-full overflow-y-auto snap-y snap-mandatory no-scrollbar scroll-smooth"
     >
-      <div class="relative w-full max-w-[500px] mx-auto bg-[#022b1d] shadow-[0_0_100px_rgba(0,0,0,0.8)] min-h-screen">
+      <div class="relative w-full bg-[#022b1d] min-h-screen">
         <!-- Watermark Background -->
         <div
           class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none z-0 mix-blend-screen opacity-[0.03]"
