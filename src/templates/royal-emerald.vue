@@ -180,7 +180,7 @@
               <p
                 class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black"
               >
-                The Eternal Journey Of
+                {{ data.heroLabel || 'The Eternal Journey Of' }}
               </p>
               <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
                 {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
@@ -509,7 +509,7 @@
               <p
                 class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60"
               >
-                The Joyful Rituals
+                {{ data.eventLabel || 'The Joyful Rituals' }}
               </p>
               <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
               <div class="flex items-center gap-4 justify-center pt-1">
@@ -848,7 +848,7 @@
               </p>
               <div class="space-y-3 py-6 border-y border-white/5">
                 <p class="text-xs md:text-base text-[#d4af37] font-black uppercase tracking-[0.2em]">
-                  With Gratitude and Happiness
+                  {{ data.closingGreeting || 'With Gratitude and Happiness' }}
                 </p>
               </div>
               <div class="space-y-3 pt-6">
