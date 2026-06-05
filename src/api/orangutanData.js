@@ -15,7 +15,7 @@ export const orangutanData = {
   bridePhotoUrl: '/assets/images/orangutan-cewe.png',
   groomPhotoUrl: '/assets/images/orangutan-cowo.png',
   photoCoupleUrl: '/assets/images/orangutan-cewe.png', // Placeholder for couple photo
-  videoPrewedding: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+  videoPrewedding: 'https://www.youtube.com/embed/-uNHfSNxoII',
   dateTime: '2026-06-06T10:00:00.000Z',
   isSingleEvent: false,
   mergeEvents: false,
@@ -70,7 +70,7 @@ export const orangutanData = {
     'Pemerintah Prefektur Ehime',
     'Seluruh Pecinta Satwa'
   ],
-  liveStreamingUrl: 'https://www.tobezoo.com/live',
+  liveStreamingUrl: 'https://www.youtube.com/live/9lRi54vxC0k',
   dressCode: 'Batik atau Pakaian Bertema Budaya Indonesia/Jepang',
   giftDeliveryAddress: 'Tobe Zoological Park: 240 Uehara-machi, Tobe-cho, Iyo-gun, Ehime Prefecture 791-2191',
   footerText: 'Terima kasih atas dukungan Anda terhadap program pelestarian satwa liar.',
