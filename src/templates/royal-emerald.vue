@@ -241,14 +241,12 @@
             <p
               class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg"
             >
-              "Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu
-              dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia
-              menjadikan di antaramu rasa kasih dan sayang."
+              "{{ data.quoteText }}"
             </p>
             <div class="flex flex-col items-center gap-4">
               <div class="h-10 md:h-16 w-[1px] bg-[#d4af37]/40"></div>
               <p class="text-[10px] md:text-sm font-black text-[#d4af37] tracking-[0.3em] uppercase">
-                {{ data.quoteSource || 'QS. AR-RUM: 21' }}
+                {{ data.quoteSource }}
               </p>
             </div>
           </div>
