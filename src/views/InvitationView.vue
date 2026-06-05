@@ -102,7 +102,7 @@ onMounted(async () => {
     if (slug === 'jennifer-hayato') {
       data = {
         ...orangutanData,
-        template_slug: route.query.templateId || 'zen-tranquility',
+        template_slug: route.query.templateId || 'royal-emerald',
         guestName: route.query.to || orangutanData.guestName,
       }
     } else if (isDemoMode.value) {

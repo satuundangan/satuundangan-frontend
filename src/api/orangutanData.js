@@ -12,9 +12,9 @@ export const orangutanData = {
   quoteType: 'default',
   musicChoice: '/audio/wedding-acoustic-morning.mp3',
   isCustomMusic: false,
-  bridePhotoUrl: 'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?q=80&w=2076&auto=format&fit=crop', // Orangutan photo
-  groomPhotoUrl: 'https://images.unsplash.com/photo-1570481662006-a3a1374699e8?q=80&w=1965&auto=format&fit=crop', // Orangutan photo
-  photoCoupleUrl: 'https://images.unsplash.com/photo-1583083527882-4bee9aba2eea?q=80&w=1977&auto=format&fit=crop',
+  bridePhotoUrl: '/assets/images/orangutan-cewe.png',
+  groomPhotoUrl: '/assets/images/orangutan-cowo.png',
+  photoCoupleUrl: '/assets/images/orangutan-cewe.png', // Placeholder for couple photo
   videoPrewedding: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
   dateTime: '2026-06-06T10:00:00.000Z',
   isSingleEvent: false,
@@ -41,9 +41,8 @@ export const orangutanData = {
     }
   ],
   galleryImages: [
-    'https://images.unsplash.com/photo-1540573133985-87b6da6d54a9?q=80&w=2076&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1570481662006-a3a1374699e8?q=80&w=1965&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1583083527882-4bee9aba2eea?q=80&w=1977&auto=format&fit=crop',
+    '/assets/images/orangutan-cewe.png',
+    '/assets/images/orangutan-cowo.png',
   ],
   loveStory: [
     {
