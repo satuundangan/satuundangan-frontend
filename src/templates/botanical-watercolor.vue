@@ -32,7 +32,7 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/70 backdrop-blur-xl border border-[#e8d5c4] rounded-full px-6 py-3 flex items-center justify-center gap-6 shadow-xl w-fit max-w-[90%] md:hidden transition-all duration-500">
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/70 backdrop-blur-xl border border-[#e8d5c4] rounded-full px-6 py-3 flex items-center justify-center gap-6 shadow-xl w-fit max-w-[90%] transition-all duration-500">
       <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
         class="flex flex-col items-center gap-1 transition-all duration-300 relative group"
         :class="activeSection === item.id ? 'text-[#b48c5b] scale-110' : 'text-gray-400 hover:text-[#b48c5b]'">
@@ -56,11 +56,11 @@
           </div>
 
           <div class="space-y-2">
-            <h1 class="text-xs md:text-sm tracking-[0.5em] uppercase text-[#b48c5b] font-semibold">The Wedding Celebration Of</h1>
+            <h1 class="text-xs md:text-sm tracking-[0.5em] uppercase text-[#b48c5b] font-semibold">The Wedding Of</h1>
             <div class="py-4">
-              <h2 class="text-5xl md:text-7xl font-playfair text-[#4a4a4a]" v-html="data.groomName"></h2>
+              <h2 class="text-4xl md:text-6xl font-playfair text-[#4a4a4a] leading-tight">{{ data.groomName?.split(' ')[0] || data.groomName }}</h2>
               <div class="text-2xl md:text-3xl font-playfair italic text-[#b48c5b] my-2">&</div>
-              <h2 class="text-5xl md:text-7xl font-playfair text-[#4a4a4a]" v-html="data.brideName"></h2>
+              <h2 class="text-4xl md:text-6xl font-playfair text-[#4a4a4a] leading-tight">{{ data.brideName?.split(' ')[0] || data.brideName }}</h2>
             </div>
           </div>
 
@@ -107,7 +107,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-24 px-6 bg-white/30" v-observe>
+      <section v-if="isSectionEnabled('quote')" class="py-24 px-6 bg-white/30" v-observe>
         <div class="max-w-2xl mx-auto text-center">
           <div class="w-12 h-px bg-[#e8d5c4] mx-auto mb-8"></div>
           <p class="text-base md:text-xl text-gray-600 italic leading-relaxed font-light mb-8 px-4">
@@ -168,7 +168,7 @@
               </div>
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.groomName }}</h3>
-                <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putra Dari</p>
+                <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putra ke-{{ data.groomOrder || 'dua' }} dari</p>
                 <p class="text-sm text-gray-500 mt-1">{{ data.parents?.groomParents }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
@@ -186,7 +186,7 @@
               </div>
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.brideName }}</h3>
-                <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putri Dari</p>
+                <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putri ke-{{ data.brideOrder || 'dua' }} dari</p>
                 <p class="text-sm text-gray-500 mt-1">{{ data.parents?.brideParents }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
@@ -283,18 +283,20 @@
 
       <!-- RSVP -->
       <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-24 px-6 bg-[#fdfaf5]">
-        <div class="max-w-2xl mx-auto bg-white border border-[#e8d5c4] rounded-[3rem] p-8 md:p-16 shadow-lg text-center" v-observe>
-          <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-2">RSVP</h2>
-          <p class="text-gray-400 mb-10 text-sm">Konfirmasi kehadiran Anda di hari bahagia kami</p>
+        <div class="max-w-2xl mx-auto bg-white border border-[#e8d5c4] rounded-[3rem] p-8 md:p-12 shadow-lg flex flex-col" style="max-height: 90vh;" v-observe>
+          <div class="text-center mb-8 flex-shrink-0">
+            <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-2">RSVP & Ucapan</h2>
+            <p class="text-gray-400 text-sm">Konfirmasi kehadiran Anda di hari bahagia kami</p>
+          </div>
 
-          <form @submit.prevent="submitRSVP" class="space-y-6">
+          <form @submit.prevent="submitRSVP" class="space-y-4 flex-shrink-0">
             <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
               class="w-full bg-[#fdfaf5] border border-[#e8d5c4] rounded-2xl px-6 py-4 text-[#4a4a4a] focus:outline-none focus:border-[#b48c5b] transition-colors placeholder-gray-300"
               required />
 
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-3 gap-3">
               <label v-for="opt in [{v:'hadir',l:'Hadir'},{v:'tidak',l:'Maaf'},{v:'ragu',l:'Ragu'}]" :key="opt.v"
-                class="flex items-center justify-center py-4 rounded-2xl cursor-pointer border transition-all text-sm font-bold uppercase tracking-tighter"
+                class="flex items-center justify-center py-3 rounded-2xl cursor-pointer border transition-all text-sm font-bold uppercase tracking-tighter"
                 :class="rsvp.attendance === opt.v ? 'bg-[#b48c5b] border-[#b48c5b] text-white' : 'bg-white border-[#e8d5c4] text-gray-400 hover:bg-gray-50'">
                 <input type="radio" :value="opt.v" v-model="rsvp.attendance" class="hidden"> {{ opt.l }}
               </label>
@@ -306,14 +308,30 @@
               <option v-for="_ in 5" :key="_" :value="_">{{ _ }} Orang</option>
             </select>
 
-            <textarea v-model="rsvp.message" rows="4" placeholder="Ucapan & Doa Terbaik"
-              class="w-full bg-[#fdfaf5] border border-[#e8d5c4] rounded-2xl px-6 py-4 text-[#4a4a4a] focus:outline-none focus:border-[#b48c5b] placeholder-gray-300"></textarea>
+            <textarea v-model="rsvp.message" rows="3" placeholder="Ucapan & Doa Terbaik"
+              class="w-full bg-[#fdfaf5] border border-[#e8d5c4] rounded-2xl px-6 py-3 text-[#4a4a4a] focus:outline-none focus:border-[#b48c5b] placeholder-gray-300"></textarea>
 
             <button type="submit"
-              class="w-full py-5 bg-[#b48c5b] text-white font-bold rounded-2xl transition-all shadow-lg hover:bg-[#9a754a] uppercase tracking-widest text-sm">
+              class="w-full py-4 bg-[#b48c5b] text-white font-bold rounded-2xl transition-all shadow-lg hover:bg-[#9a754a] uppercase tracking-widest text-sm">
               Kirim Konfirmasi
             </button>
           </form>
+
+          <!-- Guest Messages -->
+          <div v-if="guestMessages.length" class="mt-6 flex-1 overflow-y-auto no-scrollbar space-y-3 pt-4 border-t border-[#e8d5c4]">
+            <div v-for="(msg, i) in guestMessages" :key="i"
+              class="bg-[#fdfaf5] p-4 rounded-2xl border border-[#e8d5c4]/60 text-left">
+              <div class="flex justify-between items-start gap-2 mb-1">
+                <span class="text-sm font-bold text-[#4a4a4a]">{{ msg.guestName }}</span>
+                <span class="text-[10px] text-[#b48c5b] shrink-0">{{ timeAgo(msg.createdAt) }}</span>
+              </div>
+              <span class="inline-block text-[9px] px-2 py-0.5 rounded-full font-bold mb-1"
+                :class="msg.rsvpStatus === 'hadir' ? 'bg-green-100 text-green-600' : 'bg-rose-100 text-rose-500'">
+                {{ msg.rsvpStatus === 'hadir' ? '✓ Hadir' : '✗ Tidak Hadir' }}
+              </span>
+              <p v-if="msg.message" class="text-xs text-gray-500 italic leading-relaxed line-clamp-2">"{{ msg.message }}"</p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -341,7 +359,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" class="py-24 px-6 text-center">
+      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" id="gift" class="py-24 px-6 text-center">
         <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-12 max-w-md mx-auto text-sm">Doa restu Anda sudah lebih dari cukup bagi kami, namun jika ingin memberikan tanda kasih, silakan melalui:</p>
 
@@ -356,6 +374,21 @@
             <button @click="copyToClipboard(bank.accountNumber)"
               class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b48c5b] border border-[#b48c5b] px-6 py-2 rounded-full hover:bg-[#b48c5b] hover:text-white transition-all">
               Salin Nomor
+            </button>
+          </div>
+        </div>
+
+        <!-- Physical Gift Address -->
+        <div v-if="data.giftDeliveryAddress" class="mt-8 max-w-lg mx-auto" v-observe>
+          <div class="bg-white border border-[#e8d5c4] p-8 rounded-[2rem] shadow-sm text-center space-y-3">
+            <i class="fa-solid fa-box-heart text-[#b48c5b] text-xl block"></i>
+            <h3 class="text-base font-playfair text-[#4a4a4a] font-bold">Kirim Kado Fisik</h3>
+            <p class="text-sm text-gray-400 italic leading-relaxed">
+              "{{ Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress }}"
+            </p>
+            <button @click="copyToClipboard(Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress)"
+              class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#b48c5b] border border-[#b48c5b] px-6 py-2 rounded-full hover:bg-[#b48c5b] hover:text-white transition-all">
+              Salin Alamat
             </button>
           </div>
         </div>
@@ -377,7 +410,7 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
-import { createGuestMessage } from '@/api/guestMessage'
+import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
 const props = defineProps({
@@ -406,16 +439,18 @@ const activeSections = computed(() => {
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
+const guestMessages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 // Navigation items with their corresponding keys in backend
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
-  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-feather', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
-  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
+  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' },
+  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' }
 ]
 
 const navItems = computed(() => {
@@ -516,6 +551,30 @@ function getMusicUrl(choice) {
   return '/audio/romantic_music1.mp3'
 }
 
+function timeAgo(date) {
+  if (!date) return ''
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000)
+  let interval = seconds / 2592000
+  if (interval > 1) return Math.floor(interval) + ' bulan lalu'
+  interval = seconds / 86400
+  if (interval > 1) return Math.floor(interval) + ' hari lalu'
+  return 'Baru saja'
+}
+
+async function loadWishes() {
+  if (data.value.id && data.value.id !== 'live-preview' && data.value.id !== 0) {
+    try {
+      const res = await getGuestMessagesByInvitationId(data.value.id)
+      guestMessages.value = res.data || res
+    } catch (err) {}
+  } else {
+    guestMessages.value = [
+      { guestName: 'Budi & Keluarga', message: 'Selamat menempuh hidup baru, semoga menjadi keluarga yang sakinah mawaddah warahmah.', rsvpStatus: 'hadir', createdAt: new Date() },
+      { guestName: 'Siti Rahayu', message: 'MasyaAllah, cantik banget! Barakallahu lakuma.', rsvpStatus: 'hadir', createdAt: new Date() },
+    ]
+  }
+}
+
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
@@ -561,6 +620,8 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Konfirmasi terkirim!`)
+    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
+    loadWishes()
   } catch (err) {
     console.error(err)
     toast.error("Gagal mengirim RSVP.")
@@ -580,6 +641,8 @@ function initData() {
       { src: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=400' }
     ]
   }
+
+  loadWishes()
 
   const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
   if (targetDate) {

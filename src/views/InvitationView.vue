@@ -1,6 +1,7 @@
 <script setup>
 import { getInvitationBySlug, getMyInvitationBySlug } from '@/api/invitation'
 import { demoData } from '@/api/demoData'
+import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -100,10 +101,24 @@ onMounted(async () => {
     if (isDemoMode.value) {
       // Handle Demo Mode
       const templateSlug = route.params.templateSlug
+      let templateDefaultMusic = null
+      let templateAudioStart = 0
+      let templateAudioEnd = 0
+      try {
+        const tmpl = await getTemplateDesignBySlug(templateSlug)
+        templateDefaultMusic = tmpl?.defaultMusic || null
+        templateAudioStart = tmpl?.defaultAudioStart ?? 0
+        templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
+      } catch {
+        // no-op — demo still works without template music
+      }
       data = {
         ...demoData,
         template_slug: templateSlug,
-        guestName: route.query.to || demoData.guestName
+        guestName: route.query.to || demoData.guestName,
+        musicChoice: templateDefaultMusic || demoData.musicChoice,
+        audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
+        audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
       }
     } else {
       try {

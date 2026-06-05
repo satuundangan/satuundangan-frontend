@@ -875,6 +875,8 @@
         </footer>
       </div>
     </div>
+  </div>
+</template>
 
 <script setup>
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
