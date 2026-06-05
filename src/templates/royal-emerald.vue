@@ -180,7 +180,7 @@
               <p
                 class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black"
               >
-                The Halal Journey Of
+                The Eternal Journey Of
               </p>
               <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
                 {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
@@ -511,7 +511,7 @@
               <p
                 class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60"
               >
-                The Halal Rituals
+                The Joyful Rituals
               </p>
               <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
               <div class="flex items-center gap-4 justify-center pt-1">
@@ -532,7 +532,7 @@
                   <div
                     class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center"
                   >
-                    <i class="fa-solid fa-kaaba text-xl md:text-4xl text-[#d4af37]"></i>
+                    <i class="fa-solid fa-leaf text-xl md:text-4xl text-[#d4af37]"></i>
                   </div>
                   <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
                     <h3
@@ -850,7 +850,7 @@
               </p>
               <div class="space-y-3 py-6 border-y border-white/5">
                 <p class="text-xs md:text-base text-[#d4af37] font-black uppercase tracking-[0.2em]">
-                  Wassalamu'alaikum Warahmatullahi Wabarakatuh
+                  With Gratitude and Happiness
                 </p>
               </div>
               <div class="space-y-3 pt-6">
