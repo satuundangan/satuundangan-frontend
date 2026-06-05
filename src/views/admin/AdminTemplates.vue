@@ -147,28 +147,70 @@
               <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-400 truncate">URL: {{ form.defaultMusic }}</p>
             </div>
 
-            <!-- Audio Trim -->
+            <!-- Audio Trim with Mini Player -->
             <div v-if="form.defaultMusic" class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Trim Audio</label>
-              <div class="mt-2 grid grid-cols-2 gap-3">
-                <div>
-                  <label class="text-xs text-slate-400">Mulai (detik)</label>
-                  <input v-model.number="form.defaultAudioStart" type="number" min="0" step="1"
-                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                    placeholder="0" />
+
+              <audio ref="audioRef" :src="form.defaultMusic" preload="metadata"
+                @timeupdate="onAudioTimeUpdate" @loadedmetadata="onAudioLoadedMetadata"
+                @ended="onAudioEnded" @play="onAudioPlay" @pause="onAudioPause" class="hidden" />
+
+              <div class="mt-2 rounded-xl border border-slate-200 bg-slate-50 p-3">
+                <!-- Player row -->
+                <div class="flex items-center gap-3">
+                  <button type="button" @click="togglePlay"
+                    class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white shadow transition-colors hover:bg-slate-700">
+                    <i :class="audioIsPlaying ? 'fa-solid fa-pause' : 'fa-solid fa-play'" class="text-xs"></i>
+                  </button>
+                  <div class="min-w-0 flex-1">
+                    <input type="range" min="0" :max="audioDuration || 100" step="0.1" :value="audioCurrentTime"
+                      @input="seekAudio"
+                      class="w-full h-1.5 cursor-pointer appearance-none rounded-full bg-slate-200 accent-slate-900" />
+                    <div class="mt-1 flex justify-between font-mono text-[10px] text-slate-400">
+                      <span>{{ formatTime(audioCurrentTime) }}</span>
+                      <span>{{ formatTime(audioDuration) }}</span>
+                    </div>
+                  </div>
                 </div>
-                <div>
-                  <label class="text-xs text-slate-400">Akhir (detik, 0 = penuh)</label>
-                  <input v-model.number="form.defaultAudioEnd" type="number" min="0" step="1"
-                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
-                    placeholder="0" />
+
+                <!-- Set point buttons -->
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                  <button type="button" @click="setTrimStart"
+                    class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100">
+                    <i class="fa-solid fa-circle-dot text-emerald-500"></i>
+                    Set Mulai
+                    <span class="ml-auto font-mono text-slate-400">{{ formatTime(form.defaultAudioStart) }}</span>
+                  </button>
+                  <button type="button" @click="setTrimEnd"
+                    class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100">
+                    <i class="fa-solid fa-stop text-rose-400"></i>
+                    Set Akhir
+                    <span class="ml-auto font-mono text-slate-400">{{ form.defaultAudioEnd > 0 ? formatTime(form.defaultAudioEnd) : 'Penuh' }}</span>
+                  </button>
                 </div>
+
+                <!-- Manual inputs -->
+                <div class="mt-3 grid grid-cols-2 gap-2">
+                  <div>
+                    <label class="text-[10px] text-slate-400">Mulai (detik)</label>
+                    <input v-model.number="form.defaultAudioStart" type="number" min="0" step="1"
+                      class="mt-0.5 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-slate-400"
+                      placeholder="0" />
+                  </div>
+                  <div>
+                    <label class="text-[10px] text-slate-400">Akhir (detik, 0 = penuh)</label>
+                    <input v-model.number="form.defaultAudioEnd" type="number" min="0" step="1"
+                      class="mt-0.5 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-slate-400"
+                      placeholder="0" />
+                  </div>
+                </div>
+
+                <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-2 text-xs text-slate-400">
+                  Diputar dari detik {{ form.defaultAudioStart }}
+                  <span v-if="form.defaultAudioEnd > 0"> hingga detik {{ form.defaultAudioEnd }}</span>
+                  <span v-else> sampai habis</span>
+                </p>
               </div>
-              <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-1 text-xs text-slate-400">
-                Diputar dari detik {{ form.defaultAudioStart }}
-                <span v-if="form.defaultAudioEnd > 0"> hingga detik {{ form.defaultAudioEnd }}</span>
-                <span v-else> sampai habis</span>
-              </p>
             </div>
 
             <div class="md:col-span-2">
@@ -273,6 +315,10 @@ import Swal from 'sweetalert2'
 
 const toast = useToast()
 const thumbnailInput = ref(null)
+const audioRef = ref(null)
+const audioCurrentTime = ref(0)
+const audioDuration = ref(0)
+const audioIsPlaying = ref(false)
 const templates = ref([])
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
@@ -515,6 +561,48 @@ function openEdit(template) {
   })
   showForm.value = true
 }
+
+function formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return '0:00'
+  const m = Math.floor(seconds / 60)
+  const s = Math.floor(seconds % 60)
+  return `${m}:${s.toString().padStart(2, '0')}`
+}
+
+function togglePlay() {
+  if (!audioRef.value) return
+  audioIsPlaying.value ? audioRef.value.pause() : audioRef.value.play()
+}
+
+function seekAudio(event) {
+  if (!audioRef.value) return
+  audioRef.value.currentTime = Number(event.target.value)
+}
+
+function setTrimStart() {
+  form.defaultAudioStart = Math.floor(audioCurrentTime.value)
+}
+
+function setTrimEnd() {
+  form.defaultAudioEnd = Math.floor(audioCurrentTime.value)
+}
+
+function onAudioTimeUpdate() { audioCurrentTime.value = audioRef.value?.currentTime || 0 }
+function onAudioLoadedMetadata() { audioDuration.value = audioRef.value?.duration || 0 }
+function onAudioEnded() { audioIsPlaying.value = false }
+function onAudioPlay() { audioIsPlaying.value = true }
+function onAudioPause() { audioIsPlaying.value = false }
+
+watch(() => form.defaultMusic, () => {
+  if (audioRef.value) { audioRef.value.pause(); audioRef.value.load() }
+  audioCurrentTime.value = 0
+  audioDuration.value = 0
+  audioIsPlaying.value = false
+})
+
+watch(showForm, (val) => {
+  if (!val && audioRef.value) { audioRef.value.pause(); audioIsPlaying.value = false }
+})
 
 function closeForm() {
   showForm.value = false
