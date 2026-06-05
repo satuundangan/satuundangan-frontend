@@ -24,7 +24,7 @@
 
     <!-- Falling Petals Effect -->
     <div class="fixed inset-0 pointer-events-none z-20">
-      <div v-for="n in 15" :key="n" class="petal" :style="getPetalStyle(n)"></div>
+      <div v-for="n in 20" :key="n" class="petal" :style="getPetalStyle(n)"></div>
     </div>
 
     <!-- Music Control -->
@@ -504,8 +504,8 @@ const vObserve = {
 
 function getPetalStyle(_n) {
   const left = Math.random() * 100
-  const duration = 5 + Math.random() * 10
-  const delay = Math.random() * 10
+  const duration = 6 + Math.random() * 10
+  const delay = Math.random() * duration
   const size = 10 + Math.random() * 15
   return {
     left: `${left}%`,
