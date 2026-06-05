@@ -134,6 +134,43 @@
               <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
             </div>
 
+            <!-- Default Music -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Default Musik</label>
+              <select v-model="form.defaultMusic"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                <option :value="null">— Tanpa Musik Default —</option>
+                <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
+                  {{ audio.title }} ({{ audio.category }})
+                </option>
+              </select>
+              <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-400 truncate">URL: {{ form.defaultMusic }}</p>
+            </div>
+
+            <!-- Audio Trim -->
+            <div v-if="form.defaultMusic" class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Trim Audio</label>
+              <div class="mt-2 grid grid-cols-2 gap-3">
+                <div>
+                  <label class="text-xs text-slate-400">Mulai (detik)</label>
+                  <input v-model.number="form.defaultAudioStart" type="number" min="0" step="1"
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                    placeholder="0" />
+                </div>
+                <div>
+                  <label class="text-xs text-slate-400">Akhir (detik, 0 = penuh)</label>
+                  <input v-model.number="form.defaultAudioEnd" type="number" min="0" step="1"
+                    class="mt-1 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                    placeholder="0" />
+                </div>
+              </div>
+              <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-1 text-xs text-slate-400">
+                Diputar dari detik {{ form.defaultAudioStart }}
+                <span v-if="form.defaultAudioEnd > 0"> hingga detik {{ form.defaultAudioEnd }}</span>
+                <span v-else> sampai habis</span>
+              </p>
+            </div>
+
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Palette Warna</label>
               <div class="mt-2 grid grid-cols-3 gap-4 rounded-xl bg-slate-50 p-4 border border-slate-200">
@@ -229,7 +266,7 @@ import {
   deleteAdminTemplate,
   fetchAdminCategories,
 } from '@/api/admin.js'
-import { fetchAdminSections } from '@/api/master.js'
+import { fetchAdminSections, fetchAdminAudio } from '@/api/master.js'
 import { uploadFileApi } from '@/api/file.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -239,6 +276,7 @@ const thumbnailInput = ref(null)
 const templates = ref([])
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
+const audioList = ref([])
 const total = ref(0)
 const page = ref(1)
 const limit = 10
@@ -277,6 +315,9 @@ const form = reactive({
   sections: [],
   isActive: true,
   isPremium: false,
+  defaultMusic: null,
+  defaultAudioStart: 0,
+  defaultAudioEnd: 0,
 })
 
 watch(() => form.name, (newVal) => {
@@ -295,10 +336,11 @@ watch(() => form.slug, (newVal) => {
 async function loadData() {
   loading.value = true
   try {
-    const [tmplRes, catRes, sectRes] = await Promise.all([
+    const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
       fetchAdminTemplates({ page: page.value, limit, q: search.value }),
-      fetchAdminCategories({ limit: 100 }), // Get all categories
-      fetchAdminSections({ limit: 100 }), // Fetch all active sections
+      fetchAdminCategories({ limit: 100 }),
+      fetchAdminSections({ limit: 100 }),
+      fetchAdminAudio({ limit: 100 }),
     ])
 
     templates.value = tmplRes.data
@@ -306,6 +348,7 @@ async function loadData() {
 
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
+    audioList.value = audioRes.data || audioRes
   } catch {
     toast.error('Gagal memuat data')
   } finally {
@@ -417,6 +460,9 @@ function openCreate() {
     })),
     isActive: true,
     isPremium: false,
+    defaultMusic: null,
+    defaultAudioStart: 0,
+    defaultAudioEnd: 0,
   })
   showForm.value = true
 }
@@ -463,6 +509,9 @@ function openEdit(template) {
     sections: sections,
     isActive: Boolean(template.isActive),
     isPremium: Boolean(template.isPremium),
+    defaultMusic: template.defaultMusic || null,
+    defaultAudioStart: template.defaultAudioStart ?? 0,
+    defaultAudioEnd: template.defaultAudioEnd ?? 0,
   })
   showForm.value = true
 }
@@ -483,6 +532,9 @@ function buildPayload() {
     description: form.description || null,
     isActive: form.isActive,
     isPremium: form.isPremium,
+    defaultMusic: form.defaultMusic || null,
+    defaultAudioStart: Number(form.defaultAudioStart) || 0,
+    defaultAudioEnd: Number(form.defaultAudioEnd) || 0,
     sections: form.sections.map(s => ({
       sectionId: s.sectionId,
       order: s.order,
