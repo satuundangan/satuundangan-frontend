@@ -46,12 +46,9 @@ export const demoData = {
     }
   ],
   galleryImages: [
-    'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=2069&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1519225495045-395671568e28?q=80&w=2070&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1465495910483-0d750b1013ce?q=80&w=2070&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1522673607200-1648832cee98?q=80&w=2071&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=2070&auto=format&fit=crop',
-    'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop',
+    'https://cdn.satuundangan.id/1779999901-gallery-boat-couple.png',
+    'https://cdn.satuundangan.id/1779999902-gallery-sunset-couple.png',
+    'https://cdn.satuundangan.id/1779999903-gallery-temple-couple.png',
   ],
   loveStory: [
     {
