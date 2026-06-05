@@ -180,7 +180,7 @@
               <p
                 class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#d4af37] font-black"
               >
-                {{ data.heroLabel || 'The Eternal Journey Of' }}
+                {{ data.heroLabel || 'The Halal Journey Of' }}
               </p>
               <h1 class="text-5xl md:text-[8rem] font-alex text-white leading-none drop-shadow-2xl">
                 {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
@@ -241,12 +241,12 @@
             <p
               class="text-base md:text-2xl text-white/90 italic leading-relaxed font-serif px-2 md:px-12 drop-shadow-lg"
             >
-              "{{ data.quoteText }}"
+              "{{ data.quoteText || 'Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.' }}"
             </p>
             <div class="flex flex-col items-center gap-4">
               <div class="h-10 md:h-16 w-[1px] bg-[#d4af37]/40"></div>
               <p class="text-[10px] md:text-sm font-black text-[#d4af37] tracking-[0.3em] uppercase">
-                {{ data.quoteSource }}
+                {{ data.quoteSource || 'QS. AR-RUM: 21' }}
               </p>
             </div>
           </div>
@@ -509,7 +509,7 @@
               <p
                 class="text-[8px] md:text-xs tracking-[0.8em] text-[#d4af37] font-black uppercase opacity-60"
               >
-                {{ data.eventLabel || 'The Joyful Rituals' }}
+                {{ data.eventLabel || 'The Halal Rituals' }}
               </p>
               <h2 class="text-4xl md:text-[5rem] font-alex text-white leading-none">Acara Bahagia</h2>
               <div class="flex items-center gap-4 justify-center pt-1">
@@ -530,7 +530,7 @@
                   <div
                     class="w-12 h-12 md:w-20 md:h-20 bg-[#043927] rounded-full border border-[#d4af37]/30 flex flex-shrink-0 items-center justify-center"
                   >
-                    <i class="fa-solid fa-leaf text-xl md:text-4xl text-[#d4af37]"></i>
+                    <i :class="`fa-solid ${data.akadIcon || 'fa-kaaba'} text-xl md:text-4xl text-[#d4af37]`"></i>
                   </div>
                   <div class="flex-1 text-left md:text-center space-y-1 md:space-y-3">
                     <h3
@@ -848,7 +848,7 @@
               </p>
               <div class="space-y-3 py-6 border-y border-white/5">
                 <p class="text-xs md:text-base text-[#d4af37] font-black uppercase tracking-[0.2em]">
-                  {{ data.closingGreeting || 'With Gratitude and Happiness' }}
+                  {{ data.closingGreeting || "Wassalamu'alaikum Warahmatullahi Wabarakatuh" }}
                 </p>
               </div>
               <div class="space-y-3 pt-6">
