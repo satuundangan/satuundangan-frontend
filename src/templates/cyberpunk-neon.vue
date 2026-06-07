@@ -18,12 +18,14 @@
     </nav>
     
     <!-- Mobile Nav -->
-    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#0a0a12]/90 backdrop-blur-md px-6 py-3 border border-[#00f0ff]/30 flex items-center justify-center gap-6 shadow-[0_0_20px_rgba(0,240,255,0.15)] w-fit max-w-[95%] md:hidden transition-all duration-1000">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 transition-all duration-300"
-        :class="activeSection === item.id ? 'text-[#00f0ff] drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]' : 'text-[#64748b] hover:text-[#00f0ff]'">
-        <i :class="[item.icon, 'text-lg']"></i>
-      </button>
+    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#0a0a12]/90 backdrop-blur-md border border-[#00f0ff]/30 shadow-[0_0_20px_rgba(0,240,255,0.15)] max-w-[95%] md:hidden transition-all duration-1000 flex overflow-x-auto no-scrollbar scroll-smooth">
+      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 transition-all duration-300 shrink-0"
+          :class="activeSection === item.id ? 'text-[#00f0ff] drop-shadow-[0_0_8px_rgba(0,240,255,0.8)]' : 'text-[#64748b] hover:text-[#00f0ff]'">
+          <i :class="[item.icon, 'text-lg']"></i>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->

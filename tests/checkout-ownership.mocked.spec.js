@@ -35,6 +35,7 @@ const mockUser = {
   name: 'Test User',
   email: 'playwright@test.com',
   isAdmin: false,
+  emailVerifiedAt: '2026-06-06T00:00:00.000Z',
 }
 
 test.describe('Checkout – Ownership Guard', () => {

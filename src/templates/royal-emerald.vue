@@ -34,22 +34,24 @@
     <!-- Bottom Navigation (Refined Glassmorphism) -->
     <nav
       v-if="isOpened"
-      class="fixed bottom-0 left-0 right-0 z-[80] bg-[#043927]/60 backdrop-blur-xl border-t border-[#d4af37]/30 rounded-t-2xl px-5 py-3 flex items-center justify-center gap-5 shadow-[0_-10px_30px_rgba(0,0,0,0.4)] animate-fade-in w-full"
+      class="fixed bottom-0 left-0 right-0 z-[80] bg-[#043927]/60 backdrop-blur-xl border-t border-[#d4af37]/30 rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.4)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
     >
-      <button
-        v-for="item in navItems"
-        :key="item.id"
-        @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[42px]"
-        :class="
-          activeSection === item.id
-            ? 'text-[#d4af37] scale-110'
-            : 'text-white/30 hover:text-white/60'
-        "
-      >
-        <i :class="[item.icon, 'text-lg md:text-xl']"></i>
-        <span class="text-[6px] font-black uppercase tracking-tighter">{{ item.label }}</span>
-      </button>
+      <div class="flex items-center justify-center gap-5 px-5 py-3 mx-auto min-w-max">
+        <button
+          v-for="item in navItems"
+          :key="item.id"
+          @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[42px] shrink-0"
+          :class="
+            activeSection === item.id
+              ? 'text-[#d4af37] scale-110'
+              : 'text-white/30 hover:text-white/60'
+          "
+        >
+          <i :class="[item.icon, 'text-lg md:text-xl']"></i>
+          <span class="text-[6px] font-black uppercase tracking-tighter">{{ item.label }}</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->
@@ -1089,7 +1091,7 @@ function formatTime(dateStr) {
     : date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 function isSectionEnabled(key) {
-  if (!data.value.selectedSections || data.value.selectedSections.length === 0) return true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
   return data.value.selectedSections.includes(key)
 }
 function formatInstagramUrl(handle) {

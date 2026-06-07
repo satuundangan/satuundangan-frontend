@@ -35,6 +35,13 @@ const isDemoMode = ref(false)
 
 const isLiveSyncActive = ref(false)
 
+const ALL_SECTION_KEYS = [
+  'quote', 'love-story', 'couple', 'event', 'gallery', 'rsvp', 
+  'gift', 'prokes', 'extended-family', 'dress-code', 
+  'live-streaming', 'video', 'denah', 'menu', 'countdown',
+  'wishes', 'map', 'music', 'photoCouple', 'hero'
+]
+
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
   // Check if inside iframe or forced via query param
@@ -59,6 +66,27 @@ onMounted(async () => {
         audioEnd: Number(payload.audioEnd) || 0,
         template_slug: payload.template_slug || payload.templateDesignId || 'dark-elegant',
         guestName: payload.guestName || invitationData.value?.guestName || 'Tamu Undangan',
+      }
+      
+      if (payload.selectedSections) {
+        const existingSections = newData.sections && Array.isArray(newData.sections) ? newData.sections : []
+        const existingKeys = existingSections.map(s => s.key || s.section?.key).filter(Boolean)
+        const allKeys = Array.from(new Set([...existingKeys, ...ALL_SECTION_KEYS]))
+        
+        const mappedSections = allKeys.map(key => {
+          const existing = existingSections.find(s => (s.key === key || s.section?.key === key))
+          return {
+            ...(existing || {}),
+            key,
+            is_enabled: payload.selectedSections.includes(key)
+          }
+        })
+        
+        newData.sections = mappedSections
+        if (newData.content) {
+          newData.content.selectedSections = mappedSections
+        }
+        newData.selectedSections = payload.selectedSections
       }
       
       invitationData.value = newData

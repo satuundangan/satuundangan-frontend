@@ -18,13 +18,15 @@
     </nav>
     
     <!-- Mobile Nav -->
-    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-md px-6 py-3 rounded-[30px] flex items-center justify-center gap-6 shadow-xl border border-[#e0f2fe] w-fit max-w-[95%] md:hidden transition-all duration-1000">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 transition-all duration-300"
-        :class="activeSection === item.id ? 'text-[#1e3a8a] -translate-y-1' : 'text-[#93c5fd] hover:text-[#1e3a8a]'">
-        <i :class="[item.icon, 'text-lg']"></i>
-        <span class="text-[8px] font-bold uppercase tracking-widest">{{ item.label }}</span>
-      </button>
+    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-md rounded-[30px] shadow-xl border border-[#e0f2fe] max-w-[95%] md:hidden transition-all duration-1000 flex overflow-x-auto no-scrollbar scroll-smooth">
+      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 transition-all duration-300 shrink-0"
+          :class="activeSection === item.id ? 'text-[#1e3a8a] -translate-y-1' : 'text-[#93c5fd] hover:text-[#1e3a8a]'">
+          <i :class="[item.icon, 'text-lg']"></i>
+          <span class="text-[8px] font-bold uppercase tracking-widest">{{ item.label }}</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->

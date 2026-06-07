@@ -36,19 +36,18 @@ const router = createRouter({
     {
       path: '/create',
       name: 'create',
-      component: CreateDesign,
-      meta: { title: 'Pilih Desain' },
+      component: () => import('@/views/StudioView.vue'),
+      meta: { title: 'Studio Editor' },
     },
     {
       path: '/create/form',
-      name: 'create.form',
-      component: CreateForm,
+      redirect: '/create',
     },
     {
       path: '/invitation/:id/edit',
       name: 'invitation.edit',
-      component: CreateForm,
-      meta: { title: 'Edit Undangan' },
+      component: () => import('@/views/StudioView.vue'),
+      meta: { title: 'Edit Undangan', requiresAuth: true, requiresApproval: true },
     },
     {
       path: '/preview',
