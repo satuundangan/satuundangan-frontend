@@ -45,3 +45,9 @@ export const recordConsent = (data) =>
     method: 'POST',
     body: JSON.stringify(data),
   })
+
+export const updateProfile = (data) =>
+  apiFetch('/user', {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })

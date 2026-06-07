@@ -197,7 +197,7 @@ import BottomNav from '@/components/dashboard/BottomNav.vue'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
-import { resendVerification } from '@/api/auth'
+import { resendVerification, updateProfile } from '@/api/auth'
 
 const toast = useToast()
 const auth = useAuthStore()
@@ -244,10 +244,11 @@ async function handleUpdateProfile() {
   }
   loadingProfile.value = true
   try {
-    await new Promise((resolve) => setTimeout(resolve, 800))
+    await updateProfile({ name: profileForm.value.name })
     toast.success('Profil berhasil diperbarui')
-  } catch {
-    toast.error('Gagal memperbarui profil')
+    await auth.fetchProfile()
+  } catch (err) {
+    toast.error(err.message || 'Gagal memperbarui profil')
   } finally {
     loadingProfile.value = false
   }
@@ -264,11 +265,12 @@ async function handleUpdatePassword() {
   }
   loadingPassword.value = true
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1000))
+    await updateProfile({ password: passwordForm.value.newPassword })
     toast.success('Password berhasil diganti')
     passwordForm.value = { newPassword: '', confirmPassword: '' }
-  } catch {
-    toast.error('Gagal mengganti password')
+    await auth.fetchProfile()
+  } catch (err) {
+    toast.error(err.message || 'Gagal mengganti password')
   } finally {
     loadingPassword.value = false
   }
