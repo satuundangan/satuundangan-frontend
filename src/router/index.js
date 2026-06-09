@@ -102,10 +102,18 @@ const router = createRouter({
       meta: { title: 'Syarat & Ketentuan' },
     },
     {
+      path: '/syarat-ketentuan',
+      redirect: '/terms',
+    },
+    {
       path: '/privacy',
       name: 'privacy',
       component: () => import('@/views/PrivacyView.vue'),
       meta: { title: 'Kebijakan Privasi' },
+    },
+    {
+      path: '/kebijakan-privasi',
+      redirect: '/privacy',
     },
     {
       path: '/tentang-kami',
