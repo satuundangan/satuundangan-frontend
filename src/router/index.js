@@ -145,6 +145,12 @@ const router = createRouter({
     { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },
     { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
     {
+      path: '/admin/totp/setup',
+      name: 'admin-totp-setup',
+      component: () => import('@/views/admin/AdminTotpSetup.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Setup Authenticator' },
+    },
+    {
       path: '/admin',
       name: 'admin-dashboard',
       component: AdminDashboard,
