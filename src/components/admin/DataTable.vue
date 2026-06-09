@@ -5,8 +5,29 @@
         <table class="min-w-full divide-y divide-slate-200 text-sm">
           <thead class="bg-slate-50 text-left font-medium text-slate-500 uppercase tracking-wider text-[10px]">
             <tr>
-              <th v-for="header in headers" :key="header.key" class="px-4 py-4" :class="header.class">
-                {{ header.label }}
+              <th v-for="header in headers" :key="header.key" class="px-4 py-4" :class="[header.class, header.sortable ? 'cursor-pointer hover:bg-slate-100 transition-colors' : '']" @click="header.sortable ? handleSort(header.key) : null">
+                <div class="flex items-center gap-2">
+                  {{ header.label }}
+                  <span v-if="header.sortable" class="flex flex-col text-[8px] opacity-40">
+                    <i class="fa-solid fa-chevron-up -mb-1" :class="sortBy === header.key && sortOrder === 'ASC' ? 'text-slate-900 opacity-100' : ''"></i>
+                    <i class="fa-solid fa-chevron-down" :class="sortBy === header.key && sortOrder === 'DESC' ? 'text-slate-900 opacity-100' : ''"></i>
+                  </span>
+                </div>
+              </th>
+            </tr>
+            <tr v-if="headers.some(h => h.filterable)" class="border-t border-slate-100">
+              <th v-for="header in headers" :key="`filter-${header.key}`" class="px-4 py-2 bg-slate-50/50">
+                <div v-if="header.filterable">
+                  <slot :name="`filter(${header.key})`" :filter="filters[header.key]" :updateFilter="(val) => handleFilter(header.key, val)">
+                    <input 
+                      :value="filters[header.key]" 
+                      @input="handleFilter(header.key, $event.target.value)"
+                      type="text" 
+                      class="w-full rounded border border-slate-200 bg-white px-2 py-1 text-[10px] font-normal lowercase outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100"
+                      :placeholder="`Filter ${header.label}...`"
+                    />
+                  </slot>
+                </div>
               </th>
             </tr>
           </thead>
@@ -95,17 +116,41 @@
 
 <script setup>
 import { computed } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 
 const props = defineProps({
-  headers: { type: Array, required: true }, // [{ label: 'Name', key: 'name', class: '...', cellClass: '...' }]
+  headers: { type: Array, required: true }, // [{ label: 'Name', key: 'name', class: '...', cellClass: '...', sortable: true, filterable: true }]
   items: { type: Array, required: true },
   loading: { type: Boolean, default: false },
   total: { type: Number, default: 0 },
   page: { type: Number, default: 1 },
   limit: { type: Number, default: 10 },
+  sortBy: { type: String, default: 'id' },
+  sortOrder: { type: String, default: 'DESC' },
+  filters: { type: Object, default: () => ({}) },
 })
 
-const emit = defineEmits(['update:page'])
+const emit = defineEmits(['update:page', 'update:sortBy', 'update:sortOrder', 'update:sort', 'update:filters', 'filter'])
+
+function handleSort(key) {
+  let order = 'ASC'
+  if (props.sortBy === key) {
+    order = props.sortOrder === 'ASC' ? 'DESC' : 'ASC'
+  }
+  emit('update:sortBy', key)
+  emit('update:sortOrder', order)
+  emit('update:sort', { sortBy: key, sortOrder: order })
+}
+
+const debouncedFilter = useDebounceFn((key, value) => {
+  const newFilters = { ...props.filters, [key]: value }
+  emit('update:filters', newFilters)
+  emit('filter', newFilters)
+}, 500)
+
+function handleFilter(key, value) {
+  debouncedFilter(key, value)
+}
 
 const totalPages = computed(() => Math.max(1, Math.ceil(props.total / props.limit)))
 

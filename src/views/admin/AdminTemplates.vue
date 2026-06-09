@@ -9,8 +9,34 @@
       :total="total"
       v-model:page="page"
       :limit="limit"
+      :sort-by="sortBy"
+      :sort-order="sortOrder"
+      v-model:filters="filters"
       @update:page="setPage"
+      @update:sort="handleSort"
+      @filter="handleFilter"
     >
+      <template #filter(category)="{ filter, updateFilter }">
+        <select 
+          :value="filter" 
+          @change="updateFilter($event.target.value)"
+          class="w-full rounded border border-slate-200 bg-white px-2 py-1 text-[10px] font-normal outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100"
+        >
+          <option value="">Semua Kategori</option>
+          <option v-for="cat in categories" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
+        </select>
+      </template>
+      <template #filter(isActive)="{ filter, updateFilter }">
+        <select 
+          :value="filter" 
+          @change="updateFilter($event.target.value)"
+          class="w-full rounded border border-slate-200 bg-white px-2 py-1 text-[10px] font-normal outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100"
+        >
+          <option value="">Semua</option>
+          <option value="true">Aktif</option>
+          <option value="false">Nonaktif</option>
+        </select>
+      </template>
       <template #cell(preview)="{ item }">
         <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
           <img :src="item.thumbnailUrl || item.previewUrl" class="h-full w-full object-cover" v-if="item.thumbnailUrl || item.previewUrl" />
@@ -327,6 +353,9 @@ const total = ref(0)
 const page = ref(1)
 const limit = 10
 const search = ref('')
+const sortBy = ref('id')
+const sortOrder = ref('DESC')
+const filters = ref({})
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
@@ -334,11 +363,11 @@ const editing = ref(null)
 
 const headers = [
   { label: 'Preview', key: 'preview', class: 'w-16' },
-  { label: 'Nama', key: 'name' },
-  { label: 'Slug', key: 'slug' },
-  { label: 'Kategori', key: 'category' },
-  { label: 'Harga', key: 'price' },
-  { label: 'Status', key: 'isActive' },
+  { label: 'Nama', key: 'name', sortable: true, filterable: true },
+  { label: 'Slug', key: 'slug', sortable: true, filterable: true },
+  { label: 'Kategori', key: 'category', sortable: true, filterable: true },
+  { label: 'Harga', key: 'price', sortable: true },
+  { label: 'Status', key: 'isActive', sortable: true, filterable: true },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -383,7 +412,14 @@ async function loadData() {
   loading.value = true
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
-      fetchAdminTemplates({ page: page.value, limit, q: search.value }),
+      fetchAdminTemplates({
+        page: page.value,
+        limit,
+        q: search.value,
+        sortBy: sortBy.value,
+        sortOrder: sortOrder.value,
+        filters: Object.keys(filters.value).length ? JSON.stringify(filters.value) : undefined
+      }),
       fetchAdminCategories({ limit: 100 }),
       fetchAdminSections({ limit: 100 }),
       fetchAdminAudio({ limit: 100 }),
@@ -408,6 +444,19 @@ function handleSearch(value) {
   search.value = value
   page.value = 1
   debouncedSearch()
+}
+
+function handleSort({ sortBy: newSortBy, sortOrder: newSortOrder }) {
+  sortBy.value = newSortBy
+  sortOrder.value = newSortOrder
+  page.value = 1
+  loadData()
+}
+
+function handleFilter(newFilters) {
+  filters.value = newFilters
+  page.value = 1
+  loadData()
 }
 
 function setPage(newPage) {
