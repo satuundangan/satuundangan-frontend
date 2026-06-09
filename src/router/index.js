@@ -282,6 +282,12 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
 
+  // Block admin routes if TOTP not yet set up (except the setup page itself)
+  if (requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
+    next({ name: 'admin-totp-setup' })
+    return
+  }
+
   if (guestOnly && authStore.user?.isAdmin) {
     next({ name: 'admin-dashboard' })
     return
