@@ -6,20 +6,21 @@
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-0 right-0 mx-auto z-50 bg-black/80 backdrop-blur-xl border border-[#d6b18a]/30 rounded-full px-5 py-3 flex items-center justify-center gap-5 shadow-2xl shadow-black/50 animate-slide-up w-fit max-w-[95%] md:hidden">
+      class="fixed bottom-6 left-0 right-0 mx-auto z-50 bg-black/80 backdrop-blur-xl border border-[#d6b18a]/30 rounded-full shadow-2xl shadow-black/50 animate-slide-up max-w-[95%] overflow-x-auto no-scrollbar scroll-smooth md:hidden flex">
+      <div class="flex items-center justify-center gap-5 px-5 py-3 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group shrink-0"
+          :class="activeSection === item.id ? 'text-[#d6b18a] scale-110' : 'text-white/50 hover:text-white/80'">
 
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
-        :class="activeSection === item.id ? 'text-[#d6b18a] scale-110' : 'text-white/50 hover:text-white/80'">
+          <i :class="[item.icon, 'text-xl mb-0.5']"></i>
+          <span class="text-[9px] font-medium tracking-wide uppercase">{{ item.label }}</span>
 
-        <i :class="[item.icon, 'text-xl mb-0.5']"></i>
-        <span class="text-[9px] font-medium tracking-wide uppercase">{{ item.label }}</span>
-
-        <!-- Active Indicator Dot -->
-        <span
-          class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#d6b18a] transition-all duration-300"
-          :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"></span>
-      </button>
+          <!-- Active Indicator Dot -->
+          <span
+            class="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#d6b18a] transition-all duration-300"
+            :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"></span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->
@@ -599,7 +600,7 @@ function formatTime(dateStr) {
 }
 
 function isSectionEnabled(key) {
-  if (!props.data?.selectedSections || props.data.selectedSections.length === 0) return true
+  if (props.data?.selectedSections === undefined || props.data?.selectedSections === null) return true
   return props.data.selectedSections.includes(key)
 }
 

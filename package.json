@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "postbuild": "node -e \"if(!process.env.VERCEL) process.exit(require('child_process').spawnSync('npm', ['run', 'prerender'], {stdio: 'inherit', shell: true}).status)\"",
+    "postbuild": "node -e \"if(!process.env.VERCEL && !process.env.CF_PAGES && !process.env.CI) process.exit(require('child_process').spawnSync('npm', ['run', 'prerender'], {stdio: 'inherit', shell: true}).status)\"",
     "preview": "vite preview",
     "prerender": "node scripts/prerender.js",
     "test": "vitest",

@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 
 const BASE = 'http://127.0.0.1:5173'
 
-const mockUser = { id: 'user-1', name: 'Test User', email: 'test@test.com', isAdmin: true }
+const mockUser = { id: 'user-1', name: 'Test User', email: 'test@test.com', isAdmin: true, emailVerifiedAt: '2026-06-06T00:00:00.000Z' }
 
 const mockInvitation = {
   id: 'mock-inv-001',

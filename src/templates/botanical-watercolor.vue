@@ -32,15 +32,17 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/70 backdrop-blur-xl border border-[#e8d5c4] rounded-full px-6 py-3 flex items-center justify-center gap-6 shadow-xl w-fit max-w-[90%] transition-all duration-500">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 transition-all duration-300 relative group"
-        :class="activeSection === item.id ? 'text-[#b48c5b] scale-110' : 'text-gray-400 hover:text-[#b48c5b]'">
-        <i :class="[item.icon, 'text-lg']"></i>
-        <span class="text-[8px] font-bold uppercase tracking-tighter">{{ item.label }}</span>
-        <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#b48c5b] transition-all"
-          :class="activeSection === item.id ? 'opacity-100' : 'opacity-0'"></span>
-      </button>
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/70 backdrop-blur-xl border border-[#e8d5c4] rounded-full shadow-xl max-w-[90%] overflow-x-auto no-scrollbar scroll-smooth transition-all duration-500 flex">
+      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 transition-all duration-300 relative group shrink-0"
+          :class="activeSection === item.id ? 'text-[#b48c5b] scale-110' : 'text-gray-400 hover:text-[#b48c5b]'">
+          <i :class="[item.icon, 'text-lg']"></i>
+          <span class="text-[8px] font-bold uppercase tracking-tighter">{{ item.label }}</span>
+          <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#b48c5b] transition-all"
+            :class="activeSection === item.id ? 'opacity-100' : 'opacity-0'"></span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->
@@ -199,13 +201,25 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-24 px-6 text-center border-y border-[#e8d5c4]/30 bg-white/20">
+      <section v-if="isSectionEnabled('extended-family') && (data.extendedFamily?.length || data.turutMengundang)" class="py-24 px-6 text-center border-y border-[#e8d5c4]/30 bg-white/20">
          <div class="max-w-4xl mx-auto space-y-12" v-observe>
             <h3 class="text-2xl md:text-3xl font-playfair text-[#4a4a4a]">Turut Mengundang</h3>
             <div class="flex flex-wrap justify-center gap-x-12 gap-y-6">
-               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-sm text-gray-500 italic">
-                  {{ person }}
-               </div>
+               <template v-if="Array.isArray(data.extendedFamily)">
+                  <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-sm text-gray-500 italic">
+                     {{ person }}
+                  </div>
+               </template>
+               <template v-else-if="typeof data.extendedFamily === 'string' && data.extendedFamily.trim()">
+                  <div v-for="(person, idx) in data.extendedFamily.split(/,|\n/).map(s => s.trim()).filter(Boolean)" :key="idx" class="text-sm text-gray-500 italic">
+                     {{ person }}
+                  </div>
+               </template>
+               <template v-else-if="data.turutMengundang">
+                  <div v-for="(person, idx) in data.turutMengundang.split(/,|\n/).map(s => s.trim()).filter(Boolean)" :key="idx" class="text-sm text-gray-500 italic">
+                     {{ person }}
+                  </div>
+               </template>
             </div>
          </div>
       </section>

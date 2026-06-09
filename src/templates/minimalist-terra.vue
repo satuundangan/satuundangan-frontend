@@ -18,13 +18,15 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#3d405b]/90 backdrop-blur-md rounded-2xl px-6 py-3 flex items-center justify-center gap-8 shadow-xl w-fit max-w-[90%] md:hidden transition-all duration-500">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 transition-all duration-300 relative group"
-        :class="activeSection === item.id ? 'text-[#f2cc8f] scale-110' : 'text-white/40 hover:text-[#f2cc8f]'">
-        <i :class="[item.icon, 'text-lg']"></i>
-        <span class="text-[7px] font-bold uppercase tracking-widest">{{ item.label }}</span>
-      </button>
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#3d405b]/90 backdrop-blur-md rounded-2xl shadow-xl max-w-[90%] md:hidden transition-all duration-500 flex overflow-x-auto no-scrollbar scroll-smooth">
+      <div class="flex items-center justify-center gap-8 px-6 py-3 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 transition-all duration-300 relative group shrink-0"
+          :class="activeSection === item.id ? 'text-[#f2cc8f] scale-110' : 'text-white/40 hover:text-[#f2cc8f]'">
+          <i :class="[item.icon, 'text-lg']"></i>
+          <span class="text-[7px] font-bold uppercase tracking-widest">{{ item.label }}</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->

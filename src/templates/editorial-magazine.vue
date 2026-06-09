@@ -10,13 +10,15 @@
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-black text-white rounded-none px-8 py-4 flex items-center justify-center gap-10 shadow-2xl w-fit max-w-[95%] md:hidden transition-all duration-500">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 transition-all duration-300"
-        :class="activeSection === item.id ? 'text-white' : 'text-gray-500'">
-        <i :class="[item.icon, 'text-base']"></i>
-        <span class="text-[6px] font-black uppercase tracking-[0.3em]">{{ item.label }}</span>
-      </button>
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-black text-white rounded-none shadow-2xl max-w-[95%] md:hidden transition-all duration-500 flex overflow-x-auto no-scrollbar scroll-smooth">
+      <div class="flex items-center justify-center gap-10 px-8 py-4 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 transition-all duration-300 shrink-0"
+          :class="activeSection === item.id ? 'text-white' : 'text-gray-500'">
+          <i :class="[item.icon, 'text-base']"></i>
+          <span class="text-[6px] font-black uppercase tracking-[0.3em]">{{ item.label }}</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->

@@ -5,13 +5,15 @@
 
     <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
 
-    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-md px-8 py-4 rounded-full flex items-center justify-center gap-8 shadow-lg shadow-[#8b9d83]/10 w-fit max-w-[95%] border border-[#8b9d83]/20 transition-all duration-1000">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1.5 transition-all duration-500"
-        :class="activeSection === item.id ? 'text-[#8b9d83] scale-110' : 'text-[#a3a3a3] hover:text-[#8b9d83]'">
-        <i :class="[item.icon, 'text-lg']"></i>
-        <span class="text-[8px] font-medium uppercase tracking-[0.2em]">{{ item.label }}</span>
-      </button>
+    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-md rounded-full shadow-lg shadow-[#8b9d83]/10 max-w-[95%] border border-[#8b9d83]/20 transition-all duration-1000 flex overflow-x-auto no-scrollbar scroll-smooth">
+      <div class="flex items-center justify-center gap-8 px-8 py-4 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1.5 transition-all duration-500 shrink-0"
+          :class="activeSection === item.id ? 'text-[#8b9d83] scale-110' : 'text-[#a3a3a3] hover:text-[#8b9d83]'">
+          <i :class="[item.icon, 'text-lg']"></i>
+          <span class="text-[8px] font-medium uppercase tracking-[0.2em]">{{ item.label }}</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->

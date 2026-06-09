@@ -8,6 +8,7 @@ const approvedUser = {
   email: 'playwright@test.com',
   isAdmin: false,
   isApproved: true,
+  emailVerifiedAt: '2026-06-06T00:00:00.000Z',
 }
 
 const adminUser = {

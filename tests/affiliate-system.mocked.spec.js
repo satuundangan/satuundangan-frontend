@@ -69,7 +69,7 @@ async function setupAffiliateMocks(page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ id: 1, name: 'John Doe', email: 'john@test.com', isAdmin: true }),
+      body: JSON.stringify({ id: 1, name: 'John Doe', email: 'john@test.com', isAdmin: true, emailVerifiedAt: '2026-06-06T00:00:00.000Z' }),
     });
   });
 

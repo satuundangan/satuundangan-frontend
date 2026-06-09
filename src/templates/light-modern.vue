@@ -6,13 +6,15 @@
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full px-6 py-3 flex gap-6 shadow-2xl animate-slide-up w-max max-w-[90%] overflow-x-auto no-scrollbar">
-      <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-        class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group"
-        :class="activeSection === item.id ? 'text-blue-600 scale-110' : 'text-gray-500 hover:text-blue-600'">
-        <i :class="[item.icon, 'text-lg']"></i>
-        <span class="text-[10px]">{{ item.label }}</span>
-      </button>
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full shadow-2xl animate-slide-up max-w-[90%] overflow-x-auto no-scrollbar flex">
+      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+        <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
+          class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group shrink-0"
+          :class="activeSection === item.id ? 'text-blue-600 scale-110' : 'text-gray-500 hover:text-blue-600'">
+          <i :class="[item.icon, 'text-lg']"></i>
+          <span class="text-[10px]">{{ item.label }}</span>
+        </button>
+      </div>
     </nav>
 
     <!-- Welcome Screen -->
@@ -475,7 +477,7 @@ const navItems = computed(() => {
 const activeSection = ref('home')
 
 function isSectionEnabled(key) {
-  if (!props.data?.selectedSections || props.data.selectedSections.length === 0) return true
+  if (props.data?.selectedSections === undefined || props.data?.selectedSections === null) return true
   return props.data.selectedSections.includes(key)
 }
 
