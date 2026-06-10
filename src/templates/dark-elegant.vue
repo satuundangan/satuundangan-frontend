@@ -2,7 +2,7 @@
   <div class="relative min-h-screen bg-black overflow-hidden font-sans no-scrollbar font-montserrat text-[#f0f0f0]">
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#1a1a1a" accentColor="#d6b18a" />
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"

@@ -6,7 +6,7 @@
     <div class="fixed top-0 right-10 w-px h-full bg-gray-100 z-0 hidden md:block"></div>
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#ffffff" accentColor="#000000" class="z-[55]" />
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"

@@ -28,7 +28,7 @@
     </div>
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#fdfaf5" accentColor="#b48c5b" />
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"

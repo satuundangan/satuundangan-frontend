@@ -11,7 +11,7 @@
     <div class="fixed bottom-[-20%] -right-[-10%] w-[600px] h-[600px] z-0 opacity-20 pointer-events-none rounded-full blur-[120px] bg-indigo-900/50 animate-pulse"></div>
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#050b1a" accentColor="#f3ca40" class="z-[55]" />
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"

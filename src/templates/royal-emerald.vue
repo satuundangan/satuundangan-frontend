@@ -29,6 +29,8 @@
       :src="getMusicUrl(data.musicChoice)"
       :audioStart="data.audioStart"
       :audioEnd="data.audioEnd"
+      primaryColor="#022b1d"
+      accentColor="#d4af37"
     />
 
     <!-- Bottom Navigation (Refined Glassmorphism) -->
