@@ -282,8 +282,8 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
 
-  // Block admin routes if TOTP not yet set up (production only)
-  if (import.meta.env.PROD && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
+  // Block admin routes if TOTP not yet set up (only where TOTP is required)
+  if (import.meta.env.VITE_ADMIN_TOTP_ENABLED === 'true' && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
     next({ name: 'admin-totp-setup' })
     return
   }
