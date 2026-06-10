@@ -97,7 +97,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-24 md:py-32 px-6 border-y-2 border-black">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-24 md:py-32 px-6 border-y-2 border-black">
         <div class="max-w-7xl mx-auto space-y-20">
           <div class="flex items-end justify-between border-b border-gray-100 pb-10">
              <h2 class="text-4xl md:text-7xl font-playfair font-black uppercase leading-none tracking-tighter">Feature<br>Story</h2>
@@ -105,9 +105,9 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12 md:gap-16">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="space-y-6 group" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="space-y-6 group" v-observe>
                <div class="aspect-square bg-gray-100 overflow-hidden grayscale group-hover:grayscale-0 transition-all duration-1000">
-                  <img v-if="story.image" :src="story.image" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[1.5s]" />
+                  <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[1.5s]" />
                   <div v-else class="w-full h-full flex items-center justify-center font-playfair italic text-gray-300">Visual Missing</div>
                </div>
                <div class="space-y-3">
@@ -131,7 +131,7 @@
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Gentleman</span>
                 <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.groomName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black"></div>
-                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Son of {{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
                   Follow Journey
                 </a>
@@ -157,7 +157,7 @@
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Lady</span>
                 <h3 class="text-4xl md:text-6xl lg:text-7xl font-playfair font-bold uppercase tracking-tighter leading-none">{{ data.brideName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black ml-auto md:ml-0"></div>
-                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Daughter of {{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
                   View Profile
                 </a>
@@ -302,7 +302,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-24 md:py-32 px-6 text-center md:px-20">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-24 md:py-32 px-6 text-center md:px-20">
         <h2 class="text-5xl md:text-7xl font-playfair font-black uppercase tracking-tighter mb-12 md:mb-20" v-observe>Gifts</h2>
         
         <div class="flex flex-wrap justify-center gap-4 md:gap-6">
@@ -344,25 +344,34 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({
-  data: { type: Object, default: () => ({}) }
-})
-
-const toast = useToast()
 const data = ref(props.data || {})
 
-// Normalize sections from different possible structures
-const activeSections = computed(() => {
-  if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
@@ -371,21 +380,32 @@ const allNavItems = [
   { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-clock', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-image', key: 'gallery' },
+  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-check', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const sectionSettings = activeSections.value.find(s => s.key === item.key)
-    return sectionSettings ? (sectionSettings.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
+function getEmbedUrlVideo(url) {
+  if (!url) return ''
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1]
+    const ampPos = videoId.indexOf('&')
+    return `https://www.youtube.com/embed/${ampPos !== -1 ? videoId.substring(0, ampPos) : videoId}`
+  }
+  if (url.includes('youtu.be')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1]}`
+  return url
+}
+
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')
@@ -447,16 +467,19 @@ function getMusicUrl(choice) {
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 
 function formatInstagramUrl(handle) {
+  if (!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
 
@@ -472,24 +495,23 @@ function initData() {
 
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-  } else {
-    galleryImages.value = [
-      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' }
-    ]
   }
 
   const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
   if (targetDate) {
     const target = new Date(targetDate).getTime()
-    interval = setInterval(() => {
-      const now = new Date().getTime()
-      const diff = target - now
-      if (diff <= 0) return clearInterval(interval)
-      countdown.value.DD = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
-      countdown.value.HR = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
-      countdown.value.MN = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
-      countdown.value.SC = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
-    }, 1000)
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
+      interval = setInterval(() => {
+        const now = new Date().getTime()
+        const diff = target - now
+        if (diff <= 0) return clearInterval(interval)
+        countdown.value.DD = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
+        countdown.value.HR = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
+        countdown.value.MN = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        countdown.value.SC = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+      }, 1000)
+    }
   }
 }
 
@@ -507,6 +529,7 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Registry Updated`)
+    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
   } catch (err) {
     console.error(err)
     toast.error("Process failed.")

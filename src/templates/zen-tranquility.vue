@@ -72,7 +72,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[#f5f5f0]">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[#f5f5f0]">
         <div class="max-w-4xl mx-auto space-y-20">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-sm uppercase tracking-[0.5em] text-[#8b9d83]">Cerita Kita</h2>
@@ -80,7 +80,7 @@
           </div>
 
           <div class="relative border-l border-[#8b9d83]/30 ml-4 md:ml-auto md:mr-auto space-y-16 pl-8">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative" v-observe>
               <div class="absolute -left-[41px] top-0 w-5 h-5 rounded-full bg-[#f5f5f0] border-2 border-[#8b9d83] flex items-center justify-center">
                  <div class="w-1.5 h-1.5 rounded-full bg-[#8b9d83]"></div>
               </div>
@@ -88,8 +88,8 @@
                 <span class="text-[10px] font-bold text-[#8b9d83] uppercase tracking-widest">{{ story.date }}</span>
                 <h3 class="text-2xl font-serif font-light text-[#333333]">{{ story.title }}</h3>
                 <p class="text-sm leading-relaxed text-[#7a7a7a] max-w-2xl">{{ story.description }}</p>
-                <div v-if="story.image" class="aspect-video max-w-md rounded-2xl overflow-hidden shadow-lg grayscale hover:grayscale-0 transition-all duration-700 mt-6">
-                  <img :src="story.image" class="w-full h-full object-cover" />
+                <div v-if="story.image || isPreviewMode" class="aspect-video max-w-md rounded-2xl overflow-hidden shadow-lg grayscale hover:grayscale-0 transition-all duration-700 mt-6">
+                  <img :src="story.image || 'https://via.placeholder.com/600x400'" class="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
@@ -108,21 +108,21 @@
           <div class="grid md:grid-cols-2 gap-20 items-center" v-observe>
             <div class="order-2 md:order-1 text-center md:text-right space-y-6">
               <h3 class="text-4xl md:text-6xl font-serif font-light text-[#333333]">{{ data.groomName }}</h3>
-              <p class="text-xs font-light text-[#7a7a7a] uppercase tracking-[0.2em]">Putra dari<br><span class="font-medium text-[#4a4a4a]">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-xs font-light text-[#7a7a7a] uppercase tracking-[0.2em]">Putra dari<br><span class="font-medium text-[#4a4a4a]">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block text-[10px] uppercase tracking-[0.2em] text-[#8b9d83] border-b border-[#8b9d83] pb-1 hover:text-[#333333] transition-colors pt-4"><i class="fa-brands fa-instagram mr-2"></i>Instagram</a>
             </div>
             <div class="order-1 md:order-2 aspect-square rounded-full overflow-hidden border-8 border-white shadow-xl mx-auto max-w-[280px] bg-[#e8e8e3]">
-               <img :src="data.groomPhotoUrl" class="w-full h-full object-cover sepia-[0.2]" />
+               <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover sepia-[0.2]" />
             </div>
           </div>
 
           <div class="grid md:grid-cols-2 gap-20 items-center" v-observe>
             <div class="aspect-square rounded-full overflow-hidden border-8 border-white shadow-xl mx-auto max-w-[280px] bg-[#e8e8e3]">
-               <img :src="data.bridePhotoUrl" class="w-full h-full object-cover sepia-[0.2]" />
+               <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover sepia-[0.2]" />
             </div>
             <div class="text-center md:text-left space-y-6">
               <h3 class="text-4xl md:text-6xl font-serif font-light text-[#333333]">{{ data.brideName }}</h3>
-              <p class="text-xs font-light text-[#7a7a7a] uppercase tracking-[0.2em]">Putri dari<br><span class="font-medium text-[#4a4a4a]">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-xs font-light text-[#7a7a7a] uppercase tracking-[0.2em]">Putri dari<br><span class="font-medium text-[#4a4a4a]">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block text-[10px] uppercase tracking-[0.2em] text-[#8b9d83] border-b border-[#8b9d83] pb-1 hover:text-[#333333] transition-colors pt-4"><i class="fa-brands fa-instagram mr-2"></i>Instagram</a>
             </div>
           </div>
@@ -268,7 +268,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 bg-white text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-32 px-6 bg-white text-center">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-sm uppercase tracking-[0.5em] text-[#8b9d83]">Tanda Kasih</h2>
@@ -302,35 +302,50 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({ data: { type: Object, default: () => ({}) } })
-const toast = useToast()
 const data = ref(props.data || {})
 
-const activeSections = computed(() => {
-  if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 const allNavItems = [
   { id: 'home', label: 'Utama', icon: 'fa-solid fa-leaf', key: 'hero' },
   { id: 'couple', label: 'Profil', icon: 'fa-solid fa-user', key: 'couple' },
+  { id: 'story', label: 'Cerita', icon: 'fa-solid fa-book-open', key: 'love-story' },
   { id: 'event', label: 'Acara', icon: 'fa-solid fa-calendar', key: 'event' },
   { id: 'gallery', label: 'Galeri', icon: 'fa-solid fa-image', key: 'gallery' },
+  { id: 'gift', label: 'Kado', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const s = activeSections.value.find(s => s.key === item.key)
-    return s ? (s.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
@@ -346,9 +361,8 @@ function getEmbedUrlVideo(url) {
 }
 
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')
@@ -386,7 +400,9 @@ function scrollToSection(id) {
 
 function initScrollSpy() {
   const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) activeSection.value = e.target.id })
+    entries.forEach(entry => {
+      if (entry.isIntersecting) activeSection.value = entry.target.id
+    })
   }, { threshold: 0.5 })
   navItems.value.forEach(item => {
     const el = document.getElementById(item.id)
@@ -420,6 +436,23 @@ function initData() {
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
   }
+
+  const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
+  if (targetDate) {
+    const target = new Date(targetDate).getTime()
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
+      interval = setInterval(() => {
+        const now = new Date().getTime()
+        const diff = target - now
+        if (diff <= 0) return clearInterval(interval)
+        countdown.value.Hari = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
+        countdown.value.Jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
+        countdown.value.Menit = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+      }, 1000)
+    }
+  }
 }
 
 async function submitRSVP() {
@@ -430,6 +463,7 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success("Terima kasih atas konfirmasinya")
+    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
   } catch (err) {
     console.error(err)
     toast.error("Gagal mengirim RSVP.")
@@ -437,6 +471,7 @@ async function submitRSVP() {
 }
 
 onMounted(() => { initData() })
+onUnmounted(() => { if (interval) clearInterval(interval) })
 watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initData() } }, { deep: true })
 </script>
 
@@ -452,4 +487,3 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 ::-webkit-scrollbar-track { background: #f5f5f0; }
 ::-webkit-scrollbar-thumb { background: #8b9d83; border-radius: 10px; }
 </style>
-style>

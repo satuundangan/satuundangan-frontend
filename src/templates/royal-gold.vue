@@ -107,7 +107,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[#0a1128]">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[#0a1128]">
         <div class="max-w-5xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-4xl md:text-6xl font-cinzel text-white">Our Heritage</h2>
@@ -115,11 +115,11 @@
           </div>
 
           <div class="space-y-16">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative group" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative group" v-observe>
                <div class="grid md:grid-cols-12 gap-8 md:gap-16 items-center">
                   <div class="md:col-span-4" :class="idx % 2 === 0 ? '' : 'md:order-last'">
                      <div class="relative rounded-lg overflow-hidden border border-[#d4af37]/30 shadow-2xl aspect-[4/5] grayscale hover:grayscale-0 transition-all duration-700">
-                        <img v-if="story.image" :src="story.image" class="w-full h-full object-cover" />
+                        <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x500'" class="w-full h-full object-cover" />
                         <div v-else class="w-full h-full bg-white/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#d4af37]/20 text-4xl"></i></div>
                      </div>
                   </div>
@@ -152,7 +152,7 @@
               <div class="text-center space-y-2">
                 <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.groomName }}</h3>
                 <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putra Dari</p>
-                <p class="text-gray-400 font-serif">{{ data.parents?.groomParents }}</p>
+                <p class="text-gray-400 font-serif">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
                 <div class="pt-4 flex justify-center">
                    <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
                      <i class="fa-brands fa-instagram"></i>
@@ -173,7 +173,7 @@
               <div class="text-center space-y-2">
                 <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.brideName }}</h3>
                 <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putri Dari</p>
-                <p class="text-gray-400 font-serif">{{ data.parents?.brideParents }}</p>
+                <p class="text-gray-400 font-serif">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
                 <div class="pt-4 flex justify-center">
                    <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
                      <i class="fa-brands fa-instagram"></i>
@@ -321,7 +321,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" class="py-32 px-6 text-center bg-[#0a1128]">
+      <section v-if="isSectionEnabled('gift') && data.bankAccounts?.length" id="gift" class="py-32 px-6 text-center bg-[#0a1128]">
         <h2 class="text-4xl font-cinzel text-white mb-4" v-observe>Wedding Gift</h2>
         <p class="text-[#d4af37] mb-16 max-w-md mx-auto text-xs uppercase tracking-widest">Tanda Kasih Digital</p>
 
@@ -567,4 +567,3 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
-yle>

@@ -96,7 +96,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[#f4f1ea]">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[#f4f1ea]">
         <div class="max-w-4xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-3xl md:text-5xl font-playfair italic text-[#3d405b]">Our Voyage</h2>
@@ -104,11 +104,11 @@
           </div>
 
           <div class="space-y-20">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative" v-observe>
                <div class="grid md:grid-cols-2 gap-12 items-center">
                   <div :class="idx % 2 === 0 ? '' : 'md:order-last'">
                      <div class="rounded-[2rem] overflow-hidden shadow-lg aspect-square grayscale hover:grayscale-0 transition-all duration-700">
-                        <img v-if="story.image" :src="story.image" class="w-full h-full object-cover" />
+                        <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover" />
                         <div v-else class="w-full h-full bg-[#3d405b]/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#e07a5f]/20 text-4xl"></i></div>
                      </div>
                   </div>
@@ -140,7 +140,7 @@
               <div class="space-y-2">
                 <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Groom</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-sm text-gray-500 leading-relaxed pt-2">Son of {{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
                   <i class="fa-brands fa-instagram text-2xl"></i>
                 </a>
@@ -158,7 +158,7 @@
               <div class="space-y-2 md:text-right">
                 <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Bride</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-sm text-gray-500 leading-relaxed pt-2">Daughter of {{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
                   <i class="fa-brands fa-instagram text-2xl"></i>
                 </a>
@@ -336,7 +336,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" class="py-32 px-6 text-center bg-[#f4f1ea]">
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" id="gift" class="py-32 px-6 text-center bg-[#f4f1ea]">
         <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-16 max-w-md mx-auto text-sm leading-relaxed">Your presence is enough for us, but if you wish to give a gift, you can use:</p>
 
@@ -379,25 +379,34 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({
-  data: { type: Object, default: () => ({}) }
-})
-
-const toast = useToast()
 const data = ref(props.data || {})
 
-// Normalize sections from different possible structures
-const activeSections = computed(() => {
-  if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
@@ -406,14 +415,15 @@ const allNavItems = [
   { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-location-dot', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-palette', key: 'gallery' },
+  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-pen-nib', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const sectionSettings = activeSections.value.find(s => s.key === item.key)
-    return sectionSettings ? (sectionSettings.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
@@ -429,9 +439,8 @@ function getEmbedUrlVideo(url) {
 }
 
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')
@@ -493,16 +502,19 @@ function getMusicUrl(choice) {
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatInstagramUrl(handle) {
+  if (!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
 
@@ -518,31 +530,30 @@ function initData() {
 
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-  } else {
-    galleryImages.value = [
-      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' }
-    ]
   }
 
   const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
   if (targetDate) {
     const target = new Date(targetDate).getTime()
-    interval = setInterval(() => {
-      const now = new Date().getTime()
-      const diff = target - now
-      if (diff <= 0) return clearInterval(interval)
-      countdown.value.Days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
-      countdown.value.Hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
-      countdown.value.Min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
-      countdown.value.Sec = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
-    }, 1000)
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
+      interval = setInterval(() => {
+        const now = new Date().getTime()
+        const diff = target - now
+        if (diff <= 0) return clearInterval(interval)
+        countdown.value.Days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
+        countdown.value.Hrs = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
+        countdown.value.Min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        countdown.value.Sec = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+      }, 1000)
+    }
   }
 }
 
 function addToCalendar() {
   const event = {
     title: `Wedding of ${data.value.groomName} & ${data.value.brideName}`,
-    start: new Date(data.value.akadLocation?.dateTime || Date.now()).toISOString().replace(/-|:|\.\d\d\d/g, ""),
+    start: new Date(data.value.akadLocation?.dateTime || data.value.dateTime || Date.now()).toISOString().replace(/-|:|\.\d\d\d/g, ""),
     description: "Please join us on our wedding day."
   }
   const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.start}&details=${encodeURIComponent(event.description)}`
@@ -563,6 +574,7 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Confirmation sent!`)
+    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
   } catch (err) {
     console.error(err)
     toast.error("Failed to send RSVP.")
@@ -592,4 +604,3 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
-le>

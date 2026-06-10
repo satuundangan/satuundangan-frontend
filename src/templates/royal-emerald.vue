@@ -936,7 +936,7 @@ const navItems = computed(() => {
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
     { id: 'story', label: 'Story', icon: 'fa-solid fa-feather' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-    // Gallery hidden as requested
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
     { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
   ]
@@ -1069,7 +1069,9 @@ function initScrollSpy() {
 
 function getMusicUrl(choice) {
   if (!choice) return null
-  return choice.includes('/') ? choice : '/audio/romantic_music1.mp3'
+  if (choice.startsWith('yt:')) return choice
+  if (choice.includes('/') || choice.includes('http')) return choice
+  return '/audio/wedding-sacred-ceremony.mp3'
 }
 function formatDate(dateStr) {
   if (!dateStr) return '-'

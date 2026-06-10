@@ -107,13 +107,13 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section v-if="isSectionEnabled('love-story') && data.loveStory?.length" id="story" class="py-20 md:py-24 px-6 bg-black">
+      <section v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" id="story" class="py-20 md:py-24 px-6 bg-black">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-12 md:mb-20" v-observe>Our Journey
           </h2>
 
           <div class="relative before:absolute before:left-1/2 before:top-0 before:h-full before:w-px before:bg-[#d6b18a]/20 hidden md:block">
-            <div v-for="(story, index) in data.loveStory" :key="index" class="mb-20 relative flex items-center justify-between" v-observe>
+            <div v-for="(story, index) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="index" class="mb-20 relative flex items-center justify-between" v-observe>
               <div class="w-[45%]" :class="index % 2 === 0 ? 'text-right' : 'order-last text-left'">
                 <div class="space-y-4">
                   <span class="text-[#d6b18a] font-bold text-sm tracking-widest">{{ story.date }}</span>
@@ -123,8 +123,8 @@
               </div>
               <div class="absolute left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-[#d6b18a] shadow-[0_0_15px_rgba(214,177,138,0.5)] z-10"></div>
               <div class="w-[45%]" :class="index % 2 === 0 ? 'order-last' : ''">
-                <div v-if="story.image" class="rounded-3xl overflow-hidden border border-[#d6b18a]/30 shadow-2xl aspect-video grayscale hover:grayscale-0 transition-all duration-700">
-                  <img :src="story.image" class="w-full h-full object-cover" />
+                <div v-if="story.image || isPreviewMode" class="rounded-3xl overflow-hidden border border-[#d6b18a]/30 shadow-2xl aspect-video grayscale hover:grayscale-0 transition-all duration-700">
+                  <img :src="story.image || 'https://via.placeholder.com/400x300'" class="w-full h-full object-cover" />
                 </div>
               </div>
             </div>
@@ -132,10 +132,9 @@
 
           <!-- Mobile Story -->
           <div class="md:hidden space-y-12">
-            <div v-for="(story, index) in data.loveStory" :key="index" class="space-y-6" v-observe>
+            <div v-for="(story, index) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="index" class="space-y-6" v-observe>
               <div class="aspect-video rounded-2xl overflow-hidden border border-[#d6b18a]/20 grayscale">
-                <img v-if="story.image" :src="story.image" class="w-full h-full object-cover" />
-                <div v-else class="w-full h-full bg-white/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#d6b18a]/20 text-3xl"></i></div>
+                <img :src="story.image || 'https://via.placeholder.com/400x300'" class="w-full h-full object-cover" />
               </div>
               <div class="space-y-2 text-center">
                 <span class="text-[#d6b18a] font-bold text-xs tracking-widest">{{ story.date }}</span>
@@ -337,92 +336,8 @@
         </div>
       </section>
 
-      <!-- LOVE STORY -->
-      <section v-if="data.loveStory?.length && isSectionEnabled('love-story')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
-        <div class="max-w-4xl mx-auto">
-          <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-12 md:mb-16" v-observe>Our Journey
-          </h2>
-
-          <div class="space-y-12">
-            <div v-for="(story, index) in data.loveStory" :key="index"
-              class="flex flex-col md:flex-row gap-6 md:gap-8 items-center group" v-observe>
-              <div :class="['w-full md:w-1/2', index % 2 !== 0 ? 'md:order-2' : '']">
-                <img v-if="story.images" :src="story.images"
-                  class="w-full h-56 md:h-64 object-cover rounded-2xl shadow-lg grayscale group-hover:grayscale-0 transition-all duration-500" />
-                <div v-else class="w-full h-56 md:h-64 bg-white/5 rounded-2xl flex items-center justify-center">
-                  <i class="fa-solid fa-heart text-4xl text-white/20"></i>
-                </div>
-              </div>
-              <div class="w-full md:w-1/2 text-center md:text-left">
-                <div class="text-[#d6b18a] font-bold text-base md:text-lg mb-2">{{ formatStoryDate(story.date) }}</div>
-                <h3 class="text-xl md:text-2xl font-serif text-white mb-3">{{ story.title }}</h3>
-                <p class="text-gray-400 text-sm md:text-base leading-relaxed">{{ story.content }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- GALLERY -->
-      <section id="gallery" v-if="galleryImages.length && isSectionEnabled('gallery')" class="py-20 md:py-24 px-4 bg-black">
-        <h2 class="text-3xl md:text-4xl font-alex text-center text-[#d6b18a] mb-8 md:mb-12" v-observe>Captured Moments
-        </h2>
-
-        <!-- Use the component -->
-        <GalleryInvitation :items="galleryImages" />
-      </section>
-
-      <!-- RSVP -->
-      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="py-20 md:py-24 px-6 relative bg-[#1a1a1a]">
-        <div
-          class="max-w-2xl mx-auto bg-black/40 backdrop-blur-xl border border-[#d6b18a]/20 rounded-3xl p-6 md:p-12 shadow-2xl"
-          v-observe>
-          <h2 class="text-2xl md:text-3xl font-serif text-center text-white mb-2">RSVP</h2>
-          <p class="text-center text-gray-400 mb-8 text-xs md:text-sm">Mohon konfirmasi kehadiran Anda sebelum acara
-            dimulai.</p>
-
-          <form @submit.prevent="submitRSVP" class="space-y-5">
-            <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d6b18a] transition-colors placeholder-white/30 text-sm md:text-base"
-              required />
-
-            <div class="grid grid-cols-3 gap-3">
-              <label
-                class="flex items-center justify-center px-2 md:px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 cursor-pointer transition-all hover:bg-white/10 text-xs md:text-base"
-                :class="{ 'border-[#d6b18a] text-[#d6b18a] bg-[#d6b18a]/10 font-bold': rsvp.attendance === 'hadir' }">
-                <input type="radio" value="hadir" v-model="rsvp.attendance" class="hidden"> Hadir
-              </label>
-              <label
-                class="flex items-center justify-center px-2 md:px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 cursor-pointer transition-all hover:bg-white/10 text-xs md:text-base"
-                :class="{ 'border-[#d6b18a] text-[#d6b18a] bg-[#d6b18a]/10 font-bold': rsvp.attendance === 'tidak' }">
-                <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden"> Maaf
-              </label>
-              <label
-                class="flex items-center justify-center px-2 md:px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-gray-400 cursor-pointer transition-all hover:bg-white/10 text-xs md:text-base"
-                :class="{ 'border-[#d6b18a] text-[#d6b18a] bg-[#d6b18a]/10 font-bold': rsvp.attendance === 'ragu' }">
-                <input type="radio" value="ragu" v-model="rsvp.attendance" class="hidden"> Ragu
-              </label>
-            </div>
-
-            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d6b18a] transition-colors placeholder-white/30 text-sm md:text-base">
-              <option value="" disabled class="text-black">Jumlah Tamu</option>
-              <option v-for="n in 5" :key="n" :value="n" class="text-black">{{ n }} Orang</option>
-            </select>
-
-            <textarea v-model="rsvp.message" rows="3" placeholder="Ucapan & Doa"
-              class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d6b18a] transition-colors placeholder-white/30 text-sm md:text-base"></textarea>
-
-            <button type="submit"
-              class="w-full py-3.5 bg-[#d6b18a] hover:bg-[#b48c5b] text-black font-bold rounded-xl transition-all shadow-lg mt-4 text-sm md:text-base">
-              Kirim Konfirmasi
-            </button>
-          </form>
-        </div>
-      </section>
-
       <!-- GIFT -->
-      <section v-if="(data.bankAccounts?.length || data.eWalletLink?.length) && isSectionEnabled('gift')"
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" id="gift"
         class="py-20 md:py-24 px-6 bg-black text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-[#d6b18a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
@@ -491,37 +406,51 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({
-  data: {
-    type: Object,
-    default: () => ({})
-  }
-})
-
-const toast = useToast()
-// Basic Data Init
 const data = ref(props.data || {})
+
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
+
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 const backgroundUrl = ref('')
 
 // Navigation
 const navItems = computed(() => {
   const items = [
-    { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
-    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
-    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart' },
-    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
-    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
+    { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
+    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
+    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
+    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
+    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
   ]
   
   return items.filter(item => {
     if (item.id === 'home') return true
-    if (item.id === 'event') return isSectionEnabled('event')
-    if (item.id === 'story') return isSectionEnabled('love-story')
-    return isSectionEnabled(item.id)
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 const activeSection = ref('home')
@@ -600,8 +529,8 @@ function formatTime(dateStr) {
 }
 
 function isSectionEnabled(key) {
-  if (props.data?.selectedSections === undefined || props.data?.selectedSections === null) return true
-  return props.data.selectedSections.includes(key)
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 function formatStoryDate(dateStr) {
