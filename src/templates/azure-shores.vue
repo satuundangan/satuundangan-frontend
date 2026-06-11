@@ -3,7 +3,7 @@
     <!-- Wavy Pattern Overlay -->
     <div class="fixed inset-0 opacity-10 pointer-events-none z-0" style="background-image: radial-gradient(circle at center, #1e3a8a 1px, transparent 1px); background-size: 20px 20px;"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#f0f8ff" accentColor="#1e3a8a" class="z-[55]" />
 
     <!-- Navigation -->
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 transition-all duration-1000 hidden md:flex">
@@ -98,7 +98,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 relative">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 relative">
         <div class="max-w-7xl mx-auto space-y-20">
           <div class="text-center" v-observe>
             <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Our Voyage</h2>
@@ -106,9 +106,9 @@
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="bg-white p-6 rounded-[30px] shadow-lg border border-[#e0f2fe] space-y-6 flex flex-col group hover:-translate-y-2 transition-all duration-500" v-observe>
-               <div v-if="story.image" class="aspect-[4/3] rounded-2xl overflow-hidden relative">
-                  <img :src="story.image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="bg-white p-6 rounded-[30px] shadow-lg border border-[#e0f2fe] space-y-6 flex flex-col group hover:-translate-y-2 transition-all duration-500" v-observe>
+               <div v-if="story.image || isPreviewMode" class="aspect-[4/3] rounded-2xl overflow-hidden relative">
+                  <img :src="story.image || 'https://via.placeholder.com/600x400'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                   <div class="absolute inset-0 bg-[#1e3a8a]/10 group-hover:bg-transparent transition-colors"></div>
                </div>
                <div class="space-y-3 flex-1">
@@ -129,14 +129,14 @@
           <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative">
                <div class="aspect-square rounded-full p-2 bg-white shadow-xl border border-[#e0f2fe] relative z-10 mx-auto max-w-[300px]">
-                  <img :src="data.groomPhotoUrl" class="w-full h-full object-cover rounded-full" />
+                  <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover rounded-full" />
                </div>
                <div class="absolute top-10 -right-4 w-20 h-20 bg-[#ffb703] rounded-full blur-2xl opacity-40 z-0"></div>
             </div>
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[#60a5fa]">The Groom</span>
               <h3 class="text-4xl md:text-6xl font-serif text-[#1e3a8a]">{{ data.groomName }}</h3>
-              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Son of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Son of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
           </div>
@@ -144,14 +144,14 @@
           <div class="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative">
                <div class="aspect-square rounded-full p-2 bg-white shadow-xl border border-[#e0f2fe] relative z-10 mx-auto max-w-[300px]">
-                  <img :src="data.bridePhotoUrl" class="w-full h-full object-cover rounded-full" />
+                  <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover rounded-full" />
                </div>
                <div class="absolute bottom-10 -left-4 w-20 h-20 bg-[#3b82f6] rounded-full blur-2xl opacity-40 z-0"></div>
             </div>
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[#60a5fa]">The Bride</span>
               <h3 class="text-4xl md:text-6xl font-serif text-[#1e3a8a]">{{ data.brideName }}</h3>
-              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Daughter of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Daughter of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
           </div>
@@ -295,7 +295,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-32 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Wedding Gift</h2>
@@ -332,42 +332,67 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({ data: { type: Object, default: () => ({}) } })
-const toast = useToast()
 const data = ref(props.data || {})
 
-const activeSections = computed(() => {
-  if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Events', icon: 'fa-solid fa-calendar-day', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
+  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const s = activeSections.value.find(s => s.key === item.key)
-    return s ? (s.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
+function getEmbedUrlVideo(url) {
+  if (!url) return ''
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1]
+    const ampPos = videoId.indexOf('&')
+    return `https://www.youtube.com/embed/${ampPos !== -1 ? videoId.substring(0, ampPos) : videoId}`
+  }
+  if (url.includes('youtu.be')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1]}`
+  return url
+}
+
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')
@@ -422,14 +447,21 @@ function getMusicUrl(choice) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase()
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
+  return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 function formatTime(dateStr) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+  const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
-function formatInstagramUrl(handle) { return `https://instagram.com/${handle.replace('@', '')}` }
-function copyToClipboard(text) { navigator.clipboard.writeText(text); toast.success('Number Copied') }
+function formatInstagramUrl(handle) {
+  if (!handle) return '#'
+  return `https://instagram.com/${handle.replace('@', '')}`
+}
+function copyToClipboard(text) { navigator.clipboard.writeText(text); toast.success('Nomor Rekening Disalin') }
 
 function initData() {
   if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
@@ -439,23 +471,42 @@ function initData() {
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
   }
+
+  const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
+  if (targetDate) {
+    const target = new Date(targetDate).getTime()
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
+      interval = setInterval(() => {
+        const now = new Date().getTime()
+        const diff = target - now
+        if (diff <= 0) return clearInterval(interval)
+        countdown.value.Hari = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
+        countdown.value.Jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
+        countdown.value.Menit = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+      }, 1000)
+    }
+  }
 }
 
 async function submitRSVP() {
-  if (!rsvp.value.name?.trim() || !rsvp.value.attendance) return toast.error("Please fill all fields")
+  if (!rsvp.value.name?.trim() || !rsvp.value.attendance) return toast.error("Lengkapi data yang dibutuhkan")
   try {
     await createGuestMessage({
       invitationId: data.value.id, guestName: rsvp.value.name, message: rsvp.value.message,
       rsvpStatus: rsvp.value.attendance, totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
-    toast.success("Thank you for confirming!")
+    toast.success("Terima kasih atas konfirmasinya")
+    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
   } catch (err) {
     console.error(err)
-    toast.error("Failed to confirm.")
+    toast.error("Gagal mengirim RSVP.")
   }
 }
 
 onMounted(() => { initData() })
+onUnmounted(() => { if (interval) clearInterval(interval) })
 watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initData() } }, { deep: true })
 </script>
 

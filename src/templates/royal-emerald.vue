@@ -29,6 +29,8 @@
       :src="getMusicUrl(data.musicChoice)"
       :audioStart="data.audioStart"
       :audioEnd="data.audioEnd"
+      primaryColor="#022b1d"
+      accentColor="#d4af37"
     />
 
     <!-- Bottom Navigation (Refined Glassmorphism) -->
@@ -627,6 +629,40 @@
           </div>
         </section>
 
+        <!-- 7. GALLERY SECTION -->
+        <section
+          v-if="isSectionEnabled('gallery') && galleryImages.length"
+          id="gallery"
+          class="snap-start relative min-h-[100svh] w-full flex flex-col items-center justify-center pt-8 pb-32 md:pt-12 md:pb-24 px-6 bg-[#022b1d] overflow-hidden"
+          v-observe
+        >
+          <!-- Floral Corner Top Left -->
+          <div
+            class="absolute top-0 left-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-70 z-0"
+          >
+          </div>
+          <!-- Floral Corner Bottom Right -->
+          <div
+            class="absolute bottom-0 right-0 w-48 h-48 md:w-80 md:h-80 pointer-events-none opacity-50 z-0 transform rotate-180"
+          >
+          </div>
+
+          <div class="max-w-4xl mx-auto w-full space-y-10 relative z-10">
+            <div class="text-center space-y-3" v-observe>
+              <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Moments</h2>
+              <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">
+                Captured Memories
+              </p>
+            </div>
+            <div
+              class="bg-white/5 p-4 md:p-8 rounded-[2rem] border border-[#d4af37]/20 shadow-xl"
+              v-observe
+            >
+              <GalleryInvitation :items="galleryImages" />
+            </div>
+          </div>
+        </section>
+
         <!-- 8. GIFT SECTION -->
         <section
           v-if="isSectionEnabled('gift')"
@@ -936,13 +972,14 @@ const navItems = computed(() => {
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
     { id: 'story', label: 'Story', icon: 'fa-solid fa-feather' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-    // Gallery hidden as requested
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
     { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
   ]
   return items.filter((item) => {
     if (item.id === 'home') return true
     if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    if (item.id === 'gallery') return isSectionEnabled('gallery') && data.value.galleryImages?.length > 0
     return isSectionEnabled(item.id)
   })
 })
@@ -1069,7 +1106,9 @@ function initScrollSpy() {
 
 function getMusicUrl(choice) {
   if (!choice) return null
-  return choice.includes('/') ? choice : '/audio/romantic_music1.mp3'
+  if (choice.startsWith('yt:')) return choice
+  if (choice.includes('/') || choice.includes('http')) return choice
+  return '/audio/wedding-sacred-ceremony.mp3'
 }
 function formatDate(dateStr) {
   if (!dateStr) return '-'

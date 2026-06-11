@@ -3,7 +3,8 @@
     
     <!-- YouTube mode: mini visible player with mute toggle -->
     <div v-if="isYoutube" class="relative group">
-       <div class="w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden shadow-2xl border border-[#d4af37]/30 ring-1 ring-white/10">
+       <div class="w-10 h-10 md:w-14 md:h-14 rounded-full overflow-hidden shadow-2xl border ring-1 ring-white/10"
+         :style="{ borderColor: accentColor + '4D' }">
           <iframe
             ref="ytIframe"
             :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1${audioStart > 0 ? '&start=' + Math.floor(audioStart) : ''}${audioEnd > 0 ? '&end=' + Math.floor(audioEnd) : ''}`"
@@ -14,9 +15,12 @@
        </div>
        <button
          @click="toggleYoutubeMute"
-         class="absolute inset-0 flex items-center justify-center rounded-full bg-[#022b1d]/60 backdrop-blur-md hover:bg-[#022b1d]/40 transition-all duration-500"
+         class="absolute inset-0 flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-500"
+         :style="{ backgroundColor: primaryColor + '99' }"
        >
-         <i :class="isMuted ? 'fa-solid fa-volume-xmark text-white/50' : 'fa-solid fa-compact-disc text-[#d4af37] animate-spin-slow'" class="text-base md:text-xl" />
+         <i :class="isMuted ? 'fa-solid fa-volume-xmark text-white/50' : 'fa-solid fa-compact-disc animate-spin-slow'" 
+            class="text-base md:text-xl"
+            :style="{ color: !isMuted ? accentColor : undefined }" />
        </button>
     </div>
 
@@ -24,21 +28,25 @@
     <button
       v-else
       @click="toggleAudio"
-      class="relative group w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-110 active:scale-95 border border-[#d4af37]/30 backdrop-blur-xl bg-[#043927]/60"
+      class="relative group w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-110 active:scale-95 border backdrop-blur-xl"
+      :style="{ 
+        backgroundColor: primaryColor + '99', 
+        borderColor: accentColor + '4D' 
+      }"
     >
       <!-- Animated Music Waves -->
       <div v-if="isPlaying" class="absolute inset-0 flex items-center justify-center gap-[2px] opacity-40">
-         <span v-for="i in 3" :key="i" class="w-[2px] h-3 bg-[#d4af37] rounded-full animate-music-bar" :style="{ animationDelay: `${i * 0.2}s` }"></span>
+         <span v-for="i in 3" :key="i" class="w-[2px] h-3 rounded-full animate-music-bar" :style="{ backgroundColor: accentColor, animationDelay: `${i * 0.2}s` }"></span>
       </div>
 
       <!-- Icon Container -->
       <div class="relative z-10 flex items-center justify-center transition-transform duration-500" :class="{ 'rotate-[360deg]': isPlaying }">
-         <i v-if="isPlaying" class="fa-solid fa-compact-disc text-[#d4af37] text-lg md:text-2xl animate-spin-slow" />
-         <i v-else class="fa-solid fa-play text-white/40 text-sm md:text-lg ml-1" />
+         <i v-if="isPlaying" class="fa-solid fa-compact-disc text-lg md:text-2xl animate-spin-slow" :style="{ color: accentColor }" />
+         <i v-else class="fa-solid fa-play text-sm md:text-lg ml-1 opacity-40" :style="{ color: accentColor }" />
       </div>
 
       <!-- Pulsing Glow Effect -->
-      <div v-if="isPlaying" class="absolute inset-0 rounded-full bg-[#d4af37]/20 animate-ping-slow pointer-events-none"></div>
+      <div v-if="isPlaying" class="absolute inset-0 rounded-full animate-ping-slow pointer-events-none" :style="{ backgroundColor: accentColor + '33' }"></div>
     </button>
 
   </div>
@@ -63,6 +71,14 @@ const props = defineProps({
   audioEnd: {
     type: Number,
     default: 0
+  },
+  primaryColor: {
+    type: String,
+    default: '#043927'
+  },
+  accentColor: {
+    type: String,
+    default: '#d4af37'
   }
 })
 

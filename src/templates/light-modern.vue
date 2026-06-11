@@ -2,7 +2,7 @@
   <div class="relative min-h-screen bg-white overflow-hidden font-sans no-scrollbar font-montserrat text-gray-800">
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#ffffff" accentColor="#1e3a8a" />
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"
@@ -101,17 +101,17 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section v-if="isSectionEnabled('love-story') && data.loveStory?.length" id="story" class="py-20 md:py-24 px-6 bg-white">
+      <section v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" id="story" class="py-20 md:py-24 px-6 bg-white">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-alex text-center text-blue-800 mb-12 md:mb-16" v-observe>Our Journey
           </h2>
 
           <div class="space-y-12">
-            <div v-for="(story, index) in data.loveStory" :key="index"
+            <div v-for="(story, index) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="index"
               class="flex flex-col md:flex-row gap-6 md:gap-12 items-center group" v-observe>
               <div :class="['w-full md:w-1/2', index % 2 !== 0 ? 'md:order-2' : '']">
                 <div class="relative overflow-hidden rounded-[2.5rem] shadow-xl aspect-video grayscale group-hover:grayscale-0 transition-all duration-700 border-4 border-white ring-1 ring-gray-100">
-                  <img v-if="story.image || story.images" :src="story.image || story.images" class="w-full h-full object-cover" />
+                  <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x300'" class="w-full h-full object-cover" />
                   <div v-else class="w-full h-full bg-blue-50 flex items-center justify-center">
                     <i class="fa-solid fa-heart text-blue-200 text-3xl"></i>
                   </div>
@@ -280,7 +280,7 @@
       </section>
 
       <!-- VIDEO PREWEDDING -->
-      <section v-if="data.videoPrewedding" class="py-20 md:py-24 px-6 bg-white" v-observe>
+      <section v-if="isSectionEnabled('video') && data.videoPrewedding" class="py-20 md:py-24 px-6 bg-white" v-observe>
          <div class="max-w-4xl mx-auto text-center">
             <h2 class="text-3xl md:text-4xl font-alex text-blue-800 mb-8">Video Prewedding</h2>
             <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
@@ -289,34 +289,8 @@
          </div>
       </section>
 
-      <!-- LOVE STORY -->
-      <section v-if="data.loveStory?.length" class="py-20 md:py-24 px-6 bg-gray-50">
-        <div class="max-w-4xl mx-auto">
-          <h2 class="text-3xl md:text-4xl font-alex text-center text-blue-800 mb-12 md:mb-16" v-observe>Our Journey
-          </h2>
-
-          <div class="space-y-12">
-            <div v-for="(story, index) in data.loveStory" :key="index"
-              class="flex flex-col md:flex-row gap-6 md:gap-8 items-center group" v-observe>
-              <div :class="['w-full md:w-1/2', index % 2 !== 0 ? 'md:order-2' : '']">
-                <img v-if="story.images" :src="story.images"
-                  class="w-full h-56 md:h-64 object-cover rounded-2xl shadow-lg grayscale group-hover:grayscale-0 transition-all duration-500" />
-                <div v-else class="w-full h-56 md:h-64 bg-white rounded-2xl flex items-center justify-center border border-gray-200">
-                  <i class="fa-solid fa-heart text-4xl text-blue-200"></i>
-                </div>
-              </div>
-              <div class="w-full md:w-1/2 text-center md:text-left">
-                <div class="text-blue-500 font-bold text-base md:text-lg mb-2">{{ formatStoryDate(story.date) }}</div>
-                <h3 class="text-xl md:text-2xl font-serif text-gray-800 mb-3">{{ story.title }}</h3>
-                <p class="text-gray-500 text-sm md:text-base leading-relaxed">{{ story.content }}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <!-- GALLERY -->
-      <section v-if="galleryImages.length" class="py-20 md:py-24 px-4 bg-white">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-20 md:py-24 px-4 bg-white">
         <h2 class="text-3xl md:text-4xl font-alex text-center text-blue-800 mb-8 md:mb-12" v-observe>Captured Moments
         </h2>
 
@@ -374,8 +348,8 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length || data.eWalletLink?.length"
-        class="py-20 md:py-24 px-6 bg-white text-center">
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)"
+        id="gift" class="py-20 md:py-24 px-6 bg-white text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-blue-800 mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-500 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
           sangat berarti bagi kami.</p>
@@ -452,33 +426,57 @@ const props = defineProps({
 // Basic Data Init
 const toast = useToast()
 const data = ref(props.data || {})
+
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
+
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: '', message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 const backgroundUrl = ref('https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=1920&auto=format&fit=crop')
 
 // Navigation
 const navItems = computed(() => {
   const items = [
-    { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
-    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
-    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart' },
-    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
-    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
-    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' }
+    { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
+    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
+    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
+    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
+    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
   ]
+  
   return items.filter(item => {
     if (item.id === 'home') return true
-    if (item.id === 'event') return isSectionEnabled('event')
-    if (item.id === 'story') return isSectionEnabled('love-story')
-    return isSectionEnabled(item.id)
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 const activeSection = ref('home')
 
 function isSectionEnabled(key) {
-  if (props.data?.selectedSections === undefined || props.data?.selectedSections === null) return true
-  return props.data.selectedSections.includes(key)
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 // Countdown Logic
@@ -770,4 +768,3 @@ watch(() => props.data, (newVal) => {
   }
 }
 </style>
-tyle>

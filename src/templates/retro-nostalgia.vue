@@ -3,7 +3,7 @@
     <!-- Film Grain Overlay -->
     <div class="fixed inset-0 opacity-[0.08] pointer-events-none mix-blend-overlay z-[100]" style="background-image: url('https://www.transparenttextures.com/patterns/stardust.png');"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#2c2c2c" accentColor="#e06d53" class="z-[55]" />
 
     <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#2c2c2c] rounded-xl shadow-[4px_4px_0px_0px_rgba(224,109,83,1)] max-w-[95%] border-2 border-[#e06d53] transition-all duration-500 flex overflow-x-auto no-scrollbar scroll-smooth">
       <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
@@ -75,7 +75,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-5xl mx-auto space-y-20">
           <div class="text-center" v-observe>
             <h2 class="text-6xl font-serif font-black uppercase italic">Our Story</h2>
@@ -83,7 +83,7 @@
           </div>
 
           <div class="space-y-24 relative before:absolute before:left-1/2 before:top-0 before:h-full before:w-1 before:bg-[#2c2c2c]/10 before:-translate-x-1/2 hidden md:block">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative flex items-center justify-between" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative flex items-center justify-between" v-observe>
               <div class="w-[45%]" :class="idx % 2 === 0 ? 'text-right' : 'order-last text-left'">
                 <div class="bg-white p-6 border-2 border-[#2c2c2c] shadow-[6px_6px_0px_0px_rgba(44,44,44,1)] space-y-4" :class="idx % 2 === 0 ? 'rotate-[-1deg]' : 'rotate-[1deg]'">
                   <span class="text-[#e06d53] font-bold text-xs">{{ story.date }}</span>
@@ -93,9 +93,9 @@
               </div>
               <div class="absolute left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#e06d53] border-4 border-[#fdfbf7] z-10"></div>
               <div class="w-[45%]" :class="idx % 2 === 0 ? 'order-last' : ''">
-                <div v-if="story.image" class="relative group" :class="idx % 2 === 0 ? 'rotate-[3deg]' : 'rotate-[-3deg]'">
+                <div v-if="story.image || isPreviewMode" class="relative group" :class="idx % 2 === 0 ? 'rotate-[3deg]' : 'rotate-[-3deg]'">
                   <div class="absolute -inset-2 bg-white shadow-lg border border-gray-200"></div>
-                  <img :src="story.image" class="relative z-10 w-full aspect-video object-cover border-4 border-white" />
+                  <img :src="story.image || 'https://via.placeholder.com/400x300'" class="relative z-10 w-full aspect-video object-cover border-4 border-white" />
                 </div>
               </div>
             </div>
@@ -103,15 +103,15 @@
 
           <!-- Mobile Story -->
           <div class="md:hidden space-y-16">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="space-y-6" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="space-y-6" v-observe>
                <div class="bg-white p-6 border-2 border-[#2c2c2c] shadow-[6px_6px_0px_0px_rgba(44,44,44,1)] space-y-4">
                   <span class="text-[#e06d53] font-bold text-xs">{{ story.date }}</span>
                   <h3 class="text-2xl font-serif font-black uppercase">{{ story.title }}</h3>
                   <p class="text-sm font-medium text-gray-600 leading-relaxed">{{ story.description }}</p>
                </div>
-               <div v-if="story.image" class="relative max-w-[280px] mx-auto rotate-[2deg]">
+               <div v-if="story.image || isPreviewMode" class="relative max-w-[280px] mx-auto rotate-[2deg]">
                   <div class="absolute -inset-2 bg-white shadow-lg border border-gray-200"></div>
-                  <img :src="story.image" class="relative z-10 w-full aspect-square object-cover border-4 border-white border-b-[30px]" />
+                  <img :src="story.image || 'https://via.placeholder.com/400x400'" class="relative z-10 w-full aspect-square object-cover border-4 border-white border-b-[30px]" />
                </div>
             </div>
           </div>
@@ -308,7 +308,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+      <section v-if="isSectionEnabled('gift') && data.bankAccounts?.length" id="gift" class="py-32 px-6 text-center bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <h2 class="text-6xl font-serif font-black uppercase">Wedding Gift</h2>
@@ -348,31 +348,48 @@ const props = defineProps({ data: { type: Object, default: () => ({}) } })
 const toast = useToast()
 const data = ref(props.data || {})
 
-const activeSections = computed(() => {
-  if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 const allNavItems = [
   { id: 'home', label: 'Ticket', icon: 'fa-solid fa-ticket', key: 'hero' },
   { id: 'couple', label: 'Cast', icon: 'fa-solid fa-star', key: 'couple' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-open', key: 'love-story' },
   { id: 'event', label: 'Showtime', icon: 'fa-solid fa-film', key: 'event' },
   { id: 'gallery', label: 'Stills', icon: 'fa-solid fa-camera-retro', key: 'gallery' },
+  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-pen-nib', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const s = activeSections.value.find(s => s.key === item.key)
-    return s ? (s.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
@@ -388,9 +405,8 @@ function getEmbedUrlVideo(url) {
 }
 
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')

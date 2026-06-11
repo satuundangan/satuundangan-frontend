@@ -28,7 +28,7 @@
     </div>
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#fdfaf5" accentColor="#b48c5b" />
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"
@@ -121,12 +121,12 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-24 px-6">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-24 px-6">
         <div class="max-w-4xl mx-auto">
           <h2 class="text-3xl md:text-5xl font-playfair text-center text-[#4a4a4a] mb-16" v-observe>Cerita Kita</h2>
           
           <div class="space-y-20 relative before:absolute before:left-1/2 before:top-0 before:h-full before:w-px before:bg-[#e8d5c4] hidden md:block">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative flex items-center justify-between" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative flex items-center justify-between" v-observe>
               <div class="w-[42%]" :class="idx % 2 === 0 ? 'text-right' : 'order-last text-left'">
                  <div class="space-y-3">
                     <span class="text-[10px] font-bold text-[#b48c5b] uppercase tracking-widest">{{ story.date }}</span>
@@ -136,15 +136,15 @@
               </div>
               <div class="absolute left-1/2 -translate-x-1/2 w-3 h-3 rounded-full bg-[#b48c5b] border-4 border-white ring-1 ring-[#e8d5c4] z-10"></div>
               <div class="w-[42%]" :class="idx % 2 === 0 ? 'order-last' : ''">
-                 <img v-if="story.image" :src="story.image" class="rounded-3xl shadow-lg border-4 border-white aspect-video object-cover" />
+                 <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x300'" class="rounded-3xl shadow-lg border-4 border-white aspect-video object-cover" />
               </div>
             </div>
           </div>
 
           <!-- Mobile Story -->
           <div class="md:hidden space-y-12">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="space-y-6 text-center" v-observe>
-               <img v-if="story.image" :src="story.image" class="rounded-[2.5rem] shadow-md border-4 border-white w-full aspect-video object-cover" />
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="space-y-6 text-center" v-observe>
+               <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x300'" class="rounded-[2.5rem] shadow-md border-4 border-white w-full aspect-video object-cover" />
                <div class="px-4">
                   <span class="text-[10px] font-bold text-[#b48c5b] uppercase tracking-widest">{{ story.date }}</span>
                   <h3 class="text-xl font-playfair text-[#4a4a4a] mb-2">{{ story.title }}</h3>
@@ -171,7 +171,7 @@
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putra ke-{{ data.groomOrder || 'dua' }} dari</p>
-                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.groomParents }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
                   <i class="fa-brands fa-instagram text-xl"></i>
@@ -189,7 +189,7 @@
               <div class="pt-4">
                 <h3 class="text-2xl md:text-4xl font-playfair text-[#4a4a4a]">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#b48c5b] font-bold mt-2">Putri ke-{{ data.brideOrder || 'dua' }} dari</p>
-                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.brideParents }}</p>
+                <p class="text-sm text-gray-500 mt-1">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" 
                   target="_blank" class="inline-flex mt-4 text-[#b48c5b] hover:text-[#9a754a] transition-colors">
                   <i class="fa-brands fa-instagram text-xl"></i>
@@ -373,7 +373,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length && isSectionEnabled('gift')" id="gift" class="py-24 px-6 text-center">
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" id="gift" class="py-24 px-6 text-center">
         <h2 class="text-3xl font-playfair text-[#4a4a4a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-12 max-w-md mx-auto text-sm">Doa restu Anda sudah lebih dari cukup bagi kami, namun jika ingin memberikan tanda kasih, silakan melalui:</p>
 
@@ -427,34 +427,35 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({
-  data: { type: Object, default: () => ({}) }
-})
-
-const toast = useToast()
 const data = ref(props.data || {})
 
-// Normalize sections from different possible structures
-const activeSections = computed(() => {
-  // Structure 1: data.sections (direct from template)
-  if (data.value.sections && Array.isArray(data.value.sections)) {
-    return data.value.sections
-  }
-  // Structure 2: data.content.selectedSections (from invitation content)
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  // Structure 3: data.selectedSections (root of invitation)
-  if (data.value.selectedSections && Array.isArray(data.value.selectedSections)) {
-    return data.value.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const guestMessages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 // Navigation items with their corresponding keys in backend
 const allNavItems = [
@@ -468,12 +469,10 @@ const allNavItems = [
 ]
 
 const navItems = computed(() => {
-  // If no sections defined in data, show all as fallback
-  if (!activeSections.value) return allNavItems
-
-  return allNavItems.filter(item => {
-    const sectionSettings = activeSections.value.find(s => s.key === item.key)
-    return sectionSettings ? (sectionSettings.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
@@ -489,9 +488,8 @@ function getEmbedUrlVideo(url) {
 }
 
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')
@@ -592,16 +590,19 @@ async function loadWishes() {
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
+  if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatInstagramUrl(handle) {
+  if (!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
 
@@ -634,7 +635,7 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`Konfirmasi terkirim!`)
-    rsvp.value = { name: '', attendance: '', totalGuests: 1, message: '' }
+    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
     loadWishes()
   } catch (err) {
     console.error(err)
@@ -649,11 +650,6 @@ function initData() {
 
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-  } else {
-    galleryImages.value = [
-      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' },
-      { src: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1511285560982-1351cdeb9821?q=80&w=400' }
-    ]
   }
 
   loadWishes()
@@ -661,15 +657,18 @@ function initData() {
   const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
   if (targetDate) {
     const target = new Date(targetDate).getTime()
-    interval = setInterval(() => {
-      const now = new Date().getTime()
-      const diff = target - now
-      if (diff <= 0) return clearInterval(interval)
-      countdown.value.Hari = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
-      countdown.value.Jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
-      countdown.value.Menit = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
-      countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
-    }, 1000)
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
+      interval = setInterval(() => {
+        const now = new Date().getTime()
+        const diff = target - now
+        if (diff <= 0) return clearInterval(interval)
+        countdown.value.Hari = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
+        countdown.value.Jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
+        countdown.value.Menit = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+      }, 1000)
+    }
   }
 }
 

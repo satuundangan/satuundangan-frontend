@@ -361,6 +361,7 @@
     </div>
 
   </div>
+    <ExitIntentPromo />
 </template>
 
 <script setup>

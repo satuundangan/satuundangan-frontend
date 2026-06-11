@@ -11,7 +11,7 @@
     <div class="fixed bottom-[-20%] -right-[-10%] w-[600px] h-[600px] z-0 opacity-20 pointer-events-none rounded-full blur-[120px] bg-indigo-900/50 animate-pulse"></div>
 
     <!-- Music Control -->
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#050b1a" accentColor="#f3ca40" class="z-[55]" />
 
     <!-- Mobile Bottom Navigation -->
     <nav v-if="!showWelcome"
@@ -102,7 +102,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6 bg-white/[0.01]">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-white/[0.01]">
         <div class="max-w-4xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <h2 class="text-4xl md:text-7xl font-cormorant font-bold text-white">Our Journey</h2>
@@ -110,7 +110,7 @@
           </div>
 
           <div class="space-y-20 relative before:absolute before:left-0 md:before:left-1/2 before:top-0 before:h-full before:w-px before:bg-white/10 ml-4 md:ml-0">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative pl-10 md:pl-0" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative pl-10 md:pl-0" v-observe>
                <div class="absolute left-[-5px] md:left-1/2 md:translate-x-[-50%] top-0 w-2.5 h-2.5 rounded-full bg-[#f3ca40] shadow-[0_0_10px_#f3ca40]"></div>
                <div class="grid md:grid-cols-2 gap-8 md:gap-24 items-center">
                   <div :class="idx % 2 === 0 ? 'md:text-right' : 'md:order-last text-left'">
@@ -120,7 +120,7 @@
                   </div>
                   <div :class="idx % 2 === 0 ? '' : 'md:order-first'">
                      <div class="relative rounded-2xl overflow-hidden border border-white/5 aspect-video shadow-2xl grayscale hover:grayscale-0 transition-all duration-1000 group">
-                        <img v-if="story.image" :src="story.image" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]" />
+                        <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/600x400'" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-[2s]" />
                      </div>
                   </div>
                </div>
@@ -146,7 +146,7 @@
               <div class="pt-4">
                 <h3 class="text-3xl md:text-5xl font-cormorant font-bold text-white tracking-wide">{{ data.groomName }}</h3>
                 <p class="text-[#f3ca40] text-[10px] uppercase tracking-[0.4em] font-bold mt-2">The Groom</p>
-                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved Son of {{ data.parents?.groomParents }}</p>
+                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved Son of {{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
                 <div class="flex justify-center gap-4 mt-6">
                    <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#f3ca40] hover:text-[#050b1a] transition-all">
                      <i class="fa-brands fa-instagram text-xl"></i>
@@ -166,7 +166,7 @@
               <div class="pt-4">
                 <h3 class="text-3xl md:text-5xl font-cormorant font-bold text-white tracking-wide">{{ data.brideName }}</h3>
                 <p class="text-[#f3ca40] text-[10px] uppercase tracking-[0.4em] font-bold mt-2">The Bride</p>
-                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved Daughter of {{ data.parents?.brideParents }}</p>
+                <p class="text-gray-500 font-light text-sm mt-2 italic px-8">Beloved Daughter of {{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
                 <div class="flex justify-center gap-4 mt-6">
                    <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-10 h-10 rounded-full border border-white/10 flex items-center justify-center hover:bg-[#f3ca40] hover:text-[#050b1a] transition-all">
                      <i class="fa-brands fa-instagram text-xl"></i>
@@ -313,7 +313,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-32 px-6 text-center">
         <h2 class="text-4xl font-cormorant font-bold text-white mb-4" v-observe>Digital Gift</h2>
         <p class="text-gray-500 mb-16 max-w-md mx-auto text-xs tracking-widest leading-loose">Should you wish to honor us with a gift, a digital token would be appreciated.</p>
 
@@ -355,25 +355,34 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
-const props = defineProps({
-  data: { type: Object, default: () => ({}) }
-})
-
-const toast = useToast()
 const data = ref(props.data || {})
 
-// Normalize sections from different possible structures
-const activeSections = computed(() => {
-  if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
-  }
-  return null
-})
+watch(
+  () => props.data,
+  (newVal) => {
+    data.value = { ...newVal }
+  },
+  { deep: true, immediate: true },
+)
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Date',
+    date: 'Jan 2024',
+    description: 'Where it all began at a small vintage cafe.',
+  },
+  {
+    title: 'The Proposal',
+    date: 'Feb 2026',
+    description: 'Under the starlight, we promised to be together forever.',
+  },
+]
 
 const showWelcome = ref(true)
 const galleryImages = ref([])
-const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 // Navigation items
 const allNavItems = [
@@ -382,21 +391,32 @@ const allNavItems = [
   { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Date', icon: 'fa-solid fa-calendar', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-camera-retro', key: 'gallery' },
+  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-paper-plane', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const sectionSettings = activeSections.value.find(s => s.key === item.key)
-    return sectionSettings ? (sectionSettings.is_enabled !== false) : true
+  return allNavItems.filter((item) => {
+    if (item.id === 'home') return true
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
   })
 })
 
+function getEmbedUrlVideo(url) {
+  if (!url) return ''
+  if (url.includes('youtube.com/watch')) {
+    const videoId = url.split('v=')[1]
+    const ampPos = videoId.indexOf('&')
+    return `https://www.youtube.com/embed/${ampPos !== -1 ? videoId.substring(0, ampPos) : videoId}`
+  }
+  if (url.includes('youtu.be')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1]}`
+  return url
+}
+
 const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
+  return data.value.selectedSections.includes(key)
 }
 
 const activeSection = ref('home')
@@ -474,16 +494,19 @@ function getMusicUrl(choice) {
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
-  return date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  if (isNaN(date.getTime())) return '-'
+  return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
+  if (isNaN(date.getTime())) return '-'
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
 function formatInstagramUrl(handle) {
+  if (!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
 
@@ -499,31 +522,30 @@ function initData() {
 
   if (data.value.galleryImages?.length > 0) {
     galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-  } else {
-    galleryImages.value = [
-      { src: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800', thumbnail: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=400' }
-    ]
   }
 
   const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
   if (targetDate) {
     const target = new Date(targetDate).getTime()
-    interval = setInterval(() => {
-      const now = new Date().getTime()
-      const diff = target - now
-      if (diff <= 0) return clearInterval(interval)
-      countdown.value.Days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
-      countdown.value.Hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
-      countdown.value.Min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
-      countdown.value.Sec = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
-    }, 1000)
+    if (!isNaN(target)) {
+      if (interval) clearInterval(interval)
+      interval = setInterval(() => {
+        const now = new Date().getTime()
+        const diff = target - now
+        if (diff <= 0) return clearInterval(interval)
+        countdown.value.Days = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
+        countdown.value.Hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
+        countdown.value.Min = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
+        countdown.value.Sec = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
+      }, 1000)
+    }
   }
 }
 
 function addToCalendar() {
   const event = {
     title: `Wedding of ${data.value.groomName} & ${data.value.brideName}`,
-    start: new Date(data.value.akadLocation?.dateTime || Date.now()).toISOString().replace(/-|:|\.\d\d\d/g, ""),
+    start: new Date(data.value.akadLocation?.dateTime || data.value.dateTime || Date.now()).toISOString().replace(/-|:|\.\d\d\d/g, ""),
     description: "Please join us under the stars."
   }
   const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(event.title)}&dates=${event.start}/${event.start}&details=${encodeURIComponent(event.description)}`
@@ -544,6 +566,7 @@ async function submitRSVP() {
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0
     })
     toast.success(`See you there!`)
+    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
   } catch (err) {
     console.error(err)
     toast.error("Failed to confirm.")
@@ -583,4 +606,3 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
-tyle>

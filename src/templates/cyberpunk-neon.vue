@@ -3,7 +3,7 @@
     <!-- Grid Overlay -->
     <div class="fixed inset-0 pointer-events-none z-0" style="background-image: linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px); background-size: 30px 30px; opacity: 0.2;"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#0a0a12" accentColor="#00f0ff" class="z-[55]" />
 
     <!-- Navigation -->
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 transition-all duration-1000 hidden md:flex">
@@ -91,7 +91,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6">
         <div class="max-w-6xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> History.log</p>
@@ -99,7 +99,7 @@
           </div>
 
           <div class="space-y-12">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative group" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative group" v-observe>
                <div class="absolute left-0 top-0 w-1 h-full bg-[#1e293b] group-hover:bg-[#00f0ff] transition-colors"></div>
                <div class="pl-8 py-4 space-y-6">
                   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -111,8 +111,8 @@
                   </div>
                   <div class="grid md:grid-cols-2 gap-8 items-start">
                      <p class="text-sm font-mono leading-relaxed text-[#94a3b8]">{{ story.description }}</p>
-                     <div v-if="story.image" class="border border-white/10 p-1 bg-[#0a0a12] max-w-md">
-                        <img :src="story.image" class="w-full aspect-video object-cover mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity" />
+                     <div v-if="story.image || isPreviewMode" class="border border-white/10 p-1 bg-[#0a0a12] max-w-md">
+                        <img :src="story.image || 'https://via.placeholder.com/600x400'" class="w-full aspect-video object-cover mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity" />
                      </div>
                   </div>
                </div>
@@ -128,7 +128,7 @@
           <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative group">
                <div class="aspect-square p-2 bg-[#0a0a12] border border-[#ff003c]/50 relative z-10 mx-auto max-w-[300px] shadow-[0_0_20px_rgba(255,0,60,0.2)] group-hover:shadow-[0_0_30px_rgba(255,0,60,0.5)] transition-all">
-                  <img :src="data.groomPhotoUrl" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
+                  <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
                </div>
                <div class="absolute -top-4 -left-4 w-12 h-12 border-t-2 border-l-2 border-[#ff003c]"></div>
                <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b-2 border-r-2 border-[#ff003c]"></div>
@@ -136,7 +136,7 @@
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#ff003c]">Player 1</span>
               <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.groomName }}</h3>
-              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#ff003c] text-[10px] uppercase font-mono tracking-widest font-bold text-[#ff003c] hover:bg-[#ff003c] hover:text-white transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
           </div>
@@ -144,7 +144,7 @@
           <div class="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative group">
                <div class="aspect-square p-2 bg-[#0a0a12] border border-[#00f0ff]/50 relative z-10 mx-auto max-w-[300px] shadow-[0_0_20px_rgba(0,240,255,0.2)] group-hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all">
-                  <img :src="data.bridePhotoUrl" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
+                  <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
                </div>
                <div class="absolute -top-4 -right-4 w-12 h-12 border-t-2 border-r-2 border-[#00f0ff]"></div>
                <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b-2 border-l-2 border-[#00f0ff]"></div>
@@ -152,7 +152,7 @@
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#00f0ff]">Player 2</span>
               <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.brideName }}</h3>
-              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#00f0ff] text-[10px] uppercase font-mono tracking-widest font-bold text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
           </div>
@@ -272,7 +272,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-32 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Transaction</p>
@@ -314,6 +314,21 @@ import { useToast } from 'vue-toastification'
 const props = defineProps({ data: { type: Object, default: () => ({}) } })
 const toast = useToast()
 const data = ref(props.data || {})
+
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Connection',
+    date: 'Jan 2024',
+    description: 'Sebuah koneksi tak terduga yang memulai protokol baru dalam hidup kami.',
+  },
+  {
+    title: 'System Sync',
+    date: 'Feb 2026',
+    description: 'Dua sistem berkomitmen untuk berjalan dalam satu jaringan, selamanya.',
+  },
+]
 
 const activeSections = computed(() => {
   if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
