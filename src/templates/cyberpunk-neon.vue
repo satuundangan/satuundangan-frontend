@@ -315,6 +315,21 @@ const props = defineProps({ data: { type: Object, default: () => ({}) } })
 const toast = useToast()
 const data = ref(props.data || {})
 
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Connection',
+    date: 'Jan 2024',
+    description: 'Sebuah koneksi tak terduga yang memulai protokol baru dalam hidup kami.',
+  },
+  {
+    title: 'System Sync',
+    date: 'Feb 2026',
+    description: 'Dua sistem berkomitmen untuk berjalan dalam satu jaringan, selamanya.',
+  },
+]
+
 const activeSections = computed(() => {
   if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
   if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
