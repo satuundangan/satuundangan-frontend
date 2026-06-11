@@ -296,7 +296,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
@@ -309,6 +309,8 @@ const props = defineProps({
   }
 })
 
+const toast = useToast()
+
 const data = ref(props.data || {})
 
 watch(
@@ -318,6 +320,9 @@ watch(
   },
   { deep: true, immediate: true },
 )
+
+let interval = null
+const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
 
 const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
 
