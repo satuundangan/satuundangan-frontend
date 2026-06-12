@@ -2,8 +2,9 @@
   <div class="bg-ivory min-h-screen font-sans text-dark scroll-smooth">
     <Navbar @create-invitation="showModal = true" />
 
-    <!-- Hero Section -->
-    <HeroSection @create-invitation="showModal = true" />
+    <main>
+      <!-- Hero Section -->
+      <HeroSection @create-invitation="showModal = true" />
 
     <!-- Comparison Section -->
     <ComparisonSection />
@@ -184,6 +185,7 @@
 
     <!-- FAQ Section -->
     <FaqSection />
+    </main>
 
     <!-- Footer -->
     <Footer />
@@ -518,7 +520,6 @@ function goToCreate() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
 
 .font-serif {
   font-family: 'Playfair Display', serif;

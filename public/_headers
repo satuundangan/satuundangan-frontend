@@ -1,17 +1,15 @@
 /*
   Cache-Control: public, max-age=0, must-revalidate
 
-/*.js
+# Cache compiled JS/CSS and static images from Vite
+/assets/*
   Cache-Control: public, max-age=31536000, immutable
 
-/*.css
+# Cache static audio files
+/audio/*
   Cache-Control: public, max-age=31536000, immutable
 
-/*.png
+# Cache static background designs
+/background/*
   Cache-Control: public, max-age=31536000, immutable
 
-/*.jpg
-  Cache-Control: public, max-age=31536000, immutable
-
-/*.svg
-  Cache-Control: public, max-age=31536000, immutable

@@ -13,13 +13,13 @@
              Platform undangan pernikahan digital premium. Buat momen spesialmu lebih berkesan dengan desain elegan dan fitur canggih.
            </p>
            <div class="flex gap-4">
-              <a href="https://www.instagram.com/satuundangan_official" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+              <a href="https://www.instagram.com/satuundangan_official" target="_blank" aria-label="Instagram" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
                  <i class="fab fa-instagram"></i>
               </a>
-              <a href="https://www.tiktok.com/@satuundangan.id" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+              <a href="https://www.tiktok.com/@satuundangan.id" target="_blank" aria-label="TikTok" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
                  <i class="fab fa-tiktok"></i>
               </a>
-              <a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
+              <a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" aria-label="WhatsApp" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
                  <i class="fab fa-whatsapp"></i>
               </a>
            </div>
@@ -55,7 +55,3 @@
     </div>
   </footer>
 </template>
-
-<style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-</style>

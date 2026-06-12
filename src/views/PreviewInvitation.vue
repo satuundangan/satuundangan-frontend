@@ -197,7 +197,6 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 
 .no-scrollbar::-webkit-scrollbar {
   display: none;

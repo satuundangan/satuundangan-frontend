@@ -16,9 +16,9 @@ export const orangutanData = {
   akadIcon: 'fa-leaf',
   musicChoice: '/audio/wedding-acoustic-morning.mp3',
   isCustomMusic: false,
-  bridePhotoUrl: '/assets/images/orangutan-cewe.png',
-  groomPhotoUrl: '/assets/images/orangutan-cowo.png',
-  photoCoupleUrl: '/assets/images/orangutan-cewe.png', // Placeholder for couple photo
+  bridePhotoUrl: '/assets/images/orangutan-cewe.webp',
+  groomPhotoUrl: '/assets/images/orangutan-cowo.webp',
+  photoCoupleUrl: '/assets/images/orangutan-cewe.webp', // Placeholder for couple photo
   videoPrewedding: 'https://www.youtube.com/embed/-uNHfSNxoII',
   dateTime: '2026-06-06T10:00:00.000Z',
   isSingleEvent: false,
@@ -45,8 +45,8 @@ export const orangutanData = {
     }
   ],
   galleryImages: [
-    '/assets/images/orangutan-cewe.png',
-    '/assets/images/orangutan-cowo.png',
+    '/assets/images/orangutan-cewe.webp',
+    '/assets/images/orangutan-cowo.webp',
   ],
   loveStory: [
     {
