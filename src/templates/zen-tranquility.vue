@@ -302,6 +302,13 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
+const props = defineProps({
+  data: {
+    type: Object,
+    default: () => ({})
+  }
+})
+
 const data = ref(props.data || {})
 
 watch(
