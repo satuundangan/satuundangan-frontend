@@ -413,6 +413,8 @@ const props = defineProps({
   }
 })
 
+const toast = useToast()
+
 const data = ref(props.data || {})
 
 watch(
