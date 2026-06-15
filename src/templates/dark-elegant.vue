@@ -322,6 +322,61 @@
         </div>
       </section>
 
+      <!-- GALLERY -->
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-20 md:py-24 px-6 bg-black">
+        <div class="max-w-5xl mx-auto text-center">
+          <h2 class="text-3xl md:text-4xl font-alex text-[#d6b18a] mb-12" v-observe>Our Gallery</h2>
+          <GalleryInvitation :items="galleryImages" />
+        </div>
+      </section>
+
+      <!-- RSVP -->
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-20 md:py-24 px-6 bg-[#1a1a1a]">
+        <div class="max-w-2xl mx-auto bg-black/60 backdrop-blur-md border border-[#d6b18a]/20 rounded-3xl p-6 md:p-12 shadow-2xl" v-observe>
+          <h2 class="text-2xl md:text-3xl font-alex text-center text-[#d6b18a] mb-2">RSVP</h2>
+          <p class="text-center text-gray-400 mb-8 text-xs md:text-sm">Mohon konfirmasi kehadiran Anda sebelum acara
+            dimulai.</p>
+
+          <form @submit.prevent="submitRSVP" class="space-y-5">
+            <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
+              class="w-full bg-black/40 border border-[#d6b18a]/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#d6b18a] transition-colors text-sm md:text-base"
+              required />
+
+            <div class="grid grid-cols-3 gap-3">
+              <label
+                class="flex items-center justify-center px-2 md:px-4 py-3 bg-black/40 border border-[#d6b18a]/20 rounded-xl text-gray-400 cursor-pointer transition-all hover:border-[#d6b18a]/50 text-xs md:text-base"
+                :class="{ 'border-[#d6b18a] text-[#d6b18a] bg-[#d6b18a]/10 font-bold': rsvp.attendance === 'hadir' }">
+                <input type="radio" value="hadir" v-model="rsvp.attendance" class="hidden"> Hadir
+              </label>
+              <label
+                class="flex items-center justify-center px-2 md:px-4 py-3 bg-black/40 border border-[#d6b18a]/20 rounded-xl text-gray-400 cursor-pointer transition-all hover:border-[#d6b18a]/50 text-xs md:text-base"
+                :class="{ 'border-[#d6b18a] text-[#d6b18a] bg-[#d6b18a]/10 font-bold': rsvp.attendance === 'tidak' }">
+                <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden"> Maaf
+              </label>
+              <label
+                class="flex items-center justify-center px-2 md:px-4 py-3 bg-black/40 border border-[#d6b18a]/20 rounded-xl text-gray-400 cursor-pointer transition-all hover:border-[#d6b18a]/50 text-xs md:text-base"
+                :class="{ 'border-[#d6b18a] text-[#d6b18a] bg-[#d6b18a]/10 font-bold': rsvp.attendance === 'ragu' }">
+                <input type="radio" value="ragu" v-model="rsvp.attendance" class="hidden"> Ragu
+              </label>
+            </div>
+
+            <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
+              class="w-full bg-black/40 border border-[#d6b18a]/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-[#d6b18a] transition-colors text-sm md:text-base">
+              <option value="" disabled class="text-gray-500">Jumlah Tamu</option>
+              <option v-for="n in 5" :key="n" :value="n" class="text-black">{{ n }} Orang</option>
+            </select>
+
+            <textarea v-model="rsvp.message" rows="3" placeholder="Ucapan & Doa"
+              class="w-full bg-black/40 border border-[#d6b18a]/20 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-[#d6b18a] transition-colors text-sm md:text-base"></textarea>
+
+            <button type="submit"
+              class="w-full py-3.5 bg-[#d6b18a] hover:bg-[#b48c5b] text-black font-bold rounded-xl transition-all shadow-lg mt-4 text-sm md:text-base">
+              Kirim Konfirmasi
+            </button>
+          </form>
+        </div>
+      </section>
+
       <!-- MENU MAKANAN -->
       <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-20 md:py-24 px-6 bg-black">
         <div class="max-w-3xl mx-auto text-center">
