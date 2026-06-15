@@ -74,7 +74,7 @@
               <h2 class="text-5xl md:text-7xl font-shippori text-[#5e3a45]">
                 {{ data.groomName }}
               </h2>
-              <span class="text-2xl text-[#d6336c] my-1 font-shippori">桜</span>
+              <span class="text-2xl text-[#d6336c] my-1 font-shippori">& </span>
               <h2 class="text-5xl md:text-7xl font-shippori text-[#5e3a45]">
                 {{ data.brideName }}
               </h2>
@@ -614,7 +614,7 @@
         <SakuraFlower class="w-10 h-10 mx-auto mb-6 text-[#ffb6c1]" />
         <h2 class="font-shippori italic text-5xl text-[#5e3a45] mb-4">
           {{ data.groomName }}
-          <span>&</span>
+          <span> & </span>
           {{ data.brideName }}
         </h2>
         <p class="text-[#d6336c] text-[10px] tracking-[0.5em] uppercase font-bold mb-12">
