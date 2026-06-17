@@ -21,6 +21,8 @@ const templateMap = {
   'cyberpunk-neon': () => import('../templates/cyberpunk-neon.vue'),
   'royal-emerald': () => import('../templates/royal-emerald.vue'),
   'sakura-blossom': () => import('../templates/sakura-blossom.vue'),
+  'kimi-no-na-wa': () => import('../templates/kimi-no-na-wa.vue'),
+  'pixel-quest': () => import('../templates/pixel-quest.vue'),
 }
 
 const route = useRoute()
@@ -38,7 +40,7 @@ const isLiveSyncActive = ref(false)
 
 const ALL_SECTION_KEYS = [
   'quote', 'love-story', 'couple', 'event', 'gallery', 'rsvp', 
-  'gift', 'prokes', 'extended-family', 'dress-code', 
+  'gift', 'extended-family', 'dress-code', 
   'live-streaming', 'video', 'denah', 'menu', 'countdown',
   'wishes', 'map', 'music', 'photoCouple', 'hero'
 ]

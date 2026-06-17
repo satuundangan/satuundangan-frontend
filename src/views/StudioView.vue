@@ -495,21 +495,12 @@
               <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
 
               <!-- Extra components and configs -->
-              <div v-if="sections['dress-code'] || sections['extended-family'] || sections.prokes || sections.likes" 
+              <div v-if="sections['dress-code'] || sections['extended-family'] || sections.likes" 
                    class="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6 animate-fade-in">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div v-if="sections['dress-code']">
                     <label class="form-label">Dress Code (Aturan Busana)</label>
                     <input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik Modern" class="form-input" />
-                  </div>
-                  <div v-if="sections.prokes">
-                    <label class="form-label">Protokol Kesehatan</label>
-                    <div class="flex items-center gap-3 mt-3">
-                      <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" />
-                        <span class="text-xs font-bold text-dark">Tampilkan Himbauan Prokes</span>
-                      </label>
-                    </div>
                   </div>
                 </div>
                 
@@ -1028,7 +1019,6 @@ const sectionOptionsLabelMap = {
   cover: 'Halaman Sampul (Cover)',
   gallery: 'Galeri Foto',
   'live-streaming': 'Live Streaming Link',
-  prokes: 'Protokol Kesehatan',
   'event-details': 'Detail Acara Lengkap',
   'likes': 'Fitur Like / Suka',
   footer: 'Halaman Penutup',
@@ -1064,7 +1054,6 @@ const getIcon = (key) => {
     cover: 'fa-book-open',
     gallery: 'fa-images',
     'live-streaming': 'fa-video',
-    prokes: 'fa-shield-virus',
     'event-details': 'fa-calendar-day',
     'likes': 'fa-thumbs-up',
     'footer': 'fa-scroll',
@@ -1432,7 +1421,6 @@ function mapPayloadToFormData(payload) {
          'digital-envelope': 'gift',
          'loveStory': 'love-story',
          'foodList': 'menu',
-         'health-protocol': 'prokes',
          'turut-mengundang': 'extended-family',
          'video-prewedding': 'video',
          'live-stream': 'live-streaming'

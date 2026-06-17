@@ -86,6 +86,11 @@ Berikut adalah daftar komponen global yang tersedia di sistem:
 - **Komponen Default:**
   - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `music`, `extended-family`
 
+### 13. Pixel Quest 8-Bit (`pixel-quest`)
+- **Kategori:** Premium (IDR 129,000)
+- **Komponen Default:**
+  - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `gift`, `music`
+
 ---
 
 ## Catatan untuk Sinkronisasi Database:

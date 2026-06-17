@@ -417,25 +417,6 @@
         </div>
       </section>
 
-      <!-- PROTOKOL KESEHATAN -->
-      <section v-if="data.healthProtocol && isSectionEnabled('prokes')" class="py-16 px-6 bg-[#1a1a1a] text-center border-t border-[#333]">
-        <h3 class="text-xl font-serif text-white mb-8">Protokol Kesehatan</h3>
-        <div class="flex justify-center gap-8 flex-wrap text-[#d6b18a]">
-          <div class="flex flex-col items-center gap-2 w-24">
-            <i class="fa-solid fa-mask text-3xl"></i>
-            <span class="text-xs text-gray-400">Pakai Masker</span>
-          </div>
-          <div class="flex flex-col items-center gap-2 w-24">
-            <i class="fa-solid fa-hands-bubbles text-3xl"></i>
-            <span class="text-xs text-gray-400">Cuci Tangan</span>
-          </div>
-          <div class="flex flex-col items-center gap-2 w-24">
-            <i class="fa-solid fa-people-arrows text-3xl"></i>
-            <span class="text-xs text-gray-400">Jaga Jarak</span>
-          </div>
-        </div>
-      </section>
-
       <!-- TURUT MENGUNDANG -->
       <section v-if="data.turutMengundang && isSectionEnabled('extended-family')" class="py-16 px-6 bg-black text-center border-t border-[#222]">
         <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
