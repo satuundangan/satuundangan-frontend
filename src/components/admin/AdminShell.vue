@@ -2,7 +2,7 @@
   <div class="min-h-screen flex bg-slate-50 text-slate-900">
     <AdminSidebar class="hidden lg:flex" />
 
-    <div class="flex-1 flex flex-col">
+    <div class="flex-1 flex flex-col min-w-0">
       <header class="border-b border-slate-200 bg-white">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 px-6 py-4">
           <div>

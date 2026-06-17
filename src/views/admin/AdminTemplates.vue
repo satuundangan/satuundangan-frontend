@@ -2,81 +2,114 @@
   <AdminShell title="Template Desain" description="Kelola daftar template undangan" show-search :search="search"
     search-placeholder="Cari nama, slug, atau kategori" action-label="Tambah Template" @update:search="handleSearch"
     @action="openCreate">
-    <DataTable
-      :headers="headers"
-      :items="templates"
-      :loading="loading"
-      :total="total"
-      v-model:page="page"
-      :limit="limit"
-      :sort-by="sortBy"
-      :sort-order="sortOrder"
-      v-model:filters="filters"
-      @update:page="setPage"
-      @update:sort="handleSort"
-      @filter="handleFilter"
-    >
-      <template #filter(category)="{ filter, updateFilter }">
-        <select 
-          :value="filter" 
-          @change="updateFilter($event.target.value)"
-          class="w-full rounded border border-slate-200 bg-white px-2 py-1 text-[10px] font-normal outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100"
-        >
-          <option value="">Semua Kategori</option>
-          <option v-for="cat in categories" :key="cat.id" :value="cat.name">{{ cat.name }}</option>
-        </select>
-      </template>
-      <template #filter(isActive)="{ filter, updateFilter }">
-        <select 
-          :value="filter" 
-          @change="updateFilter($event.target.value)"
-          class="w-full rounded border border-slate-200 bg-white px-2 py-1 text-[10px] font-normal outline-none focus:border-slate-400 focus:ring-1 focus:ring-slate-100"
-        >
-          <option value="">Semua</option>
-          <option value="true">Aktif</option>
-          <option value="false">Nonaktif</option>
-        </select>
-      </template>
-      <template #cell(preview)="{ item }">
-        <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
-          <img :src="item.thumbnailUrl || item.previewUrl" class="h-full w-full object-cover" v-if="item.thumbnailUrl || item.previewUrl" />
-          <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
-            <i class="fa-solid fa-image text-xs"></i>
+    <div class="card">
+      <DataTable 
+        v-model:filters="filters" 
+        :value="templates" 
+        paginator 
+        :rows="10" 
+        dataKey="id" 
+        filterDisplay="row" 
+        :loading="loading"
+        :globalFilterFields="['name', 'slug', 'category']"
+        class="p-datatable-sm"
+      >
+        <template #header>
+          <div class="flex justify-end">
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="filters['global'].value" placeholder="Cari template..." />
+            </IconField>
           </div>
-        </div>
-      </template>
-      <template #cell(name)="{ item }">
-        <span class="font-medium text-slate-900">{{ item.name }}</span>
-      </template>
-      <template #cell(category)="{ item }">
-        <span
-          class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
-          <span class="h-1.5 w-1.5 rounded-full"
-            :style="{ backgroundColor: getCategoryColor(item.category) }"></span>
-          {{ item.category }}
-        </span>
-      </template>
-      <template #cell(price)="{ item }">
-        <span class="text-slate-700 font-medium">
-          {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.price || 0) }}
-        </span>
-      </template>
-      <template #cell(isActive)="{ item }">
-        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
-          :class="item.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
-          {{ item.isActive ? 'Aktif' : 'Nonaktif' }}
-        </span>
-      </template>
-      <template #cell(actions)="{ item }">
-        <div class="flex justify-end gap-2 text-xs font-medium">
-          <a :href="`/demo/${item.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50 transition-colors">Demo</a>
-          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
-            @click="openEdit(item)">Edit</button>
-          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
-            @click="confirmDelete(item)">Hapus</button>
-        </div>
-      </template>
-    </DataTable>
+        </template>
+        <template #empty> Tidak ada template ditemukan. </template>
+        <template #loading> Memuat data template. Silakan tunggu. </template>
+
+        <Column header="Preview" class="w-16">
+          <template #body="{ data }">
+            <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+              <img :src="data.thumbnailUrl || data.previewUrl" class="h-full w-full object-cover" v-if="data.thumbnailUrl || data.previewUrl" />
+              <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
+                <i class="fa-solid fa-image text-xs"></i>
+              </div>
+            </div>
+          </template>
+        </Column>
+
+        <Column field="name" header="Nama" sortable style="min-width: 12rem">
+          <template #body="{ data }">
+            <span class="font-medium text-slate-900">{{ data.name }}</span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari nama" />
+          </template>
+        </Column>
+
+        <Column field="slug" header="Slug" sortable style="min-width: 10rem">
+          <template #body="{ data }">
+            <span class="text-slate-500 text-xs">{{ data.slug }}</span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari slug" />
+          </template>
+        </Column>
+
+        <Column field="category" header="Kategori" sortable :showFilterMenu="false" style="min-width: 10rem">
+          <template #body="{ data }">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
+              <span class="h-1.5 w-1.5 rounded-full"
+                :style="{ backgroundColor: getCategoryColor(data.category) }"></span>
+              {{ data.category }}
+            </span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <Select v-model="filterModel.value" @change="filterCallback()" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua" :showClear="true" class="w-full">
+              <template #option="slotProps">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: slotProps.option.color }"></span>
+                  <span>{{ slotProps.option.name }}</span>
+                </div>
+              </template>
+            </Select>
+          </template>
+        </Column>
+
+        <Column field="price" header="Harga" sortable style="min-width: 8rem">
+          <template #body="{ data }">
+            <span class="text-slate-700 font-medium">
+              {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.price || 0) }}
+            </span>
+          </template>
+        </Column>
+
+        <Column field="isActive" header="Status" sortable :showFilterMenu="false" style="min-width: 8rem">
+          <template #body="{ data }">
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+              :class="data.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+              {{ data.isActive ? 'Aktif' : 'Nonaktif' }}
+            </span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <Select v-model="filterModel.value" @change="filterCallback()" :options="statusOptions" optionValue="value" optionLabel="label" placeholder="Semua" :showClear="true" class="w-full" />
+          </template>
+        </Column>
+
+        <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
+          <template #body="{ data }">
+            <div class="flex justify-end gap-2 text-xs font-medium">
+              <a :href="`/demo/${data.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50 transition-colors">Demo</a>
+              <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+                @click="openEdit(data)">Edit</button>
+              <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
+                @click="confirmDelete(data)">Hapus</button>
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
@@ -163,13 +196,45 @@
             <!-- Default Music -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Default Musik</label>
-              <select v-model="form.defaultMusic"
-                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
-                <option :value="null">— Tanpa Musik Default —</option>
-                <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
-                  {{ audio.title }} ({{ audio.category }})
-                </option>
-              </select>
+              <div class="relative mt-2" ref="audioDropdownRef">
+                <div class="relative">
+                  <input 
+                    type="text" 
+                    v-model="audioSearch" 
+                    @focus="showAudioDropdown = true"
+                    placeholder="Cari musik..."
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  />
+                  <div v-if="form.defaultMusic && !audioSearch" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs text-slate-400 truncate max-w-[50%]">
+                    Terpilih: {{ getSelectedAudioTitle }}
+                  </div>
+                  <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" v-if="!form.defaultMusic && !audioSearch">
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </div>
+                </div>
+
+                <div v-if="showAudioDropdown" class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white shadow-xl">
+                  <div 
+                    class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 border-b border-slate-50"
+                    @click="selectAudio(null)"
+                  >
+                    — Tanpa Musik Default —
+                  </div>
+                  <div 
+                    v-for="audio in filteredAudioList" 
+                    :key="audio.id" 
+                    class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
+                    :class="{ 'bg-slate-100': form.defaultMusic === audio.url }"
+                    @click="selectAudio(audio)"
+                  >
+                    <div class="font-medium text-slate-900">{{ audio.title }}</div>
+                    <div class="text-[10px] text-slate-500 uppercase font-bold">{{ audio.category }}</div>
+                  </div>
+                  <div v-if="filteredAudioList.length === 0" class="px-3 py-4 text-center text-sm text-slate-500 italic">
+                    Tidak ada musik ditemukan
+                  </div>
+                </div>
+              </div>
               <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-400 truncate">URL: {{ form.defaultMusic }}</p>
             </div>
 
@@ -323,9 +388,16 @@
 
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
+import { useDebounceFn, onClickOutside } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import DataTable from '@/components/admin/DataTable.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import InputText from 'primevue/inputtext'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import Select from 'primevue/select'
+import Tag from 'primevue/tag'
+import { FilterMatchMode } from '@primevue/core/api'
 import slugify from 'slugify'
 import {
   fetchAdminTemplates,
@@ -349,27 +421,55 @@ const templates = ref([])
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const audioList = ref([])
+const audioSearch = ref('')
+const showAudioDropdown = ref(false)
+const audioDropdownRef = ref(null)
+
+const filteredAudioList = computed(() => {
+  if (!audioSearch.value) return audioList.value
+  const q = audioSearch.value.toLowerCase()
+  return audioList.value.filter(audio => 
+    (audio.title && audio.title.toLowerCase().includes(q)) || 
+    (audio.category && audio.category.toLowerCase().includes(q))
+  )
+})
+
+const getSelectedAudioTitle = computed(() => {
+  if (!form.defaultMusic) return ''
+  const audio = audioList.value.find(a => a.url === form.defaultMusic)
+  return audio ? `${audio.title} (${audio.category})` : ''
+})
+
+function selectAudio(audio) {
+  form.defaultMusic = audio ? audio.url : null
+  showAudioDropdown.value = false
+  audioSearch.value = ''
+}
+
+onClickOutside(audioDropdownRef, () => {
+  showAudioDropdown.value = false
+})
+
 const total = ref(0)
-const page = ref(1)
-const limit = 10
 const search = ref('')
 const sortBy = ref('id')
 const sortOrder = ref('DESC')
-const filters = ref({})
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  slug: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  category: { value: null, matchMode: FilterMatchMode.EQUALS },
+  isActive: { value: null, matchMode: FilterMatchMode.EQUALS }
+})
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
-const headers = [
-  { label: 'Preview', key: 'preview', class: 'w-16' },
-  { label: 'Nama', key: 'name', sortable: true, filterable: true },
-  { label: 'Slug', key: 'slug', sortable: true, filterable: true },
-  { label: 'Kategori', key: 'category', sortable: true, filterable: true },
-  { label: 'Harga', key: 'price', sortable: true },
-  { label: 'Status', key: 'isActive', sortable: true, filterable: true },
-  { label: 'Aksi', key: 'actions', class: 'text-right' },
-]
+const statusOptions = ref([
+  { label: 'Aktif', value: true },
+  { label: 'Nonaktif', value: false }
+])
 
 const tagInput = ref('')
 const customPalette = reactive({
@@ -413,20 +513,15 @@ async function loadData() {
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
       fetchAdminTemplates({
-        page: page.value,
-        limit,
-        q: search.value,
-        sortBy: sortBy.value,
-        sortOrder: sortOrder.value,
-        filters: Object.keys(filters.value).length ? JSON.stringify(filters.value) : undefined
+        limit: 1000 // Fetch all for client-side handling
       }),
       fetchAdminCategories({ limit: 100 }),
       fetchAdminSections({ limit: 100 }),
       fetchAdminAudio({ limit: 100 }),
     ])
 
-    templates.value = tmplRes.data
-    total.value = tmplRes.total
+    templates.value = tmplRes.data || tmplRes
+    total.value = tmplRes.total || (tmplRes.data ? tmplRes.data.length : tmplRes.length)
 
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
@@ -442,26 +537,7 @@ const debouncedSearch = useDebounceFn(() => loadData(), 300)
 
 function handleSearch(value) {
   search.value = value
-  page.value = 1
-  debouncedSearch()
-}
-
-function handleSort({ sortBy: newSortBy, sortOrder: newSortOrder }) {
-  sortBy.value = newSortBy
-  sortOrder.value = newSortOrder
-  page.value = 1
-  loadData()
-}
-
-function handleFilter(newFilters) {
-  filters.value = newFilters
-  page.value = 1
-  loadData()
-}
-
-function setPage(newPage) {
-  page.value = newPage
-  loadData()
+  filters.value.global.value = value
 }
 
 function getCategoryColor(categoryName) {
@@ -538,6 +614,8 @@ function removeTag(index) {
 function openCreate() {
   editing.value = null
   tagInput.value = ''
+  audioSearch.value = ''
+  showAudioDropdown.value = false
   Object.assign(customPalette, { primary: '#0F172A', secondary: '#64748B', accent: '#38BDF8' })
   Object.assign(form, {
     name: '',
@@ -565,6 +643,8 @@ function openCreate() {
 function openEdit(template) {
   editing.value = template
   tagInput.value = ''
+  audioSearch.value = ''
+  showAudioDropdown.value = false
 
   if (template.paletteColors && template.paletteColors.length >= 3) {
     customPalette.primary = template.paletteColors[0]
