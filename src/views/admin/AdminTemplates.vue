@@ -1,29 +1,18 @@
 <template>
-  <AdminShell title="Template Desain" description="Kelola daftar template undangan" show-search :search="search"
-    search-placeholder="Cari nama, slug, atau kategori" action-label="Tambah Template" @update:search="handleSearch"
+  <AdminShell title="Template Desain" description="Kelola daftar template undangan"
+    action-label="Tambah Template"
     @action="openCreate">
     <div class="card">
-      <DataTable 
-        v-model:filters="filters" 
-        :value="templates" 
-        paginator 
-        :rows="10" 
-        dataKey="id" 
-        filterDisplay="row" 
+      <DataTable
+        v-model:filters="filters"
+        :value="templates"
+        paginator
+        :rows="10"
+        dataKey="id"
+        filterDisplay="row"
         :loading="loading"
-        :globalFilterFields="['name', 'slug', 'category']"
         class="p-datatable-sm"
       >
-        <template #header>
-          <div class="flex justify-end">
-            <IconField>
-              <InputIcon>
-                <i class="pi pi-search" />
-              </InputIcon>
-              <InputText v-model="filters['global'].value" placeholder="Cari template..." />
-            </IconField>
-          </div>
-        </template>
         <template #empty> Tidak ada template ditemukan. </template>
         <template #loading> Memuat data template. Silakan tunggu. </template>
 
@@ -99,12 +88,24 @@
 
         <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
           <template #body="{ data }">
-            <div class="flex justify-end gap-2 text-xs font-medium">
-              <a :href="`/demo/${data.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50 transition-colors">Demo</a>
-              <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
-                @click="openEdit(data)">Edit</button>
-              <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
-                @click="confirmDelete(data)">Hapus</button>
+            <div class="flex justify-end gap-1.5">
+              <a :href="`/demo/${data.slug}`" target="_blank"
+                class="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-600 hover:bg-blue-50 transition-colors"
+                title="Lihat Demo">
+                <i class="pi pi-eye text-xs"></i>
+              </a>
+              <button
+                class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors"
+                @click="openEdit(data)"
+                title="Edit Template">
+                <i class="pi pi-pencil text-xs"></i>
+              </button>
+              <button
+                class="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-100 text-rose-600 hover:bg-rose-50 transition-colors"
+                @click="confirmDelete(data)"
+                title="Hapus Template">
+                <i class="pi pi-trash text-xs"></i>
+              </button>
             </div>
           </template>
         </Column>
@@ -198,9 +199,9 @@
               <label class="text-sm font-medium text-slate-600">Default Musik</label>
               <div class="relative mt-2" ref="audioDropdownRef">
                 <div class="relative">
-                  <input 
-                    type="text" 
-                    v-model="audioSearch" 
+                  <input
+                    type="text"
+                    v-model="audioSearch"
                     @focus="showAudioDropdown = true"
                     placeholder="Cari musik..."
                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
@@ -214,15 +215,15 @@
                 </div>
 
                 <div v-if="showAudioDropdown" class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white shadow-xl">
-                  <div 
+                  <div
                     class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 border-b border-slate-50"
                     @click="selectAudio(null)"
                   >
                     — Tanpa Musik Default —
                   </div>
-                  <div 
-                    v-for="audio in filteredAudioList" 
-                    :key="audio.id" 
+                  <div
+                    v-for="audio in filteredAudioList"
+                    :key="audio.id"
                     class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
                     :class="{ 'bg-slate-100': form.defaultMusic === audio.url }"
                     @click="selectAudio(audio)"
@@ -340,12 +341,12 @@
                   <input type="checkbox" :checked="isSectionEnabled(section.id)"
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-                  
+
                   <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
-                  
+
                   <div class="flex items-center gap-2 ml-auto">
                     <span class="text-[10px] uppercase text-slate-400 font-bold">Urutan:</span>
-                    <input type="number" 
+                    <input type="number"
                       :value="getSectionOrder(section.id)"
                       @input="updateSectionOrder(section.id, $event.target.value)"
                       class="w-16 rounded border border-slate-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
@@ -387,14 +388,12 @@
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { useDebounceFn, onClickOutside } from '@vueuse/core'
+import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
-import IconField from 'primevue/iconfield'
-import InputIcon from 'primevue/inputicon'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import { FilterMatchMode } from '@primevue/core/api'
@@ -428,8 +427,8 @@ const audioDropdownRef = ref(null)
 const filteredAudioList = computed(() => {
   if (!audioSearch.value) return audioList.value
   const q = audioSearch.value.toLowerCase()
-  return audioList.value.filter(audio => 
-    (audio.title && audio.title.toLowerCase().includes(q)) || 
+  return audioList.value.filter(audio =>
+    (audio.title && audio.title.toLowerCase().includes(q)) ||
     (audio.category && audio.category.toLowerCase().includes(q))
   )
 })
@@ -451,11 +450,9 @@ onClickOutside(audioDropdownRef, () => {
 })
 
 const total = ref(0)
-const search = ref('')
 const sortBy = ref('id')
 const sortOrder = ref('DESC')
 const filters = ref({
-  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
   name: { value: null, matchMode: FilterMatchMode.CONTAINS },
   slug: { value: null, matchMode: FilterMatchMode.CONTAINS },
   category: { value: null, matchMode: FilterMatchMode.EQUALS },
@@ -531,13 +528,6 @@ async function loadData() {
   } finally {
     loading.value = false
   }
-}
-
-const debouncedSearch = useDebounceFn(() => loadData(), 300)
-
-function handleSearch(value) {
-  search.value = value
-  filters.value.global.value = value
 }
 
 function getCategoryColor(categoryName) {
