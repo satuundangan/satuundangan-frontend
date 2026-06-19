@@ -983,9 +983,9 @@ async function handleCouplePhotoUpload(e) {
 
 function onCropComplete({ blob, preview }) {
    const field = cropper.value.targetField
-   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.jpg', { type: 'image/jpeg' }) }
-   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.jpg', { type: 'image/jpeg' }) }
-   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' }) }
+   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.webp', { type: 'image/webp' }) }
+   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.webp', { type: 'image/webp' }) }
+   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.webp', { type: 'image/webp' }) }
    cropper.value.show = false; validateField(field + 'Photo')
 }
 

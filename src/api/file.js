@@ -42,7 +42,11 @@ const getCompressedFileName = (fileName) => {
 }
 
 const compressImageForUpload = async (file) => {
-  if (!isCompressibleImage(file) || file.size <= IMAGE_UPLOAD_TARGET_BYTES) {
+  if (!isCompressibleImage(file)) {
+    return file
+  }
+
+  if (file.type === 'image/webp' && file.size <= IMAGE_UPLOAD_TARGET_BYTES) {
     return file
   }
 

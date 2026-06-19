@@ -125,14 +125,14 @@ const cropImage = () => {
         canvas.toBlob((blob) => {
           emit('crop', {
             blob: blob,
-            preview: canvas.toDataURL('image/jpeg', 0.8)
+            preview: canvas.toDataURL('image/webp', 0.8)
           })
           isProcessing.value = false
-        }, 'image/jpeg', 0.8)
+        }, 'image/webp', 0.8)
       } else {
         // Fallback for invalid/mocked images in testing environments
         console.warn('Canvas is undefined, falling back to original imageSrc')
-        const fallbackBlob = new Blob([props.imageSrc || 'mock-data'], { type: 'image/jpeg' })
+        const fallbackBlob = new Blob([props.imageSrc || 'mock-data'], { type: 'image/webp' })
         emit('crop', {
           blob: fallbackBlob,
           preview: props.imageSrc || 'https://via.placeholder.com/150'
