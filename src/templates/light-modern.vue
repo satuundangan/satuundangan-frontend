@@ -402,7 +402,7 @@
       <footer v-if="isSectionEnabled('footer')" class="py-12 bg-gray-100 text-center border-t border-gray-200">
         <h2 class="font-alex text-3xl md:text-4xl text-blue-800 mb-2">{{ data.groomName }} & {{ data.brideName }}</h2>
         <p v-if="data.footerText" class="text-gray-500 text-sm mb-4 max-w-lg mx-auto px-4">{{ data.footerText }}</p>
-        <p class="text-gray-400 text-xs tracking-widest uppercase">Created with SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-gray-400 text-xs tracking-widest uppercase">Created with SatuUndangan</p>
       </footer>
 
     </div>

@@ -351,7 +351,7 @@
            <div class="w-16 h-px bg-[#d4af37]"></div>
         </div>
         <p v-if="data.footerText" class="text-gray-500 text-sm mb-12 max-w-lg mx-auto px-6 italic font-serif leading-loose">{{ data.footerText }}</p>
-        <p class="text-[#d4af37] text-[9px] tracking-[0.6em] uppercase font-black">Powered by SatuUndangan.id</p>
+        <p v-if="data.show_branding" class="text-[#d4af37] text-[9px] tracking-[0.6em] uppercase font-black">Powered by SatuUndangan.id</p>
       </footer>
 
     </div>

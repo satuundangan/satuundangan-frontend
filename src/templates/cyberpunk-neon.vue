@@ -298,7 +298,7 @@
 
       <footer class="py-24 text-center border-t border-white/5 space-y-8 pb-32 md:pb-24">
         <h2 class="font-mono text-3xl md:text-5xl font-black uppercase text-white tracking-tighter">{{ data.groomName }} <span class="text-[#ff003c]">X</span> {{ data.brideName }}</h2>
-        <p class="text-[10px] font-mono uppercase tracking-[0.4em] font-bold text-[#64748b]">> SYSTEM_OFFLINE // SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-[10px] font-mono uppercase tracking-[0.4em] font-bold text-[#64748b]">> SYSTEM_OFFLINE // SatuUndangan</p>
       </footer>
     </div>
   </div>

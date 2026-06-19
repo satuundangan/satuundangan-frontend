@@ -899,7 +899,7 @@
                 </h2>
               </div>
             </div>
-            <div class="pt-16 space-y-3 opacity-30">
+            <div v-if="data.show_branding" class="pt-16 space-y-3 opacity-30">
               <p class="text-[8px] text-[#d4af37] tracking-[0.4em] uppercase font-black">
                 Official Invitation By
               </p>

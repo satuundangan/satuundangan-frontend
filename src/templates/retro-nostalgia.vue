@@ -331,7 +331,7 @@
 
       <footer class="py-24 text-center bg-[#2c2c2c] text-[#fdfbf7] space-y-6 pb-32 md:pb-24 border-t-8 border-[#e06d53]">
         <h2 class="font-serif text-5xl font-black uppercase">{{ data.groomName }} & {{ data.brideName }}</h2>
-        <p class="text-[10px] uppercase tracking-widest font-bold text-gray-400">Est. 2026 / Created with SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-[10px] uppercase tracking-widest font-bold text-gray-400">Est. 2026 / Created with SatuUndangan</p>
       </footer>
     </div>
   </div>

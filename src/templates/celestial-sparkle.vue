@@ -341,7 +341,7 @@
         <div class="absolute inset-0 bg-gradient-to-t from-[#f3ca40]/5 to-transparent pointer-events-none"></div>
         <h2 class="font-cormorant font-bold text-5xl md:text-7xl text-white mb-6 tracking-wide relative z-10">{{ data.groomName }} <span class="text-[#f3ca40]">&</span> {{ data.brideName }}</h2>
         <p class="text-gray-600 text-[10px] tracking-[0.6em] uppercase font-bold mb-12 relative z-10">Bound by the Heavens</p>
-        <p class="text-[#f3ca40]/30 text-[8px] tracking-[0.5em] uppercase font-black relative z-10">Created with SatuUndangan.id</p>
+        <p v-if="data.show_branding" class="text-[#f3ca40]/30 text-[8px] tracking-[0.5em] uppercase font-black relative z-10">Created with SatuUndangan.id</p>
       </footer>
 
     </div>

@@ -524,7 +524,7 @@
           <div class="w-32 h-[2px] bg-slate-800 mx-auto mb-8"></div>
           <div class="font-mono space-y-3">
             <p class="uppercase tracking-[0.2em]">© {{ new Date().getFullYear() }} {{ data.groomName?.split(' ')[0] }} &amp; {{ data.brideName?.split(' ')[0] }} WEDDING QUEST</p>
-            <p class="text-gray-600 mt-1 uppercase tracking-widest text-[10px]">ALL RIGHTS RESERVED. MADE WITH ❤️ BY SATUUNDANGAN.ID</p>
+            <p v-if="data.show_branding" class="text-gray-600 mt-1 uppercase tracking-widest text-[10px]">ALL RIGHTS RESERVED. MADE WITH ❤️ BY SATUUNDANGAN.ID</p>
           </div>
           <div class="text-yellow-600 text-2xl mt-12 font-bold font-pixel-title uppercase tracking-widest animate-pulse">
             THANKS FOR PLAYING!

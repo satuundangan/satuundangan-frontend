@@ -365,7 +365,7 @@
            <div class="w-12 h-12 bg-[#f2cc8f] rounded-full"></div>
            <div class="w-12 h-12 bg-[#81b29a] rounded-full"></div>
         </div>
-        <p class="text-gray-300 text-[8px] tracking-[0.4em] uppercase font-bold italic">Created by SatuUndangan.id</p>
+        <p v-if="data.show_branding" class="text-gray-300 text-[8px] tracking-[0.4em] uppercase font-bold italic">Created by SatuUndangan.id</p>
       </footer>
 
     </div>

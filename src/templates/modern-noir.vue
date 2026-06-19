@@ -312,7 +312,7 @@
         <h2 class="font-serif text-5xl md:text-8xl font-bold uppercase tracking-tighter">{{ data.groomName }} & {{ data.brideName }}</h2>
         <div class="space-y-2">
           <p class="text-[8px] uppercase tracking-[0.8em] font-bold text-[#808080]">The End</p>
-          <p class="text-[8px] uppercase tracking-widest text-[#404040]">Directed by SatuUndangan</p>
+          <p v-if="data.show_branding" class="text-[8px] uppercase tracking-widest text-[#404040]">Directed by SatuUndangan</p>
         </div>
       </footer>
     </div>

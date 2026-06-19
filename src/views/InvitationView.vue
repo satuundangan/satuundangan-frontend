@@ -187,6 +187,7 @@ onMounted(async () => {
           audioEnd: Number((rawData.content || rawData).audioEnd) || 0,
           template_slug: rawData.template_slug || rawData.templateName,
           is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
+          show_branding: rawData.show_branding !== undefined ? rawData.show_branding : (rawData.showBranding || false),
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
       } catch (err) {

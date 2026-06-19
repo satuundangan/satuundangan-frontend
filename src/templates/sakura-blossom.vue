@@ -36,25 +36,25 @@
       accentColor="#d6336c"
     />
 
-    <!-- Mobile Bottom Navigation -->
+    <!-- Bottom Navigation (Refined Glassmorphism) -->
     <nav
       v-if="isOpened"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#4a2530]/90 backdrop-blur-md rounded-2xl shadow-xl max-w-[90%] md:hidden transition-all duration-500 flex overflow-x-auto no-scrollbar scroll-smooth"
+      class="fixed bottom-0 left-0 right-0 z-[80] bg-[#4a2530]/80 backdrop-blur-xl border-t border-[#ffb6c1]/30 rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.2)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
     >
-      <div class="flex items-center justify-center gap-8 px-6 py-3 mx-auto min-w-max">
+      <div class="flex items-center justify-center gap-5 px-5 py-3 mx-auto min-w-max">
         <button
           v-for="item in navItems"
           :key="item.id"
           @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 relative group shrink-0"
+          class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[42px] shrink-0"
           :class="
             activeSection === item.id
               ? 'text-[#ffb6c1] scale-110'
-              : 'text-white/40 hover:text-[#ffb6c1]'
+              : 'text-white/30 hover:text-white/60'
           "
         >
-          <i :class="[item.icon, 'text-lg']"></i>
-          <span class="text-[7px] font-bold uppercase tracking-widest">{{ item.label }}</span>
+          <i :class="[item.icon, 'text-lg md:text-xl']"></i>
+          <span class="text-[7px] font-black uppercase tracking-tighter">{{ item.label }}</span>
         </button>
       </div>
     </nav>
@@ -620,7 +620,7 @@
         <p class="text-[#d6336c] text-[10px] tracking-[0.5em] uppercase font-bold mb-12">
           Sampai Jumpa di Hari Bahagia Kami
         </p>
-        <p class="text-[#e0c3cc] text-[8px] tracking-[0.4em] uppercase font-bold italic">
+        <p v-if="data.show_branding" class="text-[#e0c3cc] text-[8px] tracking-[0.4em] uppercase font-bold italic">
           Created by SatuUndangan.id
         </p>
       </footer>
@@ -695,8 +695,8 @@ let animationId = null
 // Navigation items
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
-  { id: 'couple', label: 'Couple', icon: 'fa-solid fa-user-group', key: 'couple' },
   { id: 'story', label: 'Story', icon: 'fa-solid fa-feather', key: 'love-story' },
+  { id: 'couple', label: 'Couple', icon: 'fa-solid fa-user-group', key: 'couple' },
   { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-days', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
   { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
@@ -1036,6 +1036,18 @@ watch(
   }
   50% {
     transform: translateY(-12px);
+  }
+}
+
+.animate-fade-in {
+  animation: fadeIn 1.2s ease-out forwards;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

@@ -289,7 +289,7 @@
 
       <footer class="py-20 text-center bg-[#eaeaea] space-y-6 pb-32 md:pb-20">
         <h2 class="font-serif text-3xl text-[#333333] font-light">{{ data.groomName }} & {{ data.brideName }}</h2>
-        <p class="text-[8px] uppercase tracking-[0.4em] text-[#a3a3a3]">Dibuat dengan SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-[8px] uppercase tracking-[0.4em] text-[#a3a3a3]">Dibuat dengan SatuUndangan</p>
       </footer>
     </div>
   </div>

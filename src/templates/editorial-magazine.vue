@@ -329,7 +329,7 @@
         <h2 class="font-playfair font-black text-4xl md:text-8xl lg:text-[10rem] uppercase leading-none tracking-tighter mb-8 md:mb-10 px-4">{{ data.groomName }} & {{ data.brideName }}</h2>
         <div class="flex flex-col items-center space-y-4 md:space-y-6 px-4">
            <p class="text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.5em] md:tracking-[0.8em] font-black">All Rights Reserved / 2026</p>
-           <p class="text-black text-[8px] md:text-[10px] tracking-[0.3em] md:tracking-[0.4em] uppercase font-black px-6 py-2 border-2 border-black inline-block">SatuUndangan Editorial</p>
+           <p v-if="data.show_branding" class="text-black text-[8px] md:text-[10px] tracking-[0.3em] md:tracking-[0.4em] uppercase font-black px-6 py-2 border-2 border-black inline-block">SatuUndangan Editorial</p>
         </div>
       </footer>
 

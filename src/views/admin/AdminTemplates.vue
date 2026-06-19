@@ -368,7 +368,12 @@
               <div class="flex items-center gap-2">
                 <input id="templatePremium" v-model="form.isPremium" type="checkbox"
                   class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-                <label for="templatePremium" class="text-sm font-medium text-slate-600 font-bold text-amber-600">Template Premium</label>
+                <label for="templatePremium" class="text-sm font-medium font-bold text-amber-600">Template Premium</label>
+              </div>
+              <div class="flex items-center gap-2">
+                <input id="templateShowBranding" v-model="form.showBranding" type="checkbox"
+                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
+                <label for="templateShowBranding" class="text-sm font-medium text-slate-600">Tampilkan <span class="italic">Created by SatuUndangan.id</span></label>
               </div>
             </div>
 
@@ -487,6 +492,7 @@ const form = reactive({
   sections: [],
   isActive: true,
   isPremium: false,
+  showBranding: false,
   defaultMusic: null,
   defaultAudioStart: 0,
   defaultAudioEnd: 0,
@@ -623,6 +629,7 @@ function openCreate() {
     })),
     isActive: true,
     isPremium: false,
+    showBranding: false,
     defaultMusic: null,
     defaultAudioStart: 0,
     defaultAudioEnd: 0,
@@ -674,6 +681,7 @@ function openEdit(template) {
     sections: sections,
     isActive: Boolean(template.isActive),
     isPremium: Boolean(template.isPremium),
+    showBranding: Boolean(template.showBranding),
     defaultMusic: template.defaultMusic || null,
     defaultAudioStart: template.defaultAudioStart ?? 0,
     defaultAudioEnd: template.defaultAudioEnd ?? 0,
@@ -739,6 +747,7 @@ function buildPayload() {
     description: form.description || null,
     isActive: form.isActive,
     isPremium: form.isPremium,
+    showBranding: form.showBranding,
     defaultMusic: form.defaultMusic || null,
     defaultAudioStart: Number(form.defaultAudioStart) || 0,
     defaultAudioEnd: Number(form.defaultAudioEnd) || 0,

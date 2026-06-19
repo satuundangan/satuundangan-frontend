@@ -413,7 +413,7 @@
         <h2 class="font-playfair text-4xl text-[#4a4a4a] mb-4">{{ data.groomName }} & {{ data.brideName }}</h2>
         <p v-if="data.footerText" class="text-gray-400 text-sm mb-8 max-w-lg mx-auto px-6 italic">{{ data.footerText }}</p>
         <div class="w-16 h-px bg-[#e8d5c4] mx-auto mb-8"></div>
-        <p class="text-gray-300 text-[10px] tracking-[0.4em] uppercase font-bold">Created with SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-gray-300 text-[10px] tracking-[0.4em] uppercase font-bold">Created with SatuUndangan</p>
       </footer>
 
     </div>

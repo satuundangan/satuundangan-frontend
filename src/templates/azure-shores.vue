@@ -319,7 +319,7 @@
       <footer class="py-24 text-center bg-white space-y-8 pb-32 md:pb-24 border-t border-[#e0f2fe]">
         <i class="fa-solid fa-sun text-[#ffb703] text-3xl"></i>
         <h2 class="font-serif text-4xl md:text-5xl font-bold text-[#1e3a8a]">{{ data.groomName }} & {{ data.brideName }}</h2>
-        <p class="text-[8px] uppercase tracking-widest font-bold text-[#93c5fd]">Made with love by SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-[8px] uppercase tracking-widest font-bold text-[#93c5fd]">Made with love by SatuUndangan</p>
       </footer>
     </div>
   </div>
