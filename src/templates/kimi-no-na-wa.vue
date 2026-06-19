@@ -642,7 +642,7 @@
                 {{ data.brideName?.split(' ')[0] || 'Taki' }}
               </h2>
             </div>
-            <p class="text-[8px] text-white/20 uppercase tracking-[0.4em] pt-8">Made with ♥ · Satu Undangan</p>
+            <p v-if="data.show_branding" class="text-[8px] text-white/20 uppercase tracking-[0.4em] pt-8">Made with ♥ · Satu Undangan</p>
           </div>
         </div>
       </footer>

@@ -142,11 +142,13 @@ onMounted(async () => {
       let templateDefaultMusic = null
       let templateAudioStart = 0
       let templateAudioEnd = 0
+      let templateShowBranding = false
       try {
         const tmpl = await getTemplateDesignBySlug(templateSlug)
         templateDefaultMusic = tmpl?.defaultMusic || null
         templateAudioStart = tmpl?.defaultAudioStart ?? 0
         templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
+        templateShowBranding = tmpl?.showBranding ?? false
       } catch {
         // no-op — demo still works without template music
       }
@@ -157,6 +159,7 @@ onMounted(async () => {
         musicChoice: templateDefaultMusic || demoData.musicChoice,
         audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
         audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
+        show_branding: templateShowBranding,
       }
     } else {
       try {
