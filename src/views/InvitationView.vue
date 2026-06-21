@@ -1,5 +1,10 @@
 <script setup>
-import { getInvitationBySlug, getMyInvitationBySlug } from '@/api/invitation'
+import {
+  getInvitationBySlug,
+  getMyInvitationBySlug,
+  getInvitationBySubdomain,
+  getCustomSubdomain,
+} from '@/api/invitation'
 import { demoData } from '@/api/demoData'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
@@ -25,8 +30,15 @@ const templateMap = {
   'pixel-quest': () => import('../templates/pixel-quest.vue'),
 }
 
+const props = defineProps({
+  // Host-based mode: invitation resolved from custom subdomain, not route slug.
+  subdomainMode: { type: Boolean, default: false },
+})
+
 const route = useRoute()
 const router = useRouter()
+// In subdomain mode the route has no :slug — resolve label from the host.
+const subdomainLabel = props.subdomainMode ? getCustomSubdomain() : null
 const slug = route.params.slug
 const invitationData = ref(null)
 const TemplateComponent = shallowRef(null)
@@ -250,9 +262,14 @@ const goToCheckout = () => {
 
 async function fetchInvitationData(slug) {
   try {
-    const response = isPreviewMode.value
-      ? await getMyInvitationBySlug(slug)
-      : await getInvitationBySlug(slug)
+    let response
+    if (props.subdomainMode && subdomainLabel) {
+      response = await getInvitationBySubdomain(subdomainLabel)
+    } else if (isPreviewMode.value) {
+      response = await getMyInvitationBySlug(slug)
+    } else {
+      response = await getInvitationBySlug(slug)
+    }
     return response.data || response
   } catch (err) {
     if (isPreviewMode.value) {

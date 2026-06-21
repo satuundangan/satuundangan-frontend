@@ -5,7 +5,7 @@
 
     <div class="max-w-7xl mx-auto px-6 relative z-10">
       <div class="text-center mb-20">
-        <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Fitur Premium</span>
+        <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Fitur Unggulan</span>
         <h2 class="text-4xl md:text-5xl font-playfair font-bold text-dark mb-6">Fitur Lengkap Undanganmu</h2>
         <p class="text-muted max-w-2xl mx-auto text-lg">
           Semua yang kamu butuhkan untuk membuat undangan pernikahan digital yang sempurna dan berkesan ada di sini.

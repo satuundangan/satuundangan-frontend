@@ -6,6 +6,7 @@ import Invitation from '@/views/InvitationView.vue'
 import PreviewInvitation from '@/views/PreviewInvitation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import { getCustomSubdomain } from '@/api/invitation'
 import { analytics } from '@/api/analytics.js'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import InvitationsView from '@/views/dashboard/InvitationsView.vue'
@@ -24,15 +25,27 @@ import AdminSections from '@/views/admin/AdminSections.vue'
 import AdminCategories from '@/views/admin/AdminCategories.vue'
 import AdminPromoCodes from '@/views/admin/AdminPromoCodes.vue'
 
+// Host-based routing: on a custom subdomain (e.g. rina-budi.satuundangan.id),
+// the root path serves that invitation instead of the marketing homepage.
+const customSubdomain = getCustomSubdomain()
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-      meta: { title: 'Home' },
-    },
+    customSubdomain
+      ? {
+          path: '/',
+          name: 'invitation',
+          component: Invitation,
+          props: { subdomainMode: true },
+          meta: { title: 'Undangan' },
+        }
+      : {
+          path: '/',
+          name: 'home',
+          component: HomeView,
+          meta: { title: 'Home' },
+        },
     {
       path: '/create',
       name: 'create',

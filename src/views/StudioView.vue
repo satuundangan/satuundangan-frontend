@@ -543,6 +543,41 @@
                   </div>
                 </div>
               </div>
+
+              <!-- Custom Subdomain (Tier Eksklusif only) -->
+              <div v-if="formData.package === 'eksklusif'" class="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-4 animate-fade-in">
+                <div class="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <h3 class="font-bold text-dark text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-mocha/60"></i> Subdomain Custom
+                  </h3>
+                  <span class="text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Eksklusif</span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Alamat khusus undangan kamu. Kosongkan kalau mau pakai link biasa.
+                </p>
+
+                <div class="flex items-stretch rounded-xl border-2 transition-colors overflow-hidden"
+                     :class="{
+                       'border-gray-100 focus-within:border-mocha': subdomainStatus.state === 'idle' || subdomainStatus.state === 'checking',
+                       'border-emerald-300': subdomainStatus.state === 'available',
+                       'border-red-300': subdomainStatus.state === 'taken' || subdomainStatus.state === 'invalid',
+                     }">
+                  <input v-model="formData.subdomain" type="text" placeholder="namapasangan"
+                         class="flex-1 min-w-0 px-3.5 py-2.5 text-sm outline-none bg-transparent" autocomplete="off" />
+                  <span class="flex items-center px-3 bg-gray-50 text-xs text-slate-400 border-l border-gray-100 select-none">.satuundangan.id</span>
+                </div>
+
+                <!-- Status line -->
+                <p v-if="subdomainStatus.state === 'checking'" class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-spinner fa-spin"></i> Mengecek ketersediaan...
+                </p>
+                <p v-else-if="subdomainStatus.state === 'available'" class="text-[11px] text-emerald-600 font-medium flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-check"></i> {{ subdomainStatus.normalized }}.satuundangan.id tersedia
+                </p>
+                <p v-else-if="subdomainStatus.state === 'taken' || subdomainStatus.state === 'invalid'" class="text-[11px] text-red-500 font-medium flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-xmark"></i> {{ subdomainStatus.message }}
+                </p>
+              </div>
             </div>
 
             <!-- Navigation Bar (Footer Form) -->
@@ -771,7 +806,7 @@ import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
 import { analytics } from '@/api/analytics'
 import { uploadFileApi } from '@/api/file'
-import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
+import { getInvitationById, createInvitation, updateInvitation, checkSubdomainAvailability } from '@/api/invitation'
 import { getSections, fetchPublicAudio } from '@/api/master'
 import QuoteSection from './create-form/components/QuoteSection.vue'
 import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
@@ -953,6 +988,8 @@ const formData = ref({
   extendedFamilyText: '',
   healthProtocol: true,
   footerText: '',
+  subdomain: '',
+  package: 'basic',
   likes: true,
   quoteType: 'default',
   quote: '',
@@ -962,6 +999,36 @@ const formData = ref({
   wishesState: true,
   rsvpState: true
 })
+
+// Custom subdomain live availability check (tier Eksklusif)
+const subdomainStatus = ref({ state: 'idle', message: '', normalized: '' })
+let subdomainTimer = null
+
+watch(() => formData.value.subdomain, (val) => {
+  clearTimeout(subdomainTimer)
+  const raw = (val || '').trim()
+  if (!raw) {
+    subdomainStatus.value = { state: 'idle', message: '', normalized: '' }
+    return
+  }
+  subdomainStatus.value = { state: 'checking', message: '', normalized: '' }
+  subdomainTimer = setTimeout(async () => {
+    try {
+      const excludeId = route.params.id || localStorage.getItem('editInvitationId') || undefined
+      const res = await checkSubdomainAvailability(raw, excludeId)
+      const data = res.data || res
+      if (data.available) {
+        subdomainStatus.value = { state: 'available', message: '', normalized: data.normalized }
+      } else {
+        subdomainStatus.value = { state: data.reason?.includes('digunakan') ? 'taken' : 'invalid', message: data.reason || 'Tidak tersedia', normalized: data.normalized }
+      }
+    } catch {
+      subdomainStatus.value = { state: 'invalid', message: 'Gagal mengecek, coba lagi', normalized: '' }
+    }
+  }, 450)
+})
+
+onUnmounted(() => clearTimeout(subdomainTimer))
 
 // Checkbox items for optional components (CreateDesign)
 const sections = ref({})
@@ -1434,6 +1501,8 @@ function mapPayloadToFormData(payload) {
    }
 
    formData.value.title = payload.title || ''
+   formData.value.subdomain = payload.subdomain || payload.content?.subdomain || ''
+   formData.value.package = payload.package || payload.content?.package || 'basic'
    formData.value.brideName = payload.brideName || ''
    formData.value.bridePhoto = payload.bridePhotoUrl || ''
    formData.value.groomName = payload.groomName || ''
@@ -1699,6 +1768,15 @@ async function uploadAllFiles() {
 // Saving invitation API submit
 async function saveAndPreview() {
    if (!validateForm()) return
+   // Block save if a custom subdomain was typed but isn't confirmed available
+   if (formData.value.subdomain?.trim() && subdomainStatus.value.state !== 'available') {
+      if (subdomainStatus.value.state === 'checking') {
+         toast.warning('Tunggu pengecekan subdomain selesai.')
+      } else {
+         toast.error(subdomainStatus.value.message || 'Subdomain tidak tersedia. Ganti atau kosongkan.')
+      }
+      return
+   }
    if (!isAuthenticated.value) {
       toast.warning("Silakan masuk atau daftar terlebih dahulu untuk menyimpan undangan.")
       localStorage.setItem('pending_save_after_login', 'true')
@@ -1730,7 +1808,8 @@ async function saveAndPreview() {
          footerText: formData.value.footerText, likes: formData.value.likes, menu: { title: 'Menu Makanan', items: formData.value.foodList.filter(n => n.trim()) },
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
-         eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource
+         eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource,
+         subdomain: formData.value.subdomain ? subdomainStatus.value.normalized : ''
       }
       
       const editId = route.params.id || localStorage.getItem('editInvitationId')

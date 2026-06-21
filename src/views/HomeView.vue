@@ -13,6 +13,67 @@
       <FeaturesSection />
     </section>
 
+    <!-- Pricing Section -->
+    <section id="pricing" class="section bg-ivory scroll-mt-20 py-24">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Harga</span>
+          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">Pilih Paket Sesuai Kebutuhanmu</h2>
+          <p class="text-muted max-w-2xl mx-auto text-lg">
+            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 items-center">
+          <div v-for="plan in pricingPlans" :key="plan.name" :class="[
+            'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300',
+            plan.highlighted
+              ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
+              : 'border border-gray-100 shadow-lg hover:shadow-xl'
+          ]">
+            <!-- Best Seller Badge -->
+            <div v-if="plan.highlighted"
+              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase">
+              Best Seller
+            </div>
+
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
+              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
+            </div>
+
+            <div class="mb-8">
+              <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
+              <span class="text-muted text-sm">/undangan</span>
+            </div>
+
+            <ul class="space-y-4 mb-8 flex-1">
+              <li v-for="feat in plan.features" :key="feat.label" class="flex items-start gap-3 text-sm">
+                <!-- Check Icon -->
+                <svg v-if="feat.included" class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <!-- X Icon -->
+                <svg v-else class="w-5 h-5 shrink-0 text-red-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span :class="feat.included ? 'text-dark/80' : 'text-red-400 line-through decoration-red-300/60'">{{ feat.label }}</span>
+              </li>
+            </ul>
+
+            <button @click="showModal = true" :class="[
+              'w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300',
+              plan.highlighted
+                ? 'bg-mocha text-white shadow-lg shadow-mocha/20 hover:bg-mocha/90 hover:-translate-y-0.5'
+                : 'bg-ivory text-mocha border-2 border-mocha/20 hover:border-mocha hover:bg-mocha hover:text-white'
+            ]">
+              Pilih {{ plan.name }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- Steps Section -->
     <StepsSection @create-invitation="showModal = true" />
 
@@ -26,7 +87,7 @@
 
         <!-- Filter Categories (Desktop Tabs) -->
         <div class="flex flex-wrap justify-center gap-2 mb-10">
-          <button v-for="cat in visibleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
+          <button v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
             'px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 border',
             selectedCategory === cat.id
               ? 'bg-mocha text-white border-mocha shadow-lg shadow-mocha/20'
@@ -214,7 +275,7 @@
             <div class="mb-6">
               <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Kategori</h5>
               <ul class="space-y-1">
-                <li v-for="cat in categories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
+                <li v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
                   'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
                   selectedCategory === cat.id ? 'bg-white text-mocha shadow-sm border border-gray-200' : 'text-gray-600 hover:bg-gray-200/50'
                 ]">
@@ -242,7 +303,7 @@
 
           <!-- Mobile Filter Tabs -->
           <div class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
-            <button v-for="cat in categories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
+            <button v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
               'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
               selectedCategory === cat.id ? 'bg-mocha text-white border-mocha' : 'bg-white text-gray-600 border-gray-200'
             ]">
@@ -375,7 +436,6 @@ import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import StepsSection from '@/components/landing/StepsSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
 import { getTemplateDesigns } from '@/api/templateDesign'
-import { getCategories } from '@/api/category' // Update Import
 import FloatingNovaButton from '@/components/nova/FloatingNovaButton.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
 
@@ -396,8 +456,49 @@ const selectedTemplate = ref(null)
 const selectedCategory = ref('all') // Default to 'all' ID
 const templateRefs = reactive({})
 const templates = ref([])
-const categories = ref([{ id: 'all', name: 'Semua' }]) // Init categories
 const loading = ref(true)
+
+const pricingPlans = [
+  {
+    name: 'Basic',
+    price: 'Rp 50.000',
+    tagline: 'Cocok untuk undangan simpel & hemat.',
+    highlighted: false,
+    features: [
+      { label: 'Bebas Pilih Semua Desain', included: true },
+      { label: 'Peta Lokasi', included: true },
+      { label: 'Hitung Mundur', included: true },
+      { label: 'Tanpa Musik', included: false },
+      { label: 'Tanpa Galeri', included: false },
+      { label: 'Tanpa RSVP', included: false },
+      { label: 'Ada Watermark "SatuUndangan"', included: false },
+    ],
+  },
+  {
+    name: 'Premium',
+    price: 'Rp 179.000',
+    tagline: 'Fitur lengkap untuk momen spesialmu.',
+    highlighted: true,
+    features: [
+      { label: 'Semua Fitur Basic', included: true },
+      { label: 'Musik Latar', included: true },
+      { label: 'Galeri Foto', included: true },
+      { label: 'RSVP & Amplop Digital', included: true },
+      { label: 'Tanpa Watermark (Undangan Bersih)', included: true },
+    ],
+  },
+  {
+    name: 'Eksklusif',
+    price: 'Rp 239.000',
+    tagline: 'Lebih profesional & otomatis.',
+    highlighted: false,
+    features: [
+      { label: 'Semua Fitur Premium', included: true },
+      { label: 'Subdomain Custom (namapasangan.satuundangan.id)', included: true },
+      { label: 'WA Broadcast Otomatis', included: true },
+    ],
+  },
+]
 
 const testimonials = [
   {
@@ -426,24 +527,11 @@ const testimonials = [
 // Load Data
 onMounted(async () => {
   try {
-    const [tplData, catData] = await Promise.all([
-      getTemplateDesigns(),
-      getCategories()
-    ])
+    const tplData = await getTemplateDesigns()
 
     if (tplData) {
       const rawTplData = Array.isArray(tplData) ? tplData : (tplData.data || [])
       templates.value = Array.isArray(rawTplData) ? rawTplData : []
-    }
-
-    if (catData) {
-      // Use the category NAME (label) as the ID for selection logic
-      const rawCatData = Array.isArray(catData) ? catData : (Array.isArray(catData.data) ? catData.data : [])
-      const formattedCats = rawCatData.map(c => ({
-        id: c.label || c.name,
-        name: c.label || c.name
-      }))
-      categories.value = [{ id: 'all', name: 'Semua' }, ...formattedCats]
     }
 
   } catch (e) {
@@ -463,7 +551,14 @@ const filteredTemplates = computed(() => {
   })
 })
 
-const visibleCategories = computed(() => categories.value.slice(0, 5)) // Show top 5 on homepage
+// Visual style categories for homepage catalog filter (not pricing-based)
+const styleCategories = ref([
+  { id: 'all', name: 'Semua' },
+  { id: 'Minimalis', name: 'Minimalis' },
+  { id: 'Rustic', name: 'Rustic' },
+  { id: 'Elegan', name: 'Elegan' },
+  { id: 'Floral', name: 'Floral' },
+])
 
 watch(() => showModal.value, (newVal) => {
   if (newVal) {
