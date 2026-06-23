@@ -605,15 +605,24 @@ const filteredTemplates = computed(() => {
   })
 })
 
-// Visual style categories for homepage catalog filter (not pricing-based)
-const styleCategories = ref([
-  { id: 'all', name: 'Semua' },
-  { id: 'Minimalis', name: 'Minimalis' },
-  { id: 'Rustic', name: 'Rustic' },
-  { id: 'Elegan', name: 'Elegan' },
-  { id: 'Floral', name: 'Floral' },
-  { id: 'Anime', name: 'Anime' },
-])
+// Catalog filter categories, derived dynamically from the tags of loaded templates.
+// id = lowercase tag (matches case-insensitive filter); name = display-cased. Always prefixed with "Semua".
+const styleCategories = computed(() => {
+  const map = new Map()
+  templates.value.forEach((t) =>
+    normalizeTags(t.tags).forEach((raw) => {
+      const tag = (raw || '').trim()
+      const key = tag.toLowerCase()
+      if (key && !map.has(key)) {
+        map.set(key, tag.charAt(0).toUpperCase() + tag.slice(1))
+      }
+    }),
+  )
+  const cats = [...map.entries()]
+    .sort((a, b) => a[1].localeCompare(b[1]))
+    .map(([id, name]) => ({ id, name }))
+  return [{ id: 'all', name: 'Semua' }, ...cats]
+})
 
 watch(() => showModal.value, (newVal) => {
   if (newVal) {
