@@ -612,6 +612,7 @@ const styleCategories = ref([
   { id: 'Rustic', name: 'Rustic' },
   { id: 'Elegan', name: 'Elegan' },
   { id: 'Floral', name: 'Floral' },
+  { id: 'Anime', name: 'Anime' },
 ])
 
 watch(() => showModal.value, (newVal) => {
