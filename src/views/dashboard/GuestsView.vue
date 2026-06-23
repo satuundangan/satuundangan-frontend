@@ -359,7 +359,10 @@
     >
       <div class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 shadow-xl animate-scale-up">
         <h3 class="font-bold text-xl mb-2 text-dark">Kirim Undangan</h3>
-        <p class="text-xs text-muted mb-6">Pesan ini akan dikirim melalui WhatsApp.</p>
+        <p class="text-xs text-muted mb-6">
+          Kirim langsung via WhatsApp, atau salin pesan/link untuk dikirim sendiri lewat aplikasi
+          apa pun.
+        </p>
         <textarea
           v-if="loadingMessage"
           disabled
@@ -372,7 +375,25 @@ Memuat pesan template...</textarea
           v-model="shareMessage"
           class="w-full border border-gray-100 rounded-2xl p-4 bg-gray-50 focus:ring-2 focus:ring-mocha/20 outline-none h-40 text-sm"
         ></textarea>
-        <div class="mt-8 flex gap-3">
+        <!-- Salin sendiri: kirim lewat app apa pun -->
+        <div class="mt-4 grid grid-cols-2 gap-3">
+          <button
+            @click="copyText(shareMessage, 'Pesan')"
+            :disabled="loadingMessage"
+            class="py-2.5 border border-gray-200 text-dark rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition disabled:opacity-50"
+          >
+            <i class="fa-regular fa-copy"></i> Salin Pesan
+          </button>
+          <button
+            @click="copyText(shareUrl, 'Link')"
+            :disabled="loadingMessage || !shareUrl"
+            class="py-2.5 border border-gray-200 text-dark rounded-xl text-sm font-bold flex items-center justify-center gap-2 hover:bg-gray-50 transition disabled:opacity-50"
+          >
+            <i class="fa-solid fa-link"></i> Salin Link
+          </button>
+        </div>
+
+        <div class="mt-6 flex gap-3">
           <button
             @click="showShareModal = false"
             class="flex-1 py-3 text-gray-400 font-bold text-sm"
@@ -382,7 +403,7 @@ Memuat pesan template...</textarea
           <button
             @click="sendWhatsApp"
             :disabled="loadingMessage"
-            class="flex-[2] py-3 bg-green-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2"
+            class="flex-[2] py-3 bg-green-500 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 disabled:opacity-50"
           >
             <i class="fa-brands fa-whatsapp text-lg"></i> Kirim WA
           </button>
@@ -491,6 +512,7 @@ const excelInput = ref(null)
 
 const showShareModal = ref(false)
 const shareMessage = ref('')
+const shareUrl = ref('')
 const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
 const newGuest = ref({ name: '', group: '', phoneNumber: '' })
@@ -753,6 +775,7 @@ async function openShareModal(guest) {
     const res = await getGuestShareLink(guest.id)
     // Support both direct response or response.data wrapping
     const data = res?.data || res
+    shareUrl.value = data?.url || ''
     if (data?.message) {
       shareMessage.value = data.message
     } else {
@@ -775,6 +798,29 @@ function sendWhatsApp() {
   const waNumber = phone.startsWith('0') ? `62${phone.slice(1)}` : phone
   window.open(`https://wa.me/${waNumber}?text=${encodeURIComponent(shareMessage.value)}`, '_blank')
   showShareModal.value = false
+}
+
+async function copyText(text, label) {
+  if (!text) return
+  try {
+    await navigator.clipboard.writeText(text)
+    toast.success(`${label} disalin`)
+  } catch {
+    // Fallback for non-secure contexts / older browsers
+    const ta = document.createElement('textarea')
+    ta.value = text
+    ta.style.position = 'fixed'
+    ta.style.opacity = '0'
+    document.body.appendChild(ta)
+    ta.select()
+    try {
+      document.execCommand('copy')
+      toast.success(`${label} disalin`)
+    } catch {
+      toast.error('Gagal menyalin')
+    }
+    document.body.removeChild(ta)
+  }
 }
 </script>
 

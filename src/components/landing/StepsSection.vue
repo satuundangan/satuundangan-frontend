@@ -15,7 +15,7 @@
         <!-- Connecting Line (Desktop) -->
         <div class="hidden md:block absolute top-1/2 left-10 right-10 h-0.5 bg-gradient-to-r from-transparent via-sage/30 to-transparent -translate-y-1/2 z-0"></div>
 
-        <div class="grid md:grid-cols-5 gap-8 md:gap-4 relative z-10">
+        <div class="grid md:grid-cols-4 gap-8 md:gap-4 relative z-10">
           <div v-for="(step, index) in steps" :key="index" class="flex flex-col items-center group relative">
             
             <!-- Step Number -->
@@ -55,7 +55,6 @@
 
 <script setup>
 const steps = [
-  { title: "Mulai Desain", description: "Klik buat undangan, tanpa perlu daftar akun dulu.", icon: 'fa-solid fa-wand-magic-sparkles' },
   { title: "Pilih Template", description: "Pilih tema eksklusif yang sesuai seleramu.", icon: 'fa-solid fa-palette' },
   { title: "Isi Data", description: "Lengkapi data mempelai, acara, dan galeri foto.", icon: 'fa-solid fa-file-signature' },
   { title: "Live Preview", description: "Lihat hasil undanganmu secara real-time.", icon: 'fa-solid fa-mobile-screen' },

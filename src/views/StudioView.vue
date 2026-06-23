@@ -1303,7 +1303,14 @@ onMounted(async () => {
   if (template) {
     try {
       selectedTemplate.value = JSON.parse(template) || {}
-      
+
+      // Carry pricing tier chosen on the homepage (new invitations only; edit mode loads its own package).
+      if (!route.params.id) {
+        const chosenPkg = localStorage.getItem('selectedPackage')
+        if (chosenPkg) formData.value.package = chosenPkg
+      }
+
+
       // Initialize sections selection options
       if (selectedTemplate.value?.sections && Array.isArray(selectedTemplate.value.sections) && selectedTemplate.value.sections.length > 0) {
         const newOptions = {}

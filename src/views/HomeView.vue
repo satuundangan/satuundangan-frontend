@@ -13,70 +13,6 @@
       <FeaturesSection />
     </section>
 
-    <!-- Pricing Section -->
-    <section id="pricing" class="section bg-ivory scroll-mt-20 py-24">
-      <div class="max-w-6xl mx-auto px-6">
-        <div class="text-center mb-16">
-          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Harga</span>
-          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">Pilih Paket Sesuai Kebutuhanmu</h2>
-          <p class="text-muted max-w-2xl mx-auto text-lg">
-            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
-          </p>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-8 items-center">
-          <div v-for="plan in pricingPlans" :key="plan.name" :class="[
-            'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300',
-            plan.highlighted
-              ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
-              : 'border border-gray-100 shadow-lg hover:shadow-xl'
-          ]">
-            <!-- Best Seller Badge -->
-            <div v-if="plan.highlighted"
-              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase">
-              Best Seller
-            </div>
-
-            <div class="mb-6">
-              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
-              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
-            </div>
-
-            <div class="mb-8">
-              <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
-              <span class="text-muted text-sm">/undangan</span>
-            </div>
-
-            <ul class="space-y-4 mb-8 flex-1">
-              <li v-for="feat in plan.features" :key="feat.label" class="flex items-start gap-3 text-sm">
-                <!-- Check Icon -->
-                <svg v-if="feat.included" class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <!-- X Icon -->
-                <svg v-else class="w-5 h-5 shrink-0 text-red-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span :class="feat.included ? 'text-dark/80' : 'text-red-400 line-through decoration-red-300/60'">{{ feat.label }}</span>
-              </li>
-            </ul>
-
-            <button @click="showModal = true" :class="[
-              'w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300',
-              plan.highlighted
-                ? 'bg-mocha text-white shadow-lg shadow-mocha/20 hover:bg-mocha/90 hover:-translate-y-0.5'
-                : 'bg-ivory text-mocha border-2 border-mocha/20 hover:border-mocha hover:bg-mocha hover:text-white'
-            ]">
-              Pilih {{ plan.name }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Steps Section -->
-    <StepsSection @create-invitation="showModal = true" />
-
     <!-- Template Section (Existing Logic) -->
     <section id="templates" class="section bg-white scroll-mt-20">
       <div class="max-w-6xl mx-auto px-6">
@@ -109,7 +45,7 @@
             <!-- Card Image -->
             <div class="relative overflow-hidden h-64 bg-gray-100 cursor-pointer" @click="selectTemplate(item.id); showModal = true;">
               <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)" :alt="item.name"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                 @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
 
               <!-- Hover Overlay -->
@@ -140,7 +76,7 @@
                   {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
                 </div>
               </div>
-              
+
               <p class="text-sm text-muted line-clamp-2 mb-6 flex-1">{{ item.description }}</p>
 
               <!-- Features Summary -->
@@ -152,7 +88,7 @@
                  <div class="flex items-center gap-1.5 text-xs text-gray-500">
                     <i class="fa-solid fa-palette text-mocha/40"></i>
                     <div class="flex gap-1">
-                       <span v-for="color in (item.paletteColors || []).slice(0, 3)" :key="color" 
+                       <span v-for="color in (item.paletteColors || []).slice(0, 3)" :key="color"
                          class="w-2.5 h-2.5 rounded-full border border-gray-100" :style="{ backgroundColor: color }"></span>
                     </div>
                  </div>
@@ -160,7 +96,7 @@
 
               <!-- Actions -->
               <div class="flex gap-3 mt-auto">
-                 <button @click="selectTemplate(item.id); showModal = true;" 
+                 <button @click="selectTemplate(item.id); showModal = true;"
                    class="flex-[2] bg-mocha text-white py-3 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-lg shadow-mocha/10 flex items-center justify-center gap-2">
                    Gunakan Template
                  </button>
@@ -189,27 +125,71 @@
       </div>
     </section>
 
-    <!-- Custom Theme CTA Section -->
-    <section class="py-16 px-6 bg-gradient-to-br from-stone-50 to-amber-50/40">
-      <div class="max-w-3xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 bg-amber-100/80 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 border border-amber-200/60">
-          <i class="fa-solid fa-palette"></i> Custom Design
+    <!-- Steps Section -->
+    <StepsSection @create-invitation="showModal = true" />
+
+    <!-- Tutorial Section (TikTok) -->
+    <TutorialSection />
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section bg-ivory scroll-mt-20 py-24">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Harga</span>
+          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">Pilih Paket Sesuai Kebutuhanmu</h2>
+          <p class="text-muted max-w-2xl mx-auto text-lg">
+            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
+          </p>
         </div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-dark mb-3 font-serif leading-snug">
-          Ga ketemu tema undangan<br class="hidden sm:block" /> yang kamu mau?
-        </h2>
-        <p class="text-muted text-base mb-2">
-          Chat kami untuk request desain custom sesuai keinginanmu.
-        </p>
-        <p class="text-xs text-gray-400 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
-        <a
-          href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20request%20desain%20undangan%20custom%20%F0%9F%92%8C"
-          target="_blank"
-          class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-300 hover:-translate-y-0.5"
-        >
-          <i class="fa-brands fa-whatsapp text-xl"></i>
-          Chat Kami Sekarang
-        </a>
+
+        <div class="grid md:grid-cols-3 gap-8 items-center">
+          <div v-for="plan in pricingPlans" :key="plan.name" @click="choosePlan(plan.id)" :class="[
+            'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300 cursor-pointer',
+            plan.highlighted
+              ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
+              : 'border border-gray-100 shadow-lg hover:shadow-xl',
+            selectedPlan === plan.id ? 'ring-2 ring-mocha ring-offset-2' : ''
+          ]">
+            <!-- Best Seller Badge -->
+            <div v-if="plan.highlighted"
+              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase">
+              Best Seller
+            </div>
+
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
+              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
+            </div>
+
+            <div class="mb-8">
+              <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
+              <span class="text-muted text-sm">/undangan</span>
+            </div>
+
+            <ul class="space-y-4 mb-8 flex-1">
+              <li v-for="feat in plan.features" :key="feat.label" class="flex items-start gap-3 text-sm">
+                <!-- Check Icon -->
+                <svg v-if="feat.included" class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <!-- X Icon -->
+                <svg v-else class="w-5 h-5 shrink-0 text-red-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span :class="feat.included ? 'text-dark/80' : 'text-red-400 line-through decoration-red-300/60'">{{ feat.label }}</span>
+              </li>
+            </ul>
+
+            <button @click.stop="choosePlan(plan.id)" :class="[
+              'w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300',
+              plan.highlighted
+                ? 'bg-mocha text-white shadow-lg shadow-mocha/20 hover:bg-mocha/90 hover:-translate-y-0.5'
+                : 'bg-ivory text-mocha border-2 border-mocha/20 hover:border-mocha hover:bg-mocha hover:text-white'
+            ]">
+              Mulai Buat Undangan
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -245,6 +225,30 @@
 
     <!-- FAQ Section -->
     <FaqSection />
+
+    <!-- Custom Theme CTA Section -->
+    <section class="py-16 px-6 bg-gradient-to-br from-stone-50 to-amber-50/40">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 bg-amber-100/80 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 border border-amber-200/60">
+          <i class="fa-solid fa-palette"></i> Custom Design
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-dark mb-3 font-serif leading-snug">
+          Ga ketemu tema undangan<br class="hidden sm:block" /> yang kamu mau?
+        </h2>
+        <p class="text-muted text-base mb-2">
+          Chat kami untuk request desain custom sesuai keinginanmu.
+        </p>
+        <p class="text-xs text-gray-400 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
+        <a
+          href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20request%20desain%20undangan%20custom%20%F0%9F%92%8C"
+          target="_blank"
+          class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-300 hover:-translate-y-0.5"
+        >
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          Chat Kami Sekarang
+        </a>
+      </div>
+    </section>
 
     <!-- Footer -->
     <Footer />
@@ -327,7 +331,7 @@
                   <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                     @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
-                  
+
                   <!-- Preview Button (Always on top of selection overlay) -->
                   <div class="absolute top-2 right-2 flex gap-2 z-20">
                     <a :href="'/demo/' + item.slug" target="_blank" @click.stop
@@ -434,13 +438,22 @@ import HeroSection from '@/components/layout/HeroSection.vue'
 import ComparisonSection from '@/components/landing/ComparisonSection.vue'
 import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import StepsSection from '@/components/landing/StepsSection.vue'
+import TutorialSection from '@/components/landing/TutorialSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
 import { getTemplateDesigns } from '@/api/templateDesign'
+import { getPackages } from '@/api/payment'
 import FloatingNovaButton from '@/components/nova/FloatingNovaButton.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
 
 const router = useRouter()
 const showModal = ref(false)
+const selectedPlan = ref(null)
+
+// Pricing tier chosen on homepage. Persisted in goToCreate so it carries into the studio + checkout.
+function choosePlan(planId) {
+  selectedPlan.value = planId
+  showModal.value = true
+}
 const showAuthModal = ref(false)
 const authMode = ref('login')
 
@@ -458,23 +471,27 @@ const templateRefs = reactive({})
 const templates = ref([])
 const loading = ref(true)
 
-const pricingPlans = [
+// Presentation metadata. Price filled from GET /payment/packages (single source of truth).
+// id matches InvitationPackage enum on backend.
+const pricingPlans = ref([
   {
+    id: 'basic',
     name: 'Basic',
-    price: 'Rp 50.000',
+    price: 'Rp 89.000',
     tagline: 'Cocok untuk undangan simpel & hemat.',
     highlighted: false,
     features: [
       { label: 'Bebas Pilih Semua Desain', included: true },
       { label: 'Peta Lokasi', included: true },
       { label: 'Hitung Mundur', included: true },
-      { label: 'Tanpa Musik', included: false },
+      { label: 'Musik Latar', included: true },
+      { label: 'RSVP & Amplop Digital', included: true },
       { label: 'Tanpa Galeri', included: false },
-      { label: 'Tanpa RSVP', included: false },
       { label: 'Ada Watermark "SatuUndangan"', included: false },
     ],
   },
   {
+    id: 'premium',
     name: 'Premium',
     price: 'Rp 179.000',
     tagline: 'Fitur lengkap untuk momen spesialmu.',
@@ -484,10 +501,13 @@ const pricingPlans = [
       { label: 'Musik Latar', included: true },
       { label: 'Galeri Foto', included: true },
       { label: 'RSVP & Amplop Digital', included: true },
+      { label: 'Kirim Undangan via WhatsApp', included: true },
+      { label: 'Template Pesan Undangan Siap Pakai', included: true },
       { label: 'Tanpa Watermark (Undangan Bersih)', included: true },
     ],
   },
   {
+    id: 'eksklusif',
     name: 'Eksklusif',
     price: 'Rp 239.000',
     tagline: 'Lebih profesional & otomatis.',
@@ -495,10 +515,13 @@ const pricingPlans = [
     features: [
       { label: 'Semua Fitur Premium', included: true },
       { label: 'Subdomain Custom (namapasangan.satuundangan.id)', included: true },
-      { label: 'WA Broadcast Otomatis', included: true },
     ],
   },
-]
+])
+
+function formatRupiah(value) {
+  return 'Rp ' + Number(value || 0).toLocaleString('id-ID')
+}
 
 const testimonials = [
   {
@@ -539,15 +562,46 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+
+  // Sync prices from backend so cards never drift from real package prices.
+  try {
+    const pkgData = await getPackages()
+    const list = Array.isArray(pkgData) ? pkgData : (pkgData?.data || [])
+    const priceById = Object.fromEntries(list.map((p) => [p.id, p.price]))
+    pricingPlans.value = pricingPlans.value.map((plan) =>
+      priceById[plan.id] != null ? { ...plan, price: formatRupiah(priceById[plan.id]) } : plan,
+    )
+  } catch (e) {
+    console.error('Gagal ambil paket harga, pakai harga statis:', e)
+  }
 })
+
+// Normalize tags to array (handles JSON array, CSV string, or existing array)
+const normalizeTags = (tags) => {
+  if (!tags) return []
+  if (Array.isArray(tags)) return tags
+  if (typeof tags === 'string') {
+    const trimmed = tags.trim()
+    if (trimmed.startsWith('[')) {
+      try {
+        const parsed = JSON.parse(trimmed)
+        return Array.isArray(parsed) ? parsed : []
+      } catch {
+        return []
+      }
+    }
+    return trimmed.split(',').map(t => t.trim()).filter(Boolean)
+  }
+  return []
+}
 
 // Filter Logic
 const filteredTemplates = computed(() => {
   if (selectedCategory.value === 'all') return templates.value
 
   return templates.value.filter(t => {
-    // Match template.category with the selected category NAME
-    return t.category && t.category.toLowerCase() === selectedCategory.value.toLowerCase()
+    const tags = normalizeTags(t.tags)
+    return tags.some(tag => tag.toLowerCase() === selectedCategory.value.toLowerCase())
   })
 })
 
@@ -606,6 +660,7 @@ function goToCreate() {
     localStorage.removeItem('selectedSections')
     localStorage.removeItem('finalPayload')
     localStorage.setItem('selectedTemplate', JSON.stringify(tpl))
+    localStorage.setItem('selectedPackage', selectedPlan.value || 'basic')
     showModal.value = false;
     router.push('/create')
   }

@@ -199,6 +199,41 @@
                 Ringkasan Pesanan
               </h3>
 
+              <!-- Package / Tier Selector -->
+              <div class="mb-8 space-y-2">
+                <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Pilih Paket</p>
+                <button
+                  v-for="pkg in packages"
+                  :key="pkg.id"
+                  type="button"
+                  @click="selectedPackage = pkg.id"
+                  class="w-full flex items-center justify-between px-4 py-3 rounded-xl border-2 transition-all text-left"
+                  :class="
+                    selectedPackage === pkg.id
+                      ? 'border-mocha bg-mocha/5 shadow-sm'
+                      : 'border-gray-100 hover:border-mocha/30'
+                  "
+                >
+                  <span class="flex items-center gap-3">
+                    <span
+                      class="w-4 h-4 rounded-full border-2 flex items-center justify-center shrink-0"
+                      :class="selectedPackage === pkg.id ? 'border-mocha' : 'border-gray-300'"
+                    >
+                      <span v-if="selectedPackage === pkg.id" class="w-2 h-2 rounded-full bg-mocha"></span>
+                    </span>
+                    <span>
+                      <span class="font-bold text-gray-800 text-sm">{{ pkg.label }}</span>
+                      <span
+                        v-if="pkg.id === 'premium'"
+                        class="ml-2 text-[9px] font-black uppercase tracking-wider bg-mocha text-white px-1.5 py-0.5 rounded"
+                        >Best Seller</span
+                      >
+                    </span>
+                  </span>
+                  <span class="font-bold text-mocha text-sm">{{ formatCurrency(pkg.price) }}</span>
+                </button>
+              </div>
+
               <div class="space-y-6 mb-8">
                 <div class="flex justify-between items-start group">
                   <div>
@@ -357,10 +392,10 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { getMyInvitationBySlug, updateInvitation } from '@/api/invitation'
-import { createPayment } from '@/api/payment'
+import { createPayment, getPackages } from '@/api/payment'
 import { validatePromoCode } from '@/api/promo'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
@@ -406,8 +441,15 @@ const handleRelogin = () => {
   router.push('/')
 }
 
-const planName = computed(() => (invitation.value?.is_premium ? 'Premium Plan' : 'Basic Plan'))
-const planPrice = computed(() => invitation.value?.price ?? 0)
+// Pricing tiers (loaded from backend — single source of truth)
+const packages = ref([])
+const selectedPackage = ref('premium') // default to Best Seller
+
+const currentPackage = computed(
+  () => packages.value.find((p) => p.id === selectedPackage.value) || null,
+)
+const planName = computed(() => currentPackage.value?.label || 'Paket')
+const planPrice = computed(() => currentPackage.value?.price ?? 0)
 
 // Promo Code
 const promoCode = ref('')
@@ -426,7 +468,7 @@ async function applyPromo() {
   promoLoading.value = true
   promoError.value = ''
   try {
-    const res = await validatePromoCode(code, invitation.value.id)
+    const res = await validatePromoCode(code, invitation.value.id, planPrice.value)
     if (res.success) {
       appliedPromo.value = res.data
       promoCode.value = ''
@@ -446,7 +488,22 @@ function removePromo() {
   promoCode.value = ''
 }
 
+// Switching tier changes the base price → discard any applied promo (stale base)
+watch(selectedPackage, () => {
+  if (appliedPromo.value) removePromo()
+})
+
 onMounted(async () => {
+  // Load pricing tiers (best-effort; non-blocking for invitation load)
+  try {
+    packages.value = await getPackages()
+    // Honor a pre-selected tier from query (?package=eksklusif)
+    const q = route.query.package
+    if (q && packages.value.some((p) => p.id === q)) selectedPackage.value = q
+  } catch (e) {
+    console.error('Gagal memuat paket:', e)
+  }
+
   const slug = route.query.slug
   if (!slug) return
 
@@ -501,6 +558,7 @@ const simulatePaymentSuccess = async () => {
     await updateInvitation(invitation.value.id, {
       isPublished: true,
       is_published: true,
+      package: selectedPackage.value,
     })
 
     loading.value = false
@@ -529,7 +587,7 @@ const handleCheckout = async () => {
 
   loading.value = true
   try {
-    const payload = { invitation_id: invitation.value.id }
+    const payload = { invitation_id: invitation.value.id, package: selectedPackage.value }
     if (appliedPromo.value) payload.promo_code = appliedPromo.value.code
     const data = await createPayment(payload)
 
