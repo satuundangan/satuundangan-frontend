@@ -43,9 +43,9 @@
             class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 flex flex-col">
 
             <!-- Card Image -->
-            <div class="relative overflow-hidden aspect-[4/5] bg-gray-100 cursor-pointer" @click="selectTemplate(item.id); showModal = true;">
+            <div class="relative overflow-hidden aspect-[4/5] bg-gray-950 cursor-pointer flex items-center justify-center p-5" @click="selectTemplate(item.id); showModal = true;">
               <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)" :alt="item.name"
-                class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-110"
+                class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-transform duration-500 group-hover:scale-105"
                 @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
 
               <!-- Hover Overlay -->
@@ -327,9 +327,9 @@
                   selectedTemplate === item.id ? 'ring-2 ring-mocha ring-offset-2 scale-[1.02]' : 'hover:shadow-lg hover:-translate-y-1',
                   'bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-gray-100 flex flex-col group shadow-sm'
                 ]">
-                <div class="relative aspect-[4/5] overflow-hidden bg-gray-200">
+                <div class="relative aspect-[4/5] overflow-hidden bg-gray-950 flex items-center justify-center p-3">
                   <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
-                    class="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                    class="max-w-full max-h-full object-contain rounded-md shadow-xl group-hover:scale-105 transition-transform duration-500"
                     @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
 
                   <!-- Preview Button (Always on top of selection overlay) -->
