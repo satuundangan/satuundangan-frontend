@@ -15,6 +15,10 @@ export default defineConfig(({ mode }) => {
     test: {
       globals: true,
       environment: 'jsdom',
+      // Vitest = unit tests only. Playwright e2e (tests/) and worktree copies are excluded
+      // so `npm test` doesn't try to run browser specs.
+      include: ['src/**/*.{test,spec}.{js,ts}'],
+      exclude: ['node_modules', 'dist', 'tests', 'e2e', '**/.claude/**'],
     },
     resolve: {
       alias: {
