@@ -394,8 +394,8 @@ const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 // Navigation items
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-moon', key: 'hero' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-open', key: 'love-story' },
   { id: 'couple', label: 'Pair', icon: 'fa-solid fa-star', key: 'couple' },
-  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Date', icon: 'fa-solid fa-calendar', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-camera-retro', key: 'gallery' },
   { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },

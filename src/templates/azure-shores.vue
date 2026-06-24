@@ -370,8 +370,8 @@ const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
+  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-open', key: 'love-story' },
   { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
-  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
   { id: 'event', label: 'Events', icon: 'fa-solid fa-calendar-day', key: 'event' },
   { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
   { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },

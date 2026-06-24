@@ -485,8 +485,8 @@ const backgroundUrl = ref('')
 const navItems = computed(() => {
   const items = [
     { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
+    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-open', key: 'love-story' },
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart', key: 'couple' },
-    { id: 'story', label: 'Story', icon: 'fa-solid fa-book-heart', key: 'love-story' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check', key: 'event' },
     { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images', key: 'gallery' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }

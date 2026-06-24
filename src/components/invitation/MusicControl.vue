@@ -140,8 +140,16 @@ onMounted(() => {
       window.removeEventListener('touchstart', tryPlay)
     }
 
-    window.addEventListener('click', tryPlay)
-    window.addEventListener('touchstart', tryPlay)
+    // Attempt immediate playback (carries the BUKA-button user activation);
+    // fall back to first gesture if the browser blocks it.
+    audio.value.play().then(() => {
+      isPlaying.value = true
+      window.removeEventListener('click', tryPlay)
+      window.removeEventListener('touchstart', tryPlay)
+    }).catch(() => {
+      window.addEventListener('click', tryPlay)
+      window.addEventListener('touchstart', tryPlay)
+    })
   }
 })
 
