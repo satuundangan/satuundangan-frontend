@@ -594,8 +594,8 @@ const pixelCanvas = ref(null)
 const navItems = computed(() => {
   const items = [
     { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
-    { id: 'story', label: 'Quest', icon: 'fa-solid fa-book-open' },
     { id: 'couple', label: 'Hero', icon: 'fa-solid fa-heart' },
+    { id: 'story', label: 'Quest', icon: 'fa-solid fa-book-open' },
     { id: 'event', label: 'Map', icon: 'fa-solid fa-map-location-dot' },
     { id: 'gallery', label: 'Item', icon: 'fa-solid fa-images' },
     { id: 'gift', label: 'Gold', icon: 'fa-solid fa-coins' },
