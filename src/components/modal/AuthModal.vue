@@ -180,6 +180,10 @@
                   </label>
                 </div>
 
+                <div v-if="turnstileEnabled" class="flex justify-center pt-2">
+                  <TurnstileWidget ref="turnstileRef" v-model="turnstileToken" />
+                </div>
+
                 <button
                   type="submit"
                   class="w-full bg-mocha text-white font-bold py-3.5 rounded-xl hover:bg-mocha/90 hover:shadow-lg hover:shadow-mocha/20 active:scale-[0.98] transition-all flex justify-center items-center gap-2 mt-4"
@@ -252,6 +256,7 @@ import { useToast } from 'vue-toastification'
 import { BASE_URL } from '@/api/client'
 import { useRouter } from 'vue-router'
 import { forgotPassword } from '@/api/auth'
+import TurnstileWidget from '@/components/TurnstileWidget.vue'
 
 const props = defineProps({
   show: Boolean,
@@ -269,6 +274,15 @@ const agreedToTerms = ref(false)
 const loading = ref(false)
 const devResetUrl = ref('')
 const devVerificationUrl = ref('')
+
+const turnstileToken = ref('')
+const turnstileRef = ref(null)
+const turnstileEnabled = !!import.meta.env.VITE_TURNSTILE_SITE_KEY
+
+function resetTurnstile() {
+  turnstileToken.value = ''
+  turnstileRef.value?.reset()
+}
 
 const auth = useAuthStore()
 const toast = useToast()
@@ -352,9 +366,18 @@ const handleLogin = async () => {
     return
   }
 
+  if (turnstileEnabled && !turnstileToken.value) {
+    toast.warning('Selesaikan verifikasi keamanan terlebih dahulu')
+    return
+  }
+
   loading.value = true
   try {
-    await auth.login({ email: email.value, password: password.value })
+    await auth.login({
+      email: email.value,
+      password: password.value,
+      turnstileToken: turnstileToken.value,
+    })
     toast.success('Selamat datang kembali! 🎉')
     emit('close')
 
@@ -384,6 +407,7 @@ const handleLogin = async () => {
     console.error(e)
   } finally {
     loading.value = false
+    resetTurnstile()
   }
 }
 
@@ -418,6 +442,11 @@ const handleRegister = async () => {
     return
   }
 
+  if (turnstileEnabled && !turnstileToken.value) {
+    toast.warning('Selesaikan verifikasi keamanan terlebih dahulu')
+    return
+  }
+
   loading.value = true
   devVerificationUrl.value = ''
   try {
@@ -426,6 +455,7 @@ const handleRegister = async () => {
       email: email.value,
       password: password.value,
       agreedToTerms: agreedToTerms.value,
+      turnstileToken: turnstileToken.value,
     })
     devVerificationUrl.value = res.verificationUrl || ''
     toast.success('Akun berhasil dibuat. Silakan cek email untuk verifikasi.')
@@ -435,6 +465,7 @@ const handleRegister = async () => {
     console.error(e)
   } finally {
     loading.value = false
+    resetTurnstile()
   }
 }
 
@@ -450,10 +481,18 @@ const handleForgotPassword = async () => {
     return
   }
 
+  if (turnstileEnabled && !turnstileToken.value) {
+    toast.warning('Selesaikan verifikasi keamanan terlebih dahulu')
+    return
+  }
+
   loading.value = true
   devResetUrl.value = ''
   try {
-    const res = await forgotPassword({ email: email.value })
+    const res = await forgotPassword({
+      email: email.value,
+      turnstileToken: turnstileToken.value,
+    })
     devResetUrl.value = res.resetUrl || ''
     toast.success(res.message || 'Jika email terdaftar, instruksi reset password akan dikirim.')
   } catch (e) {
@@ -461,6 +500,7 @@ const handleForgotPassword = async () => {
     console.error(e)
   } finally {
     loading.value = false
+    resetTurnstile()
   }
 }
 
@@ -481,6 +521,7 @@ const setAuthMode = (mode) => {
   name.value = ''
   devResetUrl.value = ''
   devVerificationUrl.value = ''
+  resetTurnstile()
 }
 </script>
 
