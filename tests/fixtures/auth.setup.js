@@ -12,6 +12,16 @@ setup('authenticate', async ({ page }) => {
   await page.click('button:has-text("Masuk")', { force: true });
   await page.fill('input[placeholder="nama@email.com"]', email);
   await page.fill('input[placeholder="••••••••"]', password);
+
+  // Wait for the Cloudflare Turnstile widget to finish loading and auto-verify
+  // (sandbox site key always-passes, but still needs the api.js round trip)
+  // before submitting — otherwise the form guard blocks submission because
+  // turnstileToken is still empty.
+  await page.waitForFunction(() => {
+    const input = document.querySelector('input[name="cf-turnstile-response"]')
+    return !!input && input.value.length > 0
+  });
+
   await page.click('button:has-text("Masuk Sekarang")', { force: true });
 
   await expect(page).toHaveURL(/.*dashboard/);
