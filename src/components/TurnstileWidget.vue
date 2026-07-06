@@ -30,6 +30,11 @@ function loadScript() {
     }
     const s = document.createElement('script')
     s.src = SCRIPT_SRC
+    // Dynamically created <script> elements default `async` to true (the
+    // HTML spec's "force-async" flag) unless explicitly set to false.
+    // Cloudflare's turnstile.ready() throws if async/defer are set.
+    s.async = false
+    s.defer = false
     s.onload = () => resolve()
     s.onerror = reject
     document.head.appendChild(s)
