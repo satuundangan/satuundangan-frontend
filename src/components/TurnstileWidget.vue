@@ -30,8 +30,6 @@ function loadScript() {
     }
     const s = document.createElement('script')
     s.src = SCRIPT_SRC
-    s.async = true
-    s.defer = true
     s.onload = () => resolve()
     s.onerror = reject
     document.head.appendChild(s)
