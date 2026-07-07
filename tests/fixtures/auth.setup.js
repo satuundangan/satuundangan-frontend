@@ -24,6 +24,18 @@ setup('authenticate', async ({ page }) => {
 
   await page.click('button:has-text("Masuk Sekarang")', { force: true });
 
+  // After login, the router either lands on /legal-consent (account has never
+  // agreed to ToS/Privacy) or goes straight to /dashboard (already approved).
+  // Don't assume either path — wait for whichever one actually happens.
+  await page.waitForURL(/\/(legal-consent|dashboard)/, { timeout: 30000 });
+
+  if (/\/legal-consent/.test(page.url())) {
+    await page.check('#tos');
+    await page.check('#privacy');
+    await page.click('button:has-text("Setuju & Lanjut ke Dashboard")');
+    await page.waitForURL(/.*dashboard/, { timeout: 30000 });
+  }
+
   await expect(page).toHaveURL(/.*dashboard/);
 
   // Save storage state to a file
