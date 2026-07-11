@@ -359,6 +359,218 @@
               </div>
             </div>
 
+            <!-- Sample / Demo Content Editor -->
+            <div class="md:col-span-2">
+              <fieldset class="rounded-xl border border-slate-200 p-4">
+                <legend class="px-1 text-sm font-semibold text-slate-700">Konten Sample / Demo</legend>
+                <p class="mb-3 text-xs text-slate-500">
+                  Opsional. Isi untuk menampilkan konten khusus template ini di halaman
+                  <span class="font-mono">/demo/{{ form.slug || '&lt;slug&gt;' }}</span>. Jika dikosongkan,
+                  demo akan memakai data contoh bawaan (Adam &amp; Hawa).
+                </p>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Nama Pengantin Pria</label>
+                    <input v-model="form.sampleContent.groomName" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Nama Pengantin Wanita</label>
+                    <input v-model="form.sampleContent.brideName" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Nama Panggilan Pasangan</label>
+                    <input v-model="form.sampleContent.coupleName" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Foto Pengantin Pria</label>
+                    <div class="mt-2 flex gap-2">
+                      <input v-model="form.sampleContent.groomPhotoUrl" type="url"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                        placeholder="https://example.com/groom.jpg" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.groomPhotoUrl = url)" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Foto Pengantin Wanita</label>
+                    <div class="mt-2 flex gap-2">
+                      <input v-model="form.sampleContent.bridePhotoUrl" type="url"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                        placeholder="https://example.com/bride.jpg" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.bridePhotoUrl = url)" />
+                    </div>
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Foto Pasangan</label>
+                    <div class="mt-2 flex gap-2">
+                      <input v-model="form.sampleContent.photoCoupleUrl" type="url"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                        placeholder="https://example.com/couple.jpg" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.photoCoupleUrl = url)" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Sumber Kutipan</label>
+                    <input v-model="form.sampleContent.quoteSource" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Tanggal &amp; Waktu Acara</label>
+                    <input v-model="form.sampleContent.dateTime" type="text"
+                      placeholder="2026-08-15T10:00:00"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Kutipan</label>
+                    <textarea v-model="form.sampleContent.quoteText" rows="2"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div class="rounded-lg border border-slate-200 p-3">
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Akad</p>
+                    <input v-model="form.sampleContent.akadLocation.mapUrl" type="text" placeholder="Map URL"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.akadLocation.description" type="text" placeholder="Deskripsi lokasi"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.akadLocation.dateTime" type="text" placeholder="Tanggal & waktu"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                  </div>
+                  <div class="rounded-lg border border-slate-200 p-3">
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Resepsi</p>
+                    <input v-model="form.sampleContent.resepsiLocation.mapUrl" type="text" placeholder="Map URL"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.resepsiLocation.description" type="text" placeholder="Deskripsi lokasi"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.resepsiLocation.dateTime" type="text" placeholder="Tanggal & waktu"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Orang Tua Pengantin Wanita</label>
+                    <input v-model="form.sampleContent.parents.brideParents" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Orang Tua Pengantin Pria</label>
+                    <input v-model="form.sampleContent.parents.groomParents" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Instagram Pasangan</label>
+                    <input v-model="form.sampleContent.socialMedia.instagram" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">TikTok Pasangan</label>
+                    <input v-model="form.sampleContent.socialMedia.tiktok" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Instagram Pengantin Pria</label>
+                    <input v-model="form.sampleContent.socialMediaGroom.instagram" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Instagram Pengantin Wanita</label>
+                    <input v-model="form.sampleContent.socialMediaBrides.instagram" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Footer Text</label>
+                    <textarea v-model="form.sampleContent.footerText" rows="2"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                </div>
+
+                <!-- Gallery Images -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-medium text-slate-600">Galeri Foto</label>
+                    <button type="button" @click="addGalleryImage"
+                      class="rounded-lg border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">+ Tambah Foto</button>
+                  </div>
+                  <div v-for="(img, index) in form.sampleContent.galleryImages" :key="index"
+                    class="mb-2 flex items-center gap-2">
+                    <input v-model="form.sampleContent.galleryImages[index]" type="url"
+                      class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
+                      placeholder="https://example.com/gallery.jpg" />
+                    <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50">Upload</button>
+                    <input type="file" class="hidden" accept="image/*"
+                      @change="handleSampleUpload($event, (url) => form.sampleContent.galleryImages[index] = url)" />
+                    <button type="button" @click="removeGalleryImage(index)"
+                      class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
+                  </div>
+                </div>
+
+                <!-- Love Story -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-medium text-slate-600">Cerita Cinta</label>
+                    <button type="button" @click="addLoveStory"
+                      class="rounded-lg border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">+ Tambah Cerita</button>
+                  </div>
+                  <div v-for="(story, index) in form.sampleContent.loveStory" :key="index"
+                    class="mb-3 rounded-lg border border-slate-200 p-3">
+                    <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+                      <input v-model="story.date" type="text" placeholder="Tanggal"
+                        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                      <input v-model="story.title" type="text" placeholder="Judul"
+                        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    </div>
+                    <textarea v-model="story.description" rows="2" placeholder="Deskripsi"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <div class="mt-2 flex items-center gap-2">
+                      <input v-model="story.image" type="url" placeholder="URL foto"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => story.image = url)" />
+                      <button type="button" @click="removeLoveStory(index)"
+                        class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bank Accounts -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-medium text-slate-600">Rekening Bank</label>
+                    <button type="button" @click="addBankAccount"
+                      class="rounded-lg border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">+ Tambah Rekening</button>
+                  </div>
+                  <div v-for="(bank, index) in form.sampleContent.bankAccounts" :key="index"
+                    class="mb-2 grid grid-cols-1 gap-2 rounded-lg border border-slate-200 p-3 md:grid-cols-4">
+                    <input v-model="bank.bankName" type="text" placeholder="Nama Bank"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="bank.accountNumber" type="text" placeholder="No. Rekening"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="bank.accountName" type="text" placeholder="Atas Nama"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <button type="button" @click="removeBankAccount(index)"
+                      class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
             <div class="md:col-span-2 flex flex-wrap gap-6">
               <div class="flex items-center gap-2">
                 <input id="templateActive" v-model="form.isActive" type="checkbox"
@@ -480,6 +692,30 @@ const customPalette = reactive({
   accent: '#38BDF8'
 })
 
+function emptySampleContent() {
+  return {
+    groomName: '',
+    brideName: '',
+    coupleName: '',
+    groomPhotoUrl: '',
+    bridePhotoUrl: '',
+    photoCoupleUrl: '',
+    quoteText: '',
+    quoteSource: '',
+    dateTime: '',
+    akadLocation: { mapUrl: '', description: '', dateTime: '' },
+    resepsiLocation: { mapUrl: '', description: '', dateTime: '' },
+    parents: { brideParents: '', groomParents: '' },
+    galleryImages: [],
+    loveStory: [],
+    bankAccounts: [],
+    socialMedia: { instagram: '', tiktok: '' },
+    socialMediaGroom: { instagram: '' },
+    socialMediaBrides: { instagram: '' },
+    footerText: '',
+  }
+}
+
 const form = reactive({
   name: '',
   slug: '',
@@ -496,6 +732,7 @@ const form = reactive({
   defaultMusic: null,
   defaultAudioStart: 0,
   defaultAudioEnd: 0,
+  sampleContent: emptySampleContent(),
 })
 
 watch(() => form.name, (newVal) => {
@@ -595,6 +832,44 @@ async function handleThumbnailUpload(event) {
   }
 }
 
+async function handleSampleUpload(event, setUrl) {
+  const file = event.target.files[0]
+  if (!file) return
+  try {
+    const res = await uploadFileApi(file)
+    setUrl(res.fileUrl)
+    toast.success('Foto berhasil diupload')
+  } catch {
+    toast.error('Gagal mengupload foto')
+  } finally {
+    event.target.value = ''
+  }
+}
+
+function addGalleryImage() {
+  form.sampleContent.galleryImages.push('')
+}
+
+function removeGalleryImage(index) {
+  form.sampleContent.galleryImages.splice(index, 1)
+}
+
+function addLoveStory() {
+  form.sampleContent.loveStory.push({ date: '', title: '', description: '', image: '' })
+}
+
+function removeLoveStory(index) {
+  form.sampleContent.loveStory.splice(index, 1)
+}
+
+function addBankAccount() {
+  form.sampleContent.bankAccounts.push({ bankName: '', accountNumber: '', accountName: '' })
+}
+
+function removeBankAccount(index) {
+  form.sampleContent.bankAccounts.splice(index, 1)
+}
+
 function addTag() {
   const val = tagInput.value.trim()
   if (val && !form.tags.includes(val)) {
@@ -633,6 +908,7 @@ function openCreate() {
     defaultMusic: null,
     defaultAudioStart: 0,
     defaultAudioEnd: 0,
+    sampleContent: emptySampleContent(),
   })
   showForm.value = true
 }
@@ -669,6 +945,48 @@ function openEdit(template) {
     }
   })
 
+  const savedSampleContent =
+    template.sampleContent && typeof template.sampleContent === 'object'
+      ? template.sampleContent
+      : {}
+  const sampleContent = {
+    ...emptySampleContent(),
+    ...savedSampleContent,
+    akadLocation: {
+      ...emptySampleContent().akadLocation,
+      ...(savedSampleContent.akadLocation || {}),
+    },
+    resepsiLocation: {
+      ...emptySampleContent().resepsiLocation,
+      ...(savedSampleContent.resepsiLocation || {}),
+    },
+    parents: {
+      ...emptySampleContent().parents,
+      ...(savedSampleContent.parents || {}),
+    },
+    socialMedia: {
+      ...emptySampleContent().socialMedia,
+      ...(savedSampleContent.socialMedia || {}),
+    },
+    socialMediaGroom: {
+      ...emptySampleContent().socialMediaGroom,
+      ...(savedSampleContent.socialMediaGroom || {}),
+    },
+    socialMediaBrides: {
+      ...emptySampleContent().socialMediaBrides,
+      ...(savedSampleContent.socialMediaBrides || {}),
+    },
+    galleryImages: Array.isArray(savedSampleContent.galleryImages)
+      ? [...savedSampleContent.galleryImages]
+      : [],
+    loveStory: Array.isArray(savedSampleContent.loveStory)
+      ? savedSampleContent.loveStory.map(item => ({ ...item }))
+      : [],
+    bankAccounts: Array.isArray(savedSampleContent.bankAccounts)
+      ? savedSampleContent.bankAccounts.map(item => ({ ...item }))
+      : [],
+  }
+
   Object.assign(form, {
     name: template.name || '',
     slug: template.slug || '',
@@ -685,6 +1003,7 @@ function openEdit(template) {
     defaultMusic: template.defaultMusic || null,
     defaultAudioStart: template.defaultAudioStart ?? 0,
     defaultAudioEnd: template.defaultAudioEnd ?? 0,
+    sampleContent,
   })
   showForm.value = true
 }
@@ -756,7 +1075,8 @@ function buildPayload() {
       order: s.order,
       is_enabled: s.is_enabled
     })),
-    tags: form.tags
+    tags: form.tags,
+    sampleContent: form.sampleContent
   }
 
   payload.paletteId = null
