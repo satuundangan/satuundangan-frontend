@@ -1055,7 +1055,30 @@ function closeForm() {
   saving.value = false
 }
 
+// Recursively strip empty values so a blank sample field never overrides
+// the built-in demoData default. Returns undefined when nothing remains.
+function pruneEmpty(value) {
+  if (Array.isArray(value)) {
+    const items = value.map(pruneEmpty).filter((v) => v !== undefined)
+    return items.length ? items : undefined
+  }
+  if (value && typeof value === 'object') {
+    const out = {}
+    for (const [k, v] of Object.entries(value)) {
+      const pruned = pruneEmpty(v)
+      if (pruned !== undefined) out[k] = pruned
+    }
+    return Object.keys(out).length ? out : undefined
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed ? trimmed : undefined
+  }
+  return value === undefined || value === null ? undefined : value
+}
+
 function buildPayload() {
+  const prunedSample = pruneEmpty(form.sampleContent)
   const payload = {
     name: form.name,
     slug: form.slug,
@@ -1076,7 +1099,7 @@ function buildPayload() {
       is_enabled: s.is_enabled
     })),
     tags: form.tags,
-    sampleContent: form.sampleContent
+    sampleContent: prunedSample ?? null
   }
 
   payload.paletteId = null
