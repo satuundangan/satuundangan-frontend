@@ -154,19 +154,25 @@ onMounted(async () => {
       let templateAudioStart = 0
       let templateAudioEnd = 0
       let templateShowBranding = false
+      let sampleContent = {}
       try {
         const tmpl = await getTemplateDesignBySlug(templateSlug)
         templateDefaultMusic = tmpl?.defaultMusic || null
         templateAudioStart = tmpl?.defaultAudioStart ?? 0
         templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
         templateShowBranding = tmpl?.showBranding ?? false
+        sampleContent =
+          tmpl && typeof tmpl.sampleContent === 'object' && tmpl.sampleContent
+            ? tmpl.sampleContent
+            : {}
       } catch {
         // no-op — demo still works without template music
       }
       data = {
         ...demoData,
+        ...sampleContent,
         template_slug: templateSlug,
-        guestName: route.query.to || demoData.guestName,
+        guestName: route.query.to || sampleContent.guestName || demoData.guestName,
         musicChoice: templateDefaultMusic || demoData.musicChoice,
         audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
         audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
