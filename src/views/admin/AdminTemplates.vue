@@ -395,7 +395,7 @@
                       <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
                         class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
                       <input type="file" class="hidden" accept="image/*"
-                        @change="handleSampleUpload($event, (url) => form.sampleContent.groomPhotoUrl = url)" />
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.groomPhotoUrl = url, 3 / 4)" />
                     </div>
                   </div>
                   <div>
@@ -407,7 +407,7 @@
                       <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
                         class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
                       <input type="file" class="hidden" accept="image/*"
-                        @change="handleSampleUpload($event, (url) => form.sampleContent.bridePhotoUrl = url)" />
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.bridePhotoUrl = url, 3 / 4)" />
                     </div>
                   </div>
                   <div class="md:col-span-2">
@@ -419,7 +419,7 @@
                       <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
                         class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
                       <input type="file" class="hidden" accept="image/*"
-                        @change="handleSampleUpload($event, (url) => form.sampleContent.photoCoupleUrl = url)" />
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.photoCoupleUrl = url, 1)" />
                     </div>
                   </div>
 
@@ -513,7 +513,7 @@
                     <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
                       class="rounded-lg border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50">Upload</button>
                     <input type="file" class="hidden" accept="image/*"
-                      @change="handleSampleUpload($event, (url) => form.sampleContent.galleryImages[index] = url)" />
+                      @change="handleSampleUpload($event, (url) => form.sampleContent.galleryImages[index] = url, 3 / 4)" />
                     <button type="button" @click="removeGalleryImage(index)"
                       class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
                   </div>
@@ -542,7 +542,7 @@
                       <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
                         class="rounded-lg border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50">Upload</button>
                       <input type="file" class="hidden" accept="image/*"
-                        @change="handleSampleUpload($event, (url) => story.image = url)" />
+                        @change="handleSampleUpload($event, (url) => story.image = url, 3 / 4)" />
                       <button type="button" @click="removeLoveStory(index)"
                         class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
                     </div>
@@ -601,6 +601,14 @@
         </div>
       </div>
     </Transition>
+
+    <ImageCropperModal
+      :show="cropper.show"
+      :imageSrc="cropper.image"
+      :stencilAspectRatio="cropper.aspectRatio"
+      @close="cropper.show = false"
+      @crop="onSampleCropComplete"
+    />
   </AdminShell>
 </template>
 
@@ -624,11 +632,13 @@ import {
 } from '@/api/admin.js'
 import { fetchAdminSections, fetchAdminAudio } from '@/api/master.js'
 import { uploadFileApi } from '@/api/file.js'
+import ImageCropperModal from '@/views/create-form/components/ImageCropperModal.vue'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
 const thumbnailInput = ref(null)
+const cropper = ref({ show: false, image: '', aspectRatio: 3 / 4, setUrl: null })
 const audioRef = ref(null)
 const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
@@ -832,17 +842,50 @@ async function handleThumbnailUpload(event) {
   }
 }
 
-async function handleSampleUpload(event, setUrl) {
+function downscaleImage(dataUrl, maxWidth = 1600) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      let { width, height } = img
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width)
+        width = maxWidth
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL('image/jpeg', 0.9))
+    }
+    img.onerror = () => resolve(dataUrl)
+    img.src = dataUrl
+  })
+}
+
+// Open the shared cropper before uploading. setUrl receives the final CDN URL.
+function handleSampleUpload(event, setUrl, aspectRatio = 3 / 4) {
   const file = event.target.files[0]
   if (!file) return
+  const reader = new FileReader()
+  reader.onload = async () => {
+    const image = await downscaleImage(reader.result)
+    cropper.value = { show: true, image, aspectRatio, setUrl }
+  }
+  reader.readAsDataURL(file)
+  event.target.value = ''
+}
+
+async function onSampleCropComplete({ blob }) {
+  const setUrl = cropper.value.setUrl
+  cropper.value.show = false
+  if (!setUrl || !blob) return
   try {
-    const res = await uploadFileApi(file)
+    const cropped = new File([blob], 'sample.webp', { type: 'image/webp' })
+    const res = await uploadFileApi(cropped)
     setUrl(res.fileUrl)
     toast.success('Foto berhasil diupload')
   } catch {
     toast.error('Gagal mengupload foto')
-  } finally {
-    event.target.value = ''
   }
 }
 
