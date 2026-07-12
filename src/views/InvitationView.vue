@@ -27,6 +27,7 @@ const templateMap = {
   'sakura-blossom': () => import('../templates/sakura-blossom.vue'),
   'kimi-no-na-wa': () => import('../templates/kimi-no-na-wa.vue'),
   'pixel-quest': () => import('../templates/pixel-quest.vue'),
+  'one-piece': () => import('../templates/one-piece.vue'),
 }
 
 const props = defineProps({
