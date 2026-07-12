@@ -165,6 +165,7 @@ onMounted(async () => {
           tmpl && typeof tmpl.sampleContent === 'object' && tmpl.sampleContent
             ? tmpl.sampleContent
             : {}
+        applyDemoSeo(tmpl)
       } catch {
         // no-op — demo still works without template music
       }
@@ -263,6 +264,41 @@ onMounted(async () => {
 
 const goToCheckout = () => {
   router.push(`/checkout?slug=${slug}`)
+}
+
+// Set document title + meta/OG tags for a template's demo page from its SEO
+// fields, falling back to the template name/description/thumbnail.
+function applyDemoSeo(tmpl) {
+  if (!tmpl || typeof document === 'undefined') return
+  const title = tmpl.seoTitle || `${tmpl.name} — Demo Undangan Digital | Satu Undangan`
+  const description =
+    tmpl.seoDescription ||
+    tmpl.description ||
+    `Lihat demo template undangan pernikahan digital ${tmpl.name} di Satu Undangan.`
+  const image = tmpl.thumbnailUrl || tmpl.previewUrl || ''
+
+  document.title = title
+
+  const upsertMeta = (key, attr, value) => {
+    if (!value) return
+    let el = document.head.querySelector(`meta[${attr}="${key}"]`)
+    if (!el) {
+      el = document.createElement('meta')
+      el.setAttribute(attr, key)
+      document.head.appendChild(el)
+    }
+    el.setAttribute('content', value)
+  }
+
+  upsertMeta('description', 'name', description)
+  upsertMeta('og:title', 'property', title)
+  upsertMeta('og:description', 'property', description)
+  upsertMeta('og:image', 'property', image)
+  upsertMeta('og:type', 'property', 'website')
+  upsertMeta('twitter:card', 'name', image ? 'summary_large_image' : 'summary')
+  upsertMeta('twitter:title', 'name', title)
+  upsertMeta('twitter:description', 'name', description)
+  upsertMeta('twitter:image', 'name', image)
 }
 
 async function fetchInvitationData(slug) {

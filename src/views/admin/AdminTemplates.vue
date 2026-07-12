@@ -177,6 +177,34 @@
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
             </div>
 
+            <!-- SEO -->
+            <div class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div class="mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
+                <label class="text-sm font-semibold text-slate-700">SEO Halaman Demo</label>
+              </div>
+              <p class="mb-3 text-xs text-slate-500">
+                Judul & deskripsi untuk hasil pencarian Google dan preview saat link
+                <span class="font-mono">/demo/{{ form.slug || 'slug' }}</span> dibagikan. Kosongkan untuk pakai Nama & Deskripsi template. Gambar preview memakai Thumbnail.
+              </p>
+              <div class="space-y-3">
+                <div>
+                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Title</label>
+                  <input v-model="form.seoTitle" type="text" maxlength="70"
+                    placeholder="Undangan Digital Kimi no Na wa — Tema Anime Senja | Satu Undangan"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoTitle || '').length }}/70 karakter (ideal ≤ 60)</p>
+                </div>
+                <div>
+                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Description</label>
+                  <textarea v-model="form.seoDescription" rows="2" maxlength="320"
+                    placeholder="Template undangan pernikahan digital bertema senja sinematik dengan komet jatuh dan langit berbintang. Coba demo gratis di Satu Undangan."
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoDescription || '').length }}/320 karakter (ideal ≤ 160)</p>
+                </div>
+              </div>
+            </div>
+
             <!-- Tags Input UI -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Tags</label>
@@ -471,16 +499,6 @@
                   </div>
 
                   <div>
-                    <label class="text-sm font-medium text-slate-600">Instagram Pasangan</label>
-                    <input v-model="form.sampleContent.socialMedia.instagram" type="text"
-                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-                  </div>
-                  <div>
-                    <label class="text-sm font-medium text-slate-600">TikTok Pasangan</label>
-                    <input v-model="form.sampleContent.socialMedia.tiktok" type="text"
-                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-                  </div>
-                  <div>
                     <label class="text-sm font-medium text-slate-600">Instagram Pengantin Pria</label>
                     <input v-model="form.sampleContent.socialMediaGroom.instagram" type="text"
                       class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
@@ -719,7 +737,6 @@ function emptySampleContent() {
     galleryImages: [],
     loveStory: [],
     bankAccounts: [],
-    socialMedia: { instagram: '', tiktok: '' },
     socialMediaGroom: { instagram: '' },
     socialMediaBrides: { instagram: '' },
     footerText: '',
@@ -734,6 +751,8 @@ const form = reactive({
   previewUrl: '',
   thumbnailUrl: '',
   description: '',
+  seoTitle: '',
+  seoDescription: '',
   tags: [],
   sections: [],
   isActive: true,
@@ -939,6 +958,8 @@ function openCreate() {
     previewUrl: '',
     thumbnailUrl: '',
     description: '',
+    seoTitle: '',
+    seoDescription: '',
     tags: [],
     sections: availableSections.value.map((s, index) => ({
       sectionId: s.id,
@@ -1007,10 +1028,6 @@ function openEdit(template) {
       ...emptySampleContent().parents,
       ...(savedSampleContent.parents || {}),
     },
-    socialMedia: {
-      ...emptySampleContent().socialMedia,
-      ...(savedSampleContent.socialMedia || {}),
-    },
     socialMediaGroom: {
       ...emptySampleContent().socialMediaGroom,
       ...(savedSampleContent.socialMediaGroom || {}),
@@ -1038,6 +1055,8 @@ function openEdit(template) {
     previewUrl: template.previewUrl || '',
     thumbnailUrl: template.thumbnailUrl || '',
     description: template.description || '',
+    seoTitle: template.seoTitle || '',
+    seoDescription: template.seoDescription || '',
     tags: tags,
     sections: sections,
     isActive: Boolean(template.isActive),
@@ -1130,6 +1149,8 @@ function buildPayload() {
     previewUrl: form.previewUrl,
     thumbnailUrl: form.thumbnailUrl || null,
     description: form.description || null,
+    seoTitle: form.seoTitle || null,
+    seoDescription: form.seoDescription || null,
     isActive: form.isActive,
     isPremium: form.isPremium,
     showBranding: form.showBranding,
