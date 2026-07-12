@@ -602,7 +602,7 @@ function initScrollSpy() {
 }
 
 function getMusicUrl(choice) {
-  if (!choice) return '/audio/wedding-instrumental-garden.mp3'
+  if (!choice) return '/audio/one-piece-luffy.mp3'
   if (choice.startsWith('yt:')) return choice
   if (choice.includes('/') || choice.includes('http')) return choice
   return `/audio/${choice}`
