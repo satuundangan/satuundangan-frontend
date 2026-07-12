@@ -1,7 +1,6 @@
 <template>
   <div
-    class="relative h-screen overflow-hidden font-nautical text-[#2b1a0e] selection:bg-[#b5171e] selection:text-[#f4e4c1]"
-    style="background-color: #0f3a5f"
+    class="relative h-screen overflow-hidden font-nautical text-[#2b1a0e] selection:bg-[#b5171e] selection:text-[#f4e4c1] op-sky"
   >
     <!-- Floating bubbles canvas -->
     <canvas ref="seaCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
@@ -45,11 +44,12 @@
     <transition name="poster-gate">
       <div
         v-if="!isOpened"
-        class="fixed inset-0 z-[100] flex flex-col items-center justify-center px-5"
-        style="background-color: #0b2c48"
+        class="fixed inset-0 z-[100] flex flex-col items-center justify-center px-5 op-sky"
       >
+        <!-- horizon glow + sun -->
+        <div class="absolute inset-0 op-horizon pointer-events-none"></div>
         <!-- sea band behind -->
-        <div class="absolute bottom-0 left-0 right-0 h-40 opacity-70 bg-cover bg-bottom" :style="{ backgroundImage: `url('${assets.ocean}')` }"></div>
+        <div class="absolute bottom-0 left-0 right-0 h-52 bg-cover bg-bottom pointer-events-none" :style="{ backgroundImage: `url('${assets.ocean}')` }"></div>
 
         <div class="relative w-full max-w-sm wanted-poster p-6 pb-8 text-center animate-float-slow">
           <div class="wanted-corner top-2 left-2">✦</div>
@@ -93,10 +93,11 @@
       v-if="isOpened"
       id="main-content"
       class="opacity-0 transition-opacity duration-1000 h-full overflow-y-auto no-scrollbar scroll-smooth"
-      style="background-color: #103a5c"
     >
+      <!-- Sky + horizon glow + sun (fixed scene) -->
+      <div class="fixed inset-0 z-0 op-horizon pointer-events-none"></div>
       <!-- Persistent ocean floor -->
-      <div class="fixed bottom-0 left-0 right-0 h-32 z-0 opacity-70 bg-cover bg-bottom pointer-events-none" :style="{ backgroundImage: `url('${assets.ocean}')` }"></div>
+      <div class="fixed bottom-0 left-0 right-0 h-48 z-0 bg-cover bg-bottom pointer-events-none" :style="{ backgroundImage: `url('${assets.ocean}')` }"></div>
 
       <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 space-y-16 pb-36">
 
@@ -432,7 +433,7 @@ const isPreviewMode = computed(() => props.data?.id === 'live-preview' || props.
 
 const assets = {
   sunny: '/assets/images/one-piece/thousand-sunny.png',
-  ocean: '/assets/images/one-piece/ocean-waves.jpeg',
+  ocean: '/assets/images/one-piece/ocean-waves.webp',
   parchment: '/assets/images/one-piece/parchment.jpeg',
   strawHat: '/assets/images/one-piece/straw-hat.jpeg',
   denDen: '/assets/images/one-piece/den-den-mushi.jpeg',
@@ -768,6 +769,28 @@ watch(
 }
 .font-nautical {
   font-family: 'Cinzel', serif;
+}
+
+/* One Piece sky + sea horizon backdrop */
+.op-sky {
+  background: linear-gradient(
+    180deg,
+    #0a2740 0%,
+    #0f3a5f 30%,
+    #16577c 52%,
+    #2685ac 68%,
+    #63bcda 77%,
+    #a7e0ef 81%,
+    #5fb2d2 86%,
+    #2c7da0 100%
+  );
+}
+
+/* Warm sun glow sitting on the horizon line */
+.op-horizon {
+  background:
+    radial-gradient(70% 30% at 50% 80%, rgba(255, 246, 214, 0.65) 0%, rgba(255, 233, 168, 0.28) 32%, rgba(255, 233, 168, 0) 62%),
+    linear-gradient(180deg, transparent 78.5%, rgba(255, 255, 255, 0.55) 80%, transparent 81.5%);
 }
 
 /* WANTED poster on parchment */
