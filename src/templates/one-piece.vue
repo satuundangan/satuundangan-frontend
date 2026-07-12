@@ -3,7 +3,7 @@
     class="relative h-screen overflow-hidden font-nautical text-[#2b1a0e] selection:bg-[#b5171e] selection:text-[#f4e4c1] op-sky"
   >
     <!-- Floating bubbles canvas -->
-    <canvas ref="seaCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-60"></canvas>
+    <canvas ref="seaCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-90"></canvas>
 
     <!-- Music Control -->
     <MusicControl
@@ -48,8 +48,6 @@
       >
         <!-- horizon glow + sun -->
         <div class="absolute inset-0 op-horizon pointer-events-none"></div>
-        <!-- sea band behind -->
-        <div class="absolute bottom-0 left-0 right-0 h-52 bg-cover bg-bottom pointer-events-none" :style="{ backgroundImage: `url('${assets.ocean}')` }"></div>
 
         <div class="relative w-full max-w-sm wanted-poster p-6 pb-8 text-center animate-float-slow">
           <div class="wanted-corner top-2 left-2">✦</div>
@@ -96,8 +94,6 @@
     >
       <!-- Sky + horizon glow + sun (fixed scene) -->
       <div class="fixed inset-0 z-0 op-horizon pointer-events-none"></div>
-      <!-- Persistent ocean floor -->
-      <div class="fixed bottom-0 left-0 right-0 h-48 z-0 bg-cover bg-bottom pointer-events-none" :style="{ backgroundImage: `url('${assets.ocean}')` }"></div>
 
       <div class="relative z-10 max-w-4xl mx-auto px-4 py-8 space-y-16 pb-36">
 
@@ -433,7 +429,6 @@ const isPreviewMode = computed(() => props.data?.id === 'live-preview' || props.
 
 const assets = {
   sunny: '/assets/images/one-piece/thousand-sunny.png',
-  ocean: '/assets/images/one-piece/ocean-waves.webp',
   parchment: '/assets/images/one-piece/parchment.jpeg',
   strawHat: '/assets/images/one-piece/straw-hat.jpeg',
   denDen: '/assets/images/one-piece/den-den-mushi.jpeg',
@@ -521,11 +516,11 @@ class Bubble {
   }
   reset() {
     this.x = Math.random() * this.canvas.width
-    this.y = this.canvas.height + Math.random() * 100
-    this.size = Math.random() * 10 + 3
-    this.speedY = -(Math.random() * 0.7 + 0.2)
-    this.speedX = Math.random() * 0.3 - 0.15
-    this.opacity = Math.random() * 0.35 + 0.1
+    this.y = this.canvas.height + Math.random() * 200
+    this.size = Math.random() * 13 + 3
+    this.speedY = -(Math.random() * 0.8 + 0.25)
+    this.speedX = Math.random() * 0.4 - 0.2
+    this.opacity = Math.random() * 0.4 + 0.15
   }
   update() {
     this.y += this.speedY
@@ -556,7 +551,7 @@ function initParticleEngine() {
   }
   window.addEventListener('resize', resize)
   resize()
-  bubbles = Array.from({ length: 30 }, () => new Bubble(canvas))
+  bubbles = Array.from({ length: 75 }, () => new Bubble(canvas))
   const animate = () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height)
     bubbles.forEach((b) => {
