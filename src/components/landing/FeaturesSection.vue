@@ -43,7 +43,7 @@ const features = [
   {
     icon: 'fa-solid fa-map-location-dot',
     title: 'Peta Lokasi',
-    description: 'Integrasi langsung dengan Google Maps agar tamu tidak tersesat menuju venue.'
+    description: 'Sematkan link Google Maps venue agar tamu tinggal klik untuk buka arah jalan.'
   },
   {
     icon: 'fa-solid fa-envelope-open-text',
@@ -53,7 +53,7 @@ const features = [
   {
     icon: 'fa-solid fa-gift',
     title: 'Amplop Digital',
-    description: 'Terima kado cashless via QRIS, e-wallet, atau transfer bank dengan mudah.'
+    description: 'Tampilkan QRIS, e-wallet, dan rekening bank agar tamu mudah kirim kado cashless.'
   },
   {
     icon: 'fa-solid fa-images',
