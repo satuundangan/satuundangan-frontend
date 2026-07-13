@@ -64,7 +64,7 @@ export const getInvitationBySubdomain = (subdomain) =>
   apiFetch(`/invitation/subdomain/${subdomain}`)
 
 // Root domains where a subdomain is NOT a custom invitation (app itself).
-const ROOT_HOSTS = ['satuundangan.id', 'www.satuundangan.id', 'localhost']
+const ROOT_HOSTS = ['satuundangan.id', 'www.satuundangan.id', 'dev.satuundangan.id', 'localhost']
 
 // Parse current host → custom subdomain label, or null if on a root/app host.
 // e.g. "rina-budi.satuundangan.id" → "rina-budi"
