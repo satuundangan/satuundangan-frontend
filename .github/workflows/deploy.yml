@@ -35,7 +35,7 @@ jobs:
 
       - name: Build (development)
         if: github.ref == 'refs/heads/development'
-        run: npx vite build --mode dev
+        run: npx vite build --mode development
         env:
           NODE_ENV: production
 
