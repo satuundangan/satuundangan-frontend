@@ -29,6 +29,7 @@ const templateMap = {
   'pixel-quest': () => import('../templates/pixel-quest.vue'),
   'one-piece': () => import('../templates/one-piece.vue'),
   'meowly-married': () => import('../templates/meowly-married.vue'),
+  'naruto': () => import('../templates/naruto.vue'),
 }
 
 const props = defineProps({

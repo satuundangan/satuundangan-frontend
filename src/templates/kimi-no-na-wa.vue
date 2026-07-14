@@ -696,8 +696,8 @@ let twinkleAnimId = null
 const navItems = computed(() => {
   const items = [
     { id: 'home', label: 'Home', icon: 'fa-solid fa-house' },
-    { id: 'story', label: 'Story', icon: 'fa-solid fa-feather' },
     { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+    { id: 'story', label: 'Story', icon: 'fa-solid fa-feather' },
     { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
     { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
     { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift' },
