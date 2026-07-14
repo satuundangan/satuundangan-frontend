@@ -58,37 +58,40 @@
           <div class="scroll-corner bottom-2 left-2">🍃</div>
           <div class="scroll-corner bottom-2 right-2">🍃</div>
 
-          <h1 class="font-shinobi text-4xl md:text-5xl text-[#ff7800] tracking-[0.1em] leading-none mt-2">
-            GULUNGAN MISI
+          <p class="font-scroll text-[10px] md:text-xs tracking-[0.6em] text-[#ff7800] font-black uppercase mt-2">
+            The Wedding Of
+          </p>
+
+          <h1 class="font-script text-5xl md:text-6xl text-[#2a1c0d] leading-tight my-4">
+            {{ data.groomName?.split(' ')[0] || 'Naruto' }}
+            <span class="block text-2xl md:text-3xl font-scroll text-[#ff7800] my-1">&amp;</span>
+            {{ data.brideName?.split(' ')[0] || 'Hinata' }}
           </h1>
-          <div class="flex items-center justify-center gap-2 my-2">
-            <span class="h-[2px] w-8 bg-[#8a5a2b]"></span>
-            <span class="font-scroll text-[10px] tracking-[0.35em] text-[#8a5a2b] uppercase">Rahasia Konohagakure</span>
-            <span class="h-[2px] w-8 bg-[#8a5a2b]"></span>
+
+          <!-- Hitai-ate (headband) emblem accent -->
+          <div class="flex items-center justify-center gap-3 my-3 opacity-90">
+            <span class="h-[2px] w-10 bg-[#8a5a2b]"></span>
+            <span class="text-2xl select-none">🌀</span>
+            <span class="h-[2px] w-10 bg-[#8a5a2b]"></span>
           </div>
 
-          <!-- Hitai-ate (headband) emblem area -->
-          <div class="relative mx-auto my-4 w-40 h-40 border-4 border-[#3f7d3a] bg-[#0f1a0a] overflow-hidden shadow-inner flex items-center justify-center headband-emblem">
-            <span class="text-7xl select-none">🌀</span>
-          </div>
-
-          <p class="font-scroll text-[11px] tracking-[0.25em] text-[#8a5a2b] uppercase mb-1">
-            Dipanggil menghadap Hokage untuk sebuah misi istimewa
+          <p class="font-scroll text-sm md:text-base tracking-[0.25em] text-[#4a331a] uppercase mb-6">
+            {{ formatDate(data.akadLocation?.dateTime || data.resepsiLocation?.dateTime) }}
           </p>
 
-          <div class="bg-[#1f2e17] text-[#e6c58a] font-shinobi text-2xl md:text-3xl py-2 px-3 my-3 truncate tracking-wide">
-            {{ data.guestName || 'Shinobi Terhormat' }}
-          </div>
-
-          <p class="text-sm text-[#4a331a] leading-relaxed mb-6 px-2">
-            Sebuah gulungan misi dikirimkan menuju babak baru dua insan. Kenakan hitai-ate-mu &amp; buka takdir ini!
+          <p class="font-scroll text-[10px] tracking-[0.35em] text-[#8a5a2b] uppercase mb-1">
+            Yth. Bapak/Ibu/Saudara/i
           </p>
+
+          <div class="bg-[#1f2e17] text-[#e6c58a] font-shinobi text-xl md:text-2xl py-2 px-3 mb-6 truncate tracking-wide">
+            {{ data.guestName || 'Tamu Undangan' }}
+          </div>
 
           <button
             @click="openInvitation"
             class="shinobi-btn w-full py-3 text-lg font-shinobi tracking-widest animate-pulse-soft"
           >
-            🍃 BUKA GULUNGAN
+            🍃 BUKA UNDANGAN
           </button>
 
           <p class="font-scroll text-[9px] text-[#8a5a2b]/80 mt-4 uppercase tracking-[0.3em]">
@@ -986,7 +989,7 @@ watch(
 
 <style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Serif:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Serif:wght@400;600&family=Great+Vibes&display=swap');
 
 .font-shinobi {
   font-family: 'Bungee', cursive;
@@ -997,6 +1000,9 @@ watch(
 }
 .font-konoha {
   font-family: 'Noto Serif', serif;
+}
+.font-script {
+  font-family: 'Great Vibes', cursive;
 }
 
 /* Konoha forest + sky backdrop (fallback gradient behind the bg image) */
