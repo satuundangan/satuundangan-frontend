@@ -8,6 +8,9 @@
     <!-- Konoha village background layer (composited under the canvas fx) -->
     <div class="fixed inset-0 z-0 konoha-bg pointer-events-none"></div>
 
+    <!-- Kawarimi smoke poof overlay (plays over the welcome gate on open) -->
+    <canvas ref="poofCanvas" class="fixed inset-0 w-full h-full pointer-events-none z-[110]"></canvas>
+
     <!-- Music Control -->
     <MusicControl
       v-if="data.musicChoice && isOpened"
@@ -88,7 +91,7 @@
           </div>
 
           <button
-            @click="openInvitation"
+            @click="openInvitation($event)"
             class="shinobi-btn w-full py-3 text-lg font-shinobi tracking-widest animate-pulse-soft"
           >
             🍃 BUKA UNDANGAN
@@ -610,6 +613,7 @@ const activeSection = ref('home')
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
 let interval = null
 const fxCanvas = ref(null)
+const poofCanvas = ref(null)
 
 const navItems = computed(() => {
   const items = [
@@ -798,7 +802,69 @@ function initParticleEngine() {
   animate()
 }
 
-async function openInvitation() {
+// Kawarimi-style smoke poof, adapted for the "Buka Undangan" transition
+class SmokeParticle {
+  constructor(x, y) {
+    this.x = x + (Math.random() - 0.5) * 60
+    this.y = y + (Math.random() - 0.5) * 60
+    this.vx = (Math.random() - 0.5) * 10
+    this.vy = (Math.random() - 0.5) * 10
+    this.radius = Math.random() * 26 + 14
+    this.alpha = 1
+    this.growthRate = Math.random() * 2.5 + 1.5
+    this.decayRate = Math.random() * 0.02 + 0.02
+  }
+  update() {
+    this.x += this.vx
+    this.y += this.vy
+    this.radius += this.growthRate
+    this.alpha -= this.decayRate
+  }
+  draw(ctx) {
+    ctx.save()
+    ctx.globalAlpha = Math.max(0, this.alpha)
+    ctx.beginPath()
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+    ctx.fillStyle = '#e6c58a'
+    ctx.shadowBlur = 18
+    ctx.shadowColor = '#fff8e6'
+    ctx.fill()
+    ctx.restore()
+  }
+}
+
+let poofParticles = []
+let poofAnimId = null
+
+function triggerPoof(x, y) {
+  const canvas = poofCanvas.value
+  if (!canvas) return
+  canvas.width = window.innerWidth
+  canvas.height = window.innerHeight
+  const ctx = canvas.getContext('2d')
+  for (let i = 0; i < 50; i++) {
+    poofParticles.push(new SmokeParticle(x, y))
+  }
+  if (poofAnimId) return
+  const loop = () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    for (let i = poofParticles.length - 1; i >= 0; i--) {
+      const p = poofParticles[i]
+      p.update()
+      p.draw(ctx)
+      if (p.alpha <= 0) poofParticles.splice(i, 1)
+    }
+    poofAnimId = poofParticles.length > 0 ? requestAnimationFrame(loop) : null
+  }
+  loop()
+}
+
+async function openInvitation(event) {
+  const rect = event?.currentTarget?.getBoundingClientRect?.()
+  const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2
+  const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2
+  triggerPoof(x, y)
+
   isOpened.value = true
   await nextTick()
   const el = document.getElementById('main-content')
@@ -972,6 +1038,7 @@ onMounted(() => {
 onUnmounted(() => {
   if (interval) clearInterval(interval)
   if (animationId) cancelAnimationFrame(animationId)
+  if (poofAnimId) cancelAnimationFrame(poofAnimId)
   if (fxResizeHandler) window.removeEventListener('resize', fxResizeHandler)
 })
 
