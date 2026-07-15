@@ -130,6 +130,11 @@
 
       <!-- COUPLE SECTION (ASYMMETRICAL DIPTYCH COLUMNS WITH OVERLAPPING PARALLAX) -->
       <section id="couple" v-if="isSectionEnabled('couple')" class="relative py-36 md:py-48 px-6 bg-[#fcfaf7] z-20">
+        <!-- Huge Background Parallax Paw -->
+        <img src="/assets/images/luxury-clay-paw.webp" alt="Paw Sculpture Background" 
+             class="absolute w-64 h-64 md:w-96 md:h-96 opacity-[0.03] select-none pointer-events-none"
+             :style="[getParallaxStyle(0.08, -0.02, vh * 1.2), { right: '10%', top: '15%' }]" />
+
         <div class="max-w-6xl mx-auto z-20 relative">
           <div class="text-center mb-28">
             <span class="text-[9px] uppercase tracking-[0.3em] text-[#8a7e72] font-black block">🐾 *meet the* couple</span>
@@ -221,6 +226,11 @@
 
       <!-- EVENTS SECTION (OFFSET EDITORIAL STYLING) -->
       <section id="event" v-if="isSectionEnabled('event')" class="relative py-36 md:py-48 px-6 bg-[#fcfaf7] z-20 border-t border-b border-[#e6dfd5]">
+        <!-- Massive Background Parallax Paw -->
+        <img src="/assets/images/luxury-clay-paw.webp" alt="Paw Sculpture Background" 
+             class="absolute w-64 h-64 md:w-96 md:h-96 opacity-[0.03] select-none pointer-events-none"
+             :style="[getParallaxStyle(0.1, 0.01, vh * 3.2), { left: '8%', top: '25%' }]" />
+
         <div class="max-w-5xl mx-auto relative z-20">
           <div class="text-center mb-24">
             <span class="text-[9px] uppercase tracking-[0.3em] text-[#8a7e72] font-black block">🐾 *join the* CELEBRATION</span>
@@ -236,7 +246,12 @@
                  @mouseleave="resetTilt('akadCard')"
                  @touchmove="handleTouchTilt($event, 'akadCard')"
                  @touchend="resetTilt('akadCard')">
-              <div class="w-14 h-14 border border-[#e6dfd5] text-[#2a2221] flex items-center justify-center mx-auto text-xl shadow-inner"><i class="fa-solid fa-ring"></i></div>
+              
+              <!-- Luxury Intertwined Rings Sculpture -->
+              <div class="w-20 h-20 mx-auto flex items-center justify-center pointer-events-none select-none">
+                <img src="/assets/images/luxury-clay-rings.webp" alt="Wedding Rings Sculpture" class="w-full h-full object-contain drop-shadow-[0_8px_16px_rgba(42,34,33,0.06)]" />
+              </div>
+
               <div class="space-y-2">
                 <h3 class="text-2xl font-serif text-[#2a2221] font-bold">Akad Nikah</h3>
                 <p class="text-[9px] uppercase tracking-wider font-extrabold text-[#8a7e72] border-b border-[#e6dfd5] pb-1 inline-block">{{ formatDate(data.akadLocation?.dateTime) }}</p>
@@ -257,7 +272,12 @@
                  @mouseleave="resetTilt('resepsiCard')"
                  @touchmove="handleTouchTilt($event, 'resepsiCard')"
                  @touchend="resetTilt('resepsiCard')">
-              <div class="w-14 h-14 border border-[#e6dfd5] text-[#2a2221] flex items-center justify-center mx-auto text-xl shadow-inner"><i class="fa-solid fa-champagne-glasses"></i></div>
+              
+              <!-- Luxury Champagne Glasses Sculpture -->
+              <div class="w-20 h-20 mx-auto flex items-center justify-center pointer-events-none select-none">
+                <img src="/assets/images/luxury-clay-glasses.webp" alt="Champagne Glasses Sculpture" class="w-full h-full object-contain drop-shadow-[0_8px_16px_rgba(42,34,33,0.06)]" />
+              </div>
+
               <div class="space-y-2">
                 <h3 class="text-2xl font-serif text-[#2a2221] font-bold">Resepsi</h3>
                 <p class="text-[9px] uppercase tracking-wider font-extrabold text-[#8a7e72] border-b border-[#e6dfd5] pb-1 inline-block">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>
@@ -319,7 +339,12 @@
               <div>
                 <div class="flex justify-between items-center mb-6">
                    <p class="text-base font-black uppercase tracking-wider text-[#2a2221] border-b border-[#e6dfd5] pb-0.5">{{ bank.bankName }}</p>
-                   <div class="w-10 h-10 bg-white border border-[#e6dfd5] flex items-center justify-center text-[#8a7e72] shadow-sm"><i class="fa-solid fa-wallet text-xs"></i></div>
+                   
+                   <!-- Luxury Wallet Clay Sculpture -->
+                   <div class="w-12 h-12 flex items-center justify-center pointer-events-none select-none">
+                     <img src="/assets/images/luxury-clay-wallet.webp" alt="Wallet Sculpture" class="w-full h-full object-contain drop-shadow-[0_4px_10px_rgba(42,34,33,0.05)]" />
+                   </div>
+
                 </div>
                 <p class="text-2xl font-bold tracking-wider mb-2 text-[#2a2221] font-mono">{{ bank.accountNumber }}</p>
                 <p class="text-[9px] font-black text-gray-400 uppercase tracking-widest font-sans">A.N {{ bank.accountName }}</p>
@@ -344,6 +369,12 @@
           <!-- Large Form Layout -->
           <form @submit.prevent="submitRSVP" class="bg-white p-8 md:p-12 border border-[#e6dfd5] rounded-none space-y-6 shadow-[0_20px_50px_rgba(42,34,33,0.02)]"
                 :style="getParallaxStyle(0.04, 0, vh * 6.5)">
+            
+            <!-- Luxury Envelope Clay Sculpture -->
+            <div class="w-20 h-20 mx-auto flex items-center justify-center pointer-events-none select-none mb-6">
+              <img src="/assets/images/luxury-clay-envelope.webp" alt="Envelope Sculpture" class="w-full h-full object-contain drop-shadow-[0_8px_16px_rgba(42,34,33,0.06)]" />
+            </div>
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div class="space-y-1">
                 <label class="text-[9px] uppercase tracking-widest font-black text-[#8a7e72] px-1">Nama Lengkap</label>
