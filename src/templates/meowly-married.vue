@@ -91,7 +91,7 @@
         <!-- Hero Right Column: HUGE Parallax Sculpture Card -->
         <div class="w-full md:w-1/2 flex justify-center z-10 md:pr-8">
           <div class="relative w-80 sm:w-96 md:w-[440px] bg-white p-4 pb-12 shadow-[0_30px_70px_rgba(42,34,33,0.06)] border border-[#e6dfd5] rounded-none transform-style-3d transition-transform duration-100 ease-out"
-               :style="[getTiltStyle('heroCard'), getParallaxStyle(-0.12, 0, 0)]"
+               :style="[getTiltStyle('heroCard'), getParallaxStyle(-0.06, 0, sectionOffsets.home)]"
                @mousemove="handleTilt($event, 'heroCard')"
                @mouseleave="resetTilt('heroCard')"
                @touchmove="handleTouchTilt($event, 'heroCard')"
@@ -114,7 +114,7 @@
         <!-- Huge Background Parallax Heart -->
         <img src="/assets/images/luxury-clay-heart.webp" alt="Heart Sculpture Background" 
              class="absolute w-64 h-64 md:w-96 md:h-96 opacity-[0.03] select-none pointer-events-none"
-             :style="[getParallaxStyle(0.1, 0.02, vh * 0.5), { left: '10%', top: '5%' }]" />
+             :style="[getParallaxStyle(0.04, 0.01, sectionOffsets.home), { left: '10%', top: '5%' }]" />
              
         <div class="max-w-4xl mx-auto text-center space-y-10 relative z-20">
           <p class="text-2xl sm:text-3xl md:text-4xl italic leading-relaxed font-serif text-[#2a2221] px-4 font-normal font-serif">
@@ -133,7 +133,7 @@
         <!-- Huge Background Parallax Paw -->
         <img src="/assets/images/luxury-clay-paw.webp" alt="Paw Sculpture Background" 
              class="absolute w-64 h-64 md:w-96 md:h-96 opacity-[0.03] select-none pointer-events-none"
-             :style="[getParallaxStyle(0.08, -0.02, vh * 1.2), { right: '10%', top: '15%' }]" />
+             :style="[getParallaxStyle(0.03, -0.01, sectionOffsets.couple), { right: '10%', top: '15%' }]" />
 
         <div class="max-w-6xl mx-auto z-20 relative">
           <div class="text-center mb-28">
@@ -147,7 +147,7 @@
             
             <!-- Groom Card (Left column, scrolls slower) -->
             <div class="w-full md:w-[47%] bg-white p-6 pb-10 border border-[#e6dfd5] rounded-none flex flex-col justify-between items-center transform-style-3d transition-transform duration-100 ease-out z-20 shadow-[0_20px_50px_rgba(42,34,33,0.03)]"
-                 :style="[getTiltStyle('groomCard'), getParallaxStyle(0.04, 0, vh * 1.5)]"
+                 :style="[getTiltStyle('groomCard'), getParallaxStyle(0.02, 0, sectionOffsets.couple)]"
                  @mousemove="handleTilt($event, 'groomCard')"
                  @mouseleave="resetTilt('groomCard')"
                  @touchmove="handleTouchTilt($event, 'groomCard')"
@@ -168,7 +168,7 @@
 
             <!-- Bride Card (Right column, shifted down, scrolls faster/upwards to slide past Groom) -->
             <div class="w-full md:w-[47%] md:mt-40 bg-white p-6 pb-10 border border-[#e6dfd5] rounded-none flex flex-col justify-between items-center transform-style-3d transition-transform duration-100 ease-out z-10 shadow-[0_25px_60px_rgba(42,34,33,0.04)]"
-                 :style="[getTiltStyle('brideCard'), getParallaxStyle(-0.1, 0, vh * 1.5)]"
+                 :style="[getTiltStyle('brideCard'), getParallaxStyle(-0.03, 0, sectionOffsets.couple)]"
                  @mousemove="handleTilt($event, 'brideCard')"
                  @mouseleave="resetTilt('brideCard')"
                  @touchmove="handleTouchTilt($event, 'brideCard')"
@@ -204,7 +204,7 @@
             <!-- Timelines cards overlapping naturally -->
             <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory.slice(0, 3) : mockStories)" :key="idx"
                  class="bg-white p-6 border border-[#e6dfd5] rounded-none shadow-sm space-y-6 flex flex-col justify-between transition-all duration-500 hover:shadow-md hover:border-[#8a7e72]"
-                 :style="getParallaxStyle(idx === 0 ? 0.05 : idx === 1 ? -0.06 : 0.08, 0, vh * 2.2)">
+                 :style="getParallaxStyle(idx === 0 ? 0.02 : idx === 1 ? -0.02 : 0.03, 0, sectionOffsets.story)">
                <div class="space-y-4">
                  <div v-if="story.image || isPreviewMode" class="aspect-[4/3] overflow-hidden relative border border-[#e6dfd5]">
                     <img :src="story.image || 'https://via.placeholder.com/600x400'" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
@@ -229,7 +229,7 @@
         <!-- Massive Background Parallax Paw -->
         <img src="/assets/images/luxury-clay-paw.webp" alt="Paw Sculpture Background" 
              class="absolute w-64 h-64 md:w-96 md:h-96 opacity-[0.03] select-none pointer-events-none"
-             :style="[getParallaxStyle(0.1, 0.01, vh * 3.2), { left: '8%', top: '25%' }]" />
+             :style="[getParallaxStyle(0.04, 0.01, sectionOffsets.event), { left: '8%', top: '25%' }]" />
 
         <div class="max-w-5xl mx-auto relative z-20">
           <div class="text-center mb-24">
@@ -241,7 +241,7 @@
           <div class="flex flex-col md:flex-row justify-center items-start gap-16 md:gap-10 max-w-4xl mx-auto w-full">
             <!-- Akad Card (Large, offset, slower parallax) -->
             <div class="w-full md:w-[48%] bg-white p-8 border border-[#e6dfd5] rounded-none space-y-6 text-center transform-style-3d transition-transform duration-100 ease-out shadow-[0_20px_40px_rgba(42,34,33,0.02)]"
-                 :style="[getTiltStyle('akadCard'), getParallaxStyle(0.06, 0, vh * 3.5)]"
+                 :style="[getTiltStyle('akadCard'), getParallaxStyle(0.03, 0, sectionOffsets.event)]"
                  @mousemove="handleTilt($event, 'akadCard')"
                  @mouseleave="resetTilt('akadCard')"
                  @touchmove="handleTouchTilt($event, 'akadCard')"
@@ -267,7 +267,7 @@
 
             <!-- Resepsi Card (Large, offset down, faster parallax for overlapping feel) -->
             <div v-if="!data.mergeEvents" class="w-full md:w-[48%] md:mt-28 bg-white p-8 border border-[#e6dfd5] rounded-none space-y-6 text-center transform-style-3d transition-transform duration-100 ease-out shadow-[0_20px_40px_rgba(42,34,33,0.02)]"
-                 :style="[getTiltStyle('resepsiCard'), getParallaxStyle(-0.08, 0, vh * 3.5)]"
+                 :style="[getTiltStyle('resepsiCard'), getParallaxStyle(-0.03, 0, sectionOffsets.event)]"
                  @mousemove="handleTilt($event, 'resepsiCard')"
                  @mouseleave="resetTilt('resepsiCard')"
                  @touchmove="handleTouchTilt($event, 'resepsiCard')"
@@ -313,7 +313,7 @@
           </div>
           <!-- Spacious layout grid for gallery -->
           <div class="p-6 bg-white border border-[#e6dfd5] shadow-[0_20px_50px_rgba(42,34,33,0.03)]"
-               :style="getParallaxStyle(0.04, 0, vh * 4.5)">
+               :style="getParallaxStyle(0.02, 0, sectionOffsets.gallery)">
              <GalleryInvitation :items="galleryImages" />
           </div>
         </div>
@@ -328,10 +328,11 @@
             <div class="h-[1px] w-20 bg-[#2a2221] mx-auto mt-6"></div>
           </div>
           
-          <div class="flex flex-wrap justify-center gap-8 max-w-4xl mx-auto w-full">
+          <!-- Staggered cards container with extra padding buffers to prevent clipping -->
+          <div class="flex flex-col md:flex-row justify-center items-center md:items-start gap-12 max-w-4xl mx-auto w-full pt-20 md:pt-28 pb-12">
             <div v-for="(bank, idx) in data.bankAccounts.slice(0, 2)" :key="idx"
                  class="p-8 bg-[#fcfaf7] border border-[#e6dfd5] rounded-none shadow-sm text-left flex flex-col justify-between transform-style-3d transition-transform duration-100 ease-out"
-                 :style="[getTiltStyle('bankCard_' + idx), getParallaxStyle(idx === 0 ? 0.06 : -0.06, 0, vh * 5.2)]"
+                 :style="[getTiltStyle('bankCard_' + idx), getParallaxStyle(idx === 0 ? 0.03 : -0.03, 0, sectionOffsets.gift)]"
                  @mousemove="handleTilt($event, 'bankCard_' + idx)"
                  @mouseleave="resetTilt('bankCard_' + idx)"
                  @touchmove="handleTouchTilt($event, 'bankCard_' + idx)"
@@ -368,7 +369,7 @@
 
           <!-- Large Form Layout -->
           <form @submit.prevent="submitRSVP" class="bg-white p-8 md:p-12 border border-[#e6dfd5] rounded-none space-y-6 shadow-[0_20px_50px_rgba(42,34,33,0.02)]"
-                :style="getParallaxStyle(0.04, 0, vh * 6.5)">
+                :style="getParallaxStyle(0.02, 0, sectionOffsets.rsvp)">
             
             <!-- Luxury Envelope Clay Sculpture -->
             <div class="w-20 h-20 mx-auto flex items-center justify-center pointer-events-none select-none mb-6">
@@ -539,16 +540,29 @@ function getTiltStyle(key) {
 const scrollY = ref(0)
 const vh = ref(800)
 
+const sectionOffsets = ref({
+  home: 0,
+  couple: 800,
+  story: 1600,
+  event: 2400,
+  gallery: 3200,
+  gift: 4000,
+  rsvp: 4800
+})
+
+function updateOffsets() {
+  const sections = ['home', 'couple', 'story', 'event', 'gallery', 'gift', 'rsvp']
+  sections.forEach(id => {
+    const el = document.getElementById(id)
+    if (el) {
+      sectionOffsets.value[id] = el.offsetTop
+    }
+  })
+}
+
 function handleScroll(e) {
   scrollY.value = e.target.scrollTop
 }
-
-onMounted(() => {
-  vh.value = window.innerHeight
-  window.addEventListener('resize', () => {
-    vh.value = window.innerHeight
-  })
-})
 
 // ASYMMETRICAL OVERLAPPING PARALLAX STYLE
 function getParallaxStyle(speed, rotateSpeed = 0, targetOffset = 0) {
@@ -593,10 +607,12 @@ function openInvitation() {
       const content = document.getElementById('main-content')
       if (content) content.classList.remove('opacity-0')
       initScrollSpy()
+      updateOffsets()
     }, 100)
   }, 1100)
 }
 
+// Scroll to section
 function scrollToSection(id) {
   const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth' })
@@ -674,7 +690,15 @@ async function submitRSVP() {
   }
 }
 
-onMounted(() => { initData() })
+onMounted(() => {
+  initData()
+  vh.value = window.innerHeight
+  window.addEventListener('resize', () => {
+    vh.value = window.innerHeight
+    updateOffsets()
+  })
+  setTimeout(updateOffsets, 600)
+})
 </script>
 
 <style scoped>
