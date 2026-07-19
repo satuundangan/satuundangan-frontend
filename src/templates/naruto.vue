@@ -50,7 +50,7 @@
     <transition name="scroll-gate">
       <div
         v-if="!isOpened"
-        class="fixed inset-0 z-[100] flex flex-col items-center justify-center px-5 konoha-sky"
+        class="fixed inset-0 z-[100] flex flex-col items-center justify-center px-5"
       >
         <!-- warm horizon / sunbeam glow -->
         <div class="absolute inset-0 konoha-horizon pointer-events-none"></div>
