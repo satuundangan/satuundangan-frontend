@@ -56,10 +56,6 @@
         <div class="absolute inset-0 konoha-horizon pointer-events-none"></div>
 
         <div class="relative w-full max-w-sm scroll-card p-6 pb-8 text-center animate-float-slow">
-          <div class="scroll-corner top-2 left-2">🍃</div>
-          <div class="scroll-corner top-2 right-2">🍃</div>
-          <div class="scroll-corner bottom-2 left-2">🍃</div>
-          <div class="scroll-corner bottom-2 right-2">🍃</div>
 
           <p class="font-scroll text-[10px] md:text-xs tracking-[0.6em] text-[#ff7800] font-black uppercase mt-2">
             The Wedding Of
@@ -71,11 +67,9 @@
             {{ data.brideName?.split(' ')[0] || 'Hinata' }}
           </h1>
 
-          <!-- Hitai-ate (headband) emblem accent -->
-          <div class="flex items-center justify-center gap-3 my-3 opacity-90">
-            <span class="h-[2px] w-10 bg-[#8a5a2b]"></span>
-            <span class="text-2xl select-none">🌀</span>
-            <span class="h-[2px] w-10 bg-[#8a5a2b]"></span>
+          <!-- Divider accent -->
+          <div class="flex items-center justify-center my-3 opacity-90">
+            <span class="h-[2px] w-24 bg-[#8a5a2b]"></span>
           </div>
 
           <p class="font-scroll text-sm md:text-base tracking-[0.25em] text-[#4a331a] uppercase mb-6">
@@ -94,12 +88,9 @@
             @click="openInvitation($event)"
             class="shinobi-btn w-full py-3 text-lg font-shinobi tracking-widest animate-pulse-soft"
           >
-            🍃 BUKA UNDANGAN
+            BUKA UNDANGAN
           </button>
 
-          <p class="font-scroll text-[9px] text-[#8a5a2b]/80 mt-4 uppercase tracking-[0.3em]">
-            ✕ Konohagakure ✕ Hidden Leaf Edition
-          </p>
         </div>
       </div>
     </transition>
@@ -118,16 +109,12 @@
         <header id="home" class="text-center pt-6">
           <div v-observe class="relative">
             <p class="font-scroll text-[11px] tracking-[0.4em] text-[#ff7800] uppercase mb-4">
-              {{ data.heroLabel || 'The Leaf Village Wedding' }}
+              {{ data.heroLabel || 'The Wedding Of' }}
             </p>
-
-            <span class="block text-7xl md:text-8xl mx-auto drop-shadow-[0_18px_25px_rgba(0,0,0,0.5)] animate-leaf-sway select-none">
-              🍃
-            </span>
 
             <div class="leaf-plaque mt-2 px-6 py-6 max-w-xl mx-auto">
               <h2 class="font-scroll text-[10px] tracking-[0.35em] text-[#8a5a2b] uppercase mb-2">
-                Kami akan menyatukan jalan ninja kami
+                Dengan penuh syukur, kami akan menikah
               </h2>
               <h1 class="font-shinobi text-4xl md:text-6xl text-[#2a1c0d] leading-tight my-3">
                 {{ data.groomName?.split(' ')[0] || 'Naruto' }}
@@ -135,18 +122,12 @@
                 {{ data.brideName?.split(' ')[0] || 'Hinata' }}
               </h1>
               <div class="flex items-center justify-center gap-3 my-4">
-                <span class="text-[#ff7800] text-xl">🍥</span>
                 <span class="h-[2px] flex-1 max-w-[80px] bg-[#8a5a2b]"></span>
                 <span class="font-scroll text-sm text-[#4a331a] tracking-widest">
                   {{ formatDate(data.akadLocation?.dateTime || data.resepsiLocation?.dateTime) }}
                 </span>
                 <span class="h-[2px] flex-1 max-w-[80px] bg-[#8a5a2b]"></span>
-                <span class="text-[#ff7800] text-xl">🍥</span>
               </div>
-              <p class="text-sm text-[#4a331a] italic">
-                "Dua shinobi menyatukan jalan ninja menuju satu tujuan: kebahagiaan seumur hidup di bawah naungan
-                Konohagakure."
-              </p>
             </div>
           </div>
         </header>
@@ -155,7 +136,7 @@
         <section class="text-center" v-observe>
           <div class="leaf-plaque max-w-xl mx-auto px-6 py-6">
             <h3 class="font-scroll text-[10px] text-[#8a5a2b] mb-4 tracking-[0.3em] uppercase">
-              Hitung Mundur Misi Pernikahan
+              Hitung Mundur Pernikahan
             </h3>
             <div class="grid grid-cols-4 gap-2 text-center">
               <div v-for="(unit, key) in countdown" :key="key" class="scroll-cell">
@@ -187,32 +168,27 @@
         <section id="couple" v-if="isSectionEnabled('couple')" class="space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">
-              Genin Sejati Konoha
+              Kedua Mempelai
             </h2>
-            <p class="text-[#c9dfc1] text-base mt-2">Dua shinobi yang siap berlayar dalam jalan ninja seumur hidup</p>
+            <p class="text-[#c9dfc1] text-base mt-2">Dengan penuh kebahagiaan, kami memperkenalkan kedua mempelai</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Groom card -->
             <div class="ninja-card p-5 pb-6 text-center" v-observe>
-              <h3 class="font-shinobi text-2xl text-[#2a1c0d] tracking-widest">KARTU SHINOBI</h3>
-              <p class="font-scroll text-[9px] tracking-[0.3em] text-[#8a5a2b] uppercase mb-3">Berkas Rahasia</p>
+              <h3 class="font-shinobi text-2xl text-[#2a1c0d] tracking-widest mb-3">Mempelai Pria</h3>
               <div class="mx-auto mb-4 w-40 h-44 border-4 border-[#3f7d3a] bg-[#efe6cd] overflow-hidden flex items-center justify-center">
                 <img
                   v-if="data.groomPhotoUrl"
                   :src="data.groomPhotoUrl"
                   class="w-full h-full object-cover sepia-[.1]"
                 />
-                <span v-else class="text-6xl">🍥</span>
+                <span v-else class="text-6xl">👤</span>
               </div>
               <h3 class="font-shinobi text-2xl text-[#ff7800] mb-1">{{ data.groomName || 'Naruto Uzumaki' }}</h3>
               <p class="text-sm text-[#4a331a] mb-4">
                 Putra dari {{ data.parents?.groomParents || 'Bapak Minato & Ibu Kushina' }}
               </p>
-              <div class="rank-tag">
-                <span class="font-scroll text-[10px] tracking-widest text-[#8a5a2b] uppercase">Rank Ninja</span>
-                <span class="font-shinobi text-xl text-[#2a1c0d]">S-Rank — Hokage Muda</span>
-              </div>
               <div v-if="data.socialMediaGroom?.instagram" class="mt-4">
                 <a
                   :href="formatInstagramUrl(data.socialMediaGroom.instagram)"
@@ -226,8 +202,7 @@
 
             <!-- Bride card -->
             <div class="ninja-card p-5 pb-6 text-center" v-observe>
-              <h3 class="font-shinobi text-2xl text-[#2a1c0d] tracking-widest">KARTU SHINOBI</h3>
-              <p class="font-scroll text-[9px] tracking-[0.3em] text-[#8a5a2b] uppercase mb-3">Berkas Rahasia</p>
+              <h3 class="font-shinobi text-2xl text-[#2a1c0d] tracking-widest mb-3">Mempelai Wanita</h3>
               <div class="mx-auto mb-4 w-40 h-44 border-4 border-[#3f7d3a] bg-[#efe6cd] overflow-hidden flex items-center justify-center">
                 <img
                   v-if="data.bridePhotoUrl"
@@ -240,10 +215,6 @@
               <p class="text-sm text-[#4a331a] mb-4">
                 Putri dari {{ data.parents?.brideParents || 'Bapak Hiashi & Ibu Hyuga' }}
               </p>
-              <div class="rank-tag">
-                <span class="font-scroll text-[10px] tracking-widest text-[#8a5a2b] uppercase">Rank Ninja</span>
-                <span class="font-shinobi text-xl text-[#2a1c0d]">S-Rank — Kunoichi Elite</span>
-              </div>
               <div v-if="data.socialMediaBrides?.instagram" class="mt-4">
                 <a
                   :href="formatInstagramUrl(data.socialMediaBrides.instagram)"
@@ -265,9 +236,9 @@
         >
           <div class="text-center" v-observe>
             <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">
-              Gulungan Kenangan
+              Kisah Cinta Kami
             </h2>
-            <p class="text-[#c9dfc1] text-base mt-2">Catatan misi menyusuri jalan ninja cinta kami</p>
+            <p class="text-[#c9dfc1] text-base mt-2">Perjalanan kisah kami hingga hari bahagia ini</p>
           </div>
 
           <div class="space-y-6 max-w-2xl mx-auto">
@@ -278,7 +249,7 @@
               v-observe
             >
               <div class="scroll-badge shrink-0">
-                <span class="font-scroll text-[9px] uppercase tracking-widest text-[#8a5a2b]">Misi</span>
+                <span class="font-scroll text-[9px] uppercase tracking-widest text-[#8a5a2b]">Kisah</span>
                 <span class="font-shinobi text-2xl text-[#ff7800]">{{ idx + 1 }}</span>
               </div>
               <div class="flex-1 text-center md:text-left">
@@ -299,19 +270,17 @@
         <section id="event" v-if="isSectionEnabled('event')" class="space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">
-              Titik Pertemuan Konoha
+              Waktu &amp; Tempat
             </h2>
-            <p class="text-[#c9dfc1] text-base mt-2">Lokasi misi untuk merayakan bersama para shinobi</p>
+            <p class="text-[#c9dfc1] text-base mt-2">Merupakan suatu kehormatan bagi kami atas kehadiran Anda</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Akad -->
             <div class="scroll-card p-6" v-observe>
               <div class="flex items-center gap-3 mb-5">
-                <span class="text-4xl">🍥</span>
                 <div>
                   <h3 class="font-shinobi text-2xl text-[#ff7800]">Akad Nikah</h3>
-                  <p class="font-scroll text-[9px] text-[#8a5a2b] uppercase tracking-[0.3em]">Ikrar Ninja</p>
                 </div>
               </div>
               <ul class="space-y-3 text-[15px] text-[#2a1c0d] mb-6">
@@ -329,17 +298,15 @@
                 :href="data.akadLocation?.mapUrl"
                 target="_blank"
                 class="shinobi-btn block text-center py-2.5 text-base"
-                >🗺️ Buka Peta Misi</a
+                >Buka Peta Lokasi</a
               >
             </div>
 
             <!-- Resepsi -->
             <div class="scroll-card p-6" v-observe>
               <div class="flex items-center gap-3 mb-5">
-                <span class="text-4xl">🎏</span>
                 <div>
                   <h3 class="font-shinobi text-2xl text-[#ff7800]">Resepsi</h3>
-                  <p class="font-scroll text-[9px] text-[#8a5a2b] uppercase tracking-[0.3em]">Pesta Desa Konoha</p>
                 </div>
               </div>
               <ul class="space-y-3 text-[15px] text-[#2a1c0d] mb-6">
@@ -357,7 +324,7 @@
                 :href="data.resepsiLocation?.mapUrl"
                 target="_blank"
                 class="shinobi-btn block text-center py-2.5 text-base"
-                >🗺️ Buka Peta Misi</a
+                >Buka Peta Lokasi</a
               >
             </div>
           </div>
@@ -368,24 +335,16 @@
             class="scroll-card p-8 text-center max-w-xl mx-auto"
             v-observe
           >
-            <h4 class="font-shinobi text-2xl text-[#ff7800] mb-2">Kode Pakaian Shinobi</h4>
-            <p class="text-xl text-[#2a1c0d] font-semibold mb-3">"{{ data.dressCode }}"</p>
-            <div class="flex justify-center gap-4">
-              <div class="w-12 h-12 border-2 border-dashed border-[#8a5a2b] flex items-center justify-center text-2xl">
-                🥋
-              </div>
-              <div class="w-12 h-12 border-2 border-dashed border-[#8a5a2b] flex items-center justify-center text-2xl">
-                👘
-              </div>
-            </div>
+            <h4 class="font-shinobi text-2xl text-[#ff7800] mb-2">Dress Code</h4>
+            <p class="text-xl text-[#2a1c0d] font-semibold">"{{ data.dressCode }}"</p>
           </div>
         </section>
 
         <!-- GALLERY -->
         <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">Album Misi</h2>
-            <p class="text-[#c9dfc1] text-base mt-2">Momen berharga dari perjalanan ninja kami</p>
+            <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">Galeri Foto</h2>
+            <p class="text-[#c9dfc1] text-base mt-2">Momen berharga perjalanan kami</p>
           </div>
           <div class="scroll-card p-4" v-observe>
             <GalleryInvitation :items="galleryImages" />
@@ -396,17 +355,16 @@
         <section id="gift" v-if="isSectionEnabled('gift')" class="max-w-xl mx-auto space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">
-              Gulungan Hadiah
+              Tanda Kasih
             </h2>
-            <p class="text-[#c9dfc1] text-base mt-2">Kirimkan bekal restu untuk misi kehidupan kami</p>
+            <p class="text-[#c9dfc1] text-base mt-2">Doa restu Anda merupakan hadiah terindah bagi kami</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div v-for="(bank, index) in data.bankAccounts" :key="index" class="scroll-card p-6" v-observe>
               <div class="flex items-center gap-2 mb-2">
-                <span class="text-2xl">🎁</span>
                 <span class="font-scroll text-[10px] text-[#8a5a2b] uppercase tracking-widest"
-                  >Gulungan {{ index + 1 }}</span
+                  >Rekening {{ index + 1 }}</span
                 >
               </div>
               <div class="font-shinobi text-2xl text-[#2a1c0d] uppercase mb-1">{{ bank.bankName }}</div>
@@ -421,7 +379,7 @@
           </div>
 
           <div v-if="data.giftDeliveryAddress" class="scroll-card p-6 text-center" v-observe>
-            <h3 class="font-shinobi text-xl text-[#ff7800] mb-3">Kirim Hadiah ke Markas Kami</h3>
+            <h3 class="font-shinobi text-xl text-[#ff7800] mb-3">Kirim Hadiah ke Alamat Kami</h3>
             <p class="text-[15px] text-[#2a1c0d] leading-relaxed italic mb-5">
               "{{ Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress }}"
             </p>
@@ -442,22 +400,22 @@
         <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="max-w-xl mx-auto space-y-8">
           <div class="leaf-plaque p-8" v-observe>
             <div class="text-center mb-6">
-              <span class="block text-5xl mx-auto mb-3 animate-wiggle select-none">🦅</span>
-              <h2 class="font-shinobi text-3xl text-[#ff7800]">Pesan Elang</h2>
-              <p class="text-[#4a331a] text-base mt-1">Kabari kami apakah engkau akan bergabung dalam misi ini?</p>
+              <span class="block text-5xl mx-auto mb-3 animate-wiggle select-none">💌</span>
+              <h2 class="font-shinobi text-3xl text-[#ff7800]">Konfirmasi Kehadiran</h2>
+              <p class="text-[#4a331a] text-base mt-1">Mohon konfirmasi kehadiran Anda pada hari bahagia kami</p>
             </div>
 
             <form @submit.prevent="submitRSVP" class="space-y-5">
               <div>
                 <label class="block font-scroll text-[10px] text-[#8a5a2b] mb-2 uppercase tracking-widest"
-                  >Nama Shinobi</label
+                  >Nama</label
                 >
                 <input v-model="rsvp.name" type="text" required class="shinobi-input" placeholder="Masukkan namamu..." />
               </div>
 
               <div v-if="rsvp.attendance === 'hadir'">
                 <label class="block font-scroll text-[10px] text-[#8a5a2b] mb-2 uppercase tracking-widest"
-                  >Jumlah Tim</label
+                  >Jumlah Tamu</label
                 >
                 <select v-model="rsvp.totalGuests" class="shinobi-input">
                   <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
@@ -466,16 +424,16 @@
 
               <div>
                 <label class="block font-scroll text-[10px] text-[#8a5a2b] mb-2 uppercase tracking-widest"
-                  >Akan Menjalankan Misi Bersama?</label
+                  >Konfirmasi Kehadiran</label
                 >
                 <div class="grid grid-cols-2 gap-3 mt-1">
                   <label class="attend-opt" :class="rsvp.attendance === 'hadir' ? 'attend-yes' : ''">
                     <input type="radio" v-model="rsvp.attendance" value="hadir" class="sr-only" />
-                    <span>🍃 Hadir</span>
+                    <span>Hadir</span>
                   </label>
                   <label class="attend-opt" :class="rsvp.attendance === 'tidak' ? 'attend-no' : ''">
                     <input type="radio" v-model="rsvp.attendance" value="tidak" class="sr-only" />
-                    <span>🌫️ Absen</span>
+                    <span>Tidak Hadir</span>
                   </label>
                 </div>
               </div>
@@ -493,7 +451,7 @@
               </div>
 
               <button type="submit" class="shinobi-btn w-full py-3 text-lg font-shinobi tracking-widest">
-                🍃 Kirim Pesan
+                Kirim
               </button>
             </form>
           </div>
@@ -503,9 +461,9 @@
         <section class="max-w-2xl mx-auto space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-shinobi text-3xl md:text-4xl text-[#e6c58a] drop-shadow-[0_2px_0_#1f2e17]">
-              Gulungan Ucapan
+              Ucapan &amp; Doa
             </h2>
-            <p class="text-[#c9dfc1] text-base mt-2">Pesan dari sesama shinobi di seluruh Konoha</p>
+            <p class="text-[#c9dfc1] text-base mt-2">Ucapan dan doa dari keluarga &amp; sahabat</p>
           </div>
 
           <div class="scroll-card p-6" v-observe>
@@ -521,19 +479,19 @@
                     <span
                       v-if="msg.rsvpStatus === 'hadir'"
                       class="text-[9px] bg-[#ff7800]/15 text-[#ff7800] px-2 py-0.5 border border-[#ff7800]/30 uppercase font-scroll tracking-widest"
-                      >Bergabung</span
+                      >Hadir</span
                     >
                   </div>
                   <span class="text-[#8a5a2b] text-xs font-scroll">{{ timeAgo(msg.createdAt) }}</span>
                 </div>
                 <p class="text-[#4a331a] text-[15px] leading-relaxed italic">"{{ msg.message }}"</p>
                 <div v-if="msg.totalGuests > 1" class="text-[10px] text-[#8a5a2b] mt-1 font-scroll uppercase tracking-widest">
-                  Tim: {{ msg.totalGuests }} orang
+                  {{ msg.totalGuests }} orang
                 </div>
               </div>
 
               <div v-if="guestMessages.length === 0" class="text-center py-10 text-[#8a5a2b] font-scroll uppercase tracking-widest">
-                — Belum ada pesan elang —
+                — Belum ada ucapan —
               </div>
             </div>
           </div>
@@ -543,7 +501,7 @@
         <footer class="text-center py-16 relative" v-observe>
           <span class="block text-6xl mx-auto opacity-90 animate-leaf-sway select-none">🍃</span>
           <div class="leaf-plaque max-w-md mx-auto mt-4 px-6 py-6">
-            <p class="font-shinobi text-2xl text-[#ff7800] mb-2">Terima Kasih, Shinobi!</p>
+            <p class="font-shinobi text-2xl text-[#ff7800] mb-2">Terima Kasih</p>
             <p class="text-sm text-[#4a331a] uppercase tracking-[0.2em] font-scroll">
               © {{ new Date().getFullYear() }} {{ data.groomName?.split(' ')[0] }} &amp; {{ data.brideName?.split(' ')[0] }}
             </p>
@@ -590,19 +548,19 @@ watch(
 
 const mockStories = [
   {
-    title: 'Bertemu di Akademi Ninja',
+    title: 'Awal Pertemuan',
     date: 'Januari 2024',
-    description: 'Takdir mempertemukan kami di lapangan latihan Konoha, dan sejak itu jalan ninja kami tak pernah lagi berpisah arah.',
+    description: 'Takdir mempertemukan kami, dan sejak saat itu kami tahu bahwa perjalanan ini akan berjalan bersama.',
   },
   {
-    title: 'Bergabung Satu Tim',
+    title: 'Menjalin Komitmen',
     date: 'Februari 2025',
-    description: 'Kami memutuskan menjalani misi kehidupan bersama, menghadapi badai dan senja di bawah naungan Hokage.',
+    description: 'Kami memutuskan untuk melangkah bersama, saling menguatkan dalam suka maupun duka.',
   },
   {
-    title: 'Menuju Ikatan Abadi',
+    title: 'Menuju Pernikahan',
     date: 'Maret 2026',
-    description: 'Kini kami siap menjalankan misi terbesar: kehidupan bersama selamanya sebagai satu keluarga shinobi.',
+    description: 'Kini kami siap memulai babak baru: membangun keluarga bersama selamanya.',
   },
 ]
 
@@ -618,10 +576,10 @@ const poofCanvas = ref(null)
 const navItems = computed(() => {
   const items = [
     { id: 'home', label: 'Beranda', icon: 'fa-solid fa-house' },
-    { id: 'couple', label: 'Tim', icon: 'fa-solid fa-user-ninja' },
-    { id: 'story', label: 'Misi', icon: 'fa-solid fa-book' },
+    { id: 'couple', label: 'Mempelai', icon: 'fa-solid fa-user-group' },
+    { id: 'story', label: 'Cerita', icon: 'fa-solid fa-book' },
     { id: 'event', label: 'Lokasi', icon: 'fa-solid fa-map-location-dot' },
-    { id: 'gallery', label: 'Album', icon: 'fa-solid fa-images' },
+    { id: 'gallery', label: 'Galeri', icon: 'fa-solid fa-images' },
     { id: 'gift', label: 'Hadiah', icon: 'fa-solid fa-gift' },
     { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
   ]
@@ -778,8 +736,12 @@ function initParticleEngine() {
 
   leaves = Array.from({ length: 45 }, () => new Leaf(canvas))
   cloudLayers = [
-    new CloudLayer(canvas, canvas.height * 0.08, 0.18, 0.35, 420),
-    new CloudLayer(canvas, canvas.height * 0.2, 0.35, 0.55, 320),
+    new CloudLayer(canvas, canvas.height * 0.04, 0.12, 0.28, 480),
+    new CloudLayer(canvas, canvas.height * 0.1, 0.2, 0.4, 380),
+    new CloudLayer(canvas, canvas.height * 0.18, 0.3, 0.5, 320),
+    new CloudLayer(canvas, canvas.height * 0.28, 0.42, 0.55, 260),
+    new CloudLayer(canvas, canvas.height * 0.38, 0.5, 0.35, 300),
+    new CloudLayer(canvas, canvas.height * 0.52, 0.6, 0.28, 220),
   ]
 
   const animate = () => {
@@ -960,7 +922,7 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance,
       totalGuests: rsvp.value.attendance === 'hadir' ? Number(rsvp.value.totalGuests) : 0,
     })
-    toast.success('Pesan elang terkirim!')
+    toast.success('Ucapan terkirim!')
     loadWishes()
   } catch {
     toast.error('Gagal mengirim RSVP.')
@@ -978,15 +940,15 @@ async function loadWishes() {
   } else {
     guestMessages.value = [
       {
-        guestName: 'Sasuke & Sakura',
-        message: 'Barakallahu lakuma! Selamat menjalani misi kehidupan baru kalian, semoga selalu dilindungi jalan ninja kalian.',
+        guestName: 'Budi & Sinta',
+        message: 'Barakallahu lakuma! Selamat menempuh hidup baru, semoga menjadi keluarga yang sakinah, mawaddah, warahmah.',
         rsvpStatus: 'hadir',
         totalGuests: 2,
         createdAt: new Date(),
       },
       {
-        guestName: 'Kakashi Sensei',
-        message: 'Undangannya keren banget! Selamat menempuh petualangan baru, semoga langgeng seperti ikatan tim 7.',
+        guestName: 'Andi Pratama',
+        message: 'Selamat menempuh hidup baru! Semoga langgeng sampai kakek nenek dan selalu bahagia.',
         rsvpStatus: 'hadir',
         totalGuests: 1,
         createdAt: new Date(),
@@ -1094,7 +1056,7 @@ watch(
 
 /* Mission scroll card (paper scroll look, no external image needed) */
 .scroll-card {
-  background: linear-gradient(180deg, #f7ecd2 0%, #e6c58a 100%);
+  background: linear-gradient(180deg, rgba(247, 236, 210, 0.7) 0%, rgba(230, 197, 138, 0.7) 100%);
   border: 3px solid #7a4a1e;
   box-shadow: 0 14px 30px rgba(0, 0, 0, 0.45);
   color: #2a1c0d;
@@ -1107,7 +1069,7 @@ watch(
 
 /* Wood/leaf plaque */
 .leaf-plaque {
-  background: linear-gradient(180deg, #f4e9cc 0%, #e6c58a 100%);
+  background: linear-gradient(180deg, rgba(244, 233, 204, 0.7) 0%, rgba(230, 197, 138, 0.7) 100%);
   border: 3px solid #3f7d3a;
   border-radius: 4px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(63, 125, 58, 0.12);
@@ -1149,7 +1111,7 @@ watch(
 
 /* Ninja card (profile card equivalent) */
 .ninja-card {
-  background: linear-gradient(180deg, #f7ecd2 0%, #efe0bb 100%);
+  background: linear-gradient(180deg, rgba(247, 236, 210, 0.7) 0%, rgba(239, 224, 187, 0.7) 100%);
   border: 3px solid #3f7d3a;
   box-shadow: 0 0 0 2px #2a1c0d, 0 14px 30px rgba(0, 0, 0, 0.45);
   color: #2a1c0d;
