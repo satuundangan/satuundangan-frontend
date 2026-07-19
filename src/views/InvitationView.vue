@@ -172,12 +172,18 @@ onMounted(async () => {
       } catch {
         // no-op — demo still works without template music
       }
+      
+      const defaultDemoMusic = {
+        'naruto': 'wedding-instrumental-garden.mp3',
+        'one-piece': 'one-piece-luffy.mp3',
+      }
+        
       data = {
         ...demoData,
         ...sampleContent,
         template_slug: templateSlug,
         guestName: route.query.to || sampleContent.guestName || demoData.guestName,
-        musicChoice: templateDefaultMusic || demoData.musicChoice,
+        musicChoice: templateDefaultMusic || defaultDemoMusic[templateSlug] || demoData.musicChoice,
         audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
         audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
         show_branding: templateShowBranding,
