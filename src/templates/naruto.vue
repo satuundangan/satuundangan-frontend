@@ -134,13 +134,15 @@
 
         <!-- COUNTDOWN -->
         <section class="text-center" v-observe>
-          <div class="leaf-plaque max-w-xl mx-auto px-6 py-6">
+          <div class="leaf-plaque max-w-xl mx-auto px-4 sm:px-6 py-6">
             <h3 class="font-scroll text-[10px] text-[#8a5a2b] mb-4 tracking-[0.3em] uppercase">
               Hitung Mundur Pernikahan
             </h3>
-            <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-2 text-center">
               <div v-for="(unit, key) in countdown" :key="key" class="scroll-cell">
-                <div class="font-shinobi text-3xl md:text-4xl text-[#2a1c0d]">{{ unit }}</div>
+                <div class="font-shinobi text-2xl sm:text-3xl md:text-4xl leading-none text-[#2a1c0d]">
+                  {{ unit }}
+                </div>
                 <div class="text-[9px] text-[#8a5a2b] uppercase font-scroll tracking-widest">{{ key }}</div>
               </div>
             </div>
