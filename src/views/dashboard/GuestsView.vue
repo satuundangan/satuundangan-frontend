@@ -486,6 +486,7 @@ import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
 import Topbar from '@/components/dashboard/TopbarDashboard.vue'
 import BottomNav from '@/components/dashboard/BottomNav.vue'
 import { getInvitations } from '@/api/invitation'
+import { featuresFor } from '@/config/packageFeatures'
 import {
   getGuestsByInvitationId,
   createGuest,
@@ -766,6 +767,10 @@ async function deleteGuestHandler(id) {
 async function openShareModal(guest) {
   if (!currentInvitation.value?.isPublished) {
     toast.warning('Undangan belum dipublikasikan')
+    return
+  }
+  if (!featuresFor(currentInvitation.value?.package).whatsapp) {
+    toast.warning('Kirim undangan via WhatsApp tersedia untuk paket Premium & Eksklusif.')
     return
   }
   selectedGuestForShare.value = guest
