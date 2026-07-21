@@ -84,9 +84,8 @@
                   <h4 class="font-serif font-bold text-dark text-lg">{{ selectedTemplate.name }}</h4>
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="rounded-lg bg-white px-2 py-1 text-[9px] font-bold uppercase text-mocha shadow-sm border border-mocha/5">
-                      {{ selectedTemplate.isPremium ? '💎 Premium' : '✨ Gratis' }}
+                      ✨ Semua Desain Gratis
                     </span>
-                    <span class="text-xs font-bold text-mocha">{{ templatePrice }}</span>
                   </div>
                   <button @click="goBackToTemplates" class="text-xs font-bold text-mocha hover:underline flex items-center gap-1.5 pt-1">
                     <i class="fa-solid fa-exchange text-[10px]"></i>
@@ -372,9 +371,10 @@
 
                 <!-- Gallery Grid -->
                 <div data-field="gallery" class="pt-4 border-t border-gray-50">
-                  <label class="form-label">Galeri Foto Pendukung (Maksimal 10)</label>
-                  <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-3">
-                    <label class="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 transition-all group">
+                  <label class="form-label">Galeri Foto Pendukung (Maksimal {{ pkgFeatures.galleryLimit }})</label>
+
+                  <div v-if="canGallery" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-3">
+                    <label v-if="formData.gallery.length < pkgFeatures.galleryLimit" class="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 transition-all group">
                       <input type="file" accept="image/*" multiple @change="handleGalleryUpload" class="hidden" />
                       <i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha"></i>
                     </label>
@@ -382,6 +382,14 @@
                       <img :src="img.preview" class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-100" />
                       <button @click="removeGalleryImage(i)" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4.5 h-4.5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg text-[9px]">×</button>
                     </div>
+                  </div>
+
+                  <!-- Gallery locked (Basic tier) -->
+                  <div v-else class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5">
+                    <i class="fa-solid fa-images text-amber-500 mt-0.5 text-sm"></i>
+                    <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed">
+                      Galeri foto tersedia di <strong>paket Premium &amp; Eksklusif</strong>. Upgrade paket saat checkout untuk mengaktifkannya.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -426,12 +434,12 @@
                       <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
                         {{ audio.title }}
                       </option>
-                      <option value="custom" v-if="isPremiumTemplate">Upload Musik Sendiri (.mp3)</option>
+                      <option value="custom" v-if="canCustomMusic">Upload Musik Sendiri (.mp3)</option>
                       <option value="custom" v-else disabled>Upload Musik Sendiri (💎 Premium)</option>
                     </select>
 
                     <!-- Custom MP3 File Selection -->
-                    <div v-if="formData.music === 'custom' && isPremiumTemplate" class="bg-gray-50 p-5 rounded-2xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
+                    <div v-if="formData.music === 'custom' && canCustomMusic" class="bg-gray-50 p-5 rounded-2xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
                       <div v-if="!formData.musicPreview" class="text-center">
                         <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
                         <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
@@ -468,10 +476,10 @@
                     </div>
 
                     <!-- Custom MP3 locked message -->
-                    <div v-if="formData.music === 'custom' && !isPremiumTemplate" class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5 mt-4">
+                    <div v-if="formData.music === 'custom' && !canCustomMusic" class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5 mt-4">
                       <i class="fa-solid fa-gem text-amber-500 mt-0.5 text-sm"></i>
                       <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed">
-                        Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>Template Premium</strong>. Silakan ganti tema atau pilih musik preset yang tersedia.
+                        Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>paket Premium &amp; Eksklusif</strong>. Pilih musik preset, atau upgrade paket saat checkout.
                       </p>
                     </div>
                   </div>
@@ -808,6 +816,7 @@ import { analytics } from '@/api/analytics'
 import { uploadFileApi } from '@/api/file'
 import { getInvitationById, createInvitation, updateInvitation, checkSubdomainAvailability } from '@/api/invitation'
 import { getSections, fetchPublicAudio } from '@/api/master'
+import { featuresFor } from '@/config/packageFeatures'
 import QuoteSection from './create-form/components/QuoteSection.vue'
 import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
@@ -1049,9 +1058,10 @@ const uploadProgress = ref({
   currentFile: ''
 })
 
-const isPremiumTemplate = computed(() => {
-  return selectedTemplate.value?.isPremium === true || selectedTemplate.value?.isPremium === 'true'
-})
+// Feature access is driven by the chosen package tier, not the template.
+const pkgFeatures = computed(() => featuresFor(formData.value.package))
+const canCustomMusic = computed(() => pkgFeatures.value.customMusic)
+const canGallery = computed(() => pkgFeatures.value.gallery)
 
 const templateImageUrl = computed(() => (
   selectedTemplate.value?.thumbnailUrl ||
@@ -1725,8 +1735,20 @@ function onCropComplete({ blob, preview }) {
 }
 
 function handleGalleryUpload(e) {
-   const files = Array.from(e.target.files || [])
+   const limit = pkgFeatures.value.galleryLimit
+   if (!pkgFeatures.value.gallery) {
+      toast.warning('Galeri foto hanya tersedia untuk paket Premium & Eksklusif.')
+      e.target.value = ''
+      return
+   }
+   let files = Array.from(e.target.files || [])
+   const remaining = limit - formData.value.gallery.length
+   if (files.length > remaining) {
+      files = files.slice(0, Math.max(0, remaining))
+      toast.warning(`Maksimal ${limit} foto untuk paket ini.`)
+   }
    files.forEach(file => { const reader = new FileReader(); reader.onload = () => formData.value.gallery.push({ preview: reader.result, file }); reader.readAsDataURL(file) })
+   e.target.value = ''
 }
 function removeGalleryImage(i) { formData.value.gallery.splice(i, 1) }
 

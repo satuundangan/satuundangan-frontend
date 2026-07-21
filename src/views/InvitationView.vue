@@ -8,6 +8,7 @@ import {
 import { demoData } from '@/api/demoData'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
+import { featuresFor } from '@/config/packageFeatures'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -156,14 +157,12 @@ onMounted(async () => {
       let templateDefaultMusic = null
       let templateAudioStart = 0
       let templateAudioEnd = 0
-      let templateShowBranding = false
       let sampleContent = {}
       try {
         const tmpl = await getTemplateDesignBySlug(templateSlug)
         templateDefaultMusic = tmpl?.defaultMusic || null
         templateAudioStart = tmpl?.defaultAudioStart ?? 0
         templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
-        templateShowBranding = tmpl?.showBranding ?? false
         sampleContent =
           tmpl && typeof tmpl.sampleContent === 'object' && tmpl.sampleContent
             ? tmpl.sampleContent
@@ -186,7 +185,7 @@ onMounted(async () => {
         musicChoice: templateDefaultMusic || defaultDemoMusic[templateSlug] || demoData.musicChoice,
         audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
         audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
-        show_branding: templateShowBranding,
+        show_branding: false, // demo preview is a clean (premium-look) showcase
       }
     } else {
       try {
@@ -216,8 +215,7 @@ onMounted(async () => {
           audioStart: Number((rawData.content || rawData).audioStart) || 0,
           audioEnd: Number((rawData.content || rawData).audioEnd) || 0,
           template_slug: rawData.template_slug || rawData.templateName,
-          is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
-          show_branding: rawData.show_branding !== undefined ? rawData.show_branding : (rawData.showBranding || false),
+          show_branding: rawData.show_branding ?? false,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
       } catch (err) {
@@ -348,7 +346,7 @@ function getLocalPreviewPayload(slug) {
       audioEnd: payload.audioEnd,
       template_slug: payload.template_slug || payload.templateName,
       content: payload,
-      is_premium: Boolean(payload.isPremium),
+      show_branding: featuresFor(payload.package).watermark,
       is_published: false,
     }
   } catch (error) {
