@@ -1838,7 +1838,8 @@ async function saveAndPreview() {
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
          eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource,
-         subdomain: formData.value.subdomain ? subdomainStatus.value.normalized : ''
+         subdomain: formData.value.subdomain ? subdomainStatus.value.normalized : '',
+         package: formData.value.package || 'basic'
       }
       
       const editId = route.params.id || localStorage.getItem('editInvitationId')
