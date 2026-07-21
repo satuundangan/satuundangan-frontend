@@ -60,12 +60,6 @@
                   <i class="fa-solid fa-eye"></i> Demo
                 </a>
               </div>
-
-              <!-- Badge Premium -->
-              <div v-if="item.isPremium"
-                class="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-md tracking-wider uppercase z-10">
-                Premium
-              </div>
             </div>
 
             <!-- Card Content -->
@@ -362,7 +356,6 @@
                   <div class="flex justify-between items-start mb-2">
                     <h4 class="font-bold text-dark text-sm line-clamp-1"
                       :class="selectedTemplate === item.id ? 'text-mocha' : ''">{{ item.name }}</h4>
-                    <span v-if="item.isPremium" class="bg-amber-100 text-amber-700 text-[8px] font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">Premium</span>
                   </div>
 
                   <p class="text-[11px] text-muted mb-3 line-clamp-2 flex-1 leading-relaxed">{{ item.description }}</p>
@@ -440,6 +433,7 @@ import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import StepsSection from '@/components/landing/StepsSection.vue'
 import TutorialSection from '@/components/landing/TutorialSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
+import { featuresFor } from '@/config/packageFeatures'
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getPackages } from '@/api/payment'
 import FloatingNovaButton from '@/components/nova/FloatingNovaButton.vue'
@@ -473,51 +467,59 @@ const loading = ref(true)
 
 // Presentation metadata. Price filled from GET /payment/packages (single source of truth).
 // id matches InvitationPackage enum on backend.
-const pricingPlans = ref([
+// Pricing matrix derived from the single source of truth (featuresFor).
+// Only the labels & price/copy live here — inclusion flags come from the tier
+// config, so the matrix can never drift from what the backend enforces.
+const PRICING_TIERS = [
   {
     id: 'basic',
     name: 'Basic',
-    price: 'Rp 89.000',
     tagline: 'Cocok untuk undangan simpel & hemat.',
     highlighted: false,
-    features: [
-      { label: 'Bebas Pilih Semua Desain', included: true },
-      { label: 'Peta Lokasi', included: true },
-      { label: 'Hitung Mundur', included: true },
-      { label: 'Musik Latar', included: true },
-      { label: 'RSVP & Amplop Digital', included: true },
-      { label: 'Tanpa Galeri', included: false },
-      { label: 'Ada Watermark "SatuUndangan"', included: false },
-    ],
   },
   {
     id: 'premium',
     name: 'Premium',
-    price: 'Rp 179.000',
     tagline: 'Fitur lengkap untuk momen spesialmu.',
     highlighted: true,
-    features: [
-      { label: 'Semua Fitur Basic', included: true },
-      { label: 'Musik Latar', included: true },
-      { label: 'Galeri Foto', included: true },
-      { label: 'RSVP & Amplop Digital', included: true },
-      { label: 'Kirim Undangan via WhatsApp', included: true },
-      { label: 'Template Pesan Undangan Siap Pakai', included: true },
-      { label: 'Tanpa Watermark (Undangan Bersih)', included: true },
-    ],
   },
   {
     id: 'eksklusif',
     name: 'Eksklusif',
-    price: 'Rp 239.000',
     tagline: 'Lebih profesional & otomatis.',
     highlighted: false,
-    features: [
-      { label: 'Semua Fitur Premium', included: true },
-      { label: 'Subdomain Custom (namapasangan.satuundangan.id)', included: true },
-    ],
   },
-])
+]
+
+// Prices default to static copy, then get synced from GET /payment/packages.
+const tierPrices = ref({
+  basic: 'Rp 89.000',
+  premium: 'Rp 179.000',
+  eksklusif: 'Rp 239.000',
+})
+
+const pricingPlans = computed(() =>
+  PRICING_TIERS.map((tier) => {
+    const f = featuresFor(tier.id)
+    return {
+      ...tier,
+      price: tierPrices.value[tier.id],
+      features: [
+        { label: 'Bebas pilih semua desain', included: true },
+        { label: 'Peta lokasi, hitung mundur, RSVP & amplop', included: true },
+        { label: 'Musik latar preset', included: true },
+        {
+          label: f.gallery ? `Galeri foto (maks ${f.galleryLimit})` : 'Galeri foto',
+          included: f.gallery,
+        },
+        { label: 'Upload musik sendiri (MP3)', included: f.customMusic },
+        { label: 'Kirim undangan via WhatsApp', included: f.whatsapp },
+        { label: 'Tanpa watermark', included: !f.watermark },
+        { label: 'Subdomain custom', included: f.subdomain },
+      ],
+    }
+  }),
+)
 
 function formatRupiah(value) {
   return 'Rp ' + Number(value || 0).toLocaleString('id-ID')
@@ -567,10 +569,11 @@ onMounted(async () => {
   try {
     const pkgData = await getPackages()
     const list = Array.isArray(pkgData) ? pkgData : (pkgData?.data || [])
-    const priceById = Object.fromEntries(list.map((p) => [p.id, p.price]))
-    pricingPlans.value = pricingPlans.value.map((plan) =>
-      priceById[plan.id] != null ? { ...plan, price: formatRupiah(priceById[plan.id]) } : plan,
-    )
+    const next = { ...tierPrices.value }
+    list.forEach((p) => {
+      if (p.price != null) next[p.id] = formatRupiah(p.price)
+    })
+    tierPrices.value = next
   } catch (e) {
     console.error('Gagal ambil paket harga, pakai harga statis:', e)
   }

@@ -45,9 +45,6 @@
                        Gunakan
                     </span>
                  </div>
-                 <div v-if="item.isPremium" class="absolute top-3 left-3 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[8px] font-bold px-2 py-1 rounded-md shadow-md uppercase z-10">
-                    Premium
-                 </div>
                  <a :href="'/demo/' + item.slug" target="_blank" @click.stop
                     class="absolute top-3 right-3 w-8 h-8 bg-white/90 backdrop-blur-md rounded-lg flex items-center justify-center text-mocha shadow-sm border border-white/50 hover:bg-white transition-colors z-20">
                     <i class="fa-solid fa-eye text-xs"></i>

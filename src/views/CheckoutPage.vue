@@ -91,11 +91,11 @@
               <div class="absolute top-6 right-6">
                 <div
                   class="bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-2xl flex items-center gap-2 border"
-                  :class="invitation?.is_premium ? 'border-accent-gold/30' : 'border-sage/30'"
+                  :class="selectedPackage !== 'basic' ? 'border-accent-gold/30' : 'border-sage/30'"
                 >
                   <i
                     :class="
-                      invitation?.is_premium
+                      selectedPackage !== 'basic'
                         ? 'fa-solid fa-gem text-accent-gold animate-pulse'
                         : 'fa-solid fa-star text-sage'
                     "

@@ -37,7 +37,7 @@
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   <div class="absolute left-4 top-4">
                      <span class="rounded-xl bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase text-mocha shadow-xl border border-mocha/5">
-                        {{ selectedTemplate.isPremium ? '💎 Premium' : '✨ Gratis' }}
+                        ✨ Gratis
                      </span>
                   </div>
                </div>
