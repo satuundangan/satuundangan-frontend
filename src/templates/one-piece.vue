@@ -22,12 +22,12 @@
       v-if="isOpened"
       class="fixed bottom-0 left-0 right-0 z-[80] bg-[#0b2c48]/95 border-t-4 border-[#f9c74f] shadow-[0_-6px_20px_rgba(0,0,0,0.4)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
     >
-      <div class="flex items-center justify-center gap-4 px-4 py-3 mx-auto min-w-max">
+      <div class="flex items-center gap-1 px-2 py-3 w-full sm:max-w-xl sm:mx-auto">
         <button
           v-for="item in navItems"
           :key="item.id"
           @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[52px] shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300 relative group"
           :class="
             activeSection === item.id
               ? 'text-[#f9c74f] scale-110 -translate-y-1'
@@ -35,7 +35,7 @@
           "
         >
           <i :class="[item.icon, 'text-xl md:text-2xl']"></i>
-          <span class="text-[9px] font-wanted uppercase tracking-tight">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[9px] font-wanted uppercase tracking-tight">{{ item.label }}</span>
         </button>
       </div>
     </nav>
@@ -44,7 +44,7 @@
     <transition name="poster-gate">
       <div
         v-if="!isOpened"
-        class="fixed inset-0 z-[100] flex flex-col items-center justify-center px-5 op-sky"
+        class="fixed inset-0 z-[100] flex flex-col items-center justify-center px-5"
       >
         <!-- horizon glow + sun -->
         <div class="absolute inset-0 op-horizon pointer-events-none"></div>
@@ -125,11 +125,11 @@
 
         <!-- COUNTDOWN (Log Pose) -->
         <section class="text-center" v-observe>
-          <div class="ocean-plaque max-w-xl mx-auto px-6 py-6">
+          <div class="ocean-plaque max-w-xl mx-auto px-4 sm:px-6 py-6">
             <h3 class="font-wanted text-[10px] text-[#7a4a1e] mb-4 tracking-[0.3em] uppercase">Menuju hari berlayar</h3>
-            <div class="grid grid-cols-4 gap-2 text-center">
+            <div class="grid grid-cols-4 gap-1.5 sm:gap-2 text-center">
               <div v-for="(unit, key) in countdown" :key="key" class="log-pose-cell">
-                <div class="font-pirate text-3xl md:text-4xl text-[#3a2312]">{{ unit }}</div>
+                <div class="font-pirate text-2xl sm:text-3xl md:text-4xl leading-none text-[#3a2312]">{{ unit }}</div>
                 <div class="text-[9px] text-[#7a4a1e] uppercase font-wanted tracking-widest">{{ key }}</div>
               </div>
             </div>
