@@ -17,7 +17,7 @@
       class="z-[60]"
     />
 
-    <!-- Bottom Navigation (Compass / Log Pose style) -->
+    <!-- Bottom Navigation (compass style) -->
     <nav
       v-if="isOpened"
       class="fixed bottom-0 left-0 right-0 z-[80] bg-[#0b2c48]/95 border-t-4 border-[#f9c74f] shadow-[0_-6px_20px_rgba(0,0,0,0.4)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
@@ -62,15 +62,15 @@
             <span class="h-[2px] w-8 bg-[#7a4a1e]"></span>
           </div>
 
-          <!-- Straw hat mugshot area -->
+          <!-- Portrait mugshot area -->
           <div class="relative mx-auto my-4 w-40 h-40 border-4 border-[#6b3f18] bg-[#efe0bb] overflow-hidden shadow-inner flex items-center justify-center">
-            <img :src="assets.strawHat" alt="straw hat" class="w-32 h-auto mix-blend-multiply" />
+            <img :src="assets.strawHat" alt="topi jerami" class="w-32 h-auto mix-blend-multiply" />
           </div>
 
           <p class="font-wanted text-[11px] tracking-[0.25em] text-[#7a4a1e] uppercase mb-1">Diminta hadir dalam petualangan</p>
 
           <div class="bg-[#3a2312] text-[#f4e4c1] font-pirate text-2xl md:text-3xl py-2 px-3 my-3 truncate tracking-wide">
-            {{ data.guestName || 'Nakama Terhormat' }}
+            {{ data.guestName || 'Tamu Terhormat' }}
           </div>
 
           <p class="text-sm text-[#5a3a1c] leading-relaxed mb-6 px-2">
@@ -81,7 +81,7 @@
             ⚓ BUKA UNDANGAN
           </button>
 
-          <p class="font-wanted text-[9px] text-[#7a4a1e]/80 mt-4 uppercase tracking-[0.3em]">✕ MARINE ✕ Grand Line Edition</p>
+          <p class="font-wanted text-[9px] text-[#7a4a1e]/80 mt-4 uppercase tracking-[0.3em]">✕ Set Sail ✕ Pirate Wedding</p>
         </div>
       </div>
     </transition>
@@ -102,14 +102,14 @@
           <div v-observe class="relative">
             <p class="font-wanted text-[11px] tracking-[0.4em] text-[#f9c74f] uppercase mb-4">{{ data.heroLabel || 'The Pirate Wedding' }}</p>
 
-            <img :src="assets.sunny" alt="Thousand Sunny" class="w-64 md:w-80 mx-auto drop-shadow-[0_18px_25px_rgba(0,0,0,0.45)] animate-sail" />
+            <img :src="assets.sunny" alt="kapal bajak laut" class="w-64 md:w-80 mx-auto drop-shadow-[0_18px_25px_rgba(0,0,0,0.45)] animate-sail" />
 
             <div class="ocean-plaque mt-2 px-6 py-6 max-w-xl mx-auto">
               <h2 class="font-wanted text-[10px] tracking-[0.35em] text-[#7a4a1e] uppercase mb-2">Kami akan melabuhkan hati</h2>
               <h1 class="font-pirate text-4xl md:text-6xl text-[#3a2312] leading-tight my-3">
-                {{ data.groomName?.split(' ')[0] || 'Luffy' }}
+                {{ data.groomName?.split(' ')[0] || 'Rian' }}
                 <span class="text-[#b5171e]">&amp;</span>
-                {{ data.brideName?.split(' ')[0] || 'Nami' }}
+                {{ data.brideName?.split(' ')[0] || 'Sari' }}
               </h1>
               <div class="flex items-center justify-center gap-3 my-4">
                 <span class="text-[#b5171e] text-xl">☠</span>
@@ -118,12 +118,12 @@
                 <span class="h-[2px] flex-1 max-w-[80px] bg-[#7a4a1e]"></span>
                 <span class="text-[#b5171e] text-xl">☠</span>
               </div>
-              <p class="text-sm text-[#5a3a1c] italic">"Dua bajak laut menyatukan kompas menuju satu tujuan: One Piece — kebahagiaan seumur hidup."</p>
+              <p class="text-sm text-[#5a3a1c] italic">"Dua bajak laut menyatukan kompas menuju satu tujuan: kebahagiaan seumur hidup."</p>
             </div>
           </div>
         </header>
 
-        <!-- COUNTDOWN (Log Pose) -->
+        <!-- COUNTDOWN -->
         <section class="text-center" v-observe>
           <div class="ocean-plaque max-w-xl mx-auto px-4 sm:px-6 py-6">
             <h3 class="font-wanted text-[10px] text-[#7a4a1e] mb-4 tracking-[0.3em] uppercase">Menuju hari berlayar</h3>
@@ -148,15 +148,15 @@
           </div>
         </section>
 
-        <!-- COUPLE — Bounty Posters -->
+        <!-- COUPLE — Wanted Posters -->
         <section id="couple" v-if="isSectionEnabled('couple')" class="space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">The Straw Hat Crew</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Dua nakama yang siap berlayar seumur hidup bersama</p>
+            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Kedua Mempelai</h2>
+            <p class="text-[#a9d6e5] text-base mt-2">Dua insan yang siap berlayar seumur hidup bersama</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <!-- Groom bounty -->
+            <!-- Groom poster -->
             <div class="wanted-poster p-5 pb-6 text-center" v-observe>
               <h3 class="font-pirate text-3xl text-[#3a2312] tracking-widest">WANTED</h3>
               <p class="font-wanted text-[9px] tracking-[0.3em] text-[#7a4a1e] uppercase mb-3">Dead or Alive</p>
@@ -164,12 +164,8 @@
                 <img v-if="data.groomPhotoUrl" :src="data.groomPhotoUrl" class="w-full h-full object-cover sepia-[.25]" />
                 <span v-else class="text-6xl">🏴‍☠️</span>
               </div>
-              <h3 class="font-pirate text-3xl text-[#b5171e] mb-1">{{ data.groomName || 'Monkey D. Rian' }}</h3>
+              <h3 class="font-pirate text-3xl text-[#b5171e] mb-1">{{ data.groomName || 'Rian Pratama' }}</h3>
               <p class="text-sm text-[#5a3a1c] mb-4">Putra dari {{ data.parents?.groomParents || 'Bapak Mahendra & Ibu Ratna' }}</p>
-              <div class="bounty-tag">
-                <span class="font-wanted text-[10px] tracking-widest text-[#7a4a1e] uppercase">Bounty</span>
-                <span class="font-pirate text-xl text-[#3a2312]">฿ 1,500,000,000</span>
-              </div>
               <div v-if="data.socialMediaGroom?.instagram" class="mt-4">
                 <a :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="pirate-btn inline-flex items-center gap-2 px-5 py-2 text-sm">
                   <i class="fa-brands fa-instagram"></i> @{{ data.socialMediaGroom.instagram.replace('@', '') }}
@@ -177,7 +173,7 @@
               </div>
             </div>
 
-            <!-- Bride bounty -->
+            <!-- Bride poster -->
             <div class="wanted-poster p-5 pb-6 text-center" v-observe>
               <h3 class="font-pirate text-3xl text-[#3a2312] tracking-widest">WANTED</h3>
               <p class="font-wanted text-[9px] tracking-[0.3em] text-[#7a4a1e] uppercase mb-3">Dead or Alive</p>
@@ -185,12 +181,8 @@
                 <img v-if="data.bridePhotoUrl" :src="data.bridePhotoUrl" class="w-full h-full object-cover sepia-[.25]" />
                 <span v-else class="text-6xl">🌊</span>
               </div>
-              <h3 class="font-pirate text-3xl text-[#b5171e] mb-1">{{ data.brideName || 'Nami D. Sari' }}</h3>
+              <h3 class="font-pirate text-3xl text-[#b5171e] mb-1">{{ data.brideName || 'Sari Dewi' }}</h3>
               <p class="text-sm text-[#5a3a1c] mb-4">Putri dari {{ data.parents?.brideParents || 'Bapak Gunawan & Ibu Sulastri' }}</p>
-              <div class="bounty-tag">
-                <span class="font-wanted text-[10px] tracking-widest text-[#7a4a1e] uppercase">Bounty</span>
-                <span class="font-pirate text-xl text-[#3a2312]">฿ 366,000,000</span>
-              </div>
               <div v-if="data.socialMediaBrides?.instagram" class="mt-4">
                 <a :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="pirate-btn inline-flex items-center gap-2 px-5 py-2 text-sm">
                   <i class="fa-brands fa-instagram"></i> @{{ data.socialMediaBrides.instagram.replace('@', '') }}
@@ -204,7 +196,7 @@
         <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Captain's Log</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Catatan perjalanan menyusuri Grand Line cinta kami</p>
+            <p class="text-[#a9d6e5] text-base mt-2">Catatan perjalanan menyusuri lautan cinta kami</p>
           </div>
 
           <div class="space-y-6 max-w-2xl mx-auto">
@@ -234,7 +226,7 @@
         <section id="event" v-if="isSectionEnabled('event')" class="space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">The Islands</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Titik labuh untuk merayakan bersama para nakama</p>
+            <p class="text-[#a9d6e5] text-base mt-2">Titik labuh untuk merayakan bersama orang tersayang</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -324,18 +316,18 @@
           </div>
         </section>
 
-        <!-- RSVP — Den Den Mushi call -->
+        <!-- RSVP -->
         <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="max-w-xl mx-auto space-y-8">
           <div class="ocean-plaque p-8" v-observe>
             <div class="text-center mb-6">
-              <img :src="assets.denDen" alt="den den mushi" class="w-24 mx-auto mb-3 mix-blend-multiply animate-wiggle" />
-              <h2 class="font-pirate text-3xl text-[#b5171e]">Den Den Mushi</h2>
+              <img :src="assets.denDen" alt="ilustrasi telepon laut" class="w-24 mx-auto mb-3 mix-blend-multiply animate-wiggle" />
+              <h2 class="font-pirate text-3xl text-[#b5171e]">Konfirmasi Kehadiran</h2>
               <p class="text-[#5a3a1c] text-base mt-1">Kabari kami apakah kau akan bergabung di dek perayaan?</p>
             </div>
 
             <form @submit.prevent="submitRSVP" class="space-y-5">
               <div>
-                <label class="block font-wanted text-[10px] text-[#7a4a1e] mb-2 uppercase tracking-widest">Nama Nakama</label>
+                <label class="block font-wanted text-[10px] text-[#7a4a1e] mb-2 uppercase tracking-widest">Nama Tamu</label>
                 <input v-model="rsvp.name" type="text" required class="pirate-input" placeholder="Masukkan namamu..." />
               </div>
 
@@ -374,7 +366,7 @@
         <section class="max-w-2xl mx-auto space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Transmissions</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Pesan dari para nakama di seluruh lautan</p>
+            <p class="text-[#a9d6e5] text-base mt-2">Pesan dari para tamu di seluruh lautan</p>
           </div>
 
           <div class="parchment-card p-6" v-observe>
@@ -398,9 +390,9 @@
 
         <!-- FOOTER -->
         <footer class="text-center py-16 relative" v-observe>
-          <img :src="assets.sunny" alt="Thousand Sunny" class="w-40 mx-auto opacity-90 animate-sail" />
+          <img :src="assets.sunny" alt="kapal bajak laut" class="w-40 mx-auto opacity-90 animate-sail" />
           <div class="ocean-plaque max-w-md mx-auto mt-4 px-6 py-6">
-            <p class="font-pirate text-2xl text-[#b5171e] mb-2">Terima Kasih, Nakama!</p>
+            <p class="font-pirate text-2xl text-[#b5171e] mb-2">Terima Kasih!</p>
             <p class="text-sm text-[#5a3a1c] uppercase tracking-[0.2em] font-wanted">
               © {{ new Date().getFullYear() }} {{ data.groomName?.split(' ')[0] }} &amp; {{ data.brideName?.split(' ')[0] }}
             </p>
@@ -446,7 +438,7 @@ watch(
 
 const mockStories = [
   {
-    title: 'Bertemu di Grand Line',
+    title: 'Bertemu di Tengah Lautan',
     date: 'Januari 2024',
     description: 'Takdir mempertemukan kami di tengah lautan luas, dan sejak itu kompas hati tak pernah salah arah.',
   },
@@ -456,7 +448,7 @@ const mockStories = [
     description: 'Kami memutuskan berlayar dalam satu kapal, menghadapi badai dan senja bersama-sama.',
   },
   {
-    title: 'Menuju One Piece',
+    title: 'Menuju Satu Tujuan',
     date: 'Maret 2026',
     description: 'Kini kami siap menemukan harta karun terbesar: kehidupan bersama selamanya.',
   },
@@ -677,15 +669,15 @@ async function loadWishes() {
   } else {
     guestMessages.value = [
       {
-        guestName: 'Zoro & Keluarga',
-        message: 'Barakallahu lakuma! Selamat berlayar menuju harta karun terbesar kalian, One Piece kebahagiaan.',
+        guestName: 'Bima & Keluarga',
+        message: 'Barakallahu lakuma! Selamat berlayar menuju harta karun terbesar kalian: kebahagiaan.',
         rsvpStatus: 'hadir',
         totalGuests: 2,
         createdAt: new Date(),
       },
       {
-        guestName: 'Robin',
-        message: 'Undangannya keren banget! Selamat menempuh petualangan baru, semoga langgeng sampai akhir Grand Line.',
+        guestName: 'Rina',
+        message: 'Undangannya keren banget! Selamat menempuh petualangan baru, semoga langgeng sampai ujung samudra.',
         rsvpStatus: 'hadir',
         totalGuests: 1,
         createdAt: new Date(),
@@ -766,7 +758,7 @@ watch(
   font-family: 'Cinzel', serif;
 }
 
-/* One Piece sky + sea horizon backdrop */
+/* Pirate sky + sea horizon backdrop */
 .op-sky {
   background: linear-gradient(
     180deg,
@@ -825,16 +817,6 @@ watch(
   border: 2px solid #6b3f18;
   border-radius: 4px;
   padding: 8px 4px;
-}
-
-.bounty-tag {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-  padding: 8px;
-  border-top: 2px dashed #7a4a1e;
-  border-bottom: 2px dashed #7a4a1e;
 }
 
 .log-badge {
