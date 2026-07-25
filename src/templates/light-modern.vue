@@ -6,13 +6,13 @@
 
     <!-- Bottom Navigation -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full shadow-2xl animate-slide-up max-w-[90%] overflow-x-auto no-scrollbar flex">
-      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+      class="fixed bottom-6 inset-x-0 mx-auto z-50 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-full shadow-2xl animate-slide-up w-[92%] max-w-md overflow-x-auto no-scrollbar flex">
+      <div class="flex items-center gap-1 px-2 py-3 w-full">
         <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 min-w-[40px] transition-all duration-300 relative group shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300 relative group"
           :class="activeSection === item.id ? 'text-blue-600 scale-110' : 'text-gray-500 hover:text-blue-600'">
           <i :class="[item.icon, 'text-lg']"></i>
-          <span class="text-[10px]">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[10px]">{{ item.label }}</span>
         </button>
       </div>
     </nav>
@@ -758,12 +758,12 @@ watch(() => props.data, (newVal) => {
 
 @keyframes slideUp {
   from {
-    transform: translate(-50%, 100%);
+    transform: translateY(100%);
     opacity: 0;
   }
 
   to {
-    transform: translate(-50%, 0);
+    transform: translateY(0);
     opacity: 1;
   }
 }
