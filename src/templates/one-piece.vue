@@ -67,21 +67,15 @@
             <img :src="assets.strawHat" alt="topi jerami" class="w-32 h-auto mix-blend-multiply" />
           </div>
 
-          <p class="font-wanted text-[11px] tracking-[0.25em] text-[#7a4a1e] uppercase mb-1">Diminta hadir dalam petualangan</p>
+          <p class="font-wanted text-[11px] tracking-[0.25em] text-[#7a4a1e] uppercase mb-1">Yth. Bapak/Ibu/Saudara/i</p>
 
           <div class="bg-[#3a2312] text-[#f4e4c1] font-pirate text-2xl md:text-3xl py-2 px-3 my-3 truncate tracking-wide">
             {{ data.guestName || 'Tamu Terhormat' }}
           </div>
 
-          <p class="text-sm text-[#5a3a1c] leading-relaxed mb-6 px-2">
-            Sebuah undangan berlayar menuju babak baru kehidupan dua insan. Naikkan jangkar & buka gulungan takdir ini!
-          </p>
-
-          <button @click="openInvitation" class="pirate-btn w-full py-3 text-lg font-pirate tracking-widest animate-pulse-soft">
+          <button @click="openInvitation" class="pirate-btn w-full py-3 text-lg font-pirate tracking-widest animate-pulse-soft mt-6">
             ⚓ BUKA UNDANGAN
           </button>
-
-          <p class="font-wanted text-[9px] text-[#7a4a1e]/80 mt-4 uppercase tracking-[0.3em]">✕ Set Sail ✕ Pirate Wedding</p>
         </div>
       </div>
     </transition>
@@ -100,12 +94,12 @@
         <!-- HERO -->
         <header id="home" class="text-center pt-6">
           <div v-observe class="relative">
-            <p class="font-wanted text-[11px] tracking-[0.4em] text-[#f9c74f] uppercase mb-4">{{ data.heroLabel || 'The Pirate Wedding' }}</p>
+            <p class="font-wanted text-[11px] tracking-[0.4em] text-[#f9c74f] uppercase mb-4">{{ data.heroLabel || 'The Wedding Of' }}</p>
 
             <img :src="assets.sunny" alt="kapal bajak laut" class="w-64 md:w-80 mx-auto drop-shadow-[0_18px_25px_rgba(0,0,0,0.45)] animate-sail" />
 
             <div class="ocean-plaque mt-2 px-6 py-6 max-w-xl mx-auto">
-              <h2 class="font-wanted text-[10px] tracking-[0.35em] text-[#7a4a1e] uppercase mb-2">Kami akan melabuhkan hati</h2>
+              <h2 class="font-wanted text-[10px] tracking-[0.35em] text-[#7a4a1e] uppercase mb-2">Dengan penuh syukur, kami akan menikah</h2>
               <h1 class="font-pirate text-4xl md:text-6xl text-[#3a2312] leading-tight my-3">
                 {{ data.groomName?.split(' ')[0] || 'Rian' }}
                 <span class="text-[#b5171e]">&amp;</span>
@@ -118,7 +112,7 @@
                 <span class="h-[2px] flex-1 max-w-[80px] bg-[#7a4a1e]"></span>
                 <span class="text-[#b5171e] text-xl">☠</span>
               </div>
-              <p class="text-sm text-[#5a3a1c] italic">"Dua bajak laut menyatukan kompas menuju satu tujuan: kebahagiaan seumur hidup."</p>
+              <p class="text-sm text-[#5a3a1c] italic">"Dua hati menyatu menuju satu tujuan: kebahagiaan seumur hidup."</p>
             </div>
           </div>
         </header>
@@ -126,7 +120,7 @@
         <!-- COUNTDOWN -->
         <section class="text-center" v-observe>
           <div class="ocean-plaque max-w-xl mx-auto px-4 sm:px-6 py-6">
-            <h3 class="font-wanted text-[10px] text-[#7a4a1e] mb-4 tracking-[0.3em] uppercase">Menuju hari berlayar</h3>
+            <h3 class="font-wanted text-[10px] text-[#7a4a1e] mb-4 tracking-[0.3em] uppercase">Hitung Mundur Pernikahan</h3>
             <div class="grid grid-cols-4 gap-1.5 sm:gap-2 text-center">
               <div v-for="(unit, key) in countdown" :key="key" class="log-pose-cell">
                 <div class="font-pirate text-2xl sm:text-3xl md:text-4xl leading-none text-[#3a2312]">{{ unit }}</div>
@@ -195,8 +189,8 @@
         <!-- LOVE STORY — Captain's Log -->
         <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Captain's Log</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Catatan perjalanan menyusuri lautan cinta kami</p>
+            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Kisah Cinta Kami</h2>
+            <p class="text-[#a9d6e5] text-base mt-2">Perjalanan kisah kami hingga hari bahagia ini</p>
           </div>
 
           <div class="space-y-6 max-w-2xl mx-auto">
@@ -225,8 +219,8 @@
         <!-- EVENT — Island Quests -->
         <section id="event" v-if="isSectionEnabled('event')" class="space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">The Islands</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Titik labuh untuk merayakan bersama orang tersayang</p>
+            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Waktu &amp; Tempat</h2>
+            <p class="text-[#a9d6e5] text-base mt-2">Merupakan suatu kehormatan bagi kami atas kehadiran Anda</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -236,7 +230,7 @@
                 <span class="text-4xl">⚓</span>
                 <div>
                   <h3 class="font-pirate text-2xl text-[#b5171e]">Akad Nikah</h3>
-                  <p class="font-wanted text-[9px] text-[#7a4a1e] uppercase tracking-[0.3em]">First Landing</p>
+                  <p class="font-wanted text-[9px] text-[#7a4a1e] uppercase tracking-[0.3em]">Prosesi Akad</p>
                 </div>
               </div>
               <ul class="space-y-3 text-[15px] text-[#3a2312] mb-6">
@@ -244,7 +238,7 @@
                 <li class="flex items-start gap-3"><span>⏰</span><strong>{{ formatTime(data.akadLocation?.dateTime) }} WIB</strong></li>
                 <li class="flex items-start gap-3"><span>📍</span><span class="leading-snug">{{ data.akadLocation?.description }}</span></li>
               </ul>
-              <a :href="data.akadLocation?.mapUrl" target="_blank" class="pirate-btn block text-center py-2.5 text-base">🧭 Buka Peta Harta Karun</a>
+              <a :href="data.akadLocation?.mapUrl" target="_blank" class="pirate-btn block text-center py-2.5 text-base">Buka Peta Lokasi</a>
             </div>
 
             <!-- Resepsi -->
@@ -253,7 +247,7 @@
                 <span class="text-4xl">🏴‍☠️</span>
                 <div>
                   <h3 class="font-pirate text-2xl text-[#b5171e]">Resepsi</h3>
-                  <p class="font-wanted text-[9px] text-[#7a4a1e] uppercase tracking-[0.3em]">Grand Feast</p>
+                  <p class="font-wanted text-[9px] text-[#7a4a1e] uppercase tracking-[0.3em]">Jamuan Resepsi</p>
                 </div>
               </div>
               <ul class="space-y-3 text-[15px] text-[#3a2312] mb-6">
@@ -261,7 +255,7 @@
                 <li class="flex items-start gap-3"><span>⏰</span><strong>{{ formatTime(data.resepsiLocation?.dateTime) }} WIB</strong></li>
                 <li class="flex items-start gap-3"><span>📍</span><span class="leading-snug">{{ data.resepsiLocation?.description }}</span></li>
               </ul>
-              <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="pirate-btn block text-center py-2.5 text-base">🧭 Buka Peta Harta Karun</a>
+              <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="pirate-btn block text-center py-2.5 text-base">Buka Peta Lokasi</a>
             </div>
           </div>
 
@@ -279,8 +273,8 @@
         <!-- GALLERY -->
         <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Adventure Log</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Momen berharga dari pelayaran kami</p>
+            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Galeri Foto</h2>
+            <p class="text-[#a9d6e5] text-base mt-2">Momen berharga perjalanan kami</p>
           </div>
           <div class="parchment-card p-4" v-observe>
             <GalleryInvitation :items="galleryImages" />
@@ -290,15 +284,15 @@
         <!-- GIFT — Treasure Chest -->
         <section id="gift" v-if="isSectionEnabled('gift')" class="max-w-xl mx-auto space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Treasure Chest</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Kirimkan harta karun sebagai bekal pelayaran kami</p>
+            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Tanda Kasih</h2>
+            <p class="text-[#a9d6e5] text-base mt-2">Doa restu Anda merupakan hadiah terindah bagi kami</p>
           </div>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div v-for="(bank, index) in data.bankAccounts" :key="index" class="parchment-card p-6" v-observe>
               <div class="flex items-center gap-2 mb-2">
                 <span class="text-2xl">💰</span>
-                <span class="font-wanted text-[10px] text-[#7a4a1e] uppercase tracking-widest">Peti {{ index + 1 }}</span>
+                <span class="font-wanted text-[10px] text-[#7a4a1e] uppercase tracking-widest">Rekening {{ index + 1 }}</span>
               </div>
               <div class="font-pirate text-2xl text-[#3a2312] uppercase mb-1">{{ bank.bankName }}</div>
               <div class="text-xl text-[#b5171e] font-mono tracking-wider break-all mb-1">{{ bank.accountNumber }}</div>
@@ -308,7 +302,7 @@
           </div>
 
           <div v-if="data.giftDeliveryAddress" class="parchment-card p-6 text-center" v-observe>
-            <h3 class="font-pirate text-xl text-[#b5171e] mb-3">Kirim Kado ke Kapal Kami</h3>
+            <h3 class="font-pirate text-xl text-[#b5171e] mb-3">Kirim Hadiah ke Alamat Kami</h3>
             <p class="text-[15px] text-[#3a2312] leading-relaxed italic mb-5">
               "{{ Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress }}"
             </p>
@@ -322,7 +316,7 @@
             <div class="text-center mb-6">
               <img :src="assets.denDen" alt="ilustrasi telepon laut" class="w-24 mx-auto mb-3 mix-blend-multiply animate-wiggle" />
               <h2 class="font-pirate text-3xl text-[#b5171e]">Konfirmasi Kehadiran</h2>
-              <p class="text-[#5a3a1c] text-base mt-1">Kabari kami apakah kau akan bergabung di dek perayaan?</p>
+              <p class="text-[#5a3a1c] text-base mt-1">Konfirmasikan kehadiran Anda pada hari bahagia kami</p>
             </div>
 
             <form @submit.prevent="submitRSVP" class="space-y-5">
@@ -332,22 +326,22 @@
               </div>
 
               <div v-if="rsvp.attendance === 'hadir'">
-                <label class="block font-wanted text-[10px] text-[#7a4a1e] mb-2 uppercase tracking-widest">Jumlah Kru</label>
+                <label class="block font-wanted text-[10px] text-[#7a4a1e] mb-2 uppercase tracking-widest">Jumlah Tamu</label>
                 <select v-model="rsvp.totalGuests" class="pirate-input">
                   <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
                 </select>
               </div>
 
               <div>
-                <label class="block font-wanted text-[10px] text-[#7a4a1e] mb-2 uppercase tracking-widest">Akan Berlayar Bersama?</label>
+                <label class="block font-wanted text-[10px] text-[#7a4a1e] mb-2 uppercase tracking-widest">Apakah Anda akan hadir?</label>
                 <div class="grid grid-cols-2 gap-3 mt-1">
                   <label class="attend-opt" :class="rsvp.attendance === 'hadir' ? 'attend-yes' : ''">
                     <input type="radio" v-model="rsvp.attendance" value="hadir" class="sr-only" />
-                    <span>⚓ Hadir</span>
+                    <span>Hadir</span>
                   </label>
                   <label class="attend-opt" :class="rsvp.attendance === 'tidak' ? 'attend-no' : ''">
                     <input type="radio" v-model="rsvp.attendance" value="tidak" class="sr-only" />
-                    <span>🌊 Absen</span>
+                    <span>Tidak Hadir</span>
                   </label>
                 </div>
               </div>
@@ -357,7 +351,7 @@
                 <textarea v-model="rsvp.message" rows="4" class="pirate-input resize-none" placeholder="Tulis ucapanmu..."></textarea>
               </div>
 
-              <button type="submit" class="pirate-btn w-full py-3 text-lg font-pirate tracking-widest">⚓ Kirim Pesan</button>
+              <button type="submit" class="pirate-btn w-full py-3 text-lg font-pirate tracking-widest">Kirim Ucapan</button>
             </form>
           </div>
         </section>
@@ -365,8 +359,8 @@
         <!-- GUESTBOOK — Transmissions -->
         <section class="max-w-2xl mx-auto space-y-8">
           <div class="text-center" v-observe>
-            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Transmissions</h2>
-            <p class="text-[#a9d6e5] text-base mt-2">Pesan dari para tamu di seluruh lautan</p>
+            <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Ucapan &amp; Doa</h2>
+            <p class="text-[#a9d6e5] text-base mt-2">Ucapan dan doa dari keluarga &amp; sahabat</p>
           </div>
 
           <div class="parchment-card p-6" v-observe>
@@ -375,12 +369,12 @@
                 <div class="flex flex-col md:flex-row md:justify-between items-start md:items-center gap-1 mb-1">
                   <div class="flex items-center gap-2">
                     <span class="font-pirate text-lg text-[#3a2312]">{{ msg.guestName }}</span>
-                    <span v-if="msg.rsvpStatus === 'hadir'" class="text-[9px] bg-[#b5171e]/15 text-[#b5171e] px-2 py-0.5 border border-[#b5171e]/30 uppercase font-wanted tracking-widest">Berlayar</span>
+                    <span v-if="msg.rsvpStatus === 'hadir'" class="text-[9px] bg-[#b5171e]/15 text-[#b5171e] px-2 py-0.5 border border-[#b5171e]/30 uppercase font-wanted tracking-widest">Hadir</span>
                   </div>
                   <span class="text-[#7a4a1e] text-xs font-wanted">{{ timeAgo(msg.createdAt) }}</span>
                 </div>
                 <p class="text-[#5a3a1c] text-[15px] leading-relaxed italic">"{{ msg.message }}"</p>
-                <div v-if="msg.totalGuests > 1" class="text-[10px] text-[#7a4a1e] mt-1 font-wanted uppercase tracking-widest">Kru: {{ msg.totalGuests }} orang</div>
+                <div v-if="msg.totalGuests > 1" class="text-[10px] text-[#7a4a1e] mt-1 font-wanted uppercase tracking-widest">{{ msg.totalGuests }} orang</div>
               </div>
 
               <div v-if="guestMessages.length === 0" class="text-center py-10 text-[#7a4a1e] font-wanted uppercase tracking-widest">— Belum ada transmisi —</div>
@@ -802,6 +796,7 @@ watch(
   background-position: center;
   border: 3px solid #6b3f18;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+  opacity: 0.7;
 }
 
 /* Weathered wood/ocean plaque */
@@ -810,6 +805,7 @@ watch(
   border: 3px solid #6b3f18;
   border-radius: 4px;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), inset 0 0 40px rgba(122, 74, 30, 0.15);
+  opacity: 0.7;
 }
 
 .log-pose-cell {
