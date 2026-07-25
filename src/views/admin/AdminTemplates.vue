@@ -222,6 +222,20 @@
               <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
             </div>
 
+            <!-- Filter Group (homepage chip curation) -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Filter Group</label>
+              <select v-model="form.filterGroup"
+                class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                <option value="">— Tidak difilter —</option>
+                <option v-for="g in FILTER_GROUP_OPTIONS" :key="g" :value="g">{{ g }}</option>
+              </select>
+              <p class="mt-1 text-xs text-slate-500">
+                Tags dipakai untuk pencarian &amp; SEO. Filter Group yang menentukan chip filter di homepage.
+                Grup dengan kurang dari 3 template tidak muncul sebagai chip.
+              </p>
+            </div>
+
             <!-- Default Music -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Default Musik</label>
@@ -704,6 +718,14 @@ const statusOptions = ref([
 ])
 
 const tagInput = ref('')
+const FILTER_GROUP_OPTIONS = [
+  'Elegan & Mewah',
+  'Minimalis & Modern',
+  'Floral & Romantis',
+  'Anime & Pop Culture',
+  'Bold & Unik',
+  'Dreamy & Celestial',
+]
 const customPalette = reactive({
   primary: '#0F172A',
   secondary: '#64748B',
@@ -744,6 +766,7 @@ const form = reactive({
   seoTitle: '',
   seoDescription: '',
   tags: [],
+  filterGroup: '',
   sections: [],
   isActive: true,
   defaultMusic: null,
@@ -949,6 +972,7 @@ function openCreate() {
     seoTitle: '',
     seoDescription: '',
     tags: [],
+    filterGroup: '',
     sections: availableSections.value.map((s, index) => ({
       sectionId: s.id,
       order: index + 1,
@@ -1044,6 +1068,7 @@ function openEdit(template) {
     seoTitle: template.seoTitle || '',
     seoDescription: template.seoDescription || '',
     tags: tags,
+    filterGroup: template.filterGroup || '',
     sections: sections,
     isActive: Boolean(template.isActive),
     defaultMusic: template.defaultMusic || null,
@@ -1145,6 +1170,7 @@ function buildPayload() {
       is_enabled: s.is_enabled
     })),
     tags: form.tags,
+    filterGroup: form.filterGroup || null,
     sampleContent: prunedSample ?? null
   }
 
