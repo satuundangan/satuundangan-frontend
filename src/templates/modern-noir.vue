@@ -16,9 +16,9 @@
     
     <!-- Mobile Nav -->
     <nav v-if="!showWelcome" class="fixed bottom-0 left-0 w-full z-50 bg-[#0a0a0a]/90 backdrop-blur-md border-t border-white/10 md:hidden transition-all duration-1000 flex overflow-x-auto no-scrollbar scroll-smooth">
-      <div class="flex justify-around items-center py-4 px-6 mx-auto min-w-max w-full">
+      <div class="flex justify-around items-center py-4 px-4 w-full">
         <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300"
           :class="activeSection === item.id ? 'text-white' : 'text-[#404040]'">
           <i :class="[item.icon, 'text-sm']"></i>
         </button>
@@ -359,6 +359,7 @@ const mockStories = [
 ]
 
 const showWelcome = ref(true)
+let interval = null
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
