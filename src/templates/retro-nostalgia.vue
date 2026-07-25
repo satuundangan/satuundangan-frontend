@@ -5,13 +5,13 @@
 
     <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#2c2c2c" accentColor="#e06d53" class="z-[55]" />
 
-    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#2c2c2c] rounded-xl shadow-[4px_4px_0px_0px_rgba(224,109,83,1)] max-w-[95%] border-2 border-[#e06d53] transition-all duration-500 flex overflow-x-auto no-scrollbar scroll-smooth">
-      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+    <nav v-if="!showWelcome" class="fixed bottom-6 inset-x-0 mx-auto z-50 bg-[#2c2c2c] rounded-xl shadow-[4px_4px_0px_0px_rgba(224,109,83,1)] w-[92%] max-w-md border-2 border-[#e06d53] transition-all duration-500 flex overflow-x-auto no-scrollbar scroll-smooth">
+      <div class="flex items-center gap-1 px-2 py-3 w-full">
         <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300"
           :class="activeSection === item.id ? 'text-[#e06d53] -translate-y-1' : 'text-[#fdfbf7] hover:text-[#e06d53]'">
           <i :class="[item.icon, 'text-xl']"></i>
-          <span class="text-[8px] font-bold uppercase tracking-widest">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[8px] font-bold uppercase tracking-widest">{{ item.label }}</span>
         </button>
       </div>
     </nav>
@@ -376,12 +376,12 @@ const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
 const allNavItems = [
-  { id: 'home', label: 'Ticket', icon: 'fa-solid fa-ticket', key: 'hero' },
-  { id: 'story', label: 'Story', icon: 'fa-solid fa-book-open', key: 'love-story' },
-  { id: 'couple', label: 'Cast', icon: 'fa-solid fa-star', key: 'couple' },
-  { id: 'event', label: 'Showtime', icon: 'fa-solid fa-film', key: 'event' },
-  { id: 'gallery', label: 'Stills', icon: 'fa-solid fa-camera-retro', key: 'gallery' },
-  { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift', key: 'gift' },
+  { id: 'home', label: 'Home', icon: 'fa-solid fa-ticket', key: 'hero' },
+  { id: 'story', label: 'Cerita', icon: 'fa-solid fa-book-open', key: 'love-story' },
+  { id: 'couple', label: 'Mempelai', icon: 'fa-solid fa-star', key: 'couple' },
+  { id: 'event', label: 'Acara', icon: 'fa-solid fa-film', key: 'event' },
+  { id: 'gallery', label: 'Galeri', icon: 'fa-solid fa-camera-retro', key: 'gallery' },
+  { id: 'gift', label: 'Kado', icon: 'fa-solid fa-gift', key: 'gift' },
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-pen-nib', key: 'rsvp' }
 ]
 
