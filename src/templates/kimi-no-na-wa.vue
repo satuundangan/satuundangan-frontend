@@ -45,18 +45,18 @@
       v-if="isOpened"
       class="fixed bottom-0 left-0 right-0 z-[80] bg-[#191621]/70 backdrop-blur-xl border-t border-[#ff8a00]/30 rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.5)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
     >
-      <div class="flex items-center justify-center gap-5 px-5 py-3 mx-auto min-w-max">
+      <div class="flex items-center gap-1 px-2 py-3 w-full sm:max-w-xl sm:mx-auto">
         <button
           v-for="item in navItems"
           :key="item.id"
           @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[42px] shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300 relative group"
           :class="
             activeSection === item.id ? 'text-[#ff8a00] scale-110' : 'text-white/30 hover:text-white/60'
           "
         >
           <i :class="[item.icon, 'text-lg md:text-xl']"></i>
-          <span class="text-[6px] font-black uppercase tracking-tighter">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[7px] font-black uppercase tracking-tighter">{{ item.label }}</span>
         </button>
       </div>
     </nav>
@@ -82,9 +82,9 @@
             <h1
               class="text-6xl md:text-[7rem] font-script text-white leading-tight drop-shadow-glow-intense"
             >
-              {{ data.groomName?.split(' ')[0] || 'Mitsuha' }}
+              {{ data.groomName?.split(' ')[0] || 'Arya' }}
               <span class="block text-2xl md:text-4xl font-serif italic text-[#ff8a00]/90 my-2">&</span>
-              {{ data.brideName?.split(' ')[0] || 'Taki' }}
+              {{ data.brideName?.split(' ')[0] || 'Kirana' }}
             </h1>
 
             <p class="text-lg md:text-xl font-light tracking-[0.3em] text-white/80 uppercase">
@@ -153,9 +153,9 @@
               {{ data.heroLabel || 'The Wedding Of' }}
             </p>
             <h1 class="text-5xl md:text-[8rem] font-script text-white leading-none drop-shadow-glow-intense">
-              {{ data.groomName?.split(' ')[0] || 'Mitsuha' }}
+              {{ data.groomName?.split(' ')[0] || 'Arya' }}
               <span class="text-2xl md:text-4xl font-serif italic text-[#ff8a00]/80">&</span>
-              {{ data.brideName?.split(' ')[0] || 'Taki' }}
+              {{ data.brideName?.split(' ')[0] || 'Kirana' }}
             </h1>
           </div>
           <div class="flex flex-col items-center gap-4">
@@ -638,8 +638,8 @@
             <div class="space-y-3 pt-6">
               <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">Kami yang berbahagia,</p>
               <h2 class="font-script text-5xl md:text-8xl text-white drop-shadow-glow-intense leading-none">
-                {{ data.groomName?.split(' ')[0] || 'Mitsuha' }} &
-                {{ data.brideName?.split(' ')[0] || 'Taki' }}
+                {{ data.groomName?.split(' ')[0] || 'Arya' }} &
+                {{ data.brideName?.split(' ')[0] || 'Kirana' }}
               </h2>
             </div>
             <p v-if="data.show_branding" class="text-[8px] text-white/20 uppercase tracking-[0.4em] pt-8">Made with ♥ · Satu Undangan</p>
