@@ -28,13 +28,13 @@
 
     <!-- Mobile Bottom Navigation (Footer Menu) -->
     <nav v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/70 backdrop-blur-xl border border-[#dce5db] rounded-full shadow-xl max-w-[90%] overflow-x-auto no-scrollbar scroll-smooth transition-all duration-500 flex">
-      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto min-w-max">
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/70 backdrop-blur-xl border border-[#dce5db] rounded-full shadow-xl w-[92%] max-w-md overflow-x-auto no-scrollbar scroll-smooth transition-all duration-500 flex">
+      <div class="flex items-center gap-1 px-2 py-3 w-full">
         <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 relative group shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300 relative group"
           :class="activeSection === item.id ? 'text-[#657b62] scale-110' : 'text-gray-400 hover:text-[#657b62]'">
           <i :class="[item.icon, 'text-lg']"></i>
-          <span class="text-[8px] font-bold uppercase tracking-tighter">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[8px] font-bold uppercase tracking-tighter">{{ item.label }}</span>
           <span class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-[#c5a059] transition-all"
             :class="activeSection === item.id ? 'opacity-100' : 'opacity-0'"></span>
         </button>
