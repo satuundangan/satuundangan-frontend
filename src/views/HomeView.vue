@@ -21,15 +21,27 @@
           <p class="text-muted">Desain premium untuk hari spesialmu.</p>
         </div>
 
-        <!-- Filter Categories (Desktop Tabs) -->
-        <div class="flex flex-wrap justify-center gap-2 mb-10">
+        <!-- Filter: Gaya (curated filterGroup) -->
+        <div class="mb-3 flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:flex-wrap md:justify-center md:overflow-visible">
           <button v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
-            'px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 border',
+            'shrink-0 snap-start whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border',
             selectedCategory === cat.id
               ? 'bg-mocha text-white border-mocha shadow-lg shadow-mocha/20'
               : 'bg-transparent text-gray-500 border-gray-200 hover:border-mocha hover:text-mocha'
           ]">
-            {{ cat.name }}
+            {{ cat.label }}
+          </button>
+        </div>
+
+        <!-- Filter: Paket (tier) -->
+        <div class="mb-10 flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:flex-wrap md:justify-center md:overflow-visible">
+          <button v-for="pkg in packageCategories" :key="pkg.id" @click="selectedTier = pkg.id" :class="[
+            'shrink-0 snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border',
+            selectedTier === pkg.id
+              ? 'bg-dark text-white border-dark'
+              : 'bg-transparent text-gray-500 border-gray-200 hover:border-dark hover:text-dark'
+          ]">
+            {{ pkg.label }}
           </button>
         </div>
 
@@ -107,7 +119,7 @@
         <div v-if="!loading && filteredTemplates.length === 0" class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
            <div class="text-4xl mb-4">🎨</div>
            <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
-           <p class="text-muted text-sm">Coba pilih kategori lain atau kembali beberapa saat lagi.</p>
+           <p class="text-muted text-sm">Coba ubah filter gaya atau paket, atau kembali beberapa saat lagi.</p>
         </div>
 
         <div class="text-center mt-12">
@@ -277,8 +289,21 @@
                   'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
                   selectedCategory === cat.id ? 'bg-white text-mocha shadow-sm border border-gray-200' : 'text-gray-600 hover:bg-gray-200/50'
                 ]">
-                  {{ cat.name }}
+                  {{ cat.label }}
                   <span v-if="selectedCategory === cat.id" class="w-1.5 h-1.5 rounded-full bg-mocha"></span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mb-6">
+              <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Paket</h5>
+              <ul class="space-y-1">
+                <li v-for="pkg in packageCategories" :key="pkg.id" @click="selectedTier = pkg.id" :class="[
+                  'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
+                  selectedTier === pkg.id ? 'bg-white text-mocha shadow-sm border border-gray-200' : 'text-gray-600 hover:bg-gray-200/50'
+                ]">
+                  {{ pkg.label }}
+                  <span v-if="selectedTier === pkg.id" class="w-1.5 h-1.5 rounded-full bg-mocha"></span>
                 </li>
               </ul>
             </div>
@@ -299,13 +324,23 @@
             </button>
           </div>
 
-          <!-- Mobile Filter Tabs -->
+          <!-- Mobile Filter Tabs: Gaya -->
           <div class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
             <button v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
               'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
               selectedCategory === cat.id ? 'bg-mocha text-white border-mocha' : 'bg-white text-gray-600 border-gray-200'
             ]">
-              {{ cat.name }}
+              {{ cat.label }}
+            </button>
+          </div>
+
+          <!-- Mobile Filter Tabs: Paket -->
+          <div class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
+            <button v-for="pkg in packageCategories" :key="pkg.id" @click="selectedTier = pkg.id" :class="[
+              'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
+              selectedTier === pkg.id ? 'bg-dark text-white border-dark' : 'bg-white text-gray-600 border-gray-200'
+            ]">
+              {{ pkg.label }}
             </button>
           </div>
 
@@ -389,7 +424,7 @@
                 📦</div>
               <div>
                 <p class="font-medium text-gray-600">Tidak ada template ditemukan</p>
-                <p class="text-sm">Coba pilih kategori lain.</p>
+                <p class="text-sm">Coba ubah filter gaya atau paket.</p>
               </div>
             </div>
           </div>
@@ -424,7 +459,7 @@
 
 <script setup>
 import { ref, computed, watch, nextTick, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
 import HeroSection from '@/components/layout/HeroSection.vue'
@@ -438,8 +473,16 @@ import { getTemplateDesigns } from '@/api/templateDesign'
 import { getPackages } from '@/api/payment'
 import FloatingNovaButton from '@/components/nova/FloatingNovaButton.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
+import {
+  buildStyleFilters,
+  buildPackageFilters,
+  filterTemplates,
+  resolveFilterId,
+  ALL_ID,
+} from '@/utils/templateFilters'
 
 const router = useRouter()
+const route = useRoute()
 const showModal = ref(false)
 const selectedPlan = ref(null)
 
@@ -460,7 +503,9 @@ watch(showModal, (val) => {
 })
 
 const selectedTemplate = ref(null)
-const selectedCategory = ref('all') // Default to 'all' ID
+const selectedCategory = ref('all') // Default to 'all' ID (= curated filterGroup id)
+const selectedTier = ref('all') // Package tier filter id (NOT selectedPackage — that name is
+// already used by the pricing section / localStorage key)
 const templateRefs = reactive({})
 const templates = ref([])
 const loading = ref(true)
@@ -559,6 +604,10 @@ onMounted(async () => {
       templates.value = Array.isArray(rawTplData) ? rawTplData : []
     }
 
+    // Restore ?gaya=/?paket= from the URL, sanitized against the chips that
+    // actually exist (a stale or below-threshold value falls back to "Semua").
+    selectedCategory.value = resolveFilterId(route.query.gaya, buildStyleFilters(templates.value))
+    selectedTier.value = resolveFilterId(route.query.paket, buildPackageFilters(templates.value))
   } catch (e) {
     console.error('Gagal ambil data:', e)
   } finally {
@@ -579,52 +628,26 @@ onMounted(async () => {
   }
 })
 
-// Normalize tags to array (handles JSON array, CSV string, or existing array)
-const normalizeTags = (tags) => {
-  if (!tags) return []
-  if (Array.isArray(tags)) return tags
-  if (typeof tags === 'string') {
-    const trimmed = tags.trim()
-    if (trimmed.startsWith('[')) {
-      try {
-        const parsed = JSON.parse(trimmed)
-        return Array.isArray(parsed) ? parsed : []
-      } catch {
-        return []
-      }
-    }
-    return trimmed.split(',').map(t => t.trim()).filter(Boolean)
-  }
-  return []
-}
+// Filter Logic — chips come from the admin-curated `filterGroup` (style) and
+// `category` (package tier) fields, NOT from raw `tags` (tags stay in the DB
+// for search/SEO only, see D-01).
+const filteredTemplates = computed(() =>
+  filterTemplates(templates.value, selectedCategory.value, selectedTier.value),
+)
 
-// Filter Logic
-const filteredTemplates = computed(() => {
-  if (selectedCategory.value === 'all') return templates.value
+const styleCategories = computed(() => buildStyleFilters(templates.value))
+const packageCategories = computed(() => buildPackageFilters(templates.value))
 
-  return templates.value.filter(t => {
-    const tags = normalizeTags(t.tags)
-    return tags.some(tag => tag.toLowerCase() === selectedCategory.value.toLowerCase())
-  })
-})
-
-// Catalog filter categories, derived dynamically from the tags of loaded templates.
-// id = lowercase tag (matches case-insensitive filter); name = display-cased. Always prefixed with "Semua".
-const styleCategories = computed(() => {
-  const map = new Map()
-  templates.value.forEach((t) =>
-    normalizeTags(t.tags).forEach((raw) => {
-      const tag = (raw || '').trim()
-      const key = tag.toLowerCase()
-      if (key && !map.has(key)) {
-        map.set(key, tag.charAt(0).toUpperCase() + tag.slice(1))
-      }
-    }),
-  )
-  const cats = [...map.entries()]
-    .sort((a, b) => a[1].localeCompare(b[1]))
-    .map(([id, name]) => ({ id, name }))
-  return [{ id: 'all', name: 'Semua' }, ...cats]
+// Sync selection to ?gaya=/?paket= via replace (no history entry per click),
+// preserving any other existing query params.
+watch([selectedCategory, selectedTier], ([gaya, paket]) => {
+  const query = { ...route.query }
+  if (gaya && gaya !== ALL_ID) query.gaya = gaya
+  else delete query.gaya
+  if (paket && paket !== ALL_ID) query.paket = paket
+  else delete query.paket
+  if (JSON.stringify(query) === JSON.stringify(route.query)) return
+  router.replace({ query })
 })
 
 watch(() => showModal.value, (newVal) => {
