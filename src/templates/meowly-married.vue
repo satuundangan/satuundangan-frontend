@@ -17,13 +17,13 @@
     </nav>
     
     <!-- Mobile Bottom Navigation -->
-    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#fcfaf7]/95 backdrop-blur-md rounded-none shadow-md border border-[#e6dfd5] max-w-[90%] md:hidden flex overflow-x-auto no-scrollbar">
-      <div class="flex items-center justify-center gap-6 px-6 py-3 mx-auto">
+    <nav v-if="!showWelcome" class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-[#fcfaf7]/95 backdrop-blur-md rounded-none shadow-md border border-[#e6dfd5] w-[92%] max-w-md md:hidden flex overflow-x-auto no-scrollbar">
+      <div class="flex items-center gap-1 px-2 py-3 w-full">
         <button v-for="item in navItems" :key="item.id" @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-0.5 transition-all duration-300 shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-0.5 transition-all duration-300"
           :class="activeSection === item.id ? 'text-[#2a2221] scale-105 font-black' : 'text-gray-400'">
           <i :class="[item.icon, 'text-xs']"></i>
-          <span class="text-[7px] font-black uppercase tracking-[0.15em]">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[7px] font-black uppercase tracking-[0.15em]">{{ item.label }}</span>
         </button>
       </div>
     </nav>
