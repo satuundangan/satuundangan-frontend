@@ -365,6 +365,7 @@ const mockStories = [
 ]
 
 const showWelcome = ref(true)
+let interval = null
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 
