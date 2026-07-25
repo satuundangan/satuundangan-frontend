@@ -41,12 +41,12 @@
       v-if="isOpened"
       class="fixed bottom-0 left-0 right-0 z-[80] bg-[#4a2530]/80 backdrop-blur-xl border-t border-[#ffb6c1]/30 rounded-t-2xl shadow-[0_-10px_30px_rgba(0,0,0,0.2)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
     >
-      <div class="flex items-center justify-center gap-5 px-5 py-3 mx-auto min-w-max">
+      <div class="flex items-center gap-1 px-2 py-3 w-full">
         <button
           v-for="item in navItems"
           :key="item.id"
           @click="scrollToSection(item.id)"
-          class="flex flex-col items-center gap-1 transition-all duration-300 relative group min-w-[42px] shrink-0"
+          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300 relative group"
           :class="
             activeSection === item.id
               ? 'text-[#ffb6c1] scale-110'
@@ -54,7 +54,7 @@
           "
         >
           <i :class="[item.icon, 'text-lg md:text-xl']"></i>
-          <span class="text-[7px] font-black uppercase tracking-tighter">{{ item.label }}</span>
+          <span class="max-w-full truncate text-[7px] font-black uppercase tracking-tighter">{{ item.label }}</span>
         </button>
       </div>
     </nav>
