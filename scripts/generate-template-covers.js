@@ -21,6 +21,11 @@
  *
  * Env vars (write path only):
  *   COVER_ADMIN_EMAIL, COVER_ADMIN_PASSWORD  admin account used to login before upload + PATCH
+ *
+ * Env vars (optional, any mode):
+ *   CF_ACCESS_CLIENT_ID, CF_ACCESS_CLIENT_SECRET  Cloudflare Access service-token headers, sent on
+ *     page navigation when dev.satuundangan.id sits behind a Cloudflare Access policy. Required if
+ *     GET {baseUrl}/demo/:slug redirects to a cloudflareaccess.com login page (302) instead of 200.
  */
 
 import { chromium } from '@playwright/test'
@@ -34,6 +39,16 @@ const outputDir = path.resolve(__dirname, '../.cover-output')
 const DEV_HOSTS = ['dev.satuundangan.id', 'api-dev.satuundangan.id', 'localhost', '127.0.0.1']
 const MAX_BYTES = 300 * 1024
 const WEBP_QUALITIES = [0.85, 0.8, 0.75, 0.7, 0.65]
+
+// Optional Cloudflare Access service-token headers. dev.satuundangan.id can sit behind a Cloudflare
+// Access policy (302 -> cloudflareaccess.com login) that a headless browser can never click through.
+// If a Service Token + bypass policy exists for this automation, set these two env vars and the
+// headers below get attached to every page navigation. Unset by default — no behavior change.
+const cfAccessHeaders = {}
+if (process.env.CF_ACCESS_CLIENT_ID && process.env.CF_ACCESS_CLIENT_SECRET) {
+  cfAccessHeaders['CF-Access-Client-Id'] = process.env.CF_ACCESS_CLIENT_ID
+  cfAccessHeaders['CF-Access-Client-Secret'] = process.env.CF_ACCESS_CLIENT_SECRET
+}
 
 function printHelp() {
   console.log(`
@@ -119,14 +134,22 @@ async function captureScreenshot(browser, baseUrl, slug) {
   const page = await browser.newPage({
     viewport: { width: 432, height: 540 },
     deviceScaleFactor: 2.5,
+    extraHTTPHeaders: cfAccessHeaders,
   })
   try {
     await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page
+    const navResponse = await page
       .goto(`${baseUrl}/demo/${slug}`, { waitUntil: 'networkidle', timeout: 30000 })
       .catch(() => {
         // networkidle may timeout if API calls never resolve — that's fine, proceed anyway
+        return null
       })
+    if (navResponse && /cloudflareaccess\.com/.test(page.url())) {
+      throw new Error(
+        `blocked by Cloudflare Access login redirect (${page.url()}) — set CF_ACCESS_CLIENT_ID / ` +
+          `CF_ACCESS_CLIENT_SECRET or add a bypass policy for ${new URL(baseUrl).hostname}`,
+      )
+    }
     await page.evaluate(() => document.fonts.ready)
     await page.evaluate(() =>
       Promise.all(
