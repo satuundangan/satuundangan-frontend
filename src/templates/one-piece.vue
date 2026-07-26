@@ -74,7 +74,7 @@
         <!-- horizon glow + sun -->
         <div class="absolute inset-0 op-horizon pointer-events-none"></div>
 
-        <div class="relative w-full max-w-sm wanted-poster p-5 pb-6 text-center animate-float-slow">
+        <div class="relative w-full max-w-sm wanted-poster p-5 pb-5 text-center animate-float-slow">
           <div class="wanted-corner top-2 left-2">✦</div>
           <div class="wanted-corner top-2 right-2">✦</div>
           <div class="wanted-corner bottom-2 left-2">✦</div>
@@ -119,10 +119,10 @@
           <p class="font-wanted text-[9px] tracking-[0.3em] text-[#7a4a1e] uppercase">Sang Buronan</p>
           <h2
             data-op-couple
-            class="font-pirate text-[26px] leading-[1.05] text-[#3a2312] px-1 break-words hyphens-auto"
+            class="font-pirate text-[26px] leading-[1.05] text-[#3a2312] px-1 break-words hyphens-auto mb-2"
           >
             {{ data.groomName || 'Rian Pratama' }}
-            <span class="block text-[#b5171e] text-lg leading-none my-0.5">&amp;</span>
+            <span class="block text-[#b5171e] text-xl leading-none my-0.5">&amp;</span>
             {{ data.brideName || 'Sari Dewi' }}
           </h2>
 
@@ -132,7 +132,7 @@
             {{ data.guestName || 'Tamu Terhormat' }}
           </div>
 
-          <button @click="openInvitation" class="pirate-btn w-full py-2.5 text-lg font-pirate tracking-widest animate-pulse-soft mt-3">
+          <button @click="openInvitation" class="pirate-btn w-full py-2.5 text-lg font-pirate tracking-widest animate-pulse-soft mt-2">
             ⚓ BUKA UNDANGAN
           </button>
         </div>
