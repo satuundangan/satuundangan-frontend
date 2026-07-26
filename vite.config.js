@@ -9,9 +9,14 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
   const devProxyTarget = env.VITE_DEV_PROXY_TARGET || 'http://localhost:3000'
+  // Vue DevTools injects a floating inspector widget into every rendered page. Normal `npm run
+  // dev` always wants it, so it stays on by default. It must be off for any headless capture
+  // (e.g. scripts/generate-template-covers.js) since the widget bakes itself into screenshots.
+  // Opt-out only, never opt-in by default: unset VITE_DISABLE_DEVTOOLS changes nothing.
+  const devToolsDisabled = env.VITE_DISABLE_DEVTOOLS === 'true'
 
   return {
-    plugins: [vue(), vueDevTools(), tailwindcss()],
+    plugins: [vue(), ...(devToolsDisabled ? [] : [vueDevTools()]), tailwindcss()],
     test: {
       globals: true,
       environment: 'jsdom',
