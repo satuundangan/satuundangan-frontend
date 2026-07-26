@@ -134,6 +134,18 @@
                 required />
             </div>
             <div>
+              <label class="text-sm font-medium text-slate-600">Komponen Renderer</label>
+              <select v-model="form.componentKey"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                <option value="">Otomatis (pakai slug)</option>
+                <option v-for="key in templateComponentKeys" :key="key" :value="key">{{ key }}</option>
+              </select>
+              <p class="mt-1 text-[10px] text-slate-400">
+                Desain baru bisa memakai tampilan template yang sudah ada — tanpa coding. Kosongkan jika nama slug
+                sama dengan nama file template.
+              </p>
+            </div>
+            <div>
               <label class="text-sm font-medium text-slate-600">Kategori</label>
               <select v-model="form.category"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
@@ -657,6 +669,7 @@ import { uploadFileApi } from '@/api/file.js'
 import ImageCropperModal from '@/views/create-form/components/ImageCropperModal.vue'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
+import { templateComponentKeys } from '@/utils/templateRegistry'
 
 const toast = useToast()
 const thumbnailInput = ref(null)
@@ -757,6 +770,7 @@ function emptySampleContent() {
 const form = reactive({
   name: '',
   slug: '',
+  componentKey: '',
   category: '',
   price: 0,
   previewUrl: '',
@@ -963,6 +977,7 @@ function openCreate() {
   Object.assign(form, {
     name: '',
     slug: '',
+    componentKey: '',
     category: '',
     price: 0,
     previewUrl: '',
@@ -1059,6 +1074,7 @@ function openEdit(template) {
   Object.assign(form, {
     name: template.name || '',
     slug: template.slug || '',
+    componentKey: template.componentKey || '',
     category: template.category || '',
     price: template.price || 0,
     previewUrl: template.previewUrl || '',
@@ -1152,6 +1168,7 @@ function buildPayload() {
   const payload = {
     name: form.name,
     slug: form.slug,
+    componentKey: form.componentKey || null,
     category: form.category,
     price: Number(form.price),
     previewUrl: form.previewUrl,
