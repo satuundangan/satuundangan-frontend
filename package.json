@@ -9,6 +9,8 @@
     "postbuild": "node -e \"if(!process.env.VERCEL && !process.env.CF_PAGES && !process.env.CI) process.exit(require('child_process').spawnSync('npm', ['run', 'prerender'], {stdio: 'inherit', shell: true}).status)\"",
     "preview": "vite preview",
     "prerender": "node scripts/prerender.js",
+    "generate-covers": "node scripts/generate-template-covers.js --dry-run",
+    "generate-covers:apply": "node scripts/generate-template-covers.js --yes",
     "test": "vitest",
     "test:e2e": "playwright test",
     "test:e2e:smoke": "playwright test tests/p0-smoke.mocked.spec.js --project=mocked",

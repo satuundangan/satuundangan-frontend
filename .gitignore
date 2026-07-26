@@ -33,3 +33,6 @@ qodana
 *.sw?
 
 *.tsbuildinfo
+
+# Generated template covers (dry-run output)
+.cover-output/
