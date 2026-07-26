@@ -11,27 +11,12 @@ import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { featuresFor } from '@/config/packageFeatures'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-
-const templateMap = {
-  'dark-elegant': () => import('../templates/dark-elegant.vue'),
-  'light-modern': () => import('../templates/light-modern.vue'),
-  'botanical-watercolor': () => import('../templates/botanical-watercolor.vue'),
-  'royal-gold': () => import('../templates/royal-gold.vue'),
-  'minimalist-terra': () => import('../templates/minimalist-terra.vue'),
-  'celestial-sparkle': () => import('../templates/celestial-sparkle.vue'),
-  'editorial-magazine': () => import('../templates/editorial-magazine.vue'),
-  'retro-nostalgia': () => import('../templates/retro-nostalgia.vue'),
-  'modern-noir': () => import('../templates/modern-noir.vue'),
-  'azure-shores': () => import('../templates/azure-shores.vue'),
-  'cyberpunk-neon': () => import('../templates/cyberpunk-neon.vue'),
-  'royal-emerald': () => import('../templates/royal-emerald.vue'),
-  'sakura-blossom': () => import('../templates/sakura-blossom.vue'),
-  'kimi-no-na-wa': () => import('../templates/kimi-no-na-wa.vue'),
-  'pixel-quest': () => import('../templates/pixel-quest.vue'),
-  'one-piece': () => import('../templates/one-piece.vue'),
-  'meowly-married': () => import('../templates/meowly-married.vue'),
-  'naruto': () => import('../templates/naruto.vue'),
-}
+import {
+  templateLoaders,
+  resolveTemplateKey,
+  normalizeTemplateKey,
+  FALLBACK_TEMPLATE_KEY,
+} from '@/utils/templateRegistry'
 
 const props = defineProps({
   // Host-based mode: invitation resolved from custom subdomain, not route slug.
@@ -59,6 +44,8 @@ const ALL_SECTION_KEYS = [
   'live-streaming', 'video', 'denah', 'menu', 'countdown',
   'wishes', 'map', 'music', 'photoCouple', 'hero'
 ]
+
+let templateResolveSeq = 0
 
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
@@ -113,14 +100,24 @@ onMounted(async () => {
   })
 
   // Watch for invitationData changes to update TemplateComponent
-  watch(() => invitationData.value?.template_slug, (newSlug) => {
+  watch(() => invitationData.value?.template_slug, async (newSlug) => {
     if (!newSlug) return
-    
-    const normalizedSlug = newSlug.toLowerCase().replace(/\s+/g, '-')
-    const loader = templateMap[normalizedSlug] || templateMap['dark-elegant']
+    const seq = ++templateResolveSeq
+    let key = resolveTemplateKey(newSlug)
+
+    // Unknown slug: the design may be an admin-created row bound to an existing renderer.
+    if (key === FALLBACK_TEMPLATE_KEY && normalizeTemplateKey(newSlug) !== FALLBACK_TEMPLATE_KEY) {
+      try {
+        const tmpl = await getTemplateDesignBySlug(newSlug)
+        key = resolveTemplateKey(newSlug, tmpl?.componentKey)
+      } catch {
+        // keep the fallback — a network error or 404 must not blank the page
+      }
+    }
+    if (seq !== templateResolveSeq) return // a newer slug won the race
 
     TemplateComponent.value = markRaw(defineAsyncComponent({
-      loader,
+      loader: templateLoaders[key],
       errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
     }))
   }, { immediate: true })
