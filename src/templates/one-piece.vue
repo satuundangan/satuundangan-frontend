@@ -2,6 +2,31 @@
   <div
     class="relative h-screen overflow-hidden font-nautical text-[#2b1a0e] selection:bg-[#b5171e] selection:text-[#f4e4c1] op-sky"
   >
+    <!-- Inline nautical art sprite (replaces the former One Piece image assets) -->
+    <svg aria-hidden="true" class="absolute w-0 h-0 overflow-hidden" focusable="false">
+      <symbol id="op-ship" viewBox="0 0 240 200">
+        <path d="M10,182 Q30,176 50,182 T90,182 T130,182 T170,182 T210,182" fill="none" stroke="#a9d6e5" stroke-width="4" stroke-linecap="round" opacity="0.8" />
+        <path d="M20,192 Q40,187 60,192 T100,192 T140,192 T180,192 T220,192" fill="none" stroke="#a9d6e5" stroke-width="3" stroke-linecap="round" opacity="0.5" />
+        <path d="M22,140 L218,140 L198,170 Q120,184 42,170 Z" fill="#3a2312" />
+        <path d="M26,136 L214,136 L214,146 L26,146 Z" fill="#6b3f18" />
+        <circle cx="60" cy="155" r="4" fill="#f9c74f" />
+        <circle cx="90" cy="157" r="4" fill="#f9c74f" />
+        <circle cx="120" cy="158" r="4" fill="#f9c74f" />
+        <circle cx="150" cy="157" r="4" fill="#f9c74f" />
+        <circle cx="180" cy="155" r="4" fill="#f9c74f" />
+        <line x1="120" y1="136" x2="120" y2="18" stroke="#6b3f18" stroke-width="4" />
+        <line x1="70" y1="136" x2="70" y2="55" stroke="#6b3f18" stroke-width="3" />
+        <line x1="172" y1="136" x2="172" y2="62" stroke="#6b3f18" stroke-width="3" />
+        <path d="M120,18 L142,25 L120,32 Z" fill="#b5171e" />
+        <path d="M120,26 C158,34 162,78 138,116 L120,116 Z" fill="#f4e4c1" />
+        <path d="M120,32 C142,55 142,92 128,114" fill="none" stroke="#c8a86b" stroke-width="1.5" />
+        <path d="M70,58 C96,64 98,96 80,120 L70,120 Z" fill="#efe0bb" />
+        <path d="M70,62 C86,80 86,104 76,118" fill="none" stroke="#c8a86b" stroke-width="1.2" />
+        <path d="M172,65 C150,71 148,100 164,122 L172,122 Z" fill="#efe0bb" />
+        <path d="M172,69 C158,85 158,106 166,120" fill="none" stroke="#c8a86b" stroke-width="1.2" />
+      </symbol>
+    </svg>
+
     <!-- Floating bubbles canvas -->
     <canvas ref="seaCanvas" class="fixed top-0 left-0 w-full h-full pointer-events-none z-0 opacity-90"></canvas>
 
@@ -49,13 +74,13 @@
         <!-- horizon glow + sun -->
         <div class="absolute inset-0 op-horizon pointer-events-none"></div>
 
-        <div class="relative w-full max-w-sm wanted-poster p-6 pb-8 text-center animate-float-slow">
+        <div class="relative w-full max-w-sm wanted-poster p-5 pb-6 text-center animate-float-slow">
           <div class="wanted-corner top-2 left-2">✦</div>
           <div class="wanted-corner top-2 right-2">✦</div>
           <div class="wanted-corner bottom-2 left-2">✦</div>
           <div class="wanted-corner bottom-2 right-2">✦</div>
 
-          <h1 class="font-pirate text-5xl md:text-6xl text-[#3a2312] tracking-[0.15em] leading-none mt-2">WANTED</h1>
+          <h1 class="font-pirate text-4xl md:text-5xl text-[#3a2312] tracking-[0.15em] leading-none mt-1">WANTED</h1>
           <div class="flex items-center justify-center gap-2 my-2">
             <span class="h-[2px] w-8 bg-[#7a4a1e]"></span>
             <span class="font-wanted text-[10px] tracking-[0.35em] text-[#7a4a1e] uppercase">Dead or Alive</span>
@@ -63,17 +88,51 @@
           </div>
 
           <!-- Portrait mugshot area -->
-          <div class="relative mx-auto my-4 w-40 h-40 border-4 border-[#6b3f18] bg-[#efe0bb] overflow-hidden shadow-inner flex items-center justify-center">
-            <img :src="assets.strawHat" alt="topi jerami" class="w-32 h-auto mix-blend-multiply" />
+          <div class="relative mx-auto mt-3 mb-2 w-32 h-32 border-4 border-[#6b3f18] bg-[#efe0bb] overflow-hidden shadow-inner flex items-center justify-center">
+            <svg viewBox="0 0 100 100" class="w-24 h-24" role="img">
+              <title>Kemudi kapal</title>
+              <circle cx="50" cy="50" r="34" fill="none" stroke="#6b3f18" stroke-width="6" />
+              <g stroke="#7a4a1e" stroke-width="5" stroke-linecap="round">
+                <line x1="50" y1="16" x2="50" y2="6" />
+                <line x1="74.04" y1="25.96" x2="81.11" y2="18.89" />
+                <line x1="84" y1="50" x2="94" y2="50" />
+                <line x1="74.04" y1="74.04" x2="81.11" y2="81.11" />
+                <line x1="50" y1="84" x2="50" y2="94" />
+                <line x1="25.96" y1="74.04" x2="18.89" y2="81.11" />
+                <line x1="16" y1="50" x2="6" y2="50" />
+                <line x1="25.96" y1="25.96" x2="18.89" y2="18.89" />
+              </g>
+              <circle cx="50" cy="6" r="4" fill="#f9c74f" />
+              <circle cx="81.11" cy="18.89" r="4" fill="#7a4a1e" />
+              <circle cx="94" cy="50" r="4" fill="#7a4a1e" />
+              <circle cx="81.11" cy="81.11" r="4" fill="#7a4a1e" />
+              <circle cx="50" cy="94" r="4" fill="#7a4a1e" />
+              <circle cx="18.89" cy="81.11" r="4" fill="#7a4a1e" />
+              <circle cx="6" cy="50" r="4" fill="#7a4a1e" />
+              <circle cx="18.89" cy="18.89" r="4" fill="#7a4a1e" />
+              <circle cx="50" cy="50" r="13" fill="#3a2312" />
+              <circle cx="50" cy="50" r="13" fill="none" stroke="#7a4a1e" stroke-width="2" />
+              <circle cx="50" cy="50" r="3" fill="#f9c74f" />
+            </svg>
           </div>
+
+          <p class="font-wanted text-[9px] tracking-[0.3em] text-[#7a4a1e] uppercase">Sang Buronan</p>
+          <h2
+            data-op-couple
+            class="font-pirate text-[26px] leading-[1.05] text-[#3a2312] px-1 break-words hyphens-auto"
+          >
+            {{ data.groomName || 'Rian Pratama' }}
+            <span class="block text-[#b5171e] text-lg leading-none my-0.5">&amp;</span>
+            {{ data.brideName || 'Sari Dewi' }}
+          </h2>
 
           <p class="font-wanted text-[11px] tracking-[0.25em] text-[#7a4a1e] uppercase mb-1">Yth. Bapak/Ibu/Saudara/i</p>
 
-          <div class="bg-[#3a2312] text-[#f4e4c1] font-pirate text-2xl md:text-3xl py-2 px-3 my-3 truncate tracking-wide">
+          <div class="bg-[#3a2312] text-[#f4e4c1] font-pirate text-xl md:text-2xl py-2 px-3 my-2 truncate tracking-wide">
             {{ data.guestName || 'Tamu Terhormat' }}
           </div>
 
-          <button @click="openInvitation" class="pirate-btn w-full py-3 text-lg font-pirate tracking-widest animate-pulse-soft mt-6">
+          <button @click="openInvitation" class="pirate-btn w-full py-2.5 text-lg font-pirate tracking-widest animate-pulse-soft mt-3">
             ⚓ BUKA UNDANGAN
           </button>
         </div>
@@ -96,7 +155,9 @@
           <div v-observe class="relative">
             <p class="font-wanted text-[11px] tracking-[0.4em] text-[#f9c74f] uppercase mb-4">{{ data.heroLabel || 'The Wedding Of' }}</p>
 
-            <img :src="assets.sunny" alt="kapal bajak laut" class="w-64 md:w-80 mx-auto drop-shadow-[0_18px_25px_rgba(0,0,0,0.45)] animate-sail" />
+            <svg viewBox="0 0 240 200" class="w-64 md:w-80 mx-auto drop-shadow-[0_18px_25px_rgba(0,0,0,0.45)] animate-sail" aria-hidden="true">
+              <use href="#op-ship" />
+            </svg>
 
             <div class="ocean-plaque mt-2 px-6 py-6 max-w-xl mx-auto">
               <h2 class="font-wanted text-[10px] tracking-[0.35em] text-[#7a4a1e] uppercase mb-2">Dengan penuh syukur, kami akan menikah</h2>
@@ -314,7 +375,16 @@
         <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="max-w-xl mx-auto space-y-8">
           <div class="ocean-plaque p-8" v-observe>
             <div class="text-center mb-6">
-              <img :src="assets.denDen" alt="ilustrasi telepon laut" class="w-24 mx-auto mb-3 mix-blend-multiply animate-wiggle" />
+              <svg viewBox="0 0 100 120" class="w-24 mx-auto mb-3 animate-wiggle" role="img">
+                <title>Pesan dalam botol</title>
+                <g transform="rotate(12 50 60)">
+                  <rect x="42" y="10" width="16" height="10" rx="2" fill="#3a2312" />
+                  <rect x="43" y="18" width="14" height="26" fill="#a9d6e5" fill-opacity="0.45" stroke="#0f3a5f" stroke-width="2" />
+                  <path d="M35,44 Q29,72 35,98 Q50,108 65,98 Q71,72 65,44 Z" fill="#a9d6e5" fill-opacity="0.4" stroke="#0f3a5f" stroke-width="2" />
+                  <rect x="41" y="52" width="18" height="34" rx="3" fill="#f4e4c1" opacity="0.92" />
+                  <rect x="39" y="64" width="22" height="6" fill="#b5171e" />
+                </g>
+              </svg>
               <h2 class="font-pirate text-3xl text-[#b5171e]">Konfirmasi Kehadiran</h2>
               <p class="text-[#5a3a1c] text-base mt-1">Konfirmasikan kehadiran Anda pada hari bahagia kami</p>
             </div>
@@ -384,7 +454,9 @@
 
         <!-- FOOTER -->
         <footer class="text-center py-16 relative" v-observe>
-          <img :src="assets.sunny" alt="kapal bajak laut" class="w-40 mx-auto opacity-90 animate-sail" />
+          <svg viewBox="0 0 240 200" class="w-40 mx-auto opacity-90 animate-sail" aria-hidden="true">
+            <use href="#op-ship" />
+          </svg>
           <div class="ocean-plaque max-w-md mx-auto mt-4 px-6 py-6">
             <p class="font-pirate text-2xl text-[#b5171e] mb-2">Terima Kasih!</p>
             <p class="text-sm text-[#5a3a1c] uppercase tracking-[0.2em] font-wanted">
@@ -412,13 +484,6 @@ const props = defineProps({
 const toast = useToast()
 const isOpened = ref(false)
 const isPreviewMode = computed(() => props.data?.id === 'live-preview' || props.data?.id === 0)
-
-const assets = {
-  sunny: '/assets/images/one-piece/thousand-sunny.png',
-  parchment: '/assets/images/one-piece/parchment.jpeg',
-  strawHat: '/assets/images/one-piece/straw-hat.jpeg',
-  denDen: '/assets/images/one-piece/den-den-mushi.jpeg',
-}
 
 const data = ref(props.data || {})
 
