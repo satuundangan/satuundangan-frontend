@@ -721,10 +721,9 @@ const tagInput = ref('')
 const FILTER_GROUP_OPTIONS = [
   'Elegan & Mewah',
   'Minimalis & Modern',
-  'Floral & Romantis',
+  'Romantis & Dreamy',
   'Anime & Pop Culture',
   'Bold & Unik',
-  'Dreamy & Celestial',
 ]
 const customPalette = reactive({
   primary: '#0F172A',

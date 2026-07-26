@@ -14,9 +14,9 @@ import {
 // Exclusive 6 split used throughout this spec; verify the real category against
 // the dev DB in Task 4 before writing the SQL.
 const FIXTURE = [
-  { name: 'Azure Shores', slug: 'azure-shores', category: 'Exclusive', filterGroup: 'Dreamy & Celestial' },
-  { name: 'Botanical Watercolor', slug: 'botanical-watercolor', category: 'Premium', filterGroup: 'Floral & Romantis' },
-  { name: 'Celestial Sparkle', slug: 'celestial-sparkle', category: 'Exclusive', filterGroup: 'Dreamy & Celestial' },
+  { name: 'Azure Shores', slug: 'azure-shores', category: 'Exclusive', filterGroup: 'Romantis & Dreamy' },
+  { name: 'Botanical Watercolor', slug: 'botanical-watercolor', category: 'Premium', filterGroup: 'Romantis & Dreamy' },
+  { name: 'Celestial Sparkle', slug: 'celestial-sparkle', category: 'Exclusive', filterGroup: 'Romantis & Dreamy' },
   { name: 'Cyberpunk Neon', slug: 'cyberpunk-neon', category: 'Exclusive', filterGroup: 'Bold & Unik' },
   { name: 'Dark Elegant', slug: 'dark-elegant', category: 'Basic', filterGroup: 'Elegan & Mewah' },
   { name: 'Kimi no Na wa', slug: 'kimi-no-na-wa', category: 'Premium', filterGroup: 'Anime & Pop Culture' },
@@ -28,7 +28,7 @@ const FIXTURE = [
   { name: 'Retro Nostalgia', slug: 'retro-nostalgia', category: 'Exclusive', filterGroup: 'Bold & Unik' },
   { name: 'Royal Emerald', slug: 'royal-emerald', category: 'Premium', filterGroup: 'Elegan & Mewah' },
   { name: 'Royal Gold Heritage', slug: 'royal-gold-heritage', category: 'Premium', filterGroup: 'Elegan & Mewah' },
-  { name: 'Sakura Blossom', slug: 'sakura-blossom', category: 'Premium', filterGroup: 'Floral & Romantis' },
+  { name: 'Sakura Blossom', slug: 'sakura-blossom', category: 'Premium', filterGroup: 'Romantis & Dreamy' },
   { name: 'The Editorial Story', slug: 'the-editorial-story', category: 'Exclusive', filterGroup: 'Elegan & Mewah' },
 ]
 
@@ -49,11 +49,12 @@ describe('templateFilters', () => {
       ])
     })
 
-    it('produces exactly 4 chips for the golden 16-template fixture', () => {
+    it('produces exactly 5 chips for the golden 16-template fixture', () => {
       const result = buildStyleFilters(FIXTURE)
       expect(result.map((c) => c.id)).toEqual([
         ALL_ID,
         'Elegan & Mewah',
+        'Romantis & Dreamy',
         'Anime & Pop Culture',
         'Bold & Unik',
       ])
@@ -64,6 +65,7 @@ describe('templateFilters', () => {
       const byId = Object.fromEntries(result.map((c) => [c.id, c.count]))
       expect(byId[ALL_ID]).toBe(16)
       expect(byId['Elegan & Mewah']).toBe(4)
+      expect(byId['Romantis & Dreamy']).toBe(4)
       expect(byId['Anime & Pop Culture']).toBe(3)
       expect(byId['Bold & Unik']).toBe(3)
     })
@@ -79,14 +81,12 @@ describe('templateFilters', () => {
       const result = buildStyleFilters(FIXTURE)
       const ids = result.map((c) => c.id)
       expect(ids).not.toContain('Minimalis & Modern')
-      expect(ids).not.toContain('Floral & Romantis')
-      expect(ids).not.toContain('Dreamy & Celestial')
       const all = result.find((c) => c.id === ALL_ID)
       expect(all.count).toBe(16)
       const chipTotal = result
         .filter((c) => c.id !== ALL_ID)
         .reduce((sum, c) => sum + c.count, 0)
-      expect(chipTotal).toBe(10)
+      expect(chipTotal).toBe(14)
     })
 
     it('excludes templates with null/undefined/empty filterGroup and still counts them in Semua', () => {
@@ -108,8 +108,15 @@ describe('templateFilters', () => {
     it('orders by count descending, then name ascending on ties', () => {
       const result = buildStyleFilters(FIXTURE)
       const chipIds = result.filter((c) => c.id !== ALL_ID).map((c) => c.id)
-      // Anime & Pop Culture and Bold & Unik both have count 3 — tie broken alphabetically
-      expect(chipIds).toEqual(['Elegan & Mewah', 'Anime & Pop Culture', 'Bold & Unik'])
+      // Two ties: Elegan & Mewah / Romantis & Dreamy at 4, Anime & Pop Culture /
+      // Bold & Unik at 3 — both broken alphabetically
+      expect(chipIds).toEqual([
+        'Elegan & Mewah',
+        'Romantis & Dreamy',
+        'Anime & Pop Culture',
+        'Bold & Unik',
+      ])
+      expect('Elegan & Mewah'.localeCompare('Romantis & Dreamy', 'id')).toBeLessThan(0)
       expect('Anime & Pop Culture'.localeCompare('Bold & Unik', 'id')).toBeLessThan(0)
     })
   })
@@ -192,7 +199,7 @@ describe('templateFilters', () => {
 
     it('falls back to "all" for a stale/below-threshold value', () => {
       const options = buildStyleFilters(FIXTURE)
-      expect(resolveFilterId('Dreamy & Celestial', options)).toBe(ALL_ID)
+      expect(resolveFilterId('Minimalis & Modern', options)).toBe(ALL_ID)
     })
 
     it('falls back to "all" for undefined or empty candidate', () => {
