@@ -138,12 +138,18 @@
               <label class="text-sm font-medium text-slate-600">Komponen Renderer</label>
               <select v-model="form.componentKey"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
-                <option value="">Otomatis (pakai slug)</option>
-                <option v-for="key in templateComponentKeys" :key="key" :value="key">{{ key }}</option>
+                <optgroup label="Tema Kustom — atur warna, font &amp; background sendiri">
+                  <option :value="DYNAMIC_THEME_KEY">Tema Kustom (Theme Builder)</option>
+                </optgroup>
+                <optgroup label="Pakai tampilan template yang sudah ada">
+                  <option value="">Otomatis (pakai slug)</option>
+                  <option v-for="key in existingRendererKeys" :key="key" :value="key">{{ key }}</option>
+                </optgroup>
               </select>
               <p class="mt-1 text-[10px] text-slate-400">
-                Desain baru bisa memakai tampilan template yang sudah ada — tanpa coding. Kosongkan jika nama slug
-                sama dengan nama file template.
+                Pilih <span class="font-semibold">Tema Kustom</span> untuk membuka Theme Builder — atur warna, font,
+                background &amp; ornamen langsung dari form ini. Pilihan lain memakai tampilan template yang sudah ada
+                apa adanya (tidak bisa diubah dari sini).
               </p>
             </div>
             <div v-if="isThemeBuilderActive" class="md:col-span-2">
@@ -676,7 +682,7 @@ import { uploadFileApi } from '@/api/file.js'
 import ImageCropperModal from '@/views/create-form/components/ImageCropperModal.vue'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
-import { templateComponentKeys } from '@/utils/templateRegistry'
+import { templateComponentKeys, DYNAMIC_THEME_KEY } from '@/utils/templateRegistry'
 import ThemeBuilder from '@/components/admin/ThemeBuilder.vue'
 import {
   designConfigForPayload,
@@ -801,7 +807,10 @@ const form = reactive({
   designConfig: null,
 })
 
-const isThemeBuilderActive = computed(() => form.componentKey === 'dynamic-theme')
+const isThemeBuilderActive = computed(() => form.componentKey === DYNAMIC_THEME_KEY)
+const existingRendererKeys = computed(() =>
+  templateComponentKeys.filter((key) => key !== DYNAMIC_THEME_KEY),
+)
 const themeCopySources = computed(() => buildCopySources(templates.value, editing.value?.id))
 
 watch(() => form.name, (newVal) => {
