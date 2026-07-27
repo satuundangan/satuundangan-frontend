@@ -147,3 +147,54 @@ export function designConfigForPayload(componentKey, config) {
   if (!isPlainObject(config)) return null
   return config
 }
+
+const HEX_RE = /^#[0-9a-f]{6}$/i
+const SHORTHAND_HEX_RE = /^#([0-9a-f])([0-9a-f])([0-9a-f])$/i
+
+/**
+ * Coerce a text input's hex color value into a valid `#rrggbb` string, or fall
+ * back to `previous` (itself validated, else `#000000`) when the input can't
+ * be salvaged. Never throws. Used on a hex text input's `@blur` so a typo
+ * reverts instead of persisting an invalid color into `designConfig`.
+ */
+export function sanitizeHex(next, previous) {
+  const trimmedPrevious = typeof previous === 'string' ? previous.trim() : ''
+  const fallback = HEX_RE.test(trimmedPrevious) ? trimmedPrevious : '#000000'
+
+  if (typeof next !== 'string') return fallback
+
+  let candidate = next.trim()
+  if (!candidate) return fallback
+  if (!candidate.startsWith('#')) candidate = `#${candidate}`
+
+  const shorthand = candidate.match(SHORTHAND_HEX_RE)
+  if (shorthand) {
+    const [, r, g, b] = shorthand
+    candidate = `#${r}${r}${g}${g}${b}${b}`
+  }
+
+  return HEX_RE.test(candidate) ? candidate : fallback
+}
+
+/**
+ * Build the list of copy-from-design sources for the ThemeBuilder toolbar:
+ * other `dynamic-theme` rows (excluding the one currently being edited) that
+ * actually carry a saved designConfig object.
+ */
+export function buildCopySources(templates, currentId) {
+  if (!Array.isArray(templates)) return []
+
+  return templates
+    .filter(
+      (row) =>
+        isPlainObject(row) &&
+        row.componentKey === 'dynamic-theme' &&
+        isPlainObject(row.designConfig) &&
+        row.id !== currentId,
+    )
+    .map((row) => ({
+      id: row.id,
+      name: row.name || row.slug || '(tanpa nama)',
+      designConfig: row.designConfig,
+    }))
+}
