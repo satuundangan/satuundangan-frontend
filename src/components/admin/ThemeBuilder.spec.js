@@ -10,6 +10,7 @@ import {
   SECTION_LABELS,
   applyBackgroundType,
   buildPreviewMessage,
+  designConfigForPayload,
 } from './themeBuilderOptions'
 import { THEME_SECTION_KEYS, THEME_DEFAULTS, normalizeThemeConfig } from '@/utils/themeConfig'
 
@@ -180,5 +181,26 @@ describe('buildPreviewMessage', () => {
   it('keeps musicChoice falsy so the builder preview stays silent', () => {
     const msg = buildPreviewMessage(config)
     expect(msg.data.musicChoice).toBeFalsy()
+  })
+})
+
+describe('designConfigForPayload', () => {
+  it('returns the config object (deep-equal, not a string) for dynamic-theme', () => {
+    const config = { colors: { primary: '#7a1620' } }
+    expect(designConfigForPayload('dynamic-theme', config)).toEqual(config)
+    expect(typeof designConfigForPayload('dynamic-theme', config)).toBe('object')
+  })
+
+  it('returns null for a non-dynamic-theme componentKey', () => {
+    expect(designConfigForPayload('royal-emerald', { colors: {} })).toBeNull()
+  })
+
+  it('returns null for dynamic-theme with null/undefined config', () => {
+    expect(designConfigForPayload('dynamic-theme', null)).toBeNull()
+    expect(designConfigForPayload('dynamic-theme', undefined)).toBeNull()
+  })
+
+  it('returns null for an empty componentKey', () => {
+    expect(designConfigForPayload('', { colors: {} })).toBeNull()
   })
 })

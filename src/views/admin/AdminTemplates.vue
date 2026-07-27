@@ -114,7 +114,8 @@
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
-        <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+        <div class="max-h-[90vh] w-full overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+          :class="isThemeBuilderActive ? 'max-w-6xl' : 'max-w-3xl'">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Template' : 'Tambah Template' }}</h2>
             <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
@@ -144,6 +145,12 @@
                 Desain baru bisa memakai tampilan template yang sudah ada — tanpa coding. Kosongkan jika nama slug
                 sama dengan nama file template.
               </p>
+            </div>
+            <div v-if="isThemeBuilderActive" class="md:col-span-2">
+              <p class="mb-2 text-xs text-slate-500">
+                Atur tampilan tema langsung dari form ini — tanpa coding.
+              </p>
+              <ThemeBuilder v-model="form.designConfig" />
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Kategori</label>
@@ -670,6 +677,8 @@ import ImageCropperModal from '@/views/create-form/components/ImageCropperModal.
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 import { templateComponentKeys } from '@/utils/templateRegistry'
+import ThemeBuilder from '@/components/admin/ThemeBuilder.vue'
+import { designConfigForPayload } from '@/components/admin/themeBuilderOptions.js'
 
 const toast = useToast()
 const thumbnailInput = ref(null)
@@ -786,7 +795,10 @@ const form = reactive({
   defaultAudioStart: 0,
   defaultAudioEnd: 0,
   sampleContent: emptySampleContent(),
+  designConfig: null,
 })
+
+const isThemeBuilderActive = computed(() => form.componentKey === 'dynamic-theme')
 
 watch(() => form.name, (newVal) => {
   if (!editing.value && newVal) {
@@ -997,6 +1009,7 @@ function openCreate() {
     defaultAudioStart: 0,
     defaultAudioEnd: 0,
     sampleContent: emptySampleContent(),
+    designConfig: null,
   })
   showForm.value = true
 }
@@ -1090,6 +1103,10 @@ function openEdit(template) {
     defaultAudioStart: template.defaultAudioStart ?? 0,
     defaultAudioEnd: template.defaultAudioEnd ?? 0,
     sampleContent,
+    designConfig:
+      template.designConfig && typeof template.designConfig === 'object'
+        ? template.designConfig
+        : null,
   })
   showForm.value = true
 }
@@ -1187,7 +1204,8 @@ function buildPayload() {
     })),
     tags: form.tags,
     filterGroup: form.filterGroup || null,
-    sampleContent: prunedSample ?? null
+    sampleContent: prunedSample ?? null,
+    designConfig: designConfigForPayload(form.componentKey, form.designConfig),
   }
 
   payload.paletteId = null
