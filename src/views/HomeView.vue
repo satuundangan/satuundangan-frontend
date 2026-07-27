@@ -320,7 +320,7 @@
             </div>
             <button @click="showModal = false"
               class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition">
-              &times;
+              <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
 

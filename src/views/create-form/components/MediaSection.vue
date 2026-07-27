@@ -44,10 +44,10 @@
           <img :src="img.preview" class="h-40 w-full rounded-lg object-cover shadow" />
           <button
             type="button"
-            class="absolute right-2 top-2 rounded-full bg-red-500 px-2 py-1 text-xs text-white opacity-0 transition group-hover:opacity-100"
+            class="absolute right-2 top-2 rounded-full bg-red-500 w-6 h-6 flex items-center justify-center text-xs text-white opacity-0 transition group-hover:opacity-100"
             @click="emit('remove-gallery', index)"
           >
-            ✕
+            <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
       </div>

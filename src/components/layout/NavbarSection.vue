@@ -80,8 +80,8 @@
       </div>
 
       <!-- Mobile Menu Button -->
-      <button @click="sidebarOpen = true" class="md:hidden text-2xl" :class="isScrolled ? 'text-dark' : 'text-dark'">
-        ☰
+      <button @click="sidebarOpen = true" class="md:hidden text-lg hover:text-mocha transition-colors" :class="isScrolled ? 'text-dark' : 'text-dark'">
+        <i class="fa-solid fa-bars"></i>
       </button>
     </div>
   </nav>
@@ -94,7 +94,9 @@
        <aside class="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white shadow-2xl p-6 flex flex-col z-10" @click.stop>
           <div class="flex justify-between items-center mb-8">
              <h3 class="font-serif font-bold text-2xl text-mocha">Menu</h3>
-             <button @click="sidebarOpen = false" class="text-3xl text-gray-400 font-light hover:text-red-500 transition">&times;</button>
+             <button @click="sidebarOpen = false" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-red-500 transition">
+               <i class="fa-solid fa-xmark text-lg"></i>
+             </button>
           </div>
 
           <ul class="space-y-6 flex-1">

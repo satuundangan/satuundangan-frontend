@@ -13,7 +13,7 @@
             @click="$emit('close')"
             class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-white md:text-gray-500 flex items-center justify-center transition-colors"
           >
-            &times;
+            <i class="fa-solid fa-xmark"></i>
           </button>
 
           <!-- Left Side: Image/Brand (Hidden on Mobile) -->
