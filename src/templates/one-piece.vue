@@ -20,14 +20,14 @@
     <!-- Bottom Navigation (compass style) -->
     <nav
       v-if="isOpened"
-      class="fixed bottom-0 left-0 right-0 z-[80] bg-[#0b2c48]/95 border-t-4 border-[#f9c74f] shadow-[0_-6px_20px_rgba(0,0,0,0.4)] animate-fade-in flex overflow-x-auto no-scrollbar scroll-smooth"
+      class="fixed bottom-0 left-0 right-0 z-[80] bg-[#0b2c48]/95 border-t-4 border-[#f9c74f] shadow-[0_-6px_20px_rgba(0,0,0,0.4)] animate-fade-in flex"
     >
-      <div class="flex items-center gap-1 px-2 py-3 w-full sm:max-w-xl sm:mx-auto">
+      <div class="flex items-center gap-1 px-2 py-3 w-full sm:max-w-xl sm:mx-auto overflow-x-auto no-scrollbar scroll-smooth">
         <button
           v-for="item in navItems"
           :key="item.id"
           @click="scrollToSection(item.id)"
-          class="flex flex-1 min-w-0 flex-col items-center gap-1 transition-all duration-300 relative group"
+          class="flex flex-1 min-w-[72px] shrink-0 flex-col items-center gap-1 transition-all duration-300 relative group"
           :class="
             activeSection === item.id
               ? 'text-[#f9c74f] scale-110 -translate-y-1'
