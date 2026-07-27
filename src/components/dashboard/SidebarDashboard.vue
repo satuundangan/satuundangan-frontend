@@ -10,8 +10,8 @@
     </Transition>
 
     <aside :class="[
-      'bg-white border-r border-slate-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-all duration-300 ease-in-out w-64 select-none',
-      isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full md:translate-x-0'
+      'bg-white border-r border-slate-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64 select-none',
+      isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full'
     ]">
       <!-- Brand Logo Header -->
       <div class="p-5 border-b border-slate-100/80 flex items-center justify-between">
