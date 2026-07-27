@@ -15,7 +15,7 @@
             <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white backdrop-blur-md text-[10px] font-bold uppercase tracking-wider">
               <i class="fa-solid fa-sparkles text-amber-200"></i> {{ greetingTime }}
             </div>
-            <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">Halo, {{ userName.split(' ')[0] }}! 👋</h2>
+            <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">Halo, {{ userFirstName }}! 👋</h2>
             <p class="text-xs md:text-sm text-amber-100/90 leading-relaxed">
               Kelola seluruh undangan digital pernikahanmu, daftar tamu, dan pesan ucapan langsung dari satu panel sederhana.
             </p>
@@ -227,7 +227,11 @@ const statsData = ref({
 const loading = ref(true)
 const isSidebarOpen = ref(window.innerWidth >= 768)
 
-const userName = computed(() => auth.user?.name || 'User')
+const userName = computed(() => auth.user?.name || auth.user?.username || 'Pengguna')
+const userFirstName = computed(() => {
+  const name = userName.value || 'Pengguna'
+  return name.toString().split(' ')[0] || 'Pengguna'
+})
 
 const greetingTime = computed(() => {
   const hour = new Date().getHours()
