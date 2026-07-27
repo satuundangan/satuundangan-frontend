@@ -694,6 +694,7 @@
                class="absolute top-0 left-0 bg-white"
                :style="iframeStyle"
                frameborder="0"
+               @load="onIframeLoad"
             ></iframe>
 
             <!-- Loading Overlay Inside Mockup -->
@@ -742,6 +743,7 @@
                   :src="previewUrl"
                   class="w-full h-full"
                   frameborder="0"
+                  @load="onIframeLoad"
                ></iframe>
                
                <Transition name="fade">
@@ -855,6 +857,22 @@ const isPreviewLoading = ref(true)
 const previewIframe = ref(null)
 const mobilePreviewIframe = ref(null)
 const previewMode = ref('mobile')
+
+const onIframeLoad = () => {
+  isPreviewLoading.value = false
+  syncDataToPreview(formData.value)
+}
+
+const handleMessageEvent = (event) => {
+  if (event.data?.type === 'PREVIEW_READY') {
+     isPreviewLoading.value = false
+     syncDataToPreview(formData.value) 
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('message', handleMessageEvent)
+}
 
 const refreshPreview = () => {
   isPreviewLoading.value = true
@@ -1409,13 +1427,14 @@ onMounted(async () => {
     handleEditMode(route.params.id)
   }
 
-  // Handle preview ready message from iframe
-  window.addEventListener('message', (event) => {
-     if (event.data?.type === 'PREVIEW_READY') {
+  // Fallback timeout to clear loading screen if something fails or race condition occurs
+  setTimeout(() => {
+     if (isPreviewLoading.value) {
+        console.warn("Preview load timeout fallback triggered.")
         isPreviewLoading.value = false
-        syncDataToPreview(formData.value) 
+        syncDataToPreview(formData.value)
      }
-  })
+  }, 4000)
 
   if (typeof window !== 'undefined' && window.ResizeObserver) {
     resizeObserver = new window.ResizeObserver(() => {
@@ -1441,6 +1460,9 @@ onUnmounted(() => {
     resizeObserver.disconnect()
   }
   window.removeEventListener('resize', updateScale)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('message', handleMessageEvent)
+  }
 })
 
 async function handleEditMode(id) {

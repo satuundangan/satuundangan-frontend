@@ -54,16 +54,16 @@
                  <p class="text-xs text-muted">Signed in as</p>
                  <p class="text-sm font-bold text-dark truncate">{{ userName }}</p>
               </div>
-              <router-link to="/dashboard" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
-                 <span>📊</span> Dashboard
+              <router-link to="/dashboard" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha group transition-colors">
+                 <i class="fa-solid fa-chart-line w-4 text-gray-400 group-hover:text-mocha transition-colors"></i> Dashboard
               </router-link>
-              <router-link to="/settings" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha">
-                 <span>⚙️</span> Pengaturan
+              <router-link to="/settings" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha group transition-colors">
+                 <i class="fa-solid fa-gear w-4 text-gray-400 group-hover:text-mocha transition-colors"></i> Pengaturan
               </router-link>
-              <div class="border-t border-gray-50 my-1"></div>
+              <div class="border-t border-gray-100 my-1"></div>
               <button @click="handleLogout"
-                class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2">
-                <span>🚪</span> Logout
+                class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2.5 transition-colors group">
+                <i class="fa-solid fa-right-from-bracket w-4 text-red-400 group-hover:text-red-500 transition-colors"></i> Logout
               </button>
             </div>
           </div>

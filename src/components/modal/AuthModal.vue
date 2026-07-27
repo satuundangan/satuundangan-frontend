@@ -58,7 +58,7 @@
               <button
                 v-if="authMode !== 'forgot'"
                 @click="handleGoogleLogin"
-                class="w-full border border-gray-300 rounded-xl py-2.5 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors font-medium text-dark text-sm mb-6 group"
+                class="w-full bg-white border border-gray-300 rounded-xl py-2.5 flex items-center justify-center gap-3 hover:bg-gray-50 transition-colors font-bold text-gray-700 text-sm mb-6 group"
               >
                 <img
                   src="https://www.svgrepo.com/show/475656/google-color.svg"
@@ -88,7 +88,7 @@
                     v-model="name"
                     type="text"
                     placeholder="John Doe"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white text-gray-900"
                   />
                 </div>
 
@@ -100,7 +100,7 @@
                     v-model="email"
                     type="email"
                     placeholder="nama@email.com"
-                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white"
+                    class="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white text-gray-900"
                   />
                 </div>
 
@@ -113,7 +113,7 @@
                       v-model="password"
                       :type="showPassword ? 'text' : 'password'"
                       placeholder="••••••••"
-                      class="w-full border border-gray-300 rounded-xl px-4 py-3 pr-10 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white"
+                      class="w-full border border-gray-300 rounded-xl px-4 py-3 pr-10 focus:outline-none focus:border-mocha focus:ring-1 focus:ring-mocha transition-colors bg-gray-50 focus:bg-white text-gray-900"
                     />
                     <button
                       type="button"
