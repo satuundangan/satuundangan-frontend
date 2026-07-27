@@ -236,11 +236,29 @@
       <!-- Version -->
       <p class="text-xs text-slate-400">Versi skema: {{ config.version }} (tetap)</p>
     </div>
+
+    <div>
+      <button
+        type="button"
+        class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:bg-slate-50 lg:hidden"
+        @click="showPreview = !showPreview"
+      >
+        {{ showPreview ? 'Sembunyikan Preview' : 'Tampilkan Preview' }}
+      </button>
+      <div :class="showPreview ? '' : 'hidden lg:block'" class="lg:sticky lg:top-4">
+        <iframe
+          ref="previewIframe"
+          :src="previewSrc"
+          class="h-[70vh] w-full rounded-lg border border-slate-200 bg-white"
+        />
+        <p class="mt-1 text-[10px] text-slate-400">Preview memakai data contoh.</p>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { normalizeThemeConfig, THEME_SECTION_KEYS } from '@/utils/themeConfig'
 import ImageUrlField from './ImageUrlField.vue'
 import {
@@ -249,6 +267,7 @@ import {
   BACKGROUND_TYPES,
   SECTION_LABELS,
   applyBackgroundType,
+  buildPreviewMessage,
 } from './themeBuilderOptions'
 
 const props = defineProps({
@@ -304,4 +323,45 @@ function onFontChange(role, family) {
 function onBackgroundTypeChange(key, type) {
   applyBackgroundType(config.value.sections[key], type)
 }
+
+// --- Live preview iframe ---
+const previewSrc = '/live-preview?mode=live&preview=true&templateId=dynamic-theme&frame=true'
+const previewIframe = ref(null)
+const previewReady = ref(false)
+const showPreview = ref(false)
+let debounceTimer = null
+
+function postPreview() {
+  try {
+    previewIframe.value?.contentWindow?.postMessage(buildPreviewMessage(config.value), '*')
+  } catch {
+    // never let a preview error break the form
+  }
+}
+
+function onWindowMessage(event) {
+  if (event.data?.type === 'PREVIEW_READY') {
+    previewReady.value = true
+    postPreview()
+  }
+}
+
+watch(
+  config,
+  () => {
+    if (!previewReady.value) return
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(postPreview, 300)
+  },
+  { deep: true },
+)
+
+onMounted(() => {
+  window.addEventListener('message', onWindowMessage)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('message', onWindowMessage)
+  clearTimeout(debounceTimer)
+})
 </script>

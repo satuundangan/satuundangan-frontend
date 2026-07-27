@@ -785,6 +785,7 @@ import {
   googleFontsUrl,
   sectionStyle,
 } from '@/utils/themeConfig'
+import { applyThemeFonts, removeThemeFonts } from '@/utils/themeFonts'
 
 const props = defineProps({
   data: {
@@ -1050,24 +1051,11 @@ function addToCalendar() {
   window.open(url, '_blank')
 }
 
-// --- Google Fonts injection ---
-const FONTS_LINK_ATTR = 'data-dynamic-theme-fonts'
-let fontsLinkEl = null
-
-function applyGoogleFonts() {
-  if (typeof document === 'undefined') return
-  const url = googleFontsUrl(theme.value)
-  if (!url) return
-  if (document.head.querySelector(`link[${FONTS_LINK_ATTR}]`)) return
-  fontsLinkEl = document.createElement('link')
-  fontsLinkEl.rel = 'stylesheet'
-  fontsLinkEl.setAttribute(FONTS_LINK_ATTR, '')
-  fontsLinkEl.href = url
-  document.head.appendChild(fontsLinkEl)
-}
+// --- Google Fonts injection — reactive so a font change in the theme builder
+// re-fetches the stylesheet instead of staying stuck at mount-time ---
+watch(() => googleFontsUrl(theme.value), () => applyThemeFonts(theme.value), { immediate: true })
 
 onMounted(() => {
-  applyGoogleFonts()
   startCountdown()
 })
 
@@ -1076,10 +1064,7 @@ onUnmounted(() => {
     clearInterval(countdownInterval)
     countdownInterval = null
   }
-  if (fontsLinkEl && fontsLinkEl.parentNode) {
-    fontsLinkEl.parentNode.removeChild(fontsLinkEl)
-    fontsLinkEl = null
-  }
+  removeThemeFonts()
 })
 </script>
 

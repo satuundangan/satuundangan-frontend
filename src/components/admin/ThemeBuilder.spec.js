@@ -9,8 +9,9 @@ import {
   BACKGROUND_TYPES,
   SECTION_LABELS,
   applyBackgroundType,
+  buildPreviewMessage,
 } from './themeBuilderOptions'
-import { THEME_SECTION_KEYS, THEME_DEFAULTS } from '@/utils/themeConfig'
+import { THEME_SECTION_KEYS, THEME_DEFAULTS, normalizeThemeConfig } from '@/utils/themeConfig'
 
 vi.mock('@/api/file.js', () => ({
   uploadFileApi: vi.fn().mockResolvedValue({ fileUrl: 'https://cdn.test/x.webp' }),
@@ -146,5 +147,38 @@ describe('ThemeBuilder.vue', () => {
     expect(wrapper.get('[data-testid="color-primary-hex"]').element.value).toBe('#7a1620')
     const secondaryHex = wrapper.get('[data-testid="colors-group"]').findAll('input[type="text"]')[1]
     expect(secondaryHex.element.value).toBe(THEME_DEFAULTS.colors.secondary)
+  })
+})
+
+describe('buildPreviewMessage', () => {
+  const config = normalizeThemeConfig({ colors: { primary: '#7a1620' } })
+
+  it('returns a LIVE_PREVIEW_UPDATE message', () => {
+    const msg = buildPreviewMessage(config)
+    expect(msg.type).toBe('LIVE_PREVIEW_UPDATE')
+    expect(msg.data).toBeTruthy()
+  })
+
+  it('sets template_slug to dynamic-theme and designConfig to the passed config', () => {
+    const msg = buildPreviewMessage(config)
+    expect(msg.data.template_slug).toBe('dynamic-theme')
+    expect(msg.data.designConfig).toEqual(config)
+  })
+
+  it('forces every THEME_SECTION_KEYS entry into selectedSections', () => {
+    const msg = buildPreviewMessage(config)
+    for (const key of THEME_SECTION_KEYS) {
+      expect(msg.data.selectedSections).toContain(key)
+    }
+  })
+
+  it('is JSON-clonable', () => {
+    const msg = buildPreviewMessage(config)
+    expect(JSON.parse(JSON.stringify(msg))).toEqual(msg)
+  })
+
+  it('keeps musicChoice falsy so the builder preview stays silent', () => {
+    const msg = buildPreviewMessage(config)
+    expect(msg.data.musicChoice).toBeFalsy()
   })
 })

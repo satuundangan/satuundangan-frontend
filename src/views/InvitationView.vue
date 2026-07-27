@@ -129,7 +129,7 @@ onMounted(async () => {
       if (seq !== templateResolveSeq) return
     }
 
-    if (tmpl?.designConfig && invitationData.value) {
+    if (tmpl?.designConfig && invitationData.value && !isLiveSyncActive.value) {
       // Reassigning the object does not re-fire this watch (its source is
       // template_slug, unchanged) but does propagate through the template's
       // deep props.data watch.
