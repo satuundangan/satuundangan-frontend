@@ -88,42 +88,42 @@
               <!-- Database Connectivity -->
               <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
                 <span class="font-medium text-slate-500">Database Core</span>
-                <span v-if="!diagnosticResults" class="text-slate-400">-</span>
+                <span v-if="!diagnosticResults?.database" class="text-slate-400">-</span>
                 <span v-else class="font-bold text-emerald-600 flex items-center gap-1">
                   <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  {{ diagnosticResults.database.msg }}
+                  {{ diagnosticResults?.database?.msg || '-' }}
                 </span>
               </div>
               
               <!-- Storage Space -->
               <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
                 <span class="font-medium text-slate-500">File Storage</span>
-                <span v-if="!diagnosticResults" class="text-slate-400">-</span>
+                <span v-if="!diagnosticResults?.storage" class="text-slate-400">-</span>
                 <span v-else class="font-bold text-emerald-600">
-                  {{ diagnosticResults.storage.msg }}
+                  {{ diagnosticResults?.storage?.msg || '-' }}
                 </span>
               </div>
 
               <!-- SMTP Server -->
               <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
                 <span class="font-medium text-slate-500">SMTP Mail Server</span>
-                <span v-if="!diagnosticResults" class="text-slate-400">-</span>
+                <span v-if="!diagnosticResults?.email" class="text-slate-400">-</span>
                 <span v-else class="font-bold text-emerald-600">
-                  {{ diagnosticResults.email.msg }}
+                  {{ diagnosticResults?.email?.msg || '-' }}
                 </span>
               </div>
 
               <!-- Midtrans API Gateway -->
               <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
                 <span class="font-medium text-slate-500">API Payment Gateway</span>
-                <span v-if="!diagnosticResults" class="text-slate-400">-</span>
+                <span v-if="!diagnosticResults?.payment" class="text-slate-400">-</span>
                 <span v-else class="font-bold text-emerald-600">
-                  {{ diagnosticResults.payment.msg }}
+                  {{ diagnosticResults?.payment?.msg || '-' }}
                 </span>
               </div>
             </div>
             
-            <p v-if="diagnosticResults" class="text-[9px] text-slate-400 text-right mt-3">Diagnostik terakhir: {{ diagnosticResults.rendered }}</p>
+            <p v-if="diagnosticResults?.rendered" class="text-[9px] text-slate-400 text-right mt-3">Diagnostik terakhir: {{ diagnosticResults.rendered }}</p>
           </div>
           
           <button 
@@ -334,10 +334,10 @@ const runDiagnostics = async () => {
   diagnosticResults.value = null
   try {
     const res = await fetchAdminHealth()
-    diagnosticResults.value = res
+    diagnosticResults.value = res?.data || res || null
     toast.success('Diagnostik sistem selesai!')
   } catch (error) {
-    toast.error(error.message || 'Gagal menjalankan diagnostik sistem')
+    console.warn('Diagnostics error:', error)
   } finally {
     isRunningDiagnostics.value = false
   }
@@ -379,12 +379,13 @@ const categoryColors = {
 
 const categoryDistribution = computed(() => {
   const counts = {}
-  recentInvitations.value.forEach(inv => {
-    const cat = inv.category || 'Lainnya'
+  const items = Array.isArray(recentInvitations.value) ? recentInvitations.value : []
+  items.forEach(inv => {
+    const cat = inv?.category || 'Lainnya'
     counts[cat] = (counts[cat] || 0) + 1
   })
   
-  const total = recentInvitations.value.length || 1
+  const total = items.length || 1
   return Object.entries(counts).map(([name, count]) => {
     const key = name.toLowerCase()
     return {
