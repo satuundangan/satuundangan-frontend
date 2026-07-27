@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest'
-import { mount } from '@vue/test-utils'
+import { mount, flushPromises } from '@vue/test-utils'
 import ThemeBuilder from './ThemeBuilder.vue'
 import {
   HEADING_FONTS,
@@ -12,13 +12,18 @@ import {
   buildPreviewMessage,
   designConfigForPayload,
 } from './themeBuilderOptions'
+import { THEME_PRESETS } from './themePresets'
 import { THEME_SECTION_KEYS, THEME_DEFAULTS, normalizeThemeConfig } from '@/utils/themeConfig'
+import Swal from 'sweetalert2'
 
 vi.mock('@/api/file.js', () => ({
   uploadFileApi: vi.fn().mockResolvedValue({ fileUrl: 'https://cdn.test/x.webp' }),
 }))
 vi.mock('vue-toastification', () => ({
   useToast: () => ({ success: vi.fn(), error: vi.fn() }),
+}))
+vi.mock('sweetalert2', () => ({
+  default: { fire: vi.fn().mockResolvedValue({ isConfirmed: true }) },
 }))
 
 describe('themeBuilderOptions font catalogues', () => {
@@ -202,5 +207,110 @@ describe('designConfigForPayload', () => {
 
   it('returns null for an empty componentKey', () => {
     expect(designConfigForPayload('', { colors: {} })).toBeNull()
+  })
+})
+
+describe('ThemeBuilder.vue toolbar: preset / copy / reset / hex blur', () => {
+  it('renders one preset option per THEME_PRESETS entry', () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    for (const preset of THEME_PRESETS) {
+      expect(wrapper.find(`[data-testid="preset-option-${preset.key}"]`).exists()).toBe(true)
+    }
+  })
+
+  it('applying a preset emits update:modelValue deep-equal to normalizeThemeConfig(preset.config)', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    const preset = THEME_PRESETS[0]
+    await wrapper.get('select').setValue(preset.key)
+    await wrapper.get('[data-testid="apply-preset"]').trigger('click')
+    await flushPromises()
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload).toEqual(normalizeThemeConfig(preset.config))
+  })
+
+  it('a dismissed confirm leaves config untouched and emits nothing new for a preset apply', async () => {
+    Swal.fire.mockResolvedValueOnce({ isConfirmed: false })
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    const preset = THEME_PRESETS[0]
+    await wrapper.get('select').setValue(preset.key)
+    const emittedBefore = wrapper.emitted('update:modelValue')?.length || 0
+    await wrapper.get('[data-testid="apply-preset"]').trigger('click')
+    await flushPromises()
+
+    const emittedAfter = wrapper.emitted('update:modelValue')?.length || 0
+    expect(emittedAfter).toBe(emittedBefore)
+  })
+
+  it('with an empty or absent copySources prop, the copy block is not rendered', () => {
+    const wrapperEmpty = mount(ThemeBuilder, { props: { modelValue: null, copySources: [] } })
+    expect(wrapperEmpty.find('[data-testid="copy-source-select"]').exists()).toBe(false)
+
+    const wrapperAbsent = mount(ThemeBuilder, { props: { modelValue: null } })
+    expect(wrapperAbsent.find('[data-testid="copy-source-select"]').exists()).toBe(false)
+  })
+
+  it('renders one copy-source option per entry and Salin emits the copied config', async () => {
+    const copySources = [
+      { id: 'a', name: 'Design A', designConfig: { colors: { primary: '#111111' } } },
+      { id: 'b', name: 'Design B', designConfig: { colors: { primary: '#222222' } } },
+    ]
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null, copySources } })
+    const select = wrapper.get('[data-testid="copy-source-select"]')
+    const selectableOptions = select
+      .findAll('option')
+      .filter((o) => o.attributes('disabled') === undefined)
+    expect(selectableOptions.length).toBe(2)
+
+    await select.setValue('b')
+    await wrapper.get('[data-testid="apply-copy"]').trigger('click')
+    await flushPromises()
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload).toEqual(normalizeThemeConfig(copySources[1].designConfig))
+  })
+
+  it('Reset emits update:modelValue deep-equal to normalizeThemeConfig(null)', async () => {
+    const wrapper = mount(ThemeBuilder, {
+      props: { modelValue: { colors: { primary: '#7a1620' } } },
+    })
+    await wrapper.get('[data-testid="reset-config"]').trigger('click')
+    await flushPromises()
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload).toEqual(normalizeThemeConfig(null))
+  })
+
+  it('hex blur reverts an invalid entry to the previous valid hex', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    const input = wrapper.get('[data-testid="color-primary-hex"]')
+    const previousValue = input.element.value
+
+    await input.trigger('focus')
+    await input.setValue('zzz')
+    await input.trigger('blur')
+    await flushPromises()
+
+    expect(wrapper.get('[data-testid="color-primary-hex"]').element.value).toBe(previousValue)
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload.colors.primary).toBe(previousValue)
+  })
+
+  it('hex blur normalizes a missing-hash value', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    const input = wrapper.get('[data-testid="color-primary-hex"]')
+
+    await input.trigger('focus')
+    await input.setValue('a1b2c3')
+    await input.trigger('blur')
+    await flushPromises()
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload.colors.primary).toBe('#a1b2c3')
   })
 })

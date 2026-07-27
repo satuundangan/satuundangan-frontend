@@ -1,6 +1,72 @@
 <template>
   <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
     <div class="space-y-4">
+      <!-- Mulai Cepat: preset / salin dari desain lain / reset -->
+      <div class="rounded-lg border border-slate-200 p-4" data-testid="theme-toolbar">
+        <h3 class="mb-3 text-sm font-semibold text-slate-700">Mulai Cepat</h3>
+        <div class="space-y-4">
+          <div class="space-y-1">
+            <label class="text-xs font-medium text-slate-500">Preset</label>
+            <select
+              v-model="selectedPresetKey"
+              class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+            >
+              <option disabled value="">Pilih preset...</option>
+              <option
+                v-for="p in THEME_PRESETS"
+                :key="p.key"
+                :value="p.key"
+                :data-testid="`preset-option-${p.key}`"
+              >
+                {{ p.label }}
+              </option>
+            </select>
+            <p v-if="selectedPresetDescription" class="text-[11px] text-slate-400">
+              {{ selectedPresetDescription }}
+            </p>
+            <button
+              type="button"
+              data-testid="apply-preset"
+              :disabled="!selectedPresetKey"
+              @click="applyPreset"
+              class="mt-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Terapkan
+            </button>
+          </div>
+
+          <div v-if="copySources.length" class="space-y-1">
+            <label class="text-xs font-medium text-slate-500">Salin dari desain lain</label>
+            <select
+              v-model="selectedCopyId"
+              data-testid="copy-source-select"
+              class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+            >
+              <option disabled value="">Pilih desain...</option>
+              <option v-for="s in copySources" :key="s.id" :value="s.id">{{ s.name }}</option>
+            </select>
+            <button
+              type="button"
+              data-testid="apply-copy"
+              :disabled="!selectedCopyId"
+              @click="applyCopy"
+              class="mt-1 rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Salin
+            </button>
+          </div>
+
+          <button
+            type="button"
+            data-testid="reset-config"
+            @click="resetConfig"
+            class="w-full rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-500 hover:bg-slate-50"
+          >
+            Reset ke default
+          </button>
+        </div>
+      </div>
+
       <!-- Warna -->
       <div class="rounded-lg border border-slate-200 p-4">
         <h3 class="mb-3 text-sm font-semibold text-slate-700">Warna</h3>
@@ -17,6 +83,8 @@
                 type="text"
                 v-model="config.colors[field.key]"
                 :data-testid="`color-${field.key}-hex`"
+                @focus="onHexFocus"
+                @blur="onHexBlur(config.colors, field.key, $event)"
                 class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-slate-400"
               />
             </div>
@@ -69,6 +137,8 @@
               <input
                 type="text"
                 v-model="config.hero.overlayColor"
+                @focus="onHexFocus"
+                @blur="onHexBlur(config.hero, 'overlayColor', $event)"
                 class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-slate-400"
               />
             </div>
@@ -128,6 +198,8 @@
                 <input
                   type="text"
                   v-model="config.sections[key].background.value"
+                  @focus="onHexFocus"
+                  @blur="onHexBlur(config.sections[key].background, 'value', $event)"
                   class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-slate-400"
                 />
               </div>
@@ -147,6 +219,8 @@
                   <input
                     type="text"
                     v-model="config.sections[key].background.from"
+                    @focus="onHexFocus"
+                    @blur="onHexBlur(config.sections[key].background, 'from', $event)"
                     class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-slate-400"
                   />
                 </div>
@@ -160,6 +234,8 @@
                   <input
                     type="text"
                     v-model="config.sections[key].background.to"
+                    @focus="onHexFocus"
+                    @blur="onHexBlur(config.sections[key].background, 'to', $event)"
                     class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-xs font-mono outline-none focus:border-slate-400"
                   />
                 </div>
@@ -258,9 +334,11 @@
 </template>
 
 <script setup>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
+import Swal from 'sweetalert2'
 import { normalizeThemeConfig, THEME_SECTION_KEYS } from '@/utils/themeConfig'
 import ImageUrlField from './ImageUrlField.vue'
+import { THEME_PRESETS } from './themePresets'
 import {
   FONT_CATALOGUE,
   HERO_VARIANTS,
@@ -268,10 +346,12 @@ import {
   SECTION_LABELS,
   applyBackgroundType,
   buildPreviewMessage,
+  sanitizeHex,
 } from './themeBuilderOptions'
 
 const props = defineProps({
   modelValue: { type: [Object, String], default: null },
+  copySources: { type: Array, default: () => [] },
 })
 const emit = defineEmits(['update:modelValue'])
 
@@ -293,6 +373,77 @@ watch(
   },
   { deep: true },
 )
+
+// --- Single replace funnel: preset / copy-from-design / reset all route through
+// this, so the existing deep watchers above (emit + debounced postPreview below)
+// fire exactly once per replacement instead of three parallel code paths.
+function replaceConfig(next) {
+  config.value = normalizeThemeConfig(next)
+}
+
+async function confirmReplace(title, text) {
+  const result = await Swal.fire({
+    title,
+    text,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Ya, terapkan',
+    cancelButtonText: 'Batal',
+  })
+  return result.isConfirmed
+}
+
+const selectedPresetKey = ref('')
+const selectedPresetDescription = computed(
+  () => THEME_PRESETS.find((p) => p.key === selectedPresetKey.value)?.description || '',
+)
+
+async function applyPreset() {
+  const preset = THEME_PRESETS.find((p) => p.key === selectedPresetKey.value)
+  if (!preset) return
+  const confirmed = await confirmReplace(
+    'Terapkan preset?',
+    `Semua pengaturan tema saat ini akan diganti dengan preset ${preset.label}.`,
+  )
+  if (!confirmed) return
+  replaceConfig(preset.config)
+}
+
+const selectedCopyId = ref('')
+
+async function applyCopy() {
+  const entry = props.copySources.find((s) => s.id === selectedCopyId.value)
+  if (!entry) return
+  const confirmed = await confirmReplace(
+    'Salin konfigurasi?',
+    `Pengaturan tema saat ini akan diganti dengan milik ${entry.name}.`,
+  )
+  if (!confirmed) return
+  replaceConfig(entry.designConfig)
+}
+
+async function resetConfig() {
+  const confirmed = await confirmReplace(
+    'Reset ke default?',
+    'Semua pengaturan tema akan dikembalikan ke bawaan.',
+  )
+  if (!confirmed) return
+  replaceConfig(null)
+}
+
+// --- Hex text-input revert-on-blur: a single shared ref is sufficient since
+// only one input can be focused at a time.
+const hexFocusValue = ref('')
+
+function onHexFocus(event) {
+  hexFocusValue.value = event.target.value
+}
+
+function onHexBlur(target, key, event) {
+  target[key] = sanitizeHex(event.target.value, hexFocusValue.value || target[key])
+}
 
 const colorFields = [
   { key: 'primary', label: 'Primary' },
