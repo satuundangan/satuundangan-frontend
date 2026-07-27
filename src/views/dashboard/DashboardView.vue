@@ -73,7 +73,7 @@
         <!-- Aksi Cepat (Grid-based on Mobile) -->
         <div class="space-y-4">
            <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center justify-between px-1">
-              <span>⚡ Aksi Cepat</span>
+              <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-yellow-500"></i> Aksi Cepat</span>
            </h3>
            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
               <router-link to="/create" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">

@@ -24,7 +24,7 @@
               class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group"
               active-class="bg-gray-50 text-mocha font-bold"
               :class="$route.path === item.to ? '' : 'text-gray-500 hover:bg-gray-50 hover:text-dark'">
-              <span class="text-lg group-hover:scale-110 transition-transform duration-200 opacity-70 group-hover:opacity-100">{{ item.icon }}</span>
+              <i :class="['fa-solid', item.icon, 'text-base w-5 transition-transform duration-200 group-hover:scale-110', $route.path === item.to ? 'text-mocha' : 'text-gray-400 group-hover:text-mocha']"></i>
               <span class="text-xs">{{ item.name }}</span>
             </router-link>
           </li>
@@ -33,7 +33,7 @@
 
       <div class="p-4 border-t border-gray-100">
          <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium">
-            <span>🚪</span> Logout
+            <i class="fa-solid fa-right-from-bracket text-base w-5 text-red-400"></i> Logout
          </button>
       </div>
     </aside>
@@ -63,11 +63,11 @@ function handleLogout() {
 }
 
 const menu = [
-  { name: "Dashboard", to: "/dashboard", icon: "📊" },
-  { name: "Undangan Saya", to: "/invitations", icon: "💌" },
-  { name: "Daftar Tamu", to: "/guests", icon: "👥" },
-  { name: "Buku Tamu", to: "/guestbook", icon: "📖" },
-  { name: "Pengaturan", to: "/settings", icon: "⚙️" },
+  { name: "Dashboard", to: "/dashboard", icon: "fa-chart-line" },
+  { name: "Undangan Saya", to: "/invitations", icon: "fa-envelope-open-text" },
+  { name: "Daftar Tamu", to: "/guests", icon: "fa-users" },
+  { name: "Buku Tamu", to: "/guestbook", icon: "fa-book-open" },
+  { name: "Pengaturan", to: "/settings", icon: "fa-gear" },
 ];
 </script>
 

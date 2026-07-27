@@ -22,7 +22,7 @@
         </div>
 
         <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-gray-400">
-           <div class="animate-spin text-3xl mb-4 text-mocha">⏳</div>
+           <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-4 text-mocha"></i>
            <p class="text-sm font-medium">Memuat ucapan...</p>
         </div>
         

@@ -25,7 +25,7 @@
         </div>
 
         <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-gray-400">
-           <div class="animate-spin text-3xl mb-4 text-mocha">⏳</div>
+           <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-4 text-mocha"></i>
            <p class="text-sm font-medium">Memuat desain...</p>
         </div>
 
@@ -69,7 +69,7 @@
         </div>
 
         <div v-else class="py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-           <div class="text-4xl mb-4">🎨</div>
+           <div class="text-4xl mb-4 text-mocha/50"><i class="fa-solid fa-palette"></i></div>
            <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
            <p class="text-muted text-sm px-10">Coba pilih kategori lain atau kembali beberapa saat lagi.</p>
         </div>

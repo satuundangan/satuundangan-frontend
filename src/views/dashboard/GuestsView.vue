@@ -111,7 +111,7 @@
         </div>
 
         <div v-if="loading" class="flex justify-center py-20">
-          <div class="animate-spin text-mocha text-2xl">⏳</div>
+          <i class="fa-solid fa-circle-notch animate-spin text-mocha text-2xl"></i>
         </div>
 
         <div v-else class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
