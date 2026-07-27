@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden pb-20 md:pb-0">
+  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
     <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
 
     <div
@@ -10,57 +10,61 @@
     >
       <Topbar title="Daftar Tamu" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
 
-      <main class="p-4 md:p-8 flex-1 overflow-y-auto space-y-6">
+      <main class="p-4 md:p-8 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
         <!-- Header & Main Actions -->
         <div class="space-y-4">
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div class="flex items-center gap-3">
-              <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Manajemen Tamu</h2>
-              <button
-                @click="showHelpModal = true"
-                class="w-6 h-6 rounded-full bg-blue-50 text-blue-500 flex items-center justify-center text-xs hover:bg-blue-100 transition-colors"
-                title="Cara Pakai"
-              >
-                <i class="fa-solid fa-question"></i>
-              </button>
+            <div>
+              <div class="flex items-center gap-3">
+                <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Manajemen Tamu</h2>
+                <button
+                  @click="showHelpModal = true"
+                  class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition-colors"
+                  title="Cara Pakai"
+                >
+                  <i class="fa-solid fa-circle-question"></i>
+                </button>
+              </div>
+              <p class="text-xs text-slate-400 mt-1">Kelola daftar penerima dan buat link pesan WhatsApp otomatis.</p>
             </div>
+
             <div class="flex flex-wrap gap-2 md:gap-3">
               <button
                 @click="showAddModal = true"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-mocha text-white px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-mocha/90 flex items-center justify-center gap-2 shadow-lg shadow-mocha/20 disabled:opacity-50 transition-all"
+                class="flex-1 md:flex-none bg-slate-900 text-white px-4 py-2.5 rounded-xl text-xs font-extrabold hover:bg-slate-800 flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 disabled:opacity-50 transition-all"
               >
-                <i class="fa-solid fa-user-plus"></i> Tambah
+                <i class="fa-solid fa-user-plus text-[11px]"></i> Tambah
               </button>
               <button
                 @click="showBulkModal = true"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-white text-mocha border border-mocha/20 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-gray-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+                class="flex-1 md:flex-none bg-white text-slate-800 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
               >
-                <i class="fa-solid fa-users"></i> Massal
+                <i class="fa-solid fa-users text-[11px]"></i> Massal
               </button>
               <button
                 @click="pickFromContacts"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-white text-blue-600 border border-blue-100 px-5 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
+                class="flex-1 md:flex-none bg-white text-blue-600 border border-blue-100 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all"
               >
-                <i class="fa-solid fa-address-book"></i> Kontak
+                <i class="fa-solid fa-address-book text-[11px]"></i> Kontak
               </button>
               <div class="flex gap-1">
                 <button
                   @click="triggerExcelImport"
                   :disabled="!selectedInvitationId"
-                  class="flex-1 md:flex-none bg-white text-green-600 border border-green-100 px-5 py-2.5 rounded-l-xl text-xs font-bold hover:bg-green-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all border-r-0"
+                  class="flex-1 md:flex-none bg-white text-emerald-600 border border-emerald-100 px-4 py-2.5 rounded-l-xl text-xs font-bold hover:bg-emerald-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all border-r-0"
                 >
-                  <i class="fa-solid fa-file-excel"></i> Import
+                  <i class="fa-solid fa-file-excel text-[11px]"></i> Import
                 </button>
                 <button
                   @click="downloadTemplate"
                   :disabled="!selectedInvitationId"
-                  class="bg-white text-green-600 border border-green-100 px-3 py-2.5 rounded-r-xl text-xs font-bold hover:bg-green-50 flex items-center justify-center disabled:opacity-50 transition-all"
+                  class="bg-white text-emerald-600 border border-emerald-100 px-3 py-2.5 rounded-r-xl text-xs font-bold hover:bg-emerald-50 flex items-center justify-center disabled:opacity-50 transition-all"
                   title="Download Template Excel"
                 >
-                  <i class="fa-solid fa-download"></i>
+                  <i class="fa-solid fa-download text-[11px]"></i>
                 </button>
               </div>
               <input
@@ -74,16 +78,16 @@
           </div>
 
           <div
-            class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4"
+            class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex flex-col md:flex-row gap-4"
           >
             <div class="flex-1">
               <label
-                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
+                class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5"
                 >Pilih Undangan</label
               >
               <select
                 v-model="selectedInvitationId"
-                class="w-full border border-gray-200 rounded-xl px-4 py-2 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-mocha/20"
+                class="w-full border border-slate-200 rounded-xl px-3.5 py-2 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all"
               >
                 <option v-for="inv in invitations" :key="inv.id" :value="inv.id">
                   {{ inv.title }}
@@ -92,12 +96,12 @@
             </div>
             <div class="flex-1">
               <label
-                class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
-                >Cari Nama</label
+                class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5"
+                >Cari Nama Tamu</label
               >
               <div class="relative">
                 <i
-                  class="fa-solid fa-magnifying-glass absolute left-4 top-1/2 -translate-y-1/2 text-gray-300 text-xs"
+                  class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"
                 ></i>
                 <input
                   v-model="searchQuery"

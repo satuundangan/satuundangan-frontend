@@ -1,144 +1,199 @@
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden pb-20 md:pb-0 font-sans">
-    <!-- Sidebar tetap untuk Desktop -->
+  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
+    <!-- Sidebar -->
     <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
-      <!-- Topbar diperkecil untuk Mobile -->
-      <Topbar title="Ringkasan" :showButton="false" @toggleSidebar="isSidebarOpen = !isSidebarOpen" class="md:hidden" />
-      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" class="hidden md:flex" />
+      <!-- Topbar -->
+      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
 
-      <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto">
+      <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar">
         
-        <!-- Header Ringkas (Mobile-First) -->
-        <div class="flex items-center justify-between">
-           <div>
-              <h2 class="text-xl md:text-3xl font-bold text-dark tracking-tight">Halo, {{ userName.split(' ')[0] }}!</h2>
-              <p class="text-[10px] md:text-xs text-gray-400 font-medium uppercase tracking-wider mt-1">Selamat datang di Satu Undangan</p>
-           </div>
-        </div>
-
-        <!-- Progress Undangan / CTA Utama -->
-        <div v-if="invitations.length > 0 && !allPublished" class="bg-mocha rounded-2xl p-5 md:p-6 text-white overflow-hidden relative shadow-sm">
-           <div class="relative z-10">
-              <h3 class="font-bold text-lg">Selesaikan Undanganmu</h3>
-              <p class="text-xs text-white/80 mb-4">Lengkapi detail agar siap dipublikasikan.</p>
-              
-              <div class="w-full bg-white/20 h-1.5 rounded-full mb-5">
-                 <div class="bg-white h-full rounded-full transition-all duration-500" :style="{ width: '70%' }"></div>
-              </div>
-              
-              <router-link to="/invitations" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-mocha text-[11px] font-bold rounded-xl shadow-sm hover:scale-105 transition-transform">
-                 Lanjutkan Edit <i class="fa-solid fa-arrow-right"></i>
+        <!-- Header Banner with Time-based Greeting -->
+        <div class="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 md:p-8 text-white relative overflow-hidden shadow-lg shadow-slate-900/10">
+          <div class="relative z-10 max-w-2xl space-y-3">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/90 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-sparkles text-amber-300"></i> {{ greetingTime }}
+            </div>
+            <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">Halo, {{ userName.split(' ')[0] }}! 👋</h2>
+            <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+              Kelola seluruh undangan digital pernikahanmu, daftar tamu, dan pesan ucapan langsung dari satu panel sederhana.
+            </p>
+            
+            <div class="pt-2 flex flex-wrap items-center gap-3">
+              <router-link to="/templates" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 text-xs font-black rounded-xl shadow-md hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all">
+                <i class="fa-solid fa-plus text-xs"></i> Buat Undangan Baru
               </router-link>
-           </div>
-           <i class="fa-solid fa-wand-magic-sparkles absolute -right-6 -bottom-6 text-white/10 text-9xl rotate-12"></i>
-        </div>
-
-        <div v-else-if="invitations.length === 0" class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm overflow-hidden relative">
-           <div class="relative z-10">
-              <h3 class="text-lg font-bold text-dark">Mulai Perjalananmu</h3>
-              <p class="mt-1 text-xs text-gray-400">Buat undangan digital impianmu hanya dalam hitungan menit.</p>
-              <router-link to="/create" class="mt-5 inline-block bg-mocha text-white px-6 py-3 rounded-xl text-xs font-bold shadow-sm active:scale-95 transition-all">
-                 Buat Undangan Sekarang
+              <router-link to="/invitations" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white text-xs font-bold rounded-xl hover:bg-white/20 transition-all backdrop-blur-sm">
+                Lihat Undangan Saya <i class="fa-solid fa-arrow-right text-[10px]"></i>
               </router-link>
-           </div>
+            </div>
+          </div>
+          
+          <i class="fa-solid fa-envelope-open-text absolute -right-6 -bottom-8 text-white/5 text-[180px] rotate-12 pointer-events-none hidden sm:block"></i>
         </div>
 
-        <!-- Ringkasan Statistik (Horizontal Scroll on Mobile) -->
-        <div class="flex overflow-x-auto pb-2 gap-4 md:grid md:grid-cols-3 md:pb-0 scrollbar-hide">
+        <!-- Ringkasan Statistik -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <StatCard 
             label="Total Undangan" 
             :value="stats.total" 
             iconClass="fa-solid fa-envelope-open-text" 
-            color="bg-blue-50 text-blue-500" 
-            class="min-w-[140px] flex-shrink-0"
+            color="bg-blue-50 text-blue-600" 
           />
           <StatCard 
             label="Tamu Terundang" 
             :value="stats.guests" 
             iconClass="fa-solid fa-users" 
-            color="bg-violet-50 text-violet-500" 
-            class="min-w-[140px] flex-shrink-0"
+            color="bg-purple-50 text-purple-600" 
           />
           <StatCard 
             label="Ucapan Masuk" 
             :value="stats.responses" 
-            iconClass="fa-solid fa-message" 
-            color="bg-emerald-50 text-emerald-500" 
-            class="min-w-[140px] flex-shrink-0"
+            iconClass="fa-solid fa-comments" 
+            color="bg-emerald-50 text-emerald-600" 
           />
         </div>
 
-        <!-- Aksi Cepat (Grid-based on Mobile) -->
-        <div class="space-y-4">
-           <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest flex items-center justify-between px-1">
-              <span class="flex items-center gap-1.5"><i class="fa-solid fa-bolt text-yellow-500"></i> Aksi Cepat</span>
-           </h3>
-           <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <router-link to="/create" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
-                 <div class="w-8 h-8 rounded-lg bg-orange-50 text-orange-500 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-plus text-sm"></i>
-                 </div>
-                 <span class="text-xs font-bold text-dark">Buat Baru</span>
-              </router-link>
-              <router-link to="/guests" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
-                 <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-500 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-user-plus text-sm"></i>
-                 </div>
-                 <span class="text-xs font-bold text-dark">Tamu</span>
-              </router-link>
-              <router-link to="/guestbook" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
-                 <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-500 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-comment-dots text-sm"></i>
-                 </div>
-                 <span class="text-xs font-bold text-dark">Ucapan</span>
-              </router-link>
-              <router-link to="/settings" class="flex items-center gap-3 p-4 bg-white rounded-2xl border border-gray-100 hover:border-mocha/20 transition-all">
-                 <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-gear text-sm"></i>
-                 </div>
-                 <span class="text-xs font-bold text-dark">Setelan</span>
-              </router-link>
-           </div>
+        <!-- Aksi Cepat / Shortcut Cockpit Grid -->
+        <div class="space-y-3">
+          <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center justify-between px-1">
+             <span class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Aksi Cepat</span>
+          </h3>
+          
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+             <router-link to="/templates" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                   <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
+                </div>
+                <div>
+                   <span class="text-xs font-bold text-slate-900 block">Katalog Template</span>
+                   <span class="text-[10px] text-slate-400 block">Pilih desain baru</span>
+                </div>
+             </router-link>
+             
+             <router-link to="/guests" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                   <i class="fa-solid fa-user-plus text-base"></i>
+                </div>
+                <div>
+                   <span class="text-xs font-bold text-slate-900 block">Daftar Tamu</span>
+                   <span class="text-[10px] text-slate-400 block">Kelola penerima</span>
+                </div>
+             </router-link>
+             
+             <router-link to="/guestbook" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                   <i class="fa-solid fa-book-open text-base"></i>
+                </div>
+                <div>
+                   <span class="text-xs font-bold text-slate-900 block">Buku Tamu</span>
+                   <span class="text-[10px] text-slate-400 block">Lihat ucapan masuk</span>
+                </div>
+             </router-link>
+             
+             <router-link to="/settings" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
+                <div class="w-10 h-10 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                   <i class="fa-solid fa-sliders text-base"></i>
+                </div>
+                <div>
+                   <span class="text-xs font-bold text-slate-900 block">Pengaturan</span>
+                   <span class="text-[10px] text-slate-400 block">Profil & akun</span>
+                </div>
+             </router-link>
+          </div>
         </div>
 
         <!-- Daftar Undangan Terbaru -->
-        <div class="bg-white rounded-3xl p-5 md:p-8 shadow-sm border border-gray-100">
-           <h3 class="text-xs font-black text-gray-400 uppercase tracking-widest mb-6">
-              Terakhir Dibuat
-           </h3>
+        <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-100 space-y-4">
+           <div class="flex items-center justify-between">
+              <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
+                 <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> Undangan Terakhir Dibuat
+              </h3>
+              <router-link to="/invitations" class="text-xs font-bold text-blue-600 hover:underline">
+                 Lihat Semua ({{ invitations.length }})
+              </router-link>
+           </div>
            
            <div v-if="loading" class="space-y-3">
-              <!-- Skeleton Items -->
-              <div v-for="i in 3" :key="i" class="flex items-center gap-3 p-3 bg-gray-50/50 rounded-xl animate-pulse border border-gray-100/50">
-                 <div class="w-12 h-12 rounded-lg bg-gray-200 shrink-0"></div>
+              <div v-for="i in 3" :key="i" class="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl animate-pulse">
+                 <div class="w-12 h-12 rounded-xl bg-slate-200 shrink-0"></div>
                  <div class="flex-1 space-y-2">
-                    <div class="h-3 bg-gray-200 rounded w-2/3"></div>
-                    <div class="h-2 bg-gray-100 rounded w-1/2"></div>
+                    <div class="h-3 bg-slate-200 rounded w-1/3"></div>
+                    <div class="h-2.5 bg-slate-100 rounded w-1/4"></div>
                  </div>
-                 <div class="w-8 h-8 rounded-lg bg-gray-100 shrink-0"></div>
+                 <div class="w-16 h-8 rounded-xl bg-slate-200 shrink-0"></div>
               </div>
            </div>
-           <div v-else-if="invitations.length === 0" class="py-10 text-center text-gray-400 italic">
-              Belum ada undangan. <router-link to="/create" class="text-mocha underline">Buat sekarang</router-link>
+
+           <div v-else-if="invitations.length === 0" class="py-12 text-center space-y-3">
+              <div class="w-14 h-14 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center mx-auto text-xl border border-slate-100">
+                 <i class="fa-solid fa-envelope-open"></i>
+              </div>
+              <h4 class="font-bold text-slate-800 text-sm">Belum Ada Undangan Dibuat</h4>
+              <p class="text-xs text-slate-400 max-w-xs mx-auto">Mulai perjalananmu membuat undangan digital elegan hanya dalam hitungan menit.</p>
+              <router-link to="/templates" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
+                 <i class="fa-solid fa-plus text-[10px]"></i> Buat Undangan Pertama
+              </router-link>
            </div>
            
            <div v-else class="space-y-3">
-              <div v-for="inv in invitations.slice(0, 3)" :key="inv.id" class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition">
-                 <img :src="getInvitationThumbnail(inv)" class="w-12 h-12 rounded-lg object-cover bg-gray-200" />
-                 <div class="flex-1 min-w-0">
-                    <div class="flex items-center gap-2">
-                       <h4 class="font-bold text-dark text-xs truncate">{{ inv.title }}</h4>
-                       <span :class="inv.isPublished ? 'text-green-600' : 'text-gray-400'" class="text-[8px] font-bold uppercase">
-                          • {{ inv.isPublished ? 'Published' : 'Draft' }}
-                       </span>
+              <div 
+                v-for="inv in invitations.slice(0, 4)" 
+                :key="inv.id" 
+                class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl border border-slate-100 hover:border-slate-200 hover:bg-slate-50/50 transition-all group"
+              >
+                 <div class="flex items-center gap-3.5 min-w-0">
+                    <img 
+                      :src="getInvitationThumbnail(inv)" 
+                      class="w-12 h-12 rounded-xl object-cover bg-slate-100 border border-slate-200/60 shrink-0" 
+                    />
+                    <div class="min-w-0">
+                       <div class="flex items-center gap-2">
+                          <h4 class="font-extrabold text-slate-900 text-sm truncate group-hover:text-blue-600 transition-colors">
+                            {{ inv.title || 'Undangan Tanpa Judul' }}
+                          </h4>
+                          <span 
+                            :class="inv.isPublished ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'" 
+                            class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border"
+                          >
+                             {{ inv.isPublished ? 'Published' : 'Draft' }}
+                          </span>
+                       </div>
+                       <p class="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1">
+                          <i class="fa-solid fa-link text-[10px] text-slate-300"></i>
+                          <span>satuundangan.com/{{ inv.slug }}</span>
+                       </p>
                     </div>
-                    <p class="text-[10px] text-muted truncate">satuundangan.com/{{ inv.slug }}</p>
                  </div>
-                 <router-link :to="inv.isPublished ? `/${inv.slug}` : '/invitations'" target="_blank" class="w-8 h-8 flex items-center justify-center bg-white rounded-lg text-mocha shadow-sm border border-gray-100">
-                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
-                 </router-link>
+
+                 <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                    <button 
+                      @click="copyLink(inv.slug)"
+                      class="p-2 text-slate-500 hover:text-blue-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 text-xs flex items-center gap-1.5"
+                      title="Salin Link Undangan"
+                    >
+                      <i class="fa-solid fa-copy"></i>
+                      <span class="hidden md:inline">Salin</span>
+                    </button>
+                    
+                    <router-link 
+                      :to="`/invitation/${inv.id}/edit`" 
+                      class="px-3.5 py-2 bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5"
+                    >
+                      <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                      <span>Edit</span>
+                    </router-link>
+
+                    <a 
+                      :href="`/${inv.slug}`" 
+                      target="_blank" 
+                      class="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-2xs"
+                      title="Buka Website Undangan"
+                    >
+                      <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
+                    </a>
+                 </div>
               </div>
            </div>
         </div>
@@ -146,43 +201,49 @@
       </main>
     </div>
 
-    <!-- Bottom Navigation untuk Mobile -->
+    <!-- Bottom Navigation Mobile -->
     <BottomNav />
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from "vue";
-import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
-import Topbar from "@/components/dashboard/TopbarDashboard.vue";
-import StatCard from "@/components/dashboard/StatCard.vue";
-import BottomNav from "@/components/dashboard/BottomNav.vue";
-import { getInvitations, getDashboardStats } from "@/api/invitation";
-import { useAuthStore } from "@/stores/auth";
-import { useToast } from "vue-toastification";
+import { onMounted, ref, computed } from "vue"
+import Sidebar from "@/components/dashboard/SidebarDashboard.vue"
+import Topbar from "@/components/dashboard/TopbarDashboard.vue"
+import StatCard from "@/components/dashboard/StatCard.vue"
+import BottomNav from "@/components/dashboard/BottomNav.vue"
+import { getInvitations, getDashboardStats } from "@/api/invitation"
+import { useAuthStore } from "@/stores/auth"
+import { useToast } from "vue-toastification"
 
-const toast = useToast();
-const auth = useAuthStore();
-const invitations = ref([]);
+const toast = useToast()
+const auth = useAuthStore()
+const invitations = ref([])
 const statsData = ref({
   total_invitations: 0,
   total_guests: 0,
   total_responses: 0
-});
-const loading = ref(true);
-const isSidebarOpen = ref(window.innerWidth >= 768);
+})
+const loading = ref(true)
+const isSidebarOpen = ref(window.innerWidth >= 768)
 
-const userName = computed(() => auth.user?.name || 'User');
+const userName = computed(() => auth.user?.name || 'User')
+
+const greetingTime = computed(() => {
+  const hour = new Date().getHours()
+  if (hour >= 4 && hour < 11) return 'Selamat Pagi'
+  if (hour >= 11 && hour < 15) return 'Selamat Siang'
+  if (hour >= 15 && hour < 18) return 'Selamat Sore'
+  return 'Selamat Malam'
+})
 
 const stats = computed(() => {
   return {
     total: statsData.value.total_invitations || invitations.value.length,
     guests: statsData.value.total_guests || 0,
     responses: statsData.value.total_responses || 0
-  };
-});
-
-const allPublished = computed(() => invitations.value.every(inv => inv.isPublished));
+  }
+})
 
 function getInvitationThumbnail(inv) {
   return (
@@ -193,7 +254,13 @@ function getInvitationThumbnail(inv) {
     inv.templateDesign?.thumbnailUrl ||
     inv.templateDesign?.previewUrl ||
     '/default-thumbnail.jpg'
-  );
+  )
+}
+
+function copyLink(slug) {
+  const fullUrl = `${window.location.origin}/${slug}`
+  navigator.clipboard.writeText(fullUrl)
+  toast.success('Link undangan berhasil disalin!')
 }
 
 onMounted(async () => {
@@ -201,34 +268,34 @@ onMounted(async () => {
     const [invRes, statsRes] = await Promise.allSettled([
       getInvitations(),
       getDashboardStats()
-    ]);
+    ])
     
     if (invRes.status === 'fulfilled') {
-      invitations.value = Array.isArray(invRes.value) ? invRes.value : (invRes.value.data || []);
+      invitations.value = Array.isArray(invRes.value) ? invRes.value : (invRes.value.data || [])
     }
     
     if (statsRes.status === 'fulfilled') {
-      statsData.value = statsRes.value.data || statsRes.value;
+      statsData.value = statsRes.value.data || statsRes.value
     }
   } catch (error) {
-    console.error(error);
-    toast.error("Gagal memuat dashboard");
+    console.error(error)
+    toast.error("Gagal memuat dashboard")
   } finally {
-    loading.value = false;
+    loading.value = false
   }
-});
+})
 </script>
 
-<style>
-/* Hide scrollbar for Chrome, Safari and Opera */
-.scrollbar-hide::-webkit-scrollbar {
-    display: none;
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
 }
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #f1f5f9;
+  border-radius: 10px;
 }
 </style>
 
