@@ -308,6 +308,7 @@ import {
   fetchAdminInvitations,
   fetchAdminGuests,
   fetchAdminTemplates,
+  fetchAdminHealth,
 } from '@/api/admin.js'
 import { getAdminResellers, getAdminWithdrawals } from '@/api/adminAffiliate.js'
 import { useToast } from 'vue-toastification'
@@ -328,20 +329,18 @@ const recentInvitations = ref([])
 const isRunningDiagnostics = ref(false)
 const diagnosticResults = ref(null)
 
-const runDiagnostics = () => {
+const runDiagnostics = async () => {
   isRunningDiagnostics.value = true
   diagnosticResults.value = null
-  setTimeout(() => {
-    isRunningDiagnostics.value = false
-    diagnosticResults.value = {
-      database: { status: 'healthy', msg: 'Terhubung (14ms)' },
-      storage: { status: 'healthy', msg: 'Tersedia - Sisa 14.2 GB (82%)' },
-      email: { status: 'healthy', msg: 'SMTP Online - Antrean Kosong' },
-      payment: { status: 'healthy', msg: 'Midtrans API Ready' },
-      rendered: new Date().toLocaleTimeString('id-ID')
-    }
+  try {
+    const res = await fetchAdminHealth()
+    diagnosticResults.value = res
     toast.success('Diagnostik sistem selesai!')
-  }, 1500)
+  } catch (error) {
+    toast.error(error.message || 'Gagal menjalankan diagnostik sistem')
+  } finally {
+    isRunningDiagnostics.value = false
+  }
 }
 
 // Maintenance Mode switch configuration
@@ -440,5 +439,6 @@ async function loadDashboard() {
 
 onMounted(() => {
   loadDashboard()
+  runDiagnostics()
 })
 </script>
