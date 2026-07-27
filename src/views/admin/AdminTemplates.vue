@@ -150,7 +150,7 @@
               <p class="mb-2 text-xs text-slate-500">
                 Atur tampilan tema langsung dari form ini — tanpa coding.
               </p>
-              <ThemeBuilder v-model="form.designConfig" />
+              <ThemeBuilder v-model="form.designConfig" :copy-sources="themeCopySources" />
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Kategori</label>
@@ -678,7 +678,10 @@ import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 import { templateComponentKeys } from '@/utils/templateRegistry'
 import ThemeBuilder from '@/components/admin/ThemeBuilder.vue'
-import { designConfigForPayload } from '@/components/admin/themeBuilderOptions.js'
+import {
+  designConfigForPayload,
+  buildCopySources,
+} from '@/components/admin/themeBuilderOptions.js'
 
 const toast = useToast()
 const thumbnailInput = ref(null)
@@ -799,6 +802,7 @@ const form = reactive({
 })
 
 const isThemeBuilderActive = computed(() => form.componentKey === 'dynamic-theme')
+const themeCopySources = computed(() => buildCopySources(templates.value, editing.value?.id))
 
 watch(() => form.name, (newVal) => {
   if (!editing.value && newVal) {
