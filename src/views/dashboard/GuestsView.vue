@@ -32,7 +32,7 @@
               <button
                 @click="showAddModal = true"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-slate-900 text-white px-4 py-2.5 rounded-xl text-xs font-extrabold hover:bg-slate-800 flex items-center justify-center gap-2 shadow-md shadow-slate-900/10 disabled:opacity-50 transition-all"
+                class="flex-1 md:flex-none bg-[#a47148] text-white px-4 py-2.5 rounded-xl text-xs font-extrabold hover:bg-[#8e5e38] flex items-center justify-center gap-2 shadow-md shadow-[#a47148]/20 disabled:opacity-50 transition-all"
               >
                 <i class="fa-solid fa-user-plus text-[11px]"></i> Tambah
               </button>

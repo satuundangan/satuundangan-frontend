@@ -16,12 +16,12 @@
       <!-- Brand Logo Header -->
       <div class="p-5 border-b border-slate-100/80 flex items-center justify-between">
         <router-link to="/" class="flex items-center gap-3 group">
-          <div class="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center font-extrabold text-sm shadow-md shadow-slate-900/10 group-hover:scale-105 transition-transform">
+          <div class="w-9 h-9 bg-[#a47148] text-white rounded-xl flex items-center justify-center font-extrabold text-sm shadow-md shadow-[#a47148]/20 group-hover:scale-105 transition-transform">
             S
           </div>
           <div>
             <span class="font-black text-sm text-slate-900 tracking-tight block">SatuUndangan</span>
-            <span class="text-[9px] font-bold text-slate-400 uppercase tracking-widest block -mt-0.5">User Portal</span>
+            <span class="text-[9px] font-bold text-[#a47148] uppercase tracking-widest block -mt-0.5">User Portal</span>
           </div>
         </router-link>
         
@@ -41,13 +41,13 @@
                 @click="$emit('close')"
                 class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
                 :class="$route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard')
-                  ? 'bg-slate-900 text-white font-bold shadow-md shadow-slate-900/10' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+                  ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
+                  : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
               >
                 <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
-                  $route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-slate-900']"></i>
+                  $route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
                 <span>{{ item.name }}</span>
-                <span v-if="item.badge" class="ml-auto px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-blue-100 text-blue-600">
+                <span v-if="item.badge" class="ml-auto px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-amber-100 text-amber-800">
                   {{ item.badge }}
                 </span>
               </router-link>
@@ -64,11 +64,11 @@
                 @click="$emit('close')"
                 class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
                 :class="$route.path === item.to 
-                  ? 'bg-slate-900 text-white font-bold shadow-md shadow-slate-900/10' 
-                  : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'"
+                  ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
+                  : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
               >
                 <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
-                  $route.path === item.to ? 'text-white' : 'text-slate-400 group-hover:text-slate-900']"></i>
+                  $route.path === item.to ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
                 <span>{{ item.name }}</span>
               </router-link>
             </li>
@@ -80,7 +80,7 @@
       <div class="p-3 border-t border-slate-100 bg-slate-50/50">
         <div class="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-between gap-3">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-slate-900 to-slate-700 text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-sm">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#a47148] to-[#c89f68] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
               {{ userInitial }}
             </div>
             <div class="min-w-0">

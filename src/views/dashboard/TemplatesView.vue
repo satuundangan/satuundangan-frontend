@@ -21,8 +21,8 @@
                 :class="[
                    'whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-bold transition-all border',
                    selectedCategory === cat.id 
-                     ? 'bg-slate-900 text-white border-slate-900 shadow-md shadow-slate-900/10' 
-                     : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-slate-900'
+                     ? 'bg-[#a47148] text-white border-[#a47148] shadow-md shadow-[#a47148]/20' 
+                     : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-[#a47148]'
                 ]"
               >
                  {{ cat.name }}

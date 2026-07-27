@@ -10,27 +10,27 @@
       <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar">
         
         <!-- Header Banner with Time-based Greeting -->
-        <div class="rounded-3xl bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 p-6 md:p-8 text-white relative overflow-hidden shadow-lg shadow-slate-900/10">
+        <div class="rounded-3xl bg-gradient-to-r from-[#a47148] via-[#b58055] to-[#8e5e38] p-6 md:p-8 text-white relative overflow-hidden shadow-lg shadow-[#a47148]/20">
           <div class="relative z-10 max-w-2xl space-y-3">
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-white/90 backdrop-blur-md text-[10px] font-bold uppercase tracking-wider">
-              <i class="fa-solid fa-sparkles text-amber-300"></i> {{ greetingTime }}
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/15 text-white backdrop-blur-md text-[10px] font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-sparkles text-amber-200"></i> {{ greetingTime }}
             </div>
             <h2 class="text-2xl md:text-4xl font-extrabold tracking-tight">Halo, {{ userName.split(' ')[0] }}! 👋</h2>
-            <p class="text-xs md:text-sm text-slate-300 leading-relaxed">
+            <p class="text-xs md:text-sm text-amber-100/90 leading-relaxed">
               Kelola seluruh undangan digital pernikahanmu, daftar tamu, dan pesan ucapan langsung dari satu panel sederhana.
             </p>
             
             <div class="pt-2 flex flex-wrap items-center gap-3">
-              <router-link to="/templates" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-slate-900 text-xs font-black rounded-xl shadow-md hover:bg-slate-100 hover:scale-105 active:scale-95 transition-all">
+              <router-link to="/templates" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white text-[#a47148] text-xs font-black rounded-xl shadow-md hover:bg-amber-50 hover:scale-105 active:scale-95 transition-all">
                 <i class="fa-solid fa-plus text-xs"></i> Buat Undangan Baru
               </router-link>
-              <router-link to="/invitations" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/10 text-white text-xs font-bold rounded-xl hover:bg-white/20 transition-all backdrop-blur-sm">
+              <router-link to="/invitations" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white/15 text-white text-xs font-bold rounded-xl hover:bg-white/25 transition-all backdrop-blur-sm">
                 Lihat Undangan Saya <i class="fa-solid fa-arrow-right text-[10px]"></i>
               </router-link>
             </div>
           </div>
           
-          <i class="fa-solid fa-envelope-open-text absolute -right-6 -bottom-8 text-white/5 text-[180px] rotate-12 pointer-events-none hidden sm:block"></i>
+          <i class="fa-solid fa-envelope-open-text absolute -right-6 -bottom-8 text-white/10 text-[180px] rotate-12 pointer-events-none hidden sm:block"></i>
         </div>
 
         <!-- Ringkasan Statistik -->

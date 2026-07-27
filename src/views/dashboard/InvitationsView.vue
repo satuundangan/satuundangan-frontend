@@ -50,7 +50,7 @@
 
               <router-link 
                 to="/templates" 
-                class="hidden sm:flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold shadow-md shadow-slate-900/10 hover:bg-slate-800 transition-all"
+                class="hidden sm:flex items-center gap-2 px-4 py-2 bg-[#a47148] text-white rounded-xl text-xs font-bold shadow-md shadow-[#a47148]/20 hover:bg-[#8e5e38] transition-all"
               >
                  <i class="fa-solid fa-plus text-[10px]"></i> Buat Baru
               </router-link>
@@ -74,7 +74,7 @@
            </div>
            <h3 class="font-extrabold text-slate-900 text-base">Tidak ada undangan ditemukan</h3>
            <p class="text-xs text-slate-400 max-w-sm mx-auto">Mulai buat undangan digital pertama kamu dengan memilih dari katalog template kami.</p>
-           <router-link to="/templates" class="inline-flex items-center gap-2 bg-slate-900 text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
+           <router-link to="/templates" class="inline-flex items-center gap-2 bg-[#a47148] text-white px-6 py-2.5 rounded-xl text-xs font-bold hover:bg-[#8e5e38] transition-all shadow-sm">
               <i class="fa-solid fa-plus text-[10px]"></i> Buat Sekarang
            </router-link>
         </div>
@@ -97,7 +97,7 @@
        <div class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-2xl animate-scale-up space-y-6">
           <div class="flex items-center justify-between">
             <h3 class="font-black text-xl text-slate-900 flex items-center gap-2">
-              <i class="fa-solid fa-circle-info text-blue-600"></i> Panduan Undangan
+              <i class="fa-solid fa-circle-info text-[#a47148]"></i> Panduan Undangan
             </h3>
             <button @click="showHelpModal = false" class="p-2 text-slate-400 hover:text-slate-700 rounded-lg">
               <i class="fa-solid fa-xmark text-lg"></i>
@@ -106,21 +106,21 @@
           
           <div class="space-y-5">
              <div class="flex gap-4">
-                <div class="w-9 h-9 shrink-0 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs">1</div>
+                <div class="w-9 h-9 shrink-0 rounded-xl bg-[#a47148] text-white flex items-center justify-center font-bold text-xs">1</div>
                 <div>
                    <h4 class="font-bold text-slate-900 text-xs">Status Draft</h4>
                    <p class="text-xs text-slate-500 leading-relaxed mt-0.5">Undangan baru berstatus <b>Draft</b>. Kamu bebas mengubah isi teks, foto, musik, dan tema sepuasnya.</p>
                 </div>
              </div>
              <div class="flex gap-4">
-                <div class="w-9 h-9 shrink-0 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs">2</div>
+                <div class="w-9 h-9 shrink-0 rounded-xl bg-[#a47148] text-white flex items-center justify-center font-bold text-xs">2</div>
                 <div>
                    <h4 class="font-bold text-slate-900 text-xs">Publish Undangan</h4>
                    <p class="text-xs text-slate-500 leading-relaxed mt-0.5">Klik tombol <b>Publish</b> (ikon roket) untuk memproses pembayaran dan mengaktifkan link publik undanganmu.</p>
                 </div>
              </div>
              <div class="flex gap-4">
-                <div class="w-9 h-9 shrink-0 rounded-xl bg-slate-900 text-white flex items-center justify-center font-bold text-xs">3</div>
+                <div class="w-9 h-9 shrink-0 rounded-xl bg-[#a47148] text-white flex items-center justify-center font-bold text-xs">3</div>
                 <div>
                    <h4 class="font-bold text-slate-900 text-xs">Sebarkan ke Tamu</h4>
                    <p class="text-xs text-slate-500 leading-relaxed mt-0.5">Setelah berstatus <b>Published</b>, buka menu <b>Daftar Tamu</b> untuk mengirimkan ucapan & link khusus via WhatsApp.</p>
@@ -128,7 +128,7 @@
              </div>
           </div>
 
-          <button @click="showHelpModal = false" class="w-full py-3 bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md shadow-slate-900/10 hover:bg-slate-800 transition-all">
+          <button @click="showHelpModal = false" class="w-full py-3 bg-[#a47148] text-white rounded-xl font-bold text-xs shadow-md shadow-[#a47148]/20 hover:bg-[#8e5e38] transition-all">
             Saya Mengerti
           </button>
        </div>

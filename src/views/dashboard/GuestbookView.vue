@@ -23,7 +23,7 @@
         </div>
 
         <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-slate-400">
-           <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-slate-900"></i>
+           <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-[#a47148]"></i>
            <p class="text-xs font-bold">Memuat pesan ucapan...</p>
         </div>
         
@@ -36,7 +36,7 @@
               <div>
                 <div class="flex justify-between items-start mb-3 gap-2">
                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-9 h-9 bg-slate-900 text-white rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 shadow-xs">
+                      <div class="w-9 h-9 bg-[#a47148] text-white rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 shadow-xs">
                          {{ msg.guestName ? msg.guestName.charAt(0).toUpperCase() : '?' }}
                       </div>
                       <div class="min-w-0">

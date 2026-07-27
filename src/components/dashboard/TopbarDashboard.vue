@@ -28,7 +28,7 @@
       <router-link 
         v-if="showButton" 
         to="/templates" 
-        class="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-all text-xs font-bold shadow-md shadow-slate-900/10 hover:scale-105 active:scale-95"
+        class="flex items-center gap-2 px-4 py-2 bg-[#a47148] text-white rounded-xl hover:bg-[#8e5e38] transition-all text-xs font-bold shadow-md shadow-[#a47148]/20 hover:scale-105 active:scale-95"
       >
         <i class="fa-solid fa-plus text-[10px]"></i>
         <span>Buat Undangan</span>

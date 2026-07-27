@@ -4,7 +4,7 @@
     <router-link 
       to="/dashboard" 
       class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all"
-      :class="$route.path === '/dashboard' ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'"
+      :class="$route.path === '/dashboard' ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
     >
       <i class="fa-solid fa-house text-base"></i>
       <span class="text-[9px] font-bold tracking-tight">Beranda</span>
@@ -14,7 +14,7 @@
     <router-link 
       to="/invitations" 
       class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all"
-      :class="$route.path.includes('/invitations') ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'"
+      :class="$route.path.includes('/invitations') ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
     >
       <i class="fa-solid fa-envelope-open-text text-base"></i>
       <span class="text-[9px] font-bold tracking-tight">Undangan</span>
@@ -23,7 +23,7 @@
     <!-- Center Floating Action Button (Buat Undangan) -->
     <router-link 
       to="/templates"
-      class="-mt-5 w-11 h-11 bg-gradient-to-tr from-blue-600 to-indigo-500 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-500/40 active:scale-90 transition-transform border-2 border-slate-900"
+      class="-mt-5 w-11 h-11 bg-gradient-to-tr from-[#a47148] to-[#c89f68] rounded-full flex items-center justify-center text-white shadow-lg shadow-[#a47148]/40 active:scale-90 transition-transform border-2 border-slate-900"
       title="Buat Undangan Baru"
     >
       <i class="fa-solid fa-plus text-base"></i>
@@ -33,7 +33,7 @@
     <router-link 
       to="/guests" 
       class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all"
-      :class="$route.path.includes('/guests') ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'"
+      :class="$route.path.includes('/guests') ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
     >
       <i class="fa-solid fa-users text-base"></i>
       <span class="text-[9px] font-bold tracking-tight">Tamu</span>
@@ -43,7 +43,7 @@
     <router-link 
       to="/settings" 
       class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all"
-      :class="$route.path.includes('/settings') ? 'text-blue-400 font-bold' : 'text-slate-400 hover:text-white'"
+      :class="$route.path.includes('/settings') ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
     >
       <i class="fa-solid fa-user-gear text-base"></i>
       <span class="text-[9px] font-bold tracking-tight">Akun</span>
