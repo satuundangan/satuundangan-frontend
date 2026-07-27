@@ -8,7 +8,7 @@
 
 import { chromium } from '@playwright/test'
 import { fileURLToPath } from 'node:url'
-import { writeFileSync, readFile } from 'node:fs'
+import { writeFileSync, readFileSync, readFile } from 'node:fs'
 import http from 'node:http'
 import path from 'node:path'
 
@@ -72,9 +72,23 @@ async function prerender() {
   })
   await page.waitForTimeout(3000)
 
-  const html = await page.content()
-  writeFileSync(path.join(distDir, 'index.html'), html)
-  console.log(`Saved dist/index.html (${Math.round(html.length / 1024)}KB)`)
+  // Extract rendered #app HTML content from Playwright
+  const renderedAppHtml = await page.$eval('#app', (el) => el.innerHTML).catch(() => '')
+
+  // Read original Vite-generated index.html before Playwright DOM mutations
+  const originalHtml = readFileSync(path.join(distDir, 'index.html'), 'utf-8')
+
+  // Inject rendered HTML into original index.html without modifying head scripts or asset hashes
+  if (renderedAppHtml) {
+    const finalHtml = originalHtml.replace(
+      /<div id="app">[\s\S]*?<\/div>/,
+      `<div id="app">${renderedAppHtml}</div>`
+    )
+    writeFileSync(path.join(distDir, 'index.html'), finalHtml)
+    console.log(`Saved dist/index.html with prerendered #app content (${Math.round(finalHtml.length / 1024)}KB)`)
+  } else {
+    console.log('Prerender skipped injecting #app content (empty HTML)')
+  }
 
   await browser.close()
   await new Promise((resolve) => server.close(resolve))
