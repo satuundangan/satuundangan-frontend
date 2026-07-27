@@ -333,7 +333,10 @@ let debounceTimer = null
 
 function postPreview() {
   try {
-    previewIframe.value?.contentWindow?.postMessage(buildPreviewMessage(config.value), '*')
+    // config is a Vue reactive proxy — postMessage structured clone rejects it,
+    // so strip reactivity the same way CreateForm sanitizes its payload
+    const message = JSON.parse(JSON.stringify(buildPreviewMessage(config.value)))
+    previewIframe.value?.contentWindow?.postMessage(message, '*')
   } catch {
     // never let a preview error break the form
   }
