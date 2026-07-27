@@ -122,7 +122,7 @@ const handleLogout = () => {
 const navItems = [
   { label: 'Dashboard', to: '/admin', icon: 'pi-home' },
   { label: 'Users', to: '/admin/users', icon: 'pi-users' },
-  { label: 'Invitations', to: '/admin/envelope', icon: 'pi-envelope' },
+  { label: 'Invitations', to: '/admin/invitations', icon: 'pi-envelope' },
   { label: 'Template Designs', to: '/admin/templates', icon: 'pi-palette' },
   { label: 'Master Kategori', to: '/admin/categories', icon: 'pi-tags' },
   { label: 'Master Fitur (Sections)', to: '/admin/sections', icon: 'pi-list' },
