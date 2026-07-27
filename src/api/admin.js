@@ -95,3 +95,4 @@ export const deleteAdminPromoCode = (id) =>
   })
 
 export const fetchAdminHealth = () => apiFetch('/admin/health')
+export const fetchAdminStats = () => apiFetch('/admin/stats')

@@ -166,13 +166,13 @@
                 
                 <!-- Area Path -->
                 <path
-                  d="M 0 180 C 40 160, 80 140, 125 155 C 170 170, 210 110, 250 120 C 290 130, 330 80, 375 70 C 420 60, 460 30, 500 40 L 500 180 Z"
+                  :d="svgChartData.areaPath"
                   fill="url(#chartGradient)"
                 />
                 
                 <!-- Line Path -->
                 <path
-                  d="M 0 180 C 40 160, 80 140, 125 155 C 170 170, 210 110, 250 120 C 290 130, 330 80, 375 70 C 420 60, 460 30, 500 40"
+                  :d="svgChartData.linePath"
                   fill="none"
                   stroke="#3b82f6"
                   stroke-width="3"
@@ -180,23 +180,36 @@
                 />
                 
                 <!-- Chart Dots -->
-                <circle cx="125" cy="155" r="4" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
-                <circle cx="250" cy="120" r="4" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
-                <circle cx="375" cy="70" r="4" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
-                <circle cx="500" cy="40" r="4" fill="#3b82f6" stroke="#ffffff" stroke-width="2" />
+                <circle 
+                  v-for="pt in svgChartData.coords" 
+                  :key="pt.label"
+                  :cx="pt.x" 
+                  :cy="pt.y" 
+                  r="4" 
+                  fill="#3b82f6" 
+                  stroke="#ffffff" 
+                  stroke-width="2" 
+                >
+                  <title>{{ pt.label }}: {{ pt.count }} Undangan</title>
+                </circle>
               </svg>
               
               <!-- Floating Data Labels -->
-              <div class="absolute bottom-1 left-[25%] -translate-x-1/2 text-[8px] font-bold text-slate-400 uppercase">H-4</div>
-              <div class="absolute bottom-1 left-[50%] -translate-x-1/2 text-[8px] font-bold text-slate-400 uppercase">H-2</div>
-              <div class="absolute bottom-1 left-[75%] -translate-x-1/2 text-[8px] font-bold text-slate-400 uppercase">Kemarin</div>
-              <div class="absolute bottom-1 right-0 text-[8px] font-bold text-blue-600 uppercase">Hari Ini</div>
+              <div 
+                v-for="pt in svgChartData.coords" 
+                :key="pt.label"
+                class="absolute bottom-1 text-[8px] font-bold uppercase -translate-x-1/2"
+                :style="{ left: `${(pt.x / 500) * 100}%` }"
+                :class="pt.label === 'Hari Ini' ? 'text-blue-600 font-extrabold' : 'text-slate-400'"
+              >
+                {{ pt.label }}
+              </div>
             </div>
           </div>
           
           <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Rata-rata Harian:</span>
-            <span class="font-bold text-slate-800">24 Undangan</span>
+            <span class="font-bold text-slate-800">{{ trendAverage }} Undangan</span>
           </div>
         </div>
       </div>
@@ -309,6 +322,7 @@ import {
   fetchAdminGuests,
   fetchAdminTemplates,
   fetchAdminHealth,
+  fetchAdminStats,
 } from '@/api/admin.js'
 import { getAdminResellers, getAdminWithdrawals } from '@/api/adminAffiliate.js'
 import { useToast } from 'vue-toastification'
@@ -324,6 +338,11 @@ const stats = ref([
   { label: 'Penarikan Pending', value: 0, icon: 'fa-clock', color: 'bg-rose-50 text-rose-600' },
 ])
 const recentInvitations = ref([])
+
+// Real Backend Stats
+const trendData = ref([])
+const categoryData = ref([])
+const trendAverage = ref(0)
 
 // Diagnostics simulation states
 const isRunningDiagnostics = ref(false)
@@ -368,7 +387,7 @@ const toggleMaintenance = async () => {
   }
 }
 
-// Category Distribution Calculator based on Invitations
+// Category Distribution Calculator based on DB Data
 const categoryColors = {
   modern: 'bg-blue-500',
   classic: 'bg-purple-500',
@@ -378,23 +397,54 @@ const categoryColors = {
 }
 
 const categoryDistribution = computed(() => {
-  const counts = {}
-  const items = Array.isArray(recentInvitations.value) ? recentInvitations.value : []
-  items.forEach(inv => {
-    const cat = inv?.category || 'Lainnya'
-    counts[cat] = (counts[cat] || 0) + 1
-  })
+  const items = Array.isArray(categoryData.value) && categoryData.value.length 
+    ? categoryData.value 
+    : []
   
-  const total = items.length || 1
-  return Object.entries(counts).map(([name, count]) => {
-    const key = name.toLowerCase()
+  const total = items.reduce((sum, item) => sum + (item.count || 0), 0) || 1
+  return items.map(item => {
+    const key = (item.category || 'Lainnya').toLowerCase()
     return {
-      name,
-      count,
-      percentage: Math.round((count / total) * 100),
+      name: item.category || 'Lainnya',
+      count: item.count || 0,
+      percentage: Math.round(((item.count || 0) / total) * 100),
       color: categoryColors[key] || 'bg-slate-400'
     }
   }).sort((a, b) => b.count - a.count)
+})
+
+// Dynamic SVG Chart Coordinates Calculator
+const svgChartData = computed(() => {
+  const points = trendData.value.length ? trendData.value : [
+    { dayLabel: 'H-6', count: 0 },
+    { dayLabel: 'H-5', count: 0 },
+    { dayLabel: 'H-4', count: 0 },
+    { dayLabel: 'H-3', count: 0 },
+    { dayLabel: 'H-2', count: 0 },
+    { dayLabel: 'Kemarin', count: 0 },
+    { dayLabel: 'Hari Ini', count: 0 },
+  ]
+  
+  const maxVal = Math.max(...points.map(p => p.count || 0), 1)
+  const width = 500
+  const height = 140
+  const yOffset = 180
+  const step = width / (points.length - 1 || 1)
+  
+  const coords = points.map((p, idx) => {
+    const x = Math.round(idx * step)
+    const y = Math.round(yOffset - ((p.count || 0) / maxVal) * height)
+    return { x, y, count: p.count, label: p.dayLabel, date: p.date }
+  })
+  
+  const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c.x} ${c.y}`).join(' ')
+  const areaPath = `${linePath} L ${width} 180 L 0 180 Z`
+  
+  return {
+    coords,
+    linePath,
+    areaPath,
+  }
 })
 
 async function loadDashboard() {
@@ -421,6 +471,20 @@ async function loadDashboard() {
       withdrawalsCount = withdrawalsRes.total || 0
     } catch (e) {
       console.warn("Failed to fetch withdrawals count:", e)
+    }
+
+    try {
+      const statsRes = await fetchAdminStats()
+      const data = statsRes?.data || statsRes || {}
+      trendData.value = data.trend || []
+      categoryData.value = data.categories || []
+      
+      if (trendData.value.length) {
+        const totalTrend = trendData.value.reduce((acc, curr) => acc + (curr.count || 0), 0)
+        trendAverage.value = Math.round(totalTrend / trendData.value.length)
+      }
+    } catch (e) {
+      console.warn("Failed to fetch admin stats:", e)
     }
 
     stats.value = [
