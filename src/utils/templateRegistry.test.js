@@ -14,11 +14,12 @@ const fakeRegistry = {
 }
 
 describe('templateRegistry', () => {
-  it('templateComponentKeys includes all 18 SFCs in src/templates/', () => {
-    expect(templateComponentKeys).toHaveLength(18)
+  it('templateComponentKeys includes all 19 SFCs in src/templates/', () => {
+    expect(templateComponentKeys).toHaveLength(19)
     expect(templateComponentKeys).toContain('dark-elegant')
     expect(templateComponentKeys).toContain('one-piece')
     expect(templateComponentKeys).toContain('naruto')
+    expect(templateComponentKeys).toContain('dynamic-theme')
   })
 
   it('normalizeTemplateKey trims, lowercases, and dash-joins whitespace', () => {

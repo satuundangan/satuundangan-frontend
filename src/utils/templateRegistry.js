@@ -2,9 +2,16 @@ const templateModules = import.meta.glob('../templates/*.vue')
 
 export const FALLBACK_TEMPLATE_KEY = 'dark-elegant'
 
+// The generic config-driven renderer — any admin-created design row can bind to
+// this key via componentKey and re-skin entirely via designConfig (theme builder).
+export const DYNAMIC_THEME_KEY = 'dynamic-theme'
+
 export const templateLoaders = Object.fromEntries(
   Object.entries(templateModules).map(([path, loader]) => [
-    path.split('/').pop().replace(/\.vue$/, ''),
+    path
+      .split('/')
+      .pop()
+      .replace(/\.vue$/, ''),
     loader,
   ]),
 )

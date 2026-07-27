@@ -16,6 +16,7 @@ import {
   resolveTemplateKey,
   normalizeTemplateKey,
   FALLBACK_TEMPLATE_KEY,
+  DYNAMIC_THEME_KEY,
 } from '@/utils/templateRegistry'
 
 const props = defineProps({
@@ -103,18 +104,37 @@ onMounted(async () => {
   watch(() => invitationData.value?.template_slug, async (newSlug) => {
     if (!newSlug) return
     const seq = ++templateResolveSeq
+    let tmpl = null
     let key = resolveTemplateKey(newSlug)
 
     // Unknown slug: the design may be an admin-created row bound to an existing renderer.
     if (key === FALLBACK_TEMPLATE_KEY && normalizeTemplateKey(newSlug) !== FALLBACK_TEMPLATE_KEY) {
       try {
-        const tmpl = await getTemplateDesignBySlug(newSlug)
+        tmpl = await getTemplateDesignBySlug(newSlug)
         key = resolveTemplateKey(newSlug, tmpl?.componentKey)
       } catch {
         // keep the fallback — a network error or 404 must not blank the page
       }
     }
     if (seq !== templateResolveSeq) return // a newer slug won the race
+
+    // The dynamic-theme renderer needs designConfig even when the slug itself
+    // resolved directly (i.e. the componentKey lookup above was skipped).
+    if (key === DYNAMIC_THEME_KEY && !tmpl) {
+      try {
+        tmpl = await getTemplateDesignBySlug(newSlug)
+      } catch {
+        // defaults are fine — dynamic-theme renders a complete invitation with zero designConfig
+      }
+      if (seq !== templateResolveSeq) return
+    }
+
+    if (tmpl?.designConfig && invitationData.value) {
+      // Reassigning the object does not re-fire this watch (its source is
+      // template_slug, unchanged) but does propagate through the template's
+      // deep props.data watch.
+      invitationData.value = { ...invitationData.value, designConfig: tmpl.designConfig }
+    }
 
     TemplateComponent.value = markRaw(defineAsyncComponent({
       loader: templateLoaders[key],
@@ -155,8 +175,9 @@ onMounted(async () => {
       let templateAudioStart = 0
       let templateAudioEnd = 0
       let sampleContent = {}
+      let tmpl = null
       try {
-        const tmpl = await getTemplateDesignBySlug(templateSlug)
+        tmpl = await getTemplateDesignBySlug(templateSlug)
         templateDefaultMusic = tmpl?.defaultMusic || null
         templateAudioStart = tmpl?.defaultAudioStart ?? 0
         templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
@@ -183,6 +204,7 @@ onMounted(async () => {
         audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
         audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
         show_branding: false, // demo preview is a clean (premium-look) showcase
+        designConfig: tmpl?.designConfig ?? null,
       }
     } else {
       try {
