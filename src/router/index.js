@@ -351,4 +351,18 @@ router.afterEach((to, from) => {
   }
 })
 
+// Handle stale asset/chunk errors after new deployments
+router.onError((error) => {
+  const isChunkError = 
+    error.message?.includes('Failed to fetch dynamically imported module') ||
+    error.message?.includes('Importing a module script failed') ||
+    error.message?.includes('Expected a JavaScript') ||
+    error.name === 'ChunkLoadError'
+
+  if (isChunkError) {
+    console.warn('New deployment detected or stale chunk error. Reloading page...')
+    window.location.reload()
+  }
+})
+
 export default router
