@@ -9,30 +9,55 @@
     @update:search="handleSearch"
     @action="openCreate"
   >
-    <DataTable
-      :headers="headers"
-      :items="users"
-      :loading="loading"
-      :total="total"
-      v-model:page="page"
-      :limit="limit"
-      @update:page="setPage"
-    >
-      <template #cell(name)="{ item }">
-        <span class="font-medium text-slate-900">{{ item.name || '-' }}</span>
-      </template>
-      <template #cell(role)="{ item }">
-        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium" :class="item.isAdmin ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-600'">
-          {{ item.isAdmin ? 'Admin' : 'User' }}
-        </span>
-      </template>
-      <template #cell(actions)="{ item }">
-        <div class="flex justify-end gap-2 text-xs font-medium">
-          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors" @click="openEdit(item)">Edit</button>
-          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors" @click="confirmDelete(item)">Hapus</button>
-        </div>
-      </template>
-    </DataTable>
+    <div class="card bg-white">
+      <DataTable
+        :value="users"
+        lazy
+        paginator
+        :rows="limit"
+        :totalRecords="total"
+        :loading="loading"
+        @page="onPage"
+        class="p-datatable-sm bg-white"
+        dataKey="id"
+      >
+        <template #empty> Tidak ada pengguna ditemukan. </template>
+        <template #loading> Memuat data pengguna. Silakan tunggu. </template>
+
+        <Column field="name" header="Nama" style="min-width: 12rem">
+          <template #body="{ data }">
+            <span class="font-medium text-slate-900">{{ data.name || '-' }}</span>
+          </template>
+        </Column>
+
+        <Column field="email" header="Email" style="min-width: 15rem">
+          <template #body="{ data }">
+            <span class="text-slate-600">{{ data.email }}</span>
+          </template>
+        </Column>
+
+        <Column field="role" header="Role" style="min-width: 8rem">
+          <template #body="{ data }">
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase" :class="data.isAdmin ? 'bg-indigo-50 text-indigo-700' : 'bg-slate-50 text-slate-600'">
+              {{ data.isAdmin ? 'Admin' : 'User' }}
+            </span>
+          </template>
+        </Column>
+
+        <Column header="Aksi" headerClass="text-right" bodyClass="text-right" style="min-width: 10rem">
+          <template #body="{ data }">
+            <div class="flex justify-end gap-1.5 text-xs font-medium">
+              <button class="flex h-8 items-center gap-1.5 rounded-lg border border-slate-200 px-3 hover:bg-slate-50 transition-colors text-slate-600" @click="openEdit(data)">
+                <i class="fa-solid fa-pencil text-[10px]"></i> Edit
+              </button>
+              <button class="flex h-8 items-center gap-1.5 rounded-lg border border-rose-200 px-3 text-rose-600 hover:bg-rose-50 transition-colors" @click="confirmDelete(data)">
+                <i class="fa-solid fa-trash text-[10px]"></i> Hapus
+              </button>
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
@@ -85,7 +110,8 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import DataTable from '@/components/admin/DataTable.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
 import {
   fetchAdminUsers,
   createAdminUser,
@@ -143,8 +169,8 @@ function handleSearch(value) {
   debouncedSearch()
 }
 
-function setPage(newPage) {
-  page.value = newPage
+function onPage(event) {
+  page.value = event.page + 1
   loadUsers()
 }
 

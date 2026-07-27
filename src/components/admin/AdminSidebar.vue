@@ -1,7 +1,7 @@
 <template>
   <!-- Main sidebar container with full height and flex column layout -->
   <aside 
-    class="flex h-screen flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out shrink-0"
+    class="flex h-screen sticky top-0 flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out shrink-0"
     :class="isCollapsed ? 'w-20' : 'w-64'"
   >
     <!-- Sidebar Header -->
@@ -99,6 +99,7 @@
 import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import Swal from 'sweetalert2';
 
 const route = useRoute();
 const router = useRouter();
@@ -113,9 +114,23 @@ const toggleCollapse = () => {
 
 const user = computed(() => authStore.user);
 
-const handleLogout = () => {
-  authStore.logout();
-  router.push('/admin/login');
+const handleLogout = async () => {
+  const result = await Swal.fire({
+    title: 'Keluar dari Admin?',
+    text: 'Sesi admin Anda akan diakhiri.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#cbd5e1',
+    confirmButtonText: 'Ya, Keluar',
+    cancelButtonText: 'Batal',
+    focusCancel: true
+  });
+  
+  if (result.isConfirmed) {
+    authStore.logout();
+    router.push('/admin/login');
+  }
 };
 
 // Navigation items array with PrimeIcons
