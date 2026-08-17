@@ -13,9 +13,6 @@
       <FeaturesSection />
     </section>
 
-    <!-- Steps Section -->
-    <StepsSection @create-invitation="showModal = true" />
-
     <!-- Template Section (Existing Logic) -->
     <section id="templates" class="section bg-white scroll-mt-20">
       <div class="max-w-6xl mx-auto px-6">
@@ -24,15 +21,27 @@
           <p class="text-muted">Desain premium untuk hari spesialmu.</p>
         </div>
 
-        <!-- Filter Categories (Desktop Tabs) -->
-        <div class="flex flex-wrap justify-center gap-2 mb-10">
-          <button v-for="cat in visibleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
-            'px-6 py-2 rounded-full text-sm font-medium transition-all duration-300 border',
+        <!-- Filter: Gaya (curated filterGroup) -->
+        <div class="mb-3 flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:flex-wrap md:justify-center md:overflow-visible">
+          <button v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
+            'shrink-0 snap-start whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border',
             selectedCategory === cat.id
               ? 'bg-mocha text-white border-mocha shadow-lg shadow-mocha/20'
               : 'bg-transparent text-gray-500 border-gray-200 hover:border-mocha hover:text-mocha'
           ]">
-            {{ cat.name }}
+            {{ cat.label }}
+          </button>
+        </div>
+
+        <!-- Filter: Paket (tier) -->
+        <div class="mb-10 flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:flex-wrap md:justify-center md:overflow-visible">
+          <button v-for="pkg in packageCategories" :key="pkg.id" @click="selectedTier = pkg.id" :class="[
+            'shrink-0 snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border',
+            selectedTier === pkg.id
+              ? 'bg-dark text-white border-dark'
+              : 'bg-transparent text-gray-500 border-gray-200 hover:border-dark hover:text-dark'
+          ]">
+            {{ pkg.label }}
           </button>
         </div>
 
@@ -46,9 +55,9 @@
             class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 flex flex-col">
 
             <!-- Card Image -->
-            <div class="relative overflow-hidden h-64 bg-gray-100 cursor-pointer" @click="selectTemplate(item.id); showModal = true;">
+            <div class="relative overflow-hidden aspect-[4/5] bg-gradient-to-br from-ivory to-[#efe3d2] cursor-pointer flex items-center justify-center p-5" @click="selectTemplate(item.id); showModal = true;">
               <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)" :alt="item.name"
-                class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                class="max-w-full max-h-full object-contain rounded-lg shadow-2xl transition-transform duration-500 group-hover:scale-105"
                 @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
 
               <!-- Hover Overlay -->
@@ -63,12 +72,6 @@
                   <i class="fa-solid fa-eye"></i> Demo
                 </a>
               </div>
-
-              <!-- Badge Premium -->
-              <div v-if="item.isPremium"
-                class="absolute top-4 left-4 bg-gradient-to-r from-amber-400 to-amber-600 text-white text-[10px] font-bold px-3 py-1.5 rounded-lg shadow-md tracking-wider uppercase z-10">
-                Premium
-              </div>
             </div>
 
             <!-- Card Content -->
@@ -79,7 +82,7 @@
                   {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
                 </div>
               </div>
-              
+
               <p class="text-sm text-muted line-clamp-2 mb-6 flex-1">{{ item.description }}</p>
 
               <!-- Features Summary -->
@@ -91,7 +94,7 @@
                  <div class="flex items-center gap-1.5 text-xs text-gray-500">
                     <i class="fa-solid fa-palette text-mocha/40"></i>
                     <div class="flex gap-1">
-                       <span v-for="color in (item.paletteColors || []).slice(0, 3)" :key="color" 
+                       <span v-for="color in (item.paletteColors || []).slice(0, 3)" :key="color"
                          class="w-2.5 h-2.5 rounded-full border border-gray-100" :style="{ backgroundColor: color }"></span>
                     </div>
                  </div>
@@ -99,7 +102,7 @@
 
               <!-- Actions -->
               <div class="flex gap-3 mt-auto">
-                 <button @click="selectTemplate(item.id); showModal = true;" 
+                 <button @click="selectTemplate(item.id); showModal = true;"
                    class="flex-[2] bg-mocha text-white py-3 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-lg shadow-mocha/10 flex items-center justify-center gap-2">
                    Gunakan Template
                  </button>
@@ -116,7 +119,7 @@
         <div v-if="!loading && filteredTemplates.length === 0" class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
            <div class="text-4xl mb-4">🎨</div>
            <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
-           <p class="text-muted text-sm">Coba pilih kategori lain atau kembali beberapa saat lagi.</p>
+           <p class="text-muted text-sm">Coba ubah filter gaya atau paket, atau kembali beberapa saat lagi.</p>
         </div>
 
         <div class="text-center mt-12">
@@ -128,27 +131,71 @@
       </div>
     </section>
 
-    <!-- Custom Theme CTA Section -->
-    <section class="py-16 px-6 bg-gradient-to-br from-stone-50 to-amber-50/40">
-      <div class="max-w-3xl mx-auto text-center">
-        <div class="inline-flex items-center gap-2 bg-amber-100/80 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 border border-amber-200/60">
-          <i class="fa-solid fa-palette"></i> Custom Design
+    <!-- Steps Section -->
+    <StepsSection @create-invitation="showModal = true" />
+
+    <!-- Tutorial Section (TikTok) -->
+    <TutorialSection />
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="section bg-ivory scroll-mt-20 py-24">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Harga</span>
+          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">Pilih Paket Sesuai Kebutuhanmu</h2>
+          <p class="text-muted max-w-2xl mx-auto text-lg">
+            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
+          </p>
         </div>
-        <h2 class="text-2xl sm:text-3xl font-bold text-dark mb-3 font-serif leading-snug">
-          Ga ketemu tema undangan<br class="hidden sm:block" /> yang kamu mau?
-        </h2>
-        <p class="text-muted text-base mb-2">
-          Chat kami untuk request desain custom sesuai keinginanmu.
-        </p>
-        <p class="text-xs text-gray-400 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
-        <a
-          href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20request%20desain%20undangan%20custom%20%F0%9F%92%8C"
-          target="_blank"
-          class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-300 hover:-translate-y-0.5"
-        >
-          <i class="fa-brands fa-whatsapp text-xl"></i>
-          Chat Kami Sekarang
-        </a>
+
+        <div class="grid md:grid-cols-3 gap-8 items-center">
+          <div v-for="plan in pricingPlans" :key="plan.name" @click="choosePlan(plan.id)" :class="[
+            'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300 cursor-pointer',
+            plan.highlighted
+              ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
+              : 'border border-gray-100 shadow-lg hover:shadow-xl',
+            selectedPlan === plan.id ? 'ring-2 ring-mocha ring-offset-2' : ''
+          ]">
+            <!-- Best Seller Badge -->
+            <div v-if="plan.highlighted"
+              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase">
+              Best Seller
+            </div>
+
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
+              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
+            </div>
+
+            <div class="mb-8">
+              <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
+              <span class="text-muted text-sm">/undangan</span>
+            </div>
+
+            <ul class="space-y-4 mb-8 flex-1">
+              <li v-for="feat in plan.features" :key="feat.label" class="flex items-start gap-3 text-sm">
+                <!-- Check Icon -->
+                <svg v-if="feat.included" class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <!-- X Icon -->
+                <svg v-else class="w-5 h-5 shrink-0 text-red-400 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span :class="feat.included ? 'text-dark/80' : 'text-red-400 line-through decoration-red-300/60'">{{ feat.label }}</span>
+              </li>
+            </ul>
+
+            <button @click.stop="choosePlan(plan.id)" :class="[
+              'w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300',
+              plan.highlighted
+                ? 'bg-mocha text-white shadow-lg shadow-mocha/20 hover:bg-mocha/90 hover:-translate-y-0.5'
+                : 'bg-ivory text-mocha border-2 border-mocha/20 hover:border-mocha hover:bg-mocha hover:text-white'
+            ]">
+              Mulai Buat Undangan
+            </button>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -185,12 +232,36 @@
     <!-- FAQ Section -->
     <FaqSection />
 
+    <!-- Custom Theme CTA Section -->
+    <section class="py-16 px-6 bg-gradient-to-br from-stone-50 to-amber-50/40">
+      <div class="max-w-3xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 bg-amber-100/80 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 border border-amber-200/60">
+          <i class="fa-solid fa-palette"></i> Custom Design
+        </div>
+        <h2 class="text-2xl sm:text-3xl font-bold text-dark mb-3 font-serif leading-snug">
+          Ga ketemu tema undangan<br class="hidden sm:block" /> yang kamu mau?
+        </h2>
+        <p class="text-muted text-base mb-2">
+          Chat kami untuk request desain custom sesuai keinginanmu.
+        </p>
+        <p class="text-xs text-gray-400 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
+        <a
+          href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20request%20desain%20undangan%20custom%20%F0%9F%92%8C"
+          target="_blank"
+          class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-300 hover:-translate-y-0.5"
+        >
+          <i class="fa-brands fa-whatsapp text-xl"></i>
+          Chat Kami Sekarang
+        </a>
+      </div>
+    </section>
+
     <!-- Footer -->
     <Footer />
 
 
-    <!-- Nova AI Floating Button -->
-    <FloatingNovaButton @require-auth="showAuthModal = true" />
+    <!-- Nova AI Floating Button (hidden — experimental, re-enable post-launch cleanup) -->
+    <!-- <FloatingNovaButton @require-auth="showAuthModal = true" /> -->
 
     <!-- Auth Modal (triggered by Nova when user not logged in) -->
     <AuthModal :show="showAuthModal" :authMode="authMode" @update:authMode="authMode = $event" @close="showAuthModal = false" />
@@ -214,12 +285,25 @@
             <div class="mb-6">
               <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Kategori</h5>
               <ul class="space-y-1">
-                <li v-for="cat in categories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
+                <li v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
                   'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
                   selectedCategory === cat.id ? 'bg-white text-mocha shadow-sm border border-gray-200' : 'text-gray-600 hover:bg-gray-200/50'
                 ]">
-                  {{ cat.name }}
+                  {{ cat.label }}
                   <span v-if="selectedCategory === cat.id" class="w-1.5 h-1.5 rounded-full bg-mocha"></span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="mb-6">
+              <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Paket</h5>
+              <ul class="space-y-1">
+                <li v-for="pkg in packageCategories" :key="pkg.id" @click="selectedTier = pkg.id" :class="[
+                  'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
+                  selectedTier === pkg.id ? 'bg-white text-mocha shadow-sm border border-gray-200' : 'text-gray-600 hover:bg-gray-200/50'
+                ]">
+                  {{ pkg.label }}
+                  <span v-if="selectedTier === pkg.id" class="w-1.5 h-1.5 rounded-full bg-mocha"></span>
                 </li>
               </ul>
             </div>
@@ -236,17 +320,27 @@
             </div>
             <button @click="showModal = false"
               class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition">
-              &times;
+              <i class="fa-solid fa-xmark"></i>
             </button>
           </div>
 
-          <!-- Mobile Filter Tabs -->
+          <!-- Mobile Filter Tabs: Gaya -->
           <div class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
-            <button v-for="cat in categories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
+            <button v-for="cat in styleCategories" :key="cat.id" @click="selectedCategory = cat.id" :class="[
               'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
               selectedCategory === cat.id ? 'bg-mocha text-white border-mocha' : 'bg-white text-gray-600 border-gray-200'
             ]">
-              {{ cat.name }}
+              {{ cat.label }}
+            </button>
+          </div>
+
+          <!-- Mobile Filter Tabs: Paket -->
+          <div class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar">
+            <button v-for="pkg in packageCategories" :key="pkg.id" @click="selectedTier = pkg.id" :class="[
+              'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
+              selectedTier === pkg.id ? 'bg-dark text-white border-dark' : 'bg-white text-gray-600 border-gray-200'
+            ]">
+              {{ pkg.label }}
             </button>
           </div>
 
@@ -262,11 +356,11 @@
                   selectedTemplate === item.id ? 'ring-2 ring-mocha ring-offset-2 scale-[1.02]' : 'hover:shadow-lg hover:-translate-y-1',
                   'bg-white rounded-xl overflow-hidden cursor-pointer transition-all duration-300 border border-gray-100 flex flex-col group shadow-sm'
                 ]">
-                <div class="relative h-32 sm:h-44 overflow-hidden bg-gray-200">
+                <div class="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-ivory to-[#efe3d2] flex items-center justify-center p-3">
                   <img :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
-                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    class="max-w-full max-h-full object-contain rounded-md shadow-xl group-hover:scale-105 transition-transform duration-500"
                     @error="(e) => { e.target.onerror = null; e.target.src = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='; }" />
-                  
+
                   <!-- Preview Button (Always on top of selection overlay) -->
                   <div class="absolute top-2 right-2 flex gap-2 z-20">
                     <a :href="'/demo/' + item.slug" target="_blank" @click.stop
@@ -297,7 +391,6 @@
                   <div class="flex justify-between items-start mb-2">
                     <h4 class="font-bold text-dark text-sm line-clamp-1"
                       :class="selectedTemplate === item.id ? 'text-mocha' : ''">{{ item.name }}</h4>
-                    <span v-if="item.isPremium" class="bg-amber-100 text-amber-700 text-[8px] font-bold px-1.5 py-0.5 rounded border border-amber-200 uppercase">Premium</span>
                   </div>
 
                   <p class="text-[11px] text-muted mb-3 line-clamp-2 flex-1 leading-relaxed">{{ item.description }}</p>
@@ -331,7 +424,7 @@
                 📦</div>
               <div>
                 <p class="font-medium text-gray-600">Tidak ada template ditemukan</p>
-                <p class="text-sm">Coba pilih kategori lain.</p>
+                <p class="text-sm">Coba ubah filter gaya atau paket.</p>
               </div>
             </div>
           </div>
@@ -361,25 +454,43 @@
     </div>
 
   </div>
+    <ExitIntentPromo />
 </template>
 
 <script setup>
 import { ref, computed, watch, nextTick, reactive, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
 import HeroSection from '@/components/layout/HeroSection.vue'
 import ComparisonSection from '@/components/landing/ComparisonSection.vue'
 import FeaturesSection from '@/components/landing/FeaturesSection.vue'
 import StepsSection from '@/components/landing/StepsSection.vue'
+import TutorialSection from '@/components/landing/TutorialSection.vue'
 import FaqSection from '@/components/landing/FaqSection.vue'
+import { featuresFor } from '@/config/packageFeatures'
 import { getTemplateDesigns } from '@/api/templateDesign'
-import { getCategories } from '@/api/category' // Update Import
+import { getPackages } from '@/api/payment'
 import FloatingNovaButton from '@/components/nova/FloatingNovaButton.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
+import {
+  buildStyleFilters,
+  buildPackageFilters,
+  filterTemplates,
+  resolveFilterId,
+  ALL_ID,
+} from '@/utils/templateFilters'
 
 const router = useRouter()
+const route = useRoute()
 const showModal = ref(false)
+const selectedPlan = ref(null)
+
+// Pricing tier chosen on homepage. Persisted in goToCreate so it carries into the studio + checkout.
+function choosePlan(planId) {
+  selectedPlan.value = planId
+  showModal.value = true
+}
 const showAuthModal = ref(false)
 const authMode = ref('login')
 
@@ -392,11 +503,72 @@ watch(showModal, (val) => {
 })
 
 const selectedTemplate = ref(null)
-const selectedCategory = ref('all') // Default to 'all' ID
+const selectedCategory = ref('all') // Default to 'all' ID (= curated filterGroup id)
+const selectedTier = ref('all') // Package tier filter id (NOT selectedPackage — that name is
+// already used by the pricing section / localStorage key)
 const templateRefs = reactive({})
 const templates = ref([])
-const categories = ref([{ id: 'all', name: 'Semua' }]) // Init categories
 const loading = ref(true)
+
+// Presentation metadata. Price filled from GET /payment/packages (single source of truth).
+// id matches InvitationPackage enum on backend.
+// Pricing matrix derived from the single source of truth (featuresFor).
+// Only the labels & price/copy live here — inclusion flags come from the tier
+// config, so the matrix can never drift from what the backend enforces.
+const PRICING_TIERS = [
+  {
+    id: 'basic',
+    name: 'Basic',
+    tagline: 'Cocok untuk undangan simpel & hemat.',
+    highlighted: false,
+  },
+  {
+    id: 'premium',
+    name: 'Premium',
+    tagline: 'Fitur lengkap untuk momen spesialmu.',
+    highlighted: true,
+  },
+  {
+    id: 'eksklusif',
+    name: 'Eksklusif',
+    tagline: 'Lebih profesional & otomatis.',
+    highlighted: false,
+  },
+]
+
+// Prices default to static copy, then get synced from GET /payment/packages.
+const tierPrices = ref({
+  basic: 'Rp 89.000',
+  premium: 'Rp 179.000',
+  eksklusif: 'Rp 239.000',
+})
+
+const pricingPlans = computed(() =>
+  PRICING_TIERS.map((tier) => {
+    const f = featuresFor(tier.id)
+    return {
+      ...tier,
+      price: tierPrices.value[tier.id],
+      features: [
+        { label: 'Bebas pilih semua desain', included: true },
+        { label: 'Peta lokasi, hitung mundur, RSVP & amplop', included: true },
+        { label: 'Musik latar preset', included: true },
+        {
+          label: f.gallery ? `Galeri foto (maks ${f.galleryLimit})` : 'Galeri foto',
+          included: f.gallery,
+        },
+        { label: 'Upload musik sendiri (MP3)', included: f.customMusic },
+        { label: 'Kirim undangan via WhatsApp', included: f.whatsapp },
+        { label: 'Tanpa watermark', included: !f.watermark },
+        { label: 'Subdomain custom', included: f.subdomain },
+      ],
+    }
+  }),
+)
+
+function formatRupiah(value) {
+  return 'Rp ' + Number(value || 0).toLocaleString('id-ID')
+}
 
 const testimonials = [
   {
@@ -425,44 +597,58 @@ const testimonials = [
 // Load Data
 onMounted(async () => {
   try {
-    const [tplData, catData] = await Promise.all([
-      getTemplateDesigns(),
-      getCategories()
-    ])
+    const tplData = await getTemplateDesigns()
 
     if (tplData) {
       const rawTplData = Array.isArray(tplData) ? tplData : (tplData.data || [])
       templates.value = Array.isArray(rawTplData) ? rawTplData : []
     }
 
-    if (catData) {
-      // Use the category NAME (label) as the ID for selection logic
-      const rawCatData = Array.isArray(catData) ? catData : (Array.isArray(catData.data) ? catData.data : [])
-      const formattedCats = rawCatData.map(c => ({
-        id: c.label || c.name,
-        name: c.label || c.name
-      }))
-      categories.value = [{ id: 'all', name: 'Semua' }, ...formattedCats]
-    }
-
+    // Restore ?gaya=/?paket= from the URL, sanitized against the chips that
+    // actually exist (a stale or below-threshold value falls back to "Semua").
+    selectedCategory.value = resolveFilterId(route.query.gaya, buildStyleFilters(templates.value))
+    selectedTier.value = resolveFilterId(route.query.paket, buildPackageFilters(templates.value))
   } catch (e) {
     console.error('Gagal ambil data:', e)
   } finally {
     loading.value = false
   }
+
+  // Sync prices from backend so cards never drift from real package prices.
+  try {
+    const pkgData = await getPackages()
+    const list = Array.isArray(pkgData) ? pkgData : (pkgData?.data || [])
+    const next = { ...tierPrices.value }
+    list.forEach((p) => {
+      if (p.price != null) next[p.id] = formatRupiah(p.price)
+    })
+    tierPrices.value = next
+  } catch (e) {
+    console.error('Gagal ambil paket harga, pakai harga statis:', e)
+  }
 })
 
-// Filter Logic
-const filteredTemplates = computed(() => {
-  if (selectedCategory.value === 'all') return templates.value
+// Filter Logic — chips come from the admin-curated `filterGroup` (style) and
+// `category` (package tier) fields, NOT from raw `tags` (tags stay in the DB
+// for search/SEO only, see D-01).
+const filteredTemplates = computed(() =>
+  filterTemplates(templates.value, selectedCategory.value, selectedTier.value),
+)
 
-  return templates.value.filter(t => {
-    // Match template.category with the selected category NAME
-    return t.category && t.category.toLowerCase() === selectedCategory.value.toLowerCase()
-  })
+const styleCategories = computed(() => buildStyleFilters(templates.value))
+const packageCategories = computed(() => buildPackageFilters(templates.value))
+
+// Sync selection to ?gaya=/?paket= via replace (no history entry per click),
+// preserving any other existing query params.
+watch([selectedCategory, selectedTier], ([gaya, paket]) => {
+  const query = { ...route.query }
+  if (gaya && gaya !== ALL_ID) query.gaya = gaya
+  else delete query.gaya
+  if (paket && paket !== ALL_ID) query.paket = paket
+  else delete query.paket
+  if (JSON.stringify(query) === JSON.stringify(route.query)) return
+  router.replace({ query })
 })
-
-const visibleCategories = computed(() => categories.value.slice(0, 5)) // Show top 5 on homepage
 
 watch(() => showModal.value, (newVal) => {
   if (newVal) {
@@ -510,6 +696,7 @@ function goToCreate() {
     localStorage.removeItem('selectedSections')
     localStorage.removeItem('finalPayload')
     localStorage.setItem('selectedTemplate', JSON.stringify(tpl))
+    localStorage.setItem('selectedPackage', selectedPlan.value || 'basic')
     showModal.value = false;
     router.push('/create')
   }

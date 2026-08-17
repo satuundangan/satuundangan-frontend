@@ -177,26 +177,26 @@ onMounted(async () => {
             <StatCard
               label="Tersedia (Cleared)"
               :value="formatCurrency(dashboardData.balance.availableToWithdraw)"
-              icon="💰"
-              color="text-green-600"
+              iconClass="fa-solid fa-wallet"
+              color="bg-green-50 text-green-600"
             />
             <StatCard
               label="Tertunda (Pending)"
               :value="formatCurrency(dashboardData.balance.pending)"
-              icon="⏳"
-              color="text-amber-600"
+              iconClass="fa-solid fa-hourglass-half"
+              color="bg-amber-50 text-amber-600"
             />
             <StatCard
               label="Sudah Ditarik"
               :value="formatCurrency(dashboardData.balance.withdrawn)"
-              icon="📤"
-              color="text-blue-600"
+              iconClass="fa-solid fa-paper-plane"
+              color="bg-blue-50 text-blue-600"
             />
             <StatCard
               label="Total Penjualan"
               :value="dashboardData.tier.totalSales.toString()"
-              icon="📈"
-              color="text-indigo-600"
+              iconClass="fa-solid fa-chart-line"
+              color="bg-indigo-50 text-indigo-600"
             />
           </div>
 
@@ -276,7 +276,7 @@ onMounted(async () => {
               </div>
               <div v-else class="p-4 bg-yellow-50 rounded-xl border border-yellow-100">
                 <p class="text-sm text-yellow-800 font-medium">
-                  🎉 Anda telah mencapai Tier tertinggi ({{
+                  <i class="fa-solid fa-trophy mr-1.5 text-yellow-600 animate-pulse"></i> Anda telah mencapai Tier tertinggi ({{
                     dashboardData.tier.current.toUpperCase()
                   }}). Terus tingkatkan penjualan Anda!
                 </p>
@@ -365,7 +365,7 @@ onMounted(async () => {
                 class="p-4 bg-amber-50 rounded-xl border border-amber-100 mb-4"
               >
                 <p class="text-sm text-amber-800">
-                  ⚠️ Anda memiliki permintaan penarikan yang sedang diproses. Mohon tunggu hingga
+                  <i class="fa-solid fa-triangle-exclamation mr-1.5 text-amber-600 animate-bounce"></i> Anda memiliki permintaan penarikan yang sedang diproses. Mohon tunggu hingga
                   selesai sebelum mengajukan kembali.
                 </p>
               </div>

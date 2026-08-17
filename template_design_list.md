@@ -61,30 +61,30 @@ Berikut adalah daftar komponen global yang tersedia di sistem:
 - **Komponen Default:**
   - `hero`, `couple`, `event`, `gallery`, `rsvp`, `menu`
 
-### 8. Zen Tranquility (`zen-tranquility`)
+### 8. Retro Nostalgia (`retro-nostalgia`)
 - **Kategori:** Premium (IDR 75,000)
 - **Komponen Default:**
   - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `music`
 
-### 9. Retro Nostalgia (`retro-nostalgia`)
-- **Kategori:** Premium (IDR 75,000)
-- **Komponen Default:**
-  - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `music`
-
-### 10. Modern Noir (`modern-noir`)
+### 9. Modern Noir (`modern-noir`)
 - **Kategori:** Exclusive (IDR 150,000)
 - **Komponen Default:**
   - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `music`, `live-streaming`
 
-### 11. Azure Shores (`azure-shores`)
+### 10. Azure Shores (`azure-shores`)
 - **Kategori:** Exclusive (IDR 150,000)
 - **Komponen Default:**
   - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `music`, `dress-code`
 
-### 12. Cyberpunk Neon (`cyberpunk-neon`)
+### 11. Cyberpunk Neon (`cyberpunk-neon`)
 - **Kategori:** Exclusive (IDR 150,000)
 - **Komponen Default:**
   - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `music`, `extended-family`
+
+### 12. Pixel Quest 8-Bit (`pixel-quest`)
+- **Kategori:** Premium (IDR 129,000)
+- **Komponen Default:**
+  - `hero`, `couple`, `love-story`, `event`, `gallery`, `rsvp`, `gift`, `music`
 
 ---
 

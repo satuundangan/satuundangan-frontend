@@ -1,74 +1,156 @@
 <template>
   <div>
-    <!-- Mobile Overlay -->
-    <div v-if="isOpen" @click="$emit('close')" class="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm transition-all duration-300"></div>
+    <!-- Mobile Backdrop Overlay -->
+    <Transition name="fade">
+      <div 
+        v-if="isOpen" 
+        @click="$emit('close')" 
+        class="fixed inset-0 bg-slate-900/60 z-40 md:hidden backdrop-blur-sm"
+      ></div>
+    </Transition>
 
     <aside :class="[
-      'bg-white border-r border-gray-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64',
-      isOpen ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'
+      'bg-white border-r border-slate-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64 select-none',
+      isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full'
     ]">
-      <div class="p-6 cursor-pointer border-b border-gray-50 flex items-center justify-between" @click="goToHome">
-         <div class="flex items-center gap-3">
-            <div class="w-7 h-7 bg-mocha text-white rounded-lg flex items-center justify-center font-serif font-bold text-sm">S</div>
-            <span class="font-bold text-sm text-mocha tracking-tight uppercase tracking-widest">SatuUndangan</span>
-         </div>
-         <button @click.stop="$emit('close')" class="md:hidden p-2 text-gray-400 hover:text-mocha">
-            <i class="fa-solid fa-times text-xl"></i>
-         </button>
+      <!-- Brand Logo Header -->
+      <div class="p-5 border-b border-slate-100/80 flex items-center justify-between">
+        <router-link to="/" class="flex items-center gap-3 group">
+          <div class="w-9 h-9 bg-[#a47148] text-white rounded-xl flex items-center justify-center font-extrabold text-sm shadow-md shadow-[#a47148]/20 group-hover:scale-105 transition-transform">
+            S
+          </div>
+          <div>
+            <span class="font-black text-sm text-slate-900 tracking-tight block">SatuUndangan</span>
+            <span class="text-[9px] font-bold text-[#a47148] uppercase tracking-widest block -mt-0.5">User Portal</span>
+          </div>
+        </router-link>
+        
+        <button @click="$emit('close')" class="md:hidden p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">
+          <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
       </div>
-      
-      <nav class="flex-1 overflow-y-auto py-6 px-4 custom-scrollbar">
-        <ul class="space-y-1">
-          <li v-for="item in menu" :key="item.name">
-            <router-link :to="item.to" 
-              class="flex items-center gap-3 px-4 py-2.5 rounded-xl transition-all duration-200 group"
-              active-class="bg-gray-50 text-mocha font-bold"
-              :class="$route.path === item.to ? '' : 'text-gray-500 hover:bg-gray-50 hover:text-dark'">
-              <span class="text-lg group-hover:scale-110 transition-transform duration-200 opacity-70 group-hover:opacity-100">{{ item.icon }}</span>
-              <span class="text-xs">{{ item.name }}</span>
-            </router-link>
-          </li>
-        </ul>
+
+      <!-- Main Navigation Menu -->
+      <nav class="flex-1 overflow-y-auto py-5 px-3 custom-scrollbar space-y-6">
+        <div>
+          <span class="px-3 text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Navigasi Utama</span>
+          <ul class="space-y-1">
+            <li v-for="item in primaryMenu" :key="item.name">
+              <router-link 
+                :to="item.to" 
+                @click="$emit('close')"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
+                :class="$route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard')
+                  ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
+                  : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
+              >
+                <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
+                  $route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
+                <span>{{ item.name }}</span>
+                <span v-if="item.badge" class="ml-auto px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-amber-100 text-amber-800">
+                  {{ item.badge }}
+                </span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
+
+        <div>
+          <span class="px-3 text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Akun & Pengaturan</span>
+          <ul class="space-y-1">
+            <li v-for="item in secondaryMenu" :key="item.name">
+              <router-link 
+                :to="item.to" 
+                @click="$emit('close')"
+                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
+                :class="$route.path === item.to 
+                  ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
+                  : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
+              >
+                <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
+                  $route.path === item.to ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
+                <span>{{ item.name }}</span>
+              </router-link>
+            </li>
+          </ul>
+        </div>
       </nav>
 
-      <div class="p-4 border-t border-gray-100">
-         <button @click="handleLogout" class="w-full flex items-center gap-3 px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors text-sm font-medium">
-            <span>🚪</span> Logout
-         </button>
+      <!-- User Profile & Logout Bottom Card -->
+      <div class="p-3 border-t border-slate-100 bg-slate-50/50">
+        <div class="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#a47148] to-[#c89f68] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+              {{ userInitial }}
+            </div>
+            <div class="min-w-0">
+              <span class="text-xs font-bold text-slate-900 truncate block">{{ userName }}</span>
+              <span class="text-[9px] text-slate-400 truncate block">{{ userEmail }}</span>
+            </div>
+          </div>
+
+          <button 
+            @click="handleLogout" 
+            class="w-8 h-8 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors shrink-0" 
+            title="Keluar / Logout"
+          >
+            <i class="fa-solid fa-right-from-bracket text-xs"></i>
+          </button>
+        </div>
       </div>
     </aside>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/stores/auth';
+import { computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+import Swal from 'sweetalert2'
 
 defineProps({
   isOpen: { type: Boolean, default: false }
-});
+})
 
-defineEmits(['close']);
+defineEmits(['close'])
 
-const router = useRouter();
-const auth = useAuthStore();
+const router = useRouter()
+const route = useRoute()
+const auth = useAuthStore()
 
-function goToHome() {
-  router.push('/');
+const userName = computed(() => auth.user?.name || 'Pengguna')
+const userEmail = computed(() => auth.user?.email || 'user@satuundangan.com')
+const userInitial = computed(() => (userName.value || 'U').trim().charAt(0).toUpperCase())
+
+const primaryMenu = [
+  { name: 'Dashboard', to: '/dashboard', icon: 'fa-chart-line' },
+  { name: 'Undangan Saya', to: '/invitations', icon: 'fa-envelope-open-text' },
+  { name: 'Daftar Tamu', to: '/guests', icon: 'fa-users' },
+  { name: 'Buku Tamu', to: '/guestbook', icon: 'fa-book-open' },
+  { name: 'Katalog Template', to: '/templates', icon: 'fa-layer-group' },
+]
+
+const secondaryMenu = [
+  { name: 'Pengaturan Akun', to: '/settings', icon: 'fa-sliders' },
+]
+
+async function handleLogout() {
+  const result = await Swal.fire({
+    title: 'Keluar Akun?',
+    text: 'Apakah kamu yakin ingin keluar dari aplikasi?',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#cbd5e1',
+    confirmButtonText: 'Ya, Logout',
+    cancelButtonText: 'Batal'
+  })
+
+  if (result.isConfirmed) {
+    auth.logout()
+    router.push('/')
+  }
 }
-
-function handleLogout() {
-  auth.logout();
-  router.push('/');
-}
-
-const menu = [
-  { name: "Dashboard", to: "/dashboard", icon: "📊" },
-  { name: "Undangan Saya", to: "/invitations", icon: "💌" },
-  { name: "Daftar Tamu", to: "/guests", icon: "👥" },
-  { name: "Buku Tamu", to: "/guestbook", icon: "📖" },
-  { name: "Pengaturan", to: "/settings", icon: "⚙️" },
-];
 </script>
 
 <style scoped>
@@ -79,7 +161,15 @@ const menu = [
   background: transparent;
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #e5e7eb;
+  background: #f1f5f9;
   border-radius: 10px;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -5,7 +5,7 @@
 
     <div class="max-w-7xl mx-auto px-6 relative z-10">
       <div class="text-center mb-20">
-        <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Fitur Premium</span>
+        <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Fitur Unggulan</span>
         <h2 class="text-4xl md:text-5xl font-playfair font-bold text-dark mb-6">Fitur Lengkap Undanganmu</h2>
         <p class="text-muted max-w-2xl mx-auto text-lg">
           Semua yang kamu butuhkan untuk membuat undangan pernikahan digital yang sempurna dan berkesan ada di sini.
@@ -43,7 +43,7 @@ const features = [
   {
     icon: 'fa-solid fa-map-location-dot',
     title: 'Peta Lokasi',
-    description: 'Integrasi langsung dengan Google Maps agar tamu tidak tersesat menuju venue.'
+    description: 'Sematkan link Google Maps venue agar tamu tinggal klik untuk buka arah jalan.'
   },
   {
     icon: 'fa-solid fa-envelope-open-text',
@@ -53,7 +53,7 @@ const features = [
   {
     icon: 'fa-solid fa-gift',
     title: 'Amplop Digital',
-    description: 'Terima kado cashless via QRIS, e-wallet, atau transfer bank dengan mudah.'
+    description: 'Tampilkan QRIS, e-wallet, dan rekening bank agar tamu mudah kirim kado cashless.'
   },
   {
     icon: 'fa-solid fa-images',

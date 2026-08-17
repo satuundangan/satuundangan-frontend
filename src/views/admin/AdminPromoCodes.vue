@@ -43,13 +43,18 @@
         </span>
       </template>
       <template #cell(is_active)="{ item }">
-        <button
-          @click="toggleActive(item)"
-          class="px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors"
-          :class="item.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'"
-        >
-          {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
-        </button>
+        <div class="flex flex-col gap-1 items-start">
+          <button
+            @click="toggleActive(item)"
+            class="px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors"
+            :class="item.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'"
+          >
+            {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
+          </button>
+          <span v-if="item.is_exit_intent_active" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-50 text-amber-600 border border-amber-200">
+            Exit Intent
+          </span>
+        </div>
       </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
@@ -122,6 +127,21 @@
                   class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
                 <label for="is_active" class="text-sm font-medium text-slate-600 cursor-pointer">Aktifkan promo code ini</label>
               </div>
+
+              <!-- Exit Intent Config -->
+              <div class="col-span-2 mt-4 pt-4 border-t border-slate-100">
+                <h4 class="text-sm font-semibold text-slate-800 mb-3">Pengaturan Promo Landing Page (Exit-Intent)</h4>
+                <div class="flex items-center gap-3 mb-3">
+                  <input type="checkbox" id="is_exit_intent" v-model="form.is_exit_intent_active"
+                    class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-400" />
+                  <label for="is_exit_intent" class="text-sm font-medium text-slate-600 cursor-pointer">Jadikan promo ini sebagai penawaran Exit-Intent</label>
+                </div>
+                <div v-if="form.is_exit_intent_active">
+                  <label class="mb-1 block text-xs font-semibold uppercase tracking-wider text-slate-500">Teks Promo Exit Intent</label>
+                  <textarea v-model="form.exit_intent_text" rows="2" placeholder="Contoh: Khusus untuk Anda yang mendaftar hari ini..."
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"></textarea>
+                </div>
+              </div>
             </div>
 
             <div class="flex justify-end gap-2 pt-2 text-sm font-medium">
@@ -182,6 +202,8 @@ const form = reactive({
   valid_from: '',
   valid_until: '',
   is_active: true,
+  is_exit_intent_active: false,
+  exit_intent_text: '',
 })
 
 async function loadData() {
@@ -220,6 +242,8 @@ function openCreate() {
     valid_from: '',
     valid_until: '',
     is_active: true,
+    is_exit_intent_active: false,
+    exit_intent_text: '',
   })
   showForm.value = true
 }
@@ -234,6 +258,8 @@ function openEdit(promo) {
     valid_from: promo.valid_from ? toLocalDatetime(promo.valid_from) : '',
     valid_until: promo.valid_until ? toLocalDatetime(promo.valid_until) : '',
     is_active: promo.is_active ?? true,
+    is_exit_intent_active: promo.is_exit_intent_active ?? false,
+    exit_intent_text: promo.exit_intent_text || '',
   })
   showForm.value = true
 }
@@ -252,6 +278,8 @@ async function submitForm() {
       discount_type: form.discount_type,
       discount_value: form.discount_value,
       is_active: form.is_active,
+      is_exit_intent_active: form.is_exit_intent_active,
+      exit_intent_text: form.exit_intent_text,
     }
     if (form.max_uses) payload.max_uses = form.max_uses
     if (form.valid_from) payload.valid_from = new Date(form.valid_from).toISOString()

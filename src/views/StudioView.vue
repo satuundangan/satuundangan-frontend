@@ -84,9 +84,8 @@
                   <h4 class="font-serif font-bold text-dark text-lg">{{ selectedTemplate.name }}</h4>
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="rounded-lg bg-white px-2 py-1 text-[9px] font-bold uppercase text-mocha shadow-sm border border-mocha/5">
-                      {{ selectedTemplate.isPremium ? '💎 Premium' : '✨ Gratis' }}
+                      ✨ Semua Desain Gratis
                     </span>
-                    <span class="text-xs font-bold text-mocha">{{ templatePrice }}</span>
                   </div>
                   <button @click="goBackToTemplates" class="text-xs font-bold text-mocha hover:underline flex items-center gap-1.5 pt-1">
                     <i class="fa-solid fa-exchange text-[10px]"></i>
@@ -372,9 +371,10 @@
 
                 <!-- Gallery Grid -->
                 <div data-field="gallery" class="pt-4 border-t border-gray-50">
-                  <label class="form-label">Galeri Foto Pendukung (Maksimal 10)</label>
-                  <div class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-3">
-                    <label class="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 transition-all group">
+                  <label class="form-label">Galeri Foto Pendukung (Maksimal {{ pkgFeatures.galleryLimit }})</label>
+
+                  <div v-if="canGallery" class="grid grid-cols-3 sm:grid-cols-5 md:grid-cols-6 gap-3">
+                    <label v-if="formData.gallery.length < pkgFeatures.galleryLimit" class="aspect-square border-2 border-dashed border-gray-200 rounded-xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 transition-all group">
                       <input type="file" accept="image/*" multiple @change="handleGalleryUpload" class="hidden" />
                       <i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha"></i>
                     </label>
@@ -382,6 +382,14 @@
                       <img :src="img.preview" class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-100" />
                       <button @click="removeGalleryImage(i)" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4.5 h-4.5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg text-[9px]">×</button>
                     </div>
+                  </div>
+
+                  <!-- Gallery locked (Basic tier) -->
+                  <div v-else class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5">
+                    <i class="fa-solid fa-images text-amber-500 mt-0.5 text-sm"></i>
+                    <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed">
+                      Galeri foto tersedia di <strong>paket Premium &amp; Eksklusif</strong>. Upgrade paket saat checkout untuk mengaktifkannya.
+                    </p>
                   </div>
                 </div>
               </div>
@@ -426,12 +434,12 @@
                       <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
                         {{ audio.title }}
                       </option>
-                      <option value="custom" v-if="isPremiumTemplate">Upload Musik Sendiri (.mp3)</option>
+                      <option value="custom" v-if="canCustomMusic">Upload Musik Sendiri (.mp3)</option>
                       <option value="custom" v-else disabled>Upload Musik Sendiri (💎 Premium)</option>
                     </select>
 
                     <!-- Custom MP3 File Selection -->
-                    <div v-if="formData.music === 'custom' && isPremiumTemplate" class="bg-gray-50 p-5 rounded-2xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
+                    <div v-if="formData.music === 'custom' && canCustomMusic" class="bg-gray-50 p-5 rounded-2xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
                       <div v-if="!formData.musicPreview" class="text-center">
                         <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
                         <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
@@ -468,10 +476,10 @@
                     </div>
 
                     <!-- Custom MP3 locked message -->
-                    <div v-if="formData.music === 'custom' && !isPremiumTemplate" class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5 mt-4">
+                    <div v-if="formData.music === 'custom' && !canCustomMusic" class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5 mt-4">
                       <i class="fa-solid fa-gem text-amber-500 mt-0.5 text-sm"></i>
                       <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed">
-                        Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>Template Premium</strong>. Silakan ganti tema atau pilih musik preset yang tersedia.
+                        Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>paket Premium &amp; Eksklusif</strong>. Pilih musik preset, atau upgrade paket saat checkout.
                       </p>
                     </div>
                   </div>
@@ -495,21 +503,12 @@
               <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
 
               <!-- Extra components and configs -->
-              <div v-if="sections['dress-code'] || sections['extended-family'] || sections.prokes || sections.likes" 
+              <div v-if="sections['dress-code'] || sections['extended-family'] || sections.likes" 
                    class="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6 animate-fade-in">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div v-if="sections['dress-code']">
                     <label class="form-label">Dress Code (Aturan Busana)</label>
                     <input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik Modern" class="form-input" />
-                  </div>
-                  <div v-if="sections.prokes">
-                    <label class="form-label">Protokol Kesehatan</label>
-                    <div class="flex items-center gap-3 mt-3">
-                      <label class="flex items-center gap-2 cursor-pointer select-none">
-                        <input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" />
-                        <span class="text-xs font-bold text-dark">Tampilkan Himbauan Prokes</span>
-                      </label>
-                    </div>
                   </div>
                 </div>
                 
@@ -551,6 +550,41 @@
                     </label>
                   </div>
                 </div>
+              </div>
+
+              <!-- Custom Subdomain (Tier Eksklusif only) -->
+              <div v-if="formData.package === 'eksklusif'" class="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-4 animate-fade-in">
+                <div class="flex items-center justify-between border-b border-gray-50 pb-3">
+                  <h3 class="font-bold text-dark text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-globe text-mocha/60"></i> Subdomain Custom
+                  </h3>
+                  <span class="text-[9px] font-black uppercase tracking-wider bg-amber-100 text-amber-700 px-2 py-1 rounded-full">Eksklusif</span>
+                </div>
+                <p class="text-[11px] text-slate-400 leading-relaxed">
+                  Alamat khusus undangan kamu. Kosongkan kalau mau pakai link biasa.
+                </p>
+
+                <div class="flex items-stretch rounded-xl border-2 transition-colors overflow-hidden"
+                     :class="{
+                       'border-gray-100 focus-within:border-mocha': subdomainStatus.state === 'idle' || subdomainStatus.state === 'checking',
+                       'border-emerald-300': subdomainStatus.state === 'available',
+                       'border-red-300': subdomainStatus.state === 'taken' || subdomainStatus.state === 'invalid',
+                     }">
+                  <input v-model="formData.subdomain" type="text" placeholder="namapasangan"
+                         class="flex-1 min-w-0 px-3.5 py-2.5 text-sm outline-none bg-transparent" autocomplete="off" />
+                  <span class="flex items-center px-3 bg-gray-50 text-xs text-slate-400 border-l border-gray-100 select-none">.satuundangan.id</span>
+                </div>
+
+                <!-- Status line -->
+                <p v-if="subdomainStatus.state === 'checking'" class="text-[11px] text-slate-400 flex items-center gap-1.5">
+                  <i class="fa-solid fa-spinner fa-spin"></i> Mengecek ketersediaan...
+                </p>
+                <p v-else-if="subdomainStatus.state === 'available'" class="text-[11px] text-emerald-600 font-medium flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-check"></i> {{ subdomainStatus.normalized }}.satuundangan.id tersedia
+                </p>
+                <p v-else-if="subdomainStatus.state === 'taken' || subdomainStatus.state === 'invalid'" class="text-[11px] text-red-500 font-medium flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-xmark"></i> {{ subdomainStatus.message }}
+                </p>
               </div>
             </div>
 
@@ -660,6 +694,7 @@
                class="absolute top-0 left-0 bg-white"
                :style="iframeStyle"
                frameborder="0"
+               @load="onIframeLoad"
             ></iframe>
 
             <!-- Loading Overlay Inside Mockup -->
@@ -708,6 +743,7 @@
                   :src="previewUrl"
                   class="w-full h-full"
                   frameborder="0"
+                  @load="onIframeLoad"
                ></iframe>
                
                <Transition name="fade">
@@ -780,8 +816,9 @@ import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
 import { analytics } from '@/api/analytics'
 import { uploadFileApi } from '@/api/file'
-import { getInvitationById, createInvitation, updateInvitation } from '@/api/invitation'
+import { getInvitationById, createInvitation, updateInvitation, checkSubdomainAvailability } from '@/api/invitation'
 import { getSections, fetchPublicAudio } from '@/api/master'
+import { featuresFor } from '@/config/packageFeatures'
 import QuoteSection from './create-form/components/QuoteSection.vue'
 import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
@@ -820,6 +857,22 @@ const isPreviewLoading = ref(true)
 const previewIframe = ref(null)
 const mobilePreviewIframe = ref(null)
 const previewMode = ref('mobile')
+
+const onIframeLoad = () => {
+  isPreviewLoading.value = false
+  syncDataToPreview(formData.value)
+}
+
+const handleMessageEvent = (event) => {
+  if (event.data?.type === 'PREVIEW_READY') {
+     isPreviewLoading.value = false
+     syncDataToPreview(formData.value) 
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('message', handleMessageEvent)
+}
 
 const refreshPreview = () => {
   isPreviewLoading.value = true
@@ -962,6 +1015,8 @@ const formData = ref({
   extendedFamilyText: '',
   healthProtocol: true,
   footerText: '',
+  subdomain: '',
+  package: 'basic',
   likes: true,
   quoteType: 'default',
   quote: '',
@@ -971,6 +1026,36 @@ const formData = ref({
   wishesState: true,
   rsvpState: true
 })
+
+// Custom subdomain live availability check (tier Eksklusif)
+const subdomainStatus = ref({ state: 'idle', message: '', normalized: '' })
+let subdomainTimer = null
+
+watch(() => formData.value.subdomain, (val) => {
+  clearTimeout(subdomainTimer)
+  const raw = (val || '').trim()
+  if (!raw) {
+    subdomainStatus.value = { state: 'idle', message: '', normalized: '' }
+    return
+  }
+  subdomainStatus.value = { state: 'checking', message: '', normalized: '' }
+  subdomainTimer = setTimeout(async () => {
+    try {
+      const excludeId = route.params.id || localStorage.getItem('editInvitationId') || undefined
+      const res = await checkSubdomainAvailability(raw, excludeId)
+      const data = res.data || res
+      if (data.available) {
+        subdomainStatus.value = { state: 'available', message: '', normalized: data.normalized }
+      } else {
+        subdomainStatus.value = { state: data.reason?.includes('digunakan') ? 'taken' : 'invalid', message: data.reason || 'Tidak tersedia', normalized: data.normalized }
+      }
+    } catch {
+      subdomainStatus.value = { state: 'invalid', message: 'Gagal mengecek, coba lagi', normalized: '' }
+    }
+  }, 450)
+})
+
+onUnmounted(() => clearTimeout(subdomainTimer))
 
 // Checkbox items for optional components (CreateDesign)
 const sections = ref({})
@@ -991,9 +1076,10 @@ const uploadProgress = ref({
   currentFile: ''
 })
 
-const isPremiumTemplate = computed(() => {
-  return selectedTemplate.value?.isPremium === true || selectedTemplate.value?.isPremium === 'true'
-})
+// Feature access is driven by the chosen package tier, not the template.
+const pkgFeatures = computed(() => featuresFor(formData.value.package))
+const canCustomMusic = computed(() => pkgFeatures.value.customMusic)
+const canGallery = computed(() => pkgFeatures.value.gallery)
 
 const templateImageUrl = computed(() => (
   selectedTemplate.value?.thumbnailUrl ||
@@ -1028,7 +1114,6 @@ const sectionOptionsLabelMap = {
   cover: 'Halaman Sampul (Cover)',
   gallery: 'Galeri Foto',
   'live-streaming': 'Live Streaming Link',
-  prokes: 'Protokol Kesehatan',
   'event-details': 'Detail Acara Lengkap',
   'likes': 'Fitur Like / Suka',
   footer: 'Halaman Penutup',
@@ -1064,7 +1149,6 @@ const getIcon = (key) => {
     cover: 'fa-book-open',
     gallery: 'fa-images',
     'live-streaming': 'fa-video',
-    prokes: 'fa-shield-virus',
     'event-details': 'fa-calendar-day',
     'likes': 'fa-thumbs-up',
     'footer': 'fa-scroll',
@@ -1247,7 +1331,14 @@ onMounted(async () => {
   if (template) {
     try {
       selectedTemplate.value = JSON.parse(template) || {}
-      
+
+      // Carry pricing tier chosen on the homepage (new invitations only; edit mode loads its own package).
+      if (!route.params.id) {
+        const chosenPkg = localStorage.getItem('selectedPackage')
+        if (chosenPkg) formData.value.package = chosenPkg
+      }
+
+
       // Initialize sections selection options
       if (selectedTemplate.value?.sections && Array.isArray(selectedTemplate.value.sections) && selectedTemplate.value.sections.length > 0) {
         const newOptions = {}
@@ -1336,13 +1427,14 @@ onMounted(async () => {
     handleEditMode(route.params.id)
   }
 
-  // Handle preview ready message from iframe
-  window.addEventListener('message', (event) => {
-     if (event.data?.type === 'PREVIEW_READY') {
+  // Fallback timeout to clear loading screen if something fails or race condition occurs
+  setTimeout(() => {
+     if (isPreviewLoading.value) {
+        console.warn("Preview load timeout fallback triggered.")
         isPreviewLoading.value = false
-        syncDataToPreview(formData.value) 
+        syncDataToPreview(formData.value)
      }
-  })
+  }, 4000)
 
   if (typeof window !== 'undefined' && window.ResizeObserver) {
     resizeObserver = new window.ResizeObserver(() => {
@@ -1368,6 +1460,9 @@ onUnmounted(() => {
     resizeObserver.disconnect()
   }
   window.removeEventListener('resize', updateScale)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('message', handleMessageEvent)
+  }
 })
 
 async function handleEditMode(id) {
@@ -1432,7 +1527,6 @@ function mapPayloadToFormData(payload) {
          'digital-envelope': 'gift',
          'loveStory': 'love-story',
          'foodList': 'menu',
-         'health-protocol': 'prokes',
          'turut-mengundang': 'extended-family',
          'video-prewedding': 'video',
          'live-stream': 'live-streaming'
@@ -1446,6 +1540,8 @@ function mapPayloadToFormData(payload) {
    }
 
    formData.value.title = payload.title || ''
+   formData.value.subdomain = payload.subdomain || payload.content?.subdomain || ''
+   formData.value.package = payload.package || payload.content?.package || 'basic'
    formData.value.brideName = payload.brideName || ''
    formData.value.bridePhoto = payload.bridePhotoUrl || ''
    formData.value.groomName = payload.groomName || ''
@@ -1654,15 +1750,27 @@ async function handleCouplePhotoUpload(e) {
 
 function onCropComplete({ blob, preview }) {
    const field = cropper.value.targetField
-   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.jpg', { type: 'image/jpeg' }) }
-   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.jpg', { type: 'image/jpeg' }) }
-   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' }) }
+   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.webp', { type: 'image/webp' }) }
+   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.webp', { type: 'image/webp' }) }
+   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.webp', { type: 'image/webp' }) }
    cropper.value.show = false; validateField(field + 'Photo')
 }
 
 function handleGalleryUpload(e) {
-   const files = Array.from(e.target.files || [])
+   const limit = pkgFeatures.value.galleryLimit
+   if (!pkgFeatures.value.gallery) {
+      toast.warning('Galeri foto hanya tersedia untuk paket Premium & Eksklusif.')
+      e.target.value = ''
+      return
+   }
+   let files = Array.from(e.target.files || [])
+   const remaining = limit - formData.value.gallery.length
+   if (files.length > remaining) {
+      files = files.slice(0, Math.max(0, remaining))
+      toast.warning(`Maksimal ${limit} foto untuk paket ini.`)
+   }
    files.forEach(file => { const reader = new FileReader(); reader.onload = () => formData.value.gallery.push({ preview: reader.result, file }); reader.readAsDataURL(file) })
+   e.target.value = ''
 }
 function removeGalleryImage(i) { formData.value.gallery.splice(i, 1) }
 
@@ -1711,6 +1819,15 @@ async function uploadAllFiles() {
 // Saving invitation API submit
 async function saveAndPreview() {
    if (!validateForm()) return
+   // Block save if a custom subdomain was typed but isn't confirmed available
+   if (formData.value.subdomain?.trim() && subdomainStatus.value.state !== 'available') {
+      if (subdomainStatus.value.state === 'checking') {
+         toast.warning('Tunggu pengecekan subdomain selesai.')
+      } else {
+         toast.error(subdomainStatus.value.message || 'Subdomain tidak tersedia. Ganti atau kosongkan.')
+      }
+      return
+   }
    if (!isAuthenticated.value) {
       toast.warning("Silakan masuk atau daftar terlebih dahulu untuk menyimpan undangan.")
       localStorage.setItem('pending_save_after_login', 'true')
@@ -1742,7 +1859,9 @@ async function saveAndPreview() {
          footerText: formData.value.footerText, likes: formData.value.likes, menu: { title: 'Menu Makanan', items: formData.value.foodList.filter(n => n.trim()) },
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
-         eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource
+         eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource,
+         subdomain: formData.value.subdomain ? subdomainStatus.value.normalized : '',
+         package: formData.value.package || 'basic'
       }
       
       const editId = route.params.id || localStorage.getItem('editInvitationId')

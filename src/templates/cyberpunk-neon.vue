@@ -3,7 +3,7 @@
     <!-- Grid Overlay -->
     <div class="fixed inset-0 pointer-events-none z-0" style="background-image: linear-gradient(#1e293b 1px, transparent 1px), linear-gradient(90deg, #1e293b 1px, transparent 1px); background-size: 30px 30px; opacity: 0.2;"></div>
 
-    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" class="z-[55]" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#0a0a12" accentColor="#00f0ff" class="z-[55]" />
 
     <!-- Navigation -->
     <nav v-if="!showWelcome" class="fixed right-6 top-1/2 -translate-y-1/2 z-50 flex flex-col gap-4 transition-all duration-1000 hidden md:flex">
@@ -36,7 +36,7 @@
           <div class="space-y-8 animate-glitch">
             <div class="space-y-2">
               <p class="text-[10px] uppercase font-bold tracking-[0.4em] text-[#00f0ff] animate-pulse">System Override</p>
-              <h2 class="text-4xl md:text-5xl font-mono text-[#e2e8f0] font-black uppercase tracking-tighter">{{ data.groomName }} <br><span class="text-[#ff003c] text-3xl">X</span><br> {{ data.brideName }}</h2>
+              <h2 class="text-4xl md:text-5xl font-mono text-[#e2e8f0] font-black uppercase tracking-tighter">{{ data.groomName }} <br><span class="text-[#ff003c] text-3xl">&</span><br> {{ data.brideName }}</h2>
             </div>
             
             <div class="py-6 border-y border-[#1e293b] space-y-2">
@@ -46,7 +46,7 @@
           </div>
 
           <button @click="openInvitation" class="mt-8 w-full py-4 bg-transparent border-2 border-[#ff003c] text-[#ff003c] font-black hover:bg-[#ff003c] hover:text-white transition-all duration-300 text-[10px] uppercase tracking-[0.4em] shadow-[0_0_15px_rgba(255,0,60,0.3)] hover:shadow-[0_0_25px_rgba(255,0,60,0.6)]">
-            Initialize
+            Buka Undangan
           </button>
         </div>
       </div>
@@ -91,7 +91,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="py-32 px-6">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6">
         <div class="max-w-6xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> History.log</p>
@@ -99,7 +99,7 @@
           </div>
 
           <div class="space-y-12">
-            <div v-for="(story, idx) in data.loveStory" :key="idx" class="relative group" v-observe>
+            <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative group" v-observe>
                <div class="absolute left-0 top-0 w-1 h-full bg-[#1e293b] group-hover:bg-[#00f0ff] transition-colors"></div>
                <div class="pl-8 py-4 space-y-6">
                   <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
@@ -111,8 +111,8 @@
                   </div>
                   <div class="grid md:grid-cols-2 gap-8 items-start">
                      <p class="text-sm font-mono leading-relaxed text-[#94a3b8]">{{ story.description }}</p>
-                     <div v-if="story.image" class="border border-white/10 p-1 bg-[#0a0a12] max-w-md">
-                        <img :src="story.image" class="w-full aspect-video object-cover mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity" />
+                     <div v-if="story.image || isPreviewMode" class="border border-white/10 p-1 bg-[#0a0a12] max-w-md">
+                        <img :src="story.image || 'https://via.placeholder.com/600x400'" class="w-full aspect-video object-cover mix-blend-screen opacity-70 group-hover:opacity-100 transition-opacity" />
                      </div>
                   </div>
                </div>
@@ -128,7 +128,7 @@
           <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative group">
                <div class="aspect-square p-2 bg-[#0a0a12] border border-[#ff003c]/50 relative z-10 mx-auto max-w-[300px] shadow-[0_0_20px_rgba(255,0,60,0.2)] group-hover:shadow-[0_0_30px_rgba(255,0,60,0.5)] transition-all">
-                  <img :src="data.groomPhotoUrl" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
+                  <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
                </div>
                <div class="absolute -top-4 -left-4 w-12 h-12 border-t-2 border-l-2 border-[#ff003c]"></div>
                <div class="absolute -bottom-4 -right-4 w-12 h-12 border-b-2 border-r-2 border-[#ff003c]"></div>
@@ -136,7 +136,7 @@
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#ff003c]">Player 1</span>
               <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.groomName }}</h3>
-              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents }}</span></p>
+              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#ff003c] text-[10px] uppercase font-mono tracking-widest font-bold text-[#ff003c] hover:bg-[#ff003c] hover:text-white transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
           </div>
@@ -144,7 +144,7 @@
           <div class="flex flex-col md:flex-row-reverse items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative group">
                <div class="aspect-square p-2 bg-[#0a0a12] border border-[#00f0ff]/50 relative z-10 mx-auto max-w-[300px] shadow-[0_0_20px_rgba(0,240,255,0.2)] group-hover:shadow-[0_0_30px_rgba(0,240,255,0.5)] transition-all">
-                  <img :src="data.bridePhotoUrl" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
+                  <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover contrast-150 grayscale group-hover:grayscale-0 transition-all duration-500" />
                </div>
                <div class="absolute -top-4 -right-4 w-12 h-12 border-t-2 border-r-2 border-[#00f0ff]"></div>
                <div class="absolute -bottom-4 -left-4 w-12 h-12 border-b-2 border-l-2 border-[#00f0ff]"></div>
@@ -152,7 +152,7 @@
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#00f0ff]">Player 2</span>
               <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.brideName }}</h3>
-              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents }}</span></p>
+              <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#00f0ff] text-[10px] uppercase font-mono tracking-widest font-bold text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
           </div>
@@ -164,7 +164,7 @@
         <div class="max-w-5xl mx-auto relative z-10">
           <div class="text-center mb-20 space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> Timeline</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Missions</h2>
+            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Acara</h2>
           </div>
           
           <div class="grid md:grid-cols-2 gap-10">
@@ -184,7 +184,7 @@
                 <p class="text-[#94a3b8] text-xs leading-relaxed border-l-2 border-[#1e293b] pl-4">{{ data.akadLocation?.description }}</p>
               </div>
               <a :href="data.akadLocation?.mapUrl" target="_blank" class="inline-block px-6 py-2 border border-[#00f0ff] text-[#00f0ff] font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-[#00f0ff] hover:text-black transition-colors">
-                [ Get Coordinates ]
+                [ Buka Peta ]
               </a>
             </div>
 
@@ -194,7 +194,7 @@
               <div class="flex justify-between items-start">
                 <div>
                   <span class="text-[8px] font-mono uppercase tracking-widest text-[#64748b]">Mission 02</span>
-                  <h3 class="text-3xl font-mono font-bold uppercase text-white mt-2">Reception</h3>
+                  <h3 class="text-3xl font-mono font-bold uppercase text-white mt-2">Resepsi</h3>
                 </div>
                 <i class="fa-solid fa-champagne-glasses text-2xl text-[#ff003c]"></i>
               </div>
@@ -204,7 +204,7 @@
                 <p class="text-[#94a3b8] text-xs leading-relaxed border-l-2 border-[#1e293b] pl-4">{{ data.resepsiLocation?.description }}</p>
               </div>
               <a :href="data.resepsiLocation?.mapUrl" target="_blank" class="inline-block px-6 py-2 border border-[#ff003c] text-[#ff003c] font-mono text-[10px] uppercase font-bold tracking-widest hover:bg-[#ff003c] hover:text-white transition-colors">
-                [ Get Coordinates ]
+                [ Buka Peta ]
               </a>
             </div>
           </div>
@@ -216,7 +216,7 @@
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Logs</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Visual Data</h2>
+            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Galeri</h2>
           </div>
           <div class="p-6 bg-[#0a0a12] border border-white/5">
              <GalleryInvitation :items="galleryImages" />
@@ -238,41 +238,41 @@
             <div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-[#00f0ff]"></div>
 
             <div class="space-y-2">
-              <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Identifier</label>
-              <input v-model="rsvp.name" type="text" class="w-full bg-[#1e293b]/50 border border-white/10 py-3 px-4 text-sm font-mono text-white focus:border-[#00f0ff] outline-none transition-colors" placeholder="Enter Name..." required />
+              <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Nama</label>
+              <input v-model="rsvp.name" type="text" class="w-full bg-[#1e293b]/50 border border-white/10 py-3 px-4 text-sm font-mono text-white focus:border-[#00f0ff] outline-none transition-colors" placeholder="Masukkan nama..." required />
             </div>
             
             <div class="space-y-4">
                <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Status</label>
                <div class="flex gap-4">
                  <label class="flex-1 py-3 border border-white/10 bg-[#1e293b]/50 text-center cursor-pointer transition-all font-mono font-bold uppercase tracking-widest text-[10px]" :class="rsvp.attendance === 'hadir' ? 'border-[#00f0ff] text-[#00f0ff] shadow-[0_0_10px_rgba(0,240,255,0.2)]' : 'text-[#94a3b8] hover:border-[#00f0ff]/50'">
-                   <input type="radio" value="hadir" v-model="rsvp.attendance" class="hidden"> Connect
+                   <input type="radio" value="hadir" v-model="rsvp.attendance" class="hidden"> Hadir
                  </label>
                  <label class="flex-1 py-3 border border-white/10 bg-[#1e293b]/50 text-center cursor-pointer transition-all font-mono font-bold uppercase tracking-widest text-[10px]" :class="rsvp.attendance === 'tidak' ? 'border-[#ff003c] text-[#ff003c] shadow-[0_0_10px_rgba(255,0,60,0.2)]' : 'text-[#94a3b8] hover:border-[#ff003c]/50'">
-                   <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden"> Disconnect
+                   <input type="radio" value="tidak" v-model="rsvp.attendance" class="hidden"> Tidak Hadir
                  </label>
                </div>
             </div>
 
             <div v-if="rsvp.attendance === 'hadir'" class="space-y-2">
-              <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Units</label>
+              <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Jumlah Tamu</label>
               <select v-model="rsvp.totalGuests" class="w-full bg-[#1e293b]/50 border border-white/10 py-3 px-4 text-sm font-mono text-white focus:border-[#00f0ff] outline-none">
-                <option v-for="n in 5" :key="n" :value="n">{{ n }} Unit(s)</option>
+                <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
               </select>
             </div>
 
             <div class="space-y-2">
-               <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Data Stream</label>
-               <textarea v-model="rsvp.message" rows="3" class="w-full bg-[#1e293b]/50 border border-white/10 py-3 px-4 text-sm font-mono text-white focus:border-[#00f0ff] outline-none resize-none" placeholder="Type message..."></textarea>
+               <label class="text-[10px] font-mono uppercase tracking-[0.2em] font-bold text-[#64748b]">Pesan</label>
+               <textarea v-model="rsvp.message" rows="3" class="w-full bg-[#1e293b]/50 border border-white/10 py-3 px-4 text-sm font-mono text-white focus:border-[#00f0ff] outline-none resize-none" placeholder="Tulis pesan..."></textarea>
             </div>
 
-            <button type="submit" class="w-full py-4 bg-[#00f0ff]/10 border border-[#00f0ff] text-[#00f0ff] font-mono text-[10px] uppercase tracking-[0.3em] font-black hover:bg-[#00f0ff] hover:text-black transition-all">Transmit Data</button>
+            <button type="submit" class="w-full py-4 bg-[#00f0ff]/10 border border-[#00f0ff] text-[#00f0ff] font-mono text-[10px] uppercase tracking-[0.3em] font-black hover:bg-[#00f0ff] hover:text-black transition-all">Kirim</button>
           </form>
         </div>
       </section>
 
       <!-- GIFT -->
-      <section v-if="data.bankAccounts?.length" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-32 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Transaction</p>
@@ -289,7 +289,7 @@
                 </div>
                 <p class="text-3xl font-mono font-bold tracking-widest mb-2 text-white">{{ bank.accountNumber }}</p>
                 <p class="text-[10px] font-mono font-bold text-[#64748b] uppercase tracking-widest mb-10">{{ bank.accountName }}</p>
-                <button @click="copyToClipboard(bank.accountNumber)" class="w-full py-3 bg-transparent border border-[#facc15] text-[#facc15] font-mono text-[10px] uppercase tracking-widest font-bold hover:bg-[#facc15] hover:text-black transition-colors">[ Copy Code ]</button>
+                <button @click="copyToClipboard(bank.accountNumber)" class="w-full py-3 bg-transparent border border-[#facc15] text-[#facc15] font-mono text-[10px] uppercase tracking-widest font-bold hover:bg-[#facc15] hover:text-black transition-colors">[ Salin Rekening ]</button>
               </div>
             </div>
           </div>
@@ -298,7 +298,7 @@
 
       <footer class="py-24 text-center border-t border-white/5 space-y-8 pb-32 md:pb-24">
         <h2 class="font-mono text-3xl md:text-5xl font-black uppercase text-white tracking-tighter">{{ data.groomName }} <span class="text-[#ff003c]">X</span> {{ data.brideName }}</h2>
-        <p class="text-[10px] font-mono uppercase tracking-[0.4em] font-bold text-[#64748b]">> SYSTEM_OFFLINE // SatuUndangan</p>
+        <p v-if="data.show_branding" class="text-[10px] font-mono uppercase tracking-[0.4em] font-bold text-[#64748b]">> SYSTEM_OFFLINE // SatuUndangan</p>
       </footer>
     </div>
   </div>
@@ -315,6 +315,21 @@ const props = defineProps({ data: { type: Object, default: () => ({}) } })
 const toast = useToast()
 const data = ref(props.data || {})
 
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Connection',
+    date: 'Jan 2024',
+    description: 'Sebuah koneksi tak terduga yang memulai protokol baru dalam hidup kami.',
+  },
+  {
+    title: 'System Sync',
+    date: 'Feb 2026',
+    description: 'Dua sistem berkomitmen untuk berjalan dalam satu jaringan, selamanya.',
+  },
+]
+
 const activeSections = computed(() => {
   if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
   if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
@@ -328,11 +343,11 @@ const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
 
 const allNavItems = [
-  { id: 'home', label: 'Init', icon: 'fa-solid fa-power-off', key: 'hero' },
-  { id: 'couple', label: 'Users', icon: 'fa-solid fa-user-astronaut', key: 'couple' },
-  { id: 'event', label: 'Quests', icon: 'fa-solid fa-map-location-dot', key: 'event' },
-  { id: 'gallery', label: 'Data', icon: 'fa-solid fa-floppy-disk', key: 'gallery' },
-  { id: 'rsvp', label: 'Ping', icon: 'fa-solid fa-satellite-dish', key: 'rsvp' }
+  { id: 'home', label: 'Home', icon: 'fa-solid fa-power-off', key: 'hero' },
+  { id: 'couple', label: 'Mempelai', icon: 'fa-solid fa-user-astronaut', key: 'couple' },
+  { id: 'event', label: 'Acara', icon: 'fa-solid fa-map-location-dot', key: 'event' },
+  { id: 'gallery', label: 'Galeri', icon: 'fa-solid fa-floppy-disk', key: 'gallery' },
+  { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-satellite-dish', key: 'rsvp' }
 ]
 
 const navItems = computed(() => {

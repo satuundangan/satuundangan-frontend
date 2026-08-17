@@ -37,7 +37,7 @@
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   <div class="absolute left-4 top-4">
                      <span class="rounded-xl bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase text-mocha shadow-xl border border-mocha/5">
-                        {{ selectedTemplate.isPremium ? '💎 Premium' : '✨ Gratis' }}
+                        ✨ Gratis
                      </span>
                   </div>
                </div>
@@ -181,7 +181,6 @@ const getIcon = (key) => {
     cover: 'fa-book-open',
     gallery: 'fa-images',
     'live-streaming': 'fa-video',
-    prokes: 'fa-shield-virus',
     'event-details': 'fa-calendar-day',
     'likes': 'fa-thumbs-up',
     'footer': 'fa-scroll',
@@ -231,7 +230,6 @@ const sectionOptionsLabelMap = {
   cover: 'Halaman Sampul (Cover)',
   gallery: 'Galeri Foto',
   'live-streaming': 'Live Streaming Link',
-  prokes: 'Protokol Kesehatan',
   'event-details': 'Detail Acara Lengkap',
   'likes': 'Fitur Like / Suka',
   footer: 'Halaman Penutup',

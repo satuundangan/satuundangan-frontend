@@ -1,71 +1,94 @@
 <template>
   <!-- Main sidebar container with full height and flex column layout -->
-  <aside class="flex h-screen w-64 flex-col overflow-y-auto border-r border-slate-200 bg-white">
+  <aside 
+    class="flex h-screen sticky top-0 flex-col border-r border-slate-200 bg-white transition-all duration-300 ease-in-out shrink-0"
+    :class="isCollapsed ? 'w-20' : 'w-64'"
+  >
     <!-- Sidebar Header -->
-    <div class="flex h-16 shrink-0 items-center border-b border-slate-200 px-6">
-      <router-link to="/admin" class="flex items-center gap-2 text-lg font-semibold text-slate-900">
-        <!-- A simple SVG logo for better visuals -->
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          class="h-6 w-6 text-blue-600"
+    <div 
+      class="flex h-16 shrink-0 items-center border-b border-slate-200 px-4 transition-all duration-300"
+      :class="isCollapsed ? 'justify-center' : 'justify-between px-6'"
+    >
+      <router-link to="/admin" class="flex items-center gap-3 overflow-hidden">
+        <div class="shrink-0 flex items-center justify-center overflow-hidden transition-all duration-300"
+          :class="isCollapsed ? 'h-10 w-10' : 'h-12 w-32'"
         >
-          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-          <path d="M2 17l10 5 10-5" />
-          <path d="M2 12l10 5 10-5" />
-        </svg>
-        <span>Undangdong</span>
+          <img 
+            src="/logo-admin.jpg" 
+            alt="Satu Undangan" 
+            class="h-full w-full object-contain"
+          />
+        </div>
       </router-link>
+      
+      <button 
+        v-if="!isCollapsed"
+        @click="toggleCollapse" 
+        class="flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-600"
+      >
+        <i class="pi pi-chevron-left text-xs"></i>
+      </button>
+    </div>
+
+    <!-- Toggle for Collapsed State -->
+    <div v-if="isCollapsed" class="flex justify-center py-4 border-b border-slate-50">
+      <button 
+        @click="toggleCollapse" 
+        class="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+      >
+        <i class="pi pi-chevron-right text-sm"></i>
+      </button>
     </div>
 
     <!-- Navigation Links -->
-    <nav class="flex-1 space-y-1 px-4 py-4 text-sm">
+    <nav class="flex-1 space-y-1.5 px-3 py-6 text-sm overflow-y-auto custom-scrollbar">
       <RouterLink
         v-for="item in navItems"
         :key="item.to"
         :to="item.to"
-        class="flex items-center gap-3 rounded-md px-3 py-2.5 font-medium transition-colors duration-200"
+        class="flex items-center rounded-xl font-medium transition-all duration-200 group relative"
         :class="[
           isActive(item.to)
-            ? 'bg-blue-50 text-blue-600'
-            : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900',
+            ? 'bg-blue-50 text-blue-600 shadow-sm shadow-blue-100/50'
+            : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900',
+          isCollapsed ? 'justify-center h-12 w-12 mx-auto' : 'gap-3 px-4 py-3',
         ]"
+        :title="isCollapsed ? item.label : ''"
       >
-        <!-- Dynamic component for icons, making the code cleaner -->
-        <component :is="item.icon" class="h-5 w-5 shrink-0" aria-hidden="true" />
-        <span>{{ item.label }}</span>
+        <!-- PrimeIcon for nav items -->
+        <i :class="['pi', item.icon, isCollapsed ? 'text-lg' : 'text-base']" aria-hidden="true"></i>
+        <span v-if="!isCollapsed" class="whitespace-nowrap transition-opacity duration-300">{{ item.label }}</span>
+        
+        <!-- Tooltip for collapsed state -->
+        <div v-if="isCollapsed" class="absolute left-14 z-50 hidden group-hover:block whitespace-nowrap rounded-lg bg-slate-900 px-3 py-2 text-xs font-bold text-white shadow-xl">
+          {{ item.label }}
+          <div class="absolute -left-1 top-1/2 -translate-y-1/2 border-y-[6px] border-y-transparent border-r-[6px] border-r-slate-900"></div>
+        </div>
       </RouterLink>
     </nav>
 
     <!-- Sidebar Footer (User/Logout Section) -->
-    <div class="mt-auto border-t border-slate-200 p-4">
-      <div class="flex items-center gap-3 rounded-md px-3 py-2.5">
+    <div class="mt-auto border-t border-slate-200 bg-slate-50/50 p-4">
+      <div 
+        class="flex items-center transition-all duration-300"
+        :class="isCollapsed ? 'flex-col gap-4' : 'gap-3 px-2'"
+      >
         <img
-          class="h-9 w-9 rounded-full"
+          class="h-10 w-10 rounded-xl border-2 border-white shadow-sm shrink-0"
           :src="user?.avatar || `https://ui-avatars.com/api/?name=${user?.name || 'Admin'}&background=random`"
           alt="User Avatar"
         >
-        <div class="flex flex-col overflow-hidden">
-          <span class="truncate text-sm font-semibold text-slate-800">{{ user?.name || 'Admin' }}</span>
-          <span class="truncate text-xs text-slate-500">{{ user?.email }}</span>
+        <div v-if="!isCollapsed" class="flex flex-col min-w-0">
+          <span class="truncate text-sm font-bold text-slate-800">{{ user?.name || 'Admin' }}</span>
+          <span class="truncate text-[11px] font-medium text-slate-400">{{ user?.email }}</span>
         </div>
         <button 
           @click="handleLogout" 
-          class="ml-auto text-slate-400 hover:text-red-500"
+          class="text-slate-400 hover:text-rose-500 transition-colors shrink-0"
+          :class="isCollapsed ? '' : 'ml-auto'"
           title="Logout"
         >
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-            <polyline points="16 17 21 12 16 7"></polyline>
-            <line x1="21" y1="12" x2="9" y2="12"></line>
-          </svg>
+          <i class="pi pi-sign-out text-base"></i>
         </button>
       </div>
     </div>
@@ -73,63 +96,72 @@
 </template>
 
 <script setup>
-import { h, computed } from 'vue';
+import { computed, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import Swal from 'sweetalert2';
 
 const route = useRoute();
 const router = useRouter();
 const authStore = useAuthStore();
 
-const user = computed(() => authStore.user);
+const isCollapsed = ref(localStorage.getItem('admin_sidebar_collapsed') === 'true');
 
-const handleLogout = () => {
-  authStore.logout();
-  router.push('/admin/login');
+const toggleCollapse = () => {
+  isCollapsed.value = !isCollapsed.value;
+  localStorage.setItem('admin_sidebar_collapsed', isCollapsed.value);
 };
 
-// Helper function to create simple icon components from SVG paths
-const createIcon = (paths) => ({
-  render() {
-    return h(
-      'svg',
-      {
-        xmlns: 'http://www.w3.org/2000/svg',
-        fill: 'none',
-        viewBox: '0 0 24 24',
-        stroke: 'currentColor',
-        'stroke-width': 1.5,
-      },
-      paths.map(d => h('path', { 'stroke-linecap': 'round', 'stroke-linejoin': 'round', d }))
-    );
-  },
-});
+const user = computed(() => authStore.user);
 
-// Define icons as components for cleaner code and better reusability
-const IconDashboard = createIcon(['M3 12l9-9 9 9M4.5 10.5V21h5.25v-4.5h4.5V21H19.5V10.5']);
-const IconUsers = createIcon(['M15 19.128A9.38 9.38 0 0 0 18 15.75c0-2.071-1.5-3.75-3.75-3.75h-4.5C7.5 12 6 13.679 6 15.75c0 1.78.83 3.363 2.13 4.378','m-9.375 5.25a3.375 3.375 0 0 1 6.75 0 3.375 3.375 0 0 1-6.75 0Z']);
-const IconInvitations = createIcon(['M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75']);
-const IconTemplates = createIcon(['M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.47 2.118L2.25 12.007a.94.94 0 0 1 .134-.739l.417-.646a.94.94 0 0 1 .84-.396h2.953a.94.94 0 0 1 .84.396l.417.646a.94.94 0 0 1 .134.739l-1.03 5.011a2.25 2.25 0 0 1 2.47-2.118 3 3 0 0 0 5.78-1.128zM15.75 1.5a.75.75 0 0 1 .75.75v4.5a.75.75 0 0 1-1.5 0v-4.5a.75.75 0 0 1 .75-.75zM12 12.75a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H12zm3 0a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H15zm3 0a.75.75 0 0 0 0 1.5h.008a.75.75 0 0 0 0-1.5H18z']);
-const IconCategories = createIcon(['M9.568 3H5.25A2.25 2.25 0 0 0 3 5.25v4.318c0 .597.237 1.17.659 1.591l9.581 9.581c.699.699 1.78.872 2.607.33a18.095 18.095 0 0 0 5.223-5.223c.542-.827.369-1.908-.33-2.607L11.16 3.66A2.25 2.25 0 0 0 9.568 3Z', 'M6 6h.008v.008H6V6Z']);
-const IconAudio = createIcon(['M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 1 1-.99-3.467l2.31-.66a2.25 2.25 0 0 0 1.632-2.163Zm0 0V2.25L9 5.25v10.303m0 0v3.75a2.25 2.25 0 0 1-1.632 2.163l-1.32.377a1.803 1.803 0 0 1-.99-3.467l2.31-.66A2.25 2.25 0 0 0 9 15.553Z']);
-const IconBanks = createIcon(['M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-.375m1.5-1.5H21a.75.75 0 0 0-.75.75v.75m0 0H3.75m0 0h-.375a1.125 1.125 0 0 1-1.125-1.125V15m1.5 1.5v-.75A.75.75 0 0 0 3 15h-.75M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Zm3 0h.008v.008H18V10.5Zm-12 0h.008v.008H6V10.5Z']);
-const IconSections = createIcon(['M3.75 6A2.25 2.25 0 0 1 6 3.75h2.25A2.25 2.25 0 0 1 10.5 6v2.25a2.25 2.25 0 0 1-2.25 2.25H6a2.25 2.25 0 0 1-2.25-2.25V6ZM3.75 15.75A2.25 2.25 0 0 1 6 13.5h2.25a2.25 2.25 0 0 1 2.25 2.25V18a2.25 2.25 0 0 1-2.25 2.25H6A2.25 2.25 0 0 1 3.75 18v-2.25ZM13.5 6a2.25 2.25 0 0 1 2.25-2.25H18A2.25 2.25 0 0 1 20.25 6v2.25A2.25 2.25 0 0 1 18 10.5h-2.25a2.25 2.25 0 0 1-2.25-2.25V6ZM13.5 15.75a2.25 2.25 0 0 1 2.25-2.25H18a2.25 2.25 0 0 1 2.25 2.25V18A2.25 2.25 0 0 1 18 20.25h-2.25A2.25 2.25 0 0 1 13.5 18v-2.25Z']);
+const handleLogout = async () => {
+  const result = await Swal.fire({
+    title: 'Keluar dari Admin?',
+    text: 'Sesi admin Anda akan diakhiri.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#cbd5e1',
+    confirmButtonText: 'Ya, Keluar',
+    cancelButtonText: 'Batal',
+    focusCancel: true
+  });
+  
+  if (result.isConfirmed) {
+    authStore.logout();
+    router.push('/admin/login');
+  }
+};
 
-const IconPromoCodes = createIcon(['M9 14.25l6-6m4.5-3.493V21.75l-3.75-1.5-3.75 1.5-3.75-1.5-3.75 1.5V4.757c0-1.108.806-2.057 1.907-2.185a48.507 48.507 0 0 1 11.186 0c1.1.128 1.907 1.077 1.907 2.185ZM9.75 9h.008v.008H9.75V9Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm4.125 4.5h.008v.008h-.008V13.5Zm.375 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z'])
-
-// Navigation items array using the icon components
+// Navigation items array with PrimeIcons
 const navItems = [
-  { label: 'Dashboard', to: '/admin', icon: IconDashboard },
-  { label: 'Users', to: '/admin/users', icon: IconUsers },
-  { label: 'Invitations', to: '/admin/invitations', icon: IconInvitations },
-  { label: 'Template Designs', to: '/admin/templates', icon: IconTemplates },
-  { label: 'Master Kategori', to: '/admin/categories', icon: IconCategories },
-  { label: 'Master Fitur (Sections)', to: '/admin/sections', icon: IconSections },
-  { label: 'Audio & Musik', to: '/admin/audio', icon: IconAudio },
-  { label: 'Bank & Pembayaran', to: '/admin/banks', icon: IconBanks },
-  { label: 'Promo Code', to: '/admin/promo-codes', icon: IconPromoCodes },
+  { label: 'Dashboard', to: '/admin', icon: 'pi-home' },
+  { label: 'Users', to: '/admin/users', icon: 'pi-users' },
+  { label: 'Invitations', to: '/admin/invitations', icon: 'pi-envelope' },
+  { label: 'Template Designs', to: '/admin/templates', icon: 'pi-palette' },
+  { label: 'Master Kategori', to: '/admin/categories', icon: 'pi-tags' },
+  { label: 'Master Fitur (Sections)', to: '/admin/sections', icon: 'pi-list' },
+  { label: 'Audio & Musik', to: '/admin/audio', icon: 'pi-volume-up' },
+  { label: 'Bank & Pembayaran', to: '/admin/banks', icon: 'pi-credit-card' },
+  { label: 'Promo Code', to: '/admin/promo-codes', icon: 'pi-percentage' },
 ];
 
 // Function to determine if a link is active
 const isActive = (path) => route.path === path;
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #e2e8f0;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #cbd5e1;
+}
+</style>

@@ -6,6 +6,7 @@ import Invitation from '@/views/InvitationView.vue'
 import PreviewInvitation from '@/views/PreviewInvitation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
+import { getCustomSubdomain } from '@/api/invitation'
 import { analytics } from '@/api/analytics.js'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import InvitationsView from '@/views/dashboard/InvitationsView.vue'
@@ -24,15 +25,27 @@ import AdminSections from '@/views/admin/AdminSections.vue'
 import AdminCategories from '@/views/admin/AdminCategories.vue'
 import AdminPromoCodes from '@/views/admin/AdminPromoCodes.vue'
 
+// Host-based routing: on a custom subdomain (e.g. rina-budi.satuundangan.id),
+// the root path serves that invitation instead of the marketing homepage.
+const customSubdomain = getCustomSubdomain()
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'home',
-      component: HomeView,
-      meta: { title: 'Home' },
-    },
+    customSubdomain
+      ? {
+          path: '/',
+          name: 'invitation',
+          component: Invitation,
+          props: { subdomainMode: true },
+          meta: { title: 'Undangan' },
+        }
+      : {
+          path: '/',
+          name: 'home',
+          component: HomeView,
+          meta: { title: 'Home' },
+        },
     {
       path: '/create',
       name: 'create',
@@ -282,8 +295,8 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
 
-  // Block admin routes if TOTP not yet set up (production only)
-  if (import.meta.env.PROD && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
+  // Block admin routes if TOTP not yet set up (only where TOTP is required)
+  if (import.meta.env.VITE_ADMIN_TOTP_ENABLED === 'true' && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
     next({ name: 'admin-totp-setup' })
     return
   }
@@ -335,6 +348,20 @@ router.afterEach((to, from) => {
       page: prevTitle,
       path: from.fullPath,
     })
+  }
+})
+
+// Handle stale asset/chunk errors after new deployments
+router.onError((error) => {
+  const isChunkError = 
+    error.message?.includes('Failed to fetch dynamically imported module') ||
+    error.message?.includes('Importing a module script failed') ||
+    error.message?.includes('Expected a JavaScript') ||
+    error.name === 'ChunkLoadError'
+
+  if (isChunkError) {
+    console.warn('New deployment detected or stale chunk error. Reloading page...')
+    window.location.reload()
   }
 })
 

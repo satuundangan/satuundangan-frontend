@@ -1,9 +1,9 @@
 import { apiFetch } from './client'
 
-export const validatePromoCode = (code, invitation_id) =>
+export const validatePromoCode = (code, invitation_id, base_amount) =>
   apiFetch('/promo/validate', {
     method: 'POST',
-    body: JSON.stringify({ code, invitation_id }),
+    body: JSON.stringify({ code, invitation_id, base_amount }),
   })
 
 // --- Admin CRUD ---

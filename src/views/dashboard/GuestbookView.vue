@@ -1,133 +1,178 @@
 <template>
-  <div class="flex h-screen bg-gray-50 overflow-hidden pb-20 md:pb-0">
-    <!-- Sidebar tetap untuk Desktop -->
+  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
     <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
-      <!-- Topbar diperkecil untuk Mobile -->
-      <Topbar title="Buku Tamu" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      <Topbar title="Buku Tamu & Ucapan" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
 
-      <main class="p-4 md:p-8 space-y-6 overflow-y-auto">
+      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar">
         <div class="space-y-4">
            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <h2 class="text-xl md:text-3xl font-serif font-bold text-dark">Daftar Ucapan</h2>
-              <p class="text-xs text-muted md:hidden">Lihat doa dan harapan dari para tamu undanganmu.</p>
+              <div>
+                 <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Daftar Ucapan & Doa</h2>
+                 <p class="text-xs text-slate-400 mt-1">Lihat ucapan dan konfirmasi kehadiran langsung dari para tamu.</p>
+              </div>
            </div>
-           <div class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm">
-              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1">Pilih Undangan</label>
-              <select v-model="selectedInvitationId" class="w-full border border-gray-200 rounded-xl px-4 py-2 bg-gray-50 text-sm focus:outline-none focus:ring-2 focus:ring-mocha/20">
+
+           <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs">
+              <label class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5">Pilih Undangan</label>
+              <select v-model="selectedInvitationId" class="w-full border border-slate-200 rounded-xl px-3.5 py-2 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all">
                  <option v-for="inv in invitations" :key="inv.id" :value="inv.id">{{ inv.title }}</option>
               </select>
            </div>
         </div>
 
-        <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-gray-400">
-           <div class="animate-spin text-3xl mb-4 text-mocha">⏳</div>
-           <p class="text-sm font-medium">Memuat ucapan...</p>
+        <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-slate-400">
+           <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-[#a47148]"></i>
+           <p class="text-xs font-bold">Memuat pesan ucapan...</p>
         </div>
         
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-           <div v-for="msg in messages" :key="msg.id" class="bg-white p-5 md:p-6 rounded-2xl shadow-sm border border-gray-50 hover:shadow-md transition relative group">
-              <div class="flex justify-between items-start mb-4">
-                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 bg-mocha/10 text-mocha rounded-xl flex items-center justify-center font-bold text-lg border-2 border-white">
-                       {{ msg.guestName ? msg.guestName.charAt(0) : '?' }}
-                    </div>
-                    <div>
-                       <h4 class="font-bold text-dark text-xs truncate max-w-[120px]">{{ msg.guestName }}</h4>
-                       <p class="text-[9px] text-gray-400 tracking-wider">{{ formatDate(msg.createdAt) }}</p>
-                    </div>
-                 </div>
-                 <div class="flex items-center gap-1">
-                    <span v-if="msg.rsvpStatus === 'hadir'" class="text-[8px] font-bold uppercase px-1.5 py-0.5 bg-green-50 text-green-600 rounded-md border border-green-100">Hadir</span>
-                    <span v-else-if="msg.rsvpStatus === 'tidak'" class="text-[8px] font-bold uppercase px-1.5 py-0.5 bg-red-50 text-red-400 rounded-md border border-red-100">Tidak</span>
-                 </div>
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+           <div 
+             v-for="msg in messages" 
+             :key="msg.id" 
+             class="bg-white p-5 rounded-2xl shadow-xs border border-slate-100 hover:border-slate-200 transition-all relative flex flex-col justify-between"
+           >
+              <div>
+                <div class="flex justify-between items-start mb-3 gap-2">
+                   <div class="flex items-center gap-3 min-w-0">
+                      <div class="w-9 h-9 bg-[#a47148] text-white rounded-xl flex items-center justify-center font-extrabold text-sm shrink-0 shadow-xs">
+                         {{ msg.guestName ? msg.guestName.charAt(0).toUpperCase() : '?' }}
+                      </div>
+                      <div class="min-w-0">
+                         <h4 class="font-extrabold text-slate-900 text-xs truncate">{{ msg.guestName }}</h4>
+                         <p class="text-[10px] text-slate-400 font-medium">{{ formatDate(msg.createdAt) }}</p>
+                      </div>
+                   </div>
+
+                   <div class="flex items-center gap-1 shrink-0">
+                      <span v-if="msg.rsvpStatus === 'hadir'" class="text-[9px] font-black uppercase px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md border border-emerald-200">Hadir</span>
+                      <span v-else-if="msg.rsvpStatus === 'tidak'" class="text-[9px] font-black uppercase px-2 py-0.5 bg-rose-50 text-rose-500 rounded-md border border-rose-200">Tidak Hadir</span>
+                      <span v-else class="text-[9px] font-black uppercase px-2 py-0.5 bg-slate-100 text-slate-500 rounded-md border border-slate-200">Ragu</span>
+                   </div>
+                </div>
+
+                <div class="relative py-2">
+                   <p class="text-slate-600 text-xs leading-relaxed italic">"{{ msg.message }}"</p>
+                </div>
               </div>
-              <div class="relative">
-                 <i class="fa-solid fa-quote-left absolute -left-2 -top-2 text-mocha/5 text-3xl"></i>
-                 <p class="text-gray-600 text-xs md:text-sm leading-relaxed relative z-10 italic">"{{ msg.message }}"</p>
-              </div>
-              <div class="pt-4 mt-4 border-t border-gray-50 flex justify-end">
-                 <button @click="handleDeleteMessage(msg.id)" class="text-[10px] text-red-300 hover:text-red-500 font-bold uppercase tracking-widest flex items-center gap-1.5 transition-colors">
-                    <i class="fa-solid fa-trash-can"></i> Hapus
+
+              <div class="pt-3 mt-3 border-t border-slate-100 flex justify-end">
+                 <button 
+                   @click="handleDeleteMessage(msg.id)" 
+                   class="text-[10px] text-rose-400 hover:text-rose-600 font-extrabold uppercase tracking-wider flex items-center gap-1.5 transition-colors"
+                 >
+                    <i class="fa-solid fa-trash-can"></i> Hapus Ucapan
                  </button>
               </div>
            </div>
-           <div v-if="messages.length === 0" class="col-span-full py-20 text-center bg-white rounded-3xl border border-dashed border-gray-200">
-              <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
-                 <i class="fa-solid fa-comment-slash text-2xl"></i>
+
+           <div v-if="messages.length === 0" class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-200 space-y-2">
+              <div class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300 text-xl border border-slate-100">
+                 <i class="fa-solid fa-comment-slash"></i>
               </div>
-              <h3 class="font-bold text-dark text-sm">Belum ada ucapan</h3>
-              <p class="text-xs text-muted mt-1">Doa dan harapan dari tamu akan muncul di sini.</p>
+              <h3 class="font-extrabold text-slate-800 text-sm">Belum Ada Ucapan Masuk</h3>
+              <p class="text-xs text-slate-400">Doa dan pesan kebahagiaan dari para tamu akan tampil di sini.</p>
            </div>
         </div>
       </main>
     </div>
+    
     <BottomNav />
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue";
-import Sidebar from "@/components/dashboard/SidebarDashboard.vue";
-import Topbar from "@/components/dashboard/TopbarDashboard.vue";
-import BottomNav from "@/components/dashboard/BottomNav.vue";
-import { getInvitations } from "@/api/invitation";
-import { getGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage";
-import { useToast } from "vue-toastification";
+import { onMounted, ref, watch } from "vue"
+import Sidebar from "@/components/dashboard/SidebarDashboard.vue"
+import Topbar from "@/components/dashboard/TopbarDashboard.vue"
+import BottomNav from "@/components/dashboard/BottomNav.vue"
+import { getInvitations } from "@/api/invitation"
+import { getGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage"
+import { useToast } from "vue-toastification"
+import Swal from "sweetalert2"
 
-const toast = useToast();
-const invitations = ref([]);
-const messages = ref([]);
-const selectedInvitationId = ref(null);
-const loading = ref(false);
-const isSidebarOpen = ref(window.innerWidth >= 768);
+const toast = useToast()
+const invitations = ref([])
+const messages = ref([])
+const selectedInvitationId = ref(null)
+const loading = ref(false)
+const isSidebarOpen = ref(window.innerWidth >= 768)
 
 onMounted(async () => {
    try {
-      const res = await getInvitations();
-      const data = Array.isArray(res) ? res : (res.data || []);
-      invitations.value = data;
+      const res = await getInvitations()
+      const data = Array.isArray(res) ? res : (res.data || [])
+      invitations.value = data
       if(data.length > 0) {
-         selectedInvitationId.value = data[0].id;
+         selectedInvitationId.value = data[0].id
       }
    } catch (e) {
-      console.error(e);
+      console.error(e)
    }
-});
+})
 
 watch(selectedInvitationId, async (newId) => {
-   if(newId) await fetchMessages(newId);
-});
+   if(newId) await fetchMessages(newId)
+})
 
 async function fetchMessages(invId) {
-   loading.value = true;
+   loading.value = true
    try {
-      const res = await getGuestMessagesByInvitationId(invId);
-      messages.value = Array.isArray(res) ? res : (res.data || []);
+      const res = await getGuestMessagesByInvitationId(invId)
+      messages.value = Array.isArray(res) ? res : (res.data || [])
    } catch (e) {
-      console.error(e);
-      toast.error("Gagal memuat pesan");
+      console.error(e)
+      toast.error("Gagal memuat pesan ucapan")
    } finally {
-      loading.value = false;
+      loading.value = false
    }
 }
 
 function formatDate(dateStr) {
-   if(!dateStr) return '';
-   const options = { day: 'numeric', month: 'short', year: 'numeric' };
-   return new Date(dateStr).toLocaleDateString('id-ID', options);
+   if(!dateStr) return '-'
+   try {
+     const options = { day: 'numeric', month: 'short', year: 'numeric' }
+     return new Date(dateStr).toLocaleDateString('id-ID', options)
+   } catch {
+     return '-'
+   }
 }
 
 async function handleDeleteMessage(id) {
-   if(!confirm("Hapus ucapan ini?")) return;
+   const result = await Swal.fire({
+     title: 'Hapus Ucapan Ini?',
+     text: 'Ucapan tamu yang dihapus tidak dapat dikembalikan!',
+     icon: 'warning',
+     showCancelButton: true,
+     confirmButtonColor: '#e11d48',
+     cancelButtonColor: '#cbd5e1',
+     confirmButtonText: 'Ya, Hapus',
+     cancelButtonText: 'Batal'
+   })
+
+   if (!result.isConfirmed) return
+
    try {
-      await deleteGuestMessage(id);
-      toast.success("Ucapan dihapus");
-      await fetchMessages(selectedInvitationId.value);
+      await deleteGuestMessage(id)
+      toast.success("Ucapan berhasil dihapus")
+      await fetchMessages(selectedInvitationId.value)
    } catch(e) {
-      console.error(e);
-      toast.error("Gagal menghapus");
+      console.error(e)
+      toast.error("Gagal menghapus ucapan: " + (e.message || "Terjadi kesalahan"))
    }
 }
 </script>
+
+<style scoped>
+.custom-scrollbar::-webkit-scrollbar {
+  width: 5px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #f1f5f9;
+  border-radius: 10px;
+}
+</style>

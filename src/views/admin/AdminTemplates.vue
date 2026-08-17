@@ -1,60 +1,121 @@
 <template>
-  <AdminShell title="Template Desain" description="Kelola daftar template undangan" show-search :search="search"
-    search-placeholder="Cari nama, slug, atau kategori" action-label="Tambah Template" @update:search="handleSearch"
+  <AdminShell title="Template Desain" description="Kelola daftar template undangan"
+    action-label="Tambah Template"
     @action="openCreate">
-    <DataTable
-      :headers="headers"
-      :items="templates"
-      :loading="loading"
-      :total="total"
-      v-model:page="page"
-      :limit="limit"
-      @update:page="setPage"
-    >
-      <template #cell(preview)="{ item }">
-        <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
-          <img :src="item.thumbnailUrl || item.previewUrl" class="h-full w-full object-cover" v-if="item.thumbnailUrl || item.previewUrl" />
-          <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
-            <i class="fa-solid fa-image text-xs"></i>
-          </div>
-        </div>
-      </template>
-      <template #cell(name)="{ item }">
-        <span class="font-medium text-slate-900">{{ item.name }}</span>
-      </template>
-      <template #cell(category)="{ item }">
-        <span
-          class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
-          <span class="h-1.5 w-1.5 rounded-full"
-            :style="{ backgroundColor: getCategoryColor(item.category) }"></span>
-          {{ item.category }}
-        </span>
-      </template>
-      <template #cell(price)="{ item }">
-        <span class="text-slate-700 font-medium">
-          {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(item.price || 0) }}
-        </span>
-      </template>
-      <template #cell(isActive)="{ item }">
-        <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
-          :class="item.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
-          {{ item.isActive ? 'Aktif' : 'Nonaktif' }}
-        </span>
-      </template>
-      <template #cell(actions)="{ item }">
-        <div class="flex justify-end gap-2 text-xs font-medium">
-          <a :href="`/demo/${item.slug}`" target="_blank" class="rounded-lg border border-blue-200 px-3 py-1 text-blue-600 hover:bg-blue-50 transition-colors">Demo</a>
-          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
-            @click="openEdit(item)">Edit</button>
-          <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
-            @click="confirmDelete(item)">Hapus</button>
-        </div>
-      </template>
-    </DataTable>
+    <div class="card">
+      <DataTable
+        v-model:filters="filters"
+        :value="templates"
+        paginator
+        :rows="10"
+        dataKey="id"
+        filterDisplay="row"
+        :loading="loading"
+        class="p-datatable-sm"
+      >
+        <template #empty> Tidak ada template ditemukan. </template>
+        <template #loading> Memuat data template. Silakan tunggu. </template>
+
+        <Column header="Preview" class="w-16">
+          <template #body="{ data }">
+            <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+              <img :src="data.thumbnailUrl || data.previewUrl" class="h-full w-full object-cover" v-if="data.thumbnailUrl || data.previewUrl" />
+              <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
+                <i class="fa-solid fa-image text-xs"></i>
+              </div>
+            </div>
+          </template>
+        </Column>
+
+        <Column field="name" header="Nama" sortable style="min-width: 12rem">
+          <template #body="{ data }">
+            <span class="font-medium text-slate-900">{{ data.name }}</span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari nama" />
+          </template>
+        </Column>
+
+        <Column field="slug" header="Slug" sortable style="min-width: 10rem">
+          <template #body="{ data }">
+            <span class="text-slate-500 text-xs">{{ data.slug }}</span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari slug" />
+          </template>
+        </Column>
+
+        <Column field="category" header="Kategori" sortable :showFilterMenu="false" style="min-width: 10rem">
+          <template #body="{ data }">
+            <span
+              class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
+              <span class="h-1.5 w-1.5 rounded-full"
+                :style="{ backgroundColor: getCategoryColor(data.category) }"></span>
+              {{ data.category }}
+            </span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <Select v-model="filterModel.value" @change="filterCallback()" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua" :showClear="true" class="w-full">
+              <template #option="slotProps">
+                <div class="flex items-center gap-2">
+                  <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: slotProps.option.color }"></span>
+                  <span>{{ slotProps.option.name }}</span>
+                </div>
+              </template>
+            </Select>
+          </template>
+        </Column>
+
+        <Column field="price" header="Harga" sortable style="min-width: 8rem">
+          <template #body="{ data }">
+            <span class="text-slate-700 font-medium">
+              {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.price || 0) }}
+            </span>
+          </template>
+        </Column>
+
+        <Column field="isActive" header="Status" sortable :showFilterMenu="false" style="min-width: 8rem">
+          <template #body="{ data }">
+            <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
+              :class="data.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+              {{ data.isActive ? 'Aktif' : 'Nonaktif' }}
+            </span>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <Select v-model="filterModel.value" @change="filterCallback()" :options="statusOptions" optionValue="value" optionLabel="label" placeholder="Semua" :showClear="true" class="w-full" />
+          </template>
+        </Column>
+
+        <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
+          <template #body="{ data }">
+            <div class="flex justify-end gap-1.5">
+              <a :href="`/demo/${data.slug}`" target="_blank"
+                class="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-600 hover:bg-blue-50 transition-colors"
+                title="Lihat Demo">
+                <i class="pi pi-eye text-xs"></i>
+              </a>
+              <button
+                class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors"
+                @click="openEdit(data)"
+                title="Edit Template">
+                <i class="pi pi-pencil text-xs"></i>
+              </button>
+              <button
+                class="flex h-8 w-8 items-center justify-center rounded-lg border border-rose-100 text-rose-600 hover:bg-rose-50 transition-colors"
+                @click="confirmDelete(data)"
+                title="Hapus Template">
+                <i class="pi pi-trash text-xs"></i>
+              </button>
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
 
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
-        <div class="max-h-[90vh] w-full max-w-3xl overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
+        <div class="max-h-[90vh] w-full overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
+          :class="isThemeBuilderActive ? 'max-w-6xl' : 'max-w-3xl'">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Template' : 'Tambah Template' }}</h2>
             <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
@@ -72,6 +133,30 @@
               <input v-model="form.slug" type="text"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required />
+            </div>
+            <div>
+              <label class="text-sm font-medium text-slate-600">Komponen Renderer</label>
+              <select v-model="form.componentKey"
+                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                <optgroup label="Tema Kustom — atur warna, font &amp; background sendiri">
+                  <option :value="DYNAMIC_THEME_KEY">Tema Kustom (Theme Builder)</option>
+                </optgroup>
+                <optgroup label="Pakai tampilan template yang sudah ada">
+                  <option value="">Otomatis (pakai slug)</option>
+                  <option v-for="key in existingRendererKeys" :key="key" :value="key">{{ key }}</option>
+                </optgroup>
+              </select>
+              <p class="mt-1 text-[10px] text-slate-400">
+                Pilih <span class="font-semibold">Tema Kustom</span> untuk membuka Theme Builder — atur warna, font,
+                background &amp; ornamen langsung dari form ini. Pilihan lain memakai tampilan template yang sudah ada
+                apa adanya (tidak bisa diubah dari sini).
+              </p>
+            </div>
+            <div v-if="isThemeBuilderActive" class="md:col-span-2">
+              <p class="mb-2 text-xs text-slate-500">
+                Atur tampilan tema langsung dari form ini — tanpa coding.
+              </p>
+              <ThemeBuilder v-model="form.designConfig" :copy-sources="themeCopySources" />
             </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Kategori</label>
@@ -117,6 +202,34 @@
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
             </div>
 
+            <!-- SEO -->
+            <div class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div class="mb-1 flex items-center gap-2">
+                <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
+                <label class="text-sm font-semibold text-slate-700">SEO Halaman Demo</label>
+              </div>
+              <p class="mb-3 text-xs text-slate-500">
+                Judul & deskripsi untuk hasil pencarian Google dan preview saat link
+                <span class="font-mono">/demo/{{ form.slug || 'slug' }}</span> dibagikan. Kosongkan untuk pakai Nama & Deskripsi template. Gambar preview memakai Thumbnail.
+              </p>
+              <div class="space-y-3">
+                <div>
+                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Title</label>
+                  <input v-model="form.seoTitle" type="text" maxlength="70"
+                    placeholder="Undangan Digital Kimi no Na wa — Tema Anime Senja | Satu Undangan"
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoTitle || '').length }}/70 karakter (ideal ≤ 60)</p>
+                </div>
+                <div>
+                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Description</label>
+                  <textarea v-model="form.seoDescription" rows="2" maxlength="320"
+                    placeholder="Template undangan pernikahan digital bertema senja sinematik dengan komet jatuh dan langit berbintang. Coba demo gratis di Satu Undangan."
+                    class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoDescription || '').length }}/320 karakter (ideal ≤ 160)</p>
+                </div>
+              </div>
+            </div>
+
             <!-- Tags Input UI -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Tags</label>
@@ -134,16 +247,62 @@
               <p class="mt-1 text-xs text-slate-500">Tekan Enter atau Koma untuk menambahkan tag.</p>
             </div>
 
+            <!-- Filter Group (homepage chip curation) -->
+            <div class="md:col-span-2">
+              <label class="text-sm font-medium text-slate-600">Filter Group</label>
+              <select v-model="form.filterGroup"
+                class="mt-2 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
+                <option value="">— Tidak difilter —</option>
+                <option v-for="g in FILTER_GROUP_OPTIONS" :key="g" :value="g">{{ g }}</option>
+              </select>
+              <p class="mt-1 text-xs text-slate-500">
+                Tags dipakai untuk pencarian &amp; SEO. Filter Group yang menentukan chip filter di homepage.
+                Grup dengan kurang dari 3 template tidak muncul sebagai chip.
+              </p>
+            </div>
+
             <!-- Default Music -->
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Default Musik</label>
-              <select v-model="form.defaultMusic"
-                class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100">
-                <option :value="null">— Tanpa Musik Default —</option>
-                <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
-                  {{ audio.title }} ({{ audio.category }})
-                </option>
-              </select>
+              <div class="relative mt-2" ref="audioDropdownRef">
+                <div class="relative">
+                  <input
+                    type="text"
+                    v-model="audioSearch"
+                    @focus="showAudioDropdown = true"
+                    placeholder="Cari musik..."
+                    class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                  />
+                  <div v-if="form.defaultMusic && !audioSearch" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs text-slate-400 truncate max-w-[50%]">
+                    Terpilih: {{ getSelectedAudioTitle }}
+                  </div>
+                  <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" v-if="!form.defaultMusic && !audioSearch">
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                  </div>
+                </div>
+
+                <div v-if="showAudioDropdown" class="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-slate-200 bg-white shadow-xl">
+                  <div
+                    class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 border-b border-slate-50"
+                    @click="selectAudio(null)"
+                  >
+                    — Tanpa Musik Default —
+                  </div>
+                  <div
+                    v-for="audio in filteredAudioList"
+                    :key="audio.id"
+                    class="cursor-pointer px-3 py-2 text-sm hover:bg-slate-50 transition-colors"
+                    :class="{ 'bg-slate-100': form.defaultMusic === audio.url }"
+                    @click="selectAudio(audio)"
+                  >
+                    <div class="font-medium text-slate-900">{{ audio.title }}</div>
+                    <div class="text-[10px] text-slate-500 uppercase font-bold">{{ audio.category }}</div>
+                  </div>
+                  <div v-if="filteredAudioList.length === 0" class="px-3 py-4 text-center text-sm text-slate-500 italic">
+                    Tidak ada musik ditemukan
+                  </div>
+                </div>
+              </div>
               <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-400 truncate">URL: {{ form.defaultMusic }}</p>
             </div>
 
@@ -249,12 +408,12 @@
                   <input type="checkbox" :checked="isSectionEnabled(section.id)"
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-                  
+
                   <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
-                  
+
                   <div class="flex items-center gap-2 ml-auto">
                     <span class="text-[10px] uppercase text-slate-400 font-bold">Urutan:</span>
-                    <input type="number" 
+                    <input type="number"
                       :value="getSectionOrder(section.id)"
                       @input="updateSectionOrder(section.id, $event.target.value)"
                       class="w-16 rounded border border-slate-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
@@ -267,16 +426,213 @@
               </div>
             </div>
 
+            <!-- Sample / Demo Content Editor -->
+            <div class="md:col-span-2">
+              <fieldset class="rounded-xl border border-slate-200 p-4">
+                <legend class="px-1 text-sm font-semibold text-slate-700">Konten Sample / Demo</legend>
+                <p class="mb-3 text-xs text-slate-500">
+                  Opsional. Isi untuk menampilkan konten khusus template ini di halaman
+                  <span class="font-mono">/demo/{{ form.slug || '&lt;slug&gt;' }}</span>. Jika dikosongkan,
+                  demo akan memakai data contoh bawaan (Adam &amp; Hawa).
+                </p>
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Nama Pengantin Pria</label>
+                    <input v-model="form.sampleContent.groomName" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Nama Pengantin Wanita</label>
+                    <input v-model="form.sampleContent.brideName" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Nama Panggilan Pasangan</label>
+                    <input v-model="form.sampleContent.coupleName" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Foto Pengantin Pria</label>
+                    <div class="mt-2 flex gap-2">
+                      <input v-model="form.sampleContent.groomPhotoUrl" type="url"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                        placeholder="https://example.com/groom.jpg" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.groomPhotoUrl = url, 3 / 4)" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Foto Pengantin Wanita</label>
+                    <div class="mt-2 flex gap-2">
+                      <input v-model="form.sampleContent.bridePhotoUrl" type="url"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                        placeholder="https://example.com/bride.jpg" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.bridePhotoUrl = url, 3 / 4)" />
+                    </div>
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Foto Pasangan</label>
+                    <div class="mt-2 flex gap-2">
+                      <input v-model="form.sampleContent.photoCoupleUrl" type="url"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
+                        placeholder="https://example.com/couple.jpg" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-4 py-2 text-sm hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => form.sampleContent.photoCoupleUrl = url, 1)" />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Sumber Kutipan</label>
+                    <input v-model="form.sampleContent.quoteSource" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Tanggal &amp; Waktu Acara</label>
+                    <input v-model="form.sampleContent.dateTime" type="text"
+                      placeholder="2026-08-15T10:00:00"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Kutipan</label>
+                    <textarea v-model="form.sampleContent.quoteText" rows="2"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div class="rounded-lg border border-slate-200 p-3">
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Akad</p>
+                    <input v-model="form.sampleContent.akadLocation.mapUrl" type="text" placeholder="Map URL"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.akadLocation.description" type="text" placeholder="Deskripsi lokasi"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.akadLocation.dateTime" type="text" placeholder="Tanggal & waktu"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                  </div>
+                  <div class="rounded-lg border border-slate-200 p-3">
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Resepsi</p>
+                    <input v-model="form.sampleContent.resepsiLocation.mapUrl" type="text" placeholder="Map URL"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.resepsiLocation.description" type="text" placeholder="Deskripsi lokasi"
+                      class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="form.sampleContent.resepsiLocation.dateTime" type="text" placeholder="Tanggal & waktu"
+                      class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Orang Tua Pengantin Wanita</label>
+                    <input v-model="form.sampleContent.parents.brideParents" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Orang Tua Pengantin Pria</label>
+                    <input v-model="form.sampleContent.parents.groomParents" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Instagram Pengantin Pria</label>
+                    <input v-model="form.sampleContent.socialMediaGroom.instagram" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                  <div>
+                    <label class="text-sm font-medium text-slate-600">Instagram Pengantin Wanita</label>
+                    <input v-model="form.sampleContent.socialMediaBrides.instagram" type="text"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+
+                  <div class="md:col-span-2">
+                    <label class="text-sm font-medium text-slate-600">Footer Text</label>
+                    <textarea v-model="form.sampleContent.footerText" rows="2"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+                  </div>
+                </div>
+
+                <!-- Gallery Images -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-medium text-slate-600">Galeri Foto</label>
+                    <button type="button" @click="addGalleryImage"
+                      class="rounded-lg border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">+ Tambah Foto</button>
+                  </div>
+                  <div v-for="(img, index) in form.sampleContent.galleryImages" :key="index"
+                    class="mb-2 flex items-center gap-2">
+                    <input v-model="form.sampleContent.galleryImages[index]" type="url"
+                      class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
+                      placeholder="https://example.com/gallery.jpg" />
+                    <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50">Upload</button>
+                    <input type="file" class="hidden" accept="image/*"
+                      @change="handleSampleUpload($event, (url) => form.sampleContent.galleryImages[index] = url, 3 / 4)" />
+                    <button type="button" @click="removeGalleryImage(index)"
+                      class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
+                  </div>
+                </div>
+
+                <!-- Love Story -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-medium text-slate-600">Cerita Cinta</label>
+                    <button type="button" @click="addLoveStory"
+                      class="rounded-lg border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">+ Tambah Cerita</button>
+                  </div>
+                  <div v-for="(story, index) in form.sampleContent.loveStory" :key="index"
+                    class="mb-3 rounded-lg border border-slate-200 p-3">
+                    <div class="grid grid-cols-1 gap-2 md:grid-cols-2">
+                      <input v-model="story.date" type="text" placeholder="Tanggal"
+                        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                      <input v-model="story.title" type="text" placeholder="Judul"
+                        class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    </div>
+                    <textarea v-model="story.description" rows="2" placeholder="Deskripsi"
+                      class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <div class="mt-2 flex items-center gap-2">
+                      <input v-model="story.image" type="url" placeholder="URL foto"
+                        class="flex-1 rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                      <button type="button" @click="$event.currentTarget.nextElementSibling.click()"
+                        class="rounded-lg border border-slate-200 px-3 py-2 text-xs hover:bg-slate-50">Upload</button>
+                      <input type="file" class="hidden" accept="image/*"
+                        @change="handleSampleUpload($event, (url) => story.image = url, 3 / 4)" />
+                      <button type="button" @click="removeLoveStory(index)"
+                        class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Bank Accounts -->
+                <div class="mt-4">
+                  <div class="mb-2 flex items-center justify-between">
+                    <label class="text-sm font-medium text-slate-600">Rekening Bank</label>
+                    <button type="button" @click="addBankAccount"
+                      class="rounded-lg border border-slate-200 px-3 py-1 text-xs hover:bg-slate-50">+ Tambah Rekening</button>
+                  </div>
+                  <div v-for="(bank, index) in form.sampleContent.bankAccounts" :key="index"
+                    class="mb-2 grid grid-cols-1 gap-2 rounded-lg border border-slate-200 p-3 md:grid-cols-4">
+                    <input v-model="bank.bankName" type="text" placeholder="Nama Bank"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="bank.accountNumber" type="text" placeholder="No. Rekening"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <input v-model="bank.accountName" type="text" placeholder="Atas Nama"
+                      class="rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
+                    <button type="button" @click="removeBankAccount(index)"
+                      class="rounded-lg border border-rose-100 px-3 py-2 text-xs text-rose-600 hover:bg-rose-50">Hapus</button>
+                  </div>
+                </div>
+              </fieldset>
+            </div>
+
             <div class="md:col-span-2 flex flex-wrap gap-6">
               <div class="flex items-center gap-2">
                 <input id="templateActive" v-model="form.isActive" type="checkbox"
                   class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
                 <label for="templateActive" class="text-sm font-medium text-slate-600">Aktifkan template</label>
-              </div>
-              <div class="flex items-center gap-2">
-                <input id="templatePremium" v-model="form.isPremium" type="checkbox"
-                  class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
-                <label for="templatePremium" class="text-sm font-medium text-slate-600 font-bold text-amber-600">Template Premium</label>
               </div>
             </div>
 
@@ -292,14 +648,27 @@
         </div>
       </div>
     </Transition>
+
+    <ImageCropperModal
+      :show="cropper.show"
+      :imageSrc="cropper.image"
+      :stencilAspectRatio="cropper.aspectRatio"
+      @close="cropper.show = false"
+      @crop="onSampleCropComplete"
+    />
   </AdminShell>
 </template>
 
 <script setup>
-import { computed, onMounted, onUnmounted, reactive, ref, watch } from 'vue'
-import { useDebounceFn } from '@vueuse/core'
+import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
+import { onClickOutside } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import DataTable from '@/components/admin/DataTable.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import InputText from 'primevue/inputtext'
+import Select from 'primevue/select'
+import Tag from 'primevue/tag'
+import { FilterMatchMode } from '@primevue/core/api'
 import slugify from 'slugify'
 import {
   fetchAdminTemplates,
@@ -310,11 +679,19 @@ import {
 } from '@/api/admin.js'
 import { fetchAdminSections, fetchAdminAudio } from '@/api/master.js'
 import { uploadFileApi } from '@/api/file.js'
+import ImageCropperModal from '@/views/create-form/components/ImageCropperModal.vue'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
+import { templateComponentKeys, DYNAMIC_THEME_KEY } from '@/utils/templateRegistry'
+import ThemeBuilder from '@/components/admin/ThemeBuilder.vue'
+import {
+  designConfigForPayload,
+  buildCopySources,
+} from '@/components/admin/themeBuilderOptions.js'
 
 const toast = useToast()
 const thumbnailInput = ref(null)
+const cropper = ref({ show: false, image: '', aspectRatio: 3 / 4, setUrl: null })
 const audioRef = ref(null)
 const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
@@ -323,48 +700,118 @@ const templates = ref([])
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const audioList = ref([])
+const audioSearch = ref('')
+const showAudioDropdown = ref(false)
+const audioDropdownRef = ref(null)
+
+const filteredAudioList = computed(() => {
+  if (!audioSearch.value) return audioList.value
+  const q = audioSearch.value.toLowerCase()
+  return audioList.value.filter(audio =>
+    (audio.title && audio.title.toLowerCase().includes(q)) ||
+    (audio.category && audio.category.toLowerCase().includes(q))
+  )
+})
+
+const getSelectedAudioTitle = computed(() => {
+  if (!form.defaultMusic) return ''
+  const audio = audioList.value.find(a => a.url === form.defaultMusic)
+  return audio ? `${audio.title} (${audio.category})` : ''
+})
+
+function selectAudio(audio) {
+  form.defaultMusic = audio ? audio.url : null
+  showAudioDropdown.value = false
+  audioSearch.value = ''
+}
+
+onClickOutside(audioDropdownRef, () => {
+  showAudioDropdown.value = false
+})
+
 const total = ref(0)
-const page = ref(1)
-const limit = 10
-const search = ref('')
+const sortBy = ref('id')
+const sortOrder = ref('DESC')
+const filters = ref({
+  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  slug: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  category: { value: null, matchMode: FilterMatchMode.EQUALS },
+  isActive: { value: null, matchMode: FilterMatchMode.EQUALS }
+})
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
 
-const headers = [
-  { label: 'Preview', key: 'preview', class: 'w-16' },
-  { label: 'Nama', key: 'name' },
-  { label: 'Slug', key: 'slug' },
-  { label: 'Kategori', key: 'category' },
-  { label: 'Harga', key: 'price' },
-  { label: 'Status', key: 'isActive' },
-  { label: 'Aksi', key: 'actions', class: 'text-right' },
-]
+const statusOptions = ref([
+  { label: 'Aktif', value: true },
+  { label: 'Nonaktif', value: false }
+])
 
 const tagInput = ref('')
+const FILTER_GROUP_OPTIONS = [
+  'Elegan & Mewah',
+  'Minimalis & Modern',
+  'Romantis & Dreamy',
+  'Anime & Pop Culture',
+  'Bold & Unik',
+]
 const customPalette = reactive({
   primary: '#0F172A',
   secondary: '#64748B',
   accent: '#38BDF8'
 })
 
+function emptySampleContent() {
+  return {
+    groomName: '',
+    brideName: '',
+    coupleName: '',
+    groomPhotoUrl: '',
+    bridePhotoUrl: '',
+    photoCoupleUrl: '',
+    quoteText: '',
+    quoteSource: '',
+    dateTime: '',
+    akadLocation: { mapUrl: '', description: '', dateTime: '' },
+    resepsiLocation: { mapUrl: '', description: '', dateTime: '' },
+    parents: { brideParents: '', groomParents: '' },
+    galleryImages: [],
+    loveStory: [],
+    bankAccounts: [],
+    socialMediaGroom: { instagram: '' },
+    socialMediaBrides: { instagram: '' },
+    footerText: '',
+  }
+}
+
 const form = reactive({
   name: '',
   slug: '',
+  componentKey: '',
   category: '',
   price: 0,
   previewUrl: '',
   thumbnailUrl: '',
   description: '',
+  seoTitle: '',
+  seoDescription: '',
   tags: [],
+  filterGroup: '',
   sections: [],
   isActive: true,
-  isPremium: false,
   defaultMusic: null,
   defaultAudioStart: 0,
   defaultAudioEnd: 0,
+  sampleContent: emptySampleContent(),
+  designConfig: null,
 })
+
+const isThemeBuilderActive = computed(() => form.componentKey === DYNAMIC_THEME_KEY)
+const existingRendererKeys = computed(() =>
+  templateComponentKeys.filter((key) => key !== DYNAMIC_THEME_KEY),
+)
+const themeCopySources = computed(() => buildCopySources(templates.value, editing.value?.id))
 
 watch(() => form.name, (newVal) => {
   if (!editing.value && newVal) {
@@ -383,14 +830,16 @@ async function loadData() {
   loading.value = true
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
-      fetchAdminTemplates({ page: page.value, limit, q: search.value }),
+      fetchAdminTemplates({
+        limit: 1000 // Fetch all for client-side handling
+      }),
       fetchAdminCategories({ limit: 100 }),
       fetchAdminSections({ limit: 100 }),
       fetchAdminAudio({ limit: 100 }),
     ])
 
-    templates.value = tmplRes.data
-    total.value = tmplRes.total
+    templates.value = tmplRes.data || tmplRes
+    total.value = tmplRes.total || (tmplRes.data ? tmplRes.data.length : tmplRes.length)
 
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
@@ -400,19 +849,6 @@ async function loadData() {
   } finally {
     loading.value = false
   }
-}
-
-const debouncedSearch = useDebounceFn(() => loadData(), 300)
-
-function handleSearch(value) {
-  search.value = value
-  page.value = 1
-  debouncedSearch()
-}
-
-function setPage(newPage) {
-  page.value = newPage
-  loadData()
 }
 
 function getCategoryColor(categoryName) {
@@ -474,6 +910,77 @@ async function handleThumbnailUpload(event) {
   }
 }
 
+function downscaleImage(dataUrl, maxWidth = 1600) {
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      let { width, height } = img
+      if (width > maxWidth) {
+        height = Math.round((height * maxWidth) / width)
+        width = maxWidth
+      }
+      const canvas = document.createElement('canvas')
+      canvas.width = width
+      canvas.height = height
+      canvas.getContext('2d').drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL('image/jpeg', 0.9))
+    }
+    img.onerror = () => resolve(dataUrl)
+    img.src = dataUrl
+  })
+}
+
+// Open the shared cropper before uploading. setUrl receives the final CDN URL.
+function handleSampleUpload(event, setUrl, aspectRatio = 3 / 4) {
+  const file = event.target.files[0]
+  if (!file) return
+  const reader = new FileReader()
+  reader.onload = async () => {
+    const image = await downscaleImage(reader.result)
+    cropper.value = { show: true, image, aspectRatio, setUrl }
+  }
+  reader.readAsDataURL(file)
+  event.target.value = ''
+}
+
+async function onSampleCropComplete({ blob }) {
+  const setUrl = cropper.value.setUrl
+  cropper.value.show = false
+  if (!setUrl || !blob) return
+  try {
+    const cropped = new File([blob], 'sample.webp', { type: 'image/webp' })
+    const res = await uploadFileApi(cropped)
+    setUrl(res.fileUrl)
+    toast.success('Foto berhasil diupload')
+  } catch {
+    toast.error('Gagal mengupload foto')
+  }
+}
+
+function addGalleryImage() {
+  form.sampleContent.galleryImages.push('')
+}
+
+function removeGalleryImage(index) {
+  form.sampleContent.galleryImages.splice(index, 1)
+}
+
+function addLoveStory() {
+  form.sampleContent.loveStory.push({ date: '', title: '', description: '', image: '' })
+}
+
+function removeLoveStory(index) {
+  form.sampleContent.loveStory.splice(index, 1)
+}
+
+function addBankAccount() {
+  form.sampleContent.bankAccounts.push({ bankName: '', accountNumber: '', accountName: '' })
+}
+
+function removeBankAccount(index) {
+  form.sampleContent.bankAccounts.splice(index, 1)
+}
+
 function addTag() {
   const val = tagInput.value.trim()
   if (val && !form.tags.includes(val)) {
@@ -489,26 +996,33 @@ function removeTag(index) {
 function openCreate() {
   editing.value = null
   tagInput.value = ''
+  audioSearch.value = ''
+  showAudioDropdown.value = false
   Object.assign(customPalette, { primary: '#0F172A', secondary: '#64748B', accent: '#38BDF8' })
   Object.assign(form, {
     name: '',
     slug: '',
+    componentKey: '',
     category: '',
     price: 0,
     previewUrl: '',
     thumbnailUrl: '',
     description: '',
+    seoTitle: '',
+    seoDescription: '',
     tags: [],
+    filterGroup: '',
     sections: availableSections.value.map((s, index) => ({
       sectionId: s.id,
       order: index + 1,
       is_enabled: true
     })),
     isActive: true,
-    isPremium: false,
     defaultMusic: null,
     defaultAudioStart: 0,
     defaultAudioEnd: 0,
+    sampleContent: emptySampleContent(),
+    designConfig: null,
   })
   showForm.value = true
 }
@@ -516,6 +1030,8 @@ function openCreate() {
 function openEdit(template) {
   editing.value = template
   tagInput.value = ''
+  audioSearch.value = ''
+  showAudioDropdown.value = false
 
   if (template.paletteColors && template.paletteColors.length >= 3) {
     customPalette.primary = template.paletteColors[0]
@@ -543,21 +1059,67 @@ function openEdit(template) {
     }
   })
 
+  const savedSampleContent =
+    template.sampleContent && typeof template.sampleContent === 'object'
+      ? template.sampleContent
+      : {}
+  const sampleContent = {
+    ...emptySampleContent(),
+    ...savedSampleContent,
+    akadLocation: {
+      ...emptySampleContent().akadLocation,
+      ...(savedSampleContent.akadLocation || {}),
+    },
+    resepsiLocation: {
+      ...emptySampleContent().resepsiLocation,
+      ...(savedSampleContent.resepsiLocation || {}),
+    },
+    parents: {
+      ...emptySampleContent().parents,
+      ...(savedSampleContent.parents || {}),
+    },
+    socialMediaGroom: {
+      ...emptySampleContent().socialMediaGroom,
+      ...(savedSampleContent.socialMediaGroom || {}),
+    },
+    socialMediaBrides: {
+      ...emptySampleContent().socialMediaBrides,
+      ...(savedSampleContent.socialMediaBrides || {}),
+    },
+    galleryImages: Array.isArray(savedSampleContent.galleryImages)
+      ? [...savedSampleContent.galleryImages]
+      : [],
+    loveStory: Array.isArray(savedSampleContent.loveStory)
+      ? savedSampleContent.loveStory.map(item => ({ ...item }))
+      : [],
+    bankAccounts: Array.isArray(savedSampleContent.bankAccounts)
+      ? savedSampleContent.bankAccounts.map(item => ({ ...item }))
+      : [],
+  }
+
   Object.assign(form, {
     name: template.name || '',
     slug: template.slug || '',
+    componentKey: template.componentKey || '',
     category: template.category || '',
     price: template.price || 0,
     previewUrl: template.previewUrl || '',
     thumbnailUrl: template.thumbnailUrl || '',
     description: template.description || '',
+    seoTitle: template.seoTitle || '',
+    seoDescription: template.seoDescription || '',
     tags: tags,
+    filterGroup: template.filterGroup || '',
     sections: sections,
     isActive: Boolean(template.isActive),
-    isPremium: Boolean(template.isPremium),
     defaultMusic: template.defaultMusic || null,
     defaultAudioStart: template.defaultAudioStart ?? 0,
     defaultAudioEnd: template.defaultAudioEnd ?? 0,
+    sampleContent,
+    designConfig:
+      template.designConfig && typeof template.designConfig === 'object'
+        ? template.designConfig
+        : null,
   })
   showForm.value = true
 }
@@ -609,17 +1171,42 @@ function closeForm() {
   saving.value = false
 }
 
+// Recursively strip empty values so a blank sample field never overrides
+// the built-in demoData default. Returns undefined when nothing remains.
+function pruneEmpty(value) {
+  if (Array.isArray(value)) {
+    const items = value.map(pruneEmpty).filter((v) => v !== undefined)
+    return items.length ? items : undefined
+  }
+  if (value && typeof value === 'object') {
+    const out = {}
+    for (const [k, v] of Object.entries(value)) {
+      const pruned = pruneEmpty(v)
+      if (pruned !== undefined) out[k] = pruned
+    }
+    return Object.keys(out).length ? out : undefined
+  }
+  if (typeof value === 'string') {
+    const trimmed = value.trim()
+    return trimmed ? trimmed : undefined
+  }
+  return value === undefined || value === null ? undefined : value
+}
+
 function buildPayload() {
+  const prunedSample = pruneEmpty(form.sampleContent)
   const payload = {
     name: form.name,
     slug: form.slug,
+    componentKey: form.componentKey || null,
     category: form.category,
     price: Number(form.price),
     previewUrl: form.previewUrl,
     thumbnailUrl: form.thumbnailUrl || null,
     description: form.description || null,
+    seoTitle: form.seoTitle || null,
+    seoDescription: form.seoDescription || null,
     isActive: form.isActive,
-    isPremium: form.isPremium,
     defaultMusic: form.defaultMusic || null,
     defaultAudioStart: Number(form.defaultAudioStart) || 0,
     defaultAudioEnd: Number(form.defaultAudioEnd) || 0,
@@ -628,7 +1215,10 @@ function buildPayload() {
       order: s.order,
       is_enabled: s.is_enabled
     })),
-    tags: form.tags
+    tags: form.tags,
+    filterGroup: form.filterGroup || null,
+    sampleContent: prunedSample ?? null,
+    designConfig: designConfigForPayload(form.componentKey, form.designConfig),
   }
 
   payload.paletteId = null

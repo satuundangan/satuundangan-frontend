@@ -45,7 +45,7 @@
           @change="handleBulkFileChange"
         />
 
-        <div v-if="bulkQueue.length === 0" class="text-center">
+        <div v-if="bulkQueue.length === 0" class="text-center pointer-events-none">
           <div class="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-3xl bg-white text-indigo-500 shadow-sm transition-all group-hover:scale-110 group-hover:shadow-md">
             <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
           </div>
@@ -53,7 +53,7 @@
           <p class="mt-2 text-sm text-slate-500">Drag & drop banyak file MP3 sekaligus ke sini. <br/> Judul otomatis diambil dari nama file.</p>
         </div>
 
-        <div v-else class="w-full max-w-2xl space-y-6">
+        <div v-else class="relative z-20 w-full max-w-2xl space-y-6">
           <div class="flex items-center justify-between border-b border-slate-100 pb-4">
              <div>
                 <h3 class="text-lg font-black text-slate-900">{{ bulkQueue.length }} File Siap Diupload</h3>
@@ -183,42 +183,78 @@
     </div>
 
     <!-- Main List (Table) -->
-    <DataTable
-      v-else
-      :headers="headers"
-      :items="filteredAudios"
-      :loading="loading"
-    >
-      <template #cell(title)="{ item }">
-        <div class="flex flex-col">
-          <span class="font-bold text-slate-900">{{ item.title }}</span>
-          <span class="text-[10px] font-mono text-slate-400 truncate max-w-xs">{{ item.url }}</span>
-        </div>
-      </template>
-      <template #cell(category)="{ item }">
-        <span
-          class="inline-flex items-center rounded-lg px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-          :class="getCategoryMeta(item.category).badgeClass"
-        >
-          {{ getCategoryMeta(item.category).label }}
-        </span>
-      </template>
-      <template #cell(player)="{ item }">
-        <audio 
-          controls 
-          class="h-8 w-full opacity-80 scale-90 origin-left"
-          @play="handlePlay($event)"
-        >
-          <source :src="item.url" type="audio/mpeg">
-        </audio>
-      </template>
-      <template #cell(actions)="{ item }">
-        <div class="flex justify-end gap-3">
-          <button @click="copyLink(item.url)" class="text-[10px] font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-700">Link</button>
-          <button @click="confirmDelete(item)" class="text-[10px] font-bold uppercase tracking-widest text-rose-600 hover:text-rose-700">Hapus</button>
-        </div>
-      </template>
-    </DataTable>
+    <div class="card" v-else>
+      <DataTable 
+        v-model:filters="filters" 
+        :value="audios" 
+        paginator 
+        :rows="10" 
+        dataKey="id" 
+        filterDisplay="row" 
+        :loading="loading"
+        :globalFilterFields="['title', 'category', 'url']"
+        class="p-datatable-sm"
+      >
+        <template #header>
+          <div class="flex justify-end">
+            <IconField>
+              <InputIcon>
+                <i class="pi pi-search" />
+              </InputIcon>
+              <InputText v-model="filters['global'].value" placeholder="Cari musik..." />
+            </IconField>
+          </div>
+        </template>
+        <template #empty> Tidak ada musik ditemukan. </template>
+        <template #loading> Memuat data musik. Silakan tunggu. </template>
+        
+        <Column field="title" header="Judul" style="min-width: 12rem">
+          <template #body="{ data }">
+            <div class="flex flex-col">
+              <span class="font-bold text-slate-900">{{ data.title }}</span>
+              <span class="text-[10px] font-mono text-slate-400 truncate max-w-xs">{{ data.url }}</span>
+            </div>
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari judul" />
+          </template>
+        </Column>
+
+        <Column field="category" header="Kategori" :showFilterMenu="false" style="min-width: 12rem">
+          <template #body="{ data }">
+            <Tag :value="getCategoryMeta(data.category).label" :severity="getSeverity(data.category)" />
+          </template>
+          <template #filter="{ filterModel, filterCallback }">
+            <Select v-model="filterModel.value" @change="filterCallback()" :options="categoryOptions" optionValue="value" optionLabel="label" placeholder="Semua Kategori" :showClear="true" class="w-full">
+              <template #option="slotProps">
+                <Tag :value="slotProps.option.label" :severity="getSeverity(slotProps.option.value)" />
+              </template>
+            </Select>
+          </template>
+        </Column>
+
+        <Column header="Player" class="w-48">
+          <template #body="{ data }">
+            <audio 
+              controls 
+              class="h-8 w-full opacity-80 scale-90 origin-left"
+              @play="handlePlay($event)"
+            >
+              <source :src="data.url" type="audio/mpeg">
+            </audio>
+          </template>
+        </Column>
+
+        <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
+          <template #body="{ data }">
+            <div class="flex justify-end gap-3">
+              <button @click="copyLink(data.url)" class="text-[10px] font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-700 cursor-pointer">Link</button>
+              <button @click="confirmDelete(data)" class="text-[10px] font-bold uppercase tracking-widest text-rose-600 hover:text-rose-700 cursor-pointer">Hapus</button>
+            </div>
+          </template>
+        </Column>
+      </DataTable>
+    </div>
 
     <!-- Create Modal -->
     <Transition name="modal">
@@ -336,7 +372,14 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import DataTable from '@/components/admin/DataTable.vue'
+import DataTable from 'primevue/datatable'
+import Column from 'primevue/column'
+import InputText from 'primevue/inputtext'
+import IconField from 'primevue/iconfield'
+import InputIcon from 'primevue/inputicon'
+import Select from 'primevue/select'
+import Tag from 'primevue/tag'
+import { FilterMatchMode } from '@primevue/core/api'
 import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -391,12 +434,22 @@ const currentPlayingAudio = ref(null)
 const selectedAudioFile = ref(null)
 const viewType = ref('grid') // 'grid' or 'table'
 
-const headers = [
-  { label: 'Judul', key: 'title' },
-  { label: 'Kategori', key: 'category' },
-  { label: 'Player', key: 'player', class: 'w-48' },
-  { label: 'Aksi', key: 'actions', class: 'text-right' },
-]
+const filters = ref({
+  global: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  title: { value: null, matchMode: FilterMatchMode.CONTAINS },
+  category: { value: null, matchMode: FilterMatchMode.EQUALS }
+})
+
+const getSeverity = (category) => {
+  switch (category) {
+    case 'romantic': return 'danger';
+    case 'acoustic': return 'warn';
+    case 'elegant': return 'info';
+    case 'sacred': return 'success';
+    case 'warm': return 'secondary';
+    default: return null;
+  }
+}
 
 // Bulk Upload States
 const isDragging = ref(false)
@@ -440,7 +493,10 @@ async function loadAudio() {
   }
 }
 
-function handleSearch(value) { search.value = value }
+function handleSearch(value) { 
+  search.value = value
+  filters.value.global.value = value 
+}
 function resetForm() {
   selectedAudioFile.value = null
   Object.assign(form, { title: '', category: 'romantic', url: '', fileName: '' })

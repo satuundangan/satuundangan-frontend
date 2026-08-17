@@ -35,7 +35,7 @@ jobs:
 
       - name: Build (development)
         if: github.ref == 'refs/heads/development'
-        run: npx vite build --mode dev
+        run: npx vite build --mode development
         env:
           NODE_ENV: production
 
@@ -44,4 +44,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 7a2d2ad60fe21279f176a8aadfd1aa52
-          command: pages deploy dist --project-name satuundangan --branch ${{ github.ref_name }}
+          command: pages deploy dist --project-name ${{ github.ref_name == 'development' && 'satuundangan-development' || 'satuundangan-frontend' }} --branch ${{ github.ref_name }}

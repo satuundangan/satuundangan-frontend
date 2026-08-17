@@ -1,29 +1,33 @@
 <script setup>
-import { getInvitationBySlug, getMyInvitationBySlug } from '@/api/invitation'
+import {
+  getInvitationBySlug,
+  getMyInvitationBySlug,
+  getInvitationBySubdomain,
+  getCustomSubdomain,
+} from '@/api/invitation'
 import { demoData } from '@/api/demoData'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
+import { featuresFor } from '@/config/packageFeatures'
 import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import {
+  templateLoaders,
+  resolveTemplateKey,
+  normalizeTemplateKey,
+  FALLBACK_TEMPLATE_KEY,
+  DYNAMIC_THEME_KEY,
+} from '@/utils/templateRegistry'
 
-const templateMap = {
-  'dark-elegant': () => import('../templates/dark-elegant.vue'),
-  'light-modern': () => import('../templates/light-modern.vue'),
-  'botanical-watercolor': () => import('../templates/botanical-watercolor.vue'),
-  'royal-gold': () => import('../templates/royal-gold.vue'),
-  'minimalist-terra': () => import('../templates/minimalist-terra.vue'),
-  'celestial-sparkle': () => import('../templates/celestial-sparkle.vue'),
-  'editorial-magazine': () => import('../templates/editorial-magazine.vue'),
-  'zen-tranquility': () => import('../templates/zen-tranquility.vue'),
-  'retro-nostalgia': () => import('../templates/retro-nostalgia.vue'),
-  'modern-noir': () => import('../templates/modern-noir.vue'),
-  'azure-shores': () => import('../templates/azure-shores.vue'),
-  'cyberpunk-neon': () => import('../templates/cyberpunk-neon.vue'),
-  'royal-emerald': () => import('../templates/royal-emerald.vue'),
-}
+const props = defineProps({
+  // Host-based mode: invitation resolved from custom subdomain, not route slug.
+  subdomainMode: { type: Boolean, default: false },
+})
 
 const route = useRoute()
 const router = useRouter()
+// In subdomain mode the route has no :slug — resolve label from the host.
+const subdomainLabel = props.subdomainMode ? getCustomSubdomain() : null
 const slug = route.params.slug
 const invitationData = ref(null)
 const TemplateComponent = shallowRef(null)
@@ -37,10 +41,12 @@ const isLiveSyncActive = ref(false)
 
 const ALL_SECTION_KEYS = [
   'quote', 'love-story', 'couple', 'event', 'gallery', 'rsvp', 
-  'gift', 'prokes', 'extended-family', 'dress-code', 
+  'gift', 'extended-family', 'dress-code', 
   'live-streaming', 'video', 'denah', 'menu', 'countdown',
   'wishes', 'map', 'music', 'photoCouple', 'hero'
 ]
+
+let templateResolveSeq = 0
 
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
@@ -95,14 +101,43 @@ onMounted(async () => {
   })
 
   // Watch for invitationData changes to update TemplateComponent
-  watch(() => invitationData.value?.template_slug, (newSlug) => {
+  watch(() => invitationData.value?.template_slug, async (newSlug) => {
     if (!newSlug) return
-    
-    const normalizedSlug = newSlug.toLowerCase().replace(/\s+/g, '-')
-    const loader = templateMap[normalizedSlug] || templateMap['dark-elegant']
+    const seq = ++templateResolveSeq
+    let tmpl = null
+    let key = resolveTemplateKey(newSlug)
+
+    // Unknown slug: the design may be an admin-created row bound to an existing renderer.
+    if (key === FALLBACK_TEMPLATE_KEY && normalizeTemplateKey(newSlug) !== FALLBACK_TEMPLATE_KEY) {
+      try {
+        tmpl = await getTemplateDesignBySlug(newSlug)
+        key = resolveTemplateKey(newSlug, tmpl?.componentKey)
+      } catch {
+        // keep the fallback — a network error or 404 must not blank the page
+      }
+    }
+    if (seq !== templateResolveSeq) return // a newer slug won the race
+
+    // The dynamic-theme renderer needs designConfig even when the slug itself
+    // resolved directly (i.e. the componentKey lookup above was skipped).
+    if (key === DYNAMIC_THEME_KEY && !tmpl) {
+      try {
+        tmpl = await getTemplateDesignBySlug(newSlug)
+      } catch {
+        // defaults are fine — dynamic-theme renders a complete invitation with zero designConfig
+      }
+      if (seq !== templateResolveSeq) return
+    }
+
+    if (tmpl?.designConfig && invitationData.value && !isLiveSyncActive.value) {
+      // Reassigning the object does not re-fire this watch (its source is
+      // template_slug, unchanged) but does propagate through the template's
+      // deep props.data watch.
+      invitationData.value = { ...invitationData.value, designConfig: tmpl.designConfig }
+    }
 
     TemplateComponent.value = markRaw(defineAsyncComponent({
-      loader,
+      loader: templateLoaders[key],
       errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
     }))
   }, { immediate: true })
@@ -139,21 +174,37 @@ onMounted(async () => {
       let templateDefaultMusic = null
       let templateAudioStart = 0
       let templateAudioEnd = 0
+      let sampleContent = {}
+      let tmpl = null
       try {
-        const tmpl = await getTemplateDesignBySlug(templateSlug)
+        tmpl = await getTemplateDesignBySlug(templateSlug)
         templateDefaultMusic = tmpl?.defaultMusic || null
         templateAudioStart = tmpl?.defaultAudioStart ?? 0
         templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
+        sampleContent =
+          tmpl && typeof tmpl.sampleContent === 'object' && tmpl.sampleContent
+            ? tmpl.sampleContent
+            : {}
+        applyDemoSeo(tmpl)
       } catch {
         // no-op — demo still works without template music
       }
+      
+      const defaultDemoMusic = {
+        'naruto': 'wedding-instrumental-garden.mp3',
+        'one-piece': 'one-piece-luffy.mp3',
+      }
+        
       data = {
         ...demoData,
+        ...sampleContent,
         template_slug: templateSlug,
-        guestName: route.query.to || demoData.guestName,
-        musicChoice: templateDefaultMusic || demoData.musicChoice,
+        guestName: route.query.to || sampleContent.guestName || demoData.guestName,
+        musicChoice: templateDefaultMusic || defaultDemoMusic[templateSlug] || demoData.musicChoice,
         audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
         audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
+        show_branding: false, // demo preview is a clean (premium-look) showcase
+        designConfig: tmpl?.designConfig ?? null,
       }
     } else {
       try {
@@ -183,7 +234,7 @@ onMounted(async () => {
           audioStart: Number((rawData.content || rawData).audioStart) || 0,
           audioEnd: Number((rawData.content || rawData).audioEnd) || 0,
           template_slug: rawData.template_slug || rawData.templateName,
-          is_premium: rawData.is_premium !== undefined ? rawData.is_premium : rawData.isPremium,
+          show_branding: rawData.show_branding ?? false,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         }
       } catch (err) {
@@ -241,11 +292,51 @@ const goToCheckout = () => {
   router.push(`/checkout?slug=${slug}`)
 }
 
+// Set document title + meta/OG tags for a template's demo page from its SEO
+// fields, falling back to the template name/description/thumbnail.
+function applyDemoSeo(tmpl) {
+  if (!tmpl || typeof document === 'undefined') return
+  const title = tmpl.seoTitle || `${tmpl.name} — Demo Undangan Digital | Satu Undangan`
+  const description =
+    tmpl.seoDescription ||
+    tmpl.description ||
+    `Lihat demo template undangan pernikahan digital ${tmpl.name} di Satu Undangan.`
+  const image = tmpl.thumbnailUrl || tmpl.previewUrl || ''
+
+  document.title = title
+
+  const upsertMeta = (key, attr, value) => {
+    if (!value) return
+    let el = document.head.querySelector(`meta[${attr}="${key}"]`)
+    if (!el) {
+      el = document.createElement('meta')
+      el.setAttribute(attr, key)
+      document.head.appendChild(el)
+    }
+    el.setAttribute('content', value)
+  }
+
+  upsertMeta('description', 'name', description)
+  upsertMeta('og:title', 'property', title)
+  upsertMeta('og:description', 'property', description)
+  upsertMeta('og:image', 'property', image)
+  upsertMeta('og:type', 'property', 'website')
+  upsertMeta('twitter:card', 'name', image ? 'summary_large_image' : 'summary')
+  upsertMeta('twitter:title', 'name', title)
+  upsertMeta('twitter:description', 'name', description)
+  upsertMeta('twitter:image', 'name', image)
+}
+
 async function fetchInvitationData(slug) {
   try {
-    const response = isPreviewMode.value
-      ? await getMyInvitationBySlug(slug)
-      : await getInvitationBySlug(slug)
+    let response
+    if (props.subdomainMode && subdomainLabel) {
+      response = await getInvitationBySubdomain(subdomainLabel)
+    } else if (isPreviewMode.value) {
+      response = await getMyInvitationBySlug(slug)
+    } else {
+      response = await getInvitationBySlug(slug)
+    }
     return response.data || response
   } catch (err) {
     if (isPreviewMode.value) {
@@ -274,7 +365,7 @@ function getLocalPreviewPayload(slug) {
       audioEnd: payload.audioEnd,
       template_slug: payload.template_slug || payload.templateName,
       content: payload,
-      is_premium: Boolean(payload.isPremium),
+      show_branding: featuresFor(payload.package).watermark,
       is_published: false,
     }
   } catch (error) {

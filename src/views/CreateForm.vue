@@ -321,10 +321,9 @@
                   <div v-if="currentStep === 4" class="space-y-12 animate-fade-in">
                      <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
                      <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
-                     <section v-if="sections['dress-code'] || sections['extended-family'] || sections.prokes || sections.likes" class="space-y-8">
+                     <section v-if="sections['dress-code'] || sections['extended-family'] || sections.likes" class="space-y-8">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                            <div v-if="sections['dress-code']"><label class="form-label">Dress Code</label><input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik" class="form-input" /></div>
-                           <div v-if="sections.prokes"><label class="form-label">Protokol Kesehatan</label><div class="flex items-center gap-4 mt-2"><label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" v-model="formData.healthProtocol" class="w-5 h-5 text-mocha rounded border-gray-300 focus:ring-mocha" /><span class="text-sm font-medium text-dark">Tampilkan Protokol Kesehatan</span></label></div></div>
                         </div>
                         <div v-if="sections['extended-family']"><label class="form-label">Turut Mengundang (Extended Family)</label><textarea v-model="formData.extendedFamilyText" placeholder="Pisahkan nama dengan koma atau baris baru" class="form-input h-24 resize-none"></textarea></div>
                      </section>
@@ -770,7 +769,6 @@ function mapPayloadToFormData(payload) {
          'digital-envelope': 'gift',
          'loveStory': 'love-story',
          'foodList': 'menu',
-         'health-protocol': 'prokes',
          'turut-mengundang': 'extended-family',
          'video-prewedding': 'video',
          'live-stream': 'live-streaming'
@@ -985,9 +983,9 @@ async function handleCouplePhotoUpload(e) {
 
 function onCropComplete({ blob, preview }) {
    const field = cropper.value.targetField
-   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.jpg', { type: 'image/jpeg' }) }
-   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.jpg', { type: 'image/jpeg' }) }
-   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.jpg', { type: 'image/jpeg' }) }
+   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.webp', { type: 'image/webp' }) }
+   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.webp', { type: 'image/webp' }) }
+   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.webp', { type: 'image/webp' }) }
    cropper.value.show = false; validateField(field + 'Photo')
 }
 
