@@ -260,8 +260,8 @@
     <Footer />
 
 
-    <!-- Nova AI Floating Button -->
-    <FloatingNovaButton @require-auth="showAuthModal = true" />
+    <!-- Nova AI Floating Button (hidden — experimental, re-enable post-launch cleanup) -->
+    <!-- <FloatingNovaButton @require-auth="showAuthModal = true" /> -->
 
     <!-- Auth Modal (triggered by Nova when user not logged in) -->
     <AuthModal :show="showAuthModal" :authMode="authMode" @update:authMode="authMode = $event" @close="showAuthModal = false" />
