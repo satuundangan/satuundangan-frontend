@@ -488,6 +488,7 @@ import { fetchPublicAudio } from '@/api/master'
 import { useToast } from "vue-toastification"
 import { analytics } from '@/api/analytics'
 import QuoteSection from './create-form/components/QuoteSection.vue'
+import { resolveQuoteForSave } from './create-form/components/quotePresets'
 import AudioTrimmer from '@/components/invitation/AudioTrimmer.vue'
 import LoveStorySection from './create-form/components/LoveStorySection.vue'
 import GiftSection from './create-form/components/GiftSection.vue'
@@ -580,7 +581,8 @@ const formData = ref({
    likes: true,
    quoteType: 'default',
    quote: '',
-   quoteSource: ''
+   quoteSource: '',
+   religion: ''
 })
 
 const sections = ref({})
@@ -610,8 +612,7 @@ const syncDataToPreview = (data) => {
             resepsiLocation: data.isSingleEvent
                ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
                : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
-            quoteText: data.quote,
-            quoteSource: data.quoteSource,
+            ...resolveQuoteForSave(data),
             loveStory: (data.loveStories || []).map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
             galleryImages: (data.gallery || []).map(img => img.preview),
             giftDeliveryAddress: [...(data.giftAddresses || [])],
@@ -801,6 +802,7 @@ function mapPayloadToFormData(payload) {
    formData.value.quoteType = payload.quoteType || 'default'
    formData.value.quote = payload.quoteText || ''
    formData.value.quoteSource = payload.quoteSource || ''
+   formData.value.religion = payload.religion || ''
    const akad = payload.akadLocation || {}
    const resepsi = payload.resepsiLocation || {}
    if (payload.isSingleEvent) {
@@ -1054,7 +1056,7 @@ async function saveAndPreview() {
          footerText: formData.value.footerText, likes: formData.value.likes, menu: { title: 'Menu Makanan', items: formData.value.foodList.filter(n => n.trim()) },
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
-         eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, quoteText: formData.value.quote, quoteSource: formData.value.quoteSource
+         eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, ...resolveQuoteForSave(formData.value), religion: formData.value.religion || null
       }
       const editId = route.params.id || localStorage.getItem('editInvitationId'); let result
       if (editId) {
