@@ -50,36 +50,42 @@
 
       <!-- Right Column: Quote Inputs / Preview -->
       <div class="md:col-span-2 space-y-4">
+        <!-- Religion chips: shared between default and preset modes -->
+        <div
+          v-if="formData.quoteType === 'default' || formData.quoteType === 'preset'"
+          class="space-y-3 bg-gray-50/50 p-4 rounded-2xl border border-gray-100"
+        >
+          <div>
+            <label class="form-label mb-2">Kategori / Agama</label>
+            <div class="flex flex-wrap gap-2">
+              <button
+                v-for="cat in RELIGIONS"
+                :key="cat.id"
+                type="button"
+                @click="selectReligion(cat.id)"
+                class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border flex items-center gap-1.5"
+                :class="activeReligion === cat.id
+                  ? 'bg-mocha text-white border-mocha shadow-sm'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-mocha/30 hover:bg-mocha/5'"
+              >
+                <span>{{ cat.icon }}</span>
+                <span>{{ cat.name }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
         <!-- Default Option View -->
         <div v-if="formData.quoteType === 'default'" class="space-y-3">
           <div class="bg-gray-50 p-4 rounded-xl border border-gray-200 italic text-muted text-sm leading-relaxed">
-            "{{ DEFAULT_ISLAMIC_QUOTE_TEXT }}"
-            <span class="block mt-2 font-bold not-italic text-mocha text-xs">— {{ DEFAULT_ISLAMIC_QUOTE_SOURCE }}</span>
+            "{{ defaultQuoteEntry.text }}"
+            <span class="block mt-2 font-bold not-italic text-mocha text-xs">— {{ defaultQuoteEntry.source }}</span>
           </div>
         </div>
 
         <!-- Preset Option View -->
         <div v-else-if="formData.quoteType === 'preset'" class="space-y-4">
           <div class="space-y-3 bg-gray-50/50 p-4 rounded-2xl border border-gray-100">
-            <div>
-              <label class="form-label mb-2">Kategori / Agama</label>
-              <div class="flex flex-wrap gap-2">
-                <button
-                  v-for="cat in categories"
-                  :key="cat.id"
-                  type="button"
-                  @click="selectedCategory = cat.id"
-                  class="px-3 py-1.5 rounded-full text-xs font-bold transition-all border flex items-center gap-1.5"
-                  :class="selectedCategory === cat.id 
-                    ? 'bg-mocha text-white border-mocha shadow-sm' 
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-mocha/30 hover:bg-mocha/5'"
-                >
-                  <span>{{ cat.icon }}</span>
-                  <span>{{ cat.name }}</span>
-                </button>
-              </div>
-            </div>
-
             <div class="pt-2">
               <label class="form-label mb-1.5">Pilih Ayat / Kutipan</label>
               <select
@@ -143,6 +149,7 @@
 
 <script setup>
 import { ref, computed, watch, onMounted, toRefs } from 'vue'
+import { RELIGIONS, normalizeReligion, presetsFor, defaultQuoteFor } from './quotePresets'
 
 const props = defineProps({
   formData: { type: Object, required: true },
@@ -151,105 +158,13 @@ const props = defineProps({
 
 const { formData } = toRefs(props)
 
-const DEFAULT_ISLAMIC_QUOTE_TEXT = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir."
-const DEFAULT_ISLAMIC_QUOTE_SOURCE = "QS. Ar-Rum: 21"
+// Display-only fallback: derived from formData.religion, never written back.
+const activeReligion = computed(() => normalizeReligion(formData.value.religion))
 
-const categories = [
-  { id: 'islam', name: 'Islam', icon: '🕌' },
-  { id: 'kristen', name: 'Kristen', icon: '⛪' },
-  { id: 'katolik', name: 'Katolik', icon: '✝️' },
-  { id: 'hindu', name: 'Hindu', icon: '🕉️' },
-  { id: 'budha', name: 'Buddha', icon: '☸️' },
-  { id: 'umum', name: 'Umum', icon: '📜' }
-]
+const currentPresets = computed(() => presetsFor(activeReligion.value))
+const defaultQuoteEntry = computed(() => defaultQuoteFor(activeReligion.value))
 
-const PRESETS = {
-  islam: [
-    {
-      text: "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir.",
-      source: "QS. Ar-Rum: 21"
-    },
-    {
-      text: "Maha Suci Allah yang telah menciptakan semuanya berpasang-pasangan, baik dari apa yang ditumbuhkan oleh bumi dan dari diri mereka sendiri, maupun dari apa yang tidak mereka ketahui.",
-      source: "QS. Yasin: 36"
-    },
-    {
-      text: "Dan segala sesuatu Kami ciptakan berpasang-pasangan agar kamu mengingat (kebesaran Allah).",
-      source: "QS. Az-Zariyat: 49"
-    }
-  ],
-  kristen: [
-    {
-      text: "Kasih itu sabar; kasih itu murah hati; ia tidak cemburu. Ia tidak memegahkan diri dan tidak sombong. Ia tidak melakukan yang tidak sopan dan tidak mencari keuntungan diri sendiri. Ia tidak pemarah dan tidak menyimpan kesalahan orang lain.",
-      source: "1 Korintus 13:4-5"
-    },
-    {
-      text: "Demikianlah mereka bukan lagi dua, melainkan satu. Karena itu, apa yang telah dipersatukan Allah, tidak boleh diceraikan manusia.",
-      source: "Matius 19:6"
-    },
-    {
-      text: "Dan di atas semuanya itu: kenakanlah kasih, sebagai pengikat yang mempersatukan dan menyempurnakan.",
-      source: "Kolose 3:14"
-    }
-  ],
-  katolik: [
-    {
-      text: "Sehati sepikirlah kamu, dan hiduplah dalam perdamaian; maka Allah sumber kasih dan damai sejahtera akan menyertai kamu.",
-      source: "2 Korintus 13:11"
-    },
-    {
-      text: "Hendaklah kamu selalu rendah hati, lemah lembut, dan sabar. Tunjukkanlah kasihmu dalam saling membantu.",
-      source: "Efesus 4:2"
-    },
-    {
-      text: "Dan di atas semuanya itu: kenakanlah kasih, sebagai pengikat yang mempersatukan dan menyempurnakan.",
-      source: "Kolose 3:14"
-    }
-  ],
-  hindu: [
-    {
-      text: "Moga-moga saja kalian (suami-istri) menghayati cinta kasih yang mesra, tidak pernah berpisah, dan moga-moga saja kalian berdua panjang umur dan hidup bahagia bersama anak-anak serta cucu-cucu kalian di rumah kalian sendiri.",
-      source: "Rigveda Samhita, X. 85. 42"
-    },
-    {
-      text: "Aku menerima engkau sebagai istriku demi kemakmuran dan kebahagiaan kita bersama. Moga-moga engkau hidup bersamaku sampai hari tua atas restu para Dewa.",
-      source: "Rigveda Samhita, X. 85. 36"
-    },
-    {
-      text: "Ya Tuhan Yang Maha Pengasih, ikatlah kami (suami-istri) dalam ikatan pernikahan yang teguh, agar kami selalu hidup bersama dalam kesetiaan dan kebahagiaan.",
-      source: "Atharvaveda, XIV. 1. 50"
-    }
-  ],
-  budha: [
-    {
-      text: "Bila dua orang memiliki keyakinan (Saddha), kemoralan (Sila), kemurahan hati (Caga), dan kebijaksanaan (Panna) yang setara, maka mereka akan dapat saling memahami dan hidup bahagia bersama, baik di kehidupan ini maupun kehidupan selanjutnya.",
-      source: "Anguttara Nikaya 4.55"
-    },
-    {
-      text: "Saling mencintai, saling menghormati, dan saling membantu dalam kesukaran adalah jalan menuju kebahagiaan sejati dalam kehidupan berumah tangga.",
-      source: "Dhammapada"
-    }
-  ],
-  umum: [
-    {
-      text: "Aku ingin mencintaimu dengan sederhana: dengan kata yang tak sempat diucapkan kayu kepada api yang menjadikannya abu. Aku ingin mencintaimu dengan sederhana: dengan isyarat yang tak sempat disampaikan awan kepada hujan yang menjadikannya tiada.",
-      source: "Sapardi Djoko Damono"
-    },
-    {
-      text: "Cinta tidak terlihat dengan mata, tetapi dengan hati.",
-      source: "William Shakespeare"
-    },
-    {
-      text: "Dalam cinta sejati, jarak terkecil pun terlalu jauh, dan jarak terjauh pun bisa dijembatani.",
-      source: "Hans Nouwens"
-    }
-  ]
-}
-
-const selectedCategory = ref('islam')
 const selectedPresetIndex = ref(0)
-
-const currentPresets = computed(() => PRESETS[selectedCategory.value] || [])
 
 const updateFromPreset = () => {
   const presets = currentPresets.value
@@ -260,67 +175,32 @@ const updateFromPreset = () => {
   }
 }
 
-// Find if currently stored quote matches any preset
-const findMatchingPreset = () => {
-  const qText = formData.value.quote
-  
-  if (!qText) return null
-  
-  for (const category of Object.keys(PRESETS)) {
-    const list = PRESETS[category]
-    const idx = list.findIndex(p => p.text === qText || (qText && p.text.includes(qText)))
-    if (idx !== -1) {
-      return { category, index: idx }
-    }
+/**
+ * The ONLY writer of formData.religion — explicit user intent via chip click.
+ * In default mode this must not touch quote/quoteSource: the preview is a
+ * pure computed off defaultQuoteEntry, and the actual save-time value comes
+ * from resolveQuoteForSave() in the parent view.
+ */
+function selectReligion(id) {
+  formData.value.religion = id
+  if (formData.value.quoteType === 'preset') {
+    selectedPresetIndex.value = 0
+    updateFromPreset()
   }
-  return null
 }
-
-// Watch category selection
-watch(selectedCategory, () => {
-  selectedPresetIndex.value = 0
-  updateFromPreset()
-})
 
 // Watch preset index selection
 watch(selectedPresetIndex, () => {
   updateFromPreset()
 })
 
-// Watch external quoteType changes
-watch(() => formData.value.quoteType, (newType) => {
-  if (newType === 'default') {
-    formData.value.quote = DEFAULT_ISLAMIC_QUOTE_TEXT
-    formData.value.quoteSource = DEFAULT_ISLAMIC_QUOTE_SOURCE
-  } else if (newType === 'preset') {
-    const match = findMatchingPreset()
-    if (match) {
-      selectedCategory.value = match.category
-      selectedPresetIndex.value = match.index
-    } else {
-      updateFromPreset()
-    }
-  }
-})
-
+// Preset-mode dropdown position on mount: exact match only, scoped to the
+// already-known religion, never writes formData.religion/quote/quoteSource.
 onMounted(() => {
   if (formData.value.quoteType === 'preset') {
-    const match = findMatchingPreset()
-    if (match) {
-      selectedCategory.value = match.category
-      selectedPresetIndex.value = match.index
-    } else {
-      selectedCategory.value = 'islam'
-      selectedPresetIndex.value = 0
-      if (!formData.value.quote) {
-        updateFromPreset()
-      }
-    }
-  } else if (formData.value.quoteType === 'default') {
-    if (!formData.value.quote) {
-      formData.value.quote = DEFAULT_ISLAMIC_QUOTE_TEXT
-      formData.value.quoteSource = DEFAULT_ISLAMIC_QUOTE_SOURCE
-    }
+    const presets = presetsFor(activeReligion.value)
+    const idx = presets.findIndex((p) => p.text === formData.value.quote)
+    selectedPresetIndex.value = idx !== -1 ? idx : 0
   }
 })
 </script>
