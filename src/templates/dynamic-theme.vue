@@ -266,16 +266,34 @@
           </h2>
 
           <div class="grid md:grid-cols-2 gap-12 items-center">
-            <div class="relative" v-observe>
+            <div
+              v-for="p in coupleEntries"
+              :key="p.key"
+              class="relative"
+              :class="p.offsetClass"
+              v-observe
+            >
               <div
+                v-if="p.photo.mode !== 'hide'"
                 class="relative overflow-hidden shadow-2xl rounded-[var(--dt-radius)]"
                 :style="coupleFrameStyle"
               >
                 <img
-                  :src="data.groomPhotoUrl || data.photoCoupleUrl || ''"
+                  v-if="p.photo.mode === 'photo'"
+                  :src="p.photo.src"
+                  :data-testid="`couple-photo-${p.key}`"
                   class="w-full h-[380px] md:h-[460px] object-cover"
                   alt=""
                 />
+                <div
+                  v-else
+                  :data-testid="`couple-ornament-${p.key}`"
+                  class="w-full h-[380px] md:h-[460px]"
+                  :style="{
+                    backgroundImage: `url('${p.photo.patternUrl}')`,
+                    backgroundRepeat: 'repeat',
+                  }"
+                ></div>
                 <div
                   class="absolute bottom-0 inset-x-0 p-6 md:p-8 text-center"
                   :style="{
@@ -289,50 +307,32 @@
                       color: 'var(--dt-color-surface)',
                     }"
                   >
-                    {{ data.groomName }}
+                    {{ p.name }}
                   </h3>
                   <p
                     class="text-xs md:text-sm mt-2"
                     :style="{ color: 'var(--dt-color-surface)', opacity: 0.8 }"
                   >
-                    Putra dari {{ data.parents?.groomParents }}
+                    {{ p.parentsLabel }}
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div class="relative mt-8 md:mt-16" v-observe>
-              <div
-                class="relative overflow-hidden shadow-2xl rounded-[var(--dt-radius)]"
-                :style="coupleFrameStyle"
-              >
-                <img
-                  :src="data.bridePhotoUrl || data.photoCoupleUrl || ''"
-                  class="w-full h-[380px] md:h-[460px] object-cover"
-                  alt=""
-                />
-                <div
-                  class="absolute bottom-0 inset-x-0 p-6 md:p-8 text-center"
+              <div v-else :data-testid="`couple-plain-${p.key}`" class="p-6 md:p-8 text-center">
+                <h3
+                  class="text-2xl md:text-3xl"
                   :style="{
-                    background: 'linear-gradient(to top, var(--dt-color-text), transparent)',
+                    fontFamily: 'var(--dt-font-script)',
+                    color: 'var(--dt-color-text)',
                   }"
                 >
-                  <h3
-                    class="text-2xl md:text-3xl"
-                    :style="{
-                      fontFamily: 'var(--dt-font-script)',
-                      color: 'var(--dt-color-surface)',
-                    }"
-                  >
-                    {{ data.brideName }}
-                  </h3>
-                  <p
-                    class="text-xs md:text-sm mt-2"
-                    :style="{ color: 'var(--dt-color-surface)', opacity: 0.8 }"
-                  >
-                    Putri dari {{ data.parents?.brideParents }}
-                  </p>
-                </div>
+                  {{ p.name }}
+                </h3>
+                <p
+                  class="text-xs md:text-sm mt-2"
+                  :style="{ color: 'var(--dt-color-text-muted)' }"
+                >
+                  {{ p.parentsLabel }}
+                </p>
               </div>
             </div>
           </div>
@@ -784,6 +784,7 @@ import {
   themeCssVars,
   googleFontsUrl,
   sectionStyle,
+  resolveCouplePhoto,
 } from '@/utils/themeConfig'
 import { applyThemeFonts, removeThemeFonts } from '@/utils/themeFonts'
 
@@ -856,6 +857,23 @@ const coupleFrameStyle = computed(() => {
     borderImage: `url("${theme.value.ornaments.frame}") 30 stretch`,
   }
 })
+
+const coupleEntries = computed(() => [
+  {
+    key: 'groom',
+    name: data.value.groomName,
+    parentsLabel: 'Putra dari ' + (data.value.parents?.groomParents ?? ''),
+    offsetClass: '',
+    photo: resolveCouplePhoto(theme.value, data.value.groomPhotoUrl || data.value.photoCoupleUrl),
+  },
+  {
+    key: 'bride',
+    name: data.value.brideName,
+    parentsLabel: 'Putri dari ' + (data.value.parents?.brideParents ?? ''),
+    offsetClass: 'mt-8 md:mt-16',
+    photo: resolveCouplePhoto(theme.value, data.value.bridePhotoUrl || data.value.photoCoupleUrl),
+  },
+])
 
 const rsvpInputStyle = computed(() => ({
   backgroundColor: theme.value.colors.background,
