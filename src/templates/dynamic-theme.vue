@@ -327,10 +327,7 @@
                 >
                   {{ p.name }}
                 </h3>
-                <p
-                  class="text-xs md:text-sm mt-2"
-                  :style="{ color: 'var(--dt-color-text-muted)' }"
-                >
+                <p class="text-xs md:text-sm mt-2" :style="{ color: 'var(--dt-color-text-muted)' }">
                   {{ p.parentsLabel }}
                 </p>
               </div>
@@ -1071,7 +1068,11 @@ function addToCalendar() {
 
 // --- Google Fonts injection — reactive so a font change in the theme builder
 // re-fetches the stylesheet instead of staying stuck at mount-time ---
-watch(() => googleFontsUrl(theme.value), () => applyThemeFonts(theme.value), { immediate: true })
+watch(
+  () => googleFontsUrl(theme.value),
+  () => applyThemeFonts(theme.value),
+  { immediate: true },
+)
 
 onMounted(() => {
   startCountdown()

@@ -113,15 +113,11 @@ describe('resolveCouplePhoto', () => {
   })
 
   it('accepts a raw (un-normalized) config object without throwing', () => {
-    expect(() =>
-      resolveCouplePhoto({ couple: { photoFallback: 'ornament' } }, ''),
-    ).not.toThrow()
+    expect(() => resolveCouplePhoto({ couple: { photoFallback: 'ornament' } }, '')).not.toThrow()
   })
 
   it('accepts a JSON string config without throwing', () => {
-    expect(() =>
-      resolveCouplePhoto('{"couple":{"photoFallback":"ornament"}}', ''),
-    ).not.toThrow()
+    expect(() => resolveCouplePhoto('{"couple":{"photoFallback":"ornament"}}', '')).not.toThrow()
   })
 
   it('COUPLE_PHOTO_FALLBACKS contains exactly hide and ornament', () => {

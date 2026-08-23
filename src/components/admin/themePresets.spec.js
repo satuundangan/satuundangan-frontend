@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { THEME_SECTION_KEYS, normalizeThemeConfig } from '@/utils/themeConfig'
+import {
+  THEME_SECTION_KEYS,
+  COUPLE_PHOTO_FALLBACKS,
+  normalizeThemeConfig,
+} from '@/utils/themeConfig'
 import { FONT_CATALOGUE, sanitizeHex, buildCopySources } from './themeBuilderOptions'
 import { THEME_PRESETS } from './themePresets'
 
@@ -42,6 +46,17 @@ describe('THEME_PRESETS', () => {
         }).not.toThrow()
         const twice = normalizeThemeConfig(normalized)
         expect(twice).toEqual(normalized)
+      })
+
+      // Load-bearing: the shared idempotency check above would silently pass a preset
+      // missing couple.photoFallback entirely (normalize-twice both add the same default).
+      // This strict form catches that — every preset must declare the key explicitly.
+      it('round-trips exactly through normalizeThemeConfig (strict, catches missing keys)', () => {
+        expect(normalizeThemeConfig(preset.config)).toEqual(preset.config)
+      })
+
+      it('declares a valid couple.photoFallback', () => {
+        expect(COUPLE_PHOTO_FALLBACKS).toContain(preset.config.couple.photoFallback)
       })
 
       it('has all 7 color keys, each a valid 6-digit hex', () => {
@@ -127,6 +142,13 @@ describe('asset-free presets', () => {
       expect(preset.config.ornaments.frame).toBe('')
       expect(preset.config.decor.patternUrl).toBe('')
     })
+
+    // Deliberate: only islami-emas carries a real decor.patternUrl, so it is the only
+    // preset where photoFallback: 'ornament' actually resolves rather than degrading —
+    // the other 6 stay 'hide'.
+    it(`preset "${preset.key}" has couple.photoFallback "hide" (no decor.patternUrl to tile)`, () => {
+      expect(preset.config.couple.photoFallback).toBe('hide')
+    })
   }
 })
 
@@ -179,6 +201,13 @@ describe('preset: islami-emas', () => {
     expect(preset.config.ornaments.frame).toBe('')
     expect(preset.config.hero.overlayOpacity).toBe(0.05)
     expect(preset.config.decor.patternOpacity).toBe(0.12)
+  })
+
+  // Deliberate: islami-emas is the only preset carrying a real decor.patternUrl, so it is
+  // the only one where photoFallback: 'ornament' resolves to a tiled pattern instead of
+  // silently degrading to 'hide'.
+  it('sets couple.photoFallback to "ornament" (the only preset where it actually resolves)', () => {
+    expect(preset.config.couple.photoFallback).toBe('ornament')
   })
 })
 

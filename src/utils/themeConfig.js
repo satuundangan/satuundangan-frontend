@@ -274,7 +274,8 @@ export function resolveCouplePhoto(config, photoUrl) {
     ? cfg.couple.photoFallback
     : 'hide'
 
-  const trimmedPattern = typeof cfg.decor?.patternUrl === 'string' ? cfg.decor.patternUrl.trim() : ''
+  const trimmedPattern =
+    typeof cfg.decor?.patternUrl === 'string' ? cfg.decor.patternUrl.trim() : ''
 
   if (fallback === 'ornament' && trimmedPattern) {
     return { mode: 'ornament', src: '', patternUrl: trimmedPattern }
