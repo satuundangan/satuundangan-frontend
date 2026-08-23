@@ -2,10 +2,12 @@ import { describe, it, expect } from 'vitest'
 import {
   THEME_DEFAULTS,
   THEME_SECTION_KEYS,
+  COUPLE_PHOTO_FALLBACKS,
   normalizeThemeConfig,
   themeCssVars,
   googleFontsUrl,
   sectionStyle,
+  resolveCouplePhoto,
 } from './themeConfig'
 
 describe('normalizeThemeConfig', () => {
@@ -49,6 +51,81 @@ describe('normalizeThemeConfig', () => {
       expect(normalizeThemeConfig(bad)).not.toBeNull()
       expect(normalizeThemeConfig(bad)).not.toBeUndefined()
     }
+  })
+
+  it('defaults couple.photoFallback to "hide" for nullish input', () => {
+    expect(normalizeThemeConfig(null).couple.photoFallback).toBe('hide')
+  })
+
+  it('keeps an explicit valid couple.photoFallback value', () => {
+    expect(
+      normalizeThemeConfig({ couple: { photoFallback: 'ornament' } }).couple.photoFallback,
+    ).toBe('ornament')
+  })
+
+  it('falls back to "hide" for an unknown couple.photoFallback value', () => {
+    for (const bad of ['banana', 42, '', null]) {
+      expect(normalizeThemeConfig({ couple: { photoFallback: bad } }).couple.photoFallback).toBe(
+        'hide',
+      )
+    }
+  })
+
+  it('does not throw and resolves to "hide" when couple itself is malformed', () => {
+    for (const bad of [null, 'garbage', []]) {
+      expect(() => normalizeThemeConfig({ couple: bad })).not.toThrow()
+      expect(normalizeThemeConfig({ couple: bad }).couple.photoFallback).toBe('hide')
+    }
+  })
+})
+
+describe('resolveCouplePhoto', () => {
+  it('returns mode "photo" with the trimmed src when photoUrl is non-empty', () => {
+    const result = resolveCouplePhoto(normalizeThemeConfig(null), '  https://x/y.jpg  ')
+    expect(result).toEqual({ mode: 'photo', src: 'https://x/y.jpg', patternUrl: '' })
+  })
+
+  it('treats a whitespace-only photoUrl as empty', () => {
+    const result = resolveCouplePhoto(normalizeThemeConfig(null), '   ')
+    expect(result.mode).not.toBe('photo')
+  })
+
+  it('resolves to mode "hide" when photo is empty and fallback is "hide"', () => {
+    const cfg = normalizeThemeConfig({ couple: { photoFallback: 'hide' } })
+    expect(resolveCouplePhoto(cfg, '')).toEqual({ mode: 'hide', src: '', patternUrl: '' })
+  })
+
+  it('resolves to mode "ornament" when photo is empty, fallback is "ornament" and patternUrl is set', () => {
+    const cfg = normalizeThemeConfig({
+      couple: { photoFallback: 'ornament' },
+      decor: { patternUrl: 'https://cdn.test/p.png' },
+    })
+    expect(resolveCouplePhoto(cfg, '')).toEqual({
+      mode: 'ornament',
+      src: '',
+      patternUrl: 'https://cdn.test/p.png',
+    })
+  })
+
+  it('degrades to mode "hide" when fallback is "ornament" but patternUrl is empty', () => {
+    const cfg = normalizeThemeConfig({ couple: { photoFallback: 'ornament' } })
+    expect(resolveCouplePhoto(cfg, '')).toEqual({ mode: 'hide', src: '', patternUrl: '' })
+  })
+
+  it('accepts a raw (un-normalized) config object without throwing', () => {
+    expect(() =>
+      resolveCouplePhoto({ couple: { photoFallback: 'ornament' } }, ''),
+    ).not.toThrow()
+  })
+
+  it('accepts a JSON string config without throwing', () => {
+    expect(() =>
+      resolveCouplePhoto('{"couple":{"photoFallback":"ornament"}}', ''),
+    ).not.toThrow()
+  })
+
+  it('COUPLE_PHOTO_FALLBACKS contains exactly hide and ornament', () => {
+    expect(COUPLE_PHOTO_FALLBACKS).toEqual(['hide', 'ornament'])
   })
 })
 

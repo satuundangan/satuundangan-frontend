@@ -82,6 +82,24 @@ The cover/hero visual treatment.
 
 ---
 
+## `couple`
+
+Controls how a missing couple photo (groom or bride) is handled in the `couple` section.
+
+| Field           | Type   | Allowed values     | Default | Controls                                                          |
+| --------------- | ------ | ------------------- | ------- | ------------------------------------------------------------------- |
+| `photoFallback` | string | `hide` \| `ornament` | `hide`  | What renders in place of a missing couple photo (unknown value silently falls back to `hide`) |
+
+- Only applies when the slot's photo resolves empty. Groom and bride resolve
+  independently — groom checks `groomPhotoUrl || photoCoupleUrl`, bride checks
+  `bridePhotoUrl || photoCoupleUrl` — so one can show a photo while the other
+  shows the fallback.
+- `'ornament'` tiles `decor.patternUrl` behind the name/parents text in place of
+  the photo, and **degrades to `hide` when `decor.patternUrl` is empty** — there
+  is never an empty ornament box.
+
+---
+
 ## `sections`
 
 Per-section-key overrides. Keys come from `THEME_SECTION_KEYS`:
@@ -182,6 +200,7 @@ Copy-pasteable `designConfig` for a `POST /admin/template-designs` payload with
     "overlayColor": "#1c1c1c",
     "overlayOpacity": 0.45
   },
+  "couple": { "photoFallback": "hide" },
   "sections": {
     "hero": {
       "background": { "type": "color", "value": "#1c1c1c" },

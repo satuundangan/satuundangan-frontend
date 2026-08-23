@@ -19,6 +19,8 @@ export const THEME_SECTION_KEYS = [
 
 const HERO_VARIANTS = ['classic', 'full-photo', 'framed']
 
+export const COUPLE_PHOTO_FALLBACKS = ['hide', 'ornament']
+
 const GENERIC_FAMILIES = new Set([
   'serif',
   'sans-serif',
@@ -62,6 +64,7 @@ export const THEME_DEFAULTS = {
     overlayColor: '#000000',
     overlayOpacity: 0.35,
   },
+  couple: { photoFallback: 'hide' },
   sections: {},
   ornaments: { corner: '', divider: '', frame: '' },
   decor: { borderRadius: '1.5rem', patternUrl: '', patternOpacity: 0.08 },
@@ -148,6 +151,16 @@ export function normalizeThemeConfig(raw) {
 
   if (!HERO_VARIANTS.includes(merged.hero.variant)) {
     merged.hero.variant = 'classic'
+  }
+
+  // `couple` may arrive as null/string/array via stored JSON or a partial override —
+  // re-seed it as a plain object BEFORE reading `photoFallback`, or the property
+  // access below would throw on `couple: null`.
+  if (!isPlainObject(merged.couple)) {
+    merged.couple = deepClone(THEME_DEFAULTS.couple)
+  }
+  if (!COUPLE_PHOTO_FALLBACKS.includes(merged.couple.photoFallback)) {
+    merged.couple.photoFallback = 'hide'
   }
 
   merged.hero.overlayOpacity = clampOpacity(
@@ -241,4 +254,31 @@ export function sectionStyle(config, key) {
   return {
     backgroundColor: background.value || cfg.colors?.surface || THEME_DEFAULTS.colors.surface,
   }
+}
+
+/**
+ * Decide how one couple slot (groom or bride) should render. Pure, never throws.
+ * @param {object|string|null} config  raw or normalized designConfig
+ * @param {string} photoUrl            already-resolved url, e.g. groomPhotoUrl || photoCoupleUrl
+ * @returns {{ mode: 'photo'|'ornament'|'hide', src: string, patternUrl: string }}
+ */
+export function resolveCouplePhoto(config, photoUrl) {
+  const cfg = isPlainObject(config) ? config : normalizeThemeConfig(config)
+  const trimmedPhoto = typeof photoUrl === 'string' ? photoUrl.trim() : ''
+
+  if (trimmedPhoto) {
+    return { mode: 'photo', src: trimmedPhoto, patternUrl: '' }
+  }
+
+  const fallback = COUPLE_PHOTO_FALLBACKS.includes(cfg.couple?.photoFallback)
+    ? cfg.couple.photoFallback
+    : 'hide'
+
+  const trimmedPattern = typeof cfg.decor?.patternUrl === 'string' ? cfg.decor.patternUrl.trim() : ''
+
+  if (fallback === 'ornament' && trimmedPattern) {
+    return { mode: 'ornament', src: '', patternUrl: trimmedPattern }
+  }
+
+  return { mode: 'hide', src: '', patternUrl: '' }
 }
