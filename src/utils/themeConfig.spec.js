@@ -8,7 +8,12 @@ import {
   googleFontsUrl,
   sectionStyle,
   resolveCouplePhoto,
+  hexToRgb,
+  relativeLuminance,
+  blendOverBackground,
+  resolveHeroInk,
 } from './themeConfig'
+import { THEME_PRESETS } from '@/components/admin/themePresets'
 
 describe('normalizeThemeConfig', () => {
   it('returns a deep clone of THEME_DEFAULTS (plus seeded sections) for nullish/garbage input', () => {
@@ -206,6 +211,122 @@ describe('sectionStyle', () => {
     const cfg = normalizeThemeConfig(null)
     expect(sectionStyle(cfg, 'not-a-real-key')).toEqual({
       backgroundColor: THEME_DEFAULTS.colors.surface,
+    })
+  })
+})
+
+describe('hero ink', () => {
+  describe('hexToRgb', () => {
+    it('parses a 6-digit hex with a leading #', () => {
+      expect(hexToRgb('#FAF6EC')).toEqual({ r: 250, g: 246, b: 236 })
+    })
+
+    it('parses a 6-digit hex without a leading #', () => {
+      expect(hexToRgb('FAF6EC')).toEqual({ r: 250, g: 246, b: 236 })
+    })
+
+    it('expands a 3-digit shorthand hex', () => {
+      expect(hexToRgb('#abc')).toEqual({ r: 170, g: 187, b: 204 })
+    })
+
+    it('returns null for empty/nullish/garbage/malformed input, never throws', () => {
+      for (const bad of ['', null, undefined, 'not-a-color', '#12345', 123]) {
+        expect(() => hexToRgb(bad)).not.toThrow()
+        expect(hexToRgb(bad)).toBeNull()
+      }
+    })
+  })
+
+  describe('relativeLuminance', () => {
+    it('returns 1 for pure white', () => {
+      expect(relativeLuminance({ r: 255, g: 255, b: 255 })).toBeCloseTo(1, 6)
+    })
+
+    it('returns 0 for pure black', () => {
+      expect(relativeLuminance({ r: 0, g: 0, b: 0 })).toBeCloseTo(0, 6)
+    })
+
+    it('returns ~0.92 for #FAF6EC', () => {
+      expect(relativeLuminance(hexToRgb('#FAF6EC'))).toBeCloseTo(0.92, 2)
+    })
+
+    it('returns 0 for garbage input, never throws', () => {
+      for (const bad of [null, {}, undefined, 'garbage']) {
+        expect(() => relativeLuminance(bad)).not.toThrow()
+        expect(relativeLuminance(bad)).toBe(0)
+      }
+    })
+  })
+
+  describe('blendOverBackground', () => {
+    it('black at alpha 1 over #FAF6EC resolves to pure black', () => {
+      expect(blendOverBackground('#000000', 1, '#FAF6EC')).toEqual({ r: 0, g: 0, b: 0 })
+    })
+
+    it('black at alpha 0 over #FAF6EC resolves to the background unchanged', () => {
+      expect(blendOverBackground('#000000', 0, '#FAF6EC')).toEqual({ r: 250, g: 246, b: 236 })
+    })
+
+    it('black at alpha 0.05 over #FAF6EC resolves to a slightly darkened rounded blend', () => {
+      expect(blendOverBackground('#000000', 0.05, '#FAF6EC')).toEqual({ r: 238, g: 234, b: 224 })
+    })
+
+    it('an unparsable overlay hex returns the background rgb unchanged (alpha forced to 0)', () => {
+      expect(blendOverBackground('not-a-color', 1, '#FAF6EC')).toEqual({
+        r: 250,
+        g: 246,
+        b: 236,
+      })
+    })
+
+    it('an unparsable background hex falls back to THEME_DEFAULTS.colors.background', () => {
+      expect(blendOverBackground('#000000', 0, 'not-a-color')).toEqual(
+        hexToRgb(THEME_DEFAULTS.colors.background),
+      )
+    })
+  })
+
+  describe('resolveHeroInk', () => {
+    it('islami-emas (near-zero overlay over a cream background) resolves to light-backdrop / dark ink', () => {
+      const preset = THEME_PRESETS.find((p) => p.key === 'islami-emas')
+      const result = resolveHeroInk(preset.config)
+      expect(result.isDark).toBe(false)
+      expect(result.heading).toBe('var(--dt-color-text)')
+      expect(result.eyebrow).toBe('var(--dt-color-text-muted)')
+      expect(result.scrim).toContain('radial-gradient')
+      expect(result.scrim).toContain('rgba(250, 246, 236')
+    })
+
+    // Every other shipped preset carries a 30-50% black overlay over a light/dark
+    // background, which blends dark enough to keep the original light-ink treatment.
+    // Only islami-emas ships a near-zero overlay — if a future preset also does, this
+    // it.each will fail loudly and force a deliberate review rather than silently
+    // rendering illegible text.
+    it.each(THEME_PRESETS.filter((p) => p.key !== 'islami-emas').map((p) => [p.key, p]))(
+      '%s (dark backdrop) resolves to dark-backdrop / light ink',
+      (_key, preset) => {
+        const result = resolveHeroInk(preset.config)
+        expect(result.isDark).toBe(true)
+        expect(result.heading).toBe('var(--dt-color-surface)')
+        expect(result.eyebrow).toBe('var(--dt-color-accent)')
+        expect(result.scrim).toContain('rgba(0, 0, 0')
+      },
+    )
+
+    it('resolves undefined and unparsable garbage config to the THEME_DEFAULTS outcome without throwing', () => {
+      for (const bad of [undefined, 'garbage json']) {
+        expect(() => resolveHeroInk(bad)).not.toThrow()
+        const result = resolveHeroInk(bad)
+        expect(result.isDark).toBe(true)
+      }
+    })
+
+    it('resolves a light background with zero overlay opacity to isDark: false', () => {
+      const result = resolveHeroInk({
+        colors: { background: '#ffffff' },
+        hero: { overlayColor: '#000000', overlayOpacity: 0 },
+      })
+      expect(result.isDark).toBe(false)
     })
   })
 })
