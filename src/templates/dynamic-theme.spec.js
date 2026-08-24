@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import DynamicTheme from './dynamic-theme.vue'
+import { THEME_PRESETS } from '@/components/admin/themePresets'
 
 vi.mock('vue-toastification', () => ({
   useToast: () => ({ success: vi.fn(), error: vi.fn() }),
@@ -120,5 +121,73 @@ describe('dynamic-theme.vue couple section', () => {
     const bridePhoto = section.get('[data-testid="couple-photo-bride"]')
     expect(groomPhoto.attributes('src')).toBe('https://cdn.test/shared.jpg')
     expect(bridePhoto.attributes('src')).toBe('https://cdn.test/shared.jpg')
+  })
+})
+
+describe('dynamic-theme.vue hero ink', () => {
+  function findPreset(key) {
+    return THEME_PRESETS.find((p) => p.key === key)
+  }
+
+  it('islami-emas (light backdrop) gate eyebrow reads dark ink and sits on a cream scrim', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          designConfig: findPreset('islami-emas').config,
+          resepsiLocation: { dateTime: '2027-01-01T10:00:00.000Z' },
+        }),
+      },
+    })
+
+    const eyebrow = wrapper.findAll('p').find((p) => p.text() === 'The Wedding Of')
+    expect(eyebrow.attributes('style')).toContain('var(--dt-color-text-muted)')
+
+    const gateScrim = wrapper.get('[data-dt-scrim="gate"]')
+    expect(gateScrim.attributes('style')).toContain('rgba(250, 246, 236')
+  })
+
+  it('islami-emas (light backdrop) classic hero renders dark ink, no heavy drop-shadow, muted countdown label', async () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          designConfig: findPreset('islami-emas').config,
+          resepsiLocation: { dateTime: '2027-01-01T10:00:00.000Z' },
+        }),
+      },
+    })
+
+    await wrapper.get('button').trigger('click')
+
+    const h1 = wrapper.get('#hero h1')
+    expect(h1.attributes('style')).toContain('var(--dt-color-text)')
+    expect(h1.classes()).not.toContain('drop-shadow-2xl')
+
+    const dateP = wrapper.get('#hero p.text-base')
+    expect(dateP.attributes('style')).toContain('var(--dt-color-text)')
+
+    const countdownLabel = wrapper.get('#hero .text-\\[8px\\]')
+    expect(countdownLabel.attributes('style')).toContain('var(--dt-color-text-muted)')
+
+    expect(wrapper.find('[data-dt-scrim="hero"]').exists()).toBe(true)
+  })
+
+  it('midnight-elegant (dark backdrop, full-photo) preserves the existing light-ink + drop-shadow look', async () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          designConfig: findPreset('midnight-elegant').config,
+          resepsiLocation: { dateTime: '2027-01-01T10:00:00.000Z' },
+        }),
+      },
+    })
+
+    await wrapper.get('button').trigger('click')
+
+    const h1 = wrapper.get('#hero h1')
+    expect(h1.attributes('style')).toContain('var(--dt-color-surface)')
+    expect(h1.classes()).toContain('drop-shadow-lg')
+
+    const eyebrow = wrapper.findAll('#hero p').find((p) => p.text() === 'We Are Getting Married')
+    expect(eyebrow.attributes('style')).toContain('var(--dt-color-accent)')
   })
 })
