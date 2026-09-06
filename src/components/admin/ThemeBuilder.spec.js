@@ -8,6 +8,7 @@ import {
   HERO_VARIANTS,
   BACKGROUND_TYPES,
   SECTION_LABELS,
+  COUPLE_PHOTO_FALLBACK_OPTIONS,
   applyBackgroundType,
   buildPreviewMessage,
   designConfigForPayload,
@@ -151,8 +152,30 @@ describe('ThemeBuilder.vue', () => {
       props: { modelValue: { colors: { primary: '#7a1620' } } },
     })
     expect(wrapper.get('[data-testid="color-primary-hex"]').element.value).toBe('#7a1620')
-    const secondaryHex = wrapper.get('[data-testid="colors-group"]').findAll('input[type="text"]')[1]
+    const secondaryHex = wrapper
+      .get('[data-testid="colors-group"]')
+      .findAll('input[type="text"]')[1]
     expect(secondaryHex.element.value).toBe(THEME_DEFAULTS.colors.secondary)
+  })
+
+  it('renders a couple photo fallback select with one option per COUPLE_PHOTO_FALLBACK_OPTIONS, default "hide"', () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    const select = wrapper.get('[data-testid="couple-photo-fallback"]')
+    expect(select.findAll('option').length).toBe(COUPLE_PHOTO_FALLBACK_OPTIONS.length)
+    expect(select.element.value).toBe('hide')
+  })
+
+  it('changing the couple photo fallback select emits update:modelValue with the new value and other keys intact', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+    const select = wrapper.get('[data-testid="couple-photo-fallback"]')
+    await select.setValue('ornament')
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload.couple.photoFallback).toBe('ornament')
+    expect(payload).toHaveProperty('hero')
+    expect(payload).toHaveProperty('sections')
+    expect(payload).toHaveProperty('decor')
   })
 })
 

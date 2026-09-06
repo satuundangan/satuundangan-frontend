@@ -1,14 +1,27 @@
 import { describe, it, expect } from 'vitest'
-import { THEME_SECTION_KEYS, normalizeThemeConfig } from '@/utils/themeConfig'
+import {
+  THEME_SECTION_KEYS,
+  COUPLE_PHOTO_FALLBACKS,
+  normalizeThemeConfig,
+} from '@/utils/themeConfig'
 import { FONT_CATALOGUE, sanitizeHex, buildCopySources } from './themeBuilderOptions'
 import { THEME_PRESETS } from './themePresets'
 
 const HEX_RE = /^#[0-9a-f]{6}$/i
 const COLOR_KEYS = ['primary', 'secondary', 'accent', 'background', 'surface', 'text', 'textMuted']
+const CDN_PREFIX = 'https://cdn.satuundangan.id/'
+const ASSET_FREE_PRESET_KEYS = [
+  'gorga-batak',
+  'jawa-earthy',
+  'minang-rangkiang',
+  'bali-tropis',
+  'rustic-sage',
+  'midnight-elegant',
+]
 
 describe('THEME_PRESETS', () => {
-  it('has exactly 6 entries, each { key, label, description, config }, keys unique and non-empty', () => {
-    expect(THEME_PRESETS.length).toBe(6)
+  it('has exactly 7 entries, each { key, label, description, config }, keys unique and non-empty', () => {
+    expect(THEME_PRESETS.length).toBe(7)
     const keys = new Set()
     for (const preset of THEME_PRESETS) {
       expect(typeof preset.key).toBe('string')
@@ -21,7 +34,7 @@ describe('THEME_PRESETS', () => {
       expect(preset.config).not.toBeNull()
       keys.add(preset.key)
     }
-    expect(keys.size).toBe(6)
+    expect(keys.size).toBe(7)
   })
 
   for (const preset of THEME_PRESETS) {
@@ -33,6 +46,17 @@ describe('THEME_PRESETS', () => {
         }).not.toThrow()
         const twice = normalizeThemeConfig(normalized)
         expect(twice).toEqual(normalized)
+      })
+
+      // Load-bearing: the shared idempotency check above would silently pass a preset
+      // missing couple.photoFallback entirely (normalize-twice both add the same default).
+      // This strict form catches that — every preset must declare the key explicitly.
+      it('round-trips exactly through normalizeThemeConfig (strict, catches missing keys)', () => {
+        expect(normalizeThemeConfig(preset.config)).toEqual(preset.config)
+      })
+
+      it('declares a valid couple.photoFallback', () => {
+        expect(COUPLE_PHOTO_FALLBACKS).toContain(preset.config.couple.photoFallback)
       })
 
       it('has all 7 color keys, each a valid 6-digit hex', () => {
@@ -55,14 +79,27 @@ describe('THEME_PRESETS', () => {
         }
       })
 
-      it('contains no non-empty image URLs', () => {
-        expect(preset.config.hero.backgroundImage).toBe('')
-        expect(preset.config.ornaments.corner).toBe('')
-        expect(preset.config.ornaments.divider).toBe('')
-        expect(preset.config.ornaments.frame).toBe('')
-        expect(preset.config.decor.patternUrl).toBe('')
+      it('never uses an image-type section background', () => {
         for (const key of THEME_SECTION_KEYS) {
           expect(preset.config.sections[key].background.url).toBeUndefined()
+        }
+      })
+
+      it('any non-empty top-level image URL points at the Cloudflare R2 CDN', () => {
+        const urls = [
+          preset.config.hero.backgroundImage,
+          preset.config.ornaments.corner,
+          preset.config.ornaments.divider,
+          preset.config.ornaments.frame,
+          preset.config.decor.patternUrl,
+        ]
+        for (const url of urls) {
+          if (url !== '') {
+            expect(
+              url.startsWith(CDN_PREFIX),
+              `expected "${url}" to start with ${CDN_PREFIX}`,
+            ).toBe(true)
+          }
         }
       })
 
@@ -88,6 +125,90 @@ describe('THEME_PRESETS', () => {
       })
     })
   }
+})
+
+describe('asset-free presets', () => {
+  const assetFreePresets = THEME_PRESETS.filter((p) => ASSET_FREE_PRESET_KEYS.includes(p.key))
+
+  it('ASSET_FREE_PRESET_KEYS still resolves exactly 6 presets', () => {
+    expect(assetFreePresets.length).toBe(6)
+  })
+
+  for (const preset of assetFreePresets) {
+    it(`preset "${preset.key}" contains no non-empty image URLs`, () => {
+      expect(preset.config.hero.backgroundImage).toBe('')
+      expect(preset.config.ornaments.corner).toBe('')
+      expect(preset.config.ornaments.divider).toBe('')
+      expect(preset.config.ornaments.frame).toBe('')
+      expect(preset.config.decor.patternUrl).toBe('')
+    })
+
+    // Deliberate: only islami-emas carries a real decor.patternUrl, so it is the only
+    // preset where photoFallback: 'ornament' actually resolves rather than degrading —
+    // the other 6 stay 'hide'.
+    it(`preset "${preset.key}" has couple.photoFallback "hide" (no decor.patternUrl to tile)`, () => {
+      expect(preset.config.couple.photoFallback).toBe('hide')
+    })
+  }
+})
+
+describe('preset: islami-emas', () => {
+  const preset = THEME_PRESETS.find((p) => p.key === 'islami-emas')
+
+  it('exists in THEME_PRESETS', () => {
+    expect(preset).toBeTruthy()
+  })
+
+  it('round-trips exactly through normalizeThemeConfig (stricter than normalize-twice idempotency)', () => {
+    expect(normalizeThemeConfig(preset.config)).toEqual(preset.config)
+  })
+
+  it('carries the four real CDN asset URLs verbatim, surviving normalizeThemeConfig unchanged', () => {
+    expect(preset.config.hero.backgroundImage).toBe(
+      'https://cdn.satuundangan.id/themes/islam/hero.jpg',
+    )
+    expect(preset.config.ornaments.corner).toBe(
+      'https://cdn.satuundangan.id/themes/islam/corner.png',
+    )
+    expect(preset.config.ornaments.divider).toBe(
+      'https://cdn.satuundangan.id/themes/islam/divider.png',
+    )
+    expect(preset.config.decor.patternUrl).toBe(
+      'https://cdn.satuundangan.id/themes/islam/pattern.png',
+    )
+
+    const normalized = normalizeThemeConfig(preset.config)
+    expect(normalized.hero.backgroundImage).toBe(
+      'https://cdn.satuundangan.id/themes/islam/hero.jpg',
+    )
+    expect(normalized.ornaments.corner).toBe('https://cdn.satuundangan.id/themes/islam/corner.png')
+    expect(normalized.ornaments.divider).toBe(
+      'https://cdn.satuundangan.id/themes/islam/divider.png',
+    )
+    expect(normalized.decor.patternUrl).toBe('https://cdn.satuundangan.id/themes/islam/pattern.png')
+  })
+
+  // Deliberate, non-default values pinned so a future "cleanup" trips a test instead of
+  // silently regressing the rendered result:
+  // - ornaments.frame: left '' on purpose. The renderer applies `ornaments.frame` as
+  //   `border-image: url(...) 30 stretch` against a fixed 6px `border-width`, squeezing
+  //   30px of source art into 6px — the frame art renders as mush, so it stays unset.
+  // - hero.overlayOpacity: 0.05, not the usual 0.35. The hero art has a cream void inside
+  //   the mihrab arch that a 0.35 overlay turns muddy.
+  // - decor.patternOpacity: 0.12, not the schema default 0.08 (too faint) or 0.20
+  //   (competes with the hero) — 0.10-0.14 is the chosen band.
+  it('pins the deliberate non-default values (frame empty, low hero overlay, mid pattern opacity)', () => {
+    expect(preset.config.ornaments.frame).toBe('')
+    expect(preset.config.hero.overlayOpacity).toBe(0.05)
+    expect(preset.config.decor.patternOpacity).toBe(0.12)
+  })
+
+  // Deliberate: islami-emas is the only preset carrying a real decor.patternUrl, so it is
+  // the only one where photoFallback: 'ornament' resolves to a tiled pattern instead of
+  // silently degrading to 'hide'.
+  it('sets couple.photoFallback to "ornament" (the only preset where it actually resolves)', () => {
+    expect(preset.config.couple.photoFallback).toBe('ornament')
+  })
 })
 
 describe('sanitizeHex', () => {

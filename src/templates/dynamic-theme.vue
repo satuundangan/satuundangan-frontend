@@ -34,6 +34,11 @@
         :style="gateBackgroundStyle"
       >
         <div class="absolute inset-0" :style="gateOverlayStyle"></div>
+        <div
+          class="absolute inset-0 pointer-events-none"
+          data-dt-scrim="gate"
+          :style="heroScrimStyle"
+        ></div>
 
         <img
           v-if="theme.ornaments.corner"
@@ -63,7 +68,7 @@
         <div class="relative z-10 space-y-6 w-full max-w-md">
           <p
             class="text-xs md:text-sm tracking-[0.3em] uppercase"
-            :style="{ color: 'var(--dt-color-accent)' }"
+            :style="{ color: heroInk.eyebrow }"
           >
             The Wedding Of
           </p>
@@ -75,7 +80,7 @@
             >
               {{ data.groomName }}
             </h2>
-            <span class="text-lg italic" :style="{ color: 'var(--dt-color-accent)' }">&amp;</span>
+            <span class="text-lg italic" :style="{ color: heroInk.eyebrow }">&amp;</span>
             <h2
               class="text-4xl md:text-5xl leading-tight"
               :style="{ fontFamily: 'var(--dt-font-script)', color: 'var(--dt-color-primary)' }"
@@ -123,16 +128,22 @@
             :style="heroBgImageStyle"
           ></div>
           <div class="absolute inset-0" :style="gateOverlayStyle"></div>
+          <div
+            class="absolute inset-0 pointer-events-none"
+            data-dt-scrim="hero"
+            :style="heroScrimStyle"
+          ></div>
           <div class="relative z-10 mt-auto mb-16 space-y-4" v-observe>
             <p
               class="text-xs md:text-sm tracking-[0.4em] uppercase"
-              :style="{ color: 'var(--dt-color-accent)' }"
+              :style="{ color: heroInk.eyebrow }"
             >
               We Are Getting Married
             </p>
             <h1
-              class="text-4xl md:text-6xl leading-tight drop-shadow-lg"
-              :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-surface)' }"
+              class="text-4xl md:text-6xl leading-tight"
+              :class="{ 'drop-shadow-lg': heroInk.isDark }"
+              :style="{ fontFamily: 'var(--dt-font-heading)', color: heroInk.heading }"
             >
               {{ data.groomName }} &amp; {{ data.brideName }}
             </h1>
@@ -140,10 +151,15 @@
         </template>
 
         <template v-else-if="theme.hero.variant === 'framed'">
+          <div
+            class="absolute inset-0 pointer-events-none"
+            data-dt-scrim="hero"
+            :style="heroScrimStyle"
+          ></div>
           <div class="relative z-10 space-y-6 max-w-md" v-observe>
             <p
               class="text-xs md:text-sm tracking-[0.4em] uppercase"
-              :style="{ color: 'var(--dt-color-accent)' }"
+              :style="{ color: heroInk.eyebrow }"
             >
               We Are Getting Married
             </p>
@@ -169,27 +185,31 @@
             :style="heroBgImageStyle"
           ></div>
           <div class="absolute inset-0" :style="gateOverlayStyle"></div>
+          <div
+            class="absolute inset-0 pointer-events-none"
+            data-dt-scrim="hero"
+            :style="heroScrimStyle"
+          ></div>
           <div class="relative z-10 space-y-6" v-observe>
             <p
               class="text-xs md:text-sm tracking-[0.4em] uppercase"
-              :style="{ color: 'var(--dt-color-accent)' }"
+              :style="{ color: heroInk.eyebrow }"
             >
               We Are Getting Married
             </p>
             <h1
-              class="text-5xl md:text-7xl leading-tight drop-shadow-2xl"
-              :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-surface)' }"
+              class="text-5xl md:text-7xl leading-tight"
+              :class="{ 'drop-shadow-2xl': heroInk.isDark }"
+              :style="{ fontFamily: 'var(--dt-font-heading)', color: heroInk.heading }"
             >
               {{ data.groomName }} <br />
-              <span class="text-3xl md:text-4xl" :style="{ color: 'var(--dt-color-accent)' }"
-                >&amp;</span
-              >
+              <span class="text-3xl md:text-4xl" :style="{ color: heroInk.eyebrow }">&amp;</span>
               <br />
               {{ data.brideName }}
             </h1>
             <p
               class="text-base md:text-lg font-light tracking-wide"
-              :style="{ color: 'var(--dt-color-surface)' }"
+              :style="{ color: heroInk.heading }"
             >
               {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
             </p>
@@ -212,7 +232,7 @@
                 </div>
                 <div
                   class="text-[8px] md:text-[10px] uppercase"
-                  :style="{ color: 'var(--dt-color-accent)' }"
+                  :style="{ color: 'var(--dt-color-text-muted)' }"
                 >
                   {{ label }}
                 </div>
@@ -266,16 +286,34 @@
           </h2>
 
           <div class="grid md:grid-cols-2 gap-12 items-center">
-            <div class="relative" v-observe>
+            <div
+              v-for="p in coupleEntries"
+              :key="p.key"
+              class="relative"
+              :class="p.offsetClass"
+              v-observe
+            >
               <div
+                v-if="p.photo.mode !== 'hide'"
                 class="relative overflow-hidden shadow-2xl rounded-[var(--dt-radius)]"
                 :style="coupleFrameStyle"
               >
                 <img
-                  :src="data.groomPhotoUrl || data.photoCoupleUrl || ''"
+                  v-if="p.photo.mode === 'photo'"
+                  :src="p.photo.src"
+                  :data-testid="`couple-photo-${p.key}`"
                   class="w-full h-[380px] md:h-[460px] object-cover"
                   alt=""
                 />
+                <div
+                  v-else
+                  :data-testid="`couple-ornament-${p.key}`"
+                  class="w-full h-[380px] md:h-[460px]"
+                  :style="{
+                    backgroundImage: `url('${p.photo.patternUrl}')`,
+                    backgroundRepeat: 'repeat',
+                  }"
+                ></div>
                 <div
                   class="absolute bottom-0 inset-x-0 p-6 md:p-8 text-center"
                   :style="{
@@ -289,50 +327,29 @@
                       color: 'var(--dt-color-surface)',
                     }"
                   >
-                    {{ data.groomName }}
+                    {{ p.name }}
                   </h3>
                   <p
                     class="text-xs md:text-sm mt-2"
                     :style="{ color: 'var(--dt-color-surface)', opacity: 0.8 }"
                   >
-                    Putra dari {{ data.parents?.groomParents }}
+                    {{ p.parentsLabel }}
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div class="relative mt-8 md:mt-16" v-observe>
-              <div
-                class="relative overflow-hidden shadow-2xl rounded-[var(--dt-radius)]"
-                :style="coupleFrameStyle"
-              >
-                <img
-                  :src="data.bridePhotoUrl || data.photoCoupleUrl || ''"
-                  class="w-full h-[380px] md:h-[460px] object-cover"
-                  alt=""
-                />
-                <div
-                  class="absolute bottom-0 inset-x-0 p-6 md:p-8 text-center"
+              <div v-else :data-testid="`couple-plain-${p.key}`" class="p-6 md:p-8 text-center">
+                <h3
+                  class="text-2xl md:text-3xl"
                   :style="{
-                    background: 'linear-gradient(to top, var(--dt-color-text), transparent)',
+                    fontFamily: 'var(--dt-font-script)',
+                    color: 'var(--dt-color-text)',
                   }"
                 >
-                  <h3
-                    class="text-2xl md:text-3xl"
-                    :style="{
-                      fontFamily: 'var(--dt-font-script)',
-                      color: 'var(--dt-color-surface)',
-                    }"
-                  >
-                    {{ data.brideName }}
-                  </h3>
-                  <p
-                    class="text-xs md:text-sm mt-2"
-                    :style="{ color: 'var(--dt-color-surface)', opacity: 0.8 }"
-                  >
-                    Putri dari {{ data.parents?.brideParents }}
-                  </p>
-                </div>
+                  {{ p.name }}
+                </h3>
+                <p class="text-xs md:text-sm mt-2" :style="{ color: 'var(--dt-color-text-muted)' }">
+                  {{ p.parentsLabel }}
+                </p>
               </div>
             </div>
           </div>
@@ -784,6 +801,8 @@ import {
   themeCssVars,
   googleFontsUrl,
   sectionStyle,
+  resolveCouplePhoto,
+  resolveHeroInk,
 } from '@/utils/themeConfig'
 import { applyThemeFonts, removeThemeFonts } from '@/utils/themeFonts'
 
@@ -826,6 +845,9 @@ const gateOverlayStyle = computed(() => ({
   opacity: theme.value.hero.overlayOpacity,
 }))
 
+const heroInk = computed(() => resolveHeroInk(theme.value))
+const heroScrimStyle = computed(() => ({ backgroundImage: heroInk.value.scrim }))
+
 const heroSectionStyle = computed(() => {
   if (theme.value.hero.variant !== 'classic') return {}
   return { display: 'flex' }
@@ -856,6 +878,23 @@ const coupleFrameStyle = computed(() => {
     borderImage: `url("${theme.value.ornaments.frame}") 30 stretch`,
   }
 })
+
+const coupleEntries = computed(() => [
+  {
+    key: 'groom',
+    name: data.value.groomName,
+    parentsLabel: 'Putra dari ' + (data.value.parents?.groomParents ?? ''),
+    offsetClass: '',
+    photo: resolveCouplePhoto(theme.value, data.value.groomPhotoUrl || data.value.photoCoupleUrl),
+  },
+  {
+    key: 'bride',
+    name: data.value.brideName,
+    parentsLabel: 'Putri dari ' + (data.value.parents?.brideParents ?? ''),
+    offsetClass: 'mt-8 md:mt-16',
+    photo: resolveCouplePhoto(theme.value, data.value.bridePhotoUrl || data.value.photoCoupleUrl),
+  },
+])
 
 const rsvpInputStyle = computed(() => ({
   backgroundColor: theme.value.colors.background,
@@ -1053,7 +1092,11 @@ function addToCalendar() {
 
 // --- Google Fonts injection — reactive so a font change in the theme builder
 // re-fetches the stylesheet instead of staying stuck at mount-time ---
-watch(() => googleFontsUrl(theme.value), () => applyThemeFonts(theme.value), { immediate: true })
+watch(
+  () => googleFontsUrl(theme.value),
+  () => applyThemeFonts(theme.value),
+  { immediate: true },
+)
 
 onMounted(() => {
   startCountdown()

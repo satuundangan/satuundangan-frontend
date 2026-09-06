@@ -19,6 +19,8 @@ export const THEME_SECTION_KEYS = [
 
 const HERO_VARIANTS = ['classic', 'full-photo', 'framed']
 
+export const COUPLE_PHOTO_FALLBACKS = ['hide', 'ornament']
+
 const GENERIC_FAMILIES = new Set([
   'serif',
   'sans-serif',
@@ -62,6 +64,7 @@ export const THEME_DEFAULTS = {
     overlayColor: '#000000',
     overlayOpacity: 0.35,
   },
+  couple: { photoFallback: 'hide' },
   sections: {},
   ornaments: { corner: '', divider: '', frame: '' },
   decor: { borderRadius: '1.5rem', patternUrl: '', patternOpacity: 0.08 },
@@ -148,6 +151,16 @@ export function normalizeThemeConfig(raw) {
 
   if (!HERO_VARIANTS.includes(merged.hero.variant)) {
     merged.hero.variant = 'classic'
+  }
+
+  // `couple` may arrive as null/string/array via stored JSON or a partial override —
+  // re-seed it as a plain object BEFORE reading `photoFallback`, or the property
+  // access below would throw on `couple: null`.
+  if (!isPlainObject(merged.couple)) {
+    merged.couple = deepClone(THEME_DEFAULTS.couple)
+  }
+  if (!COUPLE_PHOTO_FALLBACKS.includes(merged.couple.photoFallback)) {
+    merged.couple.photoFallback = 'hide'
   }
 
   merged.hero.overlayOpacity = clampOpacity(
@@ -240,5 +253,145 @@ export function sectionStyle(config, key) {
 
   return {
     backgroundColor: background.value || cfg.colors?.surface || THEME_DEFAULTS.colors.surface,
+  }
+}
+
+/**
+ * Decide how one couple slot (groom or bride) should render. Pure, never throws.
+ * @param {object|string|null} config  raw or normalized designConfig
+ * @param {string} photoUrl            already-resolved url, e.g. groomPhotoUrl || photoCoupleUrl
+ * @returns {{ mode: 'photo'|'ornament'|'hide', src: string, patternUrl: string }}
+ */
+export function resolveCouplePhoto(config, photoUrl) {
+  const cfg = isPlainObject(config) ? config : normalizeThemeConfig(config)
+  const trimmedPhoto = typeof photoUrl === 'string' ? photoUrl.trim() : ''
+
+  if (trimmedPhoto) {
+    return { mode: 'photo', src: trimmedPhoto, patternUrl: '' }
+  }
+
+  const fallback = COUPLE_PHOTO_FALLBACKS.includes(cfg.couple?.photoFallback)
+    ? cfg.couple.photoFallback
+    : 'hide'
+
+  const trimmedPattern =
+    typeof cfg.decor?.patternUrl === 'string' ? cfg.decor.patternUrl.trim() : ''
+
+  if (fallback === 'ornament' && trimmedPattern) {
+    return { mode: 'ornament', src: '', patternUrl: trimmedPattern }
+  }
+
+  return { mode: 'hide', src: '', patternUrl: '' }
+}
+
+// --- Hero backdrop luminance helpers ---
+// Pure, dependency-free (no Vue, no DOM, no window) so they run under jsdom/node
+// exactly like the rest of this file. Consumed by resolveHeroInk() below and by
+// `src/templates/dynamic-theme.vue`'s `heroInk` computed.
+
+const HEX_RE = /^([0-9a-f]{3}|[0-9a-f]{6})$/i
+
+/**
+ * Parse a 3- or 6-digit hex color string (with or without a leading '#') into an
+ * { r, g, b } object. Total function: any non-string or malformed input returns null.
+ */
+export function hexToRgb(hex) {
+  if (typeof hex !== 'string') return null
+  const trimmed = hex.trim().replace(/^#/, '')
+  if (!HEX_RE.test(trimmed)) return null
+
+  const full =
+    trimmed.length === 3
+      ? trimmed
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : trimmed
+
+  return {
+    r: parseInt(full.slice(0, 2), 16),
+    g: parseInt(full.slice(2, 4), 16),
+    b: parseInt(full.slice(4, 6), 16),
+  }
+}
+
+/**
+ * WCAG 2.x relative luminance of an { r, g, b } color, in [0, 1]. Total function:
+ * malformed input (not a plain object with three finite numeric channels) returns 0.
+ */
+export function relativeLuminance(rgb) {
+  if (!isPlainObject(rgb)) return 0
+  const { r, g, b } = rgb
+  if (![r, g, b].every((v) => typeof v === 'number' && Number.isFinite(v))) return 0
+
+  const channel = (v) => {
+    const c = v / 255
+    return c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4
+  }
+
+  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b)
+}
+
+/**
+ * Blend an overlay color at a given alpha over a background color, both as hex
+ * strings, returning the resulting { r, g, b }. Total function: an unparsable
+ * overlay hex forces alpha to 0 (returns the background unchanged); an unparsable
+ * background hex falls back to THEME_DEFAULTS.colors.background.
+ */
+export function blendOverBackground(overlayHex, alpha, backgroundHex) {
+  const bg = hexToRgb(backgroundHex) ?? hexToRgb(THEME_DEFAULTS.colors.background)
+  const fg = hexToRgb(overlayHex)
+  const effectiveAlpha = fg ? Math.min(1, Math.max(0, typeof alpha === 'number' ? alpha : 0)) : 0
+  const safeFg = fg ?? { r: 0, g: 0, b: 0 }
+
+  return {
+    r: Math.round(safeFg.r * effectiveAlpha + bg.r * (1 - effectiveAlpha)),
+    g: Math.round(safeFg.g * effectiveAlpha + bg.g * (1 - effectiveAlpha)),
+    b: Math.round(safeFg.b * effectiveAlpha + bg.b * (1 - effectiveAlpha)),
+  }
+}
+
+// We deliberately use a mid-luminance 0.5 cut rather than the WCAG white-vs-black
+// crossover (~0.179) because the blend ignores any `hero.backgroundImage` photo
+// sitting on top. A conservative 0.5 flips to dark ink ONLY when the backdrop is
+// unambiguously light — which keeps all six 30-50%-black-overlay presets on their
+// current light-ink look and flips only `islami-emas` (blended luminance ~0.83).
+// Do not "tighten" this to 0.179 without re-reviewing every preset visually.
+export const HERO_DARK_LUMINANCE_THRESHOLD = 0.5
+
+/**
+ * Decide the hero/gate ink treatment (light-ink-on-dark-backdrop vs.
+ * dark-ink-on-light-backdrop) from a config's blended hero overlay + background
+ * luminance. Accepts raw or normalized config, never throws.
+ * @returns {{ isDark: boolean, heading: string, eyebrow: string, scrim: string }}
+ */
+export function resolveHeroInk(config) {
+  const cfg = isPlainObject(config) ? config : normalizeThemeConfig(config)
+  const bgHex = cfg.colors?.background ?? THEME_DEFAULTS.colors.background
+  const blended = blendOverBackground(cfg.hero?.overlayColor, cfg.hero?.overlayOpacity, bgHex)
+  const isDark = relativeLuminance(blended) < HERO_DARK_LUMINANCE_THRESHOLD
+
+  const scrimRgb = isDark
+    ? { r: 0, g: 0, b: 0 }
+    : (hexToRgb(bgHex) ?? hexToRgb(THEME_DEFAULTS.colors.background))
+  const { r, g, b } = scrimRgb
+  const stops = isDark ? [0.55, 0.3, 0] : [0.9, 0.65, 0]
+  const scrim =
+    `radial-gradient(ellipse 120% 80% at 50% 50%, ` +
+    `rgba(${r}, ${g}, ${b}, ${stops[0]}) 0%, ` +
+    `rgba(${r}, ${g}, ${b}, ${stops[1]}) 45%, ` +
+    `rgba(${r}, ${g}, ${b}, ${stops[2]}) 78%)`
+
+  return {
+    isDark,
+    // On a light backdrop, colors.textMuted beats colors.primary/accent. For
+    // islami-emas, textMuted #7A6C52 on the cream #FAF6EC backdrop is ~4.75:1
+    // (passes WCAG AA for normal text — the eyebrow is text-xs uppercase), while
+    // primary/accent #BD9B2D gold is only ~2.5:1 and would still fail. Using
+    // textMuted also keeps the eyebrow visually subordinate to the heading, which
+    // is the original design intent, and matches the countdown-label treatment.
+    heading: isDark ? 'var(--dt-color-surface)' : 'var(--dt-color-text)',
+    eyebrow: isDark ? 'var(--dt-color-accent)' : 'var(--dt-color-text-muted)',
+    scrim,
   }
 }

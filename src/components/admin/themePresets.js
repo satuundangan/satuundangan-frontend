@@ -2,8 +2,18 @@
 // no DOM, no async. Each preset is a complete, schema-valid config (colors/fonts/hero/
 // sections/ornaments/decor) that round-trips through `normalizeThemeConfig` unchanged.
 //
-// No image URLs: no assets exist for these presets yet, so `hero.backgroundImage`,
-// every `ornaments.*`, `decor.patternUrl` and every section `background.url` stay ''.
+// Asset state: the six original presets remain asset-free — `hero.backgroundImage`,
+// every `ornaments.*` and `decor.patternUrl` stay '' — while `islami-emas` carries real
+// Cloudflare R2 CDN URLs on `hero.backgroundImage`, `ornaments.corner`,
+// `ornaments.divider` and `decor.patternUrl`. No preset — asset-free or not — uses an
+// image-type section background; every section `background` is always `{ type: 'color' }`.
+// `ornaments.frame` is intentionally left '' on every preset, including `islami-emas`,
+// because the renderer applies it as `border-image: url(...) 30 stretch` against a 6px
+// `border-width`, which squeezes 30px of source art into 6px and renders as mush.
+// Every preset explicitly sets `couple.photoFallback`: 'hide' on the six asset-free
+// presets, and 'ornament' only on `islami-emas` — it is the only preset carrying a real
+// `decor.patternUrl`, so it is the only one where 'ornament' resolves to a tiled pattern
+// instead of silently degrading back to 'hide'.
 
 import { THEME_SECTION_KEYS } from '@/utils/themeConfig'
 import { FONT_CATALOGUE } from './themeBuilderOptions'
@@ -65,6 +75,7 @@ export const THEME_PRESETS = [
         overlayColor: '#000000',
         overlayOpacity: 0.4,
       },
+      couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fdf6ec', '#f7f1e6'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: { borderRadius: '0.5rem', patternUrl: '', patternOpacity: 0.08 },
@@ -96,6 +107,7 @@ export const THEME_PRESETS = [
         overlayColor: '#000000',
         overlayOpacity: 0.35,
       },
+      couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbf7ef', '#f6efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: { borderRadius: '1rem', patternUrl: '', patternOpacity: 0.08 },
@@ -127,6 +139,7 @@ export const THEME_PRESETS = [
         overlayColor: '#000000',
         overlayOpacity: 0.4,
       },
+      couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fffdf9', '#faf6ef'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: { borderRadius: '0.5rem', patternUrl: '', patternOpacity: 0.08 },
@@ -158,6 +171,7 @@ export const THEME_PRESETS = [
         overlayColor: '#000000',
         overlayOpacity: 0.35,
       },
+      couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf5', '#f5f3ec'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: { borderRadius: '1.5rem', patternUrl: '', patternOpacity: 0.08 },
@@ -189,6 +203,7 @@ export const THEME_PRESETS = [
         overlayColor: '#000000',
         overlayOpacity: 0.3,
       },
+      couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#faf8f3', '#f4f1ea'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: { borderRadius: '2rem', patternUrl: '', patternOpacity: 0.06 },
@@ -220,9 +235,50 @@ export const THEME_PRESETS = [
         overlayColor: '#000000',
         overlayOpacity: 0.5,
       },
+      couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#0f172a', '#1e293b'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: { borderRadius: '1rem', patternUrl: '', patternOpacity: 0.08 },
+    },
+  },
+  {
+    key: 'islami-emas',
+    label: 'Islami Emas',
+    description: 'Emas dan krem lembut dengan motif geometris mihrab islami.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#BD9B2D',
+        secondary: '#CBA76C',
+        accent: '#BD9B2D',
+        background: '#FAF6EC',
+        surface: '#FEFBF4',
+        text: '#2E2517',
+        textMuted: '#7A6C52',
+      },
+      fonts: {
+        heading: font('heading', 'Marcellus'),
+        script: font('script', 'Italianno'),
+        body: font('body', 'Raleway'),
+      },
+      hero: {
+        variant: 'classic',
+        backgroundImage: 'https://cdn.satuundangan.id/themes/islam/hero.jpg',
+        overlayColor: '#000000',
+        overlayOpacity: 0.05,
+      },
+      couple: { photoFallback: 'ornament' },
+      sections: sectionsFrom('#FEFBF4', '#FAF6EC'),
+      ornaments: {
+        corner: 'https://cdn.satuundangan.id/themes/islam/corner.png',
+        divider: 'https://cdn.satuundangan.id/themes/islam/divider.png',
+        frame: '',
+      },
+      decor: {
+        borderRadius: '0.5rem',
+        patternUrl: 'https://cdn.satuundangan.id/themes/islam/pattern.png',
+        patternOpacity: 0.12,
+      },
     },
   },
 ]

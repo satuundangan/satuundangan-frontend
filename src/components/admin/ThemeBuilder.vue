@@ -122,7 +122,9 @@
               v-model="config.hero.variant"
               class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
             >
-              <option v-for="v in HERO_VARIANTS" :key="v.value" :value="v.value">{{ v.label }}</option>
+              <option v-for="v in HERO_VARIANTS" :key="v.value" :value="v.value">
+                {{ v.label }}
+              </option>
             </select>
           </div>
           <ImageUrlField v-model="config.hero.backgroundImage" label="Gambar Latar Belakang" />
@@ -156,6 +158,27 @@
               class="mt-1 w-full"
             />
           </div>
+        </div>
+      </div>
+
+      <!-- Mempelai -->
+      <div class="rounded-lg border border-slate-200 p-4" data-testid="couple-group">
+        <h3 class="mb-3 text-sm font-semibold text-slate-700">Mempelai</h3>
+        <div class="space-y-1">
+          <label class="text-xs font-medium text-slate-500">Foto Mempelai Kosong</label>
+          <select
+            v-model="config.couple.photoFallback"
+            data-testid="couple-photo-fallback"
+            class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+          >
+            <option v-for="o in COUPLE_PHOTO_FALLBACK_OPTIONS" :key="o.value" :value="o.value">
+              {{ o.label }}
+            </option>
+          </select>
+          <p class="text-[10px] text-slate-400">
+            Berlaku hanya jika foto mempelai belum diisi. Pilihan "ornamen" butuh URL Pola (Pattern)
+            di bagian Dekorasi — jika kosong, otomatis kembali ke sembunyikan.
+          </p>
         </div>
       </div>
 
@@ -344,6 +367,7 @@ import {
   HERO_VARIANTS,
   BACKGROUND_TYPES,
   SECTION_LABELS,
+  COUPLE_PHOTO_FALLBACK_OPTIONS,
   applyBackgroundType,
   buildPreviewMessage,
   sanitizeHex,

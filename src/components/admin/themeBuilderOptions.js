@@ -2,7 +2,7 @@
 // Consumed by `ThemeBuilder.vue`. Font catalogues, section labels, and background-type
 // switching all live here so they stay unit-testable without mounting a component.
 
-import { THEME_SECTION_KEYS } from '@/utils/themeConfig'
+import { THEME_SECTION_KEYS, COUPLE_PHOTO_FALLBACKS } from '@/utils/themeConfig'
 import { demoData } from '@/api/demoData'
 
 export const HEADING_FONTS = [
@@ -70,6 +70,20 @@ export const HERO_VARIANTS = [
   { value: 'full-photo', label: 'Foto Penuh' },
   { value: 'framed', label: 'Berbingkai' },
 ]
+
+// Labels keyed by COUPLE_PHOTO_FALLBACKS value (not a separate literal list) so the
+// builder's option set structurally can't drift from the enum in themeConfig.js — a new
+// enum value with no label here renders `undefined`, tripping a test instead of silently
+// diverging.
+const COUPLE_PHOTO_FALLBACK_LABELS = {
+  hide: 'Sembunyikan (tampilkan nama saja)',
+  ornament: 'Isi dengan pola ornamen',
+}
+
+export const COUPLE_PHOTO_FALLBACK_OPTIONS = COUPLE_PHOTO_FALLBACKS.map((value) => ({
+  value,
+  label: COUPLE_PHOTO_FALLBACK_LABELS[value],
+}))
 
 export const BACKGROUND_TYPES = ['color', 'gradient', 'image']
 

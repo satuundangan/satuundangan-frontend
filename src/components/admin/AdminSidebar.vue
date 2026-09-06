@@ -144,6 +144,7 @@ const navItems = [
   { label: 'Audio & Musik', to: '/admin/audio', icon: 'pi-volume-up' },
   { label: 'Bank & Pembayaran', to: '/admin/banks', icon: 'pi-credit-card' },
   { label: 'Promo Code', to: '/admin/promo-codes', icon: 'pi-percentage' },
+  { label: 'Artikel & Blog', to: '/admin/articles', icon: 'pi-file-edit' },
 ];
 
 // Function to determine if a link is active

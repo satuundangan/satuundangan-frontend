@@ -94,5 +94,23 @@ export const deleteAdminPromoCode = (id) =>
     method: 'DELETE',
   })
 
+// Articles
+export const fetchAdminArticles = (params) => apiFetch(withParams('/admin/articles', params))
+export const fetchAdminArticle = (id) => apiFetch(`/admin/articles/${id}`)
+export const createAdminArticle = (payload) =>
+  apiFetch('/admin/articles', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+export const updateAdminArticle = (id, payload) =>
+  apiFetch(`/admin/articles/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+export const deleteAdminArticle = (id) =>
+  apiFetch(`/admin/articles/${id}`, {
+    method: 'DELETE',
+  })
+
 export const fetchAdminHealth = () => apiFetch('/admin/health')
 export const fetchAdminStats = () => apiFetch('/admin/stats')
