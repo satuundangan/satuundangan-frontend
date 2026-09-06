@@ -235,6 +235,24 @@ const router = createRouter({
       redirect: '/admin',
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Antrean Penarikan' },
     },
+    {
+      path: '/admin/articles',
+      name: 'admin-articles',
+      component: () => import('@/views/admin/AdminArticles.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Artikel & Blog' },
+    },
+    {
+      path: '/admin/articles/create',
+      name: 'admin-article-create',
+      component: () => import('@/views/admin/AdminArticleEditor.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Tulis Artikel' },
+    },
+    {
+      path: '/admin/articles/:id/edit',
+      name: 'admin-article-edit',
+      component: () => import('@/views/admin/AdminArticleEditor.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Edit Artikel' },
+    },
     { path: '/guests', name: 'Guests', component: GuestsView },
     {
       path: '/demo/:templateSlug',
