@@ -164,6 +164,17 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Setup Authenticator' },
     },
     {
+      path: '/blog',
+      name: 'blog-list',
+      component: () => import('@/views/BlogList.vue'),
+      meta: { title: 'Blog & Artikel' },
+    },
+    {
+      path: '/blog/:slug',
+      name: 'blog-detail',
+      component: () => import('@/views/BlogDetail.vue'),
+    },
+    {
       path: '/admin',
       name: 'admin-dashboard',
       component: AdminDashboard,
