@@ -1,5 +1,5 @@
 /**
- * Generates public/og-image.jpg — the 1200x630 social preview card that index.html and
+ * Generates public/og-image-v1.jpg — the 1200x630 social preview card that index.html and
  * src/seo/seoRoutes.js (DEFAULT_OG_IMAGE) have always pointed at but that never existed.
  *
  * Usage: npm run generate-og
@@ -15,6 +15,11 @@ import path from 'node:path'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.resolve(__dirname, '..')
+
+// Bump this filename whenever the card's design or copy changes: both the CDN and social
+// scrapers key their caches on the URL, so reusing one serves the old image indefinitely.
+// Keep it in sync with DEFAULT_OG_IMAGE in src/seo/seoRoutes.js and the tags in index.html.
+const OG_IMAGE_FILE = 'og-image-v1.jpg'
 
 const WIDTH = 1200
 const HEIGHT = 630
@@ -176,7 +181,7 @@ async function main() {
   const buffer = await page.screenshot({ type: 'jpeg', quality: 90 })
   await browser.close()
 
-  const out = path.join(root, 'public/og-image.jpg')
+  const out = path.join(root, `public/${OG_IMAGE_FILE}`)
   writeFileSync(out, buffer)
   console.log(`Wrote ${out} (${WIDTH}x${HEIGHT}, ${(buffer.length / 1024).toFixed(1)} KB)`)
 }
