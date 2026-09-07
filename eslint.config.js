@@ -28,7 +28,20 @@ export default defineConfig([
   {
     files: ['**/*.{js,mjs,jsx,vue}'],
     rules: {
-      'no-unused-vars': ['error', { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
+      'no-unused-vars': [
+        'error',
+        { args: 'all', argsIgnorePattern: '^_', varsIgnorePattern: '^_' },
+      ],
+    },
+  },
+  {
+    // Cloudflare Pages Functions run on workerd, which exposes runtime globals not present in
+    // Node or the browser (e.g. HTMLRewriter for streaming HTML transforms).
+    files: ['functions/**/*.js'],
+    languageOptions: {
+      globals: {
+        HTMLRewriter: 'readonly',
+      },
     },
   },
   skipFormatting,

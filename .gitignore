@@ -36,3 +36,6 @@ qodana
 
 # Generated template covers (dry-run output)
 .cover-output/
+
+# Wrangler local dev cache (npx wrangler pages dev)
+.wrangler/
