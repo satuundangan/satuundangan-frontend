@@ -10,7 +10,11 @@ export const CANONICAL_ORIGIN = 'https://www.satuundangan.id'
 // Referenced as the default og:image everywhere in this module. The asset itself does not exist
 // yet under satuundangan-frontend/public/ — see the SEO plan follow-up note. Keeping the same
 // value `index.html` already shipped rather than inventing a new one here.
-export const DEFAULT_OG_IMAGE = 'https://www.satuundangan.id/og-image.jpg'
+// Version-suffixed on purpose: social scrapers cache a preview against its URL for a long
+// time, and the CDN caches the path itself. Regenerating the card means bumping this filename
+// (and scripts/generate-og-image.js's OG_IMAGE_FILE) so crawlers refetch instead of serving
+// the old card.
+export const DEFAULT_OG_IMAGE = 'https://www.satuundangan.id/og-image-v1.jpg'
 
 // Static, non-blog public routes. `canonicalPath` is the route the SPA actually renders for that
 // key — the two `redirect` entries (`/syarat-ketentuan`, `/kebijakan-privasi`) canonical to their
