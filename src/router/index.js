@@ -24,6 +24,7 @@ import AdminBanks from '@/views/admin/AdminBanks.vue'
 import AdminSections from '@/views/admin/AdminSections.vue'
 import AdminCategories from '@/views/admin/AdminCategories.vue'
 import AdminPromoCodes from '@/views/admin/AdminPromoCodes.vue'
+import PantauAnakKrakatau from '@/views/PantauAnakKrakatau.vue'
 
 // Host-based routing: on a custom subdomain (e.g. rina-budi.satuundangan.id),
 // the root path serves that invitation instead of the marketing homepage.
@@ -133,6 +134,12 @@ const router = createRouter({
       name: 'tentang-kami',
       component: () => import('@/views/TentangKamiView.vue'),
       meta: { title: 'Tentang Kami' },
+    },
+    {
+      path: '/pantau-anak-krakatau',
+      name: 'pantau-anak-krakatau',
+      component: PantauAnakKrakatau,
+      meta: { title: 'Pantau Anak Krakatau' },
     },
     {
       path: '/affiliate/register',
