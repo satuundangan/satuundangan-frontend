@@ -446,7 +446,7 @@
                   </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="flex flex-col gap-6">
                   <div class="space-y-4">
                     <label class="form-label">Pilih Lagu</label>
                     <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
@@ -504,10 +504,10 @@
                     </div>
                   </div>
 
-                  <!-- Audio preview player for preset music -->
-                  <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col justify-center bg-gray-50/50 p-4 rounded-2xl border border-gray-100 animate-fade-in">
+                  <!-- Audio preview player for preset music — full width row -->
+                  <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col bg-gray-50/50 p-4 rounded-2xl border border-gray-100 animate-fade-in">
                     <span class="text-[9px] font-bold text-mocha uppercase tracking-widest mb-2 block">Dengarkan Lagu:</span>
-                    <audio :src="formData.music" controls class="h-9 w-full rounded-full shadow-inner"></audio>
+                    <audio :src="formData.music" controls class="w-full rounded-full shadow-inner"></audio>
                   </div>
                 </div>
               </div>
