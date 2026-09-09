@@ -484,7 +484,9 @@ import {
 const router = useRouter()
 const route = useRoute()
 const showModal = ref(false)
-const selectedPlan = ref(null)
+// Premium is the default creation path because it is the checkout default
+// and includes the gallery feature. Users can still explicitly choose Basic.
+const selectedPlan = ref('premium')
 
 // Pricing tier chosen on homepage. Persisted in goToCreate so it carries into the studio + checkout.
 function choosePlan(planId) {
@@ -696,7 +698,7 @@ function goToCreate() {
     localStorage.removeItem('selectedSections')
     localStorage.removeItem('finalPayload')
     localStorage.setItem('selectedTemplate', JSON.stringify(tpl))
-    localStorage.setItem('selectedPackage', selectedPlan.value || 'basic')
+    localStorage.setItem('selectedPackage', selectedPlan.value || 'premium')
     showModal.value = false;
     router.push('/create')
   }

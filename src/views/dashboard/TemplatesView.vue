@@ -162,6 +162,8 @@ function formatPrice(price) {
 
 function goToCreate(item) {
   localStorage.setItem('selectedTemplate', JSON.stringify(item))
+  // Keep direct template selection consistent with the normal checkout path.
+  localStorage.setItem('selectedPackage', 'premium')
   localStorage.removeItem('selectedSections')
   localStorage.removeItem('finalPayload')
   router.push('/create')
