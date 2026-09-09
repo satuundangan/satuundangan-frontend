@@ -1071,7 +1071,9 @@ const formData = ref({
   healthProtocol: true,
   footerText: '',
   subdomain: '',
-  package: 'basic',
+  // Match the checkout default so Premium features are available while editing.
+  // Explicitly selected Basic is still carried over from the pricing flow.
+  package: 'premium',
   likes: true,
   quoteType: 'default',
   quote: '',
