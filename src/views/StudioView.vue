@@ -281,7 +281,7 @@
               </div>
 
               <!-- Multi Event Fields -->
-              <div v-if="formData.isSingleEvent === false" class="grid md:grid-cols-2 gap-6">
+              <div v-if="formData.isSingleEvent === false" class="flex flex-col gap-6">
                 <!-- Akad Nikah Card -->
                 <div class="bg-white p-5 rounded-2xl border-2 border-gray-50 shadow-sm relative group hover:border-mocha/20 transition-all">
                   <div class="absolute -top-3 left-5 px-3 py-1 bg-sage text-white text-[9px] font-bold uppercase tracking-widest rounded-full shadow-md">
@@ -338,18 +338,38 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   
                   <!-- photoCouple -->
-                  <div data-field="photoCouple">
+                  <div data-field="photoCouple" class="md:col-span-2">
                     <label class="form-label">Foto Sampul Utama / Cover (Hero) <span class="text-red-500">*</span></label>
-                    <div class="flex gap-4 items-end">
-                      <label class="w-28 h-28 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group">
-                        <input type="file" accept="image/*" @change="handleCouplePhotoUpload" class="hidden" id="couplePhoto" />
-                        <i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha transition-colors"></i>
-                      </label>
-                      <div v-if="formData.photoCouple" class="relative group">
-                        <img :src="formData.photoCouple" class="w-28 h-36 object-cover rounded-2xl shadow-md border-2 border-white" />
-                        <button @click="formData.photoCouple = ''; formData.photoCoupleFile = null" class="absolute -top-2 -right-2 w-5.5 h-5.5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg">×</button>
+
+                    <!-- State: Belum ada foto -->
+                    <label v-if="!formData.photoCouple" class="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group transition-all">
+                      <input type="file" accept="image/*" @change="handleCouplePhotoUpload" class="hidden" id="couplePhoto" />
+                      <i class="fa-solid fa-image text-3xl text-gray-300 group-hover:text-mocha transition-colors mb-2"></i>
+                      <span class="text-xs text-gray-400 group-hover:text-mocha font-semibold">Klik untuk pilih foto sampul</span>
+                    </label>
+
+                    <!-- State: Sudah ada foto — preview natural ratio + tombol edit/hapus -->
+                    <div v-else class="relative group rounded-2xl overflow-hidden shadow-md border-2 border-gray-100 bg-gray-50">
+                      <img :src="formData.photoCouple" class="w-full max-h-72 object-contain rounded-2xl" />
+
+                      <!-- Overlay actions on hover -->
+                      <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100 transition-all rounded-2xl">
+                        <!-- Edit / re-crop -->
+                        <button type="button" @click="reopenCropperForCouple()" class="flex items-center gap-1.5 px-3 py-2 bg-white text-dark rounded-xl text-xs font-bold shadow hover:bg-mocha hover:text-white transition-all">
+                          <i class="fa-solid fa-crop-simple"></i> Edit Crop
+                        </button>
+                        <!-- Ganti foto -->
+                        <label class="flex items-center gap-1.5 px-3 py-2 bg-white text-dark rounded-xl text-xs font-bold shadow hover:bg-mocha hover:text-white transition-all cursor-pointer">
+                          <input type="file" accept="image/*" @change="handleCouplePhotoUpload" class="hidden" />
+                          <i class="fa-solid fa-arrow-up-from-bracket"></i> Ganti Foto
+                        </label>
+                        <!-- Hapus -->
+                        <button type="button" @click="formData.photoCouple = ''; formData.photoCoupleFile = null" class="flex items-center gap-1.5 px-3 py-2 bg-red-500 text-white rounded-xl text-xs font-bold shadow hover:bg-red-600 transition-all">
+                          <i class="fa-solid fa-trash"></i> Hapus
+                        </button>
                       </div>
                     </div>
+
                     <p v-if="validationErrors.photoCouple" class="form-error mt-2">{{ validationErrors.photoCouple }}</p>
                   </div>
 
@@ -1746,8 +1766,13 @@ async function handleCouplePhotoUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = async () => { 
       const optimizedImage = await downscaleImage(reader.result)
-      cropper.value = { show: true, image: optimizedImage, aspectRatio: 1, targetField: 'couple' }
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: null, targetField: 'couple' }
    }; reader.readAsDataURL(file); e.target.value = ''
+}
+
+function reopenCropperForCouple() {
+   if (!formData.value.photoCouple) return
+   cropper.value = { show: true, image: formData.value.photoCouple, aspectRatio: null, targetField: 'couple' }
 }
 
 function onCropComplete({ blob, preview }) {
