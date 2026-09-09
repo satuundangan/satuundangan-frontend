@@ -679,6 +679,126 @@
         </div>
       </section>
 
+      <!-- TURUT MENGUNDANG / EXTENDED FAMILY -->
+      <section
+        v-if="isSectionEnabled('extended-family') && extendedFamilyList.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('extended-family')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-10"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          Turut Mengundang
+        </h2>
+        <div class="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4" v-observe>
+          <div
+            v-for="(person, idx) in extendedFamilyList"
+            :key="'ef' + idx"
+            class="py-3 px-5 rounded-[var(--dt-radius)] border text-sm"
+            :style="{ backgroundColor: 'var(--dt-color-surface)', borderColor: 'var(--dt-color-secondary)', color: 'var(--dt-color-text)' }"
+          >
+            {{ person }}
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU MAKANAN -->
+      <section
+        v-if="isSectionEnabled('menu') && data.menu?.items?.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('menu')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-10"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          {{ data.menu.title || 'Menu Hidangan' }}
+        </h2>
+        <div class="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4" v-observe>
+          <div
+            v-for="(item, idx) in data.menu.items"
+            :key="'food' + idx"
+            class="py-4 px-6 rounded-[var(--dt-radius)] border text-sm font-medium"
+            :style="{ backgroundColor: 'var(--dt-color-surface)', borderColor: 'var(--dt-color-secondary)', color: 'var(--dt-color-text)' }"
+          >
+            <i class="fa-solid fa-utensils mr-2" :style="{ color: 'var(--dt-color-primary)' }"></i>
+            {{ item.name || item }}
+          </div>
+        </div>
+      </section>
+
+      <!-- QRIS & E-WALLET -->
+      <section
+        v-if="isSectionEnabled('gift') && data.eWalletLink?.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('gift')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-4"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          QRIS &amp; E-Wallet
+        </h2>
+        <p class="mb-10 max-w-lg mx-auto text-sm" :style="{ color: 'var(--dt-color-text-muted)' }">
+          Scan atau salin nomor e-wallet untuk mengirim hadiah digital.
+        </p>
+        <div class="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto" v-observe>
+          <div
+            v-for="(w, idx) in data.eWalletLink"
+            :key="'ew' + idx"
+            class="p-6 rounded-[var(--dt-radius)] border w-full sm:w-64 text-center"
+            :style="{ backgroundColor: 'var(--dt-color-surface)', borderColor: 'var(--dt-color-secondary)' }"
+          >
+            <img v-if="w.wallet_image" :src="w.wallet_image" class="h-12 mx-auto object-contain mb-3" :alt="w.wallet_provider" />
+            <div v-else class="h-12 flex items-center justify-center mb-3">
+              <i class="fa-solid fa-wallet text-2xl" :style="{ color: 'var(--dt-color-primary)' }"></i>
+            </div>
+            <p class="font-bold text-sm uppercase tracking-widest mb-1" :style="{ color: 'var(--dt-color-primary)' }">{{ w.wallet_provider }}</p>
+            <p class="font-mono text-base mb-3" :style="{ color: 'var(--dt-color-text)' }">{{ w.wallet_number }}</p>
+            <button
+              @click="copyToClipboard(w.wallet_number)"
+              class="text-xs border px-4 py-1.5 rounded-full transition-colors"
+              :style="{ color: 'var(--dt-color-primary)', borderColor: 'var(--dt-color-primary)' }"
+            >
+              <i class="fa-regular fa-copy mr-1"></i> Salin
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALAMAT KIRIM KADO -->
+      <section
+        v-if="isSectionEnabled('gift') && data.giftDeliveryAddress?.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('gift')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-4"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          Kirim Kado
+        </h2>
+        <p class="mb-10 max-w-lg mx-auto text-sm" :style="{ color: 'var(--dt-color-text-muted)' }">
+          Anda dapat mengirimkan hadiah ke alamat berikut.
+        </p>
+        <div class="max-w-2xl mx-auto space-y-4" v-observe>
+          <div
+            v-for="(addr, idx) in data.giftDeliveryAddress"
+            :key="'addr' + idx"
+            class="p-6 rounded-[var(--dt-radius)] border text-left"
+            :style="{ backgroundColor: 'var(--dt-color-surface)', borderColor: 'var(--dt-color-secondary)' }"
+          >
+            <i class="fa-solid fa-location-dot mr-2" :style="{ color: 'var(--dt-color-primary)' }"></i>
+            <span class="text-sm" :style="{ color: 'var(--dt-color-text)' }">{{ addr }}</span>
+          </div>
+        </div>
+      </section>
+
       <!-- RSVP + WISHES -->
       <section
         v-if="isSectionEnabled('rsvp')"
@@ -1018,6 +1138,16 @@ const vObserve = {
 const galleryImages = computed(() =>
   (data.value.galleryImages || []).map((src) => ({ src, thumbnail: src })),
 )
+
+// --- Extended family (turut mengundang) ---
+const extendedFamilyList = computed(() => {
+  const ef = data.value.extendedFamily
+  if (Array.isArray(ef)) return ef.filter(Boolean)
+  if (typeof ef === 'string' && ef.trim()) return ef.split(/,|\n/).map(s => s.trim()).filter(Boolean)
+  const tm = data.value.turutMengundang
+  if (typeof tm === 'string' && tm.trim()) return tm.split(/,|\n/).map(s => s.trim()).filter(Boolean)
+  return []
+})
 
 // --- Love story (with a tasteful fallback for the demo/preview) ---
 const mockLoveStory = [

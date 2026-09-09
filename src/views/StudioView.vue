@@ -1238,6 +1238,7 @@ const syncDataToPreview = (data) => {
         healthProtocol: data.healthProtocol,
         extendedFamily: data.extendedFamilyText ? data.extendedFamilyText.split(/,|\n/).map(s => s.trim()).filter(Boolean) : [],
         turutMengundang: data.extendedFamilyText,
+        menu: { title: 'Menu Makanan', items: (data.foodList || []).map(f => ({ name: f })) },
         footerText: data.footerText,
         liveStreamingLink: data.liveStreamingLink,
         musicChoice: data.music === 'custom' ? data.musicPreview : data.music,
