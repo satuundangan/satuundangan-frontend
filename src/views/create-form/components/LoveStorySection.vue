@@ -38,8 +38,16 @@
               @change="emit('upload', $event, index)"
               class="w-full rounded-md border border-gray-300 p-2"
             />
-            <div v-if="story.photo" class="mt-2">
+            <div v-if="story.photo" class="mt-2 relative group inline-block rounded-lg overflow-hidden">
               <img :src="story.photo" alt="Preview" class="h-48 rounded-lg object-cover shadow" />
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button type="button" @click="emit('edit-crop', index)" class="px-3 py-1.5 bg-white text-dark rounded-lg text-xs font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-crop-simple"></i> Edit Crop
+                </button>
+                <button type="button" @click="story.photo = ''; story.photoFile = null" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-bold shadow hover:bg-red-600 transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-trash"></i> Hapus
+                </button>
+              </div>
             </div>
             <p v-if="loveStoryErrors?.[index]?.photo" class="text-xs text-red-500">
               {{ loveStoryErrors[index].photo }}
@@ -86,7 +94,7 @@ const props = defineProps({
   loveStoryErrors: { type: Array, default: () => [] },
 })
 
-const emit = defineEmits(['add', 'remove', 'upload'])
+const emit = defineEmits(['add', 'remove', 'upload', 'edit-crop'])
 
 const { loveStories, loveStoryErrors } = toRefs(props)
 </script>

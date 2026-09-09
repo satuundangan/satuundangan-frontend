@@ -56,8 +56,16 @@
           <div>
             <label class="block text-sm font-medium text-mocha">Upload Gambar QRIS / Screenshot</label>
             <input type="file" accept="image/*" class="w-full rounded-md border border-gray-300 p-2" @change="emit('wallet-upload', $event, index)" />
-            <div v-if="wallet.wallet_image" class="pt-2">
-              <img :src="wallet.wallet_image" alt="QRIS" class="h-48 w-full rounded-lg object-contain shadow" />
+            <div v-if="wallet.wallet_image" class="pt-2 relative group inline-block rounded-lg overflow-hidden">
+              <img :src="wallet.wallet_image" alt="QRIS" class="h-48 w-full rounded-lg object-contain shadow bg-gray-50" />
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button type="button" @click="emit('wallet-crop', index)" class="px-3 py-1.5 bg-white text-dark rounded-lg text-xs font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-crop-simple"></i> Edit Crop
+                </button>
+                <button type="button" @click="wallet.wallet_image = ''; wallet.wallet_image_file = null" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-bold shadow hover:bg-red-600 transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-trash"></i> Hapus
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -87,8 +95,16 @@
           <div>
             <label class="block text-sm font-medium text-mocha">Logo Bank (Opsional)</label>
             <input type="file" accept="image/*" class="w-full rounded-md border border-gray-300 p-2" @change="emit('bank-upload', $event, index)" />
-            <div v-if="account.bankLogo" class="pt-2">
-              <img :src="account.bankLogo" alt="Bank Logo" class="h-24 w-24 rounded-lg object-contain shadow" />
+            <div v-if="account.bankLogo" class="pt-2 relative group inline-block rounded-lg overflow-hidden">
+              <img :src="account.bankLogo" alt="Bank Logo" class="h-24 w-24 rounded-lg object-contain shadow bg-gray-50" />
+              <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button type="button" @click="emit('bank-crop', index)" class="px-2 py-1 bg-white text-dark rounded text-[10px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-crop-simple"></i> Crop
+                </button>
+                <button type="button" @click="account.bankLogo = ''; account.bankLogoFile = null" class="px-2 py-1 bg-red-500 text-white rounded text-[10px] font-bold shadow hover:bg-red-600 transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-trash"></i>
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -121,6 +137,8 @@ const emit = defineEmits([
   'add-bank',
   'remove-bank',
   'bank-upload',
+  'wallet-crop',
+  'bank-crop',
 ])
 
 const { sections, foodList, giftAddresses, formData } = toRefs(props)

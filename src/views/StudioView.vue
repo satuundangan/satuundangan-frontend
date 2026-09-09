@@ -159,16 +159,24 @@
                         <label class="form-label">Foto Mempelai Wanita <span class="text-red-500">*</span></label>
                         <div class="relative group max-w-[140px]">
                           <input type="file" accept="image/*" @change="handleBridePhotoUpload" class="hidden" id="bridePhoto" />
-                          <label for="bridePhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
-                            <img v-if="formData.bridePhoto" :src="formData.bridePhoto" class="w-full h-full object-cover" />
-                            <div v-else class="flex flex-col items-center text-gray-400">
-                              <i class="fa-solid fa-camera text-xl mb-1.5"></i>
-                              <span class="text-[9px] font-bold uppercase tracking-widest">Pilih Foto</span>
-                            </div>
-                            <div v-if="formData.bridePhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span class="text-white text-[9px] font-bold uppercase tracking-widest">Ganti</span>
-                            </div>
+                          <label v-if="!formData.bridePhoto" for="bridePhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
+                            <i class="fa-solid fa-camera text-xl mb-1.5 text-gray-400"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Pilih Foto</span>
                           </label>
+                          <div v-else class="relative group w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                            <img :src="formData.bridePhoto" class="w-full h-full object-cover" />
+                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                              <button type="button" @click="reopenCropperForBride" class="w-full py-1 bg-white text-dark rounded-lg text-[9px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-crop-simple"></i> Edit Crop
+                              </button>
+                              <label for="bridePhoto" class="w-full py-1 bg-white text-dark rounded-lg text-[9px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Ganti
+                              </label>
+                              <button type="button" @click="formData.bridePhoto = ''; formData.bridePhotoFile = null; validateField('bridePhoto')" class="w-full py-1 bg-red-500 text-white rounded-lg text-[9px] font-bold shadow hover:bg-red-600 transition-all flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                              </button>
+                            </div>
+                          </div>
                         </div>
                         <p v-if="validationErrors.bridePhoto" class="form-error">{{ validationErrors.bridePhoto }}</p>
                       </div>
@@ -196,16 +204,24 @@
                         <label class="form-label">Foto Mempelai Pria <span class="text-red-500">*</span></label>
                         <div class="relative group max-w-[140px]">
                           <input type="file" accept="image/*" @change="handleGroomPhotoUpload" class="hidden" id="groomPhoto" />
-                          <label for="groomPhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
-                            <img v-if="formData.groomPhoto" :src="formData.groomPhoto" class="w-full h-full object-cover" />
-                            <div v-else class="flex flex-col items-center text-gray-400">
-                              <i class="fa-solid fa-camera text-xl mb-1.5"></i>
-                              <span class="text-[9px] font-bold uppercase tracking-widest">Pilih Foto</span>
-                            </div>
-                            <div v-if="formData.groomPhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                              <span class="text-white text-[9px] font-bold uppercase tracking-widest">Ganti</span>
-                            </div>
+                          <label v-if="!formData.groomPhoto" for="groomPhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-2xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
+                            <i class="fa-solid fa-camera text-xl mb-1.5 text-gray-400"></i>
+                            <span class="text-[9px] font-bold uppercase tracking-widest text-gray-400">Pilih Foto</span>
                           </label>
+                          <div v-else class="relative group w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                            <img :src="formData.groomPhoto" class="w-full h-full object-cover" />
+                            <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                              <button type="button" @click="reopenCropperForGroom" class="w-full py-1 bg-white text-dark rounded-lg text-[9px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-crop-simple"></i> Edit Crop
+                              </button>
+                              <label for="groomPhoto" class="w-full py-1 bg-white text-dark rounded-lg text-[9px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center justify-center gap-1 cursor-pointer">
+                                <i class="fa-solid fa-arrow-up-from-bracket"></i> Ganti
+                              </label>
+                              <button type="button" @click="formData.groomPhoto = ''; formData.groomPhotoFile = null; validateField('groomPhoto')" class="w-full py-1 bg-red-500 text-white rounded-lg text-[9px] font-bold shadow hover:bg-red-600 transition-all flex items-center justify-center gap-1">
+                                <i class="fa-solid fa-trash"></i> Hapus
+                              </button>
+                            </div>
+                          </div>
                         </div>
                         <p v-if="validationErrors.groomPhoto" class="form-error">{{ validationErrors.groomPhoto }}</p>
                       </div>
@@ -377,13 +393,24 @@
                   <div v-if="sections.denah" data-field="denah">
                     <label class="form-label">Denah Lokasi / Acara</label>
                     <div class="flex gap-4 items-end">
-                      <label class="w-28 h-28 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group">
-                        <input type="file" accept="image/*" @change="handleDenahUpload" class="hidden" />
-                        <i class="fa-solid fa-map-location-dot text-gray-300 group-hover:text-mocha transition-colors"></i>
+                      <input type="file" accept="image/*" @change="handleDenahUpload" class="hidden" id="denahUpload" />
+                      <label v-if="!formData.denah" for="denahUpload" class="w-28 h-28 flex-shrink-0 border-2 border-dashed border-gray-200 rounded-2xl flex flex-col items-center justify-center cursor-pointer hover:border-mocha hover:bg-mocha/5 bg-gray-50 group transition-all">
+                        <i class="fa-solid fa-map-location-dot text-2xl text-gray-300 group-hover:text-mocha transition-colors mb-1"></i>
+                        <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest">Pilih Denah</span>
                       </label>
-                      <div v-if="formData.denah" class="relative group">
-                        <img :src="formData.denah" class="w-28 h-28 object-cover rounded-2xl shadow-md border-2 border-white" />
-                        <button @click="formData.denah = ''; formData.denahFile = null" class="absolute -top-2 -right-2 w-5.5 h-5.5 bg-red-500 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition shadow-lg">×</button>
+                      <div v-else class="relative group w-28 h-28 rounded-2xl overflow-hidden shadow-md border-2 border-white bg-gray-50 flex-shrink-0">
+                        <img :src="formData.denah" class="w-full h-full object-cover" />
+                        <div class="absolute inset-0 bg-black/40 flex flex-col items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity p-2">
+                          <button type="button" @click="reopenCropperForDenah" class="w-full py-0.5 bg-white text-dark rounded text-[9px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-crop-simple"></i> Crop
+                          </button>
+                          <label for="denahUpload" class="w-full py-0.5 bg-white text-dark rounded text-[9px] font-bold shadow hover:bg-mocha hover:text-white transition-all flex items-center justify-center gap-1 cursor-pointer">
+                            <i class="fa-solid fa-arrow-up-from-bracket"></i> Ganti
+                          </label>
+                          <button type="button" @click="formData.denah = ''; formData.denahFile = null" class="w-full py-0.5 bg-red-500 text-white rounded text-[9px] font-bold shadow hover:bg-red-600 transition-all flex items-center justify-center gap-1">
+                            <i class="fa-solid fa-trash"></i> Hapus
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -398,9 +425,16 @@
                       <input type="file" accept="image/*" multiple @change="handleGalleryUpload" class="hidden" />
                       <i class="fa-solid fa-plus text-gray-300 group-hover:text-mocha"></i>
                     </label>
-                    <div v-for="(img, i) in formData.gallery" :key="i" class="aspect-square relative group">
-                      <img :src="img.preview" class="w-full h-full object-cover rounded-xl shadow-sm border border-gray-100" />
-                      <button @click="removeGalleryImage(i)" class="absolute -top-1.5 -right-1.5 bg-red-500 text-white w-4.5 h-4.5 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition shadow-lg text-[9px]">×</button>
+                    <div v-for="(img, i) in formData.gallery" :key="i" class="aspect-square relative group rounded-xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50">
+                      <img :src="img.preview" class="w-full h-full object-cover" />
+                      <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button type="button" @click="reopenCropperForGallery(i)" title="Edit Crop" class="w-7 h-7 rounded-full bg-white text-dark hover:bg-mocha hover:text-white flex items-center justify-center shadow text-xs transition-all">
+                          <i class="fa-solid fa-crop-simple"></i>
+                        </button>
+                        <button type="button" @click="removeGalleryImage(i)" title="Hapus" class="w-7 h-7 rounded-full bg-red-500 text-white hover:bg-red-600 flex items-center justify-center shadow text-xs transition-all">
+                          <i class="fa-solid fa-trash"></i>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -415,7 +449,7 @@
               </div>
 
               <!-- Love Story Section -->
-              <LoveStorySection v-if="sections['love-story']" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" />
+              <LoveStorySection v-if="sections['love-story']" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" @edit-crop="reopenCropperForLoveStory" />
 
               <!-- YouTube Link Section -->
               <div v-if="sections.video" class="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-4 animate-fade-in">
@@ -517,7 +551,7 @@
             <div v-if="activeTab === 'ekstra'" class="space-y-6">
               
               <!-- Gift / Envelope Details -->
-              <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" />
+              <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @wallet-crop="reopenCropperForWallet" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" @bank-crop="reopenCropperForBank" />
               
               <!-- Social Media Links -->
               <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
@@ -1088,7 +1122,8 @@ const cropper = ref({
   show: false,
   image: '',
   aspectRatio: 1,
-  targetField: ''
+  targetField: '',
+  targetIndex: null
 })
 
 const uploadProgress = ref({
@@ -1771,17 +1806,82 @@ async function handleCouplePhotoUpload(e) {
    }; reader.readAsDataURL(file); e.target.value = ''
 }
 
+function reopenCropperForBride() {
+   if (!formData.value.bridePhoto) return
+   cropper.value = { show: true, image: formData.value.bridePhoto, aspectRatio: 3/4, targetField: 'bride', targetIndex: null }
+}
+
+function reopenCropperForGroom() {
+   if (!formData.value.groomPhoto) return
+   cropper.value = { show: true, image: formData.value.groomPhoto, aspectRatio: 3/4, targetField: 'groom', targetIndex: null }
+}
+
 function reopenCropperForCouple() {
    if (!formData.value.photoCouple) return
-   cropper.value = { show: true, image: formData.value.photoCouple, aspectRatio: null, targetField: 'couple' }
+   cropper.value = { show: true, image: formData.value.photoCouple, aspectRatio: null, targetField: 'couple', targetIndex: null }
+}
+
+function reopenCropperForDenah() {
+   if (!formData.value.denah) return
+   cropper.value = { show: true, image: formData.value.denah, aspectRatio: null, targetField: 'denah', targetIndex: null }
+}
+
+function reopenCropperForGallery(index) {
+   const item = formData.value.gallery[index]
+   if (!item?.preview) return
+   cropper.value = { show: true, image: item.preview, aspectRatio: null, targetField: 'gallery', targetIndex: index }
+}
+
+function reopenCropperForLoveStory(index) {
+   const story = formData.value.loveStories[index]
+   if (!story?.photo) return
+   cropper.value = { show: true, image: story.photo, aspectRatio: null, targetField: 'loveStory', targetIndex: index }
+}
+
+function reopenCropperForWallet(index) {
+   const wallet = formData.value.eWalletLink[index]
+   if (!wallet?.wallet_image) return
+   cropper.value = { show: true, image: wallet.wallet_image, aspectRatio: null, targetField: 'wallet', targetIndex: index }
+}
+
+function reopenCropperForBank(index) {
+   const bank = formData.value.bankAccounts[index]
+   if (!bank?.bankLogo) return
+   cropper.value = { show: true, image: bank.bankLogo, aspectRatio: null, targetField: 'bank', targetIndex: index }
 }
 
 function onCropComplete({ blob, preview }) {
    const field = cropper.value.targetField
-   if (field === 'bride') { formData.value.bridePhoto = preview; formData.value.bridePhotoFile = new File([blob], 'bride.webp', { type: 'image/webp' }) }
-   else if (field === 'groom') { formData.value.groomPhoto = preview; formData.value.groomPhotoFile = new File([blob], 'groom.webp', { type: 'image/webp' }) }
-   else if (field === 'couple') { formData.value.photoCouple = preview; formData.value.photoCoupleFile = new File([blob], 'couple.webp', { type: 'image/webp' }) }
-   cropper.value.show = false; validateField(field + 'Photo')
+   const idx = cropper.value.targetIndex
+   if (field === 'bride') {
+      formData.value.bridePhoto = preview
+      formData.value.bridePhotoFile = new File([blob], 'bride.webp', { type: 'image/webp' })
+      validateField('bridePhoto')
+   } else if (field === 'groom') {
+      formData.value.groomPhoto = preview
+      formData.value.groomPhotoFile = new File([blob], 'groom.webp', { type: 'image/webp' })
+      validateField('groomPhoto')
+   } else if (field === 'couple') {
+      formData.value.photoCouple = preview
+      formData.value.photoCoupleFile = new File([blob], 'couple.webp', { type: 'image/webp' })
+      validateField('photoCouple')
+   } else if (field === 'denah') {
+      formData.value.denah = preview
+      formData.value.denahFile = new File([blob], 'denah.webp', { type: 'image/webp' })
+   } else if (field === 'gallery' && idx !== null && idx !== undefined && formData.value.gallery[idx]) {
+      formData.value.gallery[idx].preview = preview
+      formData.value.gallery[idx].file = new File([blob], `gallery-${idx}.webp`, { type: 'image/webp' })
+   } else if (field === 'loveStory' && idx !== null && idx !== undefined && formData.value.loveStories[idx]) {
+      formData.value.loveStories[idx].photo = preview
+      formData.value.loveStories[idx].photoFile = new File([blob], `story-${idx}.webp`, { type: 'image/webp' })
+   } else if (field === 'wallet' && idx !== null && idx !== undefined && formData.value.eWalletLink[idx]) {
+      formData.value.eWalletLink[idx].wallet_image = preview
+      formData.value.eWalletLink[idx].wallet_image_file = new File([blob], `wallet-${idx}.webp`, { type: 'image/webp' })
+   } else if (field === 'bank' && idx !== null && idx !== undefined && formData.value.bankAccounts[idx]) {
+      formData.value.bankAccounts[idx].bankLogo = preview
+      formData.value.bankAccounts[idx].bankLogoFile = new File([blob], `bank-${idx}.webp`, { type: 'image/webp' })
+   }
+   cropper.value.show = false
 }
 
 function handleGalleryUpload(e) {
@@ -1802,9 +1902,12 @@ function handleGalleryUpload(e) {
 }
 function removeGalleryImage(i) { formData.value.gallery.splice(i, 1) }
 
-function handleDenahUpload(e) {
+async function handleDenahUpload(e) {
    const file = e.target.files?.[0]; if (!file) return
-   const reader = new FileReader(); reader.onload = () => { formData.value.denah = reader.result; formData.value.denahFile = file }; reader.readAsDataURL(file)
+   const reader = new FileReader(); reader.onload = async () => {
+      const optimizedImage = await downscaleImage(reader.result)
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: null, targetField: 'denah', targetIndex: null }
+   }; reader.readAsDataURL(file); e.target.value = ''
 }
 
 async function handleMusicUpload(e) {
