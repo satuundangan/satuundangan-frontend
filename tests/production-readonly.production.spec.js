@@ -15,6 +15,29 @@ test.describe('Production readonly smoke', () => {
     await expect(page.getByText(/Bagikan Kabar Bahagiamu/i)).toBeVisible()
   })
 
+  test('published template demos render with SEO metadata', async ({ page, request }) => {
+    const templatesResponse = await request.get(`${apiBaseURL}/template-design`)
+
+    expect(templatesResponse.ok()).toBe(true)
+    const payload = await templatesResponse.json()
+    const templates = Array.isArray(payload) ? payload : payload.data || []
+    const publishedTemplates = templates.filter((template) =>
+      (template.isPublished ?? template.is_published) && template.slug,
+    )
+
+    expect(publishedTemplates.length).toBeGreaterThan(0)
+
+    for (const template of publishedTemplates) {
+      const response = await page.goto(`/demo/${template.slug}`, { waitUntil: 'domcontentloaded' })
+
+      expect(response?.ok(), `demo failed for ${template.slug}`).toBe(true)
+      await expect(page.locator('body')).not.toContainText(/Undangan tidak ditemukan|terjadi kesalahan/i)
+      await expect(page.locator('meta[name="description"]')).toHaveAttribute('content', /.+/)
+      await expect(page.locator('meta[property="og:title"]')).toHaveAttribute('content', /.+/)
+      await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /.+/)
+    }
+  })
+
   test('public invitation API returns an active invitation', async ({ request }) => {
     const response = await request.get(`${apiBaseURL}/invitation/slug/${invitationSlug}`)
 
