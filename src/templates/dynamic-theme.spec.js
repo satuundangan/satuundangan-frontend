@@ -191,3 +191,66 @@ describe('dynamic-theme.vue hero ink', () => {
     expect(eyebrow.attributes('style')).toContain('var(--dt-color-accent)')
   })
 })
+
+describe('dynamic-theme.vue compatibility and navigation', () => {
+  it('normalizes legacy string wallet and gift-address payloads into one card each', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          selectedSections: ['gift'],
+          eWalletLink: '08123456789 (OVO)',
+          giftDeliveryAddress: 'Jl. Melati No. 123',
+        }),
+      },
+    })
+
+    const sections = wrapper.findAll('section')
+    const walletSection = sections.find((section) => section.text().includes('QRIS & E-Wallet'))
+    const addressSection = sections.find((section) => section.text().includes('Kirim Kado'))
+
+    expect(walletSection).toBeTruthy()
+    expect(walletSection.findAll('button')).toHaveLength(1)
+    expect(walletSection.text()).toContain('08123456789 (OVO)')
+    expect(addressSection).toBeTruthy()
+    expect(addressSection.text()).toContain('Jl. Melati No. 123')
+  })
+
+  it('accepts selected section objects from API responses', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          selectedSections: [{ key: 'couple', is_enabled: true }],
+        }),
+      },
+    })
+
+    expect(wrapper.find('#couple').exists()).toBe(true)
+    expect(wrapper.find('#event').exists()).toBe(false)
+  })
+
+  it('adds the Royal Emerald-style section navigation after opening', async () => {
+    const wrapper = mount(DynamicTheme, {
+      props: { data: makeData({ selectedSections: ['couple', 'event'] }) },
+    })
+
+    await wrapper.get('button').trigger('click')
+
+    const nav = wrapper.get('nav[aria-label="Navigasi undangan"]')
+    expect(nav.text()).toContain('Home')
+    expect(nav.text()).toContain('Couple')
+    expect(nav.text()).toContain('Event')
+  })
+
+  it('applies the readable compatibility palette to legacy Islami Emas config', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          template_slug: 'islami-emas',
+          designConfig: { colors: { primary: '#BD9B2D' } },
+        }),
+      },
+    })
+
+    expect(wrapper.attributes('style')).toContain('--dt-color-primary: #8A6A22')
+  })
+})
