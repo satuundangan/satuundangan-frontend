@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-labelledby="title desc">
+  <title id="title">Arabian Night abstract invitation artwork</title>
+  <desc id="desc">A midnight blue sky with a crescent moon, stars, and golden desert dunes.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#070f2a"/>
+      <stop offset="0.7" stop-color="#16264f"/>
+      <stop offset="1" stop-color="#2b1b2f"/>
+    </linearGradient>
+    <linearGradient id="dune" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#8f5b3d"/>
+      <stop offset="0.55" stop-color="#d89152"/>
+      <stop offset="1" stop-color="#e9c46a"/>
+    </linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="14"/></filter>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#sky)"/>
+  <circle cx="1170" cy="245" r="138" fill="#f8e7ad" opacity=".18" filter="url(#glow)"/>
+  <path d="M1220 130a120 120 0 1 0 62 211 103 103 0 1 1-62-211Z" fill="#f8e7ad"/>
+  <g fill="#f8e7ad">
+    <circle cx="250" cy="170" r="4"/><circle cx="390" cy="305" r="3"/><circle cx="530" cy="125" r="5"/>
+    <circle cx="735" cy="230" r="3"/><circle cx="870" cy="105" r="4"/><circle cx="1010" cy="390" r="3"/>
+    <circle cx="1360" cy="120" r="4"/><circle cx="1480" cy="320" r="3"/><circle cx="1180" cy="480" r="4"/>
+  </g>
+  <g fill="none" stroke="#e9c46a" stroke-opacity=".42" stroke-width="3">
+    <path d="M160 480h190l38 38 38-38h190"/>
+    <path d="M1040 555h160l30 30 30-30h190"/>
+  </g>
+  <path d="M0 760c190-120 350-112 540-10 205 110 395 98 610-20 170-93 295-76 450 30v240H0Z" fill="#0b1535"/>
+  <path d="M0 835c205-170 425-130 620-15 230 136 455 104 680-28 120-70 205-68 300-20v228H0Z" fill="url(#dune)" opacity=".92"/>
+  <path d="M0 895c220-104 370-78 560 8 245 111 468 82 690-50 132-78 246-65 350-5v152H0Z" fill="#5f3d3b" opacity=".72"/>
+  <g fill="#e9c46a" opacity=".8">
+    <circle cx="210" cy="785" r="5"/><circle cx="230" cy="770" r="3"/><circle cx="250" cy="788" r="4"/>
+    <circle cx="1410" cy="770" r="5"/><circle cx="1434" cy="755" r="3"/><circle cx="1450" cy="780" r="4"/>
+  </g>
+</svg>
