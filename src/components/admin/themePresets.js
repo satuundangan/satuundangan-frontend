@@ -248,9 +248,12 @@ export const THEME_PRESETS = [
     config: {
       version: 1,
       colors: {
-        primary: '#BD9B2D',
-        secondary: '#CBA76C',
-        accent: '#BD9B2D',
+        // Dark antique-gold tokens keep headings, buttons and active states
+        // readable on the cream surfaces (the previous bright gold was too low
+        // contrast outside the hero).
+        primary: '#8A6A22',
+        secondary: '#A17C32',
+        accent: '#8A6A22',
         background: '#FAF6EC',
         surface: '#FEFBF4',
         text: '#2E2517',

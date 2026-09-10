@@ -10,6 +10,37 @@
       },
     ]"
   >
+    <!-- Section navigation keeps the dynamic theme usable on both phone and desktop. -->
+    <nav
+      v-if="!showGate && navItems.length"
+      class="fixed bottom-0 left-0 right-0 z-40 backdrop-blur-xl border-t shadow-[0_-8px_24px_rgba(46,37,23,0.12)]"
+      :style="{
+        backgroundColor: 'color-mix(in srgb, var(--dt-color-text) 88%, transparent)',
+        borderColor: 'var(--dt-color-secondary)',
+      }"
+      aria-label="Navigasi undangan"
+    >
+      <div
+        class="mx-auto flex w-full max-w-5xl items-center gap-1 overflow-x-auto px-2 py-2 no-scrollbar"
+      >
+        <button
+          v-for="item in navItems"
+          :key="item.id"
+          type="button"
+          class="flex min-w-[4.25rem] flex-1 flex-col items-center gap-1 rounded-lg px-2 py-1.5 text-[9px] font-semibold uppercase tracking-wider transition-colors"
+          :class="
+            activeSection === item.id
+              ? 'bg-[var(--dt-color-primary)] text-[var(--dt-color-surface)]'
+              : 'text-[var(--dt-color-surface)]/75 hover:text-[var(--dt-color-surface)]'
+          "
+          @click="scrollToSection(item.id)"
+        >
+          <i :class="item.icon" aria-hidden="true"></i>
+          <span>{{ item.label }}</span>
+        </button>
+      </div>
+    </nav>
+
     <!-- Fixed decorative texture layer, behind everything -->
     <div
       v-if="theme.decor.patternUrl"
@@ -115,7 +146,7 @@
       </div>
     </transition>
 
-    <div v-show="!showGate" id="main-content" class="relative z-10">
+    <div v-show="!showGate" id="main-content" class="relative z-10 pb-20">
       <!-- HERO -->
       <section
         id="hero"
@@ -679,6 +710,158 @@
         </div>
       </section>
 
+      <!-- TURUT MENGUNDANG / EXTENDED FAMILY -->
+      <section
+        v-if="isSectionEnabled('extended-family') && extendedFamilyList.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('extended-family')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-10"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          Turut Mengundang
+        </h2>
+        <div class="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4" v-observe>
+          <div
+            v-for="(person, idx) in extendedFamilyList"
+            :key="'ef' + idx"
+            class="py-3 px-5 rounded-[var(--dt-radius)] border text-sm"
+            :style="{
+              backgroundColor: 'var(--dt-color-surface)',
+              borderColor: 'var(--dt-color-secondary)',
+              color: 'var(--dt-color-text)',
+            }"
+          >
+            {{ person }}
+          </div>
+        </div>
+      </section>
+
+      <!-- MENU MAKANAN -->
+      <section
+        v-if="isSectionEnabled('menu') && data.menu?.items?.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('menu')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-10"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          {{ data.menu.title || 'Menu Hidangan' }}
+        </h2>
+        <div class="max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-4" v-observe>
+          <div
+            v-for="(item, idx) in data.menu.items"
+            :key="'food' + idx"
+            class="py-4 px-6 rounded-[var(--dt-radius)] border text-sm font-medium"
+            :style="{
+              backgroundColor: 'var(--dt-color-surface)',
+              borderColor: 'var(--dt-color-secondary)',
+              color: 'var(--dt-color-text)',
+            }"
+          >
+            <i class="fa-solid fa-utensils mr-2" :style="{ color: 'var(--dt-color-primary)' }"></i>
+            {{ item.name || item }}
+          </div>
+        </div>
+      </section>
+
+      <!-- QRIS & E-WALLET -->
+      <section
+        v-if="isSectionEnabled('gift') && walletItems.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('gift')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-4"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          QRIS &amp; E-Wallet
+        </h2>
+        <p class="mb-10 max-w-lg mx-auto text-sm" :style="{ color: 'var(--dt-color-text-muted)' }">
+          Scan atau salin nomor e-wallet untuk mengirim hadiah digital.
+        </p>
+        <div class="flex flex-wrap justify-center gap-6 max-w-4xl mx-auto" v-observe>
+          <div
+            v-for="(w, idx) in walletItems"
+            :key="'ew' + idx"
+            class="p-6 rounded-[var(--dt-radius)] border w-full sm:w-64 text-center"
+            :style="{
+              backgroundColor: 'var(--dt-color-surface)',
+              borderColor: 'var(--dt-color-secondary)',
+            }"
+          >
+            <img
+              v-if="w.wallet_image"
+              :src="w.wallet_image"
+              class="h-12 mx-auto object-contain mb-3"
+              :alt="w.wallet_provider"
+            />
+            <div v-else class="h-12 flex items-center justify-center mb-3">
+              <i
+                class="fa-solid fa-wallet text-2xl"
+                :style="{ color: 'var(--dt-color-primary)' }"
+              ></i>
+            </div>
+            <p
+              class="font-bold text-sm uppercase tracking-widest mb-1"
+              :style="{ color: 'var(--dt-color-primary)' }"
+            >
+              {{ w.wallet_provider }}
+            </p>
+            <p class="font-mono text-base mb-3" :style="{ color: 'var(--dt-color-text)' }">
+              {{ w.wallet_number }}
+            </p>
+            <button
+              @click="copyToClipboard(w.wallet_number)"
+              class="text-xs border px-4 py-1.5 rounded-full transition-colors"
+              :style="{ color: 'var(--dt-color-primary)', borderColor: 'var(--dt-color-primary)' }"
+            >
+              <i class="fa-regular fa-copy mr-1"></i> Salin
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ALAMAT KIRIM KADO -->
+      <section
+        v-if="isSectionEnabled('gift') && giftAddressItems.length"
+        class="py-16 md:py-24 px-6 text-center"
+        :style="sectionBg('gift')"
+      >
+        <h2
+          class="text-2xl md:text-3xl mb-4"
+          :style="{ fontFamily: 'var(--dt-font-heading)', color: 'var(--dt-color-primary)' }"
+          v-observe
+        >
+          Kirim Kado
+        </h2>
+        <p class="mb-10 max-w-lg mx-auto text-sm" :style="{ color: 'var(--dt-color-text-muted)' }">
+          Anda dapat mengirimkan hadiah ke alamat berikut.
+        </p>
+        <div class="max-w-2xl mx-auto space-y-4" v-observe>
+          <div
+            v-for="(addr, idx) in giftAddressItems"
+            :key="'addr' + idx"
+            class="p-6 rounded-[var(--dt-radius)] border text-left"
+            :style="{
+              backgroundColor: 'var(--dt-color-surface)',
+              borderColor: 'var(--dt-color-secondary)',
+            }"
+          >
+            <i
+              class="fa-solid fa-location-dot mr-2"
+              :style="{ color: 'var(--dt-color-primary)' }"
+            ></i>
+            <span class="text-sm" :style="{ color: 'var(--dt-color-text)' }">{{ addr }}</span>
+          </div>
+        </div>
+      </section>
+
       <!-- RSVP + WISHES -->
       <section
         v-if="isSectionEnabled('rsvp')"
@@ -827,7 +1010,24 @@ watch(
 const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
 
 // --- Theme wiring — the whole point of this file ---
-const theme = computed(() => normalizeThemeConfig(data.value.designConfig))
+const theme = computed(() => {
+  const config = normalizeThemeConfig(data.value.designConfig)
+
+  // The first Islami Emas row was persisted before the contrast-safe palette
+  // shipped in the preset. Keep existing demos/invitations readable until the
+  // stored designConfig is refreshed, while preserving any deliberate admin
+  // color customization.
+  if (data.value.template_slug === 'islami-emas' && config.colors.primary === '#BD9B2D') {
+    config.colors = {
+      ...config.colors,
+      primary: '#8A6A22',
+      secondary: '#A17C32',
+      accent: '#8A6A22',
+    }
+  }
+
+  return config
+})
 const rootStyle = computed(() => themeCssVars(theme.value))
 
 function sectionBg(key) {
@@ -909,16 +1109,72 @@ const rsvpOptionActiveStyle = computed(() => ({
   fontWeight: 'bold',
 }))
 
-// --- Cover gate ---
+// --- Cover gate + section navigation ---
 const showGate = ref(true)
+const activeSection = ref('hero')
+let scrollSpyObserver = null
+
+const navItems = computed(() => {
+  const items = [
+    { id: 'hero', label: 'Home', icon: 'fa-solid fa-house' },
+    { id: 'couple', label: 'Couple', icon: 'fa-solid fa-heart' },
+    { id: 'event', label: 'Event', icon: 'fa-solid fa-calendar-check' },
+    { id: 'love-story', label: 'Story', icon: 'fa-solid fa-feather' },
+    { id: 'gallery', label: 'Gallery', icon: 'fa-solid fa-images' },
+    { id: 'gift', label: 'Gift', icon: 'fa-solid fa-gift' },
+    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope' },
+  ]
+
+  return items.filter((item) => {
+    if (item.id === 'hero') return true
+    if (item.id === 'love-story') {
+      return isSectionEnabled('love-story') && loveStoryItems.value.length > 0
+    }
+    if (item.id === 'gallery') {
+      return isSectionEnabled('gallery') && galleryImages.value.length > 0
+    }
+    return isSectionEnabled(item.id)
+  })
+})
+
 function openInvitation() {
   showGate.value = false
+  requestAnimationFrame(initScrollSpy)
+}
+
+function scrollToSection(id) {
+  const section = document.getElementById(id)
+  if (section) section.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  activeSection.value = id
+}
+
+function initScrollSpy() {
+  scrollSpyObserver?.disconnect()
+  if (typeof IntersectionObserver === 'undefined') return
+
+  scrollSpyObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) activeSection.value = entry.target.id
+      })
+    },
+    { threshold: 0.35 },
+  )
+
+  navItems.value.forEach((item) => {
+    const section = document.getElementById(item.id)
+    if (section) scrollSpyObserver.observe(section)
+  })
 }
 
 // --- Section visibility ---
 function isSectionEnabled(key) {
   if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
-  return data.value.selectedSections.includes(key)
+  if (!Array.isArray(data.value.selectedSections)) return true
+  return data.value.selectedSections.some((section) => {
+    const sectionKey = typeof section === 'string' ? section : section?.key || section?.section?.key
+    return sectionKey === key
+  })
 }
 
 // --- Music ---
@@ -965,6 +1221,7 @@ function startCountdown() {
     const now = Date.now()
     const diff = target - now
     if (diff <= 0) {
+      countdown.value = { Hari: '00', Jam: '00', Menit: '00', Detik: '00' }
       if (countdownInterval) {
         clearInterval(countdownInterval)
         countdownInterval = null
@@ -987,7 +1244,11 @@ function startCountdown() {
 }
 
 watch(
-  () => data.value.akadLocation?.dateTime,
+  () => [
+    data.value.akadLocation?.dateTime,
+    data.value.resepsiLocation?.dateTime,
+    data.value.dateTime,
+  ],
   () => startCountdown(),
 )
 
@@ -1018,6 +1279,46 @@ const vObserve = {
 const galleryImages = computed(() =>
   (data.value.galleryImages || []).map((src) => ({ src, thumbnail: src })),
 )
+
+function asList(value) {
+  if (Array.isArray(value)) return value.filter(Boolean)
+  if (typeof value === 'string' && value.trim()) return [value.trim()]
+  return []
+}
+
+// Older demo payloads stored these fields as strings while the studio stores
+// arrays. Normalize both shapes before rendering so v-for never iterates over
+// individual characters or drops a valid single entry.
+const walletItems = computed(() =>
+  asList(data.value.eWalletLink).map((wallet) => {
+    if (typeof wallet === 'object') return wallet
+    return {
+      wallet_provider: 'E-Wallet',
+      wallet_number: String(wallet),
+      wallet_image: '',
+    }
+  }),
+)
+
+const giftAddressItems = computed(() => asList(data.value.giftDeliveryAddress))
+
+// --- Extended family (turut mengundang) ---
+const extendedFamilyList = computed(() => {
+  const ef = data.value.extendedFamily
+  if (Array.isArray(ef)) return ef.filter(Boolean)
+  if (typeof ef === 'string' && ef.trim())
+    return ef
+      .split(/,|\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  const tm = data.value.turutMengundang
+  if (typeof tm === 'string' && tm.trim())
+    return tm
+      .split(/,|\n/)
+      .map((s) => s.trim())
+      .filter(Boolean)
+  return []
+})
 
 // --- Love story (with a tasteful fallback for the demo/preview) ---
 const mockLoveStory = [
@@ -1103,6 +1404,8 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  scrollSpyObserver?.disconnect()
+  scrollSpyObserver = null
   if (countdownInterval) {
     clearInterval(countdownInterval)
     countdownInterval = null
