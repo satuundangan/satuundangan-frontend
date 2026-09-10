@@ -305,6 +305,15 @@ function applyDemoSeo(tmpl) {
 
   document.title = title
 
+  const canonicalUrl = window.location.href.split('#')[0]
+  let canonical = document.head.querySelector('link[rel="canonical"]')
+  if (!canonical) {
+    canonical = document.createElement('link')
+    canonical.setAttribute('rel', 'canonical')
+    document.head.appendChild(canonical)
+  }
+  canonical.setAttribute('href', canonicalUrl)
+
   const upsertMeta = (key, attr, value) => {
     if (!value) return
     let el = document.head.querySelector(`meta[${attr}="${key}"]`)
