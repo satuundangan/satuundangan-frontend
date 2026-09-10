@@ -242,6 +242,38 @@ export const THEME_PRESETS = [
     },
   },
   {
+    key: 'arabian-night',
+    label: 'Arabian Night',
+    description: 'Nuansa dongeng malam gurun dengan biru tengah malam dan aksen emas hangat.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#e9c46a',
+        secondary: '#6d4c41',
+        accent: '#f4a261',
+        background: '#0e1a3a',
+        surface: '#16264f',
+        text: '#f8f1de',
+        textMuted: '#c8bfa7',
+      },
+      fonts: {
+        heading: font('heading', 'Cinzel'),
+        script: font('script', 'Great Vibes'),
+        body: font('body', 'Manrope'),
+      },
+      hero: {
+        variant: 'classic',
+        backgroundImage: '',
+        overlayColor: '#050b1d',
+        overlayOpacity: 0.35,
+      },
+      couple: { photoFallback: 'hide' },
+      sections: sectionsFrom('#16264f', '#0e1a3a'),
+      ornaments: { corner: '', divider: '', frame: '' },
+      decor: { borderRadius: '1rem', patternUrl: '', patternOpacity: 0.08 },
+    },
+  },
+  {
     key: 'islami-emas',
     label: 'Islami Emas',
     description: 'Emas dan krem lembut dengan motif geometris mihrab islami.',

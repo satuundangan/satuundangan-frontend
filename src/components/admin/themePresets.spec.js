@@ -17,11 +17,12 @@ const ASSET_FREE_PRESET_KEYS = [
   'bali-tropis',
   'rustic-sage',
   'midnight-elegant',
+  'arabian-night',
 ]
 
 describe('THEME_PRESETS', () => {
-  it('has exactly 7 entries, each { key, label, description, config }, keys unique and non-empty', () => {
-    expect(THEME_PRESETS.length).toBe(7)
+  it('has exactly 8 entries, each { key, label, description, config }, keys unique and non-empty', () => {
+    expect(THEME_PRESETS.length).toBe(8)
     const keys = new Set()
     for (const preset of THEME_PRESETS) {
       expect(typeof preset.key).toBe('string')
@@ -34,7 +35,7 @@ describe('THEME_PRESETS', () => {
       expect(preset.config).not.toBeNull()
       keys.add(preset.key)
     }
-    expect(keys.size).toBe(7)
+    expect(keys.size).toBe(8)
   })
 
   for (const preset of THEME_PRESETS) {
@@ -130,8 +131,8 @@ describe('THEME_PRESETS', () => {
 describe('asset-free presets', () => {
   const assetFreePresets = THEME_PRESETS.filter((p) => ASSET_FREE_PRESET_KEYS.includes(p.key))
 
-  it('ASSET_FREE_PRESET_KEYS still resolves exactly 6 presets', () => {
-    expect(assetFreePresets.length).toBe(6)
+  it('ASSET_FREE_PRESET_KEYS still resolves exactly 7 presets', () => {
+    expect(assetFreePresets.length).toBe(7)
   })
 
   for (const preset of assetFreePresets) {
@@ -145,7 +146,7 @@ describe('asset-free presets', () => {
 
     // Deliberate: only islami-emas carries a real decor.patternUrl, so it is the only
     // preset where photoFallback: 'ornament' actually resolves rather than degrading —
-    // the other 6 stay 'hide'.
+    // the other 7 stay 'hide'.
     it(`preset "${preset.key}" has couple.photoFallback "hide" (no decor.patternUrl to tile)`, () => {
       expect(preset.config.couple.photoFallback).toBe('hide')
     })
