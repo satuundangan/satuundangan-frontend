@@ -174,7 +174,7 @@ all keys prefixed `--dt-`:
 --dt-color-primary, --dt-color-secondary, --dt-color-accent,
 --dt-color-background, --dt-color-surface, --dt-color-text, --dt-color-text-muted,
 --dt-font-heading, --dt-font-script, --dt-font-body,
---dt-radius, --dt-overlay-color, --dt-overlay-opacity
+--dt-radius, --dt-overlay-color, --dt-overlay-opacity, --dt-motion-duration
 ```
 
 `dynamic-theme.vue` applies this object to its root element and consumes every value
