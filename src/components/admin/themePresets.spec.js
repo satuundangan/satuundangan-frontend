@@ -18,11 +18,12 @@ const ASSET_FREE_PRESET_KEYS = [
   'rustic-sage',
   'midnight-elegant',
   'arabian-night',
+  'manuk-dadali',
 ]
 
 describe('THEME_PRESETS', () => {
-  it('has exactly 8 entries, each { key, label, description, config }, keys unique and non-empty', () => {
-    expect(THEME_PRESETS.length).toBe(8)
+  it('has exactly 9 entries, each { key, label, description, config }, keys unique and non-empty', () => {
+    expect(THEME_PRESETS.length).toBe(9)
     const keys = new Set()
     for (const preset of THEME_PRESETS) {
       expect(typeof preset.key).toBe('string')
@@ -35,7 +36,7 @@ describe('THEME_PRESETS', () => {
       expect(preset.config).not.toBeNull()
       keys.add(preset.key)
     }
-    expect(keys.size).toBe(8)
+    expect(keys.size).toBe(9)
   })
 
   for (const preset of THEME_PRESETS) {
@@ -131,8 +132,8 @@ describe('THEME_PRESETS', () => {
 describe('asset-free presets', () => {
   const assetFreePresets = THEME_PRESETS.filter((p) => ASSET_FREE_PRESET_KEYS.includes(p.key))
 
-  it('ASSET_FREE_PRESET_KEYS still resolves exactly 7 presets', () => {
-    expect(assetFreePresets.length).toBe(7)
+  it('ASSET_FREE_PRESET_KEYS still resolves exactly 8 presets', () => {
+    expect(assetFreePresets.length).toBe(8)
   })
 
   for (const preset of assetFreePresets) {

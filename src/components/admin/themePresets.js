@@ -274,6 +274,38 @@ export const THEME_PRESETS = [
     },
   },
   {
+    key: 'manuk-dadali',
+    label: 'Manuk Dadali',
+    description: 'Hijau leuweung, cokelat kayu, dan emas hangat dalam nuansa Sunda yang anggun.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#1f5f4a',
+        secondary: '#6b4226',
+        accent: '#d5a441',
+        background: '#f3efe3',
+        surface: '#fbfaf4',
+        text: '#1d2f28',
+        textMuted: '#69766b',
+      },
+      fonts: {
+        heading: font('heading', 'Marcellus'),
+        script: font('script', 'Parisienne'),
+        body: font('body', 'Karla'),
+      },
+      hero: {
+        variant: 'framed',
+        backgroundImage: '',
+        overlayColor: '#102c22',
+        overlayOpacity: 0.3,
+      },
+      couple: { photoFallback: 'hide' },
+      sections: sectionsFrom('#fbfaf4', '#f3efe3'),
+      ornaments: { corner: '', divider: '', frame: '' },
+      decor: { borderRadius: '0.75rem', patternUrl: '', patternOpacity: 0.08 },
+    },
+  },
+  {
     key: 'islami-emas',
     label: 'Islami Emas',
     description: 'Emas dan krem lembut dengan motif geometris mihrab islami.',
