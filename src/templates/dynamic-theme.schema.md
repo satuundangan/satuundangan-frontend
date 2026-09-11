@@ -120,6 +120,8 @@ Each entry:
 | `background`     | object | `{ type: 'color', value: colors.surface }`   | See below                                                |
 | `ornamentTop`    | string (URL) | `''`                                   | Decorative image strip absolutely positioned at the section's top edge |
 | `ornamentBottom` | string (URL) | `''`                                   | Same, at the bottom edge                                  |
+| `ornamentTopMotion` | string | `none` | Motion preset for `ornamentTop`: `none`, `float`, `drift`, `sway`, `twinkle`, or `pulse` |
+| `ornamentBottomMotion` | string | `none` | Motion preset for `ornamentBottom`: same allowed values |
 
 `background.type` — one of:
 
@@ -152,6 +154,14 @@ Global surface texture/shape tokens.
 | `borderRadius`  | CSS length string | `1.5rem` | `--dt-radius` — corner rounding on cards/buttons/images across the theme |
 | `patternUrl`    | string (URL) | `''`  | Fixed, repeating background texture behind the whole invitation (empty = none) |
 | `patternOpacity`| number  | `0.08` (`0..1`, clamped; non-numeric -> default) | Opacity of `patternUrl`             |
+| `ornamentMotion` | string | `none` | Global motion preset for corner/divider ornaments and decorative accents |
+| `ornamentMotionSpeed` | string | `normal` | `slow`, `normal`, or `fast` |
+| `motionDensity` | number | `8` (`0..16`, rounded and clamped) | Number of lightweight moving accents |
+| `motionOpacity` | number | `0.22` (`0..1`, clamped) | Opacity of moving accents |
+
+Motion is CSS-only and respects `prefers-reduced-motion: reduce`. Section ornaments
+are rendered as decorative layers at the top/bottom edge of each section, so uploaded
+assets are immediately visible in the builder iframe and the published invitation.
 
 ---
 

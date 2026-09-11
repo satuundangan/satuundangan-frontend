@@ -82,6 +82,30 @@ describe('normalizeThemeConfig', () => {
       expect(normalizeThemeConfig({ couple: bad }).couple.photoFallback).toBe('hide')
     }
   })
+
+  it('seeds and sanitizes dynamic ornament motion settings', () => {
+    const defaults = normalizeThemeConfig(null)
+    expect(defaults.decor.ornamentMotion).toBe('none')
+    expect(defaults.decor.ornamentMotionSpeed).toBe('normal')
+    expect(defaults.decor.motionDensity).toBe(8)
+    expect(defaults.sections.couple.ornamentTopMotion).toBe('none')
+
+    const result = normalizeThemeConfig({
+      decor: {
+        ornamentMotion: 'float',
+        ornamentMotionSpeed: 'fast',
+        motionDensity: 99,
+        motionOpacity: -1,
+      },
+      sections: { couple: { ornamentTopMotion: 'sway', ornamentBottomMotion: 'invalid' } },
+    })
+    expect(result.decor.ornamentMotion).toBe('float')
+    expect(result.decor.ornamentMotionSpeed).toBe('fast')
+    expect(result.decor.motionDensity).toBe(16)
+    expect(result.decor.motionOpacity).toBe(0)
+    expect(result.sections.couple.ornamentTopMotion).toBe('sway')
+    expect(result.sections.couple.ornamentBottomMotion).toBe('none')
+  })
 })
 
 describe('resolveCouplePhoto', () => {
@@ -137,6 +161,7 @@ describe('themeCssVars', () => {
     expect(vars).toHaveProperty('--dt-color-primary')
     expect(vars).toHaveProperty('--dt-font-heading')
     expect(vars).toHaveProperty('--dt-radius')
+    expect(vars).toHaveProperty('--dt-motion-duration', '8s')
   })
 
   it('accepts a raw config too (normalizes internally)', () => {

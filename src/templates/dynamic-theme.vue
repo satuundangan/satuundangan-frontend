@@ -45,8 +45,24 @@
     <div
       v-if="theme.decor.patternUrl"
       class="fixed inset-0 pointer-events-none z-0"
+      :class="ornamentMotionClass"
       :style="patternStyle"
     ></div>
+
+    <div
+      v-if="theme.decor.ornamentMotion !== 'none' && motionParticles.length"
+      class="dt-motion-layer fixed inset-0 pointer-events-none z-[5]"
+      data-testid="dt-motion-layer"
+      aria-hidden="true"
+    >
+      <span
+        v-for="particle in motionParticles"
+        :key="particle"
+        class="dt-motion-particle"
+        :class="ornamentMotionClass"
+        :style="particleStyle(particle)"
+      ></span>
+    </div>
 
     <MusicControl
       v-if="data.musicChoice"
@@ -76,24 +92,28 @@
           :src="theme.ornaments.corner"
           alt=""
           class="absolute top-0 left-0 w-20 md:w-28 opacity-90 pointer-events-none"
+          :class="ornamentMotionClass"
         />
         <img
           v-if="theme.ornaments.corner"
           :src="theme.ornaments.corner"
           alt=""
           class="absolute top-0 right-0 w-20 md:w-28 opacity-90 pointer-events-none -scale-x-100"
+          :class="ornamentMotionClass"
         />
         <img
           v-if="theme.ornaments.corner"
           :src="theme.ornaments.corner"
           alt=""
           class="absolute bottom-0 left-0 w-20 md:w-28 opacity-90 pointer-events-none -scale-y-100"
+          :class="ornamentMotionClass"
         />
         <img
           v-if="theme.ornaments.corner"
           :src="theme.ornaments.corner"
           alt=""
           class="absolute bottom-0 right-0 w-20 md:w-28 opacity-90 pointer-events-none -scale-x-100 -scale-y-100"
+          :class="ornamentMotionClass"
         />
 
         <div class="relative z-10 space-y-6 w-full max-w-md">
@@ -393,7 +413,12 @@
         class="flex justify-center py-6"
         :style="sectionBg('couple')"
       >
-        <img :src="theme.ornaments.divider" alt="" class="h-10 md:h-14 opacity-90" />
+        <img
+          :src="theme.ornaments.divider"
+          alt=""
+          class="h-10 md:h-14 opacity-90"
+          :class="ornamentMotionClass"
+        />
       </div>
 
       <!-- EVENT -->
@@ -1031,7 +1056,28 @@ const theme = computed(() => {
 const rootStyle = computed(() => themeCssVars(theme.value))
 
 function sectionBg(key) {
-  return sectionStyle(theme.value, key)
+  const entry = theme.value.sections?.[key] || {}
+  const safeUrl = (value) => (typeof value === 'string' && value.trim() ? value.trim() : '')
+  const top = safeUrl(entry.ornamentTop)
+  const bottom = safeUrl(entry.ornamentBottom)
+  const motionAnimation = (preset) => {
+    const animations = {
+      float: 'dt-float var(--dt-motion-duration, 8s) ease-in-out infinite',
+      drift: 'dt-drift var(--dt-motion-duration, 12s) ease-in-out infinite',
+      sway: 'dt-sway var(--dt-motion-duration, 7s) ease-in-out infinite',
+      twinkle: 'dt-twinkle var(--dt-motion-duration, 4s) ease-in-out infinite',
+      pulse: 'dt-pulse var(--dt-motion-duration, 5s) ease-in-out infinite',
+    }
+    return animations[preset] || 'none'
+  }
+
+  return {
+    ...sectionStyle(theme.value, key),
+    '--dt-section-ornament-top': top ? `url("${top}")` : 'none',
+    '--dt-section-ornament-bottom': bottom ? `url("${bottom}")` : 'none',
+    '--dt-section-top-animation': motionAnimation(entry.ornamentTopMotion),
+    '--dt-section-bottom-animation': motionAnimation(entry.ornamentBottomMotion),
+  }
 }
 
 const patternStyle = computed(() => ({
@@ -1039,6 +1085,46 @@ const patternStyle = computed(() => ({
   backgroundRepeat: 'repeat',
   opacity: theme.value.decor.patternOpacity,
 }))
+
+const ornamentMotionClass = computed(() => {
+  const preset = theme.value.decor.ornamentMotion
+  return preset && preset !== 'none' ? `dt-motion-${preset}` : ''
+})
+
+const motionParticles = computed(() =>
+  Array.from({ length: theme.value.decor.motionDensity }, (_, index) => index),
+)
+
+const particleStyle = (index) => {
+  const positions = [
+    [8, 18],
+    [21, 72],
+    [34, 34],
+    [47, 84],
+    [59, 14],
+    [71, 61],
+    [83, 28],
+    [92, 78],
+    [14, 48],
+    [28, 9],
+    [42, 58],
+    [66, 43],
+    [77, 92],
+    [87, 52],
+    [52, 68],
+    [4, 91],
+  ]
+  const [left, top] = positions[index % positions.length]
+  const size = 3 + (index % 3) * 2
+  return {
+    left: `${left}%`,
+    top: `${top}%`,
+    width: `${size}px`,
+    height: `${size}px`,
+    opacity: theme.value.decor.motionOpacity,
+    animationDelay: `${(index % 5) * -0.8}s`,
+  }
+}
 
 const gateOverlayStyle = computed(() => ({
   backgroundColor: theme.value.hero.overlayColor,
@@ -1416,6 +1502,149 @@ onUnmounted(() => {
 
 <style scoped>
 @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
+
+#main-content > section,
+#main-content > footer {
+  position: relative;
+  isolation: isolate;
+}
+
+#main-content > section::before,
+#main-content > section::after,
+#main-content > footer::before,
+#main-content > footer::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 0;
+  height: 78px;
+  pointer-events: none;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: min(100%, 560px) auto;
+}
+
+#main-content > section::before,
+#main-content > footer::before {
+  top: 0;
+  background-image: var(--dt-section-ornament-top, none);
+  animation: var(--dt-section-top-animation, none);
+}
+
+#main-content > section::after,
+#main-content > footer::after {
+  bottom: 0;
+  background-image: var(--dt-section-ornament-bottom, none);
+  animation: var(--dt-section-bottom-animation, none);
+}
+
+#main-content > section > *,
+#main-content > footer > * {
+  position: relative;
+  z-index: 1;
+}
+
+.dt-motion-layer {
+  overflow: hidden;
+}
+
+.dt-motion-particle {
+  position: absolute;
+  display: block;
+  border-radius: 999px;
+  background: var(--dt-color-accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--dt-color-accent) 60%, transparent);
+}
+
+.dt-motion-float {
+  animation: dt-float var(--dt-motion-duration, 8s) ease-in-out infinite;
+}
+
+.dt-motion-drift {
+  animation: dt-drift var(--dt-motion-duration, 12s) ease-in-out infinite;
+}
+
+.dt-motion-sway {
+  animation: dt-sway var(--dt-motion-duration, 7s) ease-in-out infinite;
+}
+
+.dt-motion-twinkle {
+  animation: dt-twinkle var(--dt-motion-duration, 4s) ease-in-out infinite;
+}
+
+.dt-motion-pulse {
+  animation: dt-pulse var(--dt-motion-duration, 5s) ease-in-out infinite;
+}
+
+@keyframes dt-float {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) rotate(-2deg);
+  }
+  50% {
+    transform: translate3d(0, -10px, 0) rotate(2deg);
+  }
+}
+
+@keyframes dt-drift {
+  0%,
+  100% {
+    transform: translate3d(-8px, 3px, 0);
+  }
+  50% {
+    transform: translate3d(8px, -4px, 0);
+  }
+}
+
+@keyframes dt-sway {
+  0%,
+  100% {
+    transform: rotate(-5deg) translateX(-3px);
+  }
+  50% {
+    transform: rotate(5deg) translateX(3px);
+  }
+}
+
+@keyframes dt-twinkle {
+  0%,
+  100% {
+    opacity: 0.25;
+    transform: scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.25);
+  }
+}
+
+@keyframes dt-pulse {
+  0%,
+  100% {
+    transform: scale(0.95);
+    filter: saturate(0.9);
+  }
+  50% {
+    transform: scale(1.12);
+    filter: saturate(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-motion-particle,
+  .dt-motion-float,
+  .dt-motion-drift,
+  .dt-motion-sway,
+  .dt-motion-twinkle,
+  .dt-motion-pulse,
+  #main-content > section::before,
+  #main-content > section::after,
+  #main-content > footer::before,
+  #main-content > footer::after {
+    animation: none !important;
+  }
+}
 
 .dt-fade-enter-active,
 .dt-fade-leave-active {

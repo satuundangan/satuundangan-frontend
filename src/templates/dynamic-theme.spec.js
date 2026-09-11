@@ -192,6 +192,50 @@ describe('dynamic-theme.vue hero ink', () => {
   })
 })
 
+describe('dynamic-theme.vue dynamic backgrounds and ornaments', () => {
+  it('renders a section background and exposes per-section ornament URLs to the renderer', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          designConfig: {
+            sections: {
+              couple: {
+                background: { type: 'image', url: 'https://cdn.test/couple-bg.png' },
+                ornamentTop: 'https://cdn.test/top.png',
+                ornamentTopMotion: 'float',
+                ornamentBottom: 'https://cdn.test/bottom.png',
+                ornamentBottomMotion: 'sway',
+              },
+            },
+          },
+        }),
+      },
+    })
+
+    const sectionStyle = wrapper.get('#couple').attributes('style')
+    expect(sectionStyle).toContain('background-image: url("https://cdn.test/couple-bg.png")')
+    expect(sectionStyle).toContain('--dt-section-ornament-top: url("https://cdn.test/top.png")')
+    expect(sectionStyle).toContain('--dt-section-bottom-animation: dt-sway')
+  })
+
+  it('renders adjustable floating accents when global ornament motion is enabled', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          designConfig: {
+            decor: { ornamentMotion: 'float', motionDensity: 3, motionOpacity: 0.4 },
+          },
+        }),
+      },
+    })
+
+    const layer = wrapper.get('[data-testid="dt-motion-layer"]')
+    expect(layer.findAll('.dt-motion-particle')).toHaveLength(3)
+    expect(layer.findAll('.dt-motion-float')).toHaveLength(3)
+    expect(layer.find('.dt-motion-particle').attributes('style')).toContain('opacity: 0.4')
+  })
+})
+
 describe('dynamic-theme.vue compatibility and navigation', () => {
   it('normalizes legacy string wallet and gift-address payloads into one card each', () => {
     const wrapper = mount(DynamicTheme, {
