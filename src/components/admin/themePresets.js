@@ -43,9 +43,23 @@ function sectionsFrom(surface, alt) {
         background: { type: 'color', value: i % 2 === 0 ? surface : alt },
         ornamentTop: '',
         ornamentBottom: '',
+        ornamentTopMotion: 'none',
+        ornamentBottomMotion: 'none',
       },
     ]),
   )
+}
+
+function decorFrom(borderRadius, patternUrl = '', patternOpacity = 0.08) {
+  return {
+    borderRadius,
+    patternUrl,
+    patternOpacity,
+    ornamentMotion: 'none',
+    ornamentMotionSpeed: 'normal',
+    motionDensity: 8,
+    motionOpacity: 0.22,
+  }
 }
 
 export const THEME_PRESETS = [
@@ -78,7 +92,7 @@ export const THEME_PRESETS = [
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fdf6ec', '#f7f1e6'),
       ornaments: { corner: '', divider: '', frame: '' },
-      decor: { borderRadius: '0.5rem', patternUrl: '', patternOpacity: 0.08 },
+      decor: decorFrom('0.5rem'),
     },
   },
   {
@@ -110,7 +124,7 @@ export const THEME_PRESETS = [
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbf7ef', '#f6efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
-      decor: { borderRadius: '1rem', patternUrl: '', patternOpacity: 0.08 },
+      decor: decorFrom('1rem'),
     },
   },
   {
@@ -142,7 +156,7 @@ export const THEME_PRESETS = [
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fffdf9', '#faf6ef'),
       ornaments: { corner: '', divider: '', frame: '' },
-      decor: { borderRadius: '0.5rem', patternUrl: '', patternOpacity: 0.08 },
+      decor: decorFrom('0.5rem'),
     },
   },
   {
@@ -174,7 +188,7 @@ export const THEME_PRESETS = [
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf5', '#f5f3ec'),
       ornaments: { corner: '', divider: '', frame: '' },
-      decor: { borderRadius: '1.5rem', patternUrl: '', patternOpacity: 0.08 },
+      decor: decorFrom('1.5rem'),
     },
   },
   {
@@ -206,7 +220,7 @@ export const THEME_PRESETS = [
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#faf8f3', '#f4f1ea'),
       ornaments: { corner: '', divider: '', frame: '' },
-      decor: { borderRadius: '2rem', patternUrl: '', patternOpacity: 0.06 },
+      decor: decorFrom('2rem', '', 0.06),
     },
   },
   {
@@ -238,7 +252,71 @@ export const THEME_PRESETS = [
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#0f172a', '#1e293b'),
       ornaments: { corner: '', divider: '', frame: '' },
-      decor: { borderRadius: '1rem', patternUrl: '', patternOpacity: 0.08 },
+      decor: decorFrom('1rem'),
+    },
+  },
+  {
+    key: 'arabian-night',
+    label: 'Arabian Night',
+    description: 'Nuansa dongeng malam gurun dengan biru tengah malam dan aksen emas hangat.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#e9c46a',
+        secondary: '#6d4c41',
+        accent: '#f4a261',
+        background: '#0e1a3a',
+        surface: '#16264f',
+        text: '#f8f1de',
+        textMuted: '#c8bfa7',
+      },
+      fonts: {
+        heading: font('heading', 'Cinzel'),
+        script: font('script', 'Great Vibes'),
+        body: font('body', 'Manrope'),
+      },
+      hero: {
+        variant: 'classic',
+        backgroundImage: '',
+        overlayColor: '#050b1d',
+        overlayOpacity: 0.35,
+      },
+      couple: { photoFallback: 'hide' },
+      sections: sectionsFrom('#16264f', '#0e1a3a'),
+      ornaments: { corner: '', divider: '', frame: '' },
+      decor: decorFrom('1rem'),
+    },
+  },
+  {
+    key: 'manuk-dadali',
+    label: 'Manuk Dadali',
+    description: 'Hijau leuweung, cokelat kayu, dan emas hangat dalam nuansa Sunda yang anggun.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#1f5f4a',
+        secondary: '#6b4226',
+        accent: '#d5a441',
+        background: '#f3efe3',
+        surface: '#fbfaf4',
+        text: '#1d2f28',
+        textMuted: '#69766b',
+      },
+      fonts: {
+        heading: font('heading', 'Marcellus'),
+        script: font('script', 'Parisienne'),
+        body: font('body', 'Karla'),
+      },
+      hero: {
+        variant: 'framed',
+        backgroundImage: '',
+        overlayColor: '#102c22',
+        overlayOpacity: 0.3,
+      },
+      couple: { photoFallback: 'hide' },
+      sections: sectionsFrom('#fbfaf4', '#f3efe3'),
+      ornaments: { corner: '', divider: '', frame: '' },
+      decor: decorFrom('0.75rem'),
     },
   },
   {
@@ -278,9 +356,11 @@ export const THEME_PRESETS = [
         frame: '',
       },
       decor: {
-        borderRadius: '0.5rem',
-        patternUrl: 'https://cdn.satuundangan.id/themes/islam/pattern.png',
-        patternOpacity: 0.12,
+        ...decorFrom(
+          '0.5rem',
+          'https://cdn.satuundangan.id/themes/islam/pattern.png',
+          0.12,
+        ),
       },
     },
   },

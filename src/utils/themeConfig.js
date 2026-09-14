@@ -20,6 +20,8 @@ export const THEME_SECTION_KEYS = [
 const HERO_VARIANTS = ['classic', 'full-photo', 'framed']
 
 export const COUPLE_PHOTO_FALLBACKS = ['hide', 'ornament']
+export const ORNAMENT_MOTION_PRESETS = ['none', 'float', 'drift', 'sway', 'twinkle', 'pulse']
+export const ORNAMENT_MOTION_SPEEDS = ['slow', 'normal', 'fast']
 
 const GENERIC_FAMILIES = new Set([
   'serif',
@@ -67,7 +69,15 @@ export const THEME_DEFAULTS = {
   couple: { photoFallback: 'hide' },
   sections: {},
   ornaments: { corner: '', divider: '', frame: '' },
-  decor: { borderRadius: '1.5rem', patternUrl: '', patternOpacity: 0.08 },
+  decor: {
+    borderRadius: '1.5rem',
+    patternUrl: '',
+    patternOpacity: 0.08,
+    ornamentMotion: 'none',
+    ornamentMotionSpeed: 'normal',
+    motionDensity: 8,
+    motionOpacity: 0.22,
+  },
 }
 
 function isPlainObject(value) {
@@ -108,6 +118,8 @@ function defaultSectionEntry() {
     background: { type: 'color', value: THEME_DEFAULTS.colors.surface },
     ornamentTop: '',
     ornamentBottom: '',
+    ornamentTopMotion: 'none',
+    ornamentBottomMotion: 'none',
   }
 }
 
@@ -146,6 +158,16 @@ export function normalizeThemeConfig(raw) {
   for (const key of THEME_SECTION_KEYS) {
     if (!isPlainObject(merged.sections[key])) {
       merged.sections[key] = defaultSectionEntry()
+      continue
+    }
+    if (!isPlainObject(merged.sections[key].background)) {
+      merged.sections[key].background = deepClone(defaultSectionEntry().background)
+    }
+    if (!ORNAMENT_MOTION_PRESETS.includes(merged.sections[key].ornamentTopMotion)) {
+      merged.sections[key].ornamentTopMotion = 'none'
+    }
+    if (!ORNAMENT_MOTION_PRESETS.includes(merged.sections[key].ornamentBottomMotion)) {
+      merged.sections[key].ornamentBottomMotion = 'none'
     }
   }
 
@@ -167,9 +189,26 @@ export function normalizeThemeConfig(raw) {
     merged.hero.overlayOpacity,
     THEME_DEFAULTS.hero.overlayOpacity,
   )
+  if (!isPlainObject(merged.decor)) {
+    merged.decor = deepClone(THEME_DEFAULTS.decor)
+  }
   merged.decor.patternOpacity = clampOpacity(
     merged.decor.patternOpacity,
     THEME_DEFAULTS.decor.patternOpacity,
+  )
+  if (!ORNAMENT_MOTION_PRESETS.includes(merged.decor.ornamentMotion)) {
+    merged.decor.ornamentMotion = THEME_DEFAULTS.decor.ornamentMotion
+  }
+  if (!ORNAMENT_MOTION_SPEEDS.includes(merged.decor.ornamentMotionSpeed)) {
+    merged.decor.ornamentMotionSpeed = THEME_DEFAULTS.decor.ornamentMotionSpeed
+  }
+  const density = Number(merged.decor.motionDensity)
+  merged.decor.motionDensity = Number.isFinite(density)
+    ? Math.min(16, Math.max(0, Math.round(density)))
+    : THEME_DEFAULTS.decor.motionDensity
+  merged.decor.motionOpacity = clampOpacity(
+    merged.decor.motionOpacity,
+    THEME_DEFAULTS.decor.motionOpacity,
   )
 
   return merged
@@ -196,6 +235,9 @@ export function themeCssVars(config) {
   vars['--dt-overlay-opacity'] = String(
     cfg.hero?.overlayOpacity ?? THEME_DEFAULTS.hero.overlayOpacity,
   )
+  const motionDurations = { slow: '14s', normal: '8s', fast: '4s' }
+  vars['--dt-motion-duration'] =
+    motionDurations[cfg.decor?.ornamentMotionSpeed] || motionDurations.normal
 
   return vars
 }

@@ -279,7 +279,31 @@
               </div>
 
               <ImageUrlField v-model="config.sections[key].ornamentTop" label="Ornamen Atas" />
+              <div>
+                <label class="text-xs font-medium text-slate-500">Animasi Ornamen Atas</label>
+                <select
+                  v-model="config.sections[key].ornamentTopMotion"
+                  :data-testid="`section-ornament-top-motion-${key}`"
+                  class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+                >
+                  <option v-for="motion in ORNAMENT_MOTION_OPTIONS" :key="motion.value" :value="motion.value">
+                    {{ motion.label }}
+                  </option>
+                </select>
+              </div>
               <ImageUrlField v-model="config.sections[key].ornamentBottom" label="Ornamen Bawah" />
+              <div>
+                <label class="text-xs font-medium text-slate-500">Animasi Ornamen Bawah</label>
+                <select
+                  v-model="config.sections[key].ornamentBottomMotion"
+                  :data-testid="`section-ornament-bottom-motion-${key}`"
+                  class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+                >
+                  <option v-for="motion in ORNAMENT_MOTION_OPTIONS" :key="motion.value" :value="motion.value">
+                    {{ motion.label }}
+                  </option>
+                </select>
+              </div>
             </div>
           </details>
         </div>
@@ -329,6 +353,63 @@
               class="mt-1 w-full"
             />
           </div>
+          <div>
+            <label class="text-xs font-medium text-slate-500">Pernak-pernik Bergerak</label>
+            <select
+              v-model="config.decor.ornamentMotion"
+              data-testid="decor-ornament-motion"
+              class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+            >
+              <option v-for="motion in ORNAMENT_MOTION_OPTIONS" :key="motion.value" :value="motion.value">
+                {{ motion.label }}
+              </option>
+            </select>
+            <p class="mt-1 text-[10px] text-slate-400">
+              Menggerakkan ornamen global dan menambahkan aksen dekoratif ringan pada preview.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs font-medium text-slate-500">Kecepatan</label>
+              <select
+                v-model="config.decor.ornamentMotionSpeed"
+                data-testid="decor-ornament-motion-speed"
+                class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+              >
+                <option v-for="speed in ORNAMENT_MOTION_SPEED_OPTIONS" :key="speed.value" :value="speed.value">
+                  {{ speed.label }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-500">
+                Jumlah ({{ config.decor.motionDensity }})
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="16"
+                step="1"
+                v-model.number="config.decor.motionDensity"
+                data-testid="decor-motion-density"
+                class="mt-3 w-full"
+              />
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-slate-500">
+              Opasitas Aksen ({{ config.decor.motionOpacity }})
+            </label>
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.02"
+              v-model.number="config.decor.motionOpacity"
+              data-testid="decor-motion-opacity"
+              class="mt-1 w-full"
+            />
+          </div>
         </div>
       </div>
 
@@ -368,6 +449,8 @@ import {
   BACKGROUND_TYPES,
   SECTION_LABELS,
   COUPLE_PHOTO_FALLBACK_OPTIONS,
+  ORNAMENT_MOTION_OPTIONS,
+  ORNAMENT_MOTION_SPEED_OPTIONS,
   applyBackgroundType,
   buildPreviewMessage,
   sanitizeHex,

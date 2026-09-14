@@ -2,7 +2,12 @@
 // Consumed by `ThemeBuilder.vue`. Font catalogues, section labels, and background-type
 // switching all live here so they stay unit-testable without mounting a component.
 
-import { THEME_SECTION_KEYS, COUPLE_PHOTO_FALLBACKS } from '@/utils/themeConfig'
+import {
+  THEME_SECTION_KEYS,
+  COUPLE_PHOTO_FALLBACKS,
+  ORNAMENT_MOTION_PRESETS,
+  ORNAMENT_MOTION_SPEEDS,
+} from '@/utils/themeConfig'
 import { demoData } from '@/api/demoData'
 
 export const HEADING_FONTS = [
@@ -86,6 +91,21 @@ export const COUPLE_PHOTO_FALLBACK_OPTIONS = COUPLE_PHOTO_FALLBACKS.map((value) 
 }))
 
 export const BACKGROUND_TYPES = ['color', 'gradient', 'image']
+
+export const ORNAMENT_MOTION_OPTIONS = [
+  { value: 'none', label: 'Diam' },
+  { value: 'float', label: 'Mengambang' },
+  { value: 'drift', label: 'Bergeser pelan' },
+  { value: 'sway', label: 'Bergoyang' },
+  { value: 'twinkle', label: 'Berkedip' },
+  { value: 'pulse', label: 'Denyut lembut' },
+].filter((option) => ORNAMENT_MOTION_PRESETS.includes(option.value))
+
+export const ORNAMENT_MOTION_SPEED_OPTIONS = [
+  { value: 'slow', label: 'Pelan' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'fast', label: 'Cepat' },
+].filter((option) => ORNAMENT_MOTION_SPEEDS.includes(option.value))
 
 export const SECTION_LABELS = {
   hero: 'Hero/Sampul',

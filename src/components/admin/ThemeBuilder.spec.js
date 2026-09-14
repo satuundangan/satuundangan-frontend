@@ -9,6 +9,8 @@ import {
   BACKGROUND_TYPES,
   SECTION_LABELS,
   COUPLE_PHOTO_FALLBACK_OPTIONS,
+  ORNAMENT_MOTION_OPTIONS,
+  ORNAMENT_MOTION_SPEED_OPTIONS,
   applyBackgroundType,
   buildPreviewMessage,
   designConfigForPayload,
@@ -61,6 +63,22 @@ describe('HERO_VARIANTS / BACKGROUND_TYPES / SECTION_LABELS', () => {
       expect(typeof SECTION_LABELS[key]).toBe('string')
       expect(SECTION_LABELS[key].length).toBeGreaterThan(0)
     }
+  })
+
+  it('exposes motion presets and speed controls for the builder', () => {
+    expect(ORNAMENT_MOTION_OPTIONS.map((option) => option.value)).toEqual([
+      'none',
+      'float',
+      'drift',
+      'sway',
+      'twinkle',
+      'pulse',
+    ])
+    expect(ORNAMENT_MOTION_SPEED_OPTIONS.map((option) => option.value)).toEqual([
+      'slow',
+      'normal',
+      'fast',
+    ])
   })
 })
 
@@ -176,6 +194,21 @@ describe('ThemeBuilder.vue', () => {
     expect(payload).toHaveProperty('hero')
     expect(payload).toHaveProperty('sections')
     expect(payload).toHaveProperty('decor')
+  })
+
+  it('changes global motion and per-section ornament motion in the same live config', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+
+    await wrapper.get('[data-testid="decor-ornament-motion"]').setValue('float')
+    await wrapper.get('[data-testid="decor-ornament-motion-speed"]').setValue('slow')
+    await wrapper.get('[data-testid="section-couple"]').find('summary').trigger('click')
+    await wrapper.get('[data-testid="section-ornament-top-motion-couple"]').setValue('sway')
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload.decor.ornamentMotion).toBe('float')
+    expect(payload.decor.ornamentMotionSpeed).toBe('slow')
+    expect(payload.sections.couple.ornamentTopMotion).toBe('sway')
   })
 })
 

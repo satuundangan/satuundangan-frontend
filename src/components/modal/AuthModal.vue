@@ -165,15 +165,13 @@
                       to="/terms"
                       target="_blank"
                       class="font-bold text-mocha hover:underline"
-                      @click="emit('close')"
-                      >Syarat & Ketentuan</router-link
+                      >Syarat &amp; Ketentuan</router-link
                     >
                     dan
                     <router-link
                       to="/privacy"
                       target="_blank"
                       class="font-bold text-mocha hover:underline"
-                      @click="emit('close')"
                       >Kebijakan Privasi</router-link
                     >
                     SatuUndangan.
