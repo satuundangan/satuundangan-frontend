@@ -120,6 +120,7 @@
             <label class="text-xs font-medium text-slate-500">Varian</label>
             <select
               v-model="config.hero.variant"
+              data-testid="hero-variant"
               class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
             >
               <option v-for="v in HERO_VARIANTS" :key="v.value" :value="v.value">
@@ -128,6 +129,18 @@
             </select>
           </div>
           <ImageUrlField v-model="config.hero.backgroundImage" label="Gambar Latar Belakang" />
+          <div v-if="config.hero.variant === 'art-directed'" class="space-y-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/60 p-3" data-testid="hero-2d-layers">
+            <div>
+              <p class="text-xs font-semibold text-slate-600">Scene 2D berlapis</p>
+              <p class="mt-1 text-[10px] text-slate-400">
+                Upload/ganti tiap layer tanpa mengubah kode. Layer memakai kanvas transparan agar bisa disusun menjadi satu scene.
+              </p>
+            </div>
+            <ImageUrlField v-model="config.hero.layers.back" label="Layer belakang" />
+            <ImageUrlField v-model="config.hero.layers.middle" label="Layer tengah" />
+            <ImageUrlField v-model="config.hero.layers.front" label="Layer depan" />
+            <ImageUrlField v-model="config.hero.layers.accent" label="Aksen foreground" />
+          </div>
           <div>
             <label class="text-xs font-medium text-slate-500">Warna Overlay</label>
             <div class="mt-1 flex items-center gap-2">

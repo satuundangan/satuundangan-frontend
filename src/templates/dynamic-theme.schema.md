@@ -70,15 +70,29 @@ The cover/hero visual treatment.
 
 | Field             | Type   | Allowed values                            | Default     | Controls                                                    |
 | ----------------- | ------ | ------------------------------------------ | ----------- | -------------------------------------------------------------- |
-| `variant`         | string | `classic` \| `full-photo` \| `framed`      | `classic`   | Layout: unknown value silently falls back to `classic`         |
+| `variant`         | string | `classic` \| `full-photo` \| `framed` \| `art-directed` | `classic` | Layout: unknown value silently falls back to `classic` |
 | `backgroundImage` | string (URL) | any                                   | `''`        | Hero background image; falls back to `data.photoCoupleUrl` when empty |
 | `overlayColor`    | hex color string | any                                  | `#000000`   | Color of the dark/tint overlay atop the hero image              |
 | `overlayOpacity`  | number  | `0..1` (clamped; non-numeric -> default)   | `0.35`      | Overlay strength                                                |
+| `layers`          | object  | `{ back, middle, front, accent }`           | all `''`    | Transparent scene layers rendered above `backgroundImage` for `art-directed` |
 
 **Variants:**
 - `classic` — names centered over `backgroundImage`/`photoCoupleUrl`.
 - `full-photo` — edge-to-edge photo, names bottom-anchored.
 - `framed` — inset photo inside a bordered frame, names below.
+- `art-directed` — builder-driven 2D scene: `backgroundImage` is the base canvas and each
+  non-empty `layers.*` URL is rendered as a transparent layer in back-to-front order.
+  The global `decor.ornamentMotion` setting applies subtle motion to the layers and can be
+  disabled with `none` or automatically disabled by the user's reduced-motion preference.
+
+`hero.layers` fields:
+
+| Field | Type | Default | Controls |
+| ----- | ---- | ------- | -------- |
+| `back` | string (URL) | `''` | Background foliage/architecture layer |
+| `middle` | string (URL) | `''` | Midground illustration layer |
+| `front` | string (URL) | `''` | Foreground foliage/objects layer |
+| `accent` | string (URL) | `''` | Small accents such as flowers, stars, or sparkles |
 
 ---
 

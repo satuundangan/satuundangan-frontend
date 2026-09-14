@@ -50,8 +50,13 @@ describe('themeBuilderOptions font catalogues', () => {
 })
 
 describe('HERO_VARIANTS / BACKGROUND_TYPES / SECTION_LABELS', () => {
-  it('HERO_VARIANTS matches the 3 schema values', () => {
-    expect(HERO_VARIANTS.map((v) => v.value)).toEqual(['classic', 'full-photo', 'framed'])
+  it('HERO_VARIANTS matches the schema values', () => {
+    expect(HERO_VARIANTS.map((v) => v.value)).toEqual([
+      'classic',
+      'full-photo',
+      'framed',
+      'art-directed',
+    ])
   })
 
   it('BACKGROUND_TYPES matches color/gradient/image', () => {
@@ -174,6 +179,16 @@ describe('ThemeBuilder.vue', () => {
       .get('[data-testid="colors-group"]')
       .findAll('input[type="text"]')[1]
     expect(secondaryHex.element.value).toBe(THEME_DEFAULTS.colors.secondary)
+  })
+
+  it('shows editable layer slots for the builder-driven art-directed 2D hero', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+
+    await wrapper.get('[data-testid="hero-variant"]').setValue('art-directed')
+
+    const layers = wrapper.get('[data-testid="hero-2d-layers"]')
+    expect(layers.text()).toContain('Scene 2D berlapis')
+    expect(layers.findAll('input[type="url"]').length).toBe(4)
   })
 
   it('renders a couple photo fallback select with one option per COUPLE_PHOTO_FALLBACK_OPTIONS, default "hide"', () => {

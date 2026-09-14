@@ -74,6 +74,7 @@ export const HERO_VARIANTS = [
   { value: 'classic', label: 'Klasik' },
   { value: 'full-photo', label: 'Foto Penuh' },
   { value: 'framed', label: 'Berbingkai' },
+  { value: 'art-directed', label: 'Art-directed 2D' },
 ]
 
 // Labels keyed by COUPLE_PHOTO_FALLBACKS value (not a separate literal list) so the

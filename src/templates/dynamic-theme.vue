@@ -80,6 +80,11 @@
         class="fixed inset-0 z-50 flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
         :style="gateBackgroundStyle"
       >
+        <ThemeArtScene
+          v-if="theme.hero.variant === 'art-directed'"
+          :hero="theme.hero"
+          :motion-preset="theme.decor.ornamentMotion"
+        />
         <div class="absolute inset-0" :style="gateOverlayStyle"></div>
         <div
           class="absolute inset-0 pointer-events-none"
@@ -173,7 +178,42 @@
         class="relative min-h-screen flex flex-col items-center justify-center text-center px-6"
         :style="[sectionBg('hero'), heroSectionStyle]"
       >
-        <template v-if="theme.hero.variant === 'full-photo'">
+        <template v-if="theme.hero.variant === 'art-directed'">
+          <ThemeArtScene
+            :hero="theme.hero"
+            :motion-preset="theme.decor.ornamentMotion"
+          />
+          <div class="absolute inset-0" :style="gateOverlayStyle"></div>
+          <div
+            class="absolute inset-0 pointer-events-none"
+            data-dt-scrim="hero"
+            :style="heroScrimStyle"
+          ></div>
+          <div class="relative z-10 space-y-6 max-w-2xl" v-observe>
+            <p
+              class="text-xs md:text-sm tracking-[0.4em] uppercase"
+              :style="{ color: heroInk.eyebrow }"
+            >
+              We Are Getting Married
+            </p>
+            <h1
+              class="text-5xl md:text-7xl leading-tight"
+              :class="{ 'drop-shadow-lg': heroInk.isDark }"
+              :style="{ fontFamily: 'var(--dt-font-heading)', color: heroInk.heading }"
+            >
+              {{ data.groomName }} <span :style="{ color: heroInk.eyebrow }">&amp;</span>
+              {{ data.brideName }}
+            </h1>
+            <p
+              class="text-base md:text-lg font-light tracking-wide"
+              :style="{ color: heroInk.heading }"
+            >
+              {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
+            </p>
+          </div>
+        </template>
+
+        <template v-else-if="theme.hero.variant === 'full-photo'">
           <div
             class="absolute inset-0 bg-cover bg-center bg-no-repeat"
             :style="heroBgImageStyle"
@@ -1002,6 +1042,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import ThemeArtScene from '@/components/invitation/ThemeArtScene.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 import {
@@ -1153,7 +1194,12 @@ const heroFrameImageCss = computed(() =>
 
 const gateBackgroundStyle = computed(() => ({
   backgroundColor: theme.value.colors.background,
-  backgroundImage: heroBackgroundUrl.value ? `url("${heroBackgroundUrl.value}")` : 'none',
+  backgroundImage:
+    theme.value.hero.variant === 'art-directed'
+      ? 'none'
+      : heroBackgroundUrl.value
+        ? `url("${heroBackgroundUrl.value}")`
+        : 'none',
 }))
 
 const coupleFrameStyle = computed(() => {

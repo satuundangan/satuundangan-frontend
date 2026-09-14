@@ -28,6 +28,10 @@ function font(role, family) {
   return { family: entry.family, weights: [...entry.weights], fallback: entry.fallback }
 }
 
+function heroLayers(back = '', middle = '', front = '', accent = '') {
+  return { back, middle, front, accent }
+}
+
 /**
  * Seed every THEME_SECTION_KEYS entry with a preset-owned color background,
  * alternating `surface`/`alt` by index for visible separation between
@@ -88,6 +92,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.4,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fdf6ec', '#f7f1e6'),
@@ -120,6 +125,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.35,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbf7ef', '#f6efe3'),
@@ -152,6 +158,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.4,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fffdf9', '#faf6ef'),
@@ -184,6 +191,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.35,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf5', '#f5f3ec'),
@@ -216,6 +224,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.3,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#faf8f3', '#f4f1ea'),
@@ -248,6 +257,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.5,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#0f172a', '#1e293b'),
@@ -280,6 +290,7 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#050b1d',
         overlayOpacity: 0.35,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#16264f', '#0e1a3a'),
@@ -312,11 +323,55 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#102c22',
         overlayOpacity: 0.3,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf4', '#f3efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: decorFrom('0.75rem'),
+    },
+  },
+  {
+    key: 'serene-garden-2d',
+    label: 'Serene Garden 2D',
+    description: 'Scene ilustrasi taman dan arch botanical berlapis seperti undangan editorial modern.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#344c3f',
+        secondary: '#9a7b54',
+        accent: '#c9818b',
+        background: '#f6f3eb',
+        surface: '#fffdf7',
+        text: '#2f342f',
+        textMuted: '#6f746b',
+      },
+      fonts: {
+        heading: font('heading', 'Cormorant Garamond'),
+        script: font('script', 'Great Vibes'),
+        body: font('body', 'Manrope'),
+      },
+      hero: {
+        variant: 'art-directed',
+        backgroundImage: '/assets/images/serene-garden-2d/background.svg',
+        overlayColor: '#ffffff',
+        overlayOpacity: 0.08,
+        layers: heroLayers(
+          '/assets/images/serene-garden-2d/middle.svg',
+          '/assets/images/serene-garden-2d/front.svg',
+          '/assets/images/serene-garden-2d/accent.svg',
+        ),
+      },
+      couple: { photoFallback: 'hide' },
+      sections: sectionsFrom('#fffdf7', '#f6f3eb'),
+      ornaments: { corner: '', divider: '', frame: '' },
+      decor: {
+        ...decorFrom('1rem'),
+        ornamentMotion: 'float',
+        ornamentMotionSpeed: 'slow',
+        motionDensity: 6,
+        motionOpacity: 0.16,
+      },
     },
   },
   {
@@ -347,6 +402,7 @@ export const THEME_PRESETS = [
         backgroundImage: 'https://cdn.satuundangan.id/themes/islam/hero.jpg',
         overlayColor: '#000000',
         overlayOpacity: 0.05,
+        layers: heroLayers(),
       },
       couple: { photoFallback: 'ornament' },
       sections: sectionsFrom('#FEFBF4', '#FAF6EC'),

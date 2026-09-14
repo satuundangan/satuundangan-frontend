@@ -193,6 +193,33 @@ describe('dynamic-theme.vue hero ink', () => {
 })
 
 describe('dynamic-theme.vue dynamic backgrounds and ornaments', () => {
+  it('renders the builder-driven art-directed 2D scene in the cover and hero', () => {
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({
+          designConfig: {
+            hero: {
+              variant: 'art-directed',
+              backgroundImage: 'https://cdn.test/background.svg',
+              layers: {
+                back: 'https://cdn.test/back.svg',
+                middle: 'https://cdn.test/middle.svg',
+                front: 'https://cdn.test/front.svg',
+                accent: 'https://cdn.test/accent.svg',
+              },
+            },
+          },
+        }),
+      },
+    })
+
+    expect(wrapper.findAll('[data-testid="dt-art-scene"]')).toHaveLength(2)
+    expect(wrapper.findAll('[data-testid="dt-art-scene"] img')).toHaveLength(8)
+    expect(wrapper.get('[data-testid="dt-art-scene"] img').attributes('src')).toBe(
+      'https://cdn.test/back.svg',
+    )
+  })
+
   it('renders a section background and exposes per-section ornament URLs to the renderer', () => {
     const wrapper = mount(DynamicTheme, {
       props: {

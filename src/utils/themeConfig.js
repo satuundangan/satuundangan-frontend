@@ -17,7 +17,7 @@ export const THEME_SECTION_KEYS = [
   'footer',
 ]
 
-const HERO_VARIANTS = ['classic', 'full-photo', 'framed']
+const HERO_VARIANTS = ['classic', 'full-photo', 'framed', 'art-directed']
 
 export const COUPLE_PHOTO_FALLBACKS = ['hide', 'ornament']
 export const ORNAMENT_MOTION_PRESETS = ['none', 'float', 'drift', 'sway', 'twinkle', 'pulse']
@@ -65,6 +65,7 @@ export const THEME_DEFAULTS = {
     backgroundImage: '',
     overlayColor: '#000000',
     overlayOpacity: 0.35,
+    layers: { back: '', middle: '', front: '', accent: '' },
   },
   couple: { photoFallback: 'hide' },
   sections: {},
@@ -169,6 +170,16 @@ export function normalizeThemeConfig(raw) {
     if (!ORNAMENT_MOTION_PRESETS.includes(merged.sections[key].ornamentBottomMotion)) {
       merged.sections[key].ornamentBottomMotion = 'none'
     }
+  }
+
+  if (!isPlainObject(merged.hero)) {
+    merged.hero = deepClone(THEME_DEFAULTS.hero)
+  }
+  if (!isPlainObject(merged.hero.layers)) {
+    merged.hero.layers = deepClone(THEME_DEFAULTS.hero.layers)
+  }
+  for (const key of Object.keys(THEME_DEFAULTS.hero.layers)) {
+    if (typeof merged.hero.layers[key] !== 'string') merged.hero.layers[key] = ''
   }
 
   if (!HERO_VARIANTS.includes(merged.hero.variant)) {
