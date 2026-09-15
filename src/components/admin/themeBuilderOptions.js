@@ -7,6 +7,10 @@ import {
   COUPLE_PHOTO_FALLBACKS,
   ORNAMENT_MOTION_PRESETS,
   ORNAMENT_MOTION_SPEEDS,
+  COVER_TRANSITION_PRESETS,
+  SECTION_SCROLL_PRESETS,
+  REVEAL_TRANSITION_PRESETS,
+  TRANSITION_SPEEDS,
 } from '@/utils/themeConfig'
 import { demoData } from '@/api/demoData'
 
@@ -107,6 +111,27 @@ export const ORNAMENT_MOTION_SPEED_OPTIONS = [
   { value: 'normal', label: 'Normal' },
   { value: 'fast', label: 'Cepat' },
 ].filter((option) => ORNAMENT_MOTION_SPEEDS.includes(option.value))
+
+export const TRANSITION_COVER_OPTIONS = [
+  { value: 'fade', label: 'Fade sederhana' },
+  { value: 'reference', label: 'Cover cinematic (referensi)' },
+].filter((option) => COVER_TRANSITION_PRESETS.includes(option.value))
+
+export const TRANSITION_SCROLL_OPTIONS = [
+  { value: 'continuous', label: 'Scroll bebas' },
+  { value: 'snap', label: 'Snap per section' },
+].filter((option) => SECTION_SCROLL_PRESETS.includes(option.value))
+
+export const TRANSITION_REVEAL_OPTIONS = [
+  { value: 'fade-up', label: 'Fade-up' },
+  { value: 'reference', label: 'Directional (referensi)' },
+].filter((option) => REVEAL_TRANSITION_PRESETS.includes(option.value))
+
+export const TRANSITION_SPEED_OPTIONS = [
+  { value: 'slow', label: 'Pelan' },
+  { value: 'normal', label: 'Normal' },
+  { value: 'fast', label: 'Cepat' },
+].filter((option) => TRANSITION_SPEEDS.includes(option.value))
 
 export const SECTION_LABELS = {
   hero: 'Hero/Sampul',

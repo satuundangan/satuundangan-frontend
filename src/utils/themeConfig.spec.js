@@ -120,6 +120,32 @@ describe('normalizeThemeConfig', () => {
     expect(result.sections.couple.ornamentTopMotion).toBe('sway')
     expect(result.sections.couple.ornamentBottomMotion).toBe('none')
   })
+
+  it('seeds and sanitizes transition settings for the builder', () => {
+    expect(normalizeThemeConfig(null).transitions).toEqual(THEME_DEFAULTS.transitions)
+
+    const result = normalizeThemeConfig({
+      transitions: {
+        cover: 'reference',
+        scroll: 'snap',
+        reveal: 'reference',
+        speed: 'fast',
+        stagger: 99,
+      },
+    })
+    expect(result.transitions).toEqual({
+      cover: 'reference',
+      scroll: 'snap',
+      reveal: 'reference',
+      speed: 'fast',
+      stagger: 0.3,
+    })
+
+    const fallback = normalizeThemeConfig({
+      transitions: { cover: 'bad', scroll: 'bad', reveal: 'bad', speed: 'bad', stagger: -1 },
+    })
+    expect(fallback.transitions).toEqual(THEME_DEFAULTS.transitions)
+  })
 })
 
 describe('resolveCouplePhoto', () => {
@@ -176,11 +202,19 @@ describe('themeCssVars', () => {
     expect(vars).toHaveProperty('--dt-font-heading')
     expect(vars).toHaveProperty('--dt-radius')
     expect(vars).toHaveProperty('--dt-motion-duration', '8s')
+    expect(vars).toHaveProperty('--dt-reveal-duration', '1s')
+    expect(vars).toHaveProperty('--dt-reveal-stagger', '0s')
   })
 
   it('accepts a raw config too (normalizes internally)', () => {
     const vars = themeCssVars('{"colors":{"primary":"#111111"}}')
     expect(vars['--dt-color-primary']).toBe('#111111')
+  })
+
+  it('derives reveal timing variables from transition settings', () => {
+    const vars = themeCssVars({ transitions: { speed: 'slow', stagger: 0.08 } })
+    expect(vars['--dt-reveal-duration']).toBe('1.5s')
+    expect(vars['--dt-reveal-stagger']).toBe('0.08s')
   })
 })
 

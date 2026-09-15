@@ -96,6 +96,22 @@ The cover/hero visual treatment.
 
 ---
 
+## `transitions`
+
+Controls the interaction language of the invitation. The `Serene Garden 2D` preset uses
+the `reference` cover/reveal modes and `snap` scrolling to reproduce the editorial,
+mobile-first feel of the reference template.
+
+| Field | Type | Allowed values | Default | Controls |
+| ----- | ---- | -------------- | ------- | -------- |
+| `cover` | string | `fade` \| `reference` | `fade` | Cover exit: simple fade or cinematic scale/slide transition |
+| `scroll` | string | `continuous` \| `snap` | `continuous` | Normal document scrolling or viewport-aligned section snapping |
+| `reveal` | string | `fade-up` \| `reference` | `fade-up` | Content reveal direction: upward fade or alternating directional reveal |
+| `speed` | string | `slow` \| `normal` \| `fast` | `normal` | Reveal duration |
+| `stagger` | number | `0..0.3` (clamped) | `0` | Delay in seconds between reveal groups |
+
+---
+
 ## `couple`
 
 Controls how a missing couple photo (groom or bride) is handled in the `couple` section.
@@ -189,6 +205,7 @@ all keys prefixed `--dt-`:
 --dt-color-background, --dt-color-surface, --dt-color-text, --dt-color-text-muted,
 --dt-font-heading, --dt-font-script, --dt-font-body,
 --dt-radius, --dt-overlay-color, --dt-overlay-opacity, --dt-motion-duration
+--dt-reveal-duration, --dt-reveal-stagger
 ```
 
 `dynamic-theme.vue` applies this object to its root element and consumes every value

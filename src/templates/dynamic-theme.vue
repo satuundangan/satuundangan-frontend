@@ -1,6 +1,8 @@
 <template>
   <div
+    ref="scrollRoot"
     class="relative min-h-screen overflow-hidden"
+    :class="rootTransitionClass"
     :style="[
       rootStyle,
       {
@@ -74,10 +76,14 @@
     />
 
     <!-- COVER GATE -->
-    <transition name="dt-fade">
+    <transition name="dt-fade" @after-leave="gateTransitionState = 'closed'">
       <div
         v-if="showGate"
-        class="fixed inset-0 z-50 flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
+        class="dt-gate fixed inset-0 z-50 flex flex-col items-center justify-center text-center px-6 bg-cover bg-center bg-no-repeat"
+        :class="{
+          'dt-gate-reference': theme.transitions.cover === 'reference',
+          'dt-gate-closing': gateTransitionState === 'closing',
+        }"
         :style="gateBackgroundStyle"
       >
         <ThemeArtScene
@@ -121,7 +127,7 @@
           :class="ornamentMotionClass"
         />
 
-        <div class="relative z-10 space-y-6 w-full max-w-md">
+        <div class="dt-gate-panel relative z-10 space-y-6 w-full max-w-md">
           <p
             class="text-xs md:text-sm tracking-[0.3em] uppercase"
             :style="{ color: heroInk.eyebrow }"
@@ -1094,7 +1100,13 @@ const theme = computed(() => {
 
   return config
 })
+const showGate = ref(true)
+const gateTransitionState = ref('idle')
 const rootStyle = computed(() => themeCssVars(theme.value))
+const scrollRoot = ref(null)
+const rootTransitionClass = computed(() => ({
+  'dt-scroll-snap-enabled': !showGate.value && theme.value.transitions.scroll === 'snap',
+}))
 
 function sectionBg(key) {
   const entry = theme.value.sections?.[key] || {}
@@ -1242,7 +1254,6 @@ const rsvpOptionActiveStyle = computed(() => ({
 }))
 
 // --- Cover gate + section navigation ---
-const showGate = ref(true)
 const activeSection = ref('hero')
 let scrollSpyObserver = null
 
@@ -1270,6 +1281,7 @@ const navItems = computed(() => {
 })
 
 function openInvitation() {
+  gateTransitionState.value = 'closing'
   showGate.value = false
   requestAnimationFrame(initScrollSpy)
 }
@@ -1290,7 +1302,7 @@ function initScrollSpy() {
         if (entry.isIntersecting) activeSection.value = entry.target.id
       })
     },
-    { threshold: 0.35 },
+    { root: scrollRoot.value || null, threshold: 0.35 },
   )
 
   navItems.value.forEach((item) => {
@@ -1385,9 +1397,30 @@ watch(
 )
 
 // --- Scroll-reveal directive ---
+let revealIndex = 0
+const revealDirections = ['up', 'left', 'right', 'fade']
+
+function revealDirection() {
+  if (theme.value.transitions.reveal !== 'reference') return 'up'
+  const direction = revealDirections[revealIndex % revealDirections.length]
+  revealIndex += 1
+  return direction
+}
+
+function syncRevealClasses(el) {
+  const direction = el.dataset.dtRevealDirection || 'up'
+  for (const name of revealDirections) el.classList.remove(`dt-observe-${name}`)
+  el.classList.add(
+    `dt-observe-${theme.value.transitions.reveal === 'reference' ? direction : 'up'}`,
+  )
+  el.style.setProperty('--dt-reveal-delay', `${theme.value.transitions.stagger}s`)
+}
+
 const vObserve = {
   mounted(el) {
+    el.dataset.dtRevealDirection = revealDirection()
     el.classList.add('dt-observe')
+    syncRevealClasses(el)
     if (typeof IntersectionObserver === 'undefined') {
       el.classList.add('dt-observe-visible')
       return
@@ -1401,9 +1434,12 @@ const vObserve = {
           }
         })
       },
-      { threshold: 0.1 },
+      { root: scrollRoot.value || null, threshold: 0.1 },
     )
     observer.observe(el)
+  },
+  updated(el) {
+    syncRevealClasses(el)
   },
 }
 
@@ -1591,6 +1627,20 @@ onUnmounted(() => {
   z-index: 1;
 }
 
+.dt-scroll-snap-enabled {
+  height: 100svh;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scroll-behavior: smooth;
+  scroll-snap-type: y mandatory;
+}
+
+.dt-scroll-snap-enabled #main-content > section,
+.dt-scroll-snap-enabled #main-content > footer {
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
 .dt-motion-layer {
   overflow: hidden;
 }
@@ -1702,16 +1752,58 @@ onUnmounted(() => {
   opacity: 0;
 }
 
+.dt-gate-panel {
+  transform-origin: center;
+  transition:
+    opacity var(--dt-reveal-duration, 1s) ease,
+    transform var(--dt-reveal-duration, 1s) cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.dt-gate-reference.dt-gate-closing .dt-gate-panel {
+  opacity: 0;
+  transform: translate3d(0, 120px, 0) scale(0.5);
+}
+
 .dt-observe {
   opacity: 0;
-  transform: translateY(24px);
-  transition:
-    opacity 0.8s ease,
-    transform 0.8s ease;
+  transition-property: opacity, transform;
+  transition-duration: var(--dt-reveal-duration, 0.8s);
+  transition-delay: var(--dt-reveal-delay, 0s);
+  transition-timing-function: ease;
+}
+
+.dt-observe-up {
+  transform: translateY(30px);
+}
+
+.dt-observe-left {
+  transform: translateX(-100px);
+}
+
+.dt-observe-right {
+  transform: translateX(100px);
+}
+
+.dt-observe-fade {
+  transform: scale(0.8);
 }
 
 .dt-observe-visible {
   opacity: 1;
-  transform: translateY(0);
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dt-gate-panel,
+  .dt-observe,
+  .dt-scroll-snap-enabled {
+    scroll-behavior: auto;
+    transition: none !important;
+  }
+
+  .dt-observe {
+    opacity: 1;
+    transform: none;
+  }
 }
 </style>

@@ -66,6 +66,14 @@ function decorFrom(borderRadius, patternUrl = '', patternOpacity = 0.08) {
   }
 }
 
+const defaultTransitions = {
+  cover: 'fade',
+  scroll: 'continuous',
+  reveal: 'fade-up',
+  speed: 'normal',
+  stagger: 0,
+}
+
 export const THEME_PRESETS = [
   {
     key: 'gorga-batak',
@@ -94,6 +102,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.4,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fdf6ec', '#f7f1e6'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -127,6 +136,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.35,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbf7ef', '#f6efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -160,6 +170,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.4,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fffdf9', '#faf6ef'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -193,6 +204,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.35,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf5', '#f5f3ec'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -226,6 +238,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.3,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#faf8f3', '#f4f1ea'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -259,6 +272,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.5,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#0f172a', '#1e293b'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -292,6 +306,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.35,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#16264f', '#0e1a3a'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -325,6 +340,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.3,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf4', '#f3efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -361,6 +377,13 @@ export const THEME_PRESETS = [
           '/assets/images/serene-garden-2d/front.svg',
           '/assets/images/serene-garden-2d/accent.svg',
         ),
+      },
+      transitions: {
+        cover: 'reference',
+        scroll: 'snap',
+        reveal: 'reference',
+        speed: 'normal',
+        stagger: 0.08,
       },
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fffdf7', '#f6f3eb'),
@@ -404,6 +427,7 @@ export const THEME_PRESETS = [
         overlayOpacity: 0.05,
         layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'ornament' },
       sections: sectionsFrom('#FEFBF4', '#FAF6EC'),
       ornaments: {

@@ -11,6 +11,10 @@ import {
   COUPLE_PHOTO_FALLBACK_OPTIONS,
   ORNAMENT_MOTION_OPTIONS,
   ORNAMENT_MOTION_SPEED_OPTIONS,
+  TRANSITION_COVER_OPTIONS,
+  TRANSITION_SCROLL_OPTIONS,
+  TRANSITION_REVEAL_OPTIONS,
+  TRANSITION_SPEED_OPTIONS,
   applyBackgroundType,
   buildPreviewMessage,
   designConfigForPayload,
@@ -224,6 +228,37 @@ describe('ThemeBuilder.vue', () => {
     expect(payload.decor.ornamentMotion).toBe('float')
     expect(payload.decor.ornamentMotionSpeed).toBe('slow')
     expect(payload.sections.couple.ornamentTopMotion).toBe('sway')
+  })
+
+  it('exposes reference transition controls and emits their values', async () => {
+    const wrapper = mount(ThemeBuilder, { props: { modelValue: null } })
+
+    expect(wrapper.get('[data-testid="transition-cover"]').findAll('option')).toHaveLength(
+      TRANSITION_COVER_OPTIONS.length,
+    )
+    expect(wrapper.get('[data-testid="transition-scroll"]').findAll('option')).toHaveLength(
+      TRANSITION_SCROLL_OPTIONS.length,
+    )
+    expect(wrapper.get('[data-testid="transition-reveal"]').findAll('option')).toHaveLength(
+      TRANSITION_REVEAL_OPTIONS.length,
+    )
+    expect(wrapper.get('[data-testid="transition-speed"]').findAll('option')).toHaveLength(
+      TRANSITION_SPEED_OPTIONS.length,
+    )
+
+    await wrapper.get('[data-testid="transition-cover"]').setValue('reference')
+    await wrapper.get('[data-testid="transition-scroll"]').setValue('snap')
+    await wrapper.get('[data-testid="transition-reveal"]').setValue('reference')
+    await wrapper.get('[data-testid="transition-stagger"]').setValue('0.08')
+
+    const emitted = wrapper.emitted('update:modelValue')
+    const payload = emitted[emitted.length - 1][0]
+    expect(payload.transitions).toMatchObject({
+      cover: 'reference',
+      scroll: 'snap',
+      reveal: 'reference',
+      stagger: 0.08,
+    })
   })
 })
 

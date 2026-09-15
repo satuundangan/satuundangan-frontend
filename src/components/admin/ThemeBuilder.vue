@@ -426,6 +426,80 @@
         </div>
       </div>
 
+      <!-- Transisi -->
+      <div class="rounded-lg border border-slate-200 p-4">
+        <h3 class="mb-1 text-sm font-semibold text-slate-700">Transisi Undangan</h3>
+        <p class="mb-3 text-[10px] leading-relaxed text-slate-400">
+          Atur cara cover terbuka, perpindahan antar section, dan animasi konten saat masuk viewport.
+        </p>
+        <div data-testid="transitions-group" class="space-y-3">
+          <div>
+            <label class="text-xs font-medium text-slate-500">Transisi Cover</label>
+            <select
+              v-model="config.transitions.cover"
+              data-testid="transition-cover"
+              class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+            >
+              <option v-for="option in TRANSITION_COVER_OPTIONS" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-slate-500">Scroll Antar Section</label>
+            <select
+              v-model="config.transitions.scroll"
+              data-testid="transition-scroll"
+              class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+            >
+              <option v-for="option in TRANSITION_SCROLL_OPTIONS" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs font-medium text-slate-500">Reveal Konten</label>
+            <select
+              v-model="config.transitions.reveal"
+              data-testid="transition-reveal"
+              class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+            >
+              <option v-for="option in TRANSITION_REVEAL_OPTIONS" :key="option.value" :value="option.value">
+                {{ option.label }}
+              </option>
+            </select>
+          </div>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <label class="text-xs font-medium text-slate-500">Kecepatan</label>
+              <select
+                v-model="config.transitions.speed"
+                data-testid="transition-speed"
+                class="mt-1 w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm outline-none focus:border-slate-400"
+              >
+                <option v-for="option in TRANSITION_SPEED_OPTIONS" :key="option.value" :value="option.value">
+                  {{ option.label }}
+                </option>
+              </select>
+            </div>
+            <div>
+              <label class="text-xs font-medium text-slate-500">
+                Stagger ({{ config.transitions.stagger }}s)
+              </label>
+              <input
+                type="range"
+                min="0"
+                max="0.3"
+                step="0.01"
+                v-model.number="config.transitions.stagger"
+                data-testid="transition-stagger"
+                class="mt-3 w-full"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Version -->
       <p class="text-xs text-slate-400">Versi skema: {{ config.version }} (tetap)</p>
     </div>
@@ -464,6 +538,10 @@ import {
   COUPLE_PHOTO_FALLBACK_OPTIONS,
   ORNAMENT_MOTION_OPTIONS,
   ORNAMENT_MOTION_SPEED_OPTIONS,
+  TRANSITION_COVER_OPTIONS,
+  TRANSITION_SCROLL_OPTIONS,
+  TRANSITION_REVEAL_OPTIONS,
+  TRANSITION_SPEED_OPTIONS,
   applyBackgroundType,
   buildPreviewMessage,
   sanitizeHex,

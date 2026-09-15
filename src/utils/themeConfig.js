@@ -22,6 +22,10 @@ const HERO_VARIANTS = ['classic', 'full-photo', 'framed', 'art-directed']
 export const COUPLE_PHOTO_FALLBACKS = ['hide', 'ornament']
 export const ORNAMENT_MOTION_PRESETS = ['none', 'float', 'drift', 'sway', 'twinkle', 'pulse']
 export const ORNAMENT_MOTION_SPEEDS = ['slow', 'normal', 'fast']
+export const COVER_TRANSITION_PRESETS = ['fade', 'reference']
+export const SECTION_SCROLL_PRESETS = ['continuous', 'snap']
+export const REVEAL_TRANSITION_PRESETS = ['fade-up', 'reference']
+export const TRANSITION_SPEEDS = ['slow', 'normal', 'fast']
 
 const GENERIC_FAMILIES = new Set([
   'serif',
@@ -66,6 +70,13 @@ export const THEME_DEFAULTS = {
     overlayColor: '#000000',
     overlayOpacity: 0.35,
     layers: { back: '', middle: '', front: '', accent: '' },
+  },
+  transitions: {
+    cover: 'fade',
+    scroll: 'continuous',
+    reveal: 'fade-up',
+    speed: 'normal',
+    stagger: 0,
   },
   couple: { photoFallback: 'hide' },
   sections: {},
@@ -112,6 +123,12 @@ function clampOpacity(value, fallback) {
   if (n < 0) return 0
   if (n > 1) return 1
   return n
+}
+
+function clampNumber(value, fallback, min, max) {
+  const n = typeof value === 'string' ? Number(value) : value
+  if (typeof n !== 'number' || Number.isNaN(n)) return fallback
+  return Math.min(max, Math.max(min, n))
 }
 
 function defaultSectionEntry() {
@@ -186,6 +203,28 @@ export function normalizeThemeConfig(raw) {
     merged.hero.variant = 'classic'
   }
 
+  if (!isPlainObject(merged.transitions)) {
+    merged.transitions = deepClone(THEME_DEFAULTS.transitions)
+  }
+  if (!COVER_TRANSITION_PRESETS.includes(merged.transitions.cover)) {
+    merged.transitions.cover = THEME_DEFAULTS.transitions.cover
+  }
+  if (!SECTION_SCROLL_PRESETS.includes(merged.transitions.scroll)) {
+    merged.transitions.scroll = THEME_DEFAULTS.transitions.scroll
+  }
+  if (!REVEAL_TRANSITION_PRESETS.includes(merged.transitions.reveal)) {
+    merged.transitions.reveal = THEME_DEFAULTS.transitions.reveal
+  }
+  if (!TRANSITION_SPEEDS.includes(merged.transitions.speed)) {
+    merged.transitions.speed = THEME_DEFAULTS.transitions.speed
+  }
+  merged.transitions.stagger = clampNumber(
+    merged.transitions.stagger,
+    THEME_DEFAULTS.transitions.stagger,
+    0,
+    0.3,
+  )
+
   // `couple` may arrive as null/string/array via stored JSON or a partial override —
   // re-seed it as a plain object BEFORE reading `photoFallback`, or the property
   // access below would throw on `couple: null`.
@@ -249,6 +288,10 @@ export function themeCssVars(config) {
   const motionDurations = { slow: '14s', normal: '8s', fast: '4s' }
   vars['--dt-motion-duration'] =
     motionDurations[cfg.decor?.ornamentMotionSpeed] || motionDurations.normal
+  const revealDurations = { slow: '1.5s', normal: '1s', fast: '0.7s' }
+  vars['--dt-reveal-duration'] =
+    revealDurations[cfg.transitions?.speed] || revealDurations.normal
+  vars['--dt-reveal-stagger'] = `${cfg.transitions?.stagger ?? THEME_DEFAULTS.transitions.stagger}s`
 
   return vars
 }

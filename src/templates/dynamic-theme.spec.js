@@ -261,6 +261,22 @@ describe('dynamic-theme.vue dynamic backgrounds and ornaments', () => {
     expect(layer.findAll('.dt-motion-float')).toHaveLength(3)
     expect(layer.find('.dt-motion-particle').attributes('style')).toContain('opacity: 0.4')
   })
+
+  it('applies reference cover, snap scrolling, and directional reveal transitions', async () => {
+    const preset = THEME_PRESETS.find((item) => item.key === 'serene-garden-2d')
+    const wrapper = mount(DynamicTheme, {
+      props: {
+        data: makeData({ designConfig: preset.config }),
+      },
+    })
+
+    expect(wrapper.find('.dt-gate-reference').exists()).toBe(true)
+    expect(wrapper.find('.dt-observe-left').exists()).toBe(true)
+
+    await wrapper.get('.dt-gate-panel button').trigger('click')
+
+    expect(wrapper.classes()).toContain('dt-scroll-snap-enabled')
+  })
 })
 
 describe('dynamic-theme.vue compatibility and navigation', () => {
