@@ -1400,15 +1400,15 @@ watch(
 let revealIndex = 0
 const revealDirections = ['up', 'left', 'right', 'fade']
 
-function revealDirection() {
-  if (theme.value.transitions.reveal !== 'reference') return 'up'
-  const direction = revealDirections[revealIndex % revealDirections.length]
+function nextRevealIndex() {
+  const index = revealIndex
   revealIndex += 1
-  return direction
+  return index
 }
 
 function syncRevealClasses(el) {
-  const direction = el.dataset.dtRevealDirection || 'up'
+  const index = Number(el.dataset.dtRevealIndex)
+  const direction = revealDirections[Number.isFinite(index) ? index % revealDirections.length : 0]
   for (const name of revealDirections) el.classList.remove(`dt-observe-${name}`)
   el.classList.add(
     `dt-observe-${theme.value.transitions.reveal === 'reference' ? direction : 'up'}`,
@@ -1418,7 +1418,7 @@ function syncRevealClasses(el) {
 
 const vObserve = {
   mounted(el) {
-    el.dataset.dtRevealDirection = revealDirection()
+    el.dataset.dtRevealIndex = String(nextRevealIndex())
     el.classList.add('dt-observe')
     syncRevealClasses(el)
     if (typeof IntersectionObserver === 'undefined') {
