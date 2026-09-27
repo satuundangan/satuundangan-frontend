@@ -112,6 +112,48 @@
               </div>
             </div>
           </div>
+
+          <div
+            v-if="currentInvitation"
+            class="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+          >
+            <div class="flex items-start gap-4">
+              <div class="w-11 h-11 shrink-0 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center">
+                <i class="fa-solid fa-lock"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h3 class="font-bold text-slate-900 text-sm">Tamu Publik</h3>
+                  <span
+                    class="px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide"
+                    :class="currentInvitation.isGuestPublic !== false ? 'bg-green-50 text-green-600' : 'bg-rose-50 text-rose-500'"
+                  >
+                    {{ currentInvitation.isGuestPublic !== false ? 'AKTIF' : 'TIDAK AKTIF' }}
+                  </span>
+                </div>
+                <p class="mt-1 max-w-2xl text-xs leading-relaxed text-slate-500">
+                  {{ currentInvitation.isGuestPublic !== false
+                    ? 'Siapa saja dengan link undangan dapat melihatnya. Matikan agar hanya tamu yang diundang dapat membuka link khusus mereka.'
+                    : 'Undangan hanya dapat dibuka melalui link khusus yang dibagikan kepada tamu dari menu ini.' }}
+                </p>
+              </div>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              :aria-checked="currentInvitation.isGuestPublic !== false"
+              :aria-label="currentInvitation.isGuestPublic !== false ? 'Nonaktifkan akses tamu publik' : 'Aktifkan akses tamu publik'"
+              :disabled="updatingGuestAccess"
+              @click="toggleGuestAccess"
+              class="relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-50"
+              :class="currentInvitation.isGuestPublic !== false ? 'bg-violet-500' : 'bg-slate-200'"
+            >
+              <span
+                class="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform"
+                :class="currentInvitation.isGuestPublic !== false ? 'translate-x-6' : 'translate-x-1'"
+              ></span>
+            </button>
+          </div>
         </div>
 
         <div v-if="loading" class="flex justify-center py-20">
@@ -489,7 +531,7 @@ import { onMounted, ref, watch, computed } from 'vue'
 import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
 import Topbar from '@/components/dashboard/TopbarDashboard.vue'
 import BottomNav from '@/components/dashboard/BottomNav.vue'
-import { getInvitations } from '@/api/invitation'
+import { getInvitations, updateInvitation } from '@/api/invitation'
 import { featuresFor } from '@/config/packageFeatures'
 import {
   getGuestsByInvitationId,
@@ -520,6 +562,7 @@ const shareMessage = ref('')
 const shareUrl = ref('')
 const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
+const updatingGuestAccess = ref(false)
 const newGuest = ref({ name: '', group: '', phoneNumber: '' })
 
 const currentInvitation = computed(() => {
@@ -568,6 +611,23 @@ async function fetchGuests(invId) {
     console.error(error)
   } finally {
     loading.value = false
+  }
+}
+
+async function toggleGuestAccess() {
+  const invitation = currentInvitation.value
+  if (!invitation || updatingGuestAccess.value) return
+
+  const isGuestPublic = invitation.isGuestPublic === false
+  updatingGuestAccess.value = true
+  try {
+    await updateInvitation(invitation.id, { isGuestPublic })
+    invitation.isGuestPublic = isGuestPublic
+    toast.success(isGuestPublic ? 'Akses publik diaktifkan' : 'Undangan sekarang privat')
+  } catch (error) {
+    toast.error(error?.message || 'Gagal mengubah akses undangan')
+  } finally {
+    updatingGuestAccess.value = false
   }
 }
 
