@@ -1,6 +1,7 @@
 <script setup>
 import {
   getInvitationBySlug,
+  getInvitationWithGuest,
   getMyInvitationBySlug,
   getInvitationBySubdomain,
   getCustomSubdomain,
@@ -209,7 +210,8 @@ onMounted(async () => {
     } else {
       try {
         // Normal Mode: Fetch from API
-        const rawData = await fetchInvitationData(slug)
+        const response = await fetchInvitationData(slug)
+        const rawData = response?.invitation || response
         
         // If live sync already started, don't overwrite with old API data
         if (isLiveSyncActive.value) {
@@ -235,7 +237,8 @@ onMounted(async () => {
           audioEnd: Number((rawData.content || rawData).audioEnd) || 0,
           template_slug: rawData.template_slug || rawData.templateName,
           show_branding: rawData.show_branding ?? false,
-          is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
+          is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished,
+          guestName: response?.guest?.name,
         }
       } catch (err) {
         // If live sync already started, ignore error
@@ -278,7 +281,7 @@ onMounted(async () => {
     }
   } catch (err) {
     if (!isLiveSyncActive.value) {
-       error.value = 'Undangan tidak ditemukan atau terjadi kesalahan.'
+       error.value = err?.message || 'Undangan tidak ditemukan atau terjadi kesalahan.'
        console.error(err)
     }
   } finally {
@@ -343,6 +346,8 @@ async function fetchInvitationData(slug) {
       response = await getInvitationBySubdomain(subdomainLabel)
     } else if (isPreviewMode.value) {
       response = await getMyInvitationBySlug(slug)
+    } else if (route.params.guestSlug) {
+      response = await getInvitationWithGuest(slug, route.params.guestSlug)
     } else {
       response = await getInvitationBySlug(slug)
     }
