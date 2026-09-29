@@ -106,11 +106,6 @@ async function handleCredentials() {
       body: JSON.stringify({ email: form.email, password: form.password }),
     })
 
-    if (res.requiresTotp) {
-      step.value = 'totp'
-      return
-    }
-
     await finishLogin(res)
   } catch (error) {
     toast.error(error.message || 'Login gagal, periksa kembali data Anda')
@@ -144,11 +139,6 @@ async function finishLogin(res) {
   if (!auth.user?.isAdmin) {
     toast.error('Akun ini tidak memiliki akses admin')
     auth.logout()
-    return
-  }
-
-  if (res.totpSetupRequired) {
-    await router.push('/admin/totp/setup')
     return
   }
 

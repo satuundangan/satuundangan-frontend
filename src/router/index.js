@@ -331,11 +331,11 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
 
-  // Block admin routes if TOTP not yet set up (only where TOTP is required)
-  if (import.meta.env.VITE_ADMIN_TOTP_ENABLED === 'true' && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
-    next({ name: 'admin-totp-setup' })
-    return
-  }
+  // Block admin routes if TOTP not yet set up (temporarily disabled)
+  // if (import.meta.env.VITE_ADMIN_TOTP_ENABLED === 'true' && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
+  //   next({ name: 'admin-totp-setup' })
+  //   return
+  // }
 
   if (guestOnly && authStore.user?.isAdmin) {
     next({ name: 'admin-dashboard' })
