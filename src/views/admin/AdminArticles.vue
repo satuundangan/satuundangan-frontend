@@ -8,6 +8,32 @@
     actionLabel="+ Tulis Artikel"
     @action="$router.push({ name: 'admin-article-create' })"
   >
+    <!-- Auto-Blog Status & Action Banner -->
+    <div class="mb-6 p-4 md:p-5 rounded-2xl bg-gradient-to-r from-violet-50 to-amber-50 border border-violet-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-violet-600 text-white flex items-center justify-center font-bold shrink-0">
+          <i class="pi pi-sparkles text-lg"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-2 flex-wrap">
+            <h4 class="font-bold text-slate-900 text-sm">Auto-Blogger AI (Gemini)</h4>
+            <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold tracking-wide bg-green-100 text-green-700">AKTIF 08:00 WIB</span>
+          </div>
+          <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">Menulis & menerbitkan 1 artikel SEO pernikahan berkualitas tinggi setiap hari secara otomatis.</p>
+        </div>
+      </div>
+      <button
+        type="button"
+        :disabled="isGenerating"
+        @click="triggerAutoGenerate"
+        class="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs shadow transition-all disabled:opacity-50 shrink-0"
+      >
+        <i v-if="isGenerating" class="pi pi-spin pi-spinner"></i>
+        <i v-else class="pi pi-bolt text-amber-400"></i>
+        <span>{{ isGenerating ? 'AI Sedang Menulis...' : 'Generate 1 Artikel Sekarang' }}</span>
+      </button>
+    </div>
+
     <!-- Status Filter Tabs -->
     <div class="mb-6 flex gap-2">
       <button
@@ -181,11 +207,12 @@
 <script setup>
 import { ref, watch, computed } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import { fetchAdminArticles, deleteAdminArticle } from '@/api/admin.js'
+import { fetchAdminArticles, deleteAdminArticle, autoGenerateAdminArticle } from '@/api/admin.js'
 import Swal from 'sweetalert2'
 
 const articles = ref([])
 const loading = ref(true)
+const isGenerating = ref(false)
 const search = ref('')
 const page = ref(1)
 const limit = ref(20)
@@ -290,6 +317,36 @@ watch(statusFilter, () => {
   page.value = 1
   loadArticles()
 })
+
+const triggerAutoGenerate = async () => {
+  const result = await Swal.fire({
+    title: 'Generate Artikel dengan AI?',
+    text: 'Gemini AI akan memilih topik pernikahan terbaik dan menulis artikel lengkap (1.200+ kata) beserta SEO & gambar cover.',
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: '⚡ Ya, Tulis Sekarang',
+    cancelButtonText: 'Batal',
+  })
+
+  if (!result.isConfirmed) return
+
+  isGenerating.value = true
+  try {
+    const article = await autoGenerateAdminArticle()
+    await loadArticles()
+    Swal.fire({
+      title: 'Artikel Berhasil Diterbitkan! 🎉',
+      text: `"${article.title}" telah diterbitkan dan masuk ke sitemap XML.`,
+      icon: 'success',
+    })
+  } catch (err) {
+    Swal.fire('Gagal Membuat Artikel', err?.message || 'Pastikan GEMINI_API_KEY sudah diset di backend .env', 'error')
+  } finally {
+    isGenerating.value = false
+  }
+}
 
 loadArticles()
 </script>
