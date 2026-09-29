@@ -434,6 +434,69 @@
       </div>
     </section>
 
+    <!-- Blog & Wedding Inspiration Section -->
+    <section v-if="articles.length > 0" id="blog" class="py-24 bg-white relative overflow-hidden">
+      <div class="max-w-6xl mx-auto px-6 relative z-10">
+        <div class="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+          <div>
+            <span class="text-mocha font-bold tracking-widest uppercase text-xs sm:text-sm mb-2 block">
+              Inspirasi & Edukasi
+            </span>
+            <h2 class="text-3xl md:text-4xl font-serif font-bold text-dark">
+              Tips & Panduan Pernikahan
+            </h2>
+            <p class="text-muted text-sm sm:text-base mt-2 max-w-xl">
+              Kumpulan ide konsep, susunan prosesi adat, hingga kata mutiara undangan untuk menyempurnakan hari bahagiamu.
+            </p>
+          </div>
+          <router-link
+            to="/blog"
+            class="group inline-flex items-center gap-2 text-mocha font-bold text-sm hover:text-dark transition-colors shrink-0"
+          >
+            <span>Lihat Semua Artikel</span>
+            <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+          </router-link>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8">
+          <router-link
+            v-for="post in articles"
+            :key="post.id"
+            :to="'/blog/' + post.slug"
+            class="bg-white rounded-2xl overflow-hidden border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 flex flex-col group"
+          >
+            <div class="relative aspect-[16/10] overflow-hidden bg-stone-100">
+              <img
+                :src="post.coverImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80'"
+                :alt="post.title"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                loading="lazy"
+              />
+              <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-mocha shadow-sm">
+                Panduan
+              </div>
+            </div>
+            <div class="p-6 flex flex-col flex-1">
+              <h3 class="font-serif font-bold text-lg text-dark group-hover:text-mocha transition-colors line-clamp-2 mb-2 leading-snug">
+                {{ post.title }}
+              </h3>
+              <p class="text-xs text-muted line-clamp-3 mb-4 flex-1 leading-relaxed">
+                {{ post.excerpt }}
+              </p>
+              <div class="flex items-center justify-between text-xs text-mocha font-bold pt-4 border-t border-gray-100 mt-auto">
+                <span class="inline-flex items-center gap-1.5 text-gray-500 font-normal">
+                  <i class="fa-regular fa-clock text-[11px]"></i> 3 min baca
+                </span>
+                <span class="inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
+                  Baca Artikel <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </span>
+              </div>
+            </div>
+          </router-link>
+        </div>
+      </div>
+    </section>
+
     <!-- FAQ Section -->
     <FaqSection />
 
@@ -831,6 +894,7 @@ import FaqSection from '@/components/landing/FaqSection.vue'
 import { featuresFor } from '@/config/packageFeatures'
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getPackages } from '@/api/payment'
+import { fetchArticles } from '@/api/article'
 import AuthModal from '@/components/modal/AuthModal.vue'
 import {
   buildStyleFilters,
@@ -869,6 +933,7 @@ const selectedTier = ref('all') // Package tier filter id (NOT selectedPackage â
 // already used by the pricing section / localStorage key)
 const templateRefs = reactive({})
 const templates = ref([])
+const articles = ref([])
 const loading = ref(true)
 
 // Presentation metadata. Price filled from GET /payment/packages (single source of truth).
@@ -1000,6 +1065,15 @@ onMounted(async () => {
     tierPrices.value = next
   } catch (e) {
     console.error('Gagal ambil paket harga, pakai harga statis:', e)
+  }
+
+  // Fetch latest 3 blog articles for landing page showcase
+  try {
+    const artRes = await fetchArticles({ limit: 3 })
+    const artList = artRes?.data || artRes?.articles || (Array.isArray(artRes) ? artRes : [])
+    articles.value = Array.isArray(artList) ? artList : []
+  } catch (e) {
+    console.error('Gagal ambil artikel blog:', e)
   }
 
   window.addEventListener('scroll', checkScrollPosition, { passive: true })

@@ -27,13 +27,27 @@
       <!-- Desktop Menu -->
       <ul class="hidden md:flex items-center gap-8">
         <li v-for="item in menuItems" :key="item.text">
-          <a :href="item.href"
-             :class="[
-               'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
-               isScrolled ? 'text-dark' : 'text-dark/80'
-             ]">
-             {{ item.text }}
-             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          <router-link
+            v-if="item.href.startsWith('/')"
+            :to="item.href"
+            :class="[
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
+              isScrolled ? 'text-dark' : 'text-dark/80'
+            ]"
+          >
+            {{ item.text }}
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          </router-link>
+          <a
+            v-else
+            :href="item.href"
+            :class="[
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
+              isScrolled ? 'text-dark' : 'text-dark/80'
+            ]"
+          >
+            {{ item.text }}
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
           </a>
         </li>
       </ul>
@@ -109,9 +123,22 @@
 
           <ul class="space-y-6 flex-1">
             <li v-for="item in menuItems" :key="item.text">
-               <a :href="item.href" @click="sidebarOpen = false" class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2">
-                 {{ item.text }}
-               </a>
+              <router-link
+                v-if="item.href.startsWith('/')"
+                :to="item.href"
+                @click="sidebarOpen = false"
+                class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2"
+              >
+                {{ item.text }}
+              </router-link>
+              <a
+                v-else
+                :href="item.href"
+                @click="sidebarOpen = false"
+                class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2"
+              >
+                {{ item.text }}
+              </a>
             </li>
           </ul>
 
@@ -177,7 +204,9 @@ const menuItems = [
   { text: 'Home', href: '#' },
   { text: 'Fitur', href: '#features' },
   { text: 'Katalog', href: '#templates' },
+  { text: 'Harga', href: '#pricing' },
   { text: 'Testimoni', href: '#testimonials' },
+  { text: 'Blog & Tips', href: '/blog' },
 ]
 
 onClickOutside(dropdownRef, () => {

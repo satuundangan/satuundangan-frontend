@@ -45,6 +45,7 @@
               <li><router-link to="/create" class="hover:text-mocha transition">Buat Undangan</router-link></li>
               <li><router-link to="/templates" class="hover:text-mocha transition">Katalog Tema</router-link></li>
               <li><a href="#features" class="hover:text-mocha transition">Fitur Premium</a></li>
+              <li><router-link to="/blog" class="hover:text-mocha transition">Blog & Tips Pernikahan</router-link></li>
            </ul>
         </div>
 
