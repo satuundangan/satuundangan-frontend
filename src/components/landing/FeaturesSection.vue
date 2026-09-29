@@ -47,6 +47,12 @@ const features = [
     description: 'Impor nama tamu dari Excel/HP, buat link personal otomatis, dan sebar via WhatsApp dalam 1 klik tanpa repot.'
   },
   {
+    icon: 'fa-solid fa-qrcode',
+    badge: 'Anti Antre',
+    title: 'Buku Tamu Digital & QR',
+    description: 'Check-in kilat cukup scan QR code tamu dari smartphone. Meja resepsi bebas antrean panjang dan kehadiran terpantau real-time.'
+  },
+  {
     icon: 'fa-solid fa-music',
     title: 'Musik Latar',
     description: 'Pilih lagu favoritmu untuk menemani tamu saat membuka undangan. Bisa autoplay!'

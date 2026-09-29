@@ -10,8 +10,9 @@ import { demoData } from '@/api/demoData'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { featuresFor } from '@/config/packageFeatures'
-import { onMounted, ref, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
+import { onMounted, ref, computed, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import QRCode from 'qrcode'
 import {
   templateLoaders,
   resolveTemplateKey,
@@ -37,6 +38,10 @@ const error = ref(null)
 const isPreviewMode = ref(false)
 const isInsideFrame = ref(false)
 const isDemoMode = ref(false)
+const guestData = ref(null)
+const showTicketModal = ref(false)
+const ticketQrDataUrl = ref('')
+const isGeneratingQr = ref(false)
 
 const isLiveSyncActive = ref(false)
 
@@ -212,6 +217,9 @@ onMounted(async () => {
         // Normal Mode: Fetch from API
         const response = await fetchInvitationData(slug)
         const rawData = response?.invitation || response
+        if (response?.guest) {
+          guestData.value = response.guest
+        }
         
         // If live sync already started, don't overwrite with old API data
         if (isLiveSyncActive.value) {
@@ -293,6 +301,72 @@ onMounted(async () => {
 
 const goToCheckout = () => {
   router.push(`/checkout?slug=${slug}`)
+}
+
+const isPersonalGuest = computed(() => {
+  return Boolean(
+    route.params.guestSlug ||
+    route.params.token ||
+    route.query.token ||
+    guestData.value?.accessToken ||
+    guestData.value?.slug ||
+    guestData.value?.id
+  )
+})
+
+const weddingCoupleNames = computed(() => {
+  const d = invitationData.value
+  if (!d) return 'The Wedding'
+  if (d.groomName && d.brideName) return `${d.groomName} & ${d.brideName}`
+  if (d.groom_name && d.bride_name) return `${d.groom_name} & ${d.bride_name}`
+  if (d.couple_name) return d.couple_name
+  if (d.title) return d.title
+  return 'The Wedding'
+})
+
+const guestDisplayName = computed(() => {
+  return guestData.value?.name || invitationData.value?.guestName || route.query.to || 'Tamu Undangan'
+})
+
+const guestCategory = computed(() => {
+  return guestData.value?.group || guestData.value?.category || 'VIP'
+})
+
+async function generateTicketQr() {
+  if (ticketQrDataUrl.value) return
+  isGeneratingQr.value = true
+  try {
+    const token =
+      route.params.guestSlug ||
+      route.params.token ||
+      guestData.value?.accessToken ||
+      guestData.value?.slug ||
+      guestData.value?.id ||
+      route.query.token
+
+    const qrPayload =
+      typeof window !== 'undefined' && window.location?.href
+        ? window.location.href
+        : String(token || 'guest')
+
+    ticketQrDataUrl.value = await QRCode.toDataURL(qrPayload, {
+      width: 280,
+      margin: 2,
+      color: {
+        dark: '#0f172a',
+        light: '#ffffff',
+      },
+    })
+  } catch (e) {
+    console.error('Failed to generate ticket QR code', e)
+  } finally {
+    isGeneratingQr.value = false
+  }
+}
+
+function openTicketModal() {
+  generateTicketQr()
+  showTicketModal.value = true
 }
 
 // Set document title + meta/OG tags for a template's demo page from its SEO
@@ -449,6 +523,106 @@ function getLocalPreviewPayload(slug) {
           </button>
         </div>
       </div>
+
+      <!-- Floating Ticket & QR Action Button for Personal Guest -->
+      <div
+        v-if="isPersonalGuest && !isInsideFrame"
+        class="fixed bottom-6 right-6 z-40 transition-all duration-300"
+      >
+        <button
+          type="button"
+          @click="openTicketModal"
+          class="flex items-center gap-2.5 px-4 sm:px-5 py-3 rounded-full bg-slate-900/95 hover:bg-black text-white shadow-2xl shadow-black/30 backdrop-blur-md border border-white/20 transition-all transform hover:scale-105 active:scale-95 text-xs sm:text-sm font-extrabold tracking-wide cursor-pointer group"
+        >
+          <span class="text-base group-hover:rotate-12 transition-transform duration-300">🎟️</span>
+          <span>Tiket & QR Kehadiran</span>
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+        </button>
+      </div>
+
+      <!-- Ticket & QR Kehadiran Modal -->
+      <Teleport to="body">
+        <div
+          v-if="showTicketModal"
+          class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
+          @click.self="showTicketModal = false"
+        >
+          <div class="relative w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-scale-up border border-slate-100">
+            <!-- Decorative Header -->
+            <div class="bg-gradient-to-br from-slate-950 via-slate-900 to-[#a47148] p-6 text-white text-center relative overflow-hidden">
+              <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full bg-white/10 blur-xl"></div>
+              <div class="absolute -left-6 -bottom-6 w-24 h-24 rounded-full bg-[#a47148]/20 blur-xl"></div>
+
+              <button
+                type="button"
+                @click="showTicketModal = false"
+                class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition-colors cursor-pointer"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+
+              <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-[10px] font-black uppercase tracking-widest mb-3 backdrop-blur-xs border border-white/10">
+                <span>🎟️</span>
+                <span>E-Ticket & QR Kehadiran</span>
+              </div>
+
+              <h3 class="text-lg sm:text-xl font-black tracking-tight leading-tight">
+                {{ weddingCoupleNames }}
+              </h3>
+              <p class="text-[11px] text-slate-300 mt-1 font-medium">Buku Tamu Digital & Akses Masuk Resepsi</p>
+            </div>
+
+            <!-- Perforated Ticket Divider -->
+            <div class="relative flex items-center justify-between px-3 -my-3 z-10">
+              <div class="w-6 h-6 rounded-full bg-black/60 -ml-6"></div>
+              <div class="flex-1 border-t-2 border-dashed border-slate-200 mx-2"></div>
+              <div class="w-6 h-6 rounded-full bg-black/60 -mr-6"></div>
+            </div>
+
+            <!-- Guest Info & QR Code -->
+            <div class="p-6 text-center space-y-4">
+              <div>
+                <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200 mb-1.5">
+                  {{ guestCategory }}
+                </span>
+                <h4 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">
+                  {{ guestDisplayName }}
+                </h4>
+              </div>
+
+              <!-- QR Code Container -->
+              <div class="p-3 bg-slate-50 rounded-2xl border border-slate-100 inline-block shadow-inner">
+                <div v-if="ticketQrDataUrl" class="w-48 h-48 sm:w-52 sm:h-52 mx-auto rounded-xl overflow-hidden bg-white p-2 shadow-xs flex items-center justify-center">
+                  <img :src="ticketQrDataUrl" alt="QR Code Kehadiran" class="w-full h-full object-contain" />
+                </div>
+                <div v-else class="w-48 h-48 sm:w-52 sm:h-52 mx-auto rounded-xl bg-slate-100 flex flex-col items-center justify-center text-slate-400">
+                  <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-[#a47148]"></i>
+                  <span class="text-xs font-bold">Membuat QR Code...</span>
+                </div>
+              </div>
+
+              <!-- Instructions -->
+              <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
+                <p class="text-xs text-slate-600 font-medium leading-relaxed">
+                  <i class="fa-solid fa-camera text-slate-400 mr-1"></i>
+                  Tunjukkan QR Code ini kepada penerima tamu di meja resepsi untuk akses masuk.
+                </p>
+              </div>
+
+              <button
+                type="button"
+                @click="showTicketModal = false"
+                class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors cursor-pointer"
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      </Teleport>
     </template>
   </div>
 </template>
