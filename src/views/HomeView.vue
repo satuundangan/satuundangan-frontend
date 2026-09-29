@@ -235,8 +235,16 @@
             </div>
 
             <div class="mb-8">
-              <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
-              <span class="text-muted text-sm">/undangan</span>
+              <div v-if="plan.originalPrice" class="flex items-center gap-2 mb-1.5">
+                <span class="text-sm text-gray-400 line-through">{{ plan.originalPrice }}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-50 text-rose-600 tracking-wide">
+                  HEMAT {{ plan.discount }}
+                </span>
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
+                <span class="text-muted text-sm">/undangan</span>
+              </div>
             </div>
 
             <ul class="space-y-4 mb-8 flex-1">
@@ -753,10 +761,22 @@ const PRICING_TIERS = [
 
 // Prices default to static copy, then get synced from GET /payment/packages.
 const tierPrices = ref({
-  basic: 'Rp 89.000',
-  premium: 'Rp 179.000',
-  eksklusif: 'Rp 239.000',
+  basic: 'Rp 49.000',
+  premium: 'Rp 79.000',
+  eksklusif: 'Rp 99.000',
 })
+
+const tierOriginalPrices = {
+  basic: 'Rp 129.000',
+  premium: 'Rp 199.000',
+  eksklusif: 'Rp 299.000',
+}
+
+const tierDiscounts = {
+  basic: '62%',
+  premium: '60%',
+  eksklusif: '67%',
+}
 
 const pricingPlans = computed(() =>
   PRICING_TIERS.map((tier) => {
@@ -764,6 +784,8 @@ const pricingPlans = computed(() =>
     return {
       ...tier,
       price: tierPrices.value[tier.id],
+      originalPrice: tierOriginalPrices[tier.id],
+      discount: tierDiscounts[tier.id],
       features: [
         { label: 'Bebas pilih semua desain', included: true },
         { label: 'Peta lokasi, hitung mundur, RSVP & amplop', included: true },
