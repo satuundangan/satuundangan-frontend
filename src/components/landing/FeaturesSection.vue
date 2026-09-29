@@ -16,6 +16,11 @@
         <div v-for="(feature, index) in features" :key="index"
           class="group p-8 rounded-3xl border border-gray-100 hover:border-mocha/30 hover:shadow-2xl transition-all duration-500 bg-white relative overflow-hidden">
           
+          <!-- Badge if present -->
+          <div v-if="feature.badge" class="absolute top-4 right-4 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 z-20">
+            <i class="fa-solid fa-bolt text-xs text-amber-500"></i> {{ feature.badge }}
+          </div>
+
           <!-- Hover Gradient Background -->
           <div class="absolute inset-0 bg-gradient-to-br from-ivory/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -35,6 +40,12 @@
 
 <script setup>
 const features = [
+  {
+    icon: 'fa-brands fa-whatsapp',
+    badge: 'Favorit',
+    title: 'Sebar WhatsApp Otomatis',
+    description: 'Impor nama tamu dari Excel/HP, buat link personal otomatis, dan sebar via WhatsApp dalam 1 klik tanpa repot.'
+  },
   {
     icon: 'fa-solid fa-music',
     title: 'Musik Latar',
