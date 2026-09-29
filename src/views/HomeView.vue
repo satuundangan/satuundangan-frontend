@@ -79,42 +79,76 @@
             :key="item.id"
             class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 flex flex-col"
           >
-            <!-- Card Image -->
+            <!-- Card Image Container -->
             <div
-              class="relative overflow-hidden aspect-[4/5] bg-gradient-to-br from-ivory to-[#efe3d2] cursor-pointer flex items-center justify-center p-5"
+              class="relative overflow-hidden aspect-[16/11] bg-gradient-to-b from-[#FAF8F5] via-[#F4EFEA] to-[#E9DFD3] cursor-pointer p-3 sm:p-4 flex flex-col justify-center border-b border-stone-200/60"
               @click="openTemplate(item.id)"
             >
-              <img
-                :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
-                :alt="item.name"
-                :class="previewImageClass(item)"
-                @error="
-                  (e) => {
-                    e.target.onerror = null
-                    e.target.src =
-                      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
-                  }
-                "
-              />
-
-              <!-- Hover Overlay -->
+              <!-- Ambient Backlight Blur on Hover -->
               <div
-                class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-3"
-              >
-                <button
-                  @click.stop="openTemplate(item.id)"
-                  class="bg-white text-mocha px-4 py-2 rounded-xl font-bold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-mocha hover:text-white flex items-center gap-2"
-                >
-                  <i class="fa-solid fa-wand-magic-sparkles"></i> Pilih
-                </button>
-                <a
-                  :href="'/demo/' + item.slug"
-                  target="_blank"
-                  @click.stop
-                  class="bg-white/20 backdrop-blur-md text-white border border-white/30 px-4 py-2 rounded-xl font-bold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-white hover:text-mocha flex items-center gap-2 delay-75"
-                >
-                  <i class="fa-solid fa-eye"></i> Demo
-                </a>
+                class="absolute inset-0 bg-cover bg-center opacity-0 group-hover:opacity-45 transition-opacity duration-700 blur-2xl pointer-events-none scale-125"
+                :style="{ backgroundImage: `url(${resolveImageUrl(item.thumbnailUrl || item.previewUrl)})` }"
+              ></div>
+
+              <!-- Browser / Screen Frame Mockup -->
+              <div class="relative w-full h-full rounded-xl overflow-hidden bg-white shadow-md group-hover:shadow-2xl group-hover:-translate-y-1 transition-all duration-500 border border-stone-200/80 flex flex-col z-10">
+                <!-- Browser Header Bar -->
+                <div class="h-6 w-full bg-stone-50/95 border-b border-stone-100 px-3 flex items-center justify-between shrink-0">
+                  <div class="flex items-center gap-1.5">
+                    <span class="w-2 h-2 rounded-full bg-rose-400/80"></span>
+                    <span class="w-2 h-2 rounded-full bg-amber-400/80"></span>
+                    <span class="w-2 h-2 rounded-full bg-emerald-400/80"></span>
+                  </div>
+                  <div class="flex items-center gap-1 text-[9px] text-stone-400 font-mono">
+                    <span class="truncate max-w-[120px]">satuundangan.id/demo/{{ item.slug }}</span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <span class="inline-block w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                    <span class="text-[9px] text-stone-500 font-medium">Live</span>
+                  </div>
+                </div>
+
+                <!-- Screenshot Preview -->
+                <div class="relative w-full flex-1 overflow-hidden bg-stone-50 flex items-center justify-center">
+                  <img
+                    :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
+                    :alt="item.name"
+                    class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                    loading="lazy"
+                    @error="
+                      (e) => {
+                        e.target.onerror = null
+                        e.target.src =
+                          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+                      }
+                    "
+                  />
+
+                  <!-- Mobile Ready Tag -->
+                  <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded-md border border-white/20 flex items-center gap-1 shadow-sm">
+                    <i class="fa-solid fa-mobile-screen text-[8px] text-accent-gold"></i> Mobile Ready
+                  </div>
+
+                  <!-- Hover Overlay -->
+                  <div
+                    class="absolute inset-0 bg-stone-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2.5 z-20"
+                  >
+                    <button
+                      @click.stop="openTemplate(item.id)"
+                      class="bg-mocha hover:bg-[#8e5e39] text-white px-4 py-2 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5 hover:scale-105"
+                    >
+                      <i class="fa-solid fa-wand-magic-sparkles text-accent-gold text-xs"></i> Pilih Tema
+                    </button>
+                    <a
+                      :href="'/demo/' + item.slug"
+                      target="_blank"
+                      @click.stop
+                      class="bg-white/95 hover:bg-white text-dark px-4 py-2 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5 hover:scale-105 delay-75"
+                    >
+                      <i class="fa-solid fa-eye text-mocha text-xs"></i> Demo
+                    </a>
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -590,35 +624,64 @@
                 ]"
               >
                 <div
-                  class="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-ivory to-[#efe3d2] flex items-center justify-center p-3"
+                  class="relative aspect-[16/11] overflow-hidden bg-gradient-to-b from-[#FAF8F5] via-[#F4EFEA] to-[#E9DFD3] p-2.5 flex flex-col justify-center border-b border-stone-200/60"
                 >
-                  <img
-                    :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
-                    :class="previewImageClass(item)"
-                    @error="
-                      (e) => {
-                        e.target.onerror = null
-                        e.target.src =
-                          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
-                      }
-                    "
-                  />
+                  <!-- Browser / Screen Frame Mockup -->
+                  <div class="relative w-full h-full rounded-lg overflow-hidden bg-white shadow-sm border border-stone-200/80 flex flex-col z-10">
+                    <!-- Browser Header Bar -->
+                    <div class="h-5 w-full bg-stone-50/95 border-b border-stone-100 px-2 flex items-center justify-between shrink-0">
+                      <div class="flex items-center gap-1">
+                        <span class="w-1.5 h-1.5 rounded-full bg-rose-400/80"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-amber-400/80"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400/80"></span>
+                      </div>
+                      <span class="text-[8px] text-stone-400 font-mono truncate max-w-[100px]">satuundangan.id/{{ item.slug }}</span>
+                      <span class="text-[8px] text-emerald-600 font-bold">●</span>
+                    </div>
 
-                  <!-- Preview Button (Always on top of selection overlay) -->
-                  <div class="absolute top-2 right-2 flex gap-2 z-20">
-                    <a
-                      :href="'/demo/' + item.slug"
-                      target="_blank"
-                      @click.stop
-                      class="bg-white/95 hover:bg-white text-mocha px-3 py-1.5 rounded-lg text-[10px] font-bold shadow-md flex items-center gap-1.5 transition-all hover:scale-105 border border-mocha/10"
-                    >
-                      <i class="fa-solid fa-eye"></i> Demo
-                    </a>
+                    <!-- Screenshot Preview -->
+                    <div class="relative w-full flex-1 overflow-hidden bg-stone-50 flex items-center justify-center">
+                      <img
+                        :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
+                        :alt="item.name"
+                        class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        loading="lazy"
+                        @error="
+                          (e) => {
+                            e.target.onerror = null
+                            e.target.src =
+                              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+                          }
+                        "
+                      />
+
+                      <!-- Price Tag -->
+                      <div class="absolute bottom-1.5 left-1.5 z-20">
+                        <div
+                          class="bg-dark/80 backdrop-blur-md text-white px-2 py-0.5 rounded text-[9px] font-bold border border-white/10"
+                        >
+                          {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                        </div>
+                      </div>
+
+                      <!-- Preview Button -->
+                      <div class="absolute top-1.5 right-1.5 flex gap-1.5 z-20">
+                        <a
+                          :href="'/demo/' + item.slug"
+                          target="_blank"
+                          @click.stop
+                          class="bg-white/95 hover:bg-white text-mocha px-2.5 py-1 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 border border-mocha/10"
+                        >
+                          <i class="fa-solid fa-eye"></i> Demo
+                        </a>
+                      </div>
+                    </div>
                   </div>
 
+                  <!-- Selected Overlay -->
                   <div
                     v-if="selectedTemplate === item.id"
-                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in z-10"
+                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in z-30"
                   >
                     <div class="bg-white rounded-full p-2 shadow-lg scale-110">
                       <svg class="w-6 h-6 text-mocha" fill="currentColor" viewBox="0 0 20 20">
@@ -628,15 +691,6 @@
                           clip-rule="evenodd"
                         />
                       </svg>
-                    </div>
-                  </div>
-
-                  <!-- Price Tag -->
-                  <div class="absolute bottom-2 left-2 z-20">
-                    <div
-                      class="bg-black/60 backdrop-blur-md text-white px-3 py-1 rounded-lg text-[10px] font-bold border border-white/10"
-                    >
-                      {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
                     </div>
                   </div>
                 </div>
