@@ -43,24 +43,47 @@
         </div>
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6">
-          <button @click="$emit('create-invitation')" class="btn-primary text-lg px-8 py-3.5 shadow-xl shadow-mocha/20 hover:shadow-mocha/40 hover:-translate-y-1 transition-all duration-300 rounded-full">
-            Buat Undangan
+          <button @click="$emit('create-invitation')" class="btn-primary text-base md:text-lg px-8 py-4 shadow-xl shadow-mocha/25 hover:shadow-mocha/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 rounded-full flex items-center justify-center gap-3 group font-bold">
+            <i class="fa-solid fa-wand-magic-sparkles text-sm text-accent-gold group-hover:rotate-12 transition-transform"></i>
+            <span>Buat Undangan Sekarang</span>
+            <i class="fa-solid fa-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1"></i>
           </button>
-          <a href="#templates" class="btn-outline text-lg px-8 py-3.5 hover:-translate-y-1 rounded-full border-gray-300 hover:border-mocha text-dark hover:bg-white">
-            Lihat Katalog
+          <a href="#templates" class="btn-outline text-base md:text-lg px-8 py-4 hover:-translate-y-1 rounded-full border-gray-300 hover:border-mocha text-dark hover:bg-white transition-all duration-300 font-semibold flex items-center justify-center gap-2">
+            <i class="fa-solid fa-palette text-mocha/60 text-sm"></i>
+            <span>Lihat Katalog Desain</span>
           </a>
         </div>
 
-        <div class="flex items-center justify-center md:justify-start gap-4 pt-8 text-sm text-muted border-t border-gray-200 mt-8 max-w-md mx-auto md:mx-0">
+        <!-- Risk Reversal Micro-Copy -->
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-5 text-xs text-dark/70 pt-2 font-medium">
+          <span class="inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-circle-check text-emerald-600"></i> Coba Gratis Tanpa Syarat
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-bolt text-amber-500"></i> Jadi dalam 5 Menit
+          </span>
+          <span class="inline-flex items-center gap-1.5">
+            <i class="fa-solid fa-shield-halved text-mocha"></i> Bayar Saat Siap Sebar
+          </span>
+        </div>
+
+        <div class="flex items-center justify-center md:justify-start gap-4 pt-6 text-sm text-muted border-t border-gray-200 mt-6 max-w-md mx-auto md:mx-0">
           <div class="flex -space-x-3">
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100" src="https://i.pravatar.cc/100?img=1" alt="User" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100" src="https://i.pravatar.cc/100?img=5" alt="User" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100" src="https://i.pravatar.cc/100?img=8" alt="User" />
-            <div class="w-10 h-10 rounded-full border-2 border-white bg-gray-100 flex items-center justify-center text-xs font-bold text-gray-500 ring-1 ring-gray-100">+2k</div>
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover" src="https://i.pravatar.cc/100?img=1" alt="User" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover" src="https://i.pravatar.cc/100?img=5" alt="User" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover" src="https://i.pravatar.cc/100?img=8" alt="User" />
+            <div class="w-10 h-10 rounded-full border-2 border-white bg-mocha text-white flex items-center justify-center text-xs font-bold ring-1 ring-gray-100 shadow-sm">+5k</div>
           </div>
           <div class="text-left">
-             <p class="font-bold text-dark text-lg leading-none">5,000+</p>
-             <p class="text-xs">Pasangan puas</p>
+            <div class="flex items-center gap-1 text-amber-400 text-xs">
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <i class="fa-solid fa-star"></i>
+              <span class="text-dark font-extrabold text-xs ml-1">4.9 / 5</span>
+            </div>
+            <p class="text-xs text-gray-500 font-medium">Dipercaya oleh 5.000+ pasangan di Indonesia</p>
           </div>
         </div>
       </div>

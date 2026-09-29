@@ -6,8 +6,21 @@
         <!-- Brand -->
         <div class="md:col-span-1 space-y-6">
            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-mocha rounded-lg flex items-center justify-center font-serif font-bold text-xl text-white">S</div>
-              <span class="font-serif font-bold text-xl tracking-tight">satuundangan.id</span>
+              <img
+                src="@/assets/logo_satuundangan.png"
+                alt="SatuUndangan Logo"
+                class="h-11 w-11 object-contain rounded-xl bg-white p-0.5 shadow-md border border-white/10"
+                width="44"
+                height="44"
+              />
+              <div class="flex flex-col">
+                <span class="font-serif font-bold text-xl tracking-tight text-white">
+                  SatuUndangan<span class="text-accent-gold">.id</span>
+                </span>
+                <span class="text-[9px] tracking-[0.2em] text-gray-400 uppercase font-semibold">
+                  Digital Wedding Invitation
+                </span>
+              </div>
            </div>
            <p class="text-gray-400 text-sm leading-relaxed">
              Platform undangan pernikahan digital premium. Buat momen spesialmu lebih berkesan dengan desain elegan dan fitur canggih.
