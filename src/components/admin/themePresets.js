@@ -28,6 +28,10 @@ function font(role, family) {
   return { family: entry.family, weights: [...entry.weights], fallback: entry.fallback }
 }
 
+function heroLayers(back = '', middle = '', front = '', accent = '') {
+  return { back, middle, front, accent }
+}
+
 /**
  * Seed every THEME_SECTION_KEYS entry with a preset-owned color background,
  * alternating `surface`/`alt` by index for visible separation between
@@ -62,6 +66,14 @@ function decorFrom(borderRadius, patternUrl = '', patternOpacity = 0.08) {
   }
 }
 
+const defaultTransitions = {
+  cover: 'fade',
+  scroll: 'continuous',
+  reveal: 'fade-up',
+  speed: 'normal',
+  stagger: 0,
+}
+
 export const THEME_PRESETS = [
   {
     key: 'gorga-batak',
@@ -88,7 +100,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.4,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fdf6ec', '#f7f1e6'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -120,7 +134,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.35,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbf7ef', '#f6efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -152,7 +168,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.4,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fffdf9', '#faf6ef'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -184,7 +202,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.35,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf5', '#f5f3ec'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -216,7 +236,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.3,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#faf8f3', '#f4f1ea'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -248,7 +270,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#000000',
         overlayOpacity: 0.5,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#0f172a', '#1e293b'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -280,7 +304,9 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#050b1d',
         overlayOpacity: 0.35,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#16264f', '#0e1a3a'),
       ornaments: { corner: '', divider: '', frame: '' },
@@ -312,11 +338,63 @@ export const THEME_PRESETS = [
         backgroundImage: '',
         overlayColor: '#102c22',
         overlayOpacity: 0.3,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'hide' },
       sections: sectionsFrom('#fbfaf4', '#f3efe3'),
       ornaments: { corner: '', divider: '', frame: '' },
       decor: decorFrom('0.75rem'),
+    },
+  },
+  {
+    key: 'serene-garden-2d',
+    label: 'Serene Garden 2D',
+    description: 'Scene ilustrasi taman dan arch botanical berlapis seperti undangan editorial modern.',
+    config: {
+      version: 1,
+      colors: {
+        primary: '#344c3f',
+        secondary: '#9a7b54',
+        accent: '#c9818b',
+        background: '#f6f3eb',
+        surface: '#fffdf7',
+        text: '#2f342f',
+        textMuted: '#6f746b',
+      },
+      fonts: {
+        heading: font('heading', 'Cormorant Garamond'),
+        script: font('script', 'Great Vibes'),
+        body: font('body', 'Manrope'),
+      },
+      hero: {
+        variant: 'art-directed',
+        backgroundImage: '/assets/images/serene-garden-2d/background.svg',
+        overlayColor: '#ffffff',
+        overlayOpacity: 0.08,
+        layers: heroLayers(
+          '/assets/images/serene-garden-2d/middle.svg',
+          '/assets/images/serene-garden-2d/front.svg',
+          '/assets/images/serene-garden-2d/accent.svg',
+        ),
+      },
+      transitions: {
+        cover: 'reference',
+        scroll: 'snap',
+        reveal: 'reference',
+        speed: 'normal',
+        stagger: 0.08,
+      },
+      couple: { photoFallback: 'hide' },
+      sections: sectionsFrom('#fffdf7', '#f6f3eb'),
+      ornaments: { corner: '', divider: '', frame: '' },
+      decor: {
+        ...decorFrom('1rem'),
+        ornamentMotion: 'float',
+        ornamentMotionSpeed: 'slow',
+        motionDensity: 6,
+        motionOpacity: 0.16,
+      },
     },
   },
   {
@@ -347,7 +425,9 @@ export const THEME_PRESETS = [
         backgroundImage: 'https://cdn.satuundangan.id/themes/islam/hero.jpg',
         overlayColor: '#000000',
         overlayOpacity: 0.05,
+        layers: heroLayers(),
       },
+      transitions: defaultTransitions,
       couple: { photoFallback: 'ornament' },
       sections: sectionsFrom('#FEFBF4', '#FAF6EC'),
       ornaments: {

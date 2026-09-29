@@ -5,14 +5,6 @@
 // GET /payment/packages also returns `features` per tier if you prefer live data.
 export const PACKAGE_FEATURES = {
   basic: {
-    gallery: false,
-    galleryLimit: 0,
-    customMusic: false,
-    watermark: true,
-    whatsapp: false,
-    subdomain: false,
-  },
-  premium: {
     gallery: true,
     galleryLimit: 8,
     customMusic: true,
@@ -20,9 +12,17 @@ export const PACKAGE_FEATURES = {
     whatsapp: true,
     subdomain: false,
   },
-  eksklusif: {
+  premium: {
     gallery: true,
     galleryLimit: 20,
+    customMusic: true,
+    watermark: false,
+    whatsapp: true,
+    subdomain: true,
+  },
+  eksklusif: {
+    gallery: true,
+    galleryLimit: 35,
     customMusic: true,
     watermark: false,
     whatsapp: true,

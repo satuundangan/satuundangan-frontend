@@ -50,6 +50,20 @@ describe('normalizeThemeConfig', () => {
     expect(normalizeThemeConfig({ hero: { variant: 'nonsense' } }).hero.variant).toBe('classic')
   })
 
+  it('seeds and sanitizes the four art-directed hero layer slots', () => {
+    const defaults = normalizeThemeConfig(null)
+    expect(defaults.hero.layers).toEqual({ back: '', middle: '', front: '', accent: '' })
+
+    const result = normalizeThemeConfig({
+      hero: {
+        variant: 'art-directed',
+        layers: { back: 'back.svg', middle: 42, front: null },
+      },
+    })
+    expect(result.hero.variant).toBe('art-directed')
+    expect(result.hero.layers).toEqual({ back: 'back.svg', middle: '', front: '', accent: '' })
+  })
+
   it('never throws and never returns null/undefined', () => {
     for (const bad of [null, undefined, '', '{bad json', 42, [], () => {}]) {
       expect(() => normalizeThemeConfig(bad)).not.toThrow()
@@ -105,6 +119,32 @@ describe('normalizeThemeConfig', () => {
     expect(result.decor.motionOpacity).toBe(0)
     expect(result.sections.couple.ornamentTopMotion).toBe('sway')
     expect(result.sections.couple.ornamentBottomMotion).toBe('none')
+  })
+
+  it('seeds and sanitizes transition settings for the builder', () => {
+    expect(normalizeThemeConfig(null).transitions).toEqual(THEME_DEFAULTS.transitions)
+
+    const result = normalizeThemeConfig({
+      transitions: {
+        cover: 'reference',
+        scroll: 'snap',
+        reveal: 'reference',
+        speed: 'fast',
+        stagger: 99,
+      },
+    })
+    expect(result.transitions).toEqual({
+      cover: 'reference',
+      scroll: 'snap',
+      reveal: 'reference',
+      speed: 'fast',
+      stagger: 0.3,
+    })
+
+    const fallback = normalizeThemeConfig({
+      transitions: { cover: 'bad', scroll: 'bad', reveal: 'bad', speed: 'bad', stagger: -1 },
+    })
+    expect(fallback.transitions).toEqual(THEME_DEFAULTS.transitions)
   })
 })
 
@@ -162,11 +202,19 @@ describe('themeCssVars', () => {
     expect(vars).toHaveProperty('--dt-font-heading')
     expect(vars).toHaveProperty('--dt-radius')
     expect(vars).toHaveProperty('--dt-motion-duration', '8s')
+    expect(vars).toHaveProperty('--dt-reveal-duration', '1s')
+    expect(vars).toHaveProperty('--dt-reveal-stagger', '0s')
   })
 
   it('accepts a raw config too (normalizes internally)', () => {
     const vars = themeCssVars('{"colors":{"primary":"#111111"}}')
     expect(vars['--dt-color-primary']).toBe('#111111')
+  })
+
+  it('derives reveal timing variables from transition settings', () => {
+    const vars = themeCssVars({ transitions: { speed: 'slow', stagger: 0.08 } })
+    expect(vars['--dt-reveal-duration']).toBe('1.5s')
+    expect(vars['--dt-reveal-stagger']).toBe('0.08s')
   })
 })
 
@@ -322,12 +370,22 @@ describe('hero ink', () => {
       expect(result.scrim).toContain('rgba(250, 246, 236')
     })
 
-    // Every other shipped preset carries a 30-50% black overlay over a light/dark
+    it('serene-garden-2d (light illustrated scene) resolves to dark ink', () => {
+      const preset = THEME_PRESETS.find((p) => p.key === 'serene-garden-2d')
+      const result = resolveHeroInk(preset.config)
+      expect(result.isDark).toBe(false)
+      expect(result.heading).toBe('var(--dt-color-text)')
+      expect(result.eyebrow).toBe('var(--dt-color-text-muted)')
+    })
+
+    // Every other dark-backdrop preset carries a 30-50% black overlay over a light/dark
     // background, which blends dark enough to keep the original light-ink treatment.
     // Only islami-emas ships a near-zero overlay — if a future preset also does, this
     // it.each will fail loudly and force a deliberate review rather than silently
     // rendering illegible text.
-    it.each(THEME_PRESETS.filter((p) => p.key !== 'islami-emas').map((p) => [p.key, p]))(
+    it.each(
+      THEME_PRESETS.filter((p) => !['islami-emas', 'serene-garden-2d'].includes(p.key)).map((p) => [p.key, p]),
+    )(
       '%s (dark backdrop) resolves to dark-backdrop / light ink',
       (_key, preset) => {
         const result = resolveHeroInk(preset.config)

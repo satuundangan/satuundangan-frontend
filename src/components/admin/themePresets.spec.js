@@ -22,8 +22,8 @@ const ASSET_FREE_PRESET_KEYS = [
 ]
 
 describe('THEME_PRESETS', () => {
-  it('has exactly 9 entries, each { key, label, description, config }, keys unique and non-empty', () => {
-    expect(THEME_PRESETS.length).toBe(9)
+  it('has exactly 10 entries, each { key, label, description, config }, keys unique and non-empty', () => {
+    expect(THEME_PRESETS.length).toBe(10)
     const keys = new Set()
     for (const preset of THEME_PRESETS) {
       expect(typeof preset.key).toBe('string')
@@ -36,7 +36,7 @@ describe('THEME_PRESETS', () => {
       expect(preset.config).not.toBeNull()
       keys.add(preset.key)
     }
-    expect(keys.size).toBe(9)
+    expect(keys.size).toBe(10)
   })
 
   for (const preset of THEME_PRESETS) {
@@ -90,6 +90,7 @@ describe('THEME_PRESETS', () => {
       it('any non-empty top-level image URL points at the Cloudflare R2 CDN', () => {
         const urls = [
           preset.config.hero.backgroundImage,
+          ...Object.values(preset.config.hero.layers || {}),
           preset.config.ornaments.corner,
           preset.config.ornaments.divider,
           preset.config.ornaments.frame,
@@ -98,8 +99,8 @@ describe('THEME_PRESETS', () => {
         for (const url of urls) {
           if (url !== '') {
             expect(
-              url.startsWith(CDN_PREFIX),
-              `expected "${url}" to start with ${CDN_PREFIX}`,
+              url.startsWith(CDN_PREFIX) || url.startsWith('/assets/'),
+              `expected "${url}" to start with ${CDN_PREFIX} or /assets/`,
             ).toBe(true)
           }
         }
@@ -117,7 +118,7 @@ describe('THEME_PRESETS', () => {
       })
 
       it('has a valid hero.variant and opacity values within [0, 1]', () => {
-        expect(['classic', 'full-photo', 'framed']).toContain(preset.config.hero.variant)
+        expect(['classic', 'full-photo', 'framed', 'art-directed']).toContain(preset.config.hero.variant)
         expect(typeof preset.config.hero.overlayOpacity).toBe('number')
         expect(preset.config.hero.overlayOpacity).toBeGreaterThanOrEqual(0)
         expect(preset.config.hero.overlayOpacity).toBeLessThanOrEqual(1)

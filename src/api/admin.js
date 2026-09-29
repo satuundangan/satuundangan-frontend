@@ -111,6 +111,12 @@ export const deleteAdminArticle = (id) =>
   apiFetch(`/admin/articles/${id}`, {
     method: 'DELETE',
   })
+export const autoGenerateAdminArticle = (payload = {}) =>
+  apiFetch('/admin/articles/auto-generate', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+export const fetchAdminArticleBotStatus = () => apiFetch('/admin/articles/bot-status')
 
 export const fetchAdminHealth = () => apiFetch('/admin/health')
 export const fetchAdminStats = () => apiFetch('/admin/stats')

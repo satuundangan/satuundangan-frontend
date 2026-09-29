@@ -70,15 +70,45 @@ The cover/hero visual treatment.
 
 | Field             | Type   | Allowed values                            | Default     | Controls                                                    |
 | ----------------- | ------ | ------------------------------------------ | ----------- | -------------------------------------------------------------- |
-| `variant`         | string | `classic` \| `full-photo` \| `framed`      | `classic`   | Layout: unknown value silently falls back to `classic`         |
+| `variant`         | string | `classic` \| `full-photo` \| `framed` \| `art-directed` | `classic` | Layout: unknown value silently falls back to `classic` |
 | `backgroundImage` | string (URL) | any                                   | `''`        | Hero background image; falls back to `data.photoCoupleUrl` when empty |
 | `overlayColor`    | hex color string | any                                  | `#000000`   | Color of the dark/tint overlay atop the hero image              |
 | `overlayOpacity`  | number  | `0..1` (clamped; non-numeric -> default)   | `0.35`      | Overlay strength                                                |
+| `layers`          | object  | `{ back, middle, front, accent }`           | all `''`    | Transparent scene layers rendered above `backgroundImage` for `art-directed` |
 
 **Variants:**
 - `classic` — names centered over `backgroundImage`/`photoCoupleUrl`.
 - `full-photo` — edge-to-edge photo, names bottom-anchored.
 - `framed` — inset photo inside a bordered frame, names below.
+- `art-directed` — builder-driven 2D scene: `backgroundImage` is the base canvas and each
+  non-empty `layers.*` URL is rendered as a transparent layer in back-to-front order.
+  The global `decor.ornamentMotion` setting applies subtle motion to the layers and can be
+  disabled with `none` or automatically disabled by the user's reduced-motion preference.
+
+`hero.layers` fields:
+
+| Field | Type | Default | Controls |
+| ----- | ---- | ------- | -------- |
+| `back` | string (URL) | `''` | Background foliage/architecture layer |
+| `middle` | string (URL) | `''` | Midground illustration layer |
+| `front` | string (URL) | `''` | Foreground foliage/objects layer |
+| `accent` | string (URL) | `''` | Small accents such as flowers, stars, or sparkles |
+
+---
+
+## `transitions`
+
+Controls the interaction language of the invitation. The `Serene Garden 2D` preset uses
+the `reference` cover/reveal modes and `snap` scrolling to reproduce the editorial,
+mobile-first feel of the reference template.
+
+| Field | Type | Allowed values | Default | Controls |
+| ----- | ---- | -------------- | ------- | -------- |
+| `cover` | string | `fade` \| `reference` | `fade` | Cover exit: simple fade or cinematic scale/slide transition |
+| `scroll` | string | `continuous` \| `snap` | `continuous` | Normal document scrolling or viewport-aligned section snapping |
+| `reveal` | string | `fade-up` \| `reference` | `fade-up` | Content reveal direction: upward fade or alternating directional reveal |
+| `speed` | string | `slow` \| `normal` \| `fast` | `normal` | Reveal duration |
+| `stagger` | number | `0..0.3` (clamped) | `0` | Delay in seconds between reveal groups |
 
 ---
 
@@ -175,6 +205,7 @@ all keys prefixed `--dt-`:
 --dt-color-background, --dt-color-surface, --dt-color-text, --dt-color-text-muted,
 --dt-font-heading, --dt-font-script, --dt-font-body,
 --dt-radius, --dt-overlay-color, --dt-overlay-opacity, --dt-motion-duration
+--dt-reveal-duration, --dt-reveal-stagger
 ```
 
 `dynamic-theme.vue` applies this object to its root element and consumes every value
