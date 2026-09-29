@@ -21,42 +21,51 @@
           <p class="text-muted">Desain premium untuk hari spesialmu.</p>
         </div>
 
-        <!-- Filter: Gaya (curated filterGroup) -->
-        <div
-          class="mb-3 flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:flex-wrap md:justify-center md:overflow-visible"
-        >
-          <button
-            v-for="cat in styleCategories"
-            :key="cat.id"
-            @click="selectedCategory = cat.id"
-            :class="[
-              'shrink-0 snap-start whitespace-nowrap px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 border',
-              selectedCategory === cat.id
-                ? 'bg-mocha text-white border-mocha shadow-lg shadow-mocha/20'
-                : 'bg-transparent text-gray-500 border-gray-200 hover:border-mocha hover:text-mocha',
-            ]"
+        <!-- Filter Groups -->
+        <div class="space-y-3 mb-10">
+          <!-- Filter: Gaya (curated filterGroup) -->
+          <div
+            class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
-            {{ cat.label }}
-          </button>
-        </div>
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-palette text-mocha"></i> Gaya:
+            </span>
+            <button
+              v-for="cat in styleCategories"
+              :key="cat.id"
+              @click="selectedCategory = cat.id"
+              :class="[
+                'shrink-0 snap-start whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 border',
+                selectedCategory === cat.id
+                  ? 'bg-mocha text-white border-mocha shadow-lg shadow-mocha/20 scale-105'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-mocha hover:text-mocha shadow-sm',
+              ]"
+            >
+              {{ cat.label }}
+            </button>
+          </div>
 
-        <!-- Filter: Paket (tier) -->
-        <div
-          class="mb-10 flex gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:flex-wrap md:justify-center md:overflow-visible"
-        >
-          <button
-            v-for="pkg in packageCategories"
-            :key="pkg.id"
-            @click="selectedTier = pkg.id"
-            :class="[
-              'shrink-0 snap-start whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium transition-all duration-300 border',
-              selectedTier === pkg.id
-                ? 'bg-dark text-white border-dark'
-                : 'bg-transparent text-gray-500 border-gray-200 hover:border-dark hover:text-dark',
-            ]"
+          <!-- Filter: Paket (tier) -->
+          <div
+            class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
-            {{ pkg.label }}
-          </button>
+            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
+              <i class="fa-solid fa-tags text-dark"></i> Paket:
+            </span>
+            <button
+              v-for="pkg in packageCategories"
+              :key="pkg.id"
+              @click="selectedTier = pkg.id"
+              :class="[
+                'shrink-0 snap-start whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 border',
+                selectedTier === pkg.id
+                  ? 'bg-dark text-white border-dark shadow-md'
+                  : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-dark hover:text-dark',
+              ]"
+            >
+              {{ pkg.label }}
+            </button>
+          </div>
         </div>
 
         <!-- Loading State -->
@@ -297,6 +306,57 @@
             >
               Mulai Buat Undangan
             </button>
+          </div>
+        </div>
+
+        <!-- Payment Partners & Trustmarks -->
+        <div class="mt-16 text-center border-t border-gray-200/80 pt-10">
+          <p class="text-xs uppercase tracking-widest font-extrabold text-gray-400 mb-6">
+            Metode Pembayaran Aman & Instan via Midtrans (Bank Indonesia Licensed)
+          </p>
+
+          <!-- Badges Grid -->
+          <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 max-w-4xl mx-auto">
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-red-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-qrcode text-red-500"></i> QRIS
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-wide text-blue-800">
+              BCA
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-yellow-600">
+              Mandiri
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-teal-600">
+              BNI
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-blue-700">
+              BRI
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-cyan-600">
+              GoPay
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-tight text-purple-700">
+              OVO
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-orange-500">
+              ShopeePay
+            </span>
+          </div>
+
+          <!-- Guarantee Highlights -->
+          <div class="flex flex-wrap items-center justify-center gap-6 mt-8 text-xs text-gray-500 font-medium">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-lock text-emerald-600"></i>
+              <span>Enkripsi SSL 256-bit Aman</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bolt text-amber-500"></i>
+              <span>Aktivasi Otomatis Real-time</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-headset text-mocha"></i>
+              <span>Bantuan CS WhatsApp Siap Bantu</span>
+            </div>
           </div>
         </div>
       </div>
@@ -675,12 +735,36 @@
         </div>
       </div>
     </div>
+
+    <!-- Mobile Sticky Conversion Bar -->
+    <aside
+      class="fixed bottom-0 left-0 right-0 z-40 md:hidden bg-white/95 backdrop-blur-md border-t border-gray-200 px-4 py-3 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] transition-transform duration-300"
+      :class="showMobileSticky ? 'translate-y-0' : 'translate-y-full'"
+      aria-label="Aksi Cepat Undangan"
+    >
+      <div class="flex items-center justify-between gap-3 max-w-md mx-auto">
+        <div class="flex flex-col">
+          <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Mulai Sekarang</span>
+          <div class="flex items-baseline gap-1.5">
+            <span class="font-bold text-dark text-sm">Coba Gratis</span>
+            <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Bebas Revisi</span>
+          </div>
+        </div>
+        <button
+          @click="showModal = true"
+          class="bg-mocha hover:bg-[#8e5e39] text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-md shadow-mocha/25 active:scale-95 transition-all flex items-center gap-1.5"
+        >
+          <i class="fa-solid fa-wand-magic-sparkles text-[10px] text-accent-gold"></i>
+          <span>Pilih Desain</span>
+        </button>
+      </div>
+    </aside>
   </div>
   <ExitIntentPromo />
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, reactive, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, reactive, onMounted, onUnmounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
@@ -863,7 +947,24 @@ onMounted(async () => {
   } catch (e) {
     console.error('Gagal ambil paket harga, pakai harga statis:', e)
   }
+
+  window.addEventListener('scroll', checkScrollPosition, { passive: true })
 })
+
+onUnmounted(() => {
+  window.removeEventListener('scroll', checkScrollPosition)
+})
+
+const showMobileSticky = ref(false)
+
+function checkScrollPosition() {
+  const scrollY = window.scrollY
+  const documentHeight = document.documentElement.scrollHeight
+  const windowHeight = window.innerHeight
+  const nearBottom = documentHeight - (scrollY + windowHeight) < 400
+
+  showMobileSticky.value = scrollY > 400 && !nearBottom && !showModal.value
+}
 
 // Filter Logic — chips come from the admin-curated `filterGroup` (style) and
 // `category` (package tier) fields, NOT from raw `tags` (tags stay in the DB

@@ -31,29 +31,45 @@
         </div>
 
         <!-- SatuUndangan -->
-        <div class="bg-mocha/5 rounded-[2rem] p-8 border-2 border-mocha/20 relative shadow-2xl shadow-mocha/10">
-          <div class="absolute -top-4 right-8 bg-mocha text-white text-[10px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg">
-            Rekomendasi
+        <div class="bg-mocha/5 rounded-[2rem] p-8 border-2 border-mocha/30 relative shadow-2xl shadow-mocha/10 flex flex-col justify-between">
+          <div class="absolute -top-4 right-8 bg-mocha text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1.5">
+            <i class="fa-solid fa-crown text-accent-gold text-xs"></i> Paling Hemat & Praktis
           </div>
           
-          <div class="flex items-center gap-4 mb-8">
-            <div class="w-12 h-12 rounded-2xl bg-mocha flex items-center justify-center text-white text-xl shadow-lg shadow-mocha/30">
-              <i class="fa-solid fa-wand-magic-sparkles"></i>
-            </div>
-            <h3 class="text-2xl font-bold text-dark">SatuUndangan</h3>
-          </div>
-
-          <ul class="space-y-6">
-            <li v-for="(item, i) in positivePoints" :key="i" class="flex gap-4">
-              <div class="shrink-0 w-6 h-6 rounded-full bg-mocha text-white flex items-center justify-center text-[10px] mt-1 shadow-md shadow-mocha/20">
-                <i class="fa-solid fa-check"></i>
+          <div>
+            <div class="flex items-center gap-4 mb-8">
+              <div class="w-12 h-12 rounded-2xl bg-mocha flex items-center justify-center text-white text-xl shadow-lg shadow-mocha/30">
+                <i class="fa-solid fa-wand-magic-sparkles"></i>
               </div>
               <div>
-                <p class="font-bold text-dark">{{ item.title }}</p>
-                <p class="text-sm text-muted">{{ item.desc }}</p>
+                <h3 class="text-2xl font-bold text-dark">SatuUndangan</h3>
+                <span class="text-xs text-mocha font-bold">Solusi Modern Calon Pengantin</span>
               </div>
-            </li>
-          </ul>
+            </div>
+
+            <ul class="space-y-6">
+              <li v-for="(item, i) in positivePoints" :key="i" class="flex gap-4">
+                <div class="shrink-0 w-6 h-6 rounded-full bg-mocha text-white flex items-center justify-center text-[10px] mt-1 shadow-md shadow-mocha/20">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+                <div>
+                  <p class="font-bold text-dark">{{ item.title }}</p>
+                  <p class="text-sm text-dark/70 leading-relaxed">{{ item.desc }}</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- ROI Banner -->
+          <div class="mt-8 pt-6 border-t border-mocha/15 bg-white/70 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-center sm:text-left">
+              <p class="text-xs text-gray-500 uppercase font-bold tracking-wider">Estimasi Penghematan</p>
+              <p class="text-sm font-bold text-dark">Hemat hingga <span class="text-emerald-600 font-extrabold text-base">80%</span> biaya cetak & kirim</p>
+            </div>
+            <a href="#templates" class="btn-primary text-xs px-5 py-2.5 rounded-full font-bold shadow-md shadow-mocha/20 hover:scale-105 transition-all text-center shrink-0">
+              Lihat Desain
+            </a>
+          </div>
         </div>
       </div>
     </div>
@@ -62,17 +78,17 @@
 
 <script setup>
 const negativePoints = [
-  { title: 'Biaya Mahal', desc: 'Harga per lembar tinggi, belum termasuk ongkos kirim ke rumah tamu.' },
-  { title: 'Proses Lama', desc: 'Butuh waktu berhari-hari untuk desain, cetak, hingga pengiriman.' },
-  { title: 'Zero Revision', desc: 'Ada typo? Gak bisa diubah kalau sudah dicetak. Uang melayang sia-sia.' },
-  { title: 'Ribet Distribusi', desc: 'Harus kirim fisik satu per satu. Capek di jalan, habis waktu & tenaga.' },
+  { title: 'Biaya Mahal & Boncos', desc: 'Rata-rata Rp 5.000 - Rp 15.000 per lembar, belum termasuk ongkir ke rumah ratusan tamu.' },
+  { title: 'Proses Lama (Mingguan)', desc: 'Desain, cetak, revisi vendor, hingga kirim kurir butuh waktu 1-3 minggu.' },
+  { title: 'Fatal Kalau Ada Typo', desc: 'Salah ketik nama tamu, gelar, atau lokasi? Harus cetak ulang dengan biaya jutaan rupiah.' },
+  { title: 'Distribusi Ribet & Capek', desc: 'Harus diantar fisik satu per satu. Menguras tenaga dan waktu berharga menjelang hari H.' },
 ]
 
 const positivePoints = [
-  { title: 'Sangat Hemat', desc: 'Cukup bayar sekali, sebar ke ribuan tamu tanpa biaya tambahan.' },
-  { title: 'Proses Instan', desc: 'Hanya butuh 5 menit. Selesai isi data, undangan langsung aktif.' },
-  { title: 'Unlimited Revisi', desc: 'Salah ketik atau ganti lokasi? Edit sendiri kapanpun sepuasnya gratis.' },
-  { title: 'Sebar Sekali Klik', desc: 'Kirim lewat WhatsApp atau sosmed secara personal dalam hitungan detik.' },
+  { title: 'Sangat Hemat (Mulai Rp 49rb)', desc: 'Bayar sekali, sebar tanpa batas ke ribuan tamu tanpa tambahan biaya cetak atau ongkir.' },
+  { title: 'Instan Jadi dalam 5 Menit', desc: 'Tinggal pilih tema aesthetic, isi nama & tanggal, undangan langsung aktif dan siap disebar.' },
+  { title: 'Bebas Revisi Kapan Saja', desc: 'Ganti tanggal, venue, atau link maps? Edit sendiri langsung terupdate secara real-time.' },
+  { title: 'Sebar Cepat via WhatsApp', desc: 'Kirim link personal nama tamu dengan 1 klik lewat WhatsApp, Instagram, atau grup keluarga.' },
 ]
 </script>
 
