@@ -9,6 +9,12 @@ export const createGuest = (data) =>
 export const getGuestsByInvitationId = (invitationId) =>
   apiFetch(`/guests/invitation/${invitationId}`)
 
+export const updateGuest = (id, data) =>
+  apiFetch(`/guests/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+
 export const deleteGuest = (id) =>
   apiFetch(`/guests/${id}`, {
     method: 'DELETE',
