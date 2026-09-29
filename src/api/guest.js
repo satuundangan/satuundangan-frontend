@@ -28,3 +28,17 @@ export const importGuests = (formData) =>
 
 export const getGuestShareLink = (id) =>
   apiFetch(`/guests/${id}/share`)
+
+export const checkInGuest = (id) =>
+  apiFetch(`/guests/${id}/check-in`, {
+    method: 'POST',
+  })
+
+export const checkInGuestByToken = (token) =>
+  apiFetch('/guests/check-in-token', {
+    method: 'POST',
+    body: JSON.stringify({ token }),
+  })
+
+export const getCheckInSummary = (invitationId) =>
+  apiFetch(`/guests/invitation/${invitationId}/check-in-summary`)
