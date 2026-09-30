@@ -899,13 +899,8 @@
                 </h2>
               </div>
             </div>
-            <div v-if="data.show_branding" class="pt-16 space-y-3 opacity-30">
-              <p class="text-[8px] text-[#d4af37] tracking-[0.4em] uppercase font-black">
-                Official Invitation By
-              </p>
-              <h3 class="font-serif text-white font-bold text-lg md:text-2xl tracking-tighter">
-                SatuUndangan<span class="text-[#d4af37]">.id</span>
-              </h3>
+            <div class="pt-8">
+              <WatermarkBadge variant="gold" />
             </div>
           </div>
         </footer>
@@ -918,6 +913,7 @@
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

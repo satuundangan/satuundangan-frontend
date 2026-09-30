@@ -525,7 +525,9 @@
           <div class="w-32 h-[2px] bg-slate-800 mx-auto mb-8"></div>
           <div class="font-mono space-y-3">
             <p class="uppercase tracking-[0.2em]">© {{ new Date().getFullYear() }} {{ data.groomName?.split(' ')[0] }} &amp; {{ data.brideName?.split(' ')[0] }} WEDDING QUEST</p>
-            <p v-if="data.show_branding" class="text-gray-600 mt-1 uppercase tracking-widest text-[10px]">ALL RIGHTS RESERVED. MADE WITH ❤️ BY SATUUNDANGAN.ID</p>
+            <div class="mt-4">
+              <WatermarkBadge variant="neon" />
+            </div>
           </div>
           <div class="text-yellow-600 text-2xl mt-12 font-bold font-pixel-title uppercase tracking-widest animate-pulse">
             THANKS FOR PLAYING!
@@ -540,6 +542,7 @@
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

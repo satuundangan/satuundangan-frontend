@@ -331,7 +331,7 @@
 
       <footer class="py-24 text-center bg-[#2c2c2c] text-[#fdfbf7] space-y-6 pb-32 md:pb-24 border-t-8 border-[#e06d53]">
         <h2 class="font-serif text-5xl font-black uppercase">{{ data.groomName }} & {{ data.brideName }}</h2>
-        <p v-if="data.show_branding" class="text-[10px] uppercase tracking-widest font-bold text-gray-400">Est. 2026 / Created with SatuUndangan</p>
+        <WatermarkBadge variant="dark" />
       </footer>
     </div>
   </div>
@@ -341,6 +341,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

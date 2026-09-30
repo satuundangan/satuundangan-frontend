@@ -642,7 +642,9 @@
                 {{ data.brideName?.split(' ')[0] || 'Kirana' }}
               </h2>
             </div>
-            <p v-if="data.show_branding" class="text-[8px] text-white/20 uppercase tracking-[0.4em] pt-8">Made with ♥ · Satu Undangan</p>
+            <div class="pt-6">
+              <WatermarkBadge variant="dark" />
+            </div>
           </div>
         </div>
       </footer>
@@ -654,6 +656,7 @@
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

@@ -351,7 +351,7 @@
            <div class="w-16 h-px bg-[#d4af37]"></div>
         </div>
         <p v-if="data.footerText" class="text-gray-500 text-sm mb-12 max-w-lg mx-auto px-6 italic font-serif leading-loose">{{ data.footerText }}</p>
-        <p v-if="data.show_branding" class="text-[#d4af37] text-[9px] tracking-[0.6em] uppercase font-black">Powered by SatuUndangan.id</p>
+        <WatermarkBadge variant="gold" />
       </footer>
 
     </div>
@@ -362,6 +362,7 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
