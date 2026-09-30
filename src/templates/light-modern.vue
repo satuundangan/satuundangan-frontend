@@ -90,7 +90,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-20 md:py-24 px-6 relative bg-gray-50" v-observe>
+      <section v-if="isSectionEnabled('quote')" class="py-20 md:py-24 px-6 relative bg-gray-50" v-observe>
         <div class="max-w-3xl mx-auto text-center border-y border-gray-200 py-12">
           <i class="fa-solid fa-quote-left text-3xl md:text-4xl text-blue-200 mb-6 block"></i>
           <p class="text-base md:text-xl text-gray-600 italic leading-relaxed font-light mb-6">
@@ -128,7 +128,7 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" class="py-20 md:py-24 px-6 bg-white">
+      <section v-if="isSectionEnabled('couple')" id="couple" class="py-20 md:py-24 px-6 bg-white">
         <div class="max-w-6xl mx-auto">
           <h2 class="text-3xl md:text-4xl font-alex text-center text-blue-800 mb-12 md:mb-16" v-observe>The Happy
             Couple</h2>
@@ -195,7 +195,7 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" class="py-20 md:py-24 px-6 relative overflow-hidden bg-gray-50">
+      <section v-if="isSectionEnabled('event')" id="event" class="py-20 md:py-24 px-6 relative overflow-hidden bg-gray-50">
          <div class="max-w-4xl mx-auto relative z-10 text-center">
           <h2 class="text-3xl md:text-4xl font-alex text-blue-800 mb-4" v-observe>Save The Date</h2>
           <p class="text-sm md:text-base text-gray-500 mb-8 md:mb-12">Kami menantikan kehadiran Anda di hari bahagia
@@ -299,7 +299,7 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" class="py-20 md:py-24 px-6 relative bg-gray-50">
+      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="py-20 md:py-24 px-6 relative bg-gray-50">
         <div
           class="max-w-2xl mx-auto bg-white border border-gray-200 rounded-3xl p-6 md:p-12 shadow-xl"
           v-observe>
@@ -475,8 +475,21 @@ const navItems = computed(() => {
 const activeSection = ref('home')
 
 function isSectionEnabled(key) {
-  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
-  return data.value.selectedSections.includes(key)
+  const sections = data.value.selectedSections
+  if (sections === undefined || sections === null) return true
+  if (!Array.isArray(sections)) return true
+  const aliasMap = {
+    couple: ['couple', 'photoCouple'],
+    event: ['event', 'event-details', 'map'],
+    hero: ['hero', 'cover'],
+    'love-story': ['love-story', 'story'],
+    'dress-code': ['dress-code', 'dressCode'],
+    'extended-family': ['extended-family', 'turut-mengundang'],
+    video: ['video', 'video-prewedding'],
+    'live-streaming': ['live-streaming', 'live-stream']
+  }
+  const aliases = aliasMap[key] || [key]
+  return aliases.some(a => sections.includes(a))
 }
 
 // Countdown Logic

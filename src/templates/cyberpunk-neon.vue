@@ -332,8 +332,9 @@ const mockStories = [
 
 const activeSections = computed(() => {
   if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
+  const rawList = data.value.selectedSections || data.value.content?.selectedSections
+  if (rawList && Array.isArray(rawList)) {
+    return rawList.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
   }
   return null
 })
@@ -350,19 +351,27 @@ const allNavItems = [
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-satellite-dish', key: 'rsvp' }
 ]
 
-const navItems = computed(() => {
-  if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => {
-    const s = activeSections.value.find(s => s.key === item.key)
-    return s ? (s.is_enabled !== false) : true
-  })
-})
-
 const isSectionEnabled = (key) => {
   if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
+  const aliasMap = {
+    couple: ['couple', 'photoCouple'],
+    event: ['event', 'event-details', 'map'],
+    hero: ['hero', 'cover'],
+    'love-story': ['love-story', 'story'],
+    'dress-code': ['dress-code', 'dressCode'],
+    'extended-family': ['extended-family', 'turut-mengundang'],
+    video: ['video', 'video-prewedding'],
+    'live-streaming': ['live-streaming', 'live-stream']
+  }
+  const aliases = aliasMap[key] || [key]
+  const section = activeSections.value.find(s => aliases.includes(s.key))
+  return section ? (section.is_enabled !== false) : false
 }
+
+const navItems = computed(() => {
+  if (!activeSections.value) return allNavItems
+  return allNavItems.filter(item => isSectionEnabled(item.key))
+})
 
 const activeSection = ref('home')
 

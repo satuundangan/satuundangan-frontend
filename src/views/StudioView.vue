@@ -703,8 +703,30 @@
           </button>
         </div>
 
+        <!-- Zoom Level Controller -->
+        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-xl">
+          <span class="text-[9px] font-bold text-slate-400 px-1.5 flex items-center gap-1">
+            <i class="fa-solid fa-magnifying-glass text-[8px]"></i>
+            <span class="hidden sm:inline">Zoom</span>
+          </span>
+          <button 
+            v-for="zoom in [70, 80, 90, 100]" 
+            :key="zoom"
+            @click="setZoom(zoom)"
+            :class="[
+              'px-2 py-1 rounded-lg text-[10px] font-bold transition-all',
+              userZoom === zoom
+                ? 'bg-white text-mocha shadow-sm' 
+                : 'text-slate-500 hover:text-dark'
+            ]"
+            :title="`Atur zoom pratinjau ke ${zoom}%`"
+          >
+            {{ zoom }}%
+          </button>
+        </div>
+
         <!-- Refresh button -->
-        <div class="w-20 text-right">
+        <div class="text-right">
           <button @click="refreshPreview" class="w-8 h-8 rounded-full border border-gray-200 hover:border-mocha hover:text-mocha bg-white flex items-center justify-center transition-all shadow-sm ml-auto" title="Muat Ulang Pratinjau">
             <i class="fa-solid fa-rotate-right text-xs"></i>
           </button>
@@ -941,10 +963,19 @@ const refreshPreview = () => {
 }
 
 const previewArea = ref(null)
+const userZoom = ref(Number(localStorage.getItem('studio_preview_zoom')) || 80)
 const scaleFactor = ref(1)
 const mobileScale = ref(1)
 const iframeHeight = ref('100%')
 let resizeObserver = null
+
+const setZoom = (val) => {
+  userZoom.value = val
+  try {
+    localStorage.setItem('studio_preview_zoom', String(val))
+  } catch (e) {}
+  updateScale()
+}
 
 const updateScale = () => {
   if (!previewArea.value) return
@@ -952,9 +983,11 @@ const updateScale = () => {
   const containerHeight = previewArea.value.clientHeight
   if (containerWidth <= 0 || containerHeight <= 0) return
 
+  const zoomFactor = (userZoom.value || 80) / 100
+
   // 1. Desktop scale factor calculation
   const virtualWidth = 1280
-  scaleFactor.value = containerWidth / virtualWidth
+  scaleFactor.value = (containerWidth / virtualWidth) * zoomFactor
   
   let availableHeight = containerHeight
   if (previewMode.value === 'desktop') {
@@ -973,7 +1006,7 @@ const updateScale = () => {
   // Allow scaling down if container height or width is smaller than mobile dimensions
   const scaleW = containerWidth / mobileWidth
   const scaleH = containerHeight / mobileHeight
-  mobileScale.value = Math.min(1, scaleW, scaleH)
+  mobileScale.value = Math.min(1, scaleW, scaleH) * zoomFactor
 }
 
 watch(previewMode, () => {
@@ -1160,20 +1193,24 @@ const templatePrice = computed(() => {
 const sectionOptionsLabelMap = {
   quote: 'Quote Ayat / Mutiara',
   'love-story': 'Love Story (Cerita Cinta)',
-  photoCouple: 'Foto Utama Pasangan',
+  photoCouple: 'Profil & Foto Mempelai',
+  couple: 'Profil & Foto Mempelai',
   music: 'Musik Latar',
   map: 'Peta Lokasi (Google Maps)',
+  'event-details': 'Detail Acara Lengkap',
+  event: 'Detail Acara & Peta',
   rsvp: 'Konfirmasi Kehadiran (RSVP)',
   wishes: 'Kolom Ucapan & Doa',
   countdown: 'Hitung Mundur Acara',
+  'dress-code': 'Panduan Dress Code',
   denah: 'Denah Lokasi / Ruangan',
   encryptedGuest: 'Enkripsi Nama Tamu',
   menu: 'Daftar Menu Makanan',
   gift: 'Amplop Digital & Kado',
   cover: 'Halaman Sampul (Cover)',
+  hero: 'Halaman Sampul (Cover)',
   gallery: 'Galeri Foto',
   'live-streaming': 'Live Streaming Link',
-  'event-details': 'Detail Acara Lengkap',
   'likes': 'Fitur Like / Suka',
   footer: 'Halaman Penutup',
   'extended-family': 'Turut Mengundang',
@@ -1183,11 +1220,13 @@ const sectionOptionsLabelMap = {
 const defaultCommonSections = [
   'quote',
   'photoCouple',
+  'couple',
   'love-story',
   'countdown',
+  'event',
+  'map',
   'rsvp',
-  'wishes',
-  'map'
+  'wishes'
 ]
 
 // Icons Map helper
@@ -1195,26 +1234,62 @@ const getIcon = (key) => {
   const iconMap = {
     quote: 'fa-quote-left',
     'love-story': 'fa-book-heart',
-    photoCouple: 'fa-image',
+    story: 'fa-book-heart',
+    photoCouple: 'fa-user-group',
+    couple: 'fa-user-group',
     music: 'fa-music',
     map: 'fa-map-location-dot',
     rsvp: 'fa-clipboard-check',
     wishes: 'fa-comment-dots',
     countdown: 'fa-clock',
+    'dress-code': 'fa-shirt',
+    dressCode: 'fa-shirt',
     denah: 'fa-map',
     encryptedGuest: 'fa-user-lock',
     menu: 'fa-utensils',
     gift: 'fa-gift',
     cover: 'fa-book-open',
+    hero: 'fa-book-open',
     gallery: 'fa-images',
     'live-streaming': 'fa-video',
     'event-details': 'fa-calendar-day',
+    event: 'fa-calendar-day',
     'likes': 'fa-thumbs-up',
     'footer': 'fa-scroll',
     'extended-family': 'fa-users',
     video: 'fa-clapperboard'
   }
   return iconMap[key] || 'fa-star'
+}
+
+const getCanonicalSelectedSections = () => {
+  const activeKeys = Object.keys(sections.value).filter(k => sections.value[k])
+  const expanded = new Set(activeKeys)
+
+  const aliasPairs = [
+    ['couple', 'photoCouple'],
+    ['couple', 'mempelai'],
+    ['event', 'event-details'],
+    ['event', 'map'],
+    ['event', 'acara'],
+    ['hero', 'cover'],
+    ['love-story', 'story'],
+    ['wishes', 'guestbook'],
+    ['gift', 'digital-envelope'],
+    ['extended-family', 'turut-mengundang'],
+    ['video', 'video-prewedding'],
+    ['dress-code', 'dressCode'],
+    ['live-streaming', 'live-stream']
+  ]
+
+  aliasPairs.forEach(([canonical, alias]) => {
+    if (expanded.has(canonical) || expanded.has(alias)) {
+      expanded.add(canonical)
+      expanded.add(alias)
+    }
+  })
+
+  return Array.from(expanded)
 }
 
 const selectAll = () => {
@@ -1281,7 +1356,7 @@ const syncDataToPreview = (data) => {
         musicChoice: data.music === 'custom' ? data.musicPreview : data.music,
         audioStart: Number(data.audioStart) || 0,
         audioEnd: Number(data.audioEnd) || 0,
-        selectedSections: Object.keys(sections.value).filter(k => sections.value[k])
+        selectedSections: getCanonicalSelectedSections()
       }
     }
     const sanitizedPayload = JSON.parse(JSON.stringify(rawPayload))
@@ -1987,7 +2062,7 @@ async function saveAndPreview() {
          musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'), isCustomMusic: formData.value.music === 'custom' || (formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart, audioEnd: formData.value.audioEnd, encryptedGuestName: formData.value.encryptedGuest === 'ya', galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
          videoPrewedding: formData.value.youtubeUrl,
-         giftDeliveryAddress: formData.value.giftAddresses, enableCover: true, healthProtocol: formData.value.healthProtocol, enableGuestMessage: formData.value.wishes === 'ya', selectedSections: Object.keys(sections.value).filter(k => sections.value[k]),
+         giftDeliveryAddress: formData.value.giftAddresses, enableCover: true, healthProtocol: formData.value.healthProtocol, enableGuestMessage: formData.value.wishes === 'ya', selectedSections: getCanonicalSelectedSections(),
          dressCode: formData.value.dressCode, extendedFamily: formData.value.extendedFamilyText ? formData.value.extendedFamilyText.split(/,|\n/).map(s => s.trim()).filter(Boolean) : [], turutMengundang: formData.value.extendedFamilyText, liveStreamingLink: formData.value.liveStreamingLink,
          footerText: formData.value.footerText, likes: formData.value.likes, menu: { title: 'Menu Makanan', items: formData.value.foodList.filter(n => n.trim()) },
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
