@@ -184,6 +184,7 @@ const menuItems = [
   { text: 'Home', href: '#' },
   { text: 'Fitur', href: '#features' },
   { text: 'Katalog', href: '#templates' },
+  { text: 'Kalkulator Budget', href: '/kalkulator-budget' },
   { text: 'Harga', href: '#pricing' },
   { text: 'Testimoni', href: '#testimonials' },
   { text: 'Blog & Tips', href: '/blog' },

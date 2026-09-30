@@ -589,6 +589,8 @@ const handleCheckout = async () => {
   try {
     const payload = { invitation_id: invitation.value.id, package: selectedPackage.value }
     if (appliedPromo.value) payload.promo_code = appliedPromo.value.code
+    const storedRef = localStorage.getItem('referral_code') || localStorage.getItem('affiliate_code')
+    if (storedRef) payload.affiliate_code = storedRef.trim().toUpperCase()
     const data = await createPayment(payload)
 
     if (data.is_free) {

@@ -16,9 +16,30 @@
     <!-- Template Section (Existing Logic) -->
     <section id="templates" class="section bg-white scroll-mt-20">
       <div class="max-w-6xl mx-auto px-6">
-        <div class="text-center mb-12">
+        <div class="text-center mb-8">
           <h2 class="heading mb-4">Pilih Template Favoritmu</h2>
           <p class="text-muted">Desain premium untuk hari spesialmu.</p>
+        </div>
+
+        <!-- Lead Magnet Callout Banner -->
+        <div class="mb-10 p-5 sm:p-6 bg-gradient-to-r from-amber-50 via-stone-50 to-amber-100/70 rounded-3xl border border-amber-200/80 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-4 text-center sm:text-left">
+            <span class="w-12 h-12 rounded-2xl bg-amber-500 text-white flex items-center justify-center text-xl shrink-0 shadow-md">
+              <i class="fa-solid fa-calculator"></i>
+            </span>
+            <div>
+              <span class="text-[10px] font-black uppercase tracking-wider text-amber-800 bg-amber-200/70 px-2 py-0.5 rounded-md">Alat Bantu Gratis</span>
+              <h3 class="text-base sm:text-lg font-bold text-stone-900 mt-0.5">Bingung Hitung Anggaran Pernikahan?</h3>
+              <p class="text-xs text-stone-600">Gunakan Kalkulator Budget Nikah & dapatkan Wedding Checklist lengkap tanpa biaya.</p>
+            </div>
+          </div>
+          <router-link
+            to="/kalkulator-budget"
+            class="shrink-0 px-5 py-2.5 rounded-xl bg-stone-900 hover:bg-black text-white text-xs font-bold transition shadow-sm hover:shadow-md flex items-center gap-1.5"
+          >
+            <span>Hitung Sekarang (Gratis)</span>
+            <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          </router-link>
         </div>
 
         <!-- Filter Groups -->
@@ -131,22 +152,30 @@
 
                   <!-- Hover Overlay -->
                   <div
-                    class="absolute inset-0 bg-stone-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2.5 z-20"
+                    class="absolute inset-0 bg-stone-950/40 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center gap-2 z-20 px-2"
                   >
                     <button
                       @click.stop="openTemplate(item.id)"
-                      class="bg-mocha hover:bg-[#8e5e39] text-white px-4 py-2 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5 hover:scale-105"
+                      class="bg-mocha hover:bg-[#8e5e39] text-white px-3 py-1.5 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1 hover:scale-105"
                     >
-                      <i class="fa-solid fa-wand-magic-sparkles text-accent-gold text-xs"></i> Pilih Tema
+                      <i class="fa-solid fa-wand-magic-sparkles text-accent-gold text-xs"></i> Pilih
                     </button>
                     <a
                       :href="'/demo/' + item.slug"
                       target="_blank"
                       @click.stop
-                      class="bg-white/95 hover:bg-white text-dark px-4 py-2 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5 hover:scale-105 delay-75"
+                      class="bg-white/95 hover:bg-white text-dark px-3 py-1.5 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1 hover:scale-105 delay-75"
                     >
                       <i class="fa-solid fa-eye text-mocha text-xs"></i> Demo
                     </a>
+                    <button
+                      type="button"
+                      @click.stop="openMobileQr(item)"
+                      class="bg-amber-400 hover:bg-amber-300 text-stone-950 px-3 py-1.5 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1 hover:scale-105 delay-100 cursor-pointer"
+                      title="Scan QR untuk Buka di HP"
+                    >
+                      <i class="fa-solid fa-qrcode text-xs"></i> Coba di HP
+                    </button>
                   </div>
                 </div>
               </div>
@@ -165,7 +194,15 @@
                 </div>
               </div>
 
-              <p class="text-sm text-muted line-clamp-2 mb-6 flex-1">{{ item.description }}</p>
+              <p class="text-sm text-muted line-clamp-2 mb-4 flex-1">{{ item.description }}</p>
+
+              <!-- Music Preview Player -->
+              <div class="mb-4">
+                <AudioPreviewButton
+                  :audio-url="item.defaultMusic || '/audio/romantic_music1.mp3'"
+                  :template-name="item.name"
+                />
+              </div>
 
               <!-- Features Summary -->
               <div class="flex items-center gap-4 mb-6">
@@ -187,10 +224,10 @@
               </div>
 
               <!-- Actions -->
-              <div class="flex gap-3 mt-auto">
+              <div class="flex gap-2 mt-auto">
                 <button
                   @click="openTemplate(item.id)"
-                  class="flex-[2] bg-mocha text-white py-3 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-lg shadow-mocha/10 flex items-center justify-center gap-2"
+                  class="flex-[2] bg-mocha text-white py-3 rounded-xl text-sm font-bold hover:bg-mocha/90 transition-all shadow-lg shadow-mocha/10 flex items-center justify-center gap-2 cursor-pointer"
                 >
                   Gunakan Template
                 </button>
@@ -201,6 +238,14 @@
                 >
                   Demo
                 </a>
+                <button
+                  type="button"
+                  @click.stop="openMobileQr(item)"
+                  class="p-3 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl hover:bg-amber-100 transition-all flex items-center justify-center cursor-pointer shrink-0"
+                  title="Scan QR untuk Buka di HP"
+                >
+                  <i class="fa-solid fa-qrcode text-base"></i>
+                </button>
               </div>
             </div>
           </div>
@@ -728,12 +773,20 @@
                       </div>
 
                       <!-- Preview Button -->
-                      <div class="absolute top-1.5 right-1.5 flex gap-1.5 z-20">
+                      <div class="absolute top-1.5 right-1.5 flex gap-1 z-20">
+                        <button
+                          type="button"
+                          @click.stop="openMobileQr(item)"
+                          class="bg-amber-400 hover:bg-amber-300 text-stone-950 px-2 py-0.5 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 cursor-pointer"
+                          title="Scan QR untuk Buka di HP"
+                        >
+                          <i class="fa-solid fa-qrcode text-[9px]"></i> Coba di HP
+                        </button>
                         <a
                           :href="'/demo/' + item.slug"
                           target="_blank"
                           @click.stop
-                          class="bg-white/95 hover:bg-white text-mocha px-2.5 py-1 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 border border-mocha/10"
+                          class="bg-white/95 hover:bg-white text-mocha px-2 py-0.5 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 border border-mocha/10"
                         >
                           <i class="fa-solid fa-eye"></i> Demo
                         </a>
@@ -767,9 +820,18 @@
                     </h4>
                   </div>
 
-                  <p class="text-[11px] text-muted mb-3 line-clamp-2 flex-1 leading-relaxed">
+                  <p class="text-[11px] text-muted mb-2 line-clamp-2 flex-1 leading-relaxed">
                     {{ item.description }}
                   </p>
+
+                  <!-- Music Preview in Modal -->
+                  <div class="mb-3">
+                    <AudioPreviewButton
+                      :audio-url="item.defaultMusic || '/audio/romantic_music1.mp3'"
+                      :template-name="item.name"
+                      compact
+                    />
+                  </div>
 
                   <!-- Additional Info: Sections & Tags -->
                   <div class="flex items-center gap-3 mb-4">
@@ -878,6 +940,7 @@
     </aside>
   </div>
   <ExitIntentPromo />
+  <MobileQrModal v-model="showMobileQrModal" :template="selectedQrTemplate" />
 </template>
 
 <script setup>
@@ -896,6 +959,8 @@ import { getTemplateDesigns } from '@/api/templateDesign'
 import { getPackages } from '@/api/payment'
 import { fetchArticles } from '@/api/article'
 import AuthModal from '@/components/modal/AuthModal.vue'
+import MobileQrModal from '@/components/modal/MobileQrModal.vue'
+import AudioPreviewButton from '@/components/audio/AudioPreviewButton.vue'
 import {
   buildStyleFilters,
   buildPackageFilters,
@@ -918,6 +983,14 @@ function choosePlan(planId) {
 }
 const showAuthModal = ref(false)
 const authMode = ref('login')
+
+const showMobileQrModal = ref(false)
+const selectedQrTemplate = ref(null)
+
+function openMobileQr(template) {
+  selectedQrTemplate.value = template
+  showMobileQrModal.value = true
+}
 
 watch(showModal, (val) => {
   if (val) {

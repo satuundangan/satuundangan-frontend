@@ -6,24 +6,30 @@
       rel="noopener noreferrer"
       class="watermark-card inline-flex items-center gap-3 px-4 sm:px-5 py-2.5 rounded-full transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg group cursor-pointer"
       :class="variantClasses"
-      title="Buat Undangan Pernikahan Digital Eksklusif di SatuUndangan.id"
+      title="Dibuat dengan cinta menggunakan SatuUndangan.id — Dapatkan Diskon & Komisi Afiliasi"
     >
       <!-- Logo / Icon Emblem -->
       <div 
         class="w-7 h-7 rounded-full flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:rotate-12 shadow-sm"
         :class="iconContainerClasses"
       >
-        <i class="fa-solid fa-heart text-[11px]"></i>
+        <i class="fa-solid fa-heart text-[11px] animate-pulse"></i>
       </div>
 
       <!-- Copy -->
       <div class="text-left flex flex-col justify-center">
-        <span class="text-[9px] uppercase tracking-wider font-semibold opacity-75 leading-tight">
-          Tertarik undangan seperti ini?
+        <span class="text-[9px] uppercase tracking-wider font-semibold opacity-80 leading-tight flex items-center gap-1">
+          <span>Dibuat dengan cinta menggunakan</span>
         </span>
         <span class="text-xs font-black tracking-wide flex items-center gap-1.5 leading-tight">
-          <span>Buat di <span class="underline decoration-amber-400 decoration-1 underline-offset-2">SatuUndangan.id</span></span>
+          <span><span class="underline decoration-amber-400 decoration-1 underline-offset-2">SatuUndangan.id</span></span>
+          <span class="text-[9px] font-bold text-amber-300 bg-amber-400/15 px-1.5 py-0.5 rounded-full border border-amber-400/25">
+            Diskon & Komisi
+          </span>
           <i class="fa-solid fa-arrow-up-right-from-square text-[9px] opacity-80 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5"></i>
+        </span>
+        <span class="text-[9px] font-medium opacity-75 leading-tight mt-0.5">
+          Tertarik undangan seperti ini? Buat milikmu sekarang
         </span>
       </div>
     </a>
@@ -45,15 +51,28 @@ const props = defineProps({
   }
 })
 
+const effectiveReferralCode = computed(() => {
+  if (props.referralCode) return props.referralCode
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = localStorage.getItem('referral_code') || localStorage.getItem('affiliate_code')
+      if (stored) return stored
+    } catch {
+      // safe fallback if localStorage unavailable
+    }
+  }
+  return ''
+})
+
 const targetUrl = computed(() => {
   const base = 'https://satuundangan.id/'
   const params = new URLSearchParams({
     utm_source: 'invitation_watermark',
     utm_medium: 'referral',
-    utm_campaign: 'powered_by_satuundangan'
+    utm_campaign: 'viral_watermark_loop'
   })
-  if (props.referralCode) {
-    params.set('ref', props.referralCode)
+  if (effectiveReferralCode.value) {
+    params.set('ref', effectiveReferralCode.value)
   }
   return `${base}?${params.toString()}`
 })
