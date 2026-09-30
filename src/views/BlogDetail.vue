@@ -98,9 +98,10 @@
       <div class="max-w-5xl mx-auto px-6 mb-12">
         <div class="aspect-[16/9] w-full rounded-3xl overflow-hidden bg-stone-100 shadow-xl border border-stone-200/80">
           <img
-            :src="article.coverImage || article.ogImage || defaultCover"
+            :src="getArticleCover(article)"
             :alt="article.title"
             class="w-full h-full object-cover"
+            @error="(e) => (e.target.src = defaultCover)"
           />
         </div>
       </div>
@@ -377,10 +378,11 @@
             <router-link :to="`/blog/${rel.slug}`" class="flex flex-col h-full">
               <div class="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                 <img
-                  :src="rel.coverImage || rel.ogImage || defaultCover"
+                  :src="getArticleCover(rel)"
                   :alt="rel.title"
                   class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                   loading="lazy"
+                  @error="(e) => (e.target.src = defaultCover)"
                 />
                 <div class="absolute top-3 left-3">
                   <span class="px-2.5 py-1 rounded-full bg-white/90 backdrop-blur-sm text-stone-800 text-[11px] font-semibold shadow-xs">
@@ -423,6 +425,7 @@ import { useToast } from 'vue-toastification'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
 import { fetchArticleBySlug, fetchArticles } from '@/api/article'
+import { getArticleCover } from '@/utils/blogUtils'
 
 const route = useRoute()
 const toast = useToast()
@@ -618,13 +621,16 @@ const updateMeta = () => {
     el.setAttribute('content', content)
   }
 
+  const coverUrl = getArticleCover(article.value)
+
   setMeta('description', article.value.metaDescription || article.value.excerpt)
   setMeta('og:title', article.value.metaTitle || article.value.title, true)
   setMeta('og:description', article.value.metaDescription || article.value.excerpt, true)
-  setMeta('og:image', article.value.ogImage || article.value.coverImage, true)
+  setMeta('og:image', coverUrl, true)
   setMeta('og:url', currentUrl, true)
   setMeta('og:type', 'article', true)
   setMeta('twitter:card', 'summary_large_image')
+  setMeta('twitter:image', coverUrl)
 
   let canonical = document.querySelector('link[rel="canonical"]')
   if (!canonical) {
@@ -633,6 +639,41 @@ const updateMeta = () => {
     document.head.appendChild(canonical)
   }
   canonical.setAttribute('href', article.value.canonicalUrl || currentUrl)
+
+  // Inject or update Schema.org BlogPosting JSON-LD
+  let schemaScript = document.getElementById('blog-post-schema')
+  if (!schemaScript) {
+    schemaScript = document.createElement('script')
+    schemaScript.id = 'blog-post-schema'
+    schemaScript.type = 'application/ld+json'
+    document.head.appendChild(schemaScript)
+  }
+  schemaScript.textContent = JSON.stringify({
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: article.value.title,
+    image: [coverUrl],
+    datePublished: article.value.publishedAt || article.value.createdAt,
+    dateModified: article.value.updatedAt || article.value.publishedAt || article.value.createdAt,
+    author: {
+      '@type': 'Organization',
+      name: 'Tim Editorial SatuUndangan',
+      url: siteUrl,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'Satu Undangan',
+      logo: {
+        '@type': 'ImageObject',
+        url: `${siteUrl}/logo.png`,
+      },
+    },
+    description: article.value.metaDescription || article.value.excerpt,
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': currentUrl,
+    },
+  })
 }
 
 onMounted(() => {

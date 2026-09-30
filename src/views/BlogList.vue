@@ -108,10 +108,11 @@
               <!-- Left: High-Res Cover Image -->
               <div class="lg:col-span-7 relative overflow-hidden bg-stone-100 min-h-[280px] sm:min-h-[380px] lg:min-h-[440px]">
                 <img
-                  :src="featuredArticle.coverImage || featuredArticle.ogImage || defaultCover"
+                  :src="getArticleCover(featuredArticle)"
                   :alt="featuredArticle.title"
                   class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
                   loading="eager"
+                  @error="(e) => (e.target.src = defaultCover)"
                 />
                 <!-- Editor's Pick Badge -->
                 <div class="absolute top-4 left-4 z-10">
@@ -192,10 +193,11 @@
                 <!-- Cover Image (aspect 16/10) -->
                 <div class="aspect-[16/10] bg-stone-100 overflow-hidden relative">
                   <img
-                    :src="article.coverImage || article.ogImage || defaultCover"
+                    :src="getArticleCover(article)"
                     :alt="article.title"
                     class="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                     loading="lazy"
+                    @error="(e) => (e.target.src = defaultCover)"
                   />
                   <!-- Category Badge overlay -->
                   <div class="absolute top-3 left-3">
@@ -346,6 +348,7 @@ import { useToast } from 'vue-toastification'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
 import { fetchArticles } from '@/api/article'
+import { getArticleCover } from '@/utils/blogUtils'
 
 const toast = useToast()
 

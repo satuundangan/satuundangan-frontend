@@ -10,6 +10,7 @@ import {
   extractHeadings,
   filterArticles,
   searchAndFilterArticles,
+  getArticleCover,
 } from './blogUtils'
 
 describe('blogUtils', () => {
@@ -400,6 +401,60 @@ describe('blogUtils', () => {
 
     it('provides searchAndFilterArticles alias', () => {
       expect(searchAndFilterArticles).toBe(filterArticles)
+    })
+  })
+
+  // ==========================================
+  // 4. Contextual Cover Image Selection
+  // ==========================================
+  describe('Contextual Cover Image Selection (getArticleCover)', () => {
+    it('returns custom non-generic cover image as is', () => {
+      const customArticle = {
+        title: 'Custom Title',
+        coverImage: 'https://images.unsplash.com/photo-custom-valid-cover?w=1200',
+      }
+      expect(getArticleCover(customArticle)).toBe('https://images.unsplash.com/photo-custom-valid-cover?w=1200')
+    })
+
+    it('replaces generic placeholder with contextual Christian/Bible image', () => {
+      const article = {
+        title: 'Contoh Kata Mutiara Undangan Pernikahan Kristen & Ayat Alkitab',
+        coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+      }
+      const cover = getArticleCover(article)
+      expect(cover).toContain('photo-1561345806-a2a89814df7a')
+    })
+
+    it('replaces generic placeholder with contextual Quran image', () => {
+      const article = {
+        title: 'Ayat Alquran untuk Undangan Pernikahan Ar Rum 21 Arab Latin',
+        coverImage: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=1200&q=80',
+      }
+      const cover = getArticleCover(article)
+      expect(cover).toContain('photo-1665306376180-3349308d5a38')
+    })
+
+    it('replaces generic placeholder with contextual Islamic henna image', () => {
+      const article = {
+        title: 'Teks Undangan Pernikahan Islami Sesuai Sunnah Walimatul Ursy',
+        coverImage: null,
+      }
+      const cover = getArticleCover(article)
+      expect(cover).toContain('photo-1653137790376-8f7f92afe14e')
+    })
+
+    it('replaces generic placeholder with contextual calligraphy invitation image', () => {
+      const article = {
+        title: 'Contoh Penulisan Turut Mengundang pada Undangan Pernikahan',
+        coverImage: '',
+      }
+      const cover = getArticleCover(article)
+      expect(cover).toContain('photo-1647470224844-054e5023ebf9')
+    })
+
+    it('handles null/undefined gracefully with fallback', () => {
+      expect(getArticleCover(null)).toContain('https://images.unsplash.com/')
+      expect(getArticleCover(undefined, 'https://fallback.com/img.jpg')).toBe('https://fallback.com/img.jpg')
     })
   })
 })

@@ -188,3 +188,66 @@ export function filterArticles(articles, { search = '', category = '' } = {}) {
 
 // Alias for convenience
 export const searchAndFilterArticles = filterArticles
+
+/**
+ * Curated contextual cover image mapping for wedding articles.
+ * Resolves contextually accurate high-res imagery based on article topic, title, and keyword.
+ *
+ * @param {Object} article
+ * @param {string} [fallbackUrl]
+ * @returns {string}
+ */
+export function getArticleCover(article, fallbackUrl = 'https://images.unsplash.com/photo-1737749685390-0959c05aecbb?auto=format&fit=crop&w=1200&q=80') {
+  if (!article) return fallbackUrl
+
+  const rawCover = article.coverImage || article.ogImage
+  const isGenericPlaceholder = rawCover && rawCover.includes('photo-1519741497674-611481863552')
+
+  // If article has a customized, non-generic image, preserve it
+  if (rawCover && !isGenericPlaceholder) {
+    return rawCover
+  }
+
+  // Resolve contextually based on title, category, and keyword
+  const text = `${article.title || ''} ${article.focusKeyword || ''} ${article.category || ''}`.toLowerCase()
+
+  if (text.includes('kristen') || text.includes('alkitab') || text.includes('gereja') || text.includes('matrimony')) {
+    return 'https://images.unsplash.com/photo-1561345806-a2a89814df7a?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('katolik') || text.includes('sakramen')) {
+    return 'https://images.unsplash.com/photo-1769374072596-cec462031154?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('quran') || text.includes('ar rum') || text.includes('ayat')) {
+    return 'https://images.unsplash.com/photo-1665306376180-3349308d5a38?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('islami') || text.includes('sunnah') || text.includes('walimatul') || text.includes('akad')) {
+    return 'https://images.unsplash.com/photo-1653137790376-8f7f92afe14e?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('turut mengundang') || text.includes('teks undangan') || text.includes('kata mutiara')) {
+    return 'https://images.unsplash.com/photo-1647470224844-054e5023ebf9?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('panitia') || text.includes('checklist') || text.includes('tugas')) {
+    return 'https://images.unsplash.com/photo-1759661937582-0ccd5dacf20f?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('rundown') || text.includes('susunan acara') || text.includes('resepsi') || text.includes('mc')) {
+    return 'https://images.unsplash.com/photo-1677768061409-3d4fbd0250d1?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('budget') || text.includes('biaya') || text.includes('hemat') || text.includes('seserahan')) {
+    return 'https://images.unsplash.com/photo-1559599101-f09722fb4948?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('jawa') || text.includes('panggih') || text.includes('siraman')) {
+    return 'https://images.unsplash.com/photo-1551843326-629cf58c42a5?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('sunda') || text.includes('siger')) {
+    return 'https://images.unsplash.com/photo-1610425303802-f09737e52e28?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('anime') || text.includes('jepang')) {
+    return 'https://images.unsplash.com/photo-1519882189396-71f93cb4714b?auto=format&fit=crop&w=1200&q=80'
+  }
+  if (text.includes('lagu') || text.includes('musik')) {
+    return 'https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=1200&q=80'
+  }
+
+  return rawCover || fallbackUrl
+}
+
