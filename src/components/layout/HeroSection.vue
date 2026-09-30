@@ -143,32 +143,25 @@
           </div>
           
           <!-- Screen Content -->
-          <div class="w-full h-full bg-white overflow-hidden relative rounded-[2.5rem] isolate">
-             <img src="@/assets/hero_image.png" alt="App Preview" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-[1.5s] ease-out rounded-[2.5rem]" />
+          <div class="w-full h-full bg-[#faf7f2] overflow-hidden relative rounded-[2.5rem] isolate">
+             <img
+               src="@/assets/hero_invitation_preview.jpg"
+               alt="Digital Wedding Invitation Preview"
+               class="w-full h-full object-cover object-top scale-100 group-hover:scale-105 transition-transform duration-700 ease-out rounded-[2.5rem]"
+             />
              
-             <!-- Overlay Gradient & Content -->
-             <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/40 flex flex-col justify-end items-center p-8 text-white text-center pb-10 z-10">
-                
-                <!-- Play Music Button -->
-                <div class="w-14 h-14 rounded-full border border-white/30 backdrop-blur-md bg-white/10 flex items-center justify-center text-white mb-6 group-hover:bg-white group-hover:text-mocha transition-all duration-500 cursor-pointer shadow-lg transform translate-y-4 group-hover:translate-y-0">
-                   <i class="fa-solid fa-play ml-1 text-lg"></i>
-                </div>
-
-                <div class="overflow-hidden">
-                  <p class="font-serif text-4xl mb-1 drop-shadow-lg transform translate-y-full group-hover:translate-y-0 transition-transform duration-700 ease-out">
-                    Romeo <span class="italic text-mocha text-3xl font-light">&</span> Juliet
-                  </p>
-                </div>
-                <div class="overflow-hidden mt-2">
-                  <p class="text-[10px] tracking-[0.4em] text-gray-300 uppercase transform translate-y-full group-hover:translate-y-0 transition-transform duration-700 delay-100 ease-out">
-                    The Wedding
-                  </p>
-                </div>
-                
-                <!-- Swipe up indicator -->
-                <div class="mt-8 flex flex-col items-center animate-bounce opacity-70">
-                   <i class="fa-solid fa-angles-up text-[10px] mb-1"></i>
-                   <span class="text-[8px] uppercase tracking-widest font-bold">Buka Undangan</span>
+             <!-- Subtle Interactive Ambient Overlay at Bottom -->
+             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent flex flex-col justify-end items-center p-5 text-white text-center pb-6 z-10 transition-opacity">
+                <!-- Floating Live Interactive Badges -->
+                <div class="w-full flex items-center justify-between gap-2 px-3 py-2 rounded-2xl bg-black/45 backdrop-blur-md border border-white/20 text-xs shadow-lg">
+                   <div class="flex items-center gap-1.5">
+                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                     <span class="text-[11px] font-medium text-stone-200">Musik & RSVP Aktif</span>
+                   </div>
+                   <div class="flex items-center gap-1 text-[11px] text-amber-300 font-semibold">
+                     <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
+                     <span>Desain Mewah</span>
+                   </div>
                 </div>
              </div>
           </div>

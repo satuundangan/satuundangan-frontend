@@ -27,22 +27,11 @@
       <!-- Desktop Menu -->
       <ul class="hidden md:flex items-center gap-8">
         <li v-for="item in menuItems" :key="item.text">
-          <router-link
-            v-if="item.href.startsWith('/')"
-            :to="item.href"
-            :class="[
-              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
-              isScrolled ? 'text-dark' : 'text-dark/80'
-            ]"
-          >
-            {{ item.text }}
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
-          </router-link>
           <a
-            v-else
-            :href="item.href"
+            :href="getHref(item)"
+            @click.prevent="handleNavClick(item)"
             :class="[
-              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha',
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
               isScrolled ? 'text-dark' : 'text-dark/80'
             ]"
           >
@@ -123,19 +112,10 @@
 
           <ul class="space-y-6 flex-1">
             <li v-for="item in menuItems" :key="item.text">
-              <router-link
-                v-if="item.href.startsWith('/')"
-                :to="item.href"
-                @click="sidebarOpen = false"
-                class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2"
-              >
-                {{ item.text }}
-              </router-link>
               <a
-                v-else
-                :href="item.href"
-                @click="sidebarOpen = false"
-                class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2"
+                :href="getHref(item)"
+                @click.prevent="handleNavClick(item)"
+                class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2 cursor-pointer"
               >
                 {{ item.text }}
               </a>
@@ -208,6 +188,46 @@ const menuItems = [
   { text: 'Testimoni', href: '#testimonials' },
   { text: 'Blog & Tips', href: '/blog' },
 ]
+
+const getHref = (item) => {
+  if (item.href === '#' || item.href === '') {
+    return '/'
+  }
+  if (item.href.startsWith('#') && route.path !== '/') {
+    return '/' + item.href
+  }
+  return item.href
+}
+
+const handleNavClick = (item) => {
+  sidebarOpen.value = false
+
+  // Direct page routes like /blog
+  if (item.href.startsWith('/') && !item.href.startsWith('/#')) {
+    router.push(item.href)
+    return
+  }
+
+  // Home / Top of page
+  if (item.href === '#' || item.href === '' || item.href === '/') {
+    if (route.path !== '/') {
+      router.push('/')
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+    return
+  }
+
+  // Hash links like #features, #templates, #pricing, #testimonials
+  if (route.path !== '/') {
+    router.push('/' + item.href)
+  } else {
+    const el = document.querySelector(item.href)
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' })
+    }
+  }
+}
 
 onClickOutside(dropdownRef, () => {
   dropdownOpen.value = false

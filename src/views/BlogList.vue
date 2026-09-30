@@ -106,11 +106,11 @@
           >
             <div class="grid grid-cols-1 lg:grid-cols-12 items-stretch">
               <!-- Left: High-Res Cover Image -->
-              <div class="lg:col-span-7 relative overflow-hidden bg-stone-100 min-h-[280px] sm:min-h-[380px] lg:min-h-[440px]">
+              <div class="lg:col-span-6 relative overflow-hidden bg-stone-100 h-56 sm:h-72 lg:h-[330px] max-h-[350px]">
                 <img
                   :src="getArticleCover(featuredArticle)"
                   :alt="featuredArticle.title"
-                  class="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  class="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
                   loading="eager"
                   @error="(e) => (e.target.src = defaultCover)"
                 />
@@ -124,9 +124,9 @@
               </div>
 
               <!-- Right: Content Details -->
-              <div class="lg:col-span-5 p-7 sm:p-10 flex flex-col justify-between bg-white">
+              <div class="lg:col-span-6 p-6 sm:p-8 flex flex-col justify-between bg-white">
                 <div>
-                  <div class="flex items-center flex-wrap gap-2 text-xs mb-4">
+                  <div class="flex items-center flex-wrap gap-2 text-xs mb-3">
                     <span class="px-2.5 py-1 rounded-full bg-[#a47148]/10 text-[#a47148] font-semibold tracking-wide">
                       {{ getCategory(featuredArticle) }}
                     </span>
@@ -142,16 +142,16 @@
                     </span>
                   </div>
 
-                  <h2 class="font-serif text-2xl sm:text-3xl font-bold text-stone-900 group-hover:text-[#a47148] transition-colors duration-200 leading-snug mb-4">
+                  <h2 class="font-serif text-xl sm:text-2xl font-bold text-stone-900 group-hover:text-[#a47148] transition-colors duration-200 leading-snug mb-3 line-clamp-2">
                     {{ featuredArticle.title }}
                   </h2>
 
-                  <p class="text-stone-600 text-sm sm:text-base leading-relaxed line-clamp-3 mb-6">
+                  <p class="text-stone-600 text-sm leading-relaxed line-clamp-2 sm:line-clamp-3 mb-4">
                     {{ featuredArticle.excerpt || stripHtml(featuredArticle.content).substring(0, 180) + '...' }}
                   </p>
                 </div>
 
-                <div class="pt-6 border-t border-stone-100 flex items-center justify-between">
+                <div class="pt-4 border-t border-stone-100 flex items-center justify-between">
                   <div class="flex items-center gap-2.5">
                     <div class="w-8 h-8 rounded-full bg-[#a47148]/15 text-[#a47148] flex items-center justify-center font-bold text-xs">
                       SU
