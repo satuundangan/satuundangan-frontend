@@ -1032,13 +1032,9 @@
         >
           {{ data.groomName }} &amp; {{ data.brideName }}
         </h2>
-        <p
-          v-if="data.show_branding"
-          class="text-xs tracking-widest uppercase"
-          :style="{ color: 'var(--dt-color-text-muted)' }"
-        >
-          Created with SatuUndangan
-        </p>
+        <div class="mt-4">
+          <WatermarkBadge :variant="theme.mode === 'dark' ? 'dark' : 'gold'" />
+        </div>
       </footer>
     </div>
   </div>
@@ -1049,6 +1045,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import ThemeArtScene from '@/components/invitation/ThemeArtScene.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 import {

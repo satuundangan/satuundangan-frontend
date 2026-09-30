@@ -620,9 +620,7 @@
         <p class="text-[#d6336c] text-[10px] tracking-[0.5em] uppercase font-bold mb-12">
           Sampai Jumpa di Hari Bahagia Kami
         </p>
-        <p v-if="data.show_branding" class="text-[#e0c3cc] text-[8px] tracking-[0.4em] uppercase font-bold italic">
-          Created by SatuUndangan.id
-        </p>
+        <WatermarkBadge variant="light" />
       </footer>
     </div>
   </div>
@@ -632,6 +630,7 @@
 import { ref, onMounted, onUnmounted, watch, computed, nextTick, h } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

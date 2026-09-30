@@ -437,7 +437,7 @@
           <h2 class="font-script text-5xl md:text-6xl text-[#3e4d3e] mb-4">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
           <p v-if="data.footerText" class="text-[#657b62] text-sm mb-8 max-w-lg mx-auto px-6 italic">{{ data.footerText }}</p>
           <div class="w-16 h-px bg-[#c5a059] mx-auto mb-8"></div>
-          <p v-if="data.show_branding" class="text-gray-400 text-[10px] tracking-[0.4em] uppercase font-bold">Created with SatuUndangan</p>
+          <WatermarkBadge variant="light" />
         </div>
       </footer>
 
@@ -449,6 +449,7 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

@@ -414,7 +414,7 @@
           <footer class="mt-28 py-12 text-center space-y-4 border-t border-[#e6dfd5]">
             <span class="text-[9px] uppercase tracking-[0.3em] text-[#8a7e72] font-black block">🐾 VERO STUDIO INSPIRED</span>
             <h2 class="font-serif text-3xl font-light uppercase tracking-[0.05em] text-[#2a2221]">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
-            <p class="text-[8px] uppercase tracking-widest font-extrabold text-gray-400">Created with ❤️ by satuundangan.id</p>
+            <WatermarkBadge variant="light" />
           </footer>
         </div>
       </section>
@@ -427,6 +427,7 @@
 import { ref, onMounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

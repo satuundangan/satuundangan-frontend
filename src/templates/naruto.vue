@@ -507,9 +507,9 @@
             <p class="text-sm text-[#4a331a] uppercase tracking-[0.2em] font-scroll">
               © {{ new Date().getFullYear() }} {{ data.groomName?.split(' ')[0] }} &amp; {{ data.brideName?.split(' ')[0] }}
             </p>
-            <p v-if="data.show_branding" class="text-[#8a5a2b]/80 mt-2 uppercase tracking-widest text-[9px] font-scroll">
-              Dibuat dengan ❤️ oleh satuundangan.id
-            </p>
+            <div class="mt-4">
+              <WatermarkBadge variant="light" />
+            </div>
           </div>
         </footer>
       </div>
@@ -527,6 +527,7 @@ export default {
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

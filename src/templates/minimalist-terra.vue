@@ -365,7 +365,7 @@
            <div class="w-12 h-12 bg-[#f2cc8f] rounded-full"></div>
            <div class="w-12 h-12 bg-[#81b29a] rounded-full"></div>
         </div>
-        <p v-if="data.show_branding" class="text-gray-300 text-[8px] tracking-[0.4em] uppercase font-bold italic">Created by SatuUndangan.id</p>
+        <WatermarkBadge variant="light" />
       </footer>
 
     </div>
@@ -376,6 +376,7 @@
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
