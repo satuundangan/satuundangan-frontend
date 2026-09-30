@@ -983,11 +983,9 @@ const updateScale = () => {
   const containerHeight = previewArea.value.clientHeight
   if (containerWidth <= 0 || containerHeight <= 0) return
 
-  const zoomFactor = (userZoom.value || 80) / 100
-
   // 1. Desktop scale factor calculation
   const virtualWidth = 1280
-  scaleFactor.value = (containerWidth / virtualWidth) * zoomFactor
+  scaleFactor.value = containerWidth / virtualWidth
   
   let availableHeight = containerHeight
   if (previewMode.value === 'desktop') {
@@ -1000,13 +998,12 @@ const updateScale = () => {
   }
   iframeHeight.value = `${availableHeight / scaleFactor.value}px`
 
-  // 2. Mobile mockup scale factor calculation (target height is around 612px)
+  // 2. Mobile mockup scale factor calculation: phone frame fits preview area comfortably
   const mobileWidth = 290
   const mobileHeight = 612.2 // 290 * 19 / 9
-  // Allow scaling down if container height or width is smaller than mobile dimensions
-  const scaleW = containerWidth / mobileWidth
-  const scaleH = containerHeight / mobileHeight
-  mobileScale.value = Math.min(1, scaleW, scaleH) * zoomFactor
+  const scaleW = (containerWidth - 32) / mobileWidth
+  const scaleH = (containerHeight - 32) / mobileHeight
+  mobileScale.value = Math.min(1, scaleW, scaleH)
 }
 
 watch(previewMode, () => {
@@ -1039,19 +1036,35 @@ const wrapperStyle = computed(() => {
 })
 
 const iframeStyle = computed(() => {
+  const zoomFactor = (userZoom.value || 80) / 100
+
   if (previewMode.value === 'desktop') {
+    const effectiveVirtualWidth = 1280 / zoomFactor
+    const effectiveVirtualHeight = (parseFloat(iframeHeight.value) || 800) / zoomFactor
+    const effectiveScale = scaleFactor.value * zoomFactor
     return {
-      width: '1280px',
-      height: iframeHeight.value,
-      transform: `scale(${scaleFactor.value})`,
+      width: `${effectiveVirtualWidth.toFixed(1)}px`,
+      height: `${effectiveVirtualHeight.toFixed(1)}px`,
+      transform: `scale(${effectiveScale})`,
       transformOrigin: 'top left',
     }
   }
+
+  // Mobile mode: zoom the content inside the phone frame
+  if (zoomFactor >= 0.99 && zoomFactor <= 1.01) {
+    return {
+      width: '100%',
+      height: '100%',
+      transform: 'none',
+      transformOrigin: 'initial',
+    }
+  }
+  const invPercent = (100 / zoomFactor).toFixed(4)
   return {
-    width: '100%',
-    height: '100%',
-    transform: 'none',
-    transformOrigin: 'initial',
+    width: `${invPercent}%`,
+    height: `${invPercent}%`,
+    transform: `scale(${zoomFactor})`,
+    transformOrigin: 'top left',
   }
 })
 
