@@ -110,6 +110,16 @@ const router = createRouter({
       meta: { title: 'Reset Password' },
     },
     {
+      path: '/kalkulator-budget',
+      name: 'budget-calculator',
+      component: () => import('@/views/BudgetCalculatorView.vue'),
+      meta: { title: 'Kalkulator Budget Nikah & Checklist Gratis' },
+    },
+    {
+      path: '/tools/kalkulator-budget-nikah',
+      redirect: '/kalkulator-budget',
+    },
+    {
       path: '/terms',
       name: 'terms',
       component: () => import('@/views/TermsView.vue'),
@@ -340,6 +350,19 @@ router.beforeEach(async (to, _from, next) => {
   if (guestOnly && authStore.user?.isAdmin) {
     next({ name: 'admin-dashboard' })
     return
+  }
+
+  // Capture referral / affiliate code from query (?ref=...)
+  if (to.query.ref) {
+    try {
+      const code = String(to.query.ref).trim().toUpperCase()
+      if (code) {
+        localStorage.setItem('referral_code', code)
+        localStorage.setItem('affiliate_code', code)
+      }
+    } catch (e) {
+      console.warn('Gagal menyimpan kode referral:', e)
+    }
   }
 
   // Update Page Title

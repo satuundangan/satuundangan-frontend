@@ -44,6 +44,7 @@
            <ul class="space-y-4 text-sm text-gray-400">
               <li><router-link to="/create" class="hover:text-mocha transition">Buat Undangan</router-link></li>
               <li><router-link to="/templates" class="hover:text-mocha transition">Katalog Tema</router-link></li>
+              <li><router-link to="/kalkulator-budget" class="hover:text-mocha transition text-amber-300 font-semibold">Kalkulator Budget Nikah (Gratis)</router-link></li>
               <li><a href="#features" class="hover:text-mocha transition">Fitur Premium</a></li>
               <li><router-link to="/blog" class="hover:text-mocha transition">Blog & Tips Pernikahan</router-link></li>
            </ul>
