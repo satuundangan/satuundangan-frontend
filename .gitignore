@@ -39,3 +39,9 @@ qodana
 
 # Wrangler local dev cache (npx wrangler pages dev)
 .wrangler/
+
+# Local scripts & tools
+/.claude
+scripts/*.sh
+scripts/*.html
+

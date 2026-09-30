@@ -57,6 +57,15 @@
                     </span>
                  </div>
                  
+                 <button 
+                   type="button"
+                   @click.stop="openMobileQr(item)" 
+                   class="absolute top-2.5 right-12 w-8 h-8 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center text-amber-700 shadow-sm border border-white/60 hover:bg-white hover:text-amber-800 transition-colors z-20 cursor-pointer"
+                   title="Scan QR untuk Buka di HP"
+                 >
+                    <i class="fa-solid fa-qrcode text-xs"></i>
+                 </button>
+
                  <a 
                    :href="'/demo/' + item.slug" 
                    target="_blank" 
@@ -76,6 +85,15 @@
                  <div class="mb-2">
                     <h4 class="font-extrabold text-slate-900 text-xs md:text-sm truncate group-hover:text-blue-600 transition-colors">{{ item.name }}</h4>
                     <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">{{ item.category || 'Modern' }}</p>
+                 </div>
+
+                 <!-- Audio Preview Player -->
+                 <div class="mb-3">
+                    <AudioPreviewButton
+                      :audio-url="item.defaultMusic || '/audio/romantic_music1.mp3'"
+                      :template-name="item.name"
+                      compact
+                    />
                  </div>
                  
                  <div class="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
@@ -106,6 +124,7 @@
     </div>
 
     <BottomNav />
+    <MobileQrModal v-model="showMobileQrModal" :template="selectedQrTemplate" />
   </div>
 </template>
 
@@ -115,6 +134,8 @@ import { useRouter } from "vue-router"
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue"
 import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
+import MobileQrModal from "@/components/modal/MobileQrModal.vue"
+import AudioPreviewButton from "@/components/audio/AudioPreviewButton.vue"
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getCategories } from '@/api/category'
 
@@ -124,6 +145,14 @@ const categories = ref([{ id: 'all', name: 'Semua' }])
 const selectedCategory = ref('all')
 const loading = ref(true)
 const isSidebarOpen = ref(window.innerWidth >= 768)
+
+const showMobileQrModal = ref(false)
+const selectedQrTemplate = ref(null)
+
+function openMobileQr(template) {
+  selectedQrTemplate.value = template
+  showMobileQrModal.value = true
+}
 
 onMounted(async () => {
   try {

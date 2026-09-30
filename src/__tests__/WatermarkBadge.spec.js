@@ -7,6 +7,8 @@ describe('WatermarkBadge Component', () => {
     const wrapper = mount(WatermarkBadge)
     expect(wrapper.text()).toContain('Tertarik undangan seperti ini?')
     expect(wrapper.text()).toContain('SatuUndangan.id')
+    expect(wrapper.text()).toContain('Dibuat dengan cinta menggunakan')
+    expect(wrapper.text()).toContain('Diskon & Komisi')
 
     const link = wrapper.find('a')
     expect(link.exists()).toBe(true)
