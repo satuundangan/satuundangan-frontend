@@ -375,8 +375,9 @@ const data = ref(props.data || {})
 // Normalize sections from different possible structures
 const activeSections = computed(() => {
   if (data.value.sections && Array.isArray(data.value.sections)) return data.value.sections
-  if (data.value.content?.selectedSections && Array.isArray(data.value.content.selectedSections)) {
-    return data.value.content.selectedSections.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
+  const rawList = data.value.selectedSections || data.value.content?.selectedSections
+  if (rawList && Array.isArray(rawList)) {
+    return rawList.map(s => typeof s === 'string' ? { key: s, is_enabled: true } : s)
   }
   return null
 })
@@ -394,14 +395,26 @@ const allNavItems = [
   { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' }
 ]
 
-const navItems = computed(() => {
-  // If no sections defined in data, show all as fallback
-  if (!activeSections.value) return allNavItems
+const isSectionEnabled = (key) => {
+  if (!activeSections.value) return true
+  const aliasMap = {
+    couple: ['couple', 'photoCouple'],
+    event: ['event', 'event-details', 'map'],
+    hero: ['hero', 'cover'],
+    'love-story': ['love-story', 'story'],
+    'dress-code': ['dress-code', 'dressCode'],
+    'extended-family': ['extended-family', 'turut-mengundang'],
+    video: ['video', 'video-prewedding'],
+    'live-streaming': ['live-streaming', 'live-stream']
+  }
+  const aliases = aliasMap[key] || [key]
+  const section = activeSections.value.find(s => aliases.includes(s.key))
+  return section ? (section.is_enabled !== false) : false
+}
 
-  return allNavItems.filter(item => {
-    const sectionSettings = activeSections.value.find(s => s.key === item.key)
-    return sectionSettings ? (sectionSettings.is_enabled !== false) : true
-  })
+const navItems = computed(() => {
+  if (!activeSections.value) return allNavItems
+  return allNavItems.filter(item => isSectionEnabled(item.key))
 })
 function getEmbedUrlVideo(url) {
   if (!url) return ''
@@ -412,12 +425,6 @@ function getEmbedUrlVideo(url) {
   }
   if (url.includes('youtu.be')) return `https://www.youtube.com/embed/${url.split('youtu.be/')[1]}`
   return url
-}
-
-const isSectionEnabled = (key) => {
-  if (!activeSections.value) return true
-  const section = activeSections.value.find(s => s.key === key)
-  return section ? (section.is_enabled !== false) : true
 }
 
 const activeSection = ref('home')

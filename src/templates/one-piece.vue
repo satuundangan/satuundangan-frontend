@@ -128,7 +128,7 @@
         </header>
 
         <!-- COUNTDOWN -->
-        <section class="text-center" v-observe>
+        <section v-if="isSectionEnabled('countdown')" class="text-center" v-observe>
           <div class="ocean-plaque max-w-xl mx-auto px-4 sm:px-6 py-6">
             <h3 class="font-wanted text-[10px] text-[#7a4a1e] mb-4 tracking-[0.3em] uppercase">Hitung Mundur Pernikahan</h3>
             <div class="grid grid-cols-4 gap-1.5 sm:gap-2 text-center">
@@ -376,7 +376,7 @@
         </section>
 
         <!-- GUESTBOOK — Transmissions -->
-        <section class="max-w-2xl mx-auto space-y-8">
+        <section v-if="isSectionEnabled('wishes')" class="max-w-2xl mx-auto space-y-8">
           <div class="text-center" v-observe>
             <h2 class="font-pirate text-3xl md:text-4xl text-[#f9c74f] drop-shadow-[0_2px_0_#0b2c48]">Ucapan &amp; Doa</h2>
             <p class="text-[#a9d6e5] text-base mt-2">Ucapan dan doa dari keluarga &amp; sahabat</p>
@@ -624,8 +624,23 @@ function formatTime(dateStr) {
 }
 
 function isSectionEnabled(key) {
-  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
-  return data.value.selectedSections.includes(key)
+  const sections = data.value.selectedSections
+  if (sections === undefined || sections === null) return true
+  if (!Array.isArray(sections)) return true
+  const aliasMap = {
+    couple: ['couple', 'photoCouple'],
+    event: ['event', 'event-details', 'map'],
+    hero: ['hero', 'cover'],
+    'love-story': ['love-story', 'story'],
+    wishes: ['wishes', 'guestbook'],
+    gift: ['gift', 'digital-envelope'],
+    'dress-code': ['dress-code', 'dressCode'],
+    'extended-family': ['extended-family', 'turut-mengundang'],
+    video: ['video', 'video-prewedding'],
+    'live-streaming': ['live-streaming', 'live-stream']
+  }
+  const aliases = aliasMap[key] || [key]
+  return aliases.some(a => sections.includes(a))
 }
 
 function formatInstagramUrl(handle) {
