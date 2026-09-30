@@ -2,7 +2,7 @@ name: Deploy to Cloudflare Pages
 
 on:
   push:
-    branches: [ master, development ]
+    branches: [ master, main, development ]
 
 jobs:
   deploy:
@@ -44,4 +44,4 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: 7a2d2ad60fe21279f176a8aadfd1aa52
-          command: pages deploy dist --project-name ${{ github.ref_name == 'development' && 'satuundangan-development' || 'satuundangan-frontend' }} --branch ${{ github.ref_name }}
+          command: pages deploy dist --project-name ${{ github.ref_name == 'development' && 'satuundangan-development' || 'satuundangan-frontend' }} --branch ${{ (github.ref_name == 'master' || github.ref_name == 'main') && 'main' || github.ref_name }}
