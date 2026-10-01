@@ -114,29 +114,38 @@
             </div>
           </div>
 
-          <!-- Public Guest Toggle -->
+          <!-- Public vs Private Invitation Access Mode Toggle -->
           <div
             v-if="currentInvitation"
             class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4"
           >
             <div class="flex items-start gap-3.5">
-              <div class="w-10 h-10 shrink-0 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center text-sm">
-                <i class="fa-solid fa-lock"></i>
+              <div
+                class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-sm transition-colors"
+                :class="currentInvitation.isGuestPublic === false ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'"
+              >
+                <i :class="currentInvitation.isGuestPublic === false ? 'fa-solid fa-lock' : 'fa-solid fa-earth-asia'"></i>
               </div>
               <div>
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">Tamu Publik</h3>
+                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">Mode Privasi Undangan</h3>
                   <span
-                    class="px-2 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide"
-                    :class="currentInvitation.isGuestPublic !== false ? 'bg-green-50 text-green-600' : 'bg-rose-50 text-rose-500'"
+                    v-if="currentInvitation.isGuestPublic === false"
+                    class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide bg-amber-50 text-amber-800 border border-amber-200/80 inline-flex items-center gap-1"
                   >
-                    {{ currentInvitation.isGuestPublic !== false ? 'AKTIF' : 'TIDAK AKTIF' }}
+                    <i class="fa-solid fa-lock text-[8px]"></i> MODE PRIVAT (TERKUNCI)
+                  </span>
+                  <span
+                    v-else
+                    class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200/80 inline-flex items-center gap-1"
+                  >
+                    <i class="fa-solid fa-earth-asia text-[8px]"></i> AKSES PUBLIK (TERBUKA)
                   </span>
                 </div>
                 <p class="mt-0.5 max-w-2xl text-[11px] leading-relaxed text-slate-500">
-                  {{ currentInvitation.isGuestPublic !== false
-                    ? 'Siapa saja dengan link undangan dapat melihatnya. Matikan agar hanya tamu yang diundang dapat membuka link khusus mereka.'
-                    : 'Undangan hanya dapat dibuka melalui link khusus yang dibagikan kepada tamu dari menu ini.' }}
+                  {{ currentInvitation.isGuestPublic === false
+                    ? 'Undangan dikunci khusus untuk tamu terdaftar. Orang asing yang membuka link utama akan disambut layar privat santun. Bagikan link khusus personal untuk masing-masing tamu.'
+                    : 'Siapa saja dengan tautan utama dapat membuka dan melihat isi undangan. Cocok untuk perayaan umum atau resepsi massal.' }}
                 </p>
               </div>
             </div>
@@ -144,11 +153,12 @@
               type="button"
               role="switch"
               :aria-checked="currentInvitation.isGuestPublic !== false"
-              :aria-label="currentInvitation.isGuestPublic !== false ? 'Nonaktifkan akses tamu publik' : 'Aktifkan akses tamu publik'"
+              :aria-label="currentInvitation.isGuestPublic !== false ? 'Kunci menjadi mode privat' : 'Buka menjadi mode publik'"
               :disabled="updatingGuestAccess"
               @click="toggleGuestAccess"
               class="relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-50 cursor-pointer"
-              :class="currentInvitation.isGuestPublic !== false ? 'bg-violet-500' : 'bg-slate-200'"
+              :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-500' : 'bg-amber-600'"
+              :title="currentInvitation.isGuestPublic !== false ? 'Klik untuk mengubah ke Mode Privat' : 'Klik untuk mengubah ke Mode Publik'"
             >
               <span
                 class="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform"

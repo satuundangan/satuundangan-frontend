@@ -159,7 +159,7 @@ export function getGuestUrl(guest, invitation, baseUrl) {
       : 'https://satuundangan.id')
 
   const token = guest.accessToken || guest.slug || guest.id
-  let url = `${origin.replace(/\/$/, '')}/inv/${invitation.slug}/${token}`
+  let url = `${origin.replace(/\/+$/, '')}/inv/${invitation.slug}/${token}`
 
   if (invitation.encryptedGuestName && guest.name) {
     const b64 = encodeBase64Safe(guest.name)

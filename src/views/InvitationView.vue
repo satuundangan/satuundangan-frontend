@@ -20,6 +20,7 @@ import {
   FALLBACK_TEMPLATE_KEY,
   DYNAMIC_THEME_KEY,
 } from '@/utils/templateRegistry'
+import PrivateLockScreen from '@/components/invitation/PrivateLockScreen.vue'
 
 const props = defineProps({
   // Host-based mode: invitation resolved from custom subdomain, not route slug.
@@ -35,6 +36,7 @@ const invitationData = ref(null)
 const TemplateComponent = shallowRef(null)
 const loading = ref(true)
 const error = ref(null)
+const isPrivateAccessLocked = ref(false)
 const isPreviewMode = ref(false)
 const isInsideFrame = ref(false)
 const isDemoMode = ref(false)
@@ -289,8 +291,15 @@ onMounted(async () => {
     }
   } catch (err) {
     if (!isLiveSyncActive.value) {
-       error.value = err?.message || 'Undangan tidak ditemukan atau terjadi kesalahan.'
-       console.error(err)
+      const status = err?.response?.status || err?.status
+      const serverMsg = err?.response?.data?.message || err?.message || ''
+
+      if (status === 403 && (String(serverMsg).toLowerCase().includes('privat') || String(serverMsg).toLowerCase().includes('khusus'))) {
+        isPrivateAccessLocked.value = true
+      } else {
+        error.value = serverMsg || 'Undangan tidak ditemukan atau terjadi kesalahan.'
+      }
+      console.error(err)
     }
   } finally {
     if (!isLiveSyncActive.value) {
@@ -502,8 +511,26 @@ function getLocalPreviewPayload(slug) {
         </div>
       </div>
     </div>
-    <div v-else-if="error" class="min-h-screen text-center flex justify-center items-center text-red-600">{{
-      error }}</div>
+
+    <!-- Dedicated Luxury Private Lock Screen for unauthorized/anonymous access -->
+    <PrivateLockScreen v-else-if="isPrivateAccessLocked" :slug="slug" />
+
+    <!-- Graceful Error Screen for other errors (e.g. 404 / inactive) -->
+    <div v-else-if="error" class="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4">
+      <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-gray-100 shadow-xl text-center space-y-4">
+        <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-2xl">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <h2 class="text-xl font-serif font-black text-slate-900">Undangan Tidak Tersedia</h2>
+        <p class="text-xs text-slate-500 leading-relaxed">{{ error }}</p>
+        <div class="pt-2">
+          <a href="/" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-mocha text-white text-xs font-bold rounded-xl hover:bg-mocha/90 transition-colors">
+            <i class="fa-solid fa-house text-xs"></i>
+            <span>Kembali ke Beranda</span>
+          </a>
+        </div>
+      </div>
+    </div>
     
     <template v-else>
       <component :is="TemplateComponent" :data="invitationData" />
