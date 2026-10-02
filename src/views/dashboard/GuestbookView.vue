@@ -8,74 +8,80 @@
       <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
         <!-- Top Navigation / Tab Switcher -->
         <div class="space-y-4 no-print">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div>
-              <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                {{ activeTab === 'standee' ? 'QR Code Meja Resepsi (Buku Tamu Digital)' : activeTab === 'wishes' ? 'Daftar Ucapan & Doa' : 'Scanner Tiket Tamu (Panitia)' }}
-              </h2>
-              <p class="text-xs text-slate-400 mt-1">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div class="min-w-0 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-[#a47148]"></span>
+                <h2 class="text-lg md:text-xl font-black text-slate-900 tracking-tight truncate">
+                  {{ activeTab === 'standee' ? 'QR Code Meja Resepsi' : activeTab === 'wishes' ? 'Daftar Ucapan & Doa' : 'Scanner Tiket Tamu' }}
+                </h2>
+              </div>
+              <p class="text-xs text-slate-400 mt-1 max-w-xl truncate">
                 {{ activeTab === 'standee'
-                  ? 'Unduh atau cetak standee QR Code untuk dipajang di meja resepsi. Tamu cukup scan dengan kamera HP untuk mengisi buku tamu.'
+                  ? 'Cetak atau unduh standee QR Code untuk dipajang di meja penerima tamu.'
                   : activeTab === 'wishes'
-                  ? 'Lihat ucapan dan konfirmasi kehadiran langsung dari para tamu undangan.'
-                  : 'Mode panitia meja resepsi untuk memindai tiket QR personal dari HP para tamu.' }}
+                  ? 'Pesan ucapan dan doa restu yang dikirimkan para tamu undangan.'
+                  : 'Mode panitia untuk memindai tiket QR unik dari HP tamu di meja resepsi.' }}
               </p>
             </div>
 
-            <!-- Tab Buttons -->
-            <div class="flex items-center bg-slate-200/70 p-1 rounded-2xl w-full sm:w-auto">
-              <!-- Tab 1: QR Code Meja Resepsi (DEFAULT) -->
+            <!-- Tab Buttons (Segmented compact control without overflow) -->
+            <div class="inline-flex items-center bg-slate-200/80 p-1 rounded-2xl w-full sm:w-auto shrink-0 overflow-x-auto custom-scrollbar">
+              <!-- Tab 1: Standee QR (DEFAULT) -->
               <button
                 type="button"
                 @click="activeTab = 'standee'"
                 :class="[
-                  'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all cursor-pointer',
+                  'flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap',
                   activeTab === 'standee'
-                    ? 'bg-white text-slate-900 shadow-sm'
+                    ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 ]"
+                title="Dapatkan QR Code meja resepsi untuk dipajang"
               >
-                <i class="fa-solid fa-qrcode text-emerald-600"></i>
-                <span>QR Meja Resepsi</span>
+                <i class="fa-solid fa-qrcode text-emerald-600 text-xs"></i>
+                <span>Standee QR</span>
               </button>
 
-              <!-- Tab 2: Daftar Ucapan & Doa -->
+              <!-- Tab 2: Ucapan & Doa -->
               <button
                 type="button"
                 @click="activeTab = 'wishes'"
                 :class="[
-                  'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all cursor-pointer',
+                  'flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap',
                   activeTab === 'wishes'
-                    ? 'bg-white text-slate-900 shadow-sm'
+                    ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 ]"
+                title="Lihat ucapan dan doa dari para tamu"
               >
-                <i class="fa-solid fa-comments text-amber-600"></i>
+                <i class="fa-solid fa-comments text-amber-600 text-xs"></i>
                 <span>Ucapan & Doa</span>
                 <span
                   v-if="messages.length > 0"
-                  class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full font-black bg-amber-100 text-amber-800"
+                  class="ml-1 px-1.5 py-0.2 text-[10px] rounded-full font-black bg-amber-100 text-amber-800"
                 >
                   {{ messages.length }}
                 </span>
               </button>
 
-              <!-- Tab 3: Scanner Tiket Panitia -->
+              <!-- Tab 3: Scanner Panitia -->
               <button
                 type="button"
                 @click="activeTab = 'scanner'"
                 :class="[
-                  'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all cursor-pointer',
+                  'flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap',
                   activeTab === 'scanner'
-                    ? 'bg-white text-slate-900 shadow-sm'
+                    ? 'bg-white text-slate-900 shadow-xs'
                     : 'text-slate-600 hover:text-slate-900'
                 ]"
+                title="Mode scanner kamera untuk panitia"
               >
-                <i class="fa-solid fa-camera text-blue-600"></i>
+                <i class="fa-solid fa-camera text-blue-600 text-xs"></i>
                 <span>Scanner Panitia</span>
                 <span
                   v-if="checkedInCount > 0"
-                  class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full font-black bg-blue-100 text-blue-700"
+                  class="ml-1 px-1.5 py-0.2 text-[10px] rounded-full font-black bg-blue-100 text-blue-700"
                 >
                   {{ checkedInCount }}
                 </span>
@@ -383,6 +389,28 @@
         <!-- TAB 3: SCANNER TIKET PANITIA -->
         <!-- ============================================== -->
         <div v-if="activeTab === 'scanner'" class="space-y-6">
+          <!-- Guidance Hint Banner for Scanner Panitia -->
+          <div class="p-5 rounded-3xl bg-blue-50/70 border border-blue-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-blue-600 text-white flex items-center justify-center shrink-0 text-base shadow-sm">
+                <i class="fa-solid fa-camera"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-black text-slate-900 tracking-tight">
+                  Scanner Meja Resepsi (Khusus Panitia / Pagar Ayu)
+                </h3>
+                <p class="text-xs text-slate-600 mt-0.5 max-w-2xl leading-relaxed">
+                  Gunakan kamera ponsel/laptop panitia untuk memindai <strong>Tiket QR</strong> di ponsel tamu saat tiba di venue. Kamera <strong>tidak aktif otomatis</strong> demi privasi — tekan tombol <em>"Mulai Kamera"</em> saat acara dimulai. Jika tamu tidak membawa HP, gunakan kolom pencarian di sebelah kanan untuk check-in manual.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-3 py-1.5 rounded-xl bg-white border border-blue-200 text-blue-800 text-xs font-black shadow-2xs">
+                Mode Petugas Resepsi
+              </span>
+            </div>
+          </div>
+
           <!-- 1. Live Stats Bar -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Stat 1: Hadir di Lokasi -->
@@ -807,7 +835,29 @@
         <!-- ============================================== -->
         <!-- TAB 2: DAFTAR UCAPAN & DOA (EXISTING VIEW) -->
         <!-- ============================================== -->
-        <div v-else-if="activeTab === 'wishes'" class="space-y-4">
+        <div v-else-if="activeTab === 'wishes'" class="space-y-6">
+          <!-- Guidance Hint Banner for Wishes & Doa -->
+          <div class="p-5 rounded-3xl bg-amber-50/70 border border-amber-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 text-base shadow-sm">
+                <i class="fa-solid fa-comments"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-black text-slate-900 tracking-tight">
+                  Pesan Ucapan & Doa Restu Tamu
+                </h3>
+                <p class="text-xs text-slate-600 mt-0.5 max-w-2xl leading-relaxed">
+                  Semua ucapan dan doa yang dikirimkan tamu melalui undangan digital atau setelah scan QR di meja resepsi akan terkumpul di sini secara real-time. Anda dapat meninjau konfirmasi kehadiran (RSVP) serta pesan hangat dari keluarga dan sahabat tercinta.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0">
+              <span class="px-3 py-1.5 rounded-xl bg-white border border-amber-200 text-amber-800 text-xs font-black shadow-2xs">
+                Total {{ messages.length }} Pesan
+              </span>
+            </div>
+          </div>
+
           <div v-if="loadingMessages" class="flex flex-col items-center justify-center py-20 text-slate-400">
             <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-[#a47148]"></i>
             <p class="text-xs font-bold">Memuat pesan ucapan...</p>
@@ -1262,8 +1312,6 @@ onMounted(async () => {
   } catch (e) {
     console.error(e)
   }
-
-  await loadCameras()
 })
 
 watch(selectedInvitationId, async (newId) => {
