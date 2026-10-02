@@ -4,11 +4,78 @@
  */
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://api.satuundangan.id'
+const EXCLUDE_STORAGE_KEY = 'exclude_telemetry'
 let isSending = false
 const eventQueue = []
 
+/**
+ * Check if current browser / device should be excluded from telemetry tracking
+ */
+export function isTelemetryExcluded() {
+  if (typeof window === 'undefined') return true
+
+  try {
+    // 1. Quick URL parameter switch (e.g. https://satuundangan.id/?dev=1 or ?exclude_tracking=1)
+    if (window.location && window.location.search) {
+      const params = new URLSearchParams(window.location.search)
+      if (params.get('dev') === '1' || params.get('exclude_tracking') === '1') {
+        localStorage.setItem(EXCLUDE_STORAGE_KEY, 'true')
+        return true
+      }
+      if (params.get('dev') === '0' || params.get('enable_tracking') === '1') {
+        localStorage.removeItem(EXCLUDE_STORAGE_KEY)
+        return false
+      }
+    }
+
+    // 2. Check localStorage opt-out
+    if (localStorage.getItem(EXCLUDE_STORAGE_KEY) === 'true') {
+      return true
+    }
+
+    // 3. Check window global override flag
+    if (window.__EXCLUDE_TELEMETRY__ === true) {
+      return true
+    }
+  } catch {
+    // Ignore storage errors in restricted contexts
+  }
+
+  return false
+}
+
+/**
+ * Enable or disable telemetry exclusion for this browser
+ */
+export function setTelemetryExcluded(excluded = true) {
+  try {
+    if (excluded) {
+      localStorage.setItem(EXCLUDE_STORAGE_KEY, 'true')
+      console.info('[Telemetry] 🛡️ Developer Mode: Tracking DISABLED for this browser.')
+    } else {
+      localStorage.removeItem(EXCLUDE_STORAGE_KEY)
+      console.info('[Telemetry] 👁️ Tracking ENABLED for this browser.')
+    }
+  } catch (e) {
+    console.warn('[Telemetry] Storage error:', e)
+  }
+  return isTelemetryExcluded()
+}
+
+// Expose global helper in browser DevTools console for developers
+if (typeof window !== 'undefined') {
+  window.setTelemetryExcluded = setTelemetryExcluded
+  window.isTelemetryExcluded = isTelemetryExcluded
+  window.toggleTelemetry = () => setTelemetryExcluded(!isTelemetryExcluded())
+}
+
 // Flush queued telemetry events to backend
 async function flushQueue() {
+  if (isTelemetryExcluded()) {
+    eventQueue.length = 0
+    return
+  }
+
   if (isSending || eventQueue.length === 0) return
   isSending = true
 
@@ -41,6 +108,10 @@ async function flushQueue() {
 }
 
 function queueEvent(event) {
+  // Never queue or send if excluded
+  if (isTelemetryExcluded()) {
+    return
+  }
   // Prevent unbounded queue growth if network is offline
   if (eventQueue.length > 30) {
     eventQueue.shift()

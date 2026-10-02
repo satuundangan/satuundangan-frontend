@@ -82,18 +82,23 @@
           </button>
         </div>
 
-        <!-- Top Visited Pages Quick Pill & Refresh -->
+        <!-- Developer Exclusion & Refresh Actions -->
         <div class="flex items-center gap-2">
-          <div v-if="stats.topPaths?.length" class="hidden xl:flex items-center gap-1 text-[11px] text-slate-400">
-            <span class="font-bold">Top:</span>
-            <span
-              v-for="p in stats.topPaths.slice(0, 2)"
-              :key="p.path"
-              class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 font-mono text-[10px]"
-            >
-              {{ p.path }} ({{ p.count }})
-            </span>
-          </div>
+          <!-- Toggle Developer Exclusion for current browser -->
+          <button
+            type="button"
+            @click="toggleExcludeCurrentBrowser"
+            :class="[
+              'px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer border shadow-2xs',
+              isExcluded
+                ? 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100'
+                : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100 hover:text-slate-900'
+            ]"
+            :title="isExcluded ? 'Browser Anda DIKECUALIKAN dari log (Klik untuk mengaktifkan kembali tracking)' : 'Klik untuk mengecualikan browser ini agar aktivitas Anda dan tim tidak tercatat di log'"
+          >
+            <i :class="['fa-solid', isExcluded ? 'fa-shield-halved text-purple-600' : 'fa-eye text-slate-400']"></i>
+            <span>{{ isExcluded ? 'Browser Diabaikan (Dev Mode)' : 'Abaikan Browser Ini' }}</span>
+          </button>
 
           <button
             type="button"
@@ -106,6 +111,34 @@
             <span>Segarkan</span>
           </button>
         </div>
+      </div>
+
+      <!-- Developer Mode Active Alert Banner -->
+      <div
+        v-if="isExcluded"
+        class="p-4 rounded-2xl bg-purple-50 border border-purple-200/90 text-purple-950 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
+      >
+        <div class="flex items-start sm:items-center gap-3">
+          <div class="w-8 h-8 rounded-xl bg-purple-600 text-white flex items-center justify-center shrink-0 text-sm shadow-xs">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+          <div>
+            <h4 class="text-xs font-black text-purple-900">
+              Mode Developer / Admin Aktif (Browser Ini Tidak Dicatat di Log)
+            </h4>
+            <p class="text-[11px] text-purple-700 mt-0.5 leading-relaxed">
+              Setiap kali Anda membuka halaman atau mencoba fitur, data Anda tidak akan masuk ke statistik log.
+              Buka link <code class="px-1.5 py-0.5 bg-purple-100 rounded font-mono text-purple-900 font-bold">?dev=1</code> di browser HP teman Anda untuk mengecualikan perangkat mereka juga.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          @click="toggleExcludeCurrentBrowser"
+          class="px-3 py-1.5 rounded-xl bg-white hover:bg-purple-100 text-purple-800 border border-purple-200 text-xs font-bold transition-colors cursor-pointer shrink-0 self-start sm:self-center"
+        >
+          Aktifkan Kembali Tracking
+        </button>
       </div>
 
       <!-- 3. Logs DataTable -->
@@ -329,9 +362,11 @@ import AdminShell from '@/components/admin/AdminShell.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { fetchAdminLogs, fetchAdminLogStats } from '@/api/admin.js'
+import { isTelemetryExcluded, setTelemetryExcluded } from '@/utils/telemetry.js'
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+const isExcluded = ref(isTelemetryExcluded())
 const logs = ref([])
 const total = ref(0)
 const page = ref(1)
@@ -401,6 +436,16 @@ function setLevelFilter(val) {
   selectedLevel.value = val
   page.value = 1
   loadLogs()
+}
+
+function toggleExcludeCurrentBrowser() {
+  const next = !isExcluded.value
+  isExcluded.value = setTelemetryExcluded(next)
+  if (isExcluded.value) {
+    toast.success('🛡️ Mode Dev Aktif: Browser Anda tidak akan tercatat di log!')
+  } else {
+    toast.info('👁️ Tracking Aktif: Aktivitas browser Anda kembali dicatat di log.')
+  }
 }
 
 function onPage(event) {
