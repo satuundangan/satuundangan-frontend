@@ -1669,27 +1669,41 @@ async function handleExcelImport(event) {
       }
 
       isSubmitting.value = true
+      // Excel cells may be numbers; 08xx phones lose their leading 0 (→ 8xx)
+      const cell = (v) => (v === undefined || v === null ? '' : String(v).trim())
+      const phoneCell = (v) => {
+        const p = cell(v)
+        return /^8\d{7,}$/.test(p) ? `0${p}` : p
+      }
       let success = 0
+      const failed = []
       for (const row of jsonData) {
-        const name = row.Nama || row.nama || row.Name || row.name
-        const phone = row.WhatsApp || row.whatsapp || row.NoHP || row.phone || row.telp
-        const group = row.Kategori || row.group || row.category
+        const name = cell(row.Nama ?? row.nama ?? row.Name ?? row.name)
+        const phone = phoneCell(row.WhatsApp ?? row.whatsapp ?? row.NoHP ?? row.phone ?? row.telp)
+        const group = cell(row.Kategori ?? row.group ?? row.category) || undefined
 
         if (name) {
           try {
             await createGuest({
               name,
-              phoneNumber: String(phone || ''),
+              phoneNumber: phone,
               group,
               invitationId: selectedInvitationId.value,
             })
             success++
           } catch (err) {
             console.error(err)
+            failed.push(name)
           }
         }
       }
-      toast.success(`${success} tamu berhasil diimport`)
+      if (success) toast.success(`${success} tamu berhasil diimport`)
+      if (failed.length) {
+        const sample = failed.slice(0, 3).join(', ')
+        toast.error(
+          `${failed.length} tamu gagal diimport (${sample}${failed.length > 3 ? ', …' : ''}). Cek nama/nomor lalu coba lagi.`,
+        )
+      }
       await fetchGuests(selectedInvitationId.value)
     } catch (err) {
       toast.error('Gagal membaca file Excel')

@@ -104,6 +104,10 @@ export function normalizePhoneNumber(rawPhone) {
   if (digitsOnly.startsWith('0')) {
     return `62${digitsOnly.slice(1)}`
   }
+  // Excel drops the leading 0 of 08xx numbers, leaving 8xx
+  if (digitsOnly.startsWith('8')) {
+    return `62${digitsOnly}`
+  }
   return digitsOnly
 }
 
