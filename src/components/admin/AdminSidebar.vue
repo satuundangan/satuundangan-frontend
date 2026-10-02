@@ -145,6 +145,7 @@ const navItems = [
   { label: 'Bank & Pembayaran', to: '/admin/banks', icon: 'pi-credit-card' },
   { label: 'Promo Code', to: '/admin/promo-codes', icon: 'pi-percentage' },
   { label: 'Artikel & Blog', to: '/admin/articles', icon: 'pi-file-edit' },
+  { label: 'Activity & Error Logs', to: '/admin/logs', icon: 'pi-history' },
 ];
 
 // Function to determine if a link is active

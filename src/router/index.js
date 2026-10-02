@@ -8,6 +8,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { getCustomSubdomain } from '@/api/invitation'
 import { analytics } from '@/api/analytics.js'
+import { trackPageView, trackError } from '@/utils/telemetry.js'
 import DashboardView from '@/views/dashboard/DashboardView.vue'
 import InvitationsView from '@/views/dashboard/InvitationsView.vue'
 import TemplatesView from '@/views/dashboard/TemplatesView.vue'
@@ -271,6 +272,12 @@ const router = createRouter({
       component: () => import('@/views/admin/AdminArticleEditor.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Edit Artikel' },
     },
+    {
+      path: '/admin/logs',
+      name: 'admin-logs',
+      component: () => import('@/views/admin/AdminLogs.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Activity & Error Logs' },
+    },
     { path: '/guests', name: 'Guests', component: GuestsView },
     {
       path: '/demo/:templateSlug',
@@ -376,6 +383,13 @@ router.afterEach((to, from) => {
     from_path: from.fullPath,
   })
 
+  // Telemetry internal activity log
+  trackPageView(to.fullPath, pageTitle, {
+    name: String(to.name || ''),
+    from_path: from.fullPath,
+    userEmail: authStore.user?.email || null,
+  })
+
   // When leaving the page (on the next transition), the 'Time on Page' for the PREVIOUS page should be captured.
   // Note: Mixpanel's time_event works by calling track() later with the same name.
   if (from.name) {
@@ -389,6 +403,7 @@ router.afterEach((to, from) => {
 
 // Handle stale asset/chunk errors after new deployments
 router.onError((error) => {
+  trackError(error, { source: 'router.onError' })
   const isChunkError = 
     error.message?.includes('Failed to fetch dynamically imported module') ||
     error.message?.includes('Importing a module script failed') ||

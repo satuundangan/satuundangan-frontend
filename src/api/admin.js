@@ -120,3 +120,8 @@ export const fetchAdminArticleBotStatus = () => apiFetch('/admin/articles/bot-st
 
 export const fetchAdminHealth = () => apiFetch('/admin/health')
 export const fetchAdminStats = () => apiFetch('/admin/stats')
+
+// Activity & Error Logs
+export const fetchAdminLogs = (params) => apiFetch(withParams('/admin/logs', params))
+export const fetchAdminLogStats = () => apiFetch('/admin/logs/stats')
+

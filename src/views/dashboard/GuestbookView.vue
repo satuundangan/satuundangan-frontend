@@ -11,37 +11,35 @@
           <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">
-                {{ activeTab === 'reception' ? 'Meja Resepsi & Buku Tamu Digital' : 'Daftar Ucapan & Doa' }}
+                {{ activeTab === 'standee' ? 'QR Code Meja Resepsi (Buku Tamu Digital)' : activeTab === 'wishes' ? 'Daftar Ucapan & Doa' : 'Scanner Tiket Tamu (Panitia)' }}
               </h2>
               <p class="text-xs text-slate-400 mt-1">
-                {{ activeTab === 'reception'
-                  ? 'Scan tiket QR tamu, check-in manual cepat, dan pantau statistik kehadiran langsung di meja resepsi.'
-                  : 'Lihat ucapan dan konfirmasi kehadiran langsung dari para tamu.' }}
+                {{ activeTab === 'standee'
+                  ? 'Unduh atau cetak standee QR Code untuk dipajang di meja resepsi. Tamu cukup scan dengan kamera HP untuk mengisi buku tamu.'
+                  : activeTab === 'wishes'
+                  ? 'Lihat ucapan dan konfirmasi kehadiran langsung dari para tamu undangan.'
+                  : 'Mode panitia meja resepsi untuk memindai tiket QR personal dari HP para tamu.' }}
               </p>
             </div>
 
             <!-- Tab Buttons -->
             <div class="flex items-center bg-slate-200/70 p-1 rounded-2xl w-full sm:w-auto">
+              <!-- Tab 1: QR Code Meja Resepsi (DEFAULT) -->
               <button
                 type="button"
-                @click="activeTab = 'reception'"
+                @click="activeTab = 'standee'"
                 :class="[
                   'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all cursor-pointer',
-                  activeTab === 'reception'
+                  activeTab === 'standee'
                     ? 'bg-white text-slate-900 shadow-sm'
                     : 'text-slate-600 hover:text-slate-900'
                 ]"
               >
                 <i class="fa-solid fa-qrcode text-emerald-600"></i>
-                <span>Meja Resepsi & Scanner QR</span>
-                <span
-                  v-if="checkedInCount > 0"
-                  class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full font-black bg-emerald-100 text-emerald-700"
-                >
-                  {{ checkedInCount }}
-                </span>
+                <span>QR Meja Resepsi</span>
               </button>
 
+              <!-- Tab 2: Daftar Ucapan & Doa -->
               <button
                 type="button"
                 @click="activeTab = 'wishes'"
@@ -53,12 +51,33 @@
                 ]"
               >
                 <i class="fa-solid fa-comments text-amber-600"></i>
-                <span>Daftar Ucapan & Doa</span>
+                <span>Ucapan & Doa</span>
                 <span
                   v-if="messages.length > 0"
                   class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full font-black bg-amber-100 text-amber-800"
                 >
                   {{ messages.length }}
+                </span>
+              </button>
+
+              <!-- Tab 3: Scanner Tiket Panitia -->
+              <button
+                type="button"
+                @click="activeTab = 'scanner'"
+                :class="[
+                  'flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs transition-all cursor-pointer',
+                  activeTab === 'scanner'
+                    ? 'bg-white text-slate-900 shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900'
+                ]"
+              >
+                <i class="fa-solid fa-camera text-blue-600"></i>
+                <span>Scanner Panitia</span>
+                <span
+                  v-if="checkedInCount > 0"
+                  class="ml-1 px-1.5 py-0.5 text-[10px] rounded-full font-black bg-blue-100 text-blue-700"
+                >
+                  {{ checkedInCount }}
                 </span>
               </button>
             </div>
@@ -80,8 +99,31 @@
               </select>
             </div>
 
-            <!-- Reception action buttons -->
-            <div v-if="activeTab === 'reception'" class="flex items-center gap-2 pt-2 md:pt-0">
+            <!-- Standee Action Buttons -->
+            <div v-if="activeTab === 'standee'" class="flex items-center gap-2 pt-2 md:pt-0">
+              <button
+                type="button"
+                @click="downloadStandeeQr"
+                :disabled="!standeeQrDataUrl"
+                class="flex-1 md:flex-none px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <i class="fa-solid fa-download text-emerald-600"></i>
+                <span>Download QR</span>
+              </button>
+
+              <button
+                type="button"
+                @click="openStandeePrintModal"
+                :disabled="!standeeQrDataUrl"
+                class="flex-1 md:flex-none px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-sm"
+              >
+                <i class="fa-solid fa-print"></i>
+                <span>Cetak Standee</span>
+              </button>
+            </div>
+
+            <!-- Scanner action buttons -->
+            <div v-else-if="activeTab === 'scanner'" class="flex items-center gap-2 pt-2 md:pt-0">
               <button
                 type="button"
                 @click="exportToExcel"
@@ -118,9 +160,229 @@
         </div>
 
         <!-- ============================================== -->
-        <!-- TAB 1: MEJA RESEPSI & SCANNER QR -->
+        <!-- TAB 1: QR CODE MEJA RESEPSI (STANDEE) -->
         <!-- ============================================== -->
-        <div v-if="activeTab === 'reception'" class="space-y-6">
+        <div v-if="activeTab === 'standee'" class="space-y-6">
+          <!-- Top Guidance Alert -->
+          <div class="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-3.5">
+              <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 text-base shadow-sm">
+                <i class="fa-solid fa-qrcode"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-black text-slate-900 tracking-tight">
+                  QR Code Buku Tamu Meja Resepsi
+                </h3>
+                <p class="text-xs text-slate-600 mt-0.5 max-w-2xl leading-relaxed">
+                  Cetak atau pajang QR Code ini di meja resepsi / pintu masuk. Para tamu cukup scan menggunakan kamera HP mereka untuk langsung membuka buku tamu digital, menitipkan ucapan doa, konfirmasi hadir, atau mengirim amplop digital.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-center gap-2 shrink-0 w-full md:w-auto">
+              <button
+                type="button"
+                @click="openStandeePrintModal"
+                class="flex-1 md:flex-none px-4 py-2.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <i class="fa-solid fa-print"></i>
+                <span>Cetak Standee Siap Pakai</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Main Grid: QR Details & Mockup Standee -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            <!-- Left: QR Code & Direct Actions (col-span-12 lg:col-span-6) -->
+            <div class="lg:col-span-6 space-y-6">
+              <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xs space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                  <div>
+                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">File Siap Cetak</span>
+                    <h3 class="text-base font-black text-slate-900 mt-0.5">QR Code Acara Pernikahan</h3>
+                  </div>
+                  <span class="px-2.5 py-1 rounded-full text-[10px] font-black uppercase bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    Resolusi Tinggi (HD)
+                  </span>
+                </div>
+
+                <!-- QR Display Container -->
+                <div class="text-center py-4 bg-slate-50/70 rounded-2xl border border-slate-100 flex flex-col items-center justify-center">
+                  <div class="p-4 bg-white rounded-2xl shadow-sm border border-slate-200/80 inline-block">
+                    <img
+                      v-if="standeeQrDataUrl"
+                      :src="standeeQrDataUrl"
+                      alt="QR Code Meja Resepsi"
+                      class="w-56 h-56 object-contain mx-auto"
+                    />
+                    <div v-else class="w-56 h-56 flex flex-col items-center justify-center text-slate-400">
+                      <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-[#a47148]"></i>
+                      <span class="text-xs font-bold">Membuat QR Code...</span>
+                    </div>
+                  </div>
+
+                  <p class="text-xs font-black text-slate-800 mt-3 truncate max-w-xs">
+                    {{ currentInvitation?.title || 'Undangan Pernikahan' }}
+                  </p>
+                  <p class="text-[11px] text-slate-400 font-mono mt-0.5 truncate max-w-sm">
+                    {{ guestbookUrl }}
+                  </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+                  <button
+                    type="button"
+                    @click="downloadStandeeQr"
+                    :disabled="!standeeQrDataUrl"
+                    class="w-full py-3 px-4 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <i class="fa-solid fa-download"></i>
+                    <span>Download QR (PNG)</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="openStandeePrintModal"
+                    :disabled="!standeeQrDataUrl"
+                    class="w-full py-3 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak Standee (PDF/Print)</span>
+                  </button>
+                </div>
+
+                <!-- Secondary Link Actions -->
+                <div class="flex items-center gap-2 pt-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    @click="copyGuestbookUrl"
+                    class="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <i class="fa-regular fa-copy"></i>
+                    <span>Salin Link</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    @click="openGuestPreview"
+                    class="flex-1 py-2 px-3 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <span>Buka Tampilan Tamu</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Practical Advice Card -->
+              <div class="p-5 rounded-3xl bg-blue-50/70 border border-blue-100 text-xs text-blue-900 space-y-2">
+                <div class="flex items-center gap-2 font-black text-blue-950">
+                  <i class="fa-solid fa-lightbulb text-amber-500"></i>
+                  <span>Saran Peletakan di Hari H</span>
+                </div>
+                <ul class="space-y-1.5 text-[11px] text-blue-800/90 pl-5 list-disc leading-relaxed">
+                  <li>Cetak Standee dengan ukuran <strong>A5</strong> atau <strong>4R</strong>.</li>
+                  <li>Masukkan ke dalam <em>acrylic standee</em> (bingkai akrilik bening berdiri) dan tempatkan tepat di meja resepsi.</li>
+                  <li>Tamu tidak perlu mengunduh aplikasi apapun; cukup buka kamera bawaan ponsel Android maupun iPhone untuk scan QR.</li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Right: Acrylic Standee Mockup Preview (col-span-12 lg:col-span-6) -->
+            <div class="lg:col-span-6 flex flex-col">
+              <div class="bg-white p-6 rounded-3xl border border-slate-100 shadow-xs flex-1 flex flex-col justify-between space-y-5">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <div>
+                    <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Simulasi Tampilan Meja</span>
+                    <h3 class="text-sm font-black text-slate-900 mt-0.5">Preview Standee Meja Resepsi</h3>
+                  </div>
+                  <button
+                    type="button"
+                    @click="openStandeePrintModal"
+                    class="text-xs font-bold text-slate-600 hover:text-slate-900 underline flex items-center gap-1 cursor-pointer"
+                  >
+                    <i class="fa-solid fa-expand text-[10px]"></i>
+                    <span>Perbesar</span>
+                  </button>
+                </div>
+
+                <!-- Visual Acrylic Frame Mockup -->
+                <div class="relative max-w-xs sm:max-w-sm mx-auto w-full aspect-[1/1.4] bg-white rounded-2xl border-4 border-slate-200/90 shadow-2xl p-6 flex flex-col items-center justify-between text-center overflow-hidden">
+                  <!-- Monogram / Logo Crest -->
+                  <div class="space-y-1">
+                    <div class="w-10 h-10 rounded-full bg-[#f6f2ec] border border-[#d4af37]/40 text-[#a47148] flex items-center justify-center font-serif text-sm font-bold mx-auto shadow-2xs">
+                      SU
+                    </div>
+                    <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#a47148] block">
+                      Buku Tamu Digital
+                    </span>
+                    <h4 class="font-serif text-sm font-bold text-slate-900 leading-tight">
+                      {{ currentInvitation?.title || 'Romeo & Juliet' }}
+                    </h4>
+                  </div>
+
+                  <!-- Frame Inner QR -->
+                  <div class="p-3 bg-white border border-slate-200/70 rounded-xl shadow-inner my-2">
+                    <img
+                      v-if="standeeQrDataUrl"
+                      :src="standeeQrDataUrl"
+                      alt="QR Standee"
+                      class="w-36 h-36 sm:w-40 sm:h-40 object-contain"
+                    />
+                  </div>
+
+                  <!-- Greeting & Instructions -->
+                  <div class="space-y-1.5 max-w-[240px]">
+                    <p class="text-[10px] text-slate-600 leading-snug font-medium">
+                      Silakan arahkan kamera ponsel Anda ke QR Code untuk mengisi ucapan, doa restu & konfirmasi kehadiran.
+                    </p>
+                    <p class="text-[8px] uppercase tracking-widest text-slate-400 font-bold">
+                      Terima Kasih atas Kehadiran Anda
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Button below mockup -->
+                <button
+                  type="button"
+                  @click="openStandeePrintModal"
+                  class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  <i class="fa-solid fa-sliders"></i>
+                  <span>Buka Opsi Cetak & Pilih Ukuran</span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section: Personalized Guest Ticket Explanation -->
+          <div class="p-6 rounded-3xl bg-white border border-slate-100 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+            <div class="flex items-start gap-4">
+              <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shrink-0">
+                <i class="fa-solid fa-ticket"></i>
+              </div>
+              <div>
+                <h4 class="text-sm font-black text-slate-900 tracking-tight">
+                  Ingin Menggunakan Tiket Masuk Khusus Per Tamu (VIP / Meja Khusus)?
+                </h4>
+                <p class="text-xs text-slate-500 mt-0.5 max-w-2xl leading-relaxed">
+                  Jika Anda mengundang tamu dengan link personal ber-token, masing-masing tamu otomatis memiliki tiket QR tersendiri di dalam undangan mereka yang dapat di-scan oleh panitia resepsi.
+                </p>
+              </div>
+            </div>
+            <router-link
+              to="/guests"
+              class="px-4 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 rounded-xl text-xs font-bold transition-all flex items-center gap-2 shrink-0 cursor-pointer"
+            >
+              <span>Buka Menu Buku Tamu & Tiket</span>
+              <i class="fa-solid fa-arrow-right text-[10px]"></i>
+            </router-link>
+          </div>
+        </div>
+
+        <!-- ============================================== -->
+        <!-- TAB 3: SCANNER TIKET PANITIA -->
+        <!-- ============================================== -->
+        <div v-if="activeTab === 'scanner'" class="space-y-6">
           <!-- 1. Live Stats Bar -->
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <!-- Stat 1: Hadir di Lokasi -->
@@ -603,7 +865,7 @@
         </div>
 
         <!-- Hidden Printable Recap Area -->
-        <div id="printable-recap" class="hidden print:block p-8 bg-white font-sans text-slate-900">
+        <div id="printable-recap" :class="[printMode === 'rekap' ? 'print:block' : 'hidden', 'hidden p-8 bg-white font-sans text-slate-900']">
           <div class="border-b-2 border-slate-900 pb-4 mb-6">
             <h1 class="text-2xl font-black uppercase tracking-tight">Rekapitulasi Kehadiran Tamu (Meja Resepsi)</h1>
             <p class="text-sm font-bold text-slate-600 mt-1">Undangan: {{ currentInvitation?.title || '-' }}</p>
@@ -639,8 +901,183 @@
             </tbody>
           </table>
         </div>
+
+        <!-- Hidden Standee Printable Sheet for @media print -->
+        <div id="printable-standee" :class="[printMode === 'standee' ? 'print:flex' : 'hidden', 'hidden flex-col items-center justify-center p-12 bg-white text-center font-sans']">
+          <div class="border-4 border-[#d4af37] p-12 rounded-3xl max-w-md mx-auto flex flex-col items-center justify-between space-y-6">
+            <div class="space-y-2">
+              <div class="w-16 h-16 rounded-full bg-slate-50 text-[#a47148] flex items-center justify-center font-serif text-2xl font-bold mx-auto border-2 border-[#d4af37]/60">
+                SU
+              </div>
+              <span class="text-xs font-black uppercase tracking-[0.25em] text-[#a47148] block">
+                Buku Tamu Digital
+              </span>
+              <h1 class="font-serif text-2xl font-bold text-slate-900">
+                {{ currentInvitation?.title || 'Undangan Pernikahan' }}
+              </h1>
+            </div>
+
+            <div class="p-6 bg-white border-2 border-slate-300 rounded-2xl shadow-sm">
+              <img
+                v-if="standeeQrDataUrl"
+                :src="standeeQrDataUrl"
+                alt="QR Code Buku Tamu"
+                class="w-64 h-64 object-contain mx-auto"
+              />
+            </div>
+
+            <div class="space-y-2 max-w-sm">
+              <p class="text-sm text-slate-700 font-medium leading-relaxed">
+                Silakan scan QR Code ini menggunakan kamera smartphone Anda untuk mengisi buku tamu, menyampaikan ucapan & doa restu, serta amplop digital.
+              </p>
+              <p class="text-[10px] uppercase tracking-widest text-slate-400 font-bold pt-4 border-t border-slate-200">
+                www.satuundangan.id • Terima Kasih atas Doa Restu Anda
+              </p>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
+
+    <!-- Standee Print & Preview Modal -->
+    <Teleport to="body">
+      <div
+        v-if="showStandeeModal"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-xs p-4 overflow-y-auto no-print"
+        @click.self="showStandeeModal = false"
+      >
+        <div class="w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[92vh]">
+          <!-- Modal Header -->
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+            <div class="flex items-center gap-2.5">
+              <div class="w-8 h-8 rounded-xl bg-slate-900 text-white flex items-center justify-center text-xs">
+                <i class="fa-solid fa-print"></i>
+              </div>
+              <div>
+                <h3 class="text-sm font-black text-slate-900">Cetak Standee Meja Resepsi</h3>
+                <p class="text-[11px] text-slate-400">Format siap cetak langsung untuk dipajang di resepsi</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              @click="showStandeeModal = false"
+              class="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer"
+            >
+              <i class="fa-solid fa-xmark text-sm"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="p-6 overflow-y-auto space-y-5 custom-scrollbar text-center">
+            <!-- Paper Size Selector -->
+            <div>
+              <label class="text-[11px] font-black uppercase tracking-wider text-slate-400 block mb-2 text-left">
+                Pilih Ukuran Kertas / Bingkai:
+              </label>
+              <div class="grid grid-cols-3 gap-2">
+                <button
+                  type="button"
+                  @click="standeeSize = 'A4'"
+                  :class="[
+                    'py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer',
+                    standeeSize === 'A4'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  ]"
+                >
+                  Ukuran A4 (Besar)
+                </button>
+                <button
+                  type="button"
+                  @click="standeeSize = 'A5'"
+                  :class="[
+                    'py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer',
+                    standeeSize === 'A5'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  ]"
+                >
+                  Ukuran A5 (Standar)
+                </button>
+                <button
+                  type="button"
+                  @click="standeeSize = '4R'"
+                  :class="[
+                    'py-2 px-3 rounded-xl border text-xs font-bold transition-all cursor-pointer',
+                    standeeSize === '4R'
+                      ? 'bg-slate-900 text-white border-slate-900 shadow-xs'
+                      : 'bg-slate-50 text-slate-700 border-slate-200 hover:bg-slate-100'
+                  ]"
+                >
+                  Ukuran 4R (Foto Meja)
+                </button>
+              </div>
+            </div>
+
+            <!-- Standee Printable Card Preview Inside Modal -->
+            <div class="p-8 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center">
+              <div class="bg-white p-8 rounded-2xl shadow-md border-2 border-[#d4af37]/60 max-w-xs w-full text-center space-y-3">
+                <div class="w-12 h-12 rounded-full bg-[#f6f2ec] text-[#a47148] flex items-center justify-center font-serif text-base font-bold mx-auto border border-[#d4af37]/40">
+                  SU
+                </div>
+                <div>
+                  <span class="text-[9px] font-black uppercase tracking-[0.2em] text-[#a47148] block">
+                    Buku Tamu Digital
+                  </span>
+                  <h3 class="font-serif text-base font-bold text-slate-900 mt-0.5">
+                    {{ currentInvitation?.title || 'Romeo & Juliet' }}
+                  </h3>
+                </div>
+                <div class="p-3 bg-white border border-slate-200 rounded-xl inline-block shadow-inner">
+                  <img
+                    v-if="standeeQrDataUrl"
+                    :src="standeeQrDataUrl"
+                    alt="QR Standee"
+                    class="w-44 h-44 object-contain mx-auto"
+                  />
+                </div>
+                <p class="text-[10px] text-slate-600 leading-snug">
+                  Arahkan kamera smartphone ke QR Code ini untuk mengisi buku tamu & ucapan doa.
+                </p>
+                <p class="text-[8px] uppercase tracking-widest text-slate-400 font-bold">
+                  SatuUndangan.id
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Modal Footer -->
+          <div class="px-6 py-4 border-t border-slate-100 bg-slate-50 flex items-center justify-between">
+            <button
+              type="button"
+              @click="downloadStandeeQr"
+              class="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-download"></i>
+              <span>Simpan Gambar PNG</span>
+            </button>
+
+            <div class="flex items-center gap-2">
+              <button
+                type="button"
+                @click="showStandeeModal = false"
+                class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                @click="printStandee"
+                class="px-5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5 cursor-pointer"
+              >
+                <i class="fa-solid fa-print"></i>
+                <span>Cetak Sekarang</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
 
     <BottomNav class="no-print" />
   </div>
@@ -664,12 +1101,21 @@ import Swal from "sweetalert2"
 import { Html5Qrcode } from "html5-qrcode"
 import * as XLSX from "xlsx"
 import { extractQrToken } from "@/utils/qrCheckIn"
+import QRCode from "qrcode"
+import { trackAction } from "@/utils/telemetry.js"
 
 const toast = useToast()
 
 // View states
-const activeTab = ref('reception') // 'reception' | 'wishes'
+const activeTab = ref('standee') // 'standee' | 'wishes' | 'scanner'
 const isSidebarOpen = ref(window.innerWidth >= 768)
+
+// Standee states
+const showStandeeModal = ref(false)
+const standeeSize = ref('A5')
+const printMode = ref('standee') // 'standee' | 'rekap'
+const standeeQrDataUrl = ref('')
+const isGeneratingQr = ref(false)
 
 // Invitations & Messages
 const invitations = ref([])
@@ -741,6 +1187,69 @@ const matchingGuests = computed(() => {
   })
 })
 
+// Standee Computations & Actions
+const guestbookUrl = computed(() => {
+  if (!currentInvitation.value?.slug) return ''
+  const origin = window.location.origin
+  return `${origin}/inv/${currentInvitation.value.slug}`
+})
+
+async function generateStandeeQr() {
+  if (!guestbookUrl.value) {
+    standeeQrDataUrl.value = ''
+    return
+  }
+  isGeneratingQr.value = true
+  try {
+    standeeQrDataUrl.value = await QRCode.toDataURL(guestbookUrl.value, {
+      width: 600,
+      margin: 2,
+      color: { dark: '#0f172a', light: '#ffffff' },
+    })
+  } catch (err) {
+    console.error('Failed to generate standee QR:', err)
+  } finally {
+    isGeneratingQr.value = false
+  }
+}
+
+function downloadStandeeQr() {
+  if (!standeeQrDataUrl.value) return
+  trackAction('GUESTBOOK_QR_DOWNLOAD', { slug: currentInvitation.value?.slug })
+  const link = document.createElement('a')
+  link.download = `QR-Buku-Tamu-${currentInvitation.value?.slug || 'undangan'}.png`
+  link.href = standeeQrDataUrl.value
+  link.click()
+  toast.success('Gambar QR Code berhasil diunduh!')
+}
+
+function openStandeePrintModal() {
+  showStandeeModal.value = true
+}
+
+function printStandee() {
+  printMode.value = 'standee'
+  trackAction('GUESTBOOK_STANDEE_PRINT', {
+    slug: currentInvitation.value?.slug,
+    size: standeeSize.value,
+  })
+  showStandeeModal.value = false
+  nextTick(() => {
+    window.print()
+  })
+}
+
+function copyGuestbookUrl() {
+  if (!guestbookUrl.value) return
+  navigator.clipboard.writeText(guestbookUrl.value)
+  toast.success('Tautan buku tamu berhasil disalin!')
+}
+
+function openGuestPreview() {
+  if (!guestbookUrl.value) return
+  window.open(guestbookUrl.value, '_blank')
+}
+
 onMounted(async () => {
   try {
     const res = await getInvitations()
@@ -748,6 +1257,7 @@ onMounted(async () => {
     invitations.value = data
     if (data.length > 0) {
       selectedInvitationId.value = data[0].id
+      await generateStandeeQr()
     }
   } catch (e) {
     console.error(e)
@@ -759,12 +1269,16 @@ onMounted(async () => {
 watch(selectedInvitationId, async (newId) => {
   if (newId) {
     recentScanResult.value = null
-    await Promise.all([fetchGuests(newId), fetchMessages(newId)])
+    await Promise.all([
+      fetchGuests(newId),
+      fetchMessages(newId),
+      generateStandeeQr(),
+    ])
   }
 })
 
 watch(activeTab, async (newTab) => {
-  if (newTab !== 'reception') {
+  if (newTab !== 'scanner') {
     await stopCamera()
   }
 })
@@ -1143,7 +1657,10 @@ function exportToExcel() {
 }
 
 function printRekap() {
-  window.print()
+  printMode.value = 'rekap'
+  nextTick(() => {
+    window.print()
+  })
 }
 
 // ----------------------------------------------------
