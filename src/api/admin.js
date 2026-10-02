@@ -124,4 +124,8 @@ export const fetchAdminStats = () => apiFetch('/admin/stats')
 // Activity & Error Logs
 export const fetchAdminLogs = (params) => apiFetch(withParams('/admin/logs', params))
 export const fetchAdminLogStats = () => apiFetch('/admin/logs/stats')
+export const clearAdminLogs = () =>
+  apiFetch('/admin/logs', {
+    method: 'DELETE',
+  })
 

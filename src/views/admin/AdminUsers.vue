@@ -61,6 +61,64 @@
         </div>
       </div>
 
+      <!-- Quick Filter Bar -->
+      <div class="bg-white p-3 rounded-2xl border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-1.5 overflow-x-auto custom-scrollbar">
+          <button
+            type="button"
+            @click="setQuickFilter('')"
+            :class="[
+              'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer',
+              !quickFilter
+                ? 'bg-slate-900 text-white shadow-xs'
+                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+            ]"
+          >
+            Semua Akun
+          </button>
+
+          <button
+            type="button"
+            @click="setQuickFilter('playwright')"
+            :class="[
+              'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
+              quickFilter === 'playwright'
+                ? 'bg-rose-900 text-white shadow-xs'
+                : 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+            ]"
+          >
+            <i class="fa-solid fa-robot text-xs"></i>
+            <span>Akun Playwright (Testing)</span>
+          </button>
+
+          <button
+            type="button"
+            @click="setQuickFilter('test')"
+            :class="[
+              'px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5',
+              quickFilter === 'test'
+                ? 'bg-amber-900 text-white shadow-xs'
+                : 'bg-amber-50 text-amber-700 hover:bg-amber-100 border border-amber-200'
+            ]"
+          >
+            <i class="fa-solid fa-flask text-xs"></i>
+            <span>Akun @test / @example</span>
+          </button>
+        </div>
+
+        <div v-if="quickFilter" class="text-xs text-rose-600 font-bold flex items-center gap-1.5">
+          <i class="fa-solid fa-filter"></i>
+          <span>Filter Aktif: "{{ quickFilter }}"</span>
+          <button
+            type="button"
+            @click="setQuickFilter('')"
+            class="text-[11px] underline ml-1 text-slate-500 hover:text-slate-800 cursor-pointer"
+          >
+            Reset
+          </button>
+        </div>
+      </div>
+
       <!-- 2. Clean Datatable Card -->
       <div class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <DataTable
@@ -97,6 +155,12 @@
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-slate-900 text-xs truncate max-w-[180px]">{{ data.name || '-' }}</span>
                     <span class="text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">#{{ data.id }}</span>
+                    <span
+                      v-if="isTestAccount(data)"
+                      class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200"
+                    >
+                      🤖 Akun Test
+                    </span>
                   </div>
                   <span class="text-[11px] text-slate-500 truncate max-w-[180px]">{{ data.email }}</span>
                 </div>
@@ -343,8 +407,33 @@ const debouncedSearch = useDebounceFn(() => {
   loadUsers()
 }, 350)
 
+const quickFilter = ref('')
+
+function isTestAccount(user) {
+  if (!user) return false
+  const email = (user.email || '').toLowerCase()
+  const name = (user.name || '').toLowerCase()
+  return (
+    email.includes('playwright') ||
+    email.includes('@test.com') ||
+    email.includes('@example.com') ||
+    email.includes('test.') ||
+    name.includes('playwright') ||
+    name.includes('pw prod') ||
+    name.includes('tester')
+  )
+}
+
+function setQuickFilter(val) {
+  quickFilter.value = val
+  search.value = val
+  page.value = 1
+  loadUsers()
+}
+
 function handleSearch(value) {
   search.value = value
+  quickFilter.value = ''
   page.value = 1
   debouncedSearch()
 }

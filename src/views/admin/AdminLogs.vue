@@ -110,6 +110,18 @@
             <i :class="['fa-solid fa-rotate-right', loading ? 'animate-spin text-blue-600' : '']"></i>
             <span>Segarkan</span>
           </button>
+
+          <!-- Clear All Logs Action -->
+          <button
+            type="button"
+            @click="handleClearLogs"
+            :disabled="loading || total === 0"
+            class="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+            title="Hapus semua riwayat log dari database"
+          >
+            <i class="fa-solid fa-trash-can text-rose-500"></i>
+            <span>Bersihkan Log</span>
+          </button>
         </div>
       </div>
 
@@ -361,9 +373,10 @@ import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
-import { fetchAdminLogs, fetchAdminLogStats } from '@/api/admin.js'
+import { fetchAdminLogs, fetchAdminLogStats, clearAdminLogs } from '@/api/admin.js'
 import { isTelemetryExcluded, setTelemetryExcluded } from '@/utils/telemetry.js'
 import { useToast } from 'vue-toastification'
+import Swal from 'sweetalert2'
 
 const toast = useToast()
 const isExcluded = ref(isTelemetryExcluded())
@@ -445,6 +458,33 @@ function toggleExcludeCurrentBrowser() {
     toast.success('🛡️ Mode Dev Aktif: Browser Anda tidak akan tercatat di log!')
   } else {
     toast.info('👁️ Tracking Aktif: Aktivitas browser Anda kembali dicatat di log.')
+  }
+}
+
+async function handleClearLogs() {
+  const result = await Swal.fire({
+    title: 'Bersihkan Semua Log?',
+    text: 'Semua riwayat aktivitas, kunjungan halaman, dan log error akan dihapus permanen dari database.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e11d48',
+    cancelButtonColor: '#64748b',
+    confirmButtonText: 'Ya, Bersihkan',
+    cancelButtonText: 'Batal',
+  })
+
+  if (result.isConfirmed) {
+    loading.value = true
+    try {
+      await clearAdminLogs()
+      toast.success('Semua catatan log berhasil dibersihkan!')
+      page.value = 1
+      await Promise.all([loadStats(), loadLogs()])
+    } catch (err) {
+      toast.error(err.message || 'Gagal membersihkan log')
+    } finally {
+      loading.value = false
+    }
   }
 }
 
