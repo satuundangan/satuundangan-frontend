@@ -2006,18 +2006,43 @@ async function handleMusicUpload(e) {
    const reader = new FileReader(); reader.onload = () => { formData.value.musicPreview = reader.result; formData.value.musicFile = file }; reader.readAsDataURL(file)
 }
 
+// Convert a base64 data: URL back into a File so it can be uploaded.
+function dataUrlToFile(dataUrl, baseName) {
+   const [header, b64] = dataUrl.split(',')
+   const mime = header.match(/data:([^;]+)/)?.[1] || 'application/octet-stream'
+   const bin = atob(b64)
+   const bytes = new Uint8Array(bin.length)
+   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i)
+   const ext = mime.split('/')[1]?.split('+')[0] || 'bin'
+   return new File([bytes], `${baseName}.${ext}`, { type: mime })
+}
+
+// File object wins; otherwise a leftover data: URL (e.g. draft restored after login
+// reload drops File objects) is converted so it never reaches the API as base64.
+function fileOrDataUrl(file, value, baseName) {
+   if (file) return file
+   if (typeof value === 'string' && value.startsWith('data:')) return dataUrlToFile(value, baseName)
+   return null
+}
+
 // Parallel files upload progress handler
 async function uploadAllFiles() {
    const filesToUpload = []
-   if (formData.value.bridePhotoFile) filesToUpload.push({ file: formData.value.bridePhotoFile, setter: (url) => formData.value.bridePhoto = url, name: 'Foto Mempelai Wanita' })
-   if (formData.value.groomPhotoFile) filesToUpload.push({ file: formData.value.groomPhotoFile, setter: (url) => formData.value.groomPhoto = url, name: 'Foto Mempelai Pria' })
-   if (formData.value.photoCoupleFile) filesToUpload.push({ file: formData.value.photoCoupleFile, setter: (url) => formData.value.photoCouple = url, name: 'Foto Sampul' })
-   if (formData.value.denahFile) filesToUpload.push({ file: formData.value.denahFile, setter: (url) => formData.value.denah = url, name: 'Foto Denah' })
-   if (formData.value.musicFile) filesToUpload.push({ file: formData.value.musicFile, setter: (url) => formData.value.music = url, name: 'File Musik' })
-   formData.value.gallery.forEach((item, i) => { if (item.file) filesToUpload.push({ file: item.file, setter: (url) => formData.value.gallery[i].preview = url, name: `Galeri Foto ${i+1}` }) })
-   formData.value.loveStories.forEach((s, i) => { if (s.photoFile) filesToUpload.push({ file: s.photoFile, setter: (url) => formData.value.loveStories[i].photo = url, name: `Love Story Photo ${i+1}` }) })
-   formData.value.eWalletLink.forEach((w, i) => { if (w.wallet_image_file) filesToUpload.push({ file: w.wallet_image_file, setter: (url) => formData.value.eWalletLink[i].wallet_image = url, name: `E-Wallet QR ${i+1}` }) })
-   formData.value.bankAccounts.forEach((b, i) => { if (b.bankLogoFile) filesToUpload.push({ file: b.bankLogoFile, setter: (url) => formData.value.bankAccounts[i].bankLogo = url, name: `Bank Logo ${i+1}` }) })
+   const add = (file, value, baseName, setter, name) => {
+      const f = fileOrDataUrl(file, value, baseName)
+      if (f) filesToUpload.push({ file: f, setter, name })
+   }
+   const fd = formData.value
+   add(fd.bridePhotoFile, fd.bridePhoto, 'bride', (url) => formData.value.bridePhoto = url, 'Foto Mempelai Wanita')
+   add(fd.groomPhotoFile, fd.groomPhoto, 'groom', (url) => formData.value.groomPhoto = url, 'Foto Mempelai Pria')
+   add(fd.photoCoupleFile, fd.photoCouple, 'couple', (url) => formData.value.photoCouple = url, 'Foto Sampul')
+   add(fd.denahFile, fd.denah, 'denah', (url) => formData.value.denah = url, 'Foto Denah')
+   if (fd.musicFile) filesToUpload.push({ file: fd.musicFile, setter: (url) => formData.value.music = url, name: 'File Musik' })
+   else if (fd.music === 'custom') add(null, fd.musicPreview, 'music', (url) => formData.value.music = url, 'File Musik')
+   fd.gallery.forEach((item, i) => add(item.file, item.preview, `gallery-${i}`, (url) => formData.value.gallery[i].preview = url, `Galeri Foto ${i+1}`))
+   fd.loveStories.forEach((s, i) => add(s.photoFile, s.photo, `story-${i}`, (url) => formData.value.loveStories[i].photo = url, `Love Story Photo ${i+1}`))
+   fd.eWalletLink.forEach((w, i) => add(w.wallet_image_file, w.wallet_image, `wallet-${i}`, (url) => formData.value.eWalletLink[i].wallet_image = url, `E-Wallet QR ${i+1}`))
+   fd.bankAccounts.forEach((b, i) => add(b.bankLogoFile, b.bankLogo, `bank-${i}`, (url) => formData.value.bankAccounts[i].bankLogo = url, `Bank Logo ${i+1}`))
    if (filesToUpload.length === 0) return
    
    uploadProgress.value.show = true; let uploadedCount = 0
