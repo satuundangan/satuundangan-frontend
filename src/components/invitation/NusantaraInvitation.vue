@@ -74,11 +74,14 @@
           <div class="nu-section-mark" aria-hidden="true">
             <span v-for="mark in 5" :key="mark"></span>
           </div>
+          <figure v-if="coverPhoto" class="nu-welcome-photo">
+            <img :src="coverPhoto" alt="Foto kedua mempelai" fetchpriority="high" />
+          </figure>
           <p class="nu-scope">{{ theme.scope }}</p>
           <h1 class="nu-welcome-names">
-            {{ invitation.groomName || 'Mempelai Pria' }}
-            <span>&amp;</span>
-            {{ invitation.brideName || 'Mempelai Wanita' }}
+            <span class="nu-welcome-name">{{ invitation.groomName || 'Mempelai Pria' }}</span>
+            <span class="nu-welcome-join" aria-label="dan">&amp;</span>
+            <span class="nu-welcome-name">{{ invitation.brideName || 'Mempelai Wanita' }}</span>
           </h1>
           <p v-if="isSectionEnabled('quote') && invitation.quoteText" class="nu-opening-copy">
             {{ invitation.quoteText }}
@@ -1357,6 +1360,7 @@ onUnmounted(() => {
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
+
 .nu-scroll-root::-webkit-scrollbar {
   display: none;
 }
@@ -2525,6 +2529,7 @@ onUnmounted(() => {
   .nu-section {
     padding: clamp(4rem, 14vw, 5.5rem) 1.25rem;
   }
+
   .nu-section-title {
     font-size: clamp(1.7rem, 8vw, 2.25rem);
   }
@@ -2742,6 +2747,554 @@ onUnmounted(() => {
   .nu-sunda-world__layer {
     will-change: auto;
     transition: none;
+  }
+}
+
+/* Consistent, photo-led invitation layout across the Nusantara themes. */
+.nu-scroll-root {
+  scroll-snap-type: y proximity;
+  overscroll-behavior-y: contain;
+  background: var(--nu-dark);
+}
+
+.nu-cover {
+  align-items: center;
+  text-align: center;
+}
+
+.nu-cover-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.nu-cover-label {
+  margin-inline: auto;
+}
+
+.nu-names {
+  width: min(100%, 15ch);
+  max-width: 100%;
+  justify-items: center;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  letter-spacing: -0.025em;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.nu-cover-date {
+  align-self: center;
+}
+
+.nu-cover-recipient {
+  justify-items: center;
+}
+
+.nu-section {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100svh;
+  padding: clamp(4.75rem, 9vh, 7.5rem) clamp(1.25rem, 5vw, 4.5rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+.nu-welcome {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.8rem, 2vh, 1.3rem);
+  padding: 2.5rem 1.25rem calc(6rem + env(safe-area-inset-bottom));
+  color: var(--nu-paper);
+  background: var(--nu-dark);
+  text-align: center;
+}
+
+.nu-welcome > * {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+}
+
+.nu-welcome-photo {
+  position: relative;
+  width: clamp(9.5rem, 24vw, 16rem);
+  height: clamp(12rem, 34vh, 21rem);
+  margin: 0 0 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 74%, transparent);
+  border-radius: 48% 48% 0.25rem 0.25rem;
+  padding: 0.35rem;
+  background: color-mix(in srgb, var(--nu-dark) 80%, transparent);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 24%);
+}
+
+.nu-welcome-photo::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0.55rem -0.55rem -0.55rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 42%, transparent);
+  border-radius: inherit;
+  content: '';
+}
+
+.nu-welcome-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.nu-welcome .nu-section-mark {
+  gap: 0.65rem;
+  margin: 0 0 0.15rem;
+}
+
+.nu-welcome .nu-scope {
+  color: var(--nu-accent);
+  font-size: clamp(0.65rem, 1vw, 0.78rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.nu-welcome-names {
+  display: grid;
+  justify-items: center;
+  gap: 0.04em;
+  width: min(100%, 16ch);
+  margin: 0;
+  color: var(--nu-paper);
+  font-size: clamp(2.45rem, 6.5vw, 5.25rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.nu-welcome-names span {
+  color: var(--nu-accent);
+}
+
+.nu-welcome-names .nu-welcome-name {
+  max-width: 100%;
+  color: var(--nu-paper);
+  overflow-wrap: anywhere;
+}
+
+.nu-welcome-names .nu-welcome-join {
+  margin: 0;
+  font-size: 0.48em;
+  font-style: italic;
+  line-height: 0.85;
+}
+
+.nu-opening-copy {
+  width: min(100%, 34rem);
+  margin: 0.35rem auto 0;
+  color: color-mix(in srgb, var(--nu-paper) 84%, transparent);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.nu-quote-source {
+  margin: -0.35rem auto 0.2rem;
+  color: color-mix(in srgb, var(--nu-paper) 65%, transparent);
+}
+
+.nu-date-pill {
+  min-height: 0;
+  align-self: center;
+  margin-top: 0.25rem;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--nu-accent) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--nu-accent) 70%, transparent);
+  padding: 0.55rem 1.1rem;
+  color: var(--nu-paper);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.nu-countdown {
+  gap: clamp(0.6rem, 2vw, 1.4rem);
+  margin-top: 0.4rem;
+}
+
+.nu-countdown strong {
+  color: var(--nu-paper);
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.nu-countdown span {
+  color: var(--nu-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nu-couple-section,
+.nu-gallery-section,
+.nu-rsvp-section,
+.nu-detail-section,
+.nu-plan-section,
+.nu-menu-section,
+.nu-family-section {
+  background: var(--nu-paper);
+}
+
+.nu-story-section,
+.nu-gift-section {
+  background: var(--nu-bg);
+}
+
+.nu-section-kicker {
+  margin: 0 0 0.55rem;
+  color: var(--nu-primary);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.nu-section-title {
+  max-width: 22ch;
+  margin: 0 auto 0.6rem;
+  font-size: clamp(2rem, 4.8vw, 3.25rem);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.nu-section-intro {
+  max-width: 34rem;
+  margin: 0 auto 1.5rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.nu-couple-grid {
+  width: min(100%, 920px);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+}
+
+.nu-person-photo {
+  width: min(100%, 19rem);
+  margin-inline: auto;
+  aspect-ratio: 0.82;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 45%, transparent);
+  border-radius: 48% 48% 0.25rem 0.25rem;
+  padding: 0.35rem;
+  background: var(--nu-panel);
+}
+
+.nu-person-photo img {
+  border-radius: inherit;
+}
+
+.nu-person h3 {
+  margin-top: 1.2rem;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  overflow-wrap: anywhere;
+}
+
+.nu-person p {
+  max-width: 28ch;
+  margin-inline: auto;
+  line-height: 1.6;
+}
+
+.nu-event-section,
+.nu-video-section {
+  color: var(--nu-paper);
+  background: var(--nu-dark);
+}
+
+.nu-event-section .nu-section-kicker,
+.nu-event-section .nu-section-title,
+.nu-video-section .nu-section-kicker,
+.nu-video-section .nu-section-title {
+  color: var(--nu-paper);
+}
+
+.nu-event-list {
+  width: min(100%, 920px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto;
+}
+
+.nu-event-card,
+.nusantara--jawa .nu-event-card,
+.nusantara--dayak-ngaju .nu-event-card {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 55%, transparent);
+  border-radius: 0.25rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  color: var(--nu-dark);
+  background: var(--nu-paper);
+  text-align: center;
+}
+
+.nu-event-card h3 {
+  color: var(--nu-primary);
+  font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+}
+
+.nu-event-card .nu-event-date {
+  color: var(--nu-primary);
+}
+
+.nu-story-list {
+  width: min(100%, 820px);
+  gap: 2rem;
+}
+
+.nu-story-item {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  column-gap: clamp(1.25rem, 4vw, 3rem);
+  border: 0;
+  padding: 0;
+}
+
+.nu-story-item img {
+  grid-row: span 3;
+  height: min(55vh, 24rem);
+  margin: 0;
+  border-radius: 0.2rem;
+}
+
+.nu-story-item h3,
+.nu-story-date,
+.nu-story-item > p:last-child {
+  grid-column: 2;
+}
+
+.nu-story-item > p:last-child {
+  line-height: 1.75;
+}
+
+.nu-gallery-section :deep(.gallery-invitation),
+.nu-gallery-section :deep(.gallery-grid) {
+  max-width: 1000px;
+  margin-inline: auto;
+}
+
+.nu-gift-list article {
+  border-top-color: color-mix(in srgb, var(--nu-primary) 24%, transparent);
+}
+
+.nu-gift-list button,
+.nu-address {
+  border: 1px solid color-mix(in srgb, var(--nu-primary) 28%, transparent);
+  border-radius: 0.2rem;
+}
+
+.nu-rsvp-panel {
+  width: min(100%, 740px);
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 48%, transparent);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--nu-bg);
+}
+
+.nu-rsvp-panel > .nu-section-title,
+.nu-rsvp-panel > .nu-section-intro {
+  text-align: center;
+}
+
+.nu-bottom-nav {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: calc(4.25rem + env(safe-area-inset-bottom));
+  justify-content: center;
+  gap: clamp(0.25rem, 2vw, 1rem);
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--nu-accent) 52%, transparent);
+  border-radius: 0;
+  padding: 0.35rem max(0.6rem, env(safe-area-inset-left)) calc(0.35rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--nu-dark) 94%, transparent);
+  box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 12%);
+}
+
+.nu-bottom-nav button {
+  max-width: 7rem;
+  min-height: 3.25rem;
+  flex: 0 1 7rem;
+  color: color-mix(in srgb, var(--nu-paper) 68%, transparent);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nu-bottom-nav button i {
+  font-size: 1.1rem;
+}
+
+.nu-bottom-nav button.is-active {
+  color: var(--nu-accent);
+}
+
+.nu-footer {
+  padding: 4rem 1.5rem calc(7rem + env(safe-area-inset-bottom));
+}
+
+.nusantara--sunda .nu-welcome {
+  background:
+    linear-gradient(180deg, rgb(25 42 34 / 42%), rgb(25 42 34 / 66%) 72%, rgb(25 42 34 / 88%)),
+    transparent;
+}
+
+.nusantara--sunda .nu-section.nu-welcome {
+  background:
+    linear-gradient(180deg, rgb(25 42 34 / 42%), rgb(25 42 34 / 66%) 72%, rgb(25 42 34 / 88%)),
+    transparent;
+}
+
+.nusantara--sunda .nu-section:not(.nu-welcome):not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+  background-color: color-mix(in srgb, var(--nu-paper) 96%, transparent);
+}
+
+.nusantara--sunda .nu-event-section,
+.nusantara--sunda .nu-video-section,
+.nusantara--sunda .nu-footer {
+  background-color: color-mix(in srgb, var(--nu-dark) 97%, transparent);
+}
+
+.nusantara--batak .nu-welcome,
+.nusantara--dayak-ngaju .nu-welcome {
+  color: var(--nu-paper);
+  background: var(--nu-dark);
+}
+
+.nusantara--sunda .nu-bottom-nav {
+  background: color-mix(in srgb, var(--nu-dark) 97%, transparent);
+}
+
+@media (min-width: 768px) {
+  .nu-welcome {
+    gap: clamp(0.55rem, 1.35vh, 1.2rem);
+    padding: 1.5rem 2rem calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  .nu-section:not(.nu-welcome) {
+    padding-inline: max(2rem, calc((100% - 1040px) / 2));
+  }
+
+  .nu-couple-grid {
+    gap: clamp(2rem, 8vw, 7rem);
+  }
+
+  .nu-event-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nu-bottom-nav {
+    min-height: 4.25rem;
+    padding-bottom: 0.35rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .nu-scroll-root {
+    scroll-snap-type: y proximity;
+  }
+
+  .nu-section {
+    min-height: 100svh;
+    padding: 4.5rem 1.25rem 6rem;
+  }
+
+  .nu-cover-content {
+    width: min(100%, 620px);
+    padding: 2.5rem 1.25rem calc(2rem + env(safe-area-inset-bottom));
+  }
+
+  .nu-names {
+    width: min(100%, 13ch);
+    font-size: clamp(2.65rem, 12.5vw, 4rem);
+    line-height: 0.9;
+  }
+
+  .nu-welcome {
+    gap: 0.7rem;
+    padding-top: 1.5rem;
+    padding-bottom: calc(5.2rem + env(safe-area-inset-bottom));
+  }
+
+  .nu-welcome-photo {
+    width: clamp(8rem, 39vw, 10.5rem);
+    height: clamp(10.5rem, 37svh, 15.5rem);
+  }
+
+  .nu-welcome-names {
+    width: min(100%, 13ch);
+    font-size: clamp(2.2rem, 10vw, 3.6rem);
+    line-height: 0.98;
+  }
+
+  .nu-opening-copy {
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .nu-quote-source {
+    margin-top: -0.35rem;
+  }
+
+  .nu-date-pill {
+    max-width: 100%;
+    font-size: 0.69rem;
+    letter-spacing: 0.04em;
+    text-wrap: balance;
+  }
+
+  .nu-countdown {
+    grid-template-columns: repeat(4, minmax(2.65rem, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+  }
+
+  .nu-countdown strong {
+    font-size: 1.4rem;
+  }
+
+  .nu-event-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nu-story-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .nu-story-item img {
+    grid-row: auto;
+    height: min(58svh, 24rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .nu-story-item h3,
+  .nu-story-date,
+  .nu-story-item > p:last-child {
+    grid-column: 1;
+  }
+
+  .nu-bottom-nav {
+    justify-content: space-around;
+    gap: 0;
+    overflow-x: hidden;
+  }
+
+  .nu-bottom-nav button {
+    flex: 1 1 0;
+    max-width: none;
+    padding-inline: 0.05rem;
+    font-size: clamp(0.44rem, 1.8vw, 0.57rem);
   }
 }
 </style>
