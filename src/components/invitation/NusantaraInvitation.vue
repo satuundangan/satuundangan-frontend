@@ -9,7 +9,8 @@
       :accentColor="theme.colors.accent"
     />
 
-    <section v-if="!opened" class="nu-cover" aria-labelledby="nu-cover-title">
+    <Transition name="nu-cover-reveal">
+      <section v-if="!opened" class="nu-cover" aria-labelledby="nu-cover-title">
       <img v-if="coverPhoto" :src="coverPhoto" alt="" class="nu-cover-photo" />
       <div class="nu-cover-wash" aria-hidden="true"></div>
       <div class="nu-cover-motif" aria-hidden="true"></div>
@@ -33,10 +34,42 @@
           Buka Undangan
         </button>
       </div>
-    </section>
+      </section>
+    </Transition>
 
-    <template v-else>
-      <main ref="scrollRoot" class="nu-scroll-root">
+    <template v-if="opened">
+      <main
+        ref="scrollRoot"
+        class="nu-scroll-root"
+        :class="{ 'nu-scroll-root--sunda': themeKey === 'sunda' }"
+      >
+        <div v-if="themeKey === 'sunda'" class="nu-sunda-world" aria-hidden="true">
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__mountains"
+            src="/assets/images/nusantara/sunda/mountains-mist.jpg"
+            alt=""
+            data-nu-scene-layer="mountains"
+          />
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__tea"
+            src="/assets/images/nusantara/sunda/tea-hills-golden-hour.jpg"
+            alt=""
+            data-nu-scene-layer="tea"
+          />
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__path"
+            src="/assets/images/nusantara/sunda/tea-path.jpg"
+            alt=""
+            data-nu-scene-layer="path"
+          />
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__pavilion"
+            src="/assets/images/nusantara/sunda/sundanese-pavilion.jpg"
+            alt=""
+            data-nu-scene-layer="pavilion"
+          />
+          <div class="nu-sunda-world__atmosphere"></div>
+        </div>
         <section id="nu-home" class="nu-welcome nu-section">
           <div class="nu-section-mark" aria-hidden="true">
             <span v-for="mark in 5" :key="mark"></span>
@@ -81,7 +114,13 @@
           <div class="nu-couple-grid">
             <article v-for="person in couple" :key="person.key" class="nu-person">
               <div class="nu-person-photo" :class="{ 'nu-person-photo--empty': !person.photo }">
-                <img v-if="person.photo" :src="person.photo" alt="" loading="lazy" />
+                <img
+                  v-if="person.photo"
+                  :src="person.photo"
+                  alt=""
+                  loading="lazy"
+                  data-nu-parallax
+                />
                 <span v-else aria-hidden="true">{{ person.initial }}</span>
               </div>
               <h3>{{ person.name }}</h3>
@@ -163,7 +202,7 @@
           <h2 class="nu-section-title">Cerita Kami</h2>
           <ol class="nu-story-list">
             <li v-for="(story, index) in loveStory" :key="index" class="nu-story-item">
-              <img v-if="story.image" :src="story.image" alt="" loading="lazy" />
+              <img v-if="story.image" :src="story.image" alt="" loading="lazy" data-nu-parallax />
               <p v-if="story.date" class="nu-story-date">{{ story.date }}</p>
               <h3>{{ story.title || `Cerita ${index + 1}` }}</h3>
               <p>{{ story.description || story.content }}</p>
@@ -192,6 +231,7 @@
             :src="invitation.floorPlanImageUrl"
             alt="Denah lokasi acara"
             loading="lazy"
+            data-nu-parallax
           />
         </section>
 
@@ -499,6 +539,8 @@ const opened = ref(false)
 const scrollRoot = ref(null)
 const activeSection = ref('nu-home')
 let scrollObserver = null
+let revealObserver = null
+let parallaxFrame = null
 let countdownInterval = null
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
 const firstEventDate = computed(
@@ -739,9 +781,83 @@ function setupScrollObserver() {
   })
 }
 
+function updateParallax() {
+  if (parallaxFrame !== null || !scrollRoot.value) return
+  parallaxFrame = requestAnimationFrame(() => {
+    parallaxFrame = null
+    const root = scrollRoot.value
+    const rootBounds = root?.getBoundingClientRect()
+    if (!rootBounds) return
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    const progress = reduceMotion ? 0 : root.scrollTop / Math.max(1, root.scrollHeight - root.clientHeight)
+    const smoothstep = (start, end, value) => {
+      const t = Math.max(0, Math.min(1, (value - start) / (end - start)))
+      return t * t * (3 - 2 * t)
+    }
+    const sceneLayers = {
+      mountains: { opacity: 0.9 - progress * 0.14, y: -progress * 24, scale: 1.1 },
+      tea: { opacity: 0.25 + Math.sin(progress * Math.PI) * 0.12, y: -progress * 52, scale: 1.14 },
+      path: {
+        opacity: smoothstep(0.08, 0.32, progress) * (1 - smoothstep(0.5, 0.68, progress)) * 0.76,
+        y: -progress * 86,
+        scale: 1.08,
+      },
+      pavilion: {
+        opacity: smoothstep(0.48, 0.68, progress) * (1 - smoothstep(0.92, 1, progress)) * 0.76,
+        y: -progress * 38,
+        scale: 1.12,
+      },
+    }
+    root.querySelectorAll('[data-nu-scene-layer]').forEach((element) => {
+      const layer = sceneLayers[element.dataset.nuSceneLayer]
+      if (!layer) return
+      element.style.opacity = String(layer.opacity)
+      const x = ['path', 'pavilion'].includes(element.dataset.nuSceneLayer) ? '-50%' : '0'
+      element.style.transform = `translate3d(${x}, ${layer.y.toFixed(1)}px, 0) scale(${layer.scale})`
+    })
+    const center = rootBounds.top + rootBounds.height / 2
+    root.querySelectorAll('[data-nu-parallax]').forEach((element) => {
+      const bounds = element.getBoundingClientRect()
+      if (bounds.bottom < rootBounds.top || bounds.top > rootBounds.bottom) return
+      const offset = Math.max(-18, Math.min(18, (center - (bounds.top + bounds.height / 2)) * 0.045))
+      element.style.setProperty('--nu-parallax-y', `${offset.toFixed(2)}px`)
+    })
+  })
+}
+
+function setupScrollMotion() {
+  revealObserver?.disconnect()
+  const root = scrollRoot.value
+  if (!root) return
+  const targets = root.querySelectorAll('.nu-section, .nu-footer')
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+    targets.forEach((element) => element.classList.add('nu-section--visible'))
+    updateParallax()
+    return
+  }
+  if (typeof IntersectionObserver !== 'undefined') {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          entry.target.classList.toggle('nu-section--visible', entry.isIntersecting)
+        }
+      },
+      { root, threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    targets.forEach((element) => revealObserver.observe(element))
+  } else {
+    targets.forEach((element) => element.classList.add('nu-section--visible'))
+  }
+  root.addEventListener('scroll', updateParallax, { passive: true })
+  updateParallax()
+}
+
 function openInvitation() {
   opened.value = true
-  requestAnimationFrame(setupScrollObserver)
+  requestAnimationFrame(() => {
+    setupScrollObserver()
+    setupScrollMotion()
+  })
 }
 
 function scrollToSection(id) {
@@ -825,6 +941,9 @@ watch(firstEventDate, updateCountdown)
 onMounted(updateCountdown)
 onUnmounted(() => {
   scrollObserver?.disconnect()
+  revealObserver?.disconnect()
+  scrollRoot.value?.removeEventListener('scroll', updateParallax)
+  if (parallaxFrame !== null) cancelAnimationFrame(parallaxFrame)
   if (countdownInterval) clearInterval(countdownInterval)
 })
 </script>
@@ -851,6 +970,44 @@ onUnmounted(() => {
   color: var(--nu-dark);
   background: var(--nu-paper);
   text-align: center;
+}
+
+.nu-cover-reveal-leave-active {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: center top;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  transition:
+    transform 760ms cubic-bezier(0.2, 0.7, 0.15, 1),
+    opacity 640ms ease,
+    filter 640ms ease;
+}
+
+.nu-cover-reveal-leave-to {
+  opacity: 0;
+  filter: blur(5px);
+  transform: perspective(1100px) translate3d(0, -7vh, -90px) rotateX(7deg) scale(0.96);
+}
+
+.nu-cover-reveal-leave-active .nu-cover-photo {
+  transform: translate3d(0, -3vh, 50px) scale(1.08);
+  transition: transform 760ms cubic-bezier(0.2, 0.7, 0.15, 1);
+}
+
+.nu-cover-reveal-leave-active .nu-cover-motif {
+  transform: translate3d(0, 2vh, -35px) scale(0.94);
+  transition: transform 760ms cubic-bezier(0.2, 0.7, 0.15, 1);
+}
+
+.nu-cover-reveal-leave-active .nu-cover-content {
+  opacity: 0;
+  transform: translate3d(0, -24px, 35px);
+  transition:
+    opacity 320ms ease,
+    transform 640ms cubic-bezier(0.2, 0.7, 0.15, 1);
 }
 
 .nu-cover-pattern {
@@ -1873,8 +2030,83 @@ onUnmounted(() => {
   background: var(--nu-paper);
 }
 .nu-scroll-root {
+  overflow-x: clip;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   background: var(--nu-bg);
+  animation: nu-scroll-root-arrive 760ms cubic-bezier(0.2, 0.7, 0.15, 1) both;
+}
+
+@keyframes nu-scroll-root-arrive {
+  from {
+    opacity: 0.72;
+    transform: perspective(1100px) translate3d(0, 4vh, -55px) rotateX(1.5deg) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nu-section,
+.nu-footer {
+  opacity: 0;
+  visibility: hidden;
+  transform: perspective(1100px) translate3d(0, 8vh, -100px) rotateX(4deg) scale(0.94);
+  transform-origin: center top;
+  transition:
+    opacity 360ms ease-out,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 420ms;
+}
+
+.nu-section.nu-section--visible,
+.nu-footer.nu-section--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 360ms ease-out,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s;
+}
+
+.nu-section {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.nu-parallax-media {
+  transform: translate3d(0, var(--nu-parallax-y, 0px), 12px) scale(1.035);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nu-cover-reveal-leave-active,
+  .nu-cover-reveal-leave-active .nu-cover-photo,
+  .nu-cover-reveal-leave-active .nu-cover-motif,
+  .nu-cover-reveal-leave-active .nu-cover-content,
+  .nu-scroll-root,
+  .nu-section,
+  .nu-footer,
+  .nu-parallax-media {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .nu-section,
+  .nu-footer {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 .nu-section {
   padding: clamp(4.5rem, 11vw, 8rem) max(1.4rem, calc((100% - 780px) / 2));
@@ -1941,9 +2173,15 @@ onUnmounted(() => {
 }
 .nu-couple-grid {
   gap: clamp(1rem, 5vw, 3.4rem);
-  margin-block: 3rem 2rem;
+  margin-block: 2rem 1rem;
+}
+.nu-person {
+  text-align: center;
 }
 .nu-person-photo {
+  max-width: 280px;
+  margin-inline: auto;
+  aspect-ratio: 0.92;
   border-radius: 0;
   background: var(--nu-panel);
 }
@@ -2252,6 +2490,54 @@ onUnmounted(() => {
   background-image: none;
 }
 
+@media (max-width: 540px) {
+  .nu-cover {
+    align-items: center;
+    text-align: center;
+  }
+  .nu-cover-content {
+    width: min(100%, 620px);
+    padding: 3rem 1.25rem calc(2rem + env(safe-area-inset-bottom));
+  }
+  .nu-cover-scope {
+    margin-bottom: 0.9rem;
+    font-size: 0.7rem;
+  }
+  .nu-cover-label {
+    margin-bottom: 0.4rem;
+  }
+  .nu-names {
+    justify-items: center;
+    max-width: 100%;
+    font-size: clamp(2.7rem, 13vw, 4rem);
+    line-height: 0.9;
+  }
+  .nu-ampersand {
+    margin: 0.12em 0;
+  }
+  .nu-cover-date {
+    font-size: 0.82rem;
+  }
+  .nu-cover-recipient {
+    justify-items: center;
+    margin: 1.4rem 0 1rem;
+  }
+  .nu-section {
+    padding: clamp(4rem, 14vw, 5.5rem) 1.25rem;
+  }
+  .nu-section-title {
+    font-size: clamp(1.7rem, 8vw, 2.25rem);
+  }
+  .nu-event-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .nu-bottom-nav button {
+    flex-basis: 64px;
+    min-width: 0;
+    padding-inline: 0.2rem;
+  }
+}
+
 @media (min-width: 768px) {
   .nu-cover-content {
     padding-bottom: 4.5rem;
@@ -2269,7 +2555,15 @@ onUnmounted(() => {
 
 @media (min-width: 768px) {
   .nu-cover {
-    min-height: 820px;
+    min-height: 100svh;
+  }
+  .nu-cover-content {
+    padding: clamp(2rem, 7vh, 4.5rem) clamp(2rem, 5vw, 4rem)
+      calc(2rem + env(safe-area-inset-bottom));
+  }
+  .nu-names {
+    max-width: 100%;
+    font-size: clamp(3.25rem, 7vw, 5.25rem);
   }
   .nu-cover-rule--left {
     left: max(7vw, 42px);
@@ -2300,6 +2594,154 @@ onUnmounted(() => {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+  .nu-scroll-root {
+    scroll-snap-type: none;
+  }
+  .nu-section {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
+.nu-scroll-root--sunda {
+  position: relative;
+  isolation: isolate;
+  background: #20382d;
+}
+
+.nu-sunda-world {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  margin-bottom: -100svh;
+  overflow: hidden;
+  pointer-events: none;
+  background: #344b40;
+}
+
+.nu-sunda-world__layer,
+.nu-sunda-world__atmosphere {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.nu-sunda-world__layer {
+  object-fit: cover;
+  will-change: transform, opacity;
+  transition: opacity 180ms linear;
+}
+
+.nu-sunda-world__mountains {
+  z-index: 0;
+  object-position: center 48%;
+  filter: saturate(0.78) brightness(0.86);
+}
+
+.nu-sunda-world__tea {
+  z-index: 1;
+  object-position: center 56%;
+  filter: saturate(0.78) brightness(0.72);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 100%);
+}
+
+.nu-sunda-world__path {
+  z-index: 2;
+  inset: 12% auto 0 50%;
+  width: min(82vw, 920px);
+  height: 88%;
+  object-position: center 68%;
+  filter: saturate(0.74) brightness(0.8) sepia(0.08);
+  mask-image: radial-gradient(ellipse at center 54%, #000 22%, rgb(0 0 0 / 88%) 44%, transparent 76%);
+}
+
+.nu-sunda-world__pavilion {
+  z-index: 3;
+  inset: 19% auto 10% 50%;
+  width: min(82vw, 920px);
+  height: 71%;
+  object-position: center 56%;
+  filter: saturate(0.76) brightness(0.78) sepia(0.08);
+  mask-image: radial-gradient(ellipse at center 56%, #000 28%, rgb(0 0 0 / 82%) 48%, transparent 78%);
+}
+
+.nu-sunda-world__atmosphere {
+  z-index: 6;
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(235 179 96 / 24%), transparent 42%),
+    linear-gradient(180deg, rgb(25 42 34 / 14%), rgb(25 42 34 / 8%) 45%, rgb(25 42 34 / 62%)),
+    linear-gradient(90deg, rgb(19 32 27 / 26%), transparent 28%, transparent 72%, rgb(19 32 27 / 28%));
+}
+
+.nu-scroll-root--sunda > .nu-section,
+.nu-scroll-root--sunda > .nu-footer {
+  z-index: 1;
+}
+
+.nusantara--sunda .nu-welcome {
+  background-color: rgb(238 241 231 / 20%);
+}
+
+.nusantara--sunda .nu-section:not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+  background-color: rgb(238 241 231 / 52%);
+}
+
+.nusantara--sunda .nu-couple-section,
+.nusantara--sunda .nu-gallery-section,
+.nusantara--sunda .nu-gift-section,
+.nusantara--sunda .nu-rsvp-section {
+  background-color: rgb(238 241 231 / 44%);
+}
+
+.nusantara--sunda .nu-event-section {
+  background-color: rgb(32 56 45 / 76%);
+}
+
+.nusantara--sunda .nu-footer {
+  position: relative;
+  z-index: 1;
+  background: rgb(32 56 45 / 82%);
+}
+
+@media (max-width: 767px) {
+  .nu-sunda-world__mountains {
+    object-position: 54% center;
+  }
+
+  .nu-sunda-world__tea {
+    object-position: 56% center;
+  }
+
+  .nu-sunda-world__path {
+    object-position: center 72%;
+  }
+
+  .nu-sunda-world__path {
+    width: min(120vw, 540px);
+    object-position: center 70%;
+  }
+
+  .nu-sunda-world__pavilion {
+    inset: 24% auto 10% 50%;
+    width: min(118vw, 520px);
+    height: 66%;
+    object-position: center center;
+  }
+
+  .nusantara--sunda .nu-section:not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+    background-color: rgb(238 241 231 / 64%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nu-sunda-world__layer {
+    will-change: auto;
+    transition: none;
   }
 }
 </style>
