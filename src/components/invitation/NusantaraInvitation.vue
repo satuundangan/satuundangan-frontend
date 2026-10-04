@@ -3175,6 +3175,144 @@ onUnmounted(() => {
   background: color-mix(in srgb, var(--nu-dark) 97%, transparent);
 }
 
+/* Keep the Sunda landscape visible behind each section while lifting text contrast. */
+.nu-sunda-world__mountains {
+  filter: saturate(0.86) brightness(0.94);
+}
+
+.nu-sunda-world__tea {
+  filter: saturate(0.86) brightness(0.88);
+}
+
+.nu-sunda-world__path {
+  filter: saturate(0.84) brightness(0.92) sepia(0.04);
+}
+
+.nu-sunda-world__pavilion {
+  filter: saturate(0.84) brightness(0.9) sepia(0.04);
+}
+
+.nu-sunda-world__atmosphere {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(235 179 96 / 9%), transparent 42%),
+    linear-gradient(180deg, rgb(25 42 34 / 4%), rgb(25 42 34 / 3%) 45%, rgb(25 42 34 / 18%)),
+    linear-gradient(90deg, rgb(19 32 27 / 10%), transparent 28%, transparent 72%, rgb(19 32 27 / 10%));
+}
+
+.nusantara--sunda
+  .nu-scroll-root.nu-scroll-root--sunda
+  > .nu-section:not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+  color: var(--nu-paper);
+  background: transparent;
+}
+
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-welcome {
+  background: transparent;
+}
+
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-event-section,
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-stream-section,
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-video-section {
+  color: var(--nu-paper);
+  background: transparent;
+}
+
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-footer {
+  background: transparent;
+}
+
+.nusantara--sunda .nu-section-title,
+.nusantara--sunda .nu-section-kicker,
+.nusantara--sunda .nu-section-intro,
+.nusantara--sunda .nu-detail-copy,
+.nusantara--sunda .nu-person h3,
+.nusantara--sunda .nu-person p,
+.nusantara--sunda .nu-story-date,
+.nusantara--sunda .nu-story-item h3,
+.nusantara--sunda .nu-story-item > p:last-child,
+.nusantara--sunda .nu-menu-list li,
+.nusantara--sunda .nu-family-list li,
+.nusantara--sunda .nu-rsvp-panel,
+.nusantara--sunda .nu-wishes h3,
+.nusantara--sunda .nu-wish-heading,
+.nusantara--sunda .nu-wish-heading time,
+.nusantara--sunda .nu-wish-status,
+.nusantara--sunda .nu-wish-message {
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%), 0 2px 14px rgb(8 19 14 / 54%);
+}
+
+.nusantara--sunda .nu-section-kicker {
+  color: #f0c78d;
+}
+
+.nusantara--sunda .nu-event-card,
+.nusantara--sunda .nu-event-card h3,
+.nusantara--sunda .nu-event-card p,
+.nusantara--sunda .nu-event-card .nu-event-date,
+.nusantara--sunda .nu-event-card .nu-event-location,
+.nusantara--sunda .nu-event-card .nu-text-link {
+  color: var(--nu-dark);
+  text-shadow: none;
+}
+
+.nusantara--sunda .nu-stream-link,
+.nusantara--sunda .nu-button--outline {
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+  background: transparent;
+}
+
+.nusantara--sunda .nu-plan-image {
+  background: rgb(250 251 245 / 92%);
+}
+
+.nusantara--sunda .nu-gift-list article,
+.nusantara--sunda .nu-rsvp-panel {
+  border-color: color-mix(in srgb, var(--nu-paper) 56%, var(--nu-accent));
+  background: transparent;
+}
+
+.nusantara--sunda .nu-gift-list strong,
+.nusantara--sunda .nu-gift-list span,
+.nusantara--sunda .nu-gift-list small {
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+.nusantara--sunda .nu-gift-list strong,
+.nusantara--sunda .nu-gift-list span,
+.nusantara--sunda .nu-gift-list small {
+  color: var(--nu-paper);
+}
+
+.nusantara--sunda .nu-gift-list button {
+  border-color: var(--nu-paper);
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+.nusantara--sunda .nu-address {
+  color: var(--nu-dark);
+  text-shadow: none;
+}
+
+.nusantara--sunda .nu-rsvp-form > label,
+.nusantara--sunda .nu-rsvp-form legend {
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+.nusantara--sunda .nu-menu-list li,
+.nusantara--sunda .nu-family-list li,
+.nusantara--sunda .nu-wish {
+  border-color: color-mix(in srgb, var(--nu-paper) 38%, transparent);
+}
+
+.nusantara--sunda .nu-wishes-empty {
+  color: color-mix(in srgb, var(--nu-paper) 86%, transparent);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
 @media (min-width: 768px) {
   .nu-welcome {
     gap: clamp(0.55rem, 1.35vh, 1.2rem);
