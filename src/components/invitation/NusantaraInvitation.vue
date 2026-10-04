@@ -9,7 +9,8 @@
       :accentColor="theme.colors.accent"
     />
 
-    <section v-if="!opened" class="nu-cover" aria-labelledby="nu-cover-title">
+    <Transition name="nu-cover-reveal">
+      <section v-if="!opened" class="nu-cover" aria-labelledby="nu-cover-title">
       <img v-if="coverPhoto" :src="coverPhoto" alt="" class="nu-cover-photo" />
       <div class="nu-cover-wash" aria-hidden="true"></div>
       <div class="nu-cover-motif" aria-hidden="true"></div>
@@ -33,19 +34,54 @@
           Buka Undangan
         </button>
       </div>
-    </section>
+      </section>
+    </Transition>
 
-    <template v-else>
-      <main ref="scrollRoot" class="nu-scroll-root">
+    <template v-if="opened">
+      <main
+        ref="scrollRoot"
+        class="nu-scroll-root"
+        :class="{ 'nu-scroll-root--sunda': themeKey === 'sunda' }"
+      >
+        <div v-if="themeKey === 'sunda'" class="nu-sunda-world" aria-hidden="true">
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__mountains"
+            src="/assets/images/nusantara/sunda/mountains-mist.jpg"
+            alt=""
+            data-nu-scene-layer="mountains"
+          />
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__tea"
+            src="/assets/images/nusantara/sunda/tea-hills-golden-hour.jpg"
+            alt=""
+            data-nu-scene-layer="tea"
+          />
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__path"
+            src="/assets/images/nusantara/sunda/tea-path.jpg"
+            alt=""
+            data-nu-scene-layer="path"
+          />
+          <img
+            class="nu-sunda-world__layer nu-sunda-world__pavilion"
+            src="/assets/images/nusantara/sunda/sundanese-pavilion.jpg"
+            alt=""
+            data-nu-scene-layer="pavilion"
+          />
+          <div class="nu-sunda-world__atmosphere"></div>
+        </div>
         <section id="nu-home" class="nu-welcome nu-section">
           <div class="nu-section-mark" aria-hidden="true">
             <span v-for="mark in 5" :key="mark"></span>
           </div>
+          <figure v-if="coverPhoto" class="nu-welcome-photo">
+            <img :src="coverPhoto" alt="Foto kedua mempelai" fetchpriority="high" />
+          </figure>
           <p class="nu-scope">{{ theme.scope }}</p>
           <h1 class="nu-welcome-names">
-            {{ invitation.groomName || 'Mempelai Pria' }}
-            <span>&amp;</span>
-            {{ invitation.brideName || 'Mempelai Wanita' }}
+            <span class="nu-welcome-name">{{ invitation.groomName || 'Mempelai Pria' }}</span>
+            <span class="nu-welcome-join" aria-label="dan">&amp;</span>
+            <span class="nu-welcome-name">{{ invitation.brideName || 'Mempelai Wanita' }}</span>
           </h1>
           <p v-if="isSectionEnabled('quote') && invitation.quoteText" class="nu-opening-copy">
             {{ invitation.quoteText }}
@@ -81,7 +117,13 @@
           <div class="nu-couple-grid">
             <article v-for="person in couple" :key="person.key" class="nu-person">
               <div class="nu-person-photo" :class="{ 'nu-person-photo--empty': !person.photo }">
-                <img v-if="person.photo" :src="person.photo" alt="" loading="lazy" />
+                <img
+                  v-if="person.photo"
+                  :src="person.photo"
+                  alt=""
+                  loading="lazy"
+                  data-nu-parallax
+                />
                 <span v-else aria-hidden="true">{{ person.initial }}</span>
               </div>
               <h3>{{ person.name }}</h3>
@@ -163,7 +205,7 @@
           <h2 class="nu-section-title">Cerita Kami</h2>
           <ol class="nu-story-list">
             <li v-for="(story, index) in loveStory" :key="index" class="nu-story-item">
-              <img v-if="story.image" :src="story.image" alt="" loading="lazy" />
+              <img v-if="story.image" :src="story.image" alt="" loading="lazy" data-nu-parallax />
               <p v-if="story.date" class="nu-story-date">{{ story.date }}</p>
               <h3>{{ story.title || `Cerita ${index + 1}` }}</h3>
               <p>{{ story.description || story.content }}</p>
@@ -192,6 +234,7 @@
             :src="invitation.floorPlanImageUrl"
             alt="Denah lokasi acara"
             loading="lazy"
+            data-nu-parallax
           />
         </section>
 
@@ -499,6 +542,8 @@ const opened = ref(false)
 const scrollRoot = ref(null)
 const activeSection = ref('nu-home')
 let scrollObserver = null
+let revealObserver = null
+let parallaxFrame = null
 let countdownInterval = null
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
 const firstEventDate = computed(
@@ -739,9 +784,83 @@ function setupScrollObserver() {
   })
 }
 
+function updateParallax() {
+  if (parallaxFrame !== null || !scrollRoot.value) return
+  parallaxFrame = requestAnimationFrame(() => {
+    parallaxFrame = null
+    const root = scrollRoot.value
+    const rootBounds = root?.getBoundingClientRect()
+    if (!rootBounds) return
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches
+    const progress = reduceMotion ? 0 : root.scrollTop / Math.max(1, root.scrollHeight - root.clientHeight)
+    const smoothstep = (start, end, value) => {
+      const t = Math.max(0, Math.min(1, (value - start) / (end - start)))
+      return t * t * (3 - 2 * t)
+    }
+    const sceneLayers = {
+      mountains: { opacity: 0.9 - progress * 0.14, y: -progress * 24, scale: 1.1 },
+      tea: { opacity: 0.25 + Math.sin(progress * Math.PI) * 0.12, y: -progress * 52, scale: 1.14 },
+      path: {
+        opacity: smoothstep(0.08, 0.32, progress) * (1 - smoothstep(0.5, 0.68, progress)) * 0.76,
+        y: -progress * 86,
+        scale: 1.08,
+      },
+      pavilion: {
+        opacity: smoothstep(0.48, 0.68, progress) * (1 - smoothstep(0.92, 1, progress)) * 0.76,
+        y: -progress * 38,
+        scale: 1.12,
+      },
+    }
+    root.querySelectorAll('[data-nu-scene-layer]').forEach((element) => {
+      const layer = sceneLayers[element.dataset.nuSceneLayer]
+      if (!layer) return
+      element.style.opacity = String(layer.opacity)
+      const x = ['path', 'pavilion'].includes(element.dataset.nuSceneLayer) ? '-50%' : '0'
+      element.style.transform = `translate3d(${x}, ${layer.y.toFixed(1)}px, 0) scale(${layer.scale})`
+    })
+    const center = rootBounds.top + rootBounds.height / 2
+    root.querySelectorAll('[data-nu-parallax]').forEach((element) => {
+      const bounds = element.getBoundingClientRect()
+      if (bounds.bottom < rootBounds.top || bounds.top > rootBounds.bottom) return
+      const offset = Math.max(-18, Math.min(18, (center - (bounds.top + bounds.height / 2)) * 0.045))
+      element.style.setProperty('--nu-parallax-y', `${offset.toFixed(2)}px`)
+    })
+  })
+}
+
+function setupScrollMotion() {
+  revealObserver?.disconnect()
+  const root = scrollRoot.value
+  if (!root) return
+  const targets = root.querySelectorAll('.nu-section, .nu-footer')
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches) {
+    targets.forEach((element) => element.classList.add('nu-section--visible'))
+    updateParallax()
+    return
+  }
+  if (typeof IntersectionObserver !== 'undefined') {
+    revealObserver = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          entry.target.classList.toggle('nu-section--visible', entry.isIntersecting)
+        }
+      },
+      { root, threshold: 0.12, rootMargin: '0px 0px -8% 0px' },
+    )
+    targets.forEach((element) => revealObserver.observe(element))
+  } else {
+    targets.forEach((element) => element.classList.add('nu-section--visible'))
+  }
+  root.addEventListener('scroll', updateParallax, { passive: true })
+  updateParallax()
+}
+
 function openInvitation() {
   opened.value = true
-  requestAnimationFrame(setupScrollObserver)
+  requestAnimationFrame(() => {
+    setupScrollObserver()
+    setupScrollMotion()
+  })
 }
 
 function scrollToSection(id) {
@@ -825,6 +944,9 @@ watch(firstEventDate, updateCountdown)
 onMounted(updateCountdown)
 onUnmounted(() => {
   scrollObserver?.disconnect()
+  revealObserver?.disconnect()
+  scrollRoot.value?.removeEventListener('scroll', updateParallax)
+  if (parallaxFrame !== null) cancelAnimationFrame(parallaxFrame)
   if (countdownInterval) clearInterval(countdownInterval)
 })
 </script>
@@ -851,6 +973,44 @@ onUnmounted(() => {
   color: var(--nu-dark);
   background: var(--nu-paper);
   text-align: center;
+}
+
+.nu-cover-reveal-leave-active {
+  position: fixed;
+  z-index: 20;
+  inset: 0;
+  pointer-events: none;
+  transform-origin: center top;
+  transform-style: preserve-3d;
+  will-change: transform, opacity, filter;
+  transition:
+    transform 760ms cubic-bezier(0.2, 0.7, 0.15, 1),
+    opacity 640ms ease,
+    filter 640ms ease;
+}
+
+.nu-cover-reveal-leave-to {
+  opacity: 0;
+  filter: blur(5px);
+  transform: perspective(1100px) translate3d(0, -7vh, -90px) rotateX(7deg) scale(0.96);
+}
+
+.nu-cover-reveal-leave-active .nu-cover-photo {
+  transform: translate3d(0, -3vh, 50px) scale(1.08);
+  transition: transform 760ms cubic-bezier(0.2, 0.7, 0.15, 1);
+}
+
+.nu-cover-reveal-leave-active .nu-cover-motif {
+  transform: translate3d(0, 2vh, -35px) scale(0.94);
+  transition: transform 760ms cubic-bezier(0.2, 0.7, 0.15, 1);
+}
+
+.nu-cover-reveal-leave-active .nu-cover-content {
+  opacity: 0;
+  transform: translate3d(0, -24px, 35px);
+  transition:
+    opacity 320ms ease,
+    transform 640ms cubic-bezier(0.2, 0.7, 0.15, 1);
 }
 
 .nu-cover-pattern {
@@ -1200,6 +1360,7 @@ onUnmounted(() => {
   scroll-behavior: smooth;
   scrollbar-width: none;
 }
+
 .nu-scroll-root::-webkit-scrollbar {
   display: none;
 }
@@ -1873,8 +2034,83 @@ onUnmounted(() => {
   background: var(--nu-paper);
 }
 .nu-scroll-root {
+  overflow-x: clip;
+  overflow-y: auto;
+  scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
   background: var(--nu-bg);
+  animation: nu-scroll-root-arrive 760ms cubic-bezier(0.2, 0.7, 0.15, 1) both;
+}
+
+@keyframes nu-scroll-root-arrive {
+  from {
+    opacity: 0.72;
+    transform: perspective(1100px) translate3d(0, 4vh, -55px) rotateX(1.5deg) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.nu-section,
+.nu-footer {
+  opacity: 0;
+  visibility: hidden;
+  transform: perspective(1100px) translate3d(0, 8vh, -100px) rotateX(4deg) scale(0.94);
+  transform-origin: center top;
+  transition:
+    opacity 360ms ease-out,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s linear 420ms;
+}
+
+.nu-section.nu-section--visible,
+.nu-footer.nu-section--visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+  transition:
+    opacity 360ms ease-out,
+    transform 420ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s;
+}
+
+.nu-section {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  justify-content: center;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+.nu-parallax-media {
+  transform: translate3d(0, var(--nu-parallax-y, 0px), 12px) scale(1.035);
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nu-cover-reveal-leave-active,
+  .nu-cover-reveal-leave-active .nu-cover-photo,
+  .nu-cover-reveal-leave-active .nu-cover-motif,
+  .nu-cover-reveal-leave-active .nu-cover-content,
+  .nu-scroll-root,
+  .nu-section,
+  .nu-footer,
+  .nu-parallax-media {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+    filter: none !important;
+  }
+
+  .nu-section,
+  .nu-footer {
+    opacity: 1;
+    visibility: visible;
+  }
 }
 .nu-section {
   padding: clamp(4.5rem, 11vw, 8rem) max(1.4rem, calc((100% - 780px) / 2));
@@ -1941,9 +2177,15 @@ onUnmounted(() => {
 }
 .nu-couple-grid {
   gap: clamp(1rem, 5vw, 3.4rem);
-  margin-block: 3rem 2rem;
+  margin-block: 2rem 1rem;
+}
+.nu-person {
+  text-align: center;
 }
 .nu-person-photo {
+  max-width: 280px;
+  margin-inline: auto;
+  aspect-ratio: 0.92;
   border-radius: 0;
   background: var(--nu-panel);
 }
@@ -2252,6 +2494,55 @@ onUnmounted(() => {
   background-image: none;
 }
 
+@media (max-width: 540px) {
+  .nu-cover {
+    align-items: center;
+    text-align: center;
+  }
+  .nu-cover-content {
+    width: min(100%, 620px);
+    padding: 3rem 1.25rem calc(2rem + env(safe-area-inset-bottom));
+  }
+  .nu-cover-scope {
+    margin-bottom: 0.9rem;
+    font-size: 0.7rem;
+  }
+  .nu-cover-label {
+    margin-bottom: 0.4rem;
+  }
+  .nu-names {
+    justify-items: center;
+    max-width: 100%;
+    font-size: clamp(2.7rem, 13vw, 4rem);
+    line-height: 0.9;
+  }
+  .nu-ampersand {
+    margin: 0.12em 0;
+  }
+  .nu-cover-date {
+    font-size: 0.82rem;
+  }
+  .nu-cover-recipient {
+    justify-items: center;
+    margin: 1.4rem 0 1rem;
+  }
+  .nu-section {
+    padding: clamp(4rem, 14vw, 5.5rem) 1.25rem;
+  }
+
+  .nu-section-title {
+    font-size: clamp(1.7rem, 8vw, 2.25rem);
+  }
+  .nu-event-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .nu-bottom-nav button {
+    flex-basis: 64px;
+    min-width: 0;
+    padding-inline: 0.2rem;
+  }
+}
+
 @media (min-width: 768px) {
   .nu-cover-content {
     padding-bottom: 4.5rem;
@@ -2269,7 +2560,15 @@ onUnmounted(() => {
 
 @media (min-width: 768px) {
   .nu-cover {
-    min-height: 820px;
+    min-height: 100svh;
+  }
+  .nu-cover-content {
+    padding: clamp(2rem, 7vh, 4.5rem) clamp(2rem, 5vw, 4rem)
+      calc(2rem + env(safe-area-inset-bottom));
+  }
+  .nu-names {
+    max-width: 100%;
+    font-size: clamp(3.25rem, 7vw, 5.25rem);
   }
   .nu-cover-rule--left {
     left: max(7vw, 42px);
@@ -2300,6 +2599,840 @@ onUnmounted(() => {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+  }
+  .nu-scroll-root {
+    scroll-snap-type: none;
+  }
+  .nu-section {
+    scroll-snap-align: none;
+    scroll-snap-stop: normal;
+  }
+}
+
+.nu-scroll-root--sunda {
+  position: relative;
+  isolation: isolate;
+  background: #20382d;
+}
+
+.nu-sunda-world {
+  position: sticky;
+  z-index: 0;
+  top: 0;
+  width: 100%;
+  height: 100svh;
+  margin-bottom: -100svh;
+  overflow: hidden;
+  pointer-events: none;
+  background: #344b40;
+}
+
+.nu-sunda-world__layer,
+.nu-sunda-world__atmosphere {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.nu-sunda-world__layer {
+  object-fit: cover;
+  will-change: transform, opacity;
+  transition: opacity 180ms linear;
+}
+
+.nu-sunda-world__mountains {
+  z-index: 0;
+  object-position: center 48%;
+  filter: saturate(0.78) brightness(0.86);
+}
+
+.nu-sunda-world__tea {
+  z-index: 1;
+  object-position: center 56%;
+  filter: saturate(0.78) brightness(0.72);
+  mask-image: linear-gradient(180deg, transparent 0%, #000 22%, #000 100%);
+}
+
+.nu-sunda-world__path {
+  z-index: 2;
+  inset: 12% auto 0 50%;
+  width: min(82vw, 920px);
+  height: 88%;
+  object-position: center 68%;
+  filter: saturate(0.74) brightness(0.8) sepia(0.08);
+  mask-image: radial-gradient(ellipse at center 54%, #000 22%, rgb(0 0 0 / 88%) 44%, transparent 76%);
+}
+
+.nu-sunda-world__pavilion {
+  z-index: 3;
+  inset: 19% auto 10% 50%;
+  width: min(82vw, 920px);
+  height: 71%;
+  object-position: center 56%;
+  filter: saturate(0.76) brightness(0.78) sepia(0.08);
+  mask-image: radial-gradient(ellipse at center 56%, #000 28%, rgb(0 0 0 / 82%) 48%, transparent 78%);
+}
+
+.nu-sunda-world__atmosphere {
+  z-index: 6;
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(235 179 96 / 24%), transparent 42%),
+    linear-gradient(180deg, rgb(25 42 34 / 14%), rgb(25 42 34 / 8%) 45%, rgb(25 42 34 / 62%)),
+    linear-gradient(90deg, rgb(19 32 27 / 26%), transparent 28%, transparent 72%, rgb(19 32 27 / 28%));
+}
+
+.nu-scroll-root--sunda > .nu-section,
+.nu-scroll-root--sunda > .nu-footer {
+  z-index: 1;
+}
+
+.nusantara--sunda .nu-welcome {
+  background-color: rgb(238 241 231 / 20%);
+}
+
+.nusantara--sunda .nu-section:not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+  background-color: rgb(238 241 231 / 52%);
+}
+
+.nusantara--sunda .nu-couple-section,
+.nusantara--sunda .nu-gallery-section,
+.nusantara--sunda .nu-gift-section,
+.nusantara--sunda .nu-rsvp-section {
+  background-color: rgb(238 241 231 / 44%);
+}
+
+.nusantara--sunda .nu-event-section {
+  background-color: rgb(32 56 45 / 76%);
+}
+
+.nusantara--sunda .nu-footer {
+  position: relative;
+  z-index: 1;
+  background: rgb(32 56 45 / 82%);
+}
+
+@media (max-width: 767px) {
+  .nu-sunda-world__mountains {
+    object-position: 54% center;
+  }
+
+  .nu-sunda-world__tea {
+    object-position: 56% center;
+  }
+
+  .nu-sunda-world__path {
+    object-position: center 72%;
+  }
+
+  .nu-sunda-world__path {
+    width: min(120vw, 540px);
+    object-position: center 70%;
+  }
+
+  .nu-sunda-world__pavilion {
+    inset: 24% auto 10% 50%;
+    width: min(118vw, 520px);
+    height: 66%;
+    object-position: center center;
+  }
+
+  .nusantara--sunda .nu-section:not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+    background-color: rgb(238 241 231 / 64%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nu-sunda-world__layer {
+    will-change: auto;
+    transition: none;
+  }
+}
+
+/* Consistent, photo-led invitation layout across the Nusantara themes. */
+.nu-scroll-root {
+  scroll-snap-type: y proximity;
+  overscroll-behavior-y: contain;
+  background: var(--nu-dark);
+}
+
+.nu-cover {
+  align-items: center;
+  text-align: center;
+}
+
+.nu-cover-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.nu-cover-label {
+  margin-inline: auto;
+}
+
+.nu-names {
+  width: min(100%, 15ch);
+  max-width: 100%;
+  justify-items: center;
+  font-size: clamp(3rem, 6vw, 5.4rem);
+  letter-spacing: -0.025em;
+  line-height: 0.9;
+  text-wrap: balance;
+}
+
+.nu-cover-date {
+  align-self: center;
+}
+
+.nu-cover-recipient {
+  justify-items: center;
+}
+
+.nu-section {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100svh;
+  padding: clamp(4.75rem, 9vh, 7.5rem) clamp(1.25rem, 5vw, 4.5rem);
+  scroll-snap-align: start;
+  scroll-snap-stop: normal;
+}
+
+.nu-welcome {
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.8rem, 2vh, 1.3rem);
+  padding: 2.5rem 1.25rem calc(6rem + env(safe-area-inset-bottom));
+  color: var(--nu-paper);
+  background: var(--nu-dark);
+  text-align: center;
+}
+
+.nu-welcome > * {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+}
+
+.nu-welcome-photo {
+  position: relative;
+  width: clamp(9.5rem, 24vw, 16rem);
+  height: clamp(12rem, 34vh, 21rem);
+  margin: 0 0 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 74%, transparent);
+  border-radius: 48% 48% 0.25rem 0.25rem;
+  padding: 0.35rem;
+  background: color-mix(in srgb, var(--nu-dark) 80%, transparent);
+  box-shadow: 0 1rem 3rem rgb(0 0 0 / 24%);
+}
+
+.nu-welcome-photo::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0.55rem -0.55rem -0.55rem 0.55rem;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 42%, transparent);
+  border-radius: inherit;
+  content: '';
+}
+
+.nu-welcome-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+  object-position: center 35%;
+}
+
+.nu-welcome .nu-section-mark {
+  gap: 0.65rem;
+  margin: 0 0 0.15rem;
+}
+
+.nu-welcome .nu-scope {
+  color: var(--nu-accent);
+  font-size: clamp(0.65rem, 1vw, 0.78rem);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+.nu-welcome-names {
+  display: grid;
+  justify-items: center;
+  gap: 0.04em;
+  width: min(100%, 16ch);
+  margin: 0;
+  color: var(--nu-paper);
+  font-size: clamp(2.45rem, 6.5vw, 5.25rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.nu-welcome-names span {
+  color: var(--nu-accent);
+}
+
+.nu-welcome-names .nu-welcome-name {
+  max-width: 100%;
+  color: var(--nu-paper);
+  overflow-wrap: anywhere;
+}
+
+.nu-welcome-names .nu-welcome-join {
+  margin: 0;
+  font-size: 0.48em;
+  font-style: italic;
+  line-height: 0.85;
+}
+
+.nu-opening-copy {
+  width: min(100%, 34rem);
+  margin: 0.35rem auto 0;
+  color: color-mix(in srgb, var(--nu-paper) 84%, transparent);
+  font-family: 'Cormorant Garamond', Georgia, serif;
+  font-size: clamp(1rem, 1.6vw, 1.3rem);
+  line-height: 1.55;
+  text-wrap: pretty;
+}
+
+.nu-quote-source {
+  margin: -0.35rem auto 0.2rem;
+  color: color-mix(in srgb, var(--nu-paper) 65%, transparent);
+}
+
+.nu-date-pill {
+  min-height: 0;
+  align-self: center;
+  margin-top: 0.25rem;
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--nu-accent) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--nu-accent) 70%, transparent);
+  padding: 0.55rem 1.1rem;
+  color: var(--nu-paper);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+}
+
+.nu-countdown {
+  gap: clamp(0.6rem, 2vw, 1.4rem);
+  margin-top: 0.4rem;
+}
+
+.nu-countdown strong {
+  color: var(--nu-paper);
+  font-size: clamp(1.35rem, 3vw, 2rem);
+}
+
+.nu-countdown span {
+  color: var(--nu-accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nu-couple-section,
+.nu-gallery-section,
+.nu-rsvp-section,
+.nu-detail-section,
+.nu-plan-section,
+.nu-menu-section,
+.nu-family-section {
+  background: var(--nu-paper);
+}
+
+.nu-story-section,
+.nu-gift-section {
+  background: var(--nu-bg);
+}
+
+.nu-section-kicker {
+  margin: 0 0 0.55rem;
+  color: var(--nu-primary);
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.nu-section-title {
+  max-width: 22ch;
+  margin: 0 auto 0.6rem;
+  font-size: clamp(2rem, 4.8vw, 3.25rem);
+  text-align: center;
+  text-wrap: balance;
+}
+
+.nu-section-intro {
+  max-width: 34rem;
+  margin: 0 auto 1.5rem;
+  line-height: 1.7;
+  text-align: center;
+}
+
+.nu-couple-grid {
+  width: min(100%, 920px);
+  gap: clamp(1.25rem, 4vw, 3rem);
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto 0;
+}
+
+.nu-person-photo {
+  width: min(100%, 19rem);
+  margin-inline: auto;
+  aspect-ratio: 0.82;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 45%, transparent);
+  border-radius: 48% 48% 0.25rem 0.25rem;
+  padding: 0.35rem;
+  background: var(--nu-panel);
+}
+
+.nu-person-photo img {
+  border-radius: inherit;
+}
+
+.nu-person h3 {
+  margin-top: 1.2rem;
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  overflow-wrap: anywhere;
+}
+
+.nu-person p {
+  max-width: 28ch;
+  margin-inline: auto;
+  line-height: 1.6;
+}
+
+.nu-event-section,
+.nu-video-section {
+  color: var(--nu-paper);
+  background: var(--nu-dark);
+}
+
+.nu-event-section .nu-section-kicker,
+.nu-event-section .nu-section-title,
+.nu-video-section .nu-section-kicker,
+.nu-video-section .nu-section-title {
+  color: var(--nu-paper);
+}
+
+.nu-event-list {
+  width: min(100%, 920px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+  margin: clamp(1.5rem, 4vh, 2.5rem) auto;
+}
+
+.nu-event-card,
+.nusantara--jawa .nu-event-card,
+.nusantara--dayak-ngaju .nu-event-card {
+  min-width: 0;
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 55%, transparent);
+  border-radius: 0.25rem;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  color: var(--nu-dark);
+  background: var(--nu-paper);
+  text-align: center;
+}
+
+.nu-event-card h3 {
+  color: var(--nu-primary);
+  font-size: clamp(1.25rem, 2.3vw, 1.65rem);
+}
+
+.nu-event-card .nu-event-date {
+  color: var(--nu-primary);
+}
+
+.nu-story-list {
+  width: min(100%, 820px);
+  gap: 2rem;
+}
+
+.nu-story-item {
+  display: grid;
+  grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+  align-items: center;
+  column-gap: clamp(1.25rem, 4vw, 3rem);
+  border: 0;
+  padding: 0;
+}
+
+.nu-story-item img {
+  grid-row: span 3;
+  height: min(55vh, 24rem);
+  margin: 0;
+  border-radius: 0.2rem;
+}
+
+.nu-story-item h3,
+.nu-story-date,
+.nu-story-item > p:last-child {
+  grid-column: 2;
+}
+
+.nu-story-item > p:last-child {
+  line-height: 1.75;
+}
+
+.nu-gallery-section :deep(.gallery-invitation),
+.nu-gallery-section :deep(.gallery-grid) {
+  max-width: 1000px;
+  margin-inline: auto;
+}
+
+.nu-gift-list article {
+  border-top-color: color-mix(in srgb, var(--nu-primary) 24%, transparent);
+}
+
+.nu-gift-list button,
+.nu-address {
+  border: 1px solid color-mix(in srgb, var(--nu-primary) 28%, transparent);
+  border-radius: 0.2rem;
+}
+
+.nu-rsvp-panel {
+  width: min(100%, 740px);
+  border: 1px solid color-mix(in srgb, var(--nu-accent) 48%, transparent);
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  background: var(--nu-bg);
+}
+
+.nu-rsvp-panel > .nu-section-title,
+.nu-rsvp-panel > .nu-section-intro {
+  text-align: center;
+}
+
+.nu-bottom-nav {
+  right: 0;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  min-height: calc(4.25rem + env(safe-area-inset-bottom));
+  justify-content: center;
+  gap: clamp(0.25rem, 2vw, 1rem);
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--nu-accent) 52%, transparent);
+  border-radius: 0;
+  padding: 0.35rem max(0.6rem, env(safe-area-inset-left)) calc(0.35rem + env(safe-area-inset-bottom));
+  background: color-mix(in srgb, var(--nu-dark) 94%, transparent);
+  box-shadow: 0 -0.5rem 2rem rgb(0 0 0 / 12%);
+}
+
+.nu-bottom-nav button {
+  max-width: 7rem;
+  min-height: 3.25rem;
+  flex: 0 1 7rem;
+  color: color-mix(in srgb, var(--nu-paper) 68%, transparent);
+  font-size: 0.64rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nu-bottom-nav button i {
+  font-size: 1.1rem;
+}
+
+.nu-bottom-nav button.is-active {
+  color: var(--nu-accent);
+}
+
+.nu-footer {
+  padding: 4rem 1.5rem calc(7rem + env(safe-area-inset-bottom));
+}
+
+.nusantara--sunda .nu-welcome {
+  background:
+    linear-gradient(180deg, rgb(25 42 34 / 42%), rgb(25 42 34 / 66%) 72%, rgb(25 42 34 / 88%)),
+    transparent;
+}
+
+.nusantara--sunda .nu-section.nu-welcome {
+  background:
+    linear-gradient(180deg, rgb(25 42 34 / 42%), rgb(25 42 34 / 66%) 72%, rgb(25 42 34 / 88%)),
+    transparent;
+}
+
+.nusantara--sunda .nu-section:not(.nu-welcome):not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+  background-color: color-mix(in srgb, var(--nu-paper) 96%, transparent);
+}
+
+.nusantara--sunda .nu-event-section,
+.nusantara--sunda .nu-video-section,
+.nusantara--sunda .nu-footer {
+  background-color: color-mix(in srgb, var(--nu-dark) 97%, transparent);
+}
+
+.nusantara--batak .nu-welcome,
+.nusantara--dayak-ngaju .nu-welcome {
+  color: var(--nu-paper);
+  background: var(--nu-dark);
+}
+
+.nusantara--sunda .nu-bottom-nav {
+  background: color-mix(in srgb, var(--nu-dark) 97%, transparent);
+}
+
+/* Keep the Sunda landscape visible behind each section while lifting text contrast. */
+.nu-sunda-world__mountains {
+  filter: saturate(0.86) brightness(0.94);
+}
+
+.nu-sunda-world__tea {
+  filter: saturate(0.86) brightness(0.88);
+}
+
+.nu-sunda-world__path {
+  filter: saturate(0.84) brightness(0.92) sepia(0.04);
+}
+
+.nu-sunda-world__pavilion {
+  filter: saturate(0.84) brightness(0.9) sepia(0.04);
+}
+
+.nu-sunda-world__atmosphere {
+  background:
+    radial-gradient(ellipse at 75% 12%, rgb(235 179 96 / 9%), transparent 42%),
+    linear-gradient(180deg, rgb(25 42 34 / 4%), rgb(25 42 34 / 3%) 45%, rgb(25 42 34 / 18%)),
+    linear-gradient(90deg, rgb(19 32 27 / 10%), transparent 28%, transparent 72%, rgb(19 32 27 / 10%));
+}
+
+.nusantara--sunda
+  .nu-scroll-root.nu-scroll-root--sunda
+  > .nu-section:not(.nu-event-section):not(.nu-stream-section):not(.nu-video-section) {
+  color: var(--nu-paper);
+  background: transparent;
+}
+
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-welcome {
+  background: transparent;
+}
+
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-event-section,
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-stream-section,
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-video-section {
+  color: var(--nu-paper);
+  background: transparent;
+}
+
+.nusantara--sunda .nu-scroll-root.nu-scroll-root--sunda > .nu-footer {
+  background: transparent;
+}
+
+.nusantara--sunda .nu-section-title,
+.nusantara--sunda .nu-section-kicker,
+.nusantara--sunda .nu-section-intro,
+.nusantara--sunda .nu-detail-copy,
+.nusantara--sunda .nu-person h3,
+.nusantara--sunda .nu-person p,
+.nusantara--sunda .nu-story-date,
+.nusantara--sunda .nu-story-item h3,
+.nusantara--sunda .nu-story-item > p:last-child,
+.nusantara--sunda .nu-menu-list li,
+.nusantara--sunda .nu-family-list li,
+.nusantara--sunda .nu-rsvp-panel,
+.nusantara--sunda .nu-wishes h3,
+.nusantara--sunda .nu-wish-heading,
+.nusantara--sunda .nu-wish-heading time,
+.nusantara--sunda .nu-wish-status,
+.nusantara--sunda .nu-wish-message {
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%), 0 2px 14px rgb(8 19 14 / 54%);
+}
+
+.nusantara--sunda .nu-section-kicker {
+  color: #f0c78d;
+}
+
+.nusantara--sunda .nu-event-card,
+.nusantara--sunda .nu-event-card h3,
+.nusantara--sunda .nu-event-card p,
+.nusantara--sunda .nu-event-card .nu-event-date,
+.nusantara--sunda .nu-event-card .nu-event-location,
+.nusantara--sunda .nu-event-card .nu-text-link {
+  color: var(--nu-dark);
+  text-shadow: none;
+}
+
+.nusantara--sunda .nu-stream-link,
+.nusantara--sunda .nu-button--outline {
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+  background: transparent;
+}
+
+.nusantara--sunda .nu-plan-image {
+  background: rgb(250 251 245 / 92%);
+}
+
+.nusantara--sunda .nu-gift-list article,
+.nusantara--sunda .nu-rsvp-panel {
+  border-color: color-mix(in srgb, var(--nu-paper) 56%, var(--nu-accent));
+  background: transparent;
+}
+
+.nusantara--sunda .nu-gift-list strong,
+.nusantara--sunda .nu-gift-list span,
+.nusantara--sunda .nu-gift-list small {
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+.nusantara--sunda .nu-gift-list strong,
+.nusantara--sunda .nu-gift-list span,
+.nusantara--sunda .nu-gift-list small {
+  color: var(--nu-paper);
+}
+
+.nusantara--sunda .nu-gift-list button {
+  border-color: var(--nu-paper);
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+.nusantara--sunda .nu-address {
+  color: var(--nu-dark);
+  text-shadow: none;
+}
+
+.nusantara--sunda .nu-rsvp-form > label,
+.nusantara--sunda .nu-rsvp-form legend {
+  color: var(--nu-paper);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+.nusantara--sunda .nu-menu-list li,
+.nusantara--sunda .nu-family-list li,
+.nusantara--sunda .nu-wish {
+  border-color: color-mix(in srgb, var(--nu-paper) 38%, transparent);
+}
+
+.nusantara--sunda .nu-wishes-empty {
+  color: color-mix(in srgb, var(--nu-paper) 86%, transparent);
+  text-shadow: 0 1px 3px rgb(8 19 14 / 88%);
+}
+
+@media (min-width: 768px) {
+  .nu-welcome {
+    gap: clamp(0.55rem, 1.35vh, 1.2rem);
+    padding: 1.5rem 2rem calc(5.5rem + env(safe-area-inset-bottom));
+  }
+
+  .nu-section:not(.nu-welcome) {
+    padding-inline: max(2rem, calc((100% - 1040px) / 2));
+  }
+
+  .nu-couple-grid {
+    gap: clamp(2rem, 8vw, 7rem);
+  }
+
+  .nu-event-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .nu-bottom-nav {
+    min-height: 4.25rem;
+    padding-bottom: 0.35rem;
+  }
+}
+
+@media (max-width: 767px) {
+  .nu-scroll-root {
+    scroll-snap-type: y proximity;
+  }
+
+  .nu-section {
+    min-height: 100svh;
+    padding: 4.5rem 1.25rem 6rem;
+  }
+
+  .nu-cover-content {
+    width: min(100%, 620px);
+    padding: 2.5rem 1.25rem calc(2rem + env(safe-area-inset-bottom));
+  }
+
+  .nu-names {
+    width: min(100%, 13ch);
+    font-size: clamp(2.65rem, 12.5vw, 4rem);
+    line-height: 0.9;
+  }
+
+  .nu-welcome {
+    gap: 0.7rem;
+    padding-top: 1.5rem;
+    padding-bottom: calc(5.2rem + env(safe-area-inset-bottom));
+  }
+
+  .nu-welcome-photo {
+    width: clamp(8rem, 39vw, 10.5rem);
+    height: clamp(10.5rem, 37svh, 15.5rem);
+  }
+
+  .nu-welcome-names {
+    width: min(100%, 13ch);
+    font-size: clamp(2.2rem, 10vw, 3.6rem);
+    line-height: 0.98;
+  }
+
+  .nu-opening-copy {
+    font-size: 1rem;
+    line-height: 1.45;
+  }
+
+  .nu-quote-source {
+    margin-top: -0.35rem;
+  }
+
+  .nu-date-pill {
+    max-width: 100%;
+    font-size: 0.69rem;
+    letter-spacing: 0.04em;
+    text-wrap: balance;
+  }
+
+  .nu-countdown {
+    grid-template-columns: repeat(4, minmax(2.65rem, 1fr));
+    gap: 0.35rem;
+    margin-top: 0.15rem;
+  }
+
+  .nu-countdown strong {
+    font-size: 1.4rem;
+  }
+
+  .nu-event-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .nu-story-item {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .nu-story-item img {
+    grid-row: auto;
+    height: min(58svh, 24rem);
+    margin-bottom: 0.75rem;
+  }
+
+  .nu-story-item h3,
+  .nu-story-date,
+  .nu-story-item > p:last-child {
+    grid-column: 1;
+  }
+
+  .nu-bottom-nav {
+    justify-content: space-around;
+    gap: 0;
+    overflow-x: hidden;
+  }
+
+  .nu-bottom-nav button {
+    flex: 1 1 0;
+    max-width: none;
+    padding-inline: 0.05rem;
+    font-size: clamp(0.44rem, 1.8vw, 0.57rem);
   }
 }
 </style>

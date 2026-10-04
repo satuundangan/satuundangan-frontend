@@ -273,6 +273,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Edit Artikel' },
     },
     {
+      path: '/admin/whatsapp-bot',
+      name: 'admin-whatsapp-bot',
+      component: () => import('@/views/admin/AdminWhatsappBot.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'WhatsApp Bot' },
+    },
+    {
       path: '/admin/logs',
       name: 'admin-logs',
       component: () => import('@/views/admin/AdminLogs.vue'),
