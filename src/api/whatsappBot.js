@@ -12,6 +12,12 @@ export const logoutWhatsappBot = () =>
     method: 'POST',
   });
 
+export const toggleWhatsappBot = (enabled) =>
+  apiFetch('/admin/whatsapp-bot/toggle-bot', {
+    method: 'POST',
+    body: JSON.stringify({ enabled }),
+  });
+
 export const toggleWhatsappBotAi = (enabled) =>
   apiFetch('/admin/whatsapp-bot/toggle-ai', {
     method: 'POST',

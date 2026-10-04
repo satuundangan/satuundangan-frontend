@@ -25,7 +25,7 @@
     </div>
 
     <!-- Status Overview & Metrics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
       <!-- Status Connection -->
       <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between">
@@ -55,14 +55,46 @@
         </div>
         <div class="mt-4">
           <div v-if="status.status === 'CONNECTED'" class="text-sm font-semibold text-slate-800">
-            {{ status.connectedName || 'WhatsApp Connected' }}
+            {{ status.connectedName || status.botName || 'WhatsApp Connected' }}
             <p class="text-xs font-normal text-slate-500 font-mono mt-0.5">
-              +{{ status.connectedPhone || '-' }}
+              +{{ status.connectedPhone || status.phoneNumber || '-' }}
             </p>
           </div>
           <div v-else class="text-sm text-slate-500">
             {{ status.status === 'SCAN_QR' ? 'Menunggu Scan QR Code' : 'Terputus dari WhatsApp' }}
           </div>
+        </div>
+      </div>
+
+      <!-- Master Bot Auto-Reply Switch -->
+      <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Master Bot Auto-Reply</span>
+          <i :class="['pi pi-power-off', status.isBotEnabled ? 'text-emerald-500' : 'text-slate-400']"></i>
+        </div>
+        <div class="mt-4 flex items-center justify-between">
+          <div>
+            <div class="text-sm font-semibold text-slate-800">
+              {{ status.isBotEnabled ? 'Bot Aktif' : 'Bot Nonaktif' }}
+            </div>
+            <p class="text-xs text-slate-500">Auto-reply pesan masuk</p>
+          </div>
+          <button
+            @click="handleToggleBot"
+            :disabled="togglingBot"
+            type="button"
+            :class="[
+              'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
+              status.isBotEnabled ? 'bg-emerald-600' : 'bg-slate-300',
+            ]"
+          >
+            <span
+              :class="[
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out',
+                status.isBotEnabled ? 'translate-x-5' : 'translate-x-0',
+              ]"
+            />
+          </button>
         </div>
       </div>
 
@@ -75,17 +107,18 @@
         <div class="mt-4 flex items-center justify-between">
           <div>
             <div class="text-sm font-semibold text-slate-800">
-              {{ status.isAiEnabled ? 'AI Aktif' : 'AI Nonaktif' }}
+              {{ status.isAiEnabled ? 'AI Aktif' : 'Menu Statis' }}
             </div>
-            <p class="text-xs text-slate-500">Respon otomatis pelanggan</p>
+            <p class="text-xs text-slate-500">Balasan pintar vs menu</p>
           </div>
           <button
             @click="handleToggleAi"
-            :disabled="togglingAi"
+            :disabled="togglingAi || !status.isBotEnabled"
             type="button"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-              status.isAiEnabled ? 'bg-emerald-600' : 'bg-slate-300',
+              status.isAiEnabled && status.isBotEnabled ? 'bg-purple-600' : 'bg-slate-300',
+              !status.isBotEnabled ? 'opacity-40 cursor-not-allowed' : ''
             ]"
           >
             <span
@@ -354,6 +387,7 @@ import {
   fetchWhatsappBotStatus,
   connectWhatsappBot,
   logoutWhatsappBot,
+  toggleWhatsappBot,
   toggleWhatsappBotAi,
   testWhatsappBotAi,
   sendWhatsappBotMessage,
@@ -361,6 +395,7 @@ import {
 
 const loading = ref(false);
 const actionLoading = ref(false);
+const togglingBot = ref(false);
 const togglingAi = ref(false);
 const testingAi = ref(false);
 const sendingManual = ref(false);
@@ -369,7 +404,10 @@ const status = ref({
   status: 'DISCONNECTED',
   connectedPhone: null,
   connectedName: null,
+  botName: null,
+  phoneNumber: null,
   qrCodeUrl: null,
+  isBotEnabled: true,
   isAiEnabled: true,
   stats: {
     messagesReceived: 0,
@@ -462,6 +500,36 @@ const handleLogout = async () => {
     } finally {
       actionLoading.value = false;
     }
+  }
+};
+
+const handleToggleBot = async () => {
+  try {
+    togglingBot.value = true;
+    const nextState = !status.value.isBotEnabled;
+    const res = await toggleWhatsappBot(nextState);
+    if (res && res.data) {
+      status.value.isBotEnabled = res.data.isBotEnabled;
+    } else {
+      status.value.isBotEnabled = nextState;
+    }
+    Swal.fire({
+      icon: status.value.isBotEnabled ? 'success' : 'info',
+      title: status.value.isBotEnabled ? 'Bot Diaktifkan' : 'Bot Dinonaktifkan',
+      text: status.value.isBotEnabled
+        ? 'Auto-reply bot sekarang akan membalas pesan WhatsApp masuk.'
+        : 'Bot berhenti membalas pesan masuk. Anda dapat membalas chat secara manual.',
+      timer: 2000,
+      showConfirmButton: false,
+    });
+  } catch (err) {
+    Swal.fire({
+      icon: 'error',
+      title: 'Gagal Mengubah Status Bot',
+      text: err.message || 'Terjadi kesalahan sistem',
+    });
+  } finally {
+    togglingBot.value = false;
   }
 };
 
