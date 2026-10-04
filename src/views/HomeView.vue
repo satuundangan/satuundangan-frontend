@@ -87,7 +87,7 @@
               <!-- Ambient Backlight Blur on Hover -->
               <div
                 class="absolute inset-0 bg-cover bg-center opacity-0 group-hover:opacity-45 transition-opacity duration-700 blur-2xl pointer-events-none scale-125"
-                :style="{ backgroundImage: `url(${resolveImageUrl(item.thumbnailUrl || item.previewUrl)})` }"
+                :style="{ backgroundImage: `url(${resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)})` }"
               ></div>
 
               <!-- Browser / Screen Frame Mockup -->
@@ -111,7 +111,7 @@
                 <!-- Screenshot Preview -->
                 <div class="relative w-full flex-1 overflow-hidden bg-stone-50 flex items-center justify-center">
                   <img
-                    :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
+                    :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)"
                     :alt="item.name"
                     class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                     loading="lazy"
@@ -705,7 +705,7 @@
                     <!-- Screenshot Preview -->
                     <div class="relative w-full flex-1 overflow-hidden bg-stone-50 flex items-center justify-center">
                       <img
-                        :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
+                        :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)"
                         :alt="item.name"
                         class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
@@ -728,12 +728,12 @@
                       </div>
 
                       <!-- Preview Button -->
-                      <div class="absolute top-1.5 right-1.5 flex gap-1.5 z-20">
+                      <div class="absolute top-1.5 right-1.5 flex gap-1.5 z-40">
                         <a
                           :href="'/demo/' + item.slug"
                           target="_blank"
                           @click.stop
-                          class="bg-white/95 hover:bg-white text-mocha px-2.5 py-1 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 border border-mocha/10"
+                          class="bg-white/95 hover:bg-white text-mocha px-2.5 py-1 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 border border-mocha/10 pointer-events-auto"
                         >
                           <i class="fa-solid fa-eye"></i> Demo
                         </a>
@@ -744,7 +744,7 @@
                   <!-- Selected Overlay -->
                   <div
                     v-if="selectedTemplate === item.id"
-                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in z-30"
+                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in z-30 pointer-events-none"
                   >
                     <div class="bg-white rounded-full p-2 shadow-lg scale-110">
                       <svg class="w-6 h-6 text-mocha" fill="currentColor" viewBox="0 0 20 20">
@@ -903,6 +903,7 @@ import {
   resolveFilterId,
   ALL_ID,
 } from '@/utils/templateFilters'
+import { resolveTemplateThumbnail } from '@/utils/templateRegistry'
 
 const router = useRouter()
 const route = useRoute()
@@ -1149,9 +1150,13 @@ function openTemplate(id) {
   showModal.value = true
 }
 
-function resolveImageUrl(url) {
+function resolveImageUrl(url, item = null) {
+  if (item) {
+    const resolved = resolveTemplateThumbnail(item)
+    if (resolved) url = resolved
+  }
   if (!url) return 'https://via.placeholder.com/400x300?text=No+Preview'
-  if (url.startsWith('http')) return url
+  if (url.startsWith('http') || url.startsWith('data:') || url.startsWith('/assets/')) return url
   // Handle absolute path from backend
   const baseUrl = import.meta.env.VITE_API_URL.replace('/api', '')
   return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`

@@ -19,7 +19,7 @@
         <Column header="Preview" class="w-16">
           <template #body="{ data }">
             <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
-              <img :src="data.thumbnailUrl || data.previewUrl" class="h-full w-full object-cover" v-if="data.thumbnailUrl || data.previewUrl" />
+              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data)" />
               <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
                 <i class="fa-solid fa-image text-xs"></i>
               </div>
@@ -682,7 +682,7 @@ import { uploadFileApi } from '@/api/file.js'
 import ImageCropperModal from '@/views/create-form/components/ImageCropperModal.vue'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
-import { templateComponentKeys, DYNAMIC_THEME_KEY } from '@/utils/templateRegistry'
+import { templateComponentKeys, DYNAMIC_THEME_KEY, resolveTemplateThumbnail } from '@/utils/templateRegistry'
 import ThemeBuilder from '@/components/admin/ThemeBuilder.vue'
 import {
   designConfigForPayload,
@@ -1104,7 +1104,7 @@ function openEdit(template) {
     category: template.category || '',
     price: template.price || 0,
     previewUrl: template.previewUrl || '',
-    thumbnailUrl: template.thumbnailUrl || '',
+    thumbnailUrl: template.thumbnailUrl || resolveTemplateThumbnail(template) || '',
     description: template.description || '',
     seoTitle: template.seoTitle || '',
     seoDescription: template.seoDescription || '',
