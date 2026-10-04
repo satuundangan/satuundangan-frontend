@@ -384,15 +384,15 @@
           <div class="grid gap-6 md:grid-cols-2">
             <div v-for="(item, idx) in data.menu.items" :key="idx"
               class="bg-[#1a1a1a] p-6 rounded-2xl border border-[#333] hover:border-[#d6b18a]/50 transition-colors">
-              <h4 class="text-xl font-serif text-white mb-2">{{ item.name }}</h4>
-              <p class="text-gray-400 text-sm">{{ item.description }}</p>
+              <h4 class="text-xl font-serif text-white">{{ typeof item === 'string' ? item : item.name }}</h4>
+              <p v-if="item?.description" class="text-gray-400 text-sm mt-2">{{ item.description }}</p>
             </div>
           </div>
         </div>
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" id="gift"
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || giftAddresses.length)" id="gift"
         class="py-20 md:py-24 px-6 bg-black text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-[#d6b18a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
@@ -405,13 +405,43 @@
             v-observe>
             <div
               class="h-12 flex items-center justify-center mb-4 text-[#d6b18a] font-bold text-xl uppercase tracking-wider">
-              {{ bank.bankName }}
+              <img v-if="bank.bankLogo" :src="bank.bankLogo" :alt="bank.bankName" class="h-10 max-w-[140px] object-contain" />
+              <span v-else>{{ bank.bankName }}</span>
             </div>
             <p class="text-lg text-white font-mono mb-1">{{ bank.accountNumber }}</p>
             <p class="text-sm text-gray-500 mb-4">a.n {{ bank.accountName }}</p>
             <button @click="copyToClipboard(bank.accountNumber)"
               class="text-xs text-[#d6b18a] border border-[#d6b18a] px-4 py-1.5 rounded-full hover:bg-[#d6b18a] hover:text-black transition-colors">
               <i class="fa-regular fa-copy mr-1"></i> Salin
+            </button>
+          </div>
+
+          <!-- E-Wallet Cards -->
+          <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx"
+            class="bg-[#1a1a1a] border border-[#333] p-6 rounded-2xl w-full sm:w-72 hover:border-[#d6b18a]/50 transition-all"
+            v-observe>
+            <div class="h-12 flex items-center justify-center mb-4 text-[#d6b18a] font-bold text-xl uppercase tracking-wider">
+              {{ wallet.wallet_provider }}
+            </div>
+            <img v-if="wallet.wallet_image" :src="wallet.wallet_image" :alt="'QR ' + wallet.wallet_provider"
+              class="w-40 h-40 object-contain mx-auto mb-4 rounded-lg bg-white p-2" />
+            <p class="text-lg text-white font-mono mb-4">{{ wallet.wallet_number }}</p>
+            <button v-if="wallet.wallet_number" @click="copyToClipboard(wallet.wallet_number)"
+              class="text-xs text-[#d6b18a] border border-[#d6b18a] px-4 py-1.5 rounded-full hover:bg-[#d6b18a] hover:text-black transition-colors">
+              <i class="fa-regular fa-copy mr-1"></i> Salin
+            </button>
+          </div>
+        </div>
+
+        <!-- Gift Delivery Address -->
+        <div v-if="giftAddresses.length" class="max-w-xl mx-auto mt-10 space-y-4">
+          <h3 class="text-lg font-serif text-[#d6b18a]" v-observe>Kirim Hadiah</h3>
+          <div v-for="(address, idx) in giftAddresses" :key="'addr' + idx"
+            class="bg-[#1a1a1a] border border-[#333] p-6 rounded-2xl" v-observe>
+            <p class="text-gray-300 text-sm whitespace-pre-line leading-relaxed mb-4">{{ address }}</p>
+            <button @click="copyToClipboard(address)"
+              class="text-xs text-[#d6b18a] border border-[#d6b18a] px-4 py-1.5 rounded-full hover:bg-[#d6b18a] hover:text-black transition-colors">
+              <i class="fa-regular fa-copy mr-1"></i> Salin Alamat
             </button>
           </div>
         </div>
@@ -463,6 +493,13 @@ watch(
 )
 
 const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+// giftDeliveryAddress may arrive as an array (studio/API) or a single string
+const giftAddresses = computed(() => {
+  const raw = data.value.giftDeliveryAddress
+  const list = Array.isArray(raw) ? raw : raw ? [raw] : []
+  return list.map((a) => String(a || '').trim()).filter(Boolean)
+})
 
 const mockStories = [
   {
