@@ -243,7 +243,8 @@
               </div>
 
               <!-- Quote Section -->
-              <QuoteSection v-if="sections.quote" :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
+              <!-- Always shown: the quote renders on every invitation, but no template config enables a "quote" section -->
+              <QuoteSection :formData="formData" :defaultQuote="DEFAULT_QUOTE" />
             </div>
 
             <!-- TAB 3: DETAIL ACARA -->
