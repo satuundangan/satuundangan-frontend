@@ -420,8 +420,12 @@ const loadStatus = async () => {
   try {
     loading.value = true;
     const res = await fetchWhatsappBotStatus();
-    if (res && res.data) {
-      status.value = res.data;
+    const data = res?.data || res;
+    if (data && typeof data === 'object') {
+      status.value = {
+        ...status.value,
+        ...data,
+      };
     }
   } catch (err) {
     console.error('Failed to load bot status:', err);
@@ -493,8 +497,9 @@ const handleToggleBot = async () => {
     togglingBot.value = true;
     const nextState = !status.value.isBotEnabled;
     const res = await toggleWhatsappBot(nextState);
-    if (res && res.data) {
-      status.value.isBotEnabled = res.data.isBotEnabled;
+    const data = res?.data || res;
+    if (data && typeof data.isBotEnabled === 'boolean') {
+      status.value.isBotEnabled = data.isBotEnabled;
     } else {
       status.value.isBotEnabled = nextState;
     }
@@ -523,8 +528,9 @@ const handleToggleAi = async () => {
     togglingAi.value = true;
     const nextState = !status.value.isAiEnabled;
     const res = await toggleWhatsappBotAi(nextState);
-    if (res && res.data) {
-      status.value.isAiEnabled = res.data.isAiEnabled;
+    const data = res?.data || res;
+    if (data && typeof data.isAiEnabled === 'boolean') {
+      status.value.isAiEnabled = data.isAiEnabled;
     } else {
       status.value.isAiEnabled = nextState;
     }
