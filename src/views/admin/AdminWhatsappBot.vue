@@ -1,28 +1,11 @@
 <template>
-  <div class="space-y-6">
-    <!-- Header -->
-    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-      <div>
-        <h1 class="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-          <i class="pi pi-whatsapp text-emerald-600 text-2xl"></i>
-          WhatsApp Auto-Reply Bot
-        </h1>
-        <p class="text-sm text-slate-500 mt-1">
-          Auto-reply WhatsApp pintar berbasis Baileys & Google Gemini AI tanpa langganan bulanan.
-        </p>
-      </div>
-
-      <div class="flex items-center gap-3">
-        <button
-          @click="loadStatus"
-          :disabled="loading"
-          class="inline-flex items-center gap-2 px-3.5 py-2 text-sm font-medium rounded-xl border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 transition shadow-sm disabled:opacity-50"
-        >
-          <i :class="['pi pi-refresh', loading ? 'animate-spin' : '']"></i>
-          Refresh
-        </button>
-      </div>
-    </div>
+  <AdminShell
+    title="WhatsApp Auto-Reply Bot"
+    description="Auto-reply WhatsApp pintar berbasis Baileys & Google Gemini AI tanpa langganan bulanan"
+    actionLabel="Refresh Status"
+    @action="loadStatus"
+  >
+    <div class="space-y-6">
 
     <!-- Status Overview & Metrics Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
@@ -378,10 +361,12 @@
       </div>
     </div>
   </div>
+  </AdminShell>
 </template>
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
+import AdminShell from '@/components/admin/AdminShell.vue';
 import Swal from 'sweetalert2';
 import {
   fetchWhatsappBotStatus,
