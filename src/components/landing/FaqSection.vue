@@ -66,6 +66,10 @@ const faqs = [
   {
     question: 'Apakah ada batasan jumlah tamu yang bisa diundang?',
     answer: 'Tidak ada batasan jumlah tamu! Kamu bebas menyebarkan link undangan digitalmu ke sebanyak mungkin orang yang kamu mau, ke seluruh dunia tanpa biaya tambahan.'
+  },
+  {
+    question: 'Apakah bisa menambahkan Video Prewedding? Apakah bisa dibuat privat?',
+    answer: 'Bisa banget! Kamu cukup masukkan link video YouTube ke bagian Video Prewedding. Agar video tidak bisa ditonton publik di pencarian YouTube (hanya bisa ditonton lewat undanganmu), kamu cukup atur visibilitas video di YouTube menjadi <strong>"Tidak Publik" (Unlisted)</strong>.'
   }
 ]
 </script>

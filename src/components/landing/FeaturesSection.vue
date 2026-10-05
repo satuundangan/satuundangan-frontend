@@ -88,6 +88,12 @@ const features = [
     description: 'Ceritakan perjalanan cintamu dari awal bertemu hingga pelaminan.'
   },
   {
+    icon: 'fa-solid fa-clapperboard',
+    badge: 'Sinematik',
+    title: 'Video Prewedding',
+    description: 'Sematkan video prewedding dari YouTube (bisa disetel Unlisted agar privat), langsung putar di undangan.'
+  },
+  {
     icon: 'fa-solid fa-infinity',
     title: 'Revisi Sepuasnya',
     description: 'Bebas edit isi undanganmu kapan saja tanpa batasan revisi, proses instan dan cepat.'

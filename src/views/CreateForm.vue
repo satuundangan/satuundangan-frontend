@@ -227,7 +227,7 @@
                      </section>
                      <LoveStorySection v-if="sections['love-story']" :loveStories="formData.loveStories" @add="addLoveStory" @remove="removeLoveStory" @upload="handleLoveStoryUpload" />
                      
-                     <section v-if="sections.video" class="space-y-4">
+                     <section v-if="sections.video" class="space-y-5">
                         <div class="flex items-center gap-4 pb-4 border-b border-gray-50">
                            <div class="w-12 h-12 bg-mocha/10 rounded-2xl flex items-center justify-center text-mocha text-2xl">
                               <i class="fa-solid fa-clapperboard"></i>
@@ -238,8 +238,38 @@
                            </div>
                         </div>
                         <div>
-                           <label class="form-label">URL Video YouTube</label>
-                           <input v-model="formData.youtubeUrl" type="text" placeholder="https://www.youtube.com/watch?v=..." class="form-input" />
+                           <div class="flex items-center justify-between mb-1.5">
+                              <label class="form-label mb-0">URL Video YouTube</label>
+                              <span class="text-[11px] text-mocha font-medium flex items-center gap-1">
+                                 <i class="fa-brands fa-youtube"></i> Mendukung Link & Shorts
+                              </span>
+                           </div>
+                           <input
+                              v-model="formData.youtubeUrl"
+                              type="text"
+                              placeholder="Contoh: https://www.youtube.com/watch?v=... atau https://youtu.be/..."
+                              class="form-input"
+                           />
+                           <p class="text-xs text-gray-500 mt-1.5 leading-relaxed">
+                              Sematkan video teaser / prewedding yang akan langsung dapat diputar oleh tamu di undangan digitalmu.
+                           </p>
+                        </div>
+
+                        <!-- Tutorial YouTube Unlisted (Tidak Publik) -->
+                        <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 text-xs space-y-2.5">
+                           <div class="flex items-center gap-2 font-bold text-amber-900">
+                              <i class="fa-solid fa-circle-question text-amber-600 text-sm"></i>
+                              <span>Ingin video hanya bisa ditonton di undangan (Privat)?</span>
+                           </div>
+                           <p class="text-amber-800 leading-relaxed text-[11px]">
+                              Kamu bisa mengatur visibilitas video di YouTube menjadi <strong>"Tidak Publik" (Unlisted)</strong> agar video tidak bisa dicari oleh publik di YouTube, tapi tetap dapat ditonton di undangan:
+                           </p>
+                           <ol class="list-decimal list-inside space-y-1 text-amber-900/90 text-[11px] leading-relaxed pl-1 font-medium">
+                              <li>Buka <strong>YouTube Studio</strong> (studio.youtube.com) atau aplikasi YouTube di HP.</li>
+                              <li>Upload video prewedding kamu.</li>
+                              <li>Pada tahap <strong>Visibilitas (Visibility)</strong>, pilih opsi <strong>"Tidak Publik" (Unlisted)</strong>.</li>
+                              <li>Salin link video tersebut lalu tempel (paste) ke kolom URL di atas.</li>
+                           </ol>
                         </div>
                      </section>
 

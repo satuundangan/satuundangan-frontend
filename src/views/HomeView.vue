@@ -50,7 +50,7 @@
             class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
             <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
-              <i class="fa-solid fa-tags text-dark"></i> Paket:
+              <i class="fa-solid fa-tags text-gray-700"></i> Paket:
             </span>
             <button
               v-for="pkg in packageCategories"
@@ -59,8 +59,8 @@
               :class="[
                 'shrink-0 snap-start whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 border',
                 selectedTier === pkg.id
-                  ? 'bg-dark text-white border-dark shadow-md'
-                  : 'bg-gray-50 text-gray-500 border-gray-200 hover:border-dark hover:text-dark',
+                  ? 'bg-gray-900 text-white border-gray-900 shadow-md'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900 shadow-sm',
               ]"
             >
               {{ pkg.label }}
@@ -657,8 +657,8 @@
               :class="[
                 'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
                 selectedTier === pkg.id
-                  ? 'bg-dark text-white border-dark'
-                  : 'bg-white text-gray-600 border-gray-200',
+                  ? 'bg-gray-900 text-white border-gray-900'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900',
               ]"
             >
               {{ pkg.label }}
