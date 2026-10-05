@@ -82,13 +82,9 @@
         </div>
 
         <div class="relative z-10 space-y-6 md:space-y-8 animate-fade-in-up max-w-lg mx-auto py-8">
-          <!-- Gorga Emblem / Rumah Bolon Peak -->
-          <div class="flex justify-center text-[#c8963e] opacity-90 animate-pulse">
-            <svg class="w-16 h-12 md:w-20 md:h-16" viewBox="0 0 100 80" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10 65 Q50 15 90 65 L80 75 Q50 35 20 75 Z" fill="currentColor" fill-opacity="0.15" />
-              <circle cx="50" cy="35" r="5" fill="#a82b3a" stroke="currentColor" />
-              <path d="M30 60 Q50 45 70 60" stroke-width="1.5" />
-            </svg>
+          <!-- Gorga Batak Crest Emblem -->
+          <div class="flex justify-center max-w-xs mx-auto">
+            <img :src="gorgaImg" alt="Gorga Batak Toba" class="w-full h-auto object-contain filter drop-shadow-[0_4px_16px_rgba(200,150,62,0.4)]" />
           </div>
 
           <div class="space-y-2">
@@ -679,6 +675,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import gorgaImg from '@/assets/ornaments/gorga-batak.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

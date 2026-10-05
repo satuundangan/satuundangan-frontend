@@ -9,10 +9,8 @@
     ></div>
 
     <!-- Gunungan Wayang Watermark Backdrop -->
-    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[800px] pointer-events-none opacity-[0.04] z-0 select-none text-[#c5a059]">
-      <svg viewBox="0 0 100 140" fill="currentColor" class="w-full h-full">
-        <path d="M50 0 C45 25, 20 50, 10 80 C0 110, 20 135, 50 140 C80 135, 100 110, 90 80 C80 50, 55 25, 50 0 Z" />
-      </svg>
+    <div class="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[340px] md:w-[520px] pointer-events-none opacity-[0.07] z-0 select-none">
+      <img :src="gununganImg" alt="Gunungan Jawa Watermark" class="w-full h-auto object-contain filter drop-shadow-[0_0_20px_rgba(197,160,89,0.3)]" />
     </div>
 
     <!-- Royal Gold Corner Ornaments (Batik Sulur Jawa) -->
@@ -82,13 +80,8 @@
 
         <div class="relative z-10 space-y-6 md:space-y-8 animate-fade-in-up max-w-lg mx-auto py-8">
           <!-- Gunungan Icon -->
-          <div class="flex justify-center text-[#c5a059] opacity-90 animate-pulse">
-            <svg class="w-14 h-16 md:w-16 md:h-20" viewBox="0 0 100 140" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M50 5 C45 30, 20 55, 10 85 C0 115, 20 135, 50 138 C80 135, 100 115, 90 85 C80 55, 55 30, 50 5 Z" fill="currentColor" fill-opacity="0.12" />
-              <path d="M50 5 L50 138" stroke-dasharray="2 2" />
-              <circle cx="50" cy="70" r="12" stroke-width="1.5" />
-              <path d="M50 58 L50 82 M38 70 L62 70" />
-            </svg>
+          <div class="flex justify-center">
+            <img :src="gununganImg" alt="Gunungan Jawa" class="w-20 h-auto md:w-28 filter drop-shadow-[0_4px_16px_rgba(197,160,89,0.4)] animate-pulse" />
           </div>
 
           <div class="space-y-2">
@@ -678,6 +671,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import gununganImg from '@/assets/ornaments/gunungan-gold.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

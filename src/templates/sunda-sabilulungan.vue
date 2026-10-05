@@ -79,15 +79,9 @@
         </div>
 
         <div class="relative z-10 space-y-6 md:space-y-8 animate-fade-in-up max-w-lg mx-auto py-8">
-          <!-- Siger Sunda Silhouette / Tiara Icon -->
-          <div class="flex justify-center text-[#cba358] opacity-90 animate-pulse">
-            <svg class="w-16 h-12 md:w-20 md:h-16" viewBox="0 0 120 70" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M10 60 Q30 50 40 30 Q50 10 60 5 Q70 10 80 30 Q90 50 110 60 Q60 55 10 60 Z" fill="currentColor" fill-opacity="0.18" />
-              <circle cx="60" cy="18" r="4" fill="currentColor" />
-              <circle cx="38" cy="38" r="3" fill="currentColor" />
-              <circle cx="82" cy="38" r="3" fill="currentColor" />
-              <path d="M20 58 Q60 52 100 58" stroke-dasharray="2 2" />
-            </svg>
+          <!-- Siger Sunda Mahkota Emblem -->
+          <div class="flex justify-center">
+            <img :src="sigerImg" alt="Mahkota Siger Sunda" class="w-24 h-auto md:w-32 filter drop-shadow-[0_4px_16px_rgba(203,163,88,0.4)] animate-pulse" />
           </div>
 
           <div class="space-y-2">
@@ -677,6 +671,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import sigerImg from '@/assets/ornaments/siger-gold.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

@@ -83,15 +83,9 @@
         </div>
 
         <div class="relative z-10 space-y-6 md:space-y-8 animate-fade-in-up max-w-lg mx-auto py-8">
-          <!-- Batang Garing Emblem -->
-          <div class="flex justify-center text-[#d4973b] opacity-90 animate-pulse">
-            <svg class="w-14 h-16 md:w-16 md:h-20" viewBox="0 0 100 140" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M50 10 C45 35, 20 60, 10 85 C25 85, 40 70, 50 50 C60 70, 75 85, 90 85 C80 60, 55 35, 50 10 Z" fill="currentColor" fill-opacity="0.15" />
-              <path d="M50 50 L50 135" stroke-width="2.5" />
-              <circle cx="50" cy="50" r="5" fill="#9b332b" stroke="currentColor" />
-              <circle cx="28" cy="85" r="3.5" fill="#d4973b" />
-              <circle cx="72" cy="85" r="3.5" fill="#d4973b" />
-            </svg>
+          <!-- Batang Garing / Talawang Shield Emblem -->
+          <div class="flex justify-center">
+            <img :src="talawangImg" alt="Talawang Dayak Ngaju" class="w-16 h-auto md:w-24 filter drop-shadow-[0_4px_16px_rgba(212,151,59,0.4)] animate-pulse" />
           </div>
 
           <div class="space-y-2">
@@ -682,6 +676,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import talawangImg from '@/assets/ornaments/dayak-talawang.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
