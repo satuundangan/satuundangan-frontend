@@ -69,9 +69,10 @@
 
         <div class="flex items-center justify-center md:justify-start gap-4 pt-6 text-sm text-muted border-t border-gray-200 mt-6 max-w-md mx-auto md:mx-0">
           <div class="flex -space-x-3">
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover" src="https://i.pravatar.cc/100?img=1" alt="User" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover" src="https://i.pravatar.cc/100?img=5" alt="User" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover" src="https://i.pravatar.cc/100?img=8" alt="User" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
             <div class="w-10 h-10 rounded-full border-2 border-white bg-mocha text-white flex items-center justify-center text-xs font-bold ring-1 ring-gray-100 shadow-sm">+5k</div>
           </div>
           <div class="text-left">
@@ -81,9 +82,9 @@
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
               <i class="fa-solid fa-star"></i>
-              <span class="text-dark font-extrabold text-xs ml-1">4.9 / 5</span>
+              <span class="text-dark font-extrabold text-xs ml-1">4.9 / 5.0</span>
             </div>
-            <p class="text-xs text-gray-500 font-medium">Dipercaya oleh 5.000+ pasangan di Indonesia</p>
+            <p class="text-xs text-gray-500 font-medium">Dipercaya oleh 5.000+ calon pengantin</p>
           </div>
         </div>
       </div>

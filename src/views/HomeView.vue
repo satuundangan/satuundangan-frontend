@@ -5,15 +5,7 @@
     <!-- Hero Section -->
     <HeroSection @create-invitation="showModal = true" />
 
-    <!-- Comparison Section -->
-    <ComparisonSection />
-
-    <!-- Features Section -->
-    <section id="features">
-      <FeaturesSection />
-    </section>
-
-    <!-- Template Section (Existing Logic) -->
+    <!-- Template Section (Immediate discovery after hero) -->
     <section id="templates" class="section bg-white scroll-mt-20">
       <div class="max-w-6xl mx-auto px-6">
         <div class="text-center mb-12">
@@ -230,10 +222,18 @@
       </div>
     </section>
 
+    <!-- Features Section -->
+    <section id="features" class="scroll-mt-20">
+      <FeaturesSection />
+    </section>
+
     <!-- Steps Section -->
     <StepsSection @create-invitation="showModal = true" />
 
-    <!-- Tutorial Section (TikTok) -->
+    <!-- Comparison Section (Why SatuUndangan > Print) -->
+    <ComparisonSection />
+
+    <!-- Tutorial Section (TikTok / Video Guide) -->
     <TutorialSection />
 
     <!-- Pricing Section -->
@@ -407,22 +407,30 @@
       ></div>
 
       <div class="max-w-6xl mx-auto px-6 relative z-10">
-        <h2 class="heading text-center mb-12">Kata Mereka</h2>
+        <div class="text-center mb-12">
+          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Ulasan Pengantin</span>
+          <h2 class="heading mb-3">Cerita Bahagia Mereka</h2>
+          <p class="text-muted text-sm sm:text-base max-w-lg mx-auto">Pengalaman nyata para pasangan yang mempercayakan undangan pernikahan mereka di SatuUndangan.</p>
+        </div>
         <div class="grid md:grid-cols-3 gap-8">
           <div
             v-for="(item, i) in testimonials"
             :key="i"
-            class="bg-white rounded-2xl p-8 shadow-lg border border-gray-50 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative"
+            class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative flex flex-col"
           >
-            <div class="text-mocha text-5xl font-serif absolute top-6 left-6 opacity-20">"</div>
-            <p class="text-dark/80 italic mb-6 mt-4 relative z-10 text-sm leading-relaxed">
-              {{ item.text }}
+            <!-- 5 Star rating -->
+            <div class="flex items-center gap-1 text-amber-400 text-xs mb-3">
+              <i v-for="star in 5" :key="star" class="fa-solid fa-star"></i>
+            </div>
+            <p class="text-dark/80 italic mb-6 relative z-10 text-sm leading-relaxed flex-1">
+              "{{ item.text }}"
             </p>
-            <div class="flex items-center gap-4 border-t border-gray-100 pt-4">
+            <div class="flex items-center gap-4 border-t border-gray-100 pt-4 mt-auto">
               <img
                 :src="item.avatar"
-                alt="avatar"
-                class="w-12 h-12 rounded-full object-cover ring-2 ring-sage/30 p-0.5"
+                :alt="item.name"
+                class="w-12 h-12 rounded-full object-cover ring-2 ring-mocha/20 p-0.5 shadow-sm"
+                loading="lazy"
               />
               <div>
                 <h4 class="text-sm font-bold text-dark">{{ item.name }}</h4>
@@ -1014,24 +1022,27 @@ function formatRupiah(value) {
 const testimonials = [
   {
     id: 1,
-    name: 'Rani & Aldi',
-    role: 'Pengantin Bahagia',
-    text: 'Sangat puas dengan hasilnya! Template premiumnya benar-benar elegan. Tamu-tamu kami banyak yang memuji desain undangannya.',
-    avatar: 'https://i.pravatar.cc/150?img=47',
+    name: 'Rani & Aldi Pratama',
+    role: 'Pengantin (Bandung)',
+    text: 'Sangat puas dengan hasilnya! Template adat Sundanya bener-bener mewah dan anggun. Tamu-tamu undangan banyak yang memuji lagunya enak dan desainnya berkelas.',
+    avatar: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=200&q=80',
+    rating: 5,
   },
   {
     id: 2,
-    name: 'Nabila',
-    role: 'Sahabat Mempelai',
-    text: 'Baru kali ini liat undangan online yang seprofesional ini. Fitur RSVP dan amplop digitalnya sangat membantu.',
-    avatar: 'https://i.pravatar.cc/150?img=32',
+    name: 'Dimas & Annisa Putri',
+    role: 'Pengantin (Jakarta)',
+    text: 'Fitur sebar WhatsApp otomatis dan QR Code buku tamunya ngebantu banget! Pas hari H resepsi meja depan lancar tanpa antrean panjang. Recommended!',
+    avatar: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=200&q=80',
+    rating: 5,
   },
   {
     id: 3,
-    name: 'Vina & Robby',
-    role: 'Pengantin',
-    text: 'Worth every penny! Fitur lengkap, desain tidak pasaran, dan servernya cepat. Recommended banget buat yang mau nikah.',
-    avatar: 'https://i.pravatar.cc/150?img=51',
+    name: 'Vina & Robby Setiawan',
+    role: 'Pengantin (Surabaya)',
+    text: 'Worth every penny! Fitur lengkap, foto galeri prewed tampil jernih, dan servernya super cepat saat dibuka ratusan tamu sekaligus. Support CS-nya juga ramah banget.',
+    avatar: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=200&q=80',
+    rating: 5,
   },
 ]
 

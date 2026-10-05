@@ -168,7 +168,7 @@
         <!-- ============================================== -->
         <!-- TAB 1: QR CODE MEJA RESEPSI (STANDEE) -->
         <!-- ============================================== -->
-        <div v-if="activeTab === 'standee'" class="space-y-6">
+        <div v-if="activeTab === 'standee'" class="space-y-6 main-dashboard-content">
           <!-- Top Guidance Alert -->
           <div class="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex items-start gap-3.5">
@@ -388,7 +388,7 @@
         <!-- ============================================== -->
         <!-- TAB 3: SCANNER TIKET PANITIA -->
         <!-- ============================================== -->
-        <div v-if="activeTab === 'scanner'" class="space-y-6">
+        <div v-if="activeTab === 'scanner'" class="space-y-6 main-dashboard-content">
           <!-- Guidance Hint Banner for Scanner Panitia -->
           <div class="p-5 rounded-3xl bg-blue-50/70 border border-blue-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex items-start gap-3.5">
@@ -835,7 +835,7 @@
         <!-- ============================================== -->
         <!-- TAB 2: DAFTAR UCAPAN & DOA (EXISTING VIEW) -->
         <!-- ============================================== -->
-        <div v-else-if="activeTab === 'wishes'" class="space-y-6">
+        <div v-else-if="activeTab === 'wishes'" class="space-y-6 main-dashboard-content">
           <!-- Guidance Hint Banner for Wishes & Doa -->
           <div class="p-5 rounded-3xl bg-amber-50/70 border border-amber-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex items-start gap-3.5">
@@ -915,7 +915,11 @@
         </div>
 
         <!-- Hidden Printable Recap Area -->
-        <div id="printable-recap" :class="[printMode === 'rekap' ? 'print:block' : 'hidden', 'hidden p-8 bg-white font-sans text-slate-900']">
+        <div
+          id="printable-recap"
+          v-if="printMode === 'rekap'"
+          class="p-8 bg-white font-sans text-slate-900"
+        >
           <div class="border-b-2 border-slate-900 pb-4 mb-6">
             <h1 class="text-2xl font-black uppercase tracking-tight">Rekapitulasi Kehadiran Tamu (Meja Resepsi)</h1>
             <p class="text-sm font-bold text-slate-600 mt-1">Undangan: {{ currentInvitation?.title || '-' }}</p>
@@ -953,7 +957,11 @@
         </div>
 
         <!-- Hidden Standee Printable Sheet for @media print -->
-        <div id="printable-standee" :class="[printMode === 'standee' ? 'print:flex' : 'hidden', 'hidden flex-col items-center justify-center p-12 bg-white text-center font-sans']">
+        <div
+          id="printable-standee"
+          v-if="printMode === 'standee'"
+          class="flex flex-col items-center justify-center p-12 bg-white text-center font-sans"
+        >
           <div class="border-4 border-[#d4af37] p-12 rounded-3xl max-w-md mx-auto flex flex-col items-center justify-between space-y-6">
             <div class="space-y-2">
               <div class="w-16 h-16 rounded-full bg-slate-50 text-[#a47148] flex items-center justify-center font-serif text-2xl font-bold mx-auto border-2 border-[#d4af37]/60">
@@ -1278,15 +1286,160 @@ function openStandeePrintModal() {
 }
 
 function printStandee() {
-  printMode.value = 'standee'
   trackAction('GUESTBOOK_STANDEE_PRINT', {
     slug: currentInvitation.value?.slug,
     size: standeeSize.value,
   })
   showStandeeModal.value = false
-  nextTick(() => {
-    window.print()
-  })
+
+  const title = currentInvitation.value?.title || 'Romeo & Juliet'
+  const qrImg = standeeQrDataUrl.value
+  const sizeMap = {
+    'A4': { cardWidth: '380px', qrSize: '240px', padding: '40px', titleSize: '24px' },
+    'A5': { cardWidth: '320px', qrSize: '190px', padding: '30px', titleSize: '20px' },
+    '4R': { cardWidth: '280px', qrSize: '160px', padding: '24px', titleSize: '18px' },
+  }
+  const s = sizeMap[standeeSize.value] || sizeMap['A5']
+
+  const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Cetak Standee - ${title}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    @page { margin: 1cm; size: auto; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, sans-serif;
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .standee-card {
+      width: ${s.cardWidth};
+      background: #ffffff;
+      border: 3px solid rgba(212, 175, 55, 0.7);
+      border-radius: 24px;
+      padding: ${s.padding};
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    }
+    .monogram {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #fdfaf6;
+      border: 1px solid rgba(212, 175, 55, 0.4);
+      color: #a47148;
+      font-family: 'Playfair Display', serif;
+      font-size: 16px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 12px;
+    }
+    .badge-sub {
+      font-size: 9px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: #a47148;
+      display: block;
+      margin-bottom: 4px;
+    }
+    .title {
+      font-family: 'Playfair Display', serif;
+      font-size: ${s.titleSize};
+      font-weight: 700;
+      color: #0f172a;
+      line-height: 1.25;
+      margin-bottom: 16px;
+    }
+    .qr-box {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 12px;
+      display: inline-block;
+      margin-bottom: 16px;
+      box-shadow: inset 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .qr-img {
+      width: ${s.qrSize};
+      height: ${s.qrSize};
+      display: block;
+      object-fit: contain;
+    }
+    .instruction {
+      font-size: 11px;
+      color: #475569;
+      line-height: 1.5;
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+    .footer {
+      font-size: 8px;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      font-weight: 700;
+      color: #94a3b8;
+      border-top: 1px solid #f1f5f9;
+      padding-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="standee-card">
+    <div class="monogram">SU</div>
+    <span class="badge-sub">Buku Tamu Digital</span>
+    <h1 class="title">${title}</h1>
+    <div class="qr-box">
+      <img src="${qrImg}" class="qr-img" alt="QR Code Buku Tamu" />
+    </div>
+    <p class="instruction">
+      Arahkan kamera smartphone ke QR Code ini untuk mengisi buku tamu & ucapan doa.
+    </p>
+    <div class="footer">SatuUndangan.id</div>
+  </div>
+</body>
+</html>`
+
+  printViaIframe(htmlContent)
+}
+
+function printViaIframe(html) {
+  const existingFrame = document.getElementById('satuundangan-print-frame')
+  if (existingFrame) existingFrame.remove()
+
+  const iframe = document.createElement('iframe')
+  iframe.id = 'satuundangan-print-frame'
+  iframe.style.position = 'fixed'
+  iframe.style.right = '0'
+  iframe.style.bottom = '0'
+  iframe.style.width = '0'
+  iframe.style.height = '0'
+  iframe.style.border = '0'
+  document.body.appendChild(iframe)
+
+  const doc = iframe.contentWindow.document
+  doc.open()
+  doc.write(html)
+  doc.close()
+
+  iframe.contentWindow.focus()
+  setTimeout(() => {
+    iframe.contentWindow.print()
+    setTimeout(() => {
+      iframe.remove()
+    }, 1000)
+  }, 250)
 }
 
 function copyGuestbookUrl() {
@@ -1705,10 +1858,65 @@ function exportToExcel() {
 }
 
 function printRekap() {
-  printMode.value = 'rekap'
-  nextTick(() => {
-    window.print()
-  })
+  const title = currentInvitation.value?.title || '-'
+  const dateStr = formatDateTime(new Date().toISOString())
+  const rowsHtml = guests.value.map((g, idx) => `
+    <tr>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 700;">${idx + 1}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 800; color: #0f172a;">${g.name || '-'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${g.phoneNumber || '-'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${g.group || 'Umum'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 10px; font-weight: 700;">${g.rsvpStatus || '-'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: ${g.checkedInAt ? '#047857' : '#94a3b8'};">
+        ${g.checkedInAt ? 'HADIR' : 'Belum Hadir'}
+      </td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #475569;">${g.checkedInAt ? formatDateTime(g.checkedInAt) : '-'}</td>
+    </tr>
+  `).join('')
+
+  const htmlContent = `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Rekap Kehadiran - ${title}</title>
+  <style>
+    @page { margin: 1cm; size: landscape; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; padding: 24px; color: #0f172a; }
+    .header { border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 16px; }
+    .title { font-size: 18px; font-weight: 900; text-transform: uppercase; letter-spacing: -0.02em; }
+    .subtitle { font-size: 12px; font-weight: 700; color: #475569; margin-top: 4px; }
+    .meta { font-size: 11px; color: #64748b; margin-top: 2px; }
+    table { width: 100%; border-collapse: collapse; font-size: 11px; text-align: left; }
+    th { padding: 8px; border-bottom: 2px solid #cbd5e1; text-transform: uppercase; font-size: 9px; font-weight: 800; color: #475569; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="title">Rekapitulasi Kehadiran Tamu (Meja Resepsi)</div>
+    <div class="subtitle">Undangan: ${title}</div>
+    <div class="meta">Dicetak: ${dateStr} • Total Tamu: ${totalGuestsCount.value} • Hadir: ${checkedInCount.value} (${checkInPercentage.value}%)</div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 40px;">No</th>
+        <th>Nama Tamu</th>
+        <th>Nomor HP</th>
+        <th>Kategori</th>
+        <th>RSVP</th>
+        <th>Status</th>
+        <th>Waktu Check-in</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${rowsHtml}
+    </tbody>
+  </table>
+</body>
+</html>`
+
+  printViaIframe(htmlContent)
 }
 
 // ----------------------------------------------------
@@ -1813,14 +2021,46 @@ async function handleDeleteMessage(id) {
 }
 
 @media print {
-  body {
-    background: white !important;
+  @page {
+    margin: 1cm;
+    size: auto;
   }
-  .no-print {
+  
+  html, body {
+    background: white !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  /* Sembunyikan elemen dashboard & antarmuka aplikasi */
+  .no-print,
+  nav,
+  aside,
+  header {
     display: none !important;
   }
+
+  /* Sembunyikan konten non-print di main */
+  .main-dashboard-content {
+    display: none !important;
+  }
+
+  /* Tampilkan hanya area yang dipilih untuk dicetak */
   #printable-recap {
     display: block !important;
+    position: static !important;
+    width: 100% !important;
+    padding: 0 !important;
+  }
+
+  #printable-standee {
+    display: flex !important;
+    position: static !important;
+    width: 100% !important;
+    min-height: 80vh !important;
+    padding: 2rem 0 !important;
+    justify-content: center !important;
+    align-items: center !important;
   }
 }
 </style>

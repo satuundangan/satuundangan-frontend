@@ -181,9 +181,8 @@ const dropdownOpen = ref(false)
 const dropdownRef = ref(null);
 
 const menuItems = [
-  { text: 'Home', href: '#' },
+  { text: 'Katalog Desain', href: '#templates' },
   { text: 'Fitur', href: '#features' },
-  { text: 'Katalog', href: '#templates' },
   { text: 'Harga', href: '#pricing' },
   { text: 'Testimoni', href: '#testimonials' },
   { text: 'Blog & Tips', href: '/blog' },

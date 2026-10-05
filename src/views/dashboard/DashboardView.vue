@@ -34,7 +34,7 @@
         </div>
 
         <!-- Ringkasan Statistik -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           <StatCard 
             label="Total Undangan" 
             :value="stats.total" 
@@ -48,10 +48,16 @@
             color="bg-purple-50 text-purple-600" 
           />
           <StatCard 
+            label="Konfirmasi Hadir" 
+            :value="stats.attending" 
+            iconClass="fa-solid fa-circle-check" 
+            color="bg-emerald-50 text-emerald-600" 
+          />
+          <StatCard 
             label="Ucapan Masuk" 
             :value="stats.responses" 
             iconClass="fa-solid fa-comments" 
-            color="bg-emerald-50 text-emerald-600" 
+            color="bg-amber-50 text-amber-600" 
           />
         </div>
 
@@ -78,17 +84,17 @@
                 </div>
                 <div>
                    <span class="text-xs font-bold text-slate-900 block">Daftar Tamu</span>
-                   <span class="text-[10px] text-slate-400 block">Kelola penerima</span>
+                   <span class="text-[10px] text-slate-400 block">Sebar via WhatsApp</span>
                 </div>
              </router-link>
              
              <router-link to="/guestbook" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                   <i class="fa-solid fa-book-open text-base"></i>
+                   <i class="fa-solid fa-qrcode text-base"></i>
                 </div>
                 <div>
-                   <span class="text-xs font-bold text-slate-900 block">Buku Tamu</span>
-                   <span class="text-[10px] text-slate-400 block">Lihat ucapan masuk</span>
+                   <span class="text-xs font-bold text-slate-900 block">Meja Resepsi</span>
+                   <span class="text-[10px] text-slate-400 block">Buku tamu & QR check-in</span>
                 </div>
              </router-link>
              
@@ -147,9 +153,10 @@
                     <img 
                       :src="getInvitationThumbnail(inv)" 
                       class="w-12 h-12 rounded-xl object-cover bg-slate-100 border border-slate-200/60 shrink-0" 
+                      loading="lazy"
                     />
                     <div class="min-w-0">
-                       <div class="flex items-center gap-2">
+                       <div class="flex items-center gap-2 flex-wrap">
                           <h4 class="font-extrabold text-slate-900 text-sm truncate group-hover:text-blue-600 transition-colors">
                             {{ inv.title || 'Undangan Tanpa Judul' }}
                           </h4>
@@ -159,36 +166,51 @@
                           >
                              {{ inv.isPublished ? 'Published' : 'Draft' }}
                           </span>
+                          <span 
+                            v-if="inv.package" 
+                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase tracking-wider bg-amber-50 text-amber-700 border border-amber-200"
+                          >
+                            {{ inv.package }}
+                          </span>
                        </div>
-                       <p class="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1">
+                       <p class="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1.5">
                           <i class="fa-solid fa-link text-[10px] text-slate-300"></i>
-                          <span>satuundangan.com/{{ inv.slug }}</span>
+                          <span>satuundangan.id/inv/{{ inv.slug }}</span>
                        </p>
                     </div>
                  </div>
 
-                 <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+                 <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-auto flex-wrap">
                     <button 
                       @click="copyLink(inv.slug)"
-                      class="p-2 text-slate-500 hover:text-blue-600 hover:bg-white rounded-xl transition-all border border-transparent hover:border-slate-200 text-xs flex items-center gap-1.5"
+                      class="px-2.5 py-1.5 text-slate-500 hover:text-blue-600 hover:bg-white rounded-xl transition-all border border-slate-200/60 text-xs flex items-center gap-1.5"
                       title="Salin Link Undangan"
                     >
                       <i class="fa-solid fa-copy"></i>
                       <span class="hidden md:inline">Salin</span>
                     </button>
+
+                    <router-link 
+                      :to="`/guests?invitationId=${inv.id}`"
+                      class="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5"
+                      title="Sebar WhatsApp & Kelola Tamu"
+                    >
+                      <i class="fa-brands fa-whatsapp text-xs"></i>
+                      <span>Sebar</span>
+                    </router-link>
                     
                     <router-link 
                       :to="`/invitation/${inv.id}/edit`" 
-                      class="px-3.5 py-2 bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5"
+                      class="px-3 py-1.5 bg-slate-100 hover:bg-slate-900 hover:text-white text-slate-700 rounded-xl transition-all text-xs font-bold flex items-center gap-1.5"
                     >
                       <i class="fa-solid fa-pen-to-square text-[11px]"></i>
                       <span>Edit</span>
                     </router-link>
 
                     <a 
-                      :href="`/${inv.slug}`" 
+                      :href="`/inv/${inv.slug}`" 
                       target="_blank" 
-                      class="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-2xs"
+                      class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-2xs"
                       title="Buka Website Undangan"
                     >
                       <i class="fa-solid fa-arrow-up-right-from-square text-xs"></i>
@@ -242,10 +264,12 @@ const greetingTime = computed(() => {
 })
 
 const stats = computed(() => {
+  const breakdown = statsData.value.rsvp_breakdown || {}
   return {
     total: statsData.value.total_invitations || invitations.value.length,
     guests: statsData.value.total_guests || 0,
-    responses: statsData.value.total_responses || 0
+    attending: breakdown.attending || 0,
+    responses: statsData.value.total_messages_received || statsData.value.total_responses || 0
   }
 })
 
@@ -262,7 +286,7 @@ function getInvitationThumbnail(inv) {
 }
 
 function copyLink(slug) {
-  const fullUrl = `${window.location.origin}/${slug}`
+  const fullUrl = `${window.location.origin}/inv/${slug}`
   navigator.clipboard.writeText(fullUrl)
   toast.success('Link undangan berhasil disalin!')
 }
