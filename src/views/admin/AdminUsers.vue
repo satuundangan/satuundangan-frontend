@@ -326,6 +326,19 @@
               />
             </div>
 
+            <div v-if="editing" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
+              <div>
+                <label for="isEmailVerified" class="text-xs font-bold text-slate-900 block cursor-pointer">Status Verifikasi Email</label>
+                <p class="text-[11px] text-slate-500">Bypass / verifikasi email pengguna secara instan</p>
+              </div>
+              <input
+                id="isEmailVerified"
+                v-model="form.isEmailVerified"
+                type="checkbox"
+                class="h-5 w-5 rounded-md border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+              />
+            </div>
+
             <div class="flex justify-end gap-2.5 pt-4 border-t border-slate-100">
               <button
                 type="button"
@@ -379,6 +392,7 @@ const form = reactive({
   name: '',
   email: '',
   isAdmin: false,
+  isEmailVerified: false,
   password: '',
 })
 
@@ -445,7 +459,7 @@ function onPage(event) {
 
 function openCreate() {
   editing.value = null
-  Object.assign(form, { name: '', email: '', isAdmin: false, password: '' })
+  Object.assign(form, { name: '', email: '', isAdmin: false, isEmailVerified: false, password: '' })
   showForm.value = true
 }
 
@@ -455,6 +469,7 @@ function openEdit(user) {
     name: user.name || '',
     email: user.email || '',
     isAdmin: Boolean(user.isAdmin),
+    isEmailVerified: Boolean(user.emailVerifiedAt),
     password: '',
   })
   showForm.value = true
