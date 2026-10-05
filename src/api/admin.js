@@ -26,6 +26,10 @@ export const deleteAdminUser = (id) =>
   apiFetch(`/admin/users/${id}`, {
     method: 'DELETE',
   })
+export const verifyAdminUserEmail = (id) =>
+  apiFetch(`/admin/users/${id}/verify-email`, {
+    method: 'POST',
+  })
 
 // Invitations
 export const fetchAdminInvitations = (params) => apiFetch(withParams('/admin/invitations', params))

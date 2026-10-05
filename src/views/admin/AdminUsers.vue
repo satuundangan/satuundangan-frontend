@@ -169,19 +169,33 @@
           </Column>
 
           <!-- Email & Verification Status -->
-          <Column header="Status Email" style="min-width: 10rem">
+          <Column header="Status Email" style="min-width: 12rem">
             <template #body="{ data }">
-              <span
-                :class="[
-                  'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border',
-                  data.emailVerifiedAt
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border-amber-200'
-                ]"
-              >
-                <i :class="data.emailVerifiedAt ? 'fa-solid fa-check text-[9px]' : 'fa-solid fa-clock text-[9px]'"></i>
-                {{ data.emailVerifiedAt ? 'Terverifikasi' : 'Belum Verifikasi' }}
-              </span>
+              <div class="flex items-center gap-2">
+                <span
+                  :class="[
+                    'inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold border',
+                    data.emailVerifiedAt
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'
+                  ]"
+                >
+                  <i :class="data.emailVerifiedAt ? 'fa-solid fa-check text-[9px]' : 'fa-solid fa-clock text-[9px]'"></i>
+                  {{ data.emailVerifiedAt ? 'Terverifikasi' : 'Belum Verifikasi' }}
+                </span>
+                <button
+                  v-if="!data.emailVerifiedAt"
+                  type="button"
+                  :disabled="verifyingId === data.id"
+                  @click="handleQuickVerify(data)"
+                  class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                  title="Verifikasi manual akun ini sekarang"
+                >
+                  <i v-if="verifyingId === data.id" class="fa-solid fa-spinner fa-spin text-[9px]"></i>
+                  <i v-else class="fa-solid fa-shield-check text-[9px]"></i>
+                  <span>Verif</span>
+                </button>
+              </div>
             </template>
           </Column>
 
@@ -373,6 +387,7 @@ import {
   createAdminUser,
   updateAdminUser,
   deleteAdminUser,
+  verifyAdminUserEmail,
 } from '@/api/admin.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -384,6 +399,7 @@ const page = ref(1)
 const limit = 15
 const search = ref('')
 const loading = ref(false)
+const verifyingId = ref(null)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
@@ -504,6 +520,32 @@ async function submitForm() {
     toast.error(error.message || 'Gagal menyimpan pengguna')
   } finally {
     saving.value = false
+  }
+}
+
+async function handleQuickVerify(user) {
+  const result = await Swal.fire({
+    title: 'Verifikasi Email Manual?',
+    html: `Verifikasi email untuk akun <strong>${user.name || user.email}</strong> secara manual? Pengguna dapat langsung checkout dan menggunakan seluruh fitur.`,
+    icon: 'question',
+    showCancelButton: true,
+    confirmButtonColor: '#059669',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Ya, Verifikasi Akun',
+    cancelButtonText: 'Batal',
+  })
+
+  if (!result.isConfirmed) return
+
+  verifyingId.value = user.id
+  try {
+    await verifyAdminUserEmail(user.id)
+    toast.success(`Email ${user.email} berhasil diverifikasi!`)
+    loadUsers()
+  } catch (error) {
+    toast.error(error.message || 'Gagal memverifikasi email')
+  } finally {
+    verifyingId.value = null
   }
 }
 
