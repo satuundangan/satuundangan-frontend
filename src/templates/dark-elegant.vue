@@ -392,7 +392,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || giftAddresses.length)" id="gift"
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length)" id="gift"
         class="py-20 md:py-24 px-6 bg-black text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-[#d6b18a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
@@ -417,7 +417,7 @@
           </div>
 
           <!-- E-Wallet Cards -->
-          <div v-for="(wallet, idx) in data.eWalletLink" :key="'wallet' + idx"
+          <div v-for="(wallet, idx) in walletItems" :key="'wallet' + idx"
             class="bg-[#1a1a1a] border border-[#333] p-6 rounded-2xl w-full sm:w-72 hover:border-[#d6b18a]/50 transition-all"
             v-observe>
             <div class="h-12 flex items-center justify-center mb-4 text-[#d6b18a] font-bold text-xl uppercase tracking-wider">
@@ -499,6 +499,24 @@ const giftAddresses = computed(() => {
   const raw = data.value.giftDeliveryAddress
   const list = Array.isArray(raw) ? raw : raw ? [raw] : []
   return list.map((a) => String(a || '').trim()).filter(Boolean)
+})
+
+// eWalletLink may arrive as an array of objects ({ wallet_provider, wallet_number, wallet_image }),
+// an array of strings, or a single legacy string like "08123456789 (Adam Syahreza - OVO/DANA)"
+const walletItems = computed(() => {
+  const raw = data.value.eWalletLink
+  const list = Array.isArray(raw) ? raw : raw && typeof raw === 'string' && raw.trim() ? [raw.trim()] : []
+  return list
+    .map((wallet) => {
+      if (!wallet) return null
+      if (typeof wallet === 'object') return wallet
+      return {
+        wallet_provider: 'E-Wallet',
+        wallet_number: String(wallet),
+        wallet_image: '',
+      }
+    })
+    .filter(Boolean)
 })
 
 const mockStories = [
