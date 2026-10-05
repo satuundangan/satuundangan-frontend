@@ -387,12 +387,15 @@
           </div>
         </section>
 
-        <footer v-if="isSectionEnabled('footer')" class="nu-footer">
+        <footer class="nu-footer">
           <p>
             {{ invitation.groomName || 'Mempelai Pria' }} &amp;
             {{ invitation.brideName || 'Mempelai Wanita' }}
           </p>
           <p>{{ invitation.footerText || theme.closing }}</p>
+          <div class="mt-4">
+            <WatermarkBadge :variant="themeKey === 'dayak' ? 'dark' : 'gold'" />
+          </div>
         </footer>
       </main>
 
@@ -420,6 +423,7 @@ import { useToast } from 'vue-toastification'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
+import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },

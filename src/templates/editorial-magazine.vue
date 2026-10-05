@@ -325,8 +325,9 @@
       </section>
 
       <!-- FOOTER -->
-      <footer v-if="isSectionEnabled('footer')" class="py-24 md:py-32 text-center bg-white border-t-4 md:border-t-8 border-black">
+      <footer class="py-24 md:py-32 text-center bg-white border-t-4 md:border-t-8 border-black">
         <h2 class="font-playfair font-black text-4xl md:text-8xl lg:text-[10rem] uppercase leading-none tracking-tighter mb-8 md:mb-10 px-4">{{ data.groomName }} & {{ data.brideName }}</h2>
+        <p v-if="data.footerText" class="text-gray-600 text-sm md:text-base max-w-xl mx-auto mb-8 px-4 leading-relaxed font-serif italic">{{ data.footerText }}</p>
         <div class="flex flex-col items-center space-y-4 md:space-y-6 px-4">
            <p class="text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.5em] md:tracking-[0.8em] font-black">All Rights Reserved / 2026</p>
            <WatermarkBadge variant="light" />

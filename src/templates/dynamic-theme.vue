@@ -1022,7 +1022,6 @@
 
       <!-- FOOTER -->
       <footer
-        v-if="isSectionEnabled('footer')"
         class="py-12 text-center border-t"
         :style="[sectionBg('footer'), { borderColor: 'var(--dt-color-secondary)' }]"
       >

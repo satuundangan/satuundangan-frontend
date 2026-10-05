@@ -95,8 +95,10 @@ export const demoData = {
   healthProtocol: true,
   enableGuestMessage: true,
   selectedSections: [
-    'hero', 'quote', 'couple', 'love-story', 'event', 'gallery', 'gift', 
-    'message', 'extended-family', 'live-streaming', 'dress-code'
+    'hero', 'cover', 'quote', 'couple', 'photoCouple', 'love-story', 'story',
+    'countdown', 'event', 'event-details', 'map', 'gallery', 'video',
+    'dress-code', 'live-streaming', 'extended-family', 'turut-mengundang',
+    'menu', 'rsvp', 'wishes', 'message', 'gift', 'footer'
   ],
   guestName: 'Tamu Undangan',
 }
