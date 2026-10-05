@@ -625,7 +625,7 @@
               <div class="flex items-center gap-2">
                 <button
                   type="button"
-                  @click="printRundown"
+                  @click="openPrintRundownModal"
                   class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer"
                 >
                   <i class="fa-solid fa-print"></i>
@@ -1001,6 +1001,105 @@
             </div>
           </div>
         </Teleport>
+
+        <!-- Rundown Print & Preview Modal -->
+        <Teleport to="body">
+          <div
+            v-if="showPrintRundownModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-xs p-4 overflow-y-auto no-print"
+            @click.self="showPrintRundownModal = false"
+          >
+            <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-100 overflow-hidden my-6">
+              <!-- Modal Header -->
+              <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
+                <div class="flex items-center gap-3">
+                  <div class="w-9 h-9 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm font-bold">
+                    <i class="fa-solid fa-print"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-black text-sm text-slate-900">Preview & Cetak Rundown Acara</h3>
+                    <p class="text-[11px] text-slate-500">Siap dicetak di kertas A4 atau disimpan dalam format PDF</p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  @click="showPrintRundownModal = false"
+                  class="w-8 h-8 rounded-full bg-slate-200/60 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors text-xs"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <!-- Paper Preview Container -->
+              <div class="p-6 bg-slate-100 max-h-[60vh] overflow-y-auto">
+                <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-sm border border-slate-200 text-slate-800 font-sans">
+                  <!-- Header Paper -->
+                  <div class="text-center border-b-2 border-slate-900 pb-3 mb-4">
+                    <h2 class="text-base sm:text-lg font-black uppercase tracking-wider text-slate-900">Rundown Acara Pernikahan</h2>
+                    <p class="text-xs text-slate-500 mt-1">
+                      <span v-if="planner.weddingDate">Tanggal: {{ formatDate(planner.weddingDate) }} • </span>
+                      Disusun rapi melalui SatuUndangan.id
+                    </p>
+                  </div>
+
+                  <!-- Rundown Table -->
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr class="border-b-2 border-slate-200 bg-slate-50">
+                          <th class="p-2.5 font-black uppercase text-[10px] text-slate-600 w-28">Waktu</th>
+                          <th class="p-2.5 font-black uppercase text-[10px] text-slate-600">Sesi & Acara</th>
+                          <th class="p-2.5 font-black uppercase text-[10px] text-slate-600 w-32">Lokasi</th>
+                          <th class="p-2.5 font-black uppercase text-[10px] text-slate-600 w-28">PIC</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-slate-100">
+                        <tr v-for="r in planner.rundown" :key="r.id" class="text-slate-800">
+                          <td class="p-2.5 font-mono font-bold text-slate-700 align-top">{{ r.time }}</td>
+                          <td class="p-2.5 align-top">
+                            <div class="font-bold text-slate-900">{{ r.activity }}</div>
+                            <div v-if="r.notes" class="text-[11px] text-slate-500 mt-0.5 italic">{{ r.notes }}</div>
+                          </td>
+                          <td class="p-2.5 text-slate-600 align-top">{{ r.location || '-' }}</td>
+                          <td class="p-2.5 font-bold text-purple-700 align-top">{{ r.pic || '-' }}</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <!-- Footer Paper -->
+                  <div class="mt-6 pt-3 border-t border-dashed border-slate-300 text-center text-[10px] text-slate-400">
+                    Dicetak dari platform SatuUndangan.id • Solusi Undangan Digital & Wedding Planner Modern Indonesia
+                  </div>
+                </div>
+              </div>
+
+              <!-- Modal Actions -->
+              <div class="p-4 bg-white border-t border-slate-100 flex items-center justify-between gap-3">
+                <span class="text-xs text-slate-400 font-medium hidden sm:inline">
+                  {{ planner.rundown?.length || 0 }} sesi acara
+                </span>
+                <div class="flex items-center justify-end gap-2 w-full sm:w-auto">
+                  <button
+                    type="button"
+                    @click="showPrintRundownModal = false"
+                    class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                  >
+                    Batal
+                  </button>
+                  <button
+                    type="button"
+                    @click="executePrintRundown"
+                    class="px-5 py-2.5 rounded-xl bg-purple-600 hover:bg-purple-700 text-white text-xs font-black transition-colors flex items-center gap-2 shadow-xs cursor-pointer"
+                  >
+                    <i class="fa-solid fa-print"></i>
+                    <span>Cetak Sekarang (Print / PDF)</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </Teleport>
       </main>
     </div>
 
@@ -1101,6 +1200,7 @@ const vendorForm = reactive({
 })
 
 const showRundownModal = ref(false)
+const showPrintRundownModal = ref(false)
 const editingRundownIdx = ref(null)
 const rundownForm = reactive({
   id: '',
@@ -1498,23 +1598,16 @@ function deleteRundown(idx) {
   handleSavePlanner()
 }
 
-// Print Rundown via isolated iframe
-function printRundown() {
-  const el = document.getElementById('printable-rundown-area')
-  if (!el) {
-    toast.error('Konten rundown tidak ditemukan')
+function openPrintRundownModal() {
+  if (!planner.rundown || planner.rundown.length === 0) {
+    toast.warning('Belum ada jadwal rundown untuk dicetak. Tambahkan sesi acara terlebih dahulu.')
     return
   }
+  showPrintRundownModal.value = true
+}
 
-  const iframe = document.createElement('iframe')
-  iframe.style.position = 'fixed'
-  iframe.style.top = '-9999px'
-  iframe.style.left = '-9999px'
-  iframe.style.width = '0'
-  iframe.style.height = '0'
-  iframe.style.border = '0'
-  document.body.appendChild(iframe)
-
+function generateRundownPrintHtml() {
+  const weddingDateStr = planner.weddingDate ? formatDate(planner.weddingDate) : ''
   const rowsHtml = (planner.rundown || []).map(r => `
     <tr style="border-bottom: 1px solid #e2e8f0;">
       <td style="padding: 10px; font-weight: bold; font-family: monospace; font-size: 13px; color: #475569;">${r.time}</td>
@@ -1527,7 +1620,7 @@ function printRundown() {
     </tr>
   `).join('')
 
-  const html = `
+  return `
     <!DOCTYPE html>
     <html>
       <head>
@@ -1535,19 +1628,20 @@ function printRundown() {
         <title>Rundown Acara Pernikahan - SatuUndangan.id</title>
         <style>
           @page { size: A4 portrait; margin: 15mm; }
-          body { font-family: system-ui, -apple-system, sans-serif; color: #0f172a; margin: 0; padding: 20px; }
-          .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 12px; margin-bottom: 20px; }
-          .header h1 { font-size: 20px; margin: 0; text-transform: uppercase; letter-spacing: 1px; }
+          * { box-sizing: border-box; }
+          body { font-family: system-ui, -apple-system, sans-serif; color: #0f172a; margin: 0; padding: 24px; }
+          .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 20px; }
+          .header h1 { font-size: 20px; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
           .header p { font-size: 12px; color: #64748b; margin: 4px 0 0; }
           table { width: 100%; border-collapse: collapse; text-align: left; }
-          th { background: #f8fafc; padding: 10px; font-size: 11px; text-transform: uppercase; color: #64748b; border-bottom: 2px solid #cbd5e1; }
+          th { background: #f8fafc; padding: 10px; font-size: 11px; text-transform: uppercase; color: #475569; border-bottom: 2px solid #cbd5e1; font-weight: 800; }
           .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
         </style>
       </head>
       <body>
         <div class="header">
           <h1>Rundown Acara Pernikahan</h1>
-          <p>Disusun rapi menggunakan Wedding Planner SatuUndangan.id</p>
+          <p>${weddingDateStr ? `Tanggal: ${weddingDateStr} • ` : ''}Disusun rapi menggunakan Wedding Planner SatuUndangan.id</p>
         </div>
         <table>
           <thead>
@@ -1568,19 +1662,69 @@ function printRundown() {
       </body>
     </html>
   `
+}
 
-  const doc = iframe.contentWindow.document
-  doc.open()
-  doc.write(html)
-  doc.close()
+// Execute Print via new window with fallback to iframe
+function executePrintRundown() {
+  if (!planner.rundown || planner.rundown.length === 0) {
+    toast.warning('Belum ada jadwal rundown untuk dicetak')
+    return
+  }
 
-  iframe.contentWindow.focus()
-  setTimeout(() => {
-    iframe.contentWindow.print()
+  const html = generateRundownPrintHtml()
+
+  try {
+    const printWindow = window.open('', '_blank', 'width=800,height=900')
+    if (printWindow) {
+      printWindow.document.open()
+      printWindow.document.write(html)
+      printWindow.document.close()
+      printWindow.focus()
+      setTimeout(() => {
+        try {
+          printWindow.print()
+        } catch (e) {
+          console.error('Print window error:', e)
+        }
+      }, 350)
+      return
+    }
+  } catch (err) {
+    console.warn('window.open blocked, falling back to hidden iframe:', err)
+  }
+
+  // Fallback: Safe isolated iframe
+  try {
+    const existingFrame = document.getElementById('satuundangan-rundown-frame')
+    if (existingFrame) existingFrame.remove()
+
+    const iframe = document.createElement('iframe')
+    iframe.id = 'satuundangan-rundown-frame'
+    iframe.style.position = 'fixed'
+    iframe.style.right = '0'
+    iframe.style.bottom = '0'
+    iframe.style.width = '0'
+    iframe.style.height = '0'
+    iframe.style.border = '0'
+    document.body.appendChild(iframe)
+
+    const doc = iframe.contentWindow.document
+    doc.open()
+    doc.write(html)
+    doc.close()
+
+    iframe.contentWindow.focus()
     setTimeout(() => {
-      iframe.remove()
-    }, 1000)
-  }, 250)
+      try {
+        iframe.contentWindow.print()
+      } catch (e) {
+        console.error('Iframe print error:', e)
+      }
+    }, 350)
+  } catch (e) {
+    console.error('Fatal print error:', e)
+    toast.error('Gagal membuka dialog cetak. Silakan periksa pengaturan browser Anda.')
+  }
 }
 </script>
 
