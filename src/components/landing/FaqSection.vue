@@ -68,6 +68,10 @@ const faqs = [
     answer: 'Tidak ada batasan jumlah tamu! Kamu bebas menyebarkan link undangan digitalmu ke sebanyak mungkin orang yang kamu mau, ke seluruh dunia tanpa biaya tambahan.'
   },
   {
+    question: 'Apakah fitur Wedding Planner & Kalkulator Budget benar-benar gratis?',
+    answer: 'Ya, <strong>100% gratis seumur hidup!</strong> Kamu bisa mengatur target anggaran, mencatat realisasi pos pengeluaran, memantau checklist persiapan pernikahan H-180 s/d Hari H, menyimpan kontak vendor, serta mencetak rundown acara tanpa biaya sepeser pun.'
+  },
+  {
     question: 'Apakah bisa menambahkan Video Prewedding? Apakah bisa dibuat privat?',
     answer: 'Bisa banget! Kamu cukup masukkan link video YouTube ke bagian Video Prewedding. Agar video tidak bisa ditonton publik di pencarian YouTube (hanya bisa ditonton lewat undanganmu), kamu cukup atur visibilitas video di YouTube menjadi <strong>"Tidak Publik" (Unlisted)</strong>.'
   }

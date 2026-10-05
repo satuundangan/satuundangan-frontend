@@ -1000,6 +1000,7 @@ const pricingPlans = computed(() =>
       discount: tierDiscounts[tier.id],
       features: [
         { label: 'Bebas pilih semua desain', included: true },
+        { label: 'Akses Wedding Planner & Budgeting', included: true },
         { label: 'Peta lokasi, hitung mundur, RSVP & amplop', included: true },
         { label: 'Musik latar preset', included: true },
         {

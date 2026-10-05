@@ -18,10 +18,16 @@
         </h1>
         <p class="text-dark/70 text-lg md:text-xl max-w-lg mx-auto md:mx-0 leading-relaxed font-light">
           Buat undangan pernikahan digital yang eksklusif, modern, dan penuh makna. 
-          <span class="font-bold text-dark/90 block mt-2">Edit sendiri sesukamu, revisi sepuasnya tanpa batas!</span>
+          <span class="font-bold text-dark/90 block mt-2">Termasuk Wedding Planner & Kalkulator Budget Gratis!</span>
         </p>
 
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-8 text-sm font-bold text-dark/60 pt-2">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-sm font-bold text-dark/60 pt-2">
+          <div class="flex items-center gap-2 group">
+            <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
+              <i class="fa-solid fa-clipboard-check text-amber-600 text-xs"></i>
+            </div>
+            <span class="text-amber-800">Free Wedding Planner</span>
+          </div>
           <div class="flex items-center gap-2 group">
             <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
               <i class="fa-solid fa-infinity text-mocha text-xs"></i>

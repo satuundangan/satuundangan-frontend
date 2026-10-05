@@ -41,6 +41,12 @@
 <script setup>
 const features = [
   {
+    icon: 'fa-solid fa-clipboard-check',
+    badge: 'Gratis Selamanya',
+    title: 'Wedding Planner Terpadu',
+    description: 'Kalkulator budget & realisasi biaya, checklist persiapan H-180 s/d Hari H, buku vendor langsung chat WhatsApp, dan generator rundown acara siap cetak.'
+  },
+  {
     icon: 'fa-brands fa-whatsapp',
     badge: 'Favorit',
     title: 'Sebar WhatsApp Otomatis',

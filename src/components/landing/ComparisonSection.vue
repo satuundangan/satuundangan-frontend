@@ -86,6 +86,7 @@ const negativePoints = [
 
 const positivePoints = [
   { title: 'Sangat Hemat (Mulai Rp 49rb)', desc: 'Bayar sekali, sebar tanpa batas ke ribuan tamu tanpa tambahan biaya cetak atau ongkir.' },
+  { title: 'Free Wedding Planner & Budgeting', desc: 'Lengkap dengan kalkulator budget biaya, countdown checklist H-180, kontak vendor, & cetak rundown.' },
   { title: 'Instan Jadi dalam 5 Menit', desc: 'Tinggal pilih tema aesthetic, isi nama & tanggal, undangan langsung aktif dan siap disebar.' },
   { title: 'Bebas Revisi Kapan Saja', desc: 'Ganti tanggal, venue, atau link maps? Edit sendiri langsung terupdate secara real-time.' },
   { title: 'Sebar Cepat via WhatsApp', desc: 'Kirim link personal nama tamu dengan 1 klik lewat WhatsApp, Instagram, atau grup keluarga.' },
