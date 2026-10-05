@@ -55,6 +55,10 @@ describe('seoRoutes', () => {
       expect(resolveStaticSeo('/templates').canonical).toBe('https://www.satuundangan.id/templates')
     })
 
+    it('resolves /wedding-planner canonical', () => {
+      expect(resolveStaticSeo('/wedding-planner').canonical).toBe('https://www.satuundangan.id/wedding-planner')
+    })
+
     it('resolves /syarat-ketentuan to the /terms canonical', () => {
       expect(resolveStaticSeo('/syarat-ketentuan').canonical).toBe(
         'https://www.satuundangan.id/terms',

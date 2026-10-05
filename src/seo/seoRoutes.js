@@ -41,6 +41,13 @@ export const STATIC_ROUTE_SEO = {
     canonicalPath: '/templates',
     ogType: 'website',
   },
+  '/wedding-planner': {
+    title: 'Free Wedding Planner & Kalkulator Budget Pernikahan - Satu Undangan',
+    description:
+      'Aplikasi wedding planner online gratis: kalkulator estimasi & realisasi budget, countdown checklist persiapan H-180, kontak vendor, dan susunan rundown hari H.',
+    canonicalPath: '/wedding-planner',
+    ogType: 'website',
+  },
   '/create': {
     title: 'Buat Undangan Digital Pernikahan - Satu Undangan',
     description:

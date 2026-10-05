@@ -167,6 +167,12 @@ const router = createRouter({
       component: () => import('@/views/dashboard/WeddingPlannerView.vue'),
       meta: { title: 'Wedding Planner', requiresAuth: true, requiresApproval: true },
     },
+    {
+      path: '/wedding-planner',
+      name: 'WeddingPlannerPublic',
+      component: () => import('@/views/WeddingPlannerPublicView.vue'),
+      meta: { title: 'Free Wedding Planner & Kalkulator Budget' },
+    },
     { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
     { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
     { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },

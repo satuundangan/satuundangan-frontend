@@ -21,6 +21,11 @@ const FALLBACK_SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>
     <priority>0.8</priority>
   </url>
   <url>
+    <loc>https://www.satuundangan.id/wedding-planner</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
     <loc>https://www.satuundangan.id/create</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>

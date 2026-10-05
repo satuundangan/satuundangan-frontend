@@ -24,7 +24,17 @@
           </div>
 
           <!-- Quick Actions -->
-          <div v-if="isUnlocked" class="flex items-center gap-2">
+          <div v-if="isUnlocked" class="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              @click="openSetupModal = true"
+              class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              title="Atur ulang profil dan target pernikahan"
+            >
+              <i class="fa-solid fa-sliders text-amber-600"></i>
+              <span>Profil Pernikahan</span>
+            </button>
+
             <button
               type="button"
               @click="printRundown"
@@ -33,6 +43,7 @@
               <i class="fa-solid fa-print text-slate-500"></i>
               <span>Cetak Rundown / PDF</span>
             </button>
+
             <button
               type="button"
               @click="handleSavePlanner"
@@ -64,7 +75,7 @@
             </h3>
 
             <p class="text-xs md:text-sm text-stone-300 leading-relaxed">
-              Dapatkan Kalkulator Budget Otomatis, 20+ Checklist Persiapan Pernikahan Adat & Nasional, Buku Kontak Vendor, serta Generator Rundown Hari H tanpa biaya sepeser pun. Cukup dukung kami dengan 2 langkah mudah di bawah ini!
+              Dapatkan Kalkulator Budget Otomatis, 21 Checklist Persiapan Pernikahan Adat & Nasional, Buku Kontak Vendor, serta Generator Rundown Hari H tanpa biaya sepeser pun. Cukup dukung kami dengan 2 langkah mudah di bawah ini!
             </p>
 
             <!-- 2 Simple Steps -->
@@ -155,6 +166,76 @@
 
         <!-- 3. UNLOCKED TOOL INTERFACE -->
         <div v-else-if="!loading && isUnlocked" class="space-y-6">
+          <!-- MINI DASHBOARD / PROGRESS SUMMARY BANNER -->
+          <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white shadow-xl border border-amber-500/20 relative overflow-hidden">
+            <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <!-- Left: Wedding Overview Info -->
+              <div class="space-y-2">
+                <div class="flex items-center gap-2">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+                    {{ planner.weddingConcept || 'Pernikahan Modern' }}
+                  </span>
+                  <span v-if="planner.weddingDate" class="text-xs text-stone-300 font-mono flex items-center gap-1">
+                    <i class="fa-solid fa-calendar-day text-amber-400"></i> {{ formatDate(planner.weddingDate) }}
+                  </span>
+                  <span v-if="countdownDays !== null" class="text-xs font-black text-amber-400">
+                    ({{ countdownDays > 0 ? countdownDays + ' Hari Menuju Hari H' : countdownDays === 0 ? 'Hari Ini Hari H!' : 'Acara Telah Selesai' }})
+                  </span>
+                </div>
+
+                <h3 class="text-xl sm:text-2xl font-black tracking-tight">
+                  Status Kesiapan Pernikahan: <span class="text-amber-400">{{ overallReadinessPercent }}% Siap</span>
+                </h3>
+
+                <p class="text-xs text-stone-300 max-w-xl leading-relaxed">
+                  Target Tamu: <b>{{ planner.estimatedGuests || 300 }} Orang</b> • Total Anggaran: <b>{{ formatCurrency(planner.budgetTotal || 0) }}</b> • Vendor Terdaftar: <b>{{ planner.vendors?.length || 0 }} Vendor</b>
+                </p>
+              </div>
+
+              <!-- Right: 3 Mini Progress Rings / Gauges -->
+              <div class="grid grid-cols-3 gap-3 sm:gap-4 shrink-0 text-center">
+                <!-- 1. Budget Usage -->
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs space-y-1">
+                  <span class="text-[9px] font-black uppercase text-stone-400 block">Anggaran</span>
+                  <div class="text-sm sm:text-base font-black font-mono" :class="budgetPercent > 100 ? 'text-rose-400' : 'text-amber-300'">
+                    {{ budgetPercent }}%
+                  </div>
+                  <span class="text-[9px] text-stone-400 block truncate">Realisasi</span>
+                </div>
+
+                <!-- 2. Checklist Progress -->
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs space-y-1">
+                  <span class="text-[9px] font-black uppercase text-stone-400 block">Checklist</span>
+                  <div class="text-sm sm:text-base font-black font-mono text-emerald-400">
+                    {{ completedChecklistCount }}/{{ totalChecklistCount }}
+                  </div>
+                  <span class="text-[9px] text-stone-400 block">{{ checklistPercent }}% Selesai</span>
+                </div>
+
+                <!-- 3. Payment Status -->
+                <div class="p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs space-y-1">
+                  <span class="text-[9px] font-black uppercase text-stone-400 block">Vendor Bayar</span>
+                  <div class="text-sm sm:text-base font-black font-mono text-blue-300">
+                    {{ paidVendorsCount }}/{{ planner.vendors?.length || 0 }}
+                  </div>
+                  <span class="text-[9px] text-stone-400 block">Lunas</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Global Readiness Progress Bar -->
+            <div class="mt-4 pt-4 border-t border-white/10">
+              <div class="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
+                <div
+                  class="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-400 transition-all duration-700"
+                  :style="{ width: overallReadinessPercent + '%' }"
+                ></div>
+              </div>
+            </div>
+          </div>
+
           <!-- Sub-navigation Tabs -->
           <div class="inline-flex items-center bg-slate-200/80 p-1 rounded-2xl w-full sm:w-auto overflow-x-auto custom-scrollbar">
             <button
@@ -401,7 +482,7 @@
                   <div
                     v-for="task in getPhaseTasks(phase)"
                     :key="task.id"
-                    class="p-3 rounded-2xl hover:bg-slate-50/80 transition-colors flex items-start justify-between gap-3"
+                    class="p-3.5 rounded-2xl hover:bg-slate-50/80 transition-colors flex items-start justify-between gap-3"
                   >
                     <label class="flex items-start gap-3 cursor-pointer flex-1 min-w-0">
                       <input
@@ -410,13 +491,24 @@
                         class="h-4 w-4 mt-0.5 rounded-md border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                       <div class="min-w-0">
-                        <span
-                          class="text-xs font-bold block"
-                          :class="task.isCompleted ? 'line-through text-slate-400' : 'text-slate-800'"
-                        >
-                          {{ task.task }}
-                        </span>
-                        <span v-if="task.dueDate" class="text-[10px] text-amber-600 font-semibold block mt-0.5">
+                        <div class="flex flex-wrap items-center gap-2">
+                          <span
+                            class="text-xs font-bold"
+                            :class="task.isCompleted ? 'line-through text-slate-400' : 'text-slate-900'"
+                          >
+                            {{ task.task }}
+                          </span>
+                          <span v-if="task.category" class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-slate-100 text-slate-600 border border-slate-200">
+                            {{ task.category }}
+                          </span>
+                          <span v-if="task.priority === 'high'" class="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                            Prioritas Tinggi
+                          </span>
+                        </div>
+                        <p v-if="task.notes" class="text-[11px] text-slate-500 mt-1 leading-relaxed">
+                          💡 {{ task.notes }}
+                        </p>
+                        <span v-if="task.dueDate" class="text-[10px] text-amber-600 font-semibold block mt-1">
                           Tenggat: {{ task.dueDate }}
                         </span>
                       </div>
@@ -425,7 +517,7 @@
                     <button
                       type="button"
                       @click="deleteChecklist(task.id)"
-                      class="text-slate-300 hover:text-rose-500 p-1 text-xs"
+                      class="text-slate-300 hover:text-rose-500 p-1 text-xs shrink-0"
                       title="Hapus tugas"
                     >
                       <i class="fa-solid fa-xmark"></i>
@@ -614,7 +706,117 @@
           </div>
         </div>
 
-        <!-- 4. MODALS (Add/Edit Budget, Checklist, Vendor, Rundown) -->
+        <!-- 4. ONBOARDING & SETUP PROFILE MODAL (Muncul pertama kali atau via tombol Profil) -->
+        <Teleport to="body">
+          <div
+            v-if="openSetupModal"
+            class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/70 backdrop-blur-xs p-4 overflow-y-auto"
+            @click.self="openSetupModal = false"
+          >
+            <div class="w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl space-y-5 border border-slate-100 animate-scale-up">
+              <div class="flex items-start justify-between">
+                <div>
+                  <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-black uppercase mb-1">
+                    <i class="fa-solid fa-sparkles text-amber-500"></i> Personalisasi Wedding Planner
+                  </div>
+                  <h3 class="text-base sm:text-lg font-black text-slate-900">
+                    Yuk Atur Rencana Pernikahanmu!
+                  </h3>
+                  <p class="text-xs text-slate-500 mt-0.5">
+                    Isi detail ini agar kalkulator budget dan countdown otomatis menyesuaikan acara pernikahanmu.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  @click="openSetupModal = false"
+                  class="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <div class="space-y-4 text-xs">
+                <!-- 1. Tanggal Pernikahan -->
+                <div>
+                  <label class="font-bold text-slate-800 block mb-1">
+                    Tanggal Hari H Pernikahan:
+                  </label>
+                  <input
+                    v-model="setupForm.weddingDate"
+                    type="date"
+                    class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-50 font-semibold focus:bg-white focus:outline-none focus:border-amber-500 transition-all"
+                  />
+                  <p class="text-[10px] text-slate-400 mt-1">Digunakan untuk menghitung countdown hari persiapan.</p>
+                </div>
+
+                <!-- 2. Konsep / Adat -->
+                <div>
+                  <label class="font-bold text-slate-800 block mb-1">
+                    Konsep & Tema Pernikahan:
+                  </label>
+                  <select
+                    v-model="setupForm.weddingConcept"
+                    class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 bg-slate-50 font-semibold focus:bg-white focus:outline-none focus:border-amber-500 transition-all cursor-pointer"
+                  >
+                    <option value="Modern & Minimalis">Modern & Minimalis (Nasional)</option>
+                    <option value="Adat Jawa (Klasik/Keraton)">Adat Jawa (Klasik/Keraton)</option>
+                    <option value="Adat Sunda (Siger)">Adat Sunda (Siger)</option>
+                    <option value="Adat Minang / Batak / Sumatera">Adat Minang / Batak / Sumatera</option>
+                    <option value="Adat Bugis / Makassar / Kalimantan">Adat Bugis / Makassar / Kalimantan</option>
+                    <option value="Intimate Wedding / Garden Party">Intimate Wedding / Garden Party</option>
+                    <option value="Pernikahan Islami / Syar'i">Pernikahan Islami / Syar'i</option>
+                  </select>
+                </div>
+
+                <!-- 3. Target Budget & Estimasi Tamu -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-bold text-slate-800 block mb-1">
+                      Target Budget (Rp):
+                    </label>
+                    <input
+                      v-model.number="setupForm.budgetTotal"
+                      type="number"
+                      placeholder="Contoh: 75000000"
+                      class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 font-mono font-bold text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-amber-500 transition-all"
+                    />
+                  </div>
+                  <div>
+                    <label class="font-bold text-slate-800 block mb-1">
+                      Estimasi Jumlah Tamu:
+                    </label>
+                    <input
+                      v-model.number="setupForm.estimatedGuests"
+                      type="number"
+                      placeholder="Contoh: 400"
+                      class="w-full border border-slate-200 rounded-xl px-3.5 py-2.5 font-bold text-slate-900 bg-slate-50 focus:bg-white focus:outline-none focus:border-amber-500 transition-all"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  @click="openSetupModal = false"
+                  class="px-4 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50 transition-colors"
+                >
+                  Nanti Saja
+                </button>
+                <button
+                  type="button"
+                  @click="saveSetupProfile"
+                  class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all shadow-md flex items-center gap-1.5"
+                >
+                  <i class="fa-solid fa-check"></i>
+                  <span>Simpan & Terapkan</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </Teleport>
+
+        <!-- 5. OTHER MODALS (Budget, Checklist, Vendor, Rundown) -->
         <!-- Budget Item Modal -->
         <Teleport to="body">
           <div v-if="showBudgetModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4" @click.self="showBudgetModal = false">
@@ -631,7 +833,7 @@
                     <option value="Dokumentasi">Dokumentasi</option>
                     <option value="Undangan & Digital">Undangan & Digital</option>
                     <option value="Suvenir & Mahar">Suvenir & Mahar</option>
-                    <option value="Musik & Hiburan">Musik & Hiburan</option>
+                    <option value="Wedding Organizer & Hiburan">Wedding Organizer & Hiburan</option>
                     <option value="Lainnya">Lainnya</option>
                   </select>
                 </div>
@@ -679,8 +881,16 @@
                   </select>
                 </div>
                 <div>
+                  <label class="font-bold text-slate-700 block mb-1">Kategori Tugas</label>
+                  <input v-model="checklistForm.category" type="text" placeholder="Contoh: Katering, Busana, KUA" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+                </div>
+                <div>
                   <label class="font-bold text-slate-700 block mb-1">Nama Tugas</label>
                   <input v-model="checklistForm.task" type="text" placeholder="Contoh: Booking MUA Pengantin" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+                </div>
+                <div>
+                  <label class="font-bold text-slate-700 block mb-1">Catatan / Panduan (Opsional)</label>
+                  <input v-model="checklistForm.notes" type="text" placeholder="Contoh: Bawa surat sehat dan foto 2x3" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
                 </div>
                 <div>
                   <label class="font-bold text-slate-700 block mb-1">Tenggat Waktu (Opsional)</label>
@@ -822,6 +1032,7 @@ const hasClickedFollow = ref(false)
 const hasClickedShare = ref(false)
 
 const activeTab = ref('budget')
+const openSetupModal = ref(false)
 
 const unlockForm = reactive({
   instagramHandle: '',
@@ -830,10 +1041,20 @@ const unlockForm = reactive({
 // Planner Data State
 const planner = reactive({
   budgetTotal: 70000000,
+  weddingDate: '',
+  weddingConcept: 'Modern & Minimalis',
+  estimatedGuests: 300,
   budgetItems: [],
   checklists: [],
   vendors: [],
   rundown: [],
+})
+
+const setupForm = reactive({
+  weddingDate: '',
+  weddingConcept: 'Modern & Minimalis',
+  budgetTotal: 70000000,
+  estimatedGuests: 300,
 })
 
 const checklistPhases = [
@@ -860,7 +1081,9 @@ const showChecklistModal = ref(false)
 const checklistForm = reactive({
   id: '',
   phase: 'H-180 s/d H-120',
+  category: 'Administrasi',
   task: '',
+  notes: '',
   dueDate: '',
 })
 
@@ -913,6 +1136,34 @@ const checklistPercent = computed(() => {
   return Math.round((completedChecklistCount.value / totalChecklistCount.value) * 100)
 })
 
+const paidVendorsCount = computed(() => {
+  return (planner.vendors || []).filter(v => v.paymentStatus === 'paid').length
+})
+
+// Overall readiness score (0-100%)
+const overallReadinessPercent = computed(() => {
+  let score = 0
+  // 50% from checklist
+  score += Math.round(checklistPercent.value * 0.5)
+  // 25% from having vendors listed
+  if (planner.vendors?.length >= 3) score += 25
+  else if (planner.vendors?.length > 0) score += 15
+  // 25% from budget setup
+  if (totalActualCost.value > 0) score += 25
+  return Math.min(score, 100)
+})
+
+// Countdown Days to Wedding
+const countdownDays = computed(() => {
+  if (!planner.weddingDate) return null
+  const target = new Date(planner.weddingDate)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  target.setHours(0, 0, 0, 0)
+  const diffTime = target.getTime() - today.getTime()
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+})
+
 function getPhaseTasks(phase) {
   return (planner.checklists || []).filter(c => c.phase === phase)
 }
@@ -928,6 +1179,19 @@ function formatCurrency(val) {
 
 function formatNumber(val) {
   return Number(val || 0).toLocaleString('id-ID')
+}
+
+function formatDate(dateStr) {
+  if (!dateStr) return '-'
+  try {
+    return new Date(dateStr).toLocaleDateString('id-ID', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+  } catch {
+    return dateStr
+  }
 }
 
 function normalizePhone(phone) {
@@ -950,10 +1214,19 @@ async function loadPlanner() {
     instagramHandle.value = res.instagramHandle || ''
     if (res.planner) {
       planner.budgetTotal = Number(res.planner.budgetTotal) || 70000000
+      planner.weddingDate = res.planner.weddingDate || ''
+      planner.weddingConcept = res.planner.weddingConcept || 'Modern & Minimalis'
+      planner.estimatedGuests = Number(res.planner.estimatedGuests) || 300
       planner.budgetItems = res.planner.budgetItems || []
       planner.checklists = res.planner.checklists || []
       planner.vendors = res.planner.vendors || []
       planner.rundown = res.planner.rundown || []
+
+      // Sync setupForm
+      setupForm.budgetTotal = planner.budgetTotal
+      setupForm.weddingDate = planner.weddingDate
+      setupForm.weddingConcept = planner.weddingConcept
+      setupForm.estimatedGuests = planner.estimatedGuests
     }
   } catch (err) {
     console.error('Failed to load wedding planner:', err)
@@ -966,7 +1239,7 @@ async function loadPlanner() {
 function shareToWhatsApp() {
   hasClickedShare.value = true
   const text = encodeURIComponent(
-    'Halo! Rekomendasi buat kamu yang lagi siapin nikahan: coba pakai platform SatuUndangan.id. Ada fitur Wedding Planner, Kalkulator Budget & Checklist H-180 gratis seumur hidup! Cek di: https://satuundangan.id'
+    'Halo! Rekomendasi buat kamu yang lagi siapin nikahan: coba pakai platform SatuUndangan.id. Ada fitur Wedding Planner, Kalkulator Budget & Checklist H-180 gratis seumur hidup! Cek di: https://satuundangan.id/wedding-planner'
   )
   window.open(`https://wa.me/?text=${text}`, '_blank')
 }
@@ -989,17 +1262,40 @@ async function submitUnlock() {
     instagramHandle.value = res.instagramHandle || `@${handle}`
     if (res.planner) {
       planner.budgetTotal = Number(res.planner.budgetTotal) || 70000000
+      planner.weddingDate = res.planner.weddingDate || ''
+      planner.weddingConcept = res.planner.weddingConcept || 'Modern & Minimalis'
+      planner.estimatedGuests = Number(res.planner.estimatedGuests) || 300
       planner.budgetItems = res.planner.budgetItems || []
       planner.checklists = res.planner.checklists || []
       planner.vendors = res.planner.vendors || []
       planner.rundown = res.planner.rundown || []
+
+      setupForm.budgetTotal = planner.budgetTotal
+      setupForm.weddingDate = planner.weddingDate
+      setupForm.weddingConcept = planner.weddingConcept
+      setupForm.estimatedGuests = planner.estimatedGuests
     }
+
     toast.success('Selamat! Akses Wedding Planner kamu sudah aktif gratis seumur hidup 🎉')
+    // Open onboarding modal immediately so user can customize their budget & date
+    openSetupModal.value = true
   } catch (err) {
     toast.error(err.message || 'Gagal membuka akses')
   } finally {
     unlocking.value = false
   }
+}
+
+// Save Setup Profile
+async function saveSetupProfile() {
+  planner.weddingDate = setupForm.weddingDate
+  planner.weddingConcept = setupForm.weddingConcept
+  planner.budgetTotal = Number(setupForm.budgetTotal) || 70000000
+  planner.estimatedGuests = Number(setupForm.estimatedGuests) || 300
+
+  openSetupModal.value = false
+  await handleSavePlanner()
+  toast.success('Profil rencana pernikahan berhasil diperbarui!')
 }
 
 // Save Planner
@@ -1008,6 +1304,9 @@ async function handleSavePlanner() {
   try {
     await updateWeddingPlanner({
       budgetTotal: planner.budgetTotal,
+      weddingDate: planner.weddingDate,
+      weddingConcept: planner.weddingConcept,
+      estimatedGuests: planner.estimatedGuests,
       budgetItems: planner.budgetItems,
       checklists: planner.checklists,
       vendors: planner.vendors,
@@ -1035,6 +1334,7 @@ async function promptEditTotalBudget() {
   })
   if (newBudget !== undefined && newBudget !== null) {
     planner.budgetTotal = Number(newBudget)
+    setupForm.budgetTotal = Number(newBudget)
     handleSavePlanner()
   }
 }
@@ -1084,7 +1384,9 @@ function openAddChecklistModal() {
   Object.assign(checklistForm, {
     id: 'chk-' + Date.now(),
     phase: 'H-180 s/d H-120',
+    category: 'Administrasi',
     task: '',
+    notes: '',
     dueDate: '',
   })
   showChecklistModal.value = true
@@ -1098,7 +1400,9 @@ function saveChecklistTask() {
   planner.checklists.push({
     id: checklistForm.id,
     phase: checklistForm.phase,
+    category: checklistForm.category,
     task: checklistForm.task,
+    notes: checklistForm.notes,
     dueDate: checklistForm.dueDate,
     isCompleted: false,
   })
