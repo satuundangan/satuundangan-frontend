@@ -118,17 +118,21 @@
             <div class="pt-4 max-w-md mx-auto space-y-3">
               <div class="text-left">
                 <label class="text-[11px] font-bold text-amber-200 block mb-1">
-                  Username Instagram Kamu (opsional, untuk konfirmasi):
+                  Username Instagram Kamu <span class="text-rose-400">*wajib</span>:
                 </label>
                 <div class="relative">
                   <i class="fa-solid fa-at absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
                   <input
                     v-model="unlockForm.instagramHandle"
                     type="text"
+                    required
                     placeholder="nama_kamu (contoh: rina.septiani)"
-                    class="w-full rounded-xl bg-white/10 border border-white/20 pl-9 pr-3.5 py-2.5 text-xs font-semibold text-white placeholder-stone-400 focus:outline-none focus:border-amber-400 transition-all"
+                    class="w-full rounded-xl bg-white/10 border border-white/20 pl-9 pr-3.5 py-2.5 text-xs font-semibold text-white placeholder-stone-400 focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-all"
                   />
                 </div>
+                <p class="text-[10px] text-stone-400 mt-1">
+                  Kami akan memeriksa apakah kamu sudah mem-follow @satuundangan_official.
+                </p>
               </div>
 
               <button
@@ -969,13 +973,20 @@ function shareToWhatsApp() {
 
 // Submit Unlock
 async function submitUnlock() {
+  const handle = (unlockForm.instagramHandle || '').trim().replace(/^@/, '')
+  if (!handle) {
+    toast.warning('Silakan masukkan username Instagram kamu terlebih dahulu!')
+    return
+  }
+
   unlocking.value = true
   try {
     const res = await unlockWeddingPlanner({
-      instagramHandle: unlockForm.instagramHandle || auth.user?.name || '',
+      instagramHandle: `@${handle}`,
       platform: 'instagram',
     })
     isUnlocked.value = true
+    instagramHandle.value = res.instagramHandle || `@${handle}`
     if (res.planner) {
       planner.budgetTotal = Number(res.planner.budgetTotal) || 70000000
       planner.budgetItems = res.planner.budgetItems || []
