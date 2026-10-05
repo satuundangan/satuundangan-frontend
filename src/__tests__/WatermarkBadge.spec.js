@@ -5,7 +5,7 @@ import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 describe('WatermarkBadge Component', () => {
   it('renders correctly with default dark variant', () => {
     const wrapper = mount(WatermarkBadge)
-    expect(wrapper.text()).toContain('Tertarik undangan seperti ini?')
+    expect(wrapper.text()).toContain('Dibuat dengan')
     expect(wrapper.text()).toContain('SatuUndangan.id')
 
     const link = wrapper.find('a')
@@ -19,21 +19,21 @@ describe('WatermarkBadge Component', () => {
     const wrapper = mount(WatermarkBadge, {
       props: { variant: 'light' }
     })
-    expect(wrapper.find('.watermark-card').classes()).toContain('bg-slate-900/90')
+    expect(wrapper.find('.watermark-link').classes()).toContain('text-slate-500')
   })
 
   it('renders with gold variant classes', () => {
     const wrapper = mount(WatermarkBadge, {
       props: { variant: 'gold' }
     })
-    expect(wrapper.find('.watermark-card').classes()).toContain('bg-[#080f24]/95')
+    expect(wrapper.find('.watermark-link').classes()).toContain('text-[#d6b18a]/75')
   })
 
   it('renders with neon variant classes', () => {
     const wrapper = mount(WatermarkBadge, {
       props: { variant: 'neon' }
     })
-    expect(wrapper.find('.watermark-card').classes()).toContain('bg-[#0a0f1d]/95')
+    expect(wrapper.find('.watermark-link').classes()).toContain('text-cyan-400/80')
   })
 
   it('appends referral code when provided in props', () => {
