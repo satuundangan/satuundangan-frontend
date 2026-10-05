@@ -185,12 +185,24 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-20 px-6 bg-gray-50 text-center border-y border-gray-100">
-         <h3 class="text-2xl font-serif text-blue-800 mb-10" v-observe>Kami Yang Mengundang</h3>
+      <section v-if="isSectionEnabled('extended-family') && (data.extendedFamily?.length || data.turutMengundang)" class="py-20 px-6 bg-gray-50 text-center border-y border-gray-100">
+         <h3 class="text-2xl font-serif text-blue-800 mb-10" v-observe>Turut Mengundang</h3>
          <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-4" v-observe>
-            <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="px-6 py-2 bg-white border border-gray-200 rounded-full text-gray-600 text-sm shadow-sm">
-               {{ person }}
-            </div>
+            <template v-if="Array.isArray(data.extendedFamily)">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="px-6 py-2 bg-white border border-gray-200 rounded-full text-gray-600 text-sm shadow-sm">
+                  {{ person }}
+               </div>
+            </template>
+            <template v-else-if="typeof data.extendedFamily === 'string' && data.extendedFamily.trim()">
+               <div v-for="(person, idx) in data.extendedFamily.split(/,|\n/).map(s => s.trim()).filter(Boolean)" :key="idx" class="px-6 py-2 bg-white border border-gray-200 rounded-full text-gray-600 text-sm shadow-sm">
+                  {{ person }}
+               </div>
+            </template>
+            <template v-else-if="data.turutMengundang">
+               <div v-for="(person, idx) in data.turutMengundang.split(/,|\n/).map(s => s.trim()).filter(Boolean)" :key="idx" class="px-6 py-2 bg-white border border-gray-200 rounded-full text-gray-600 text-sm shadow-sm">
+                  {{ person }}
+               </div>
+            </template>
          </div>
       </section>
 
@@ -348,7 +360,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)"
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length)"
         id="gift" class="py-20 md:py-24 px-6 bg-white text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-blue-800 mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-500 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
@@ -361,7 +373,8 @@
             v-observe>
             <div
               class="h-12 flex items-center justify-center mb-4 text-blue-600 font-bold text-xl uppercase tracking-wider">
-              {{ bank.bankName }}
+              <img v-if="bank.bankLogo" :src="bank.bankLogo" :alt="bank.bankName" class="h-10 max-w-[140px] object-contain" />
+              <span v-else>{{ bank.bankName }}</span>
             </div>
             <p class="text-lg text-gray-800 font-mono mb-1">{{ bank.accountNumber }}</p>
             <p class="text-sm text-gray-500 mb-4">a.n {{ bank.accountName }}</p>
@@ -370,39 +383,47 @@
               <i class="fa-regular fa-copy mr-1"></i> Salin
             </button>
           </div>
+
+          <!-- E-Wallet Cards -->
+          <div v-for="(wallet, idx) in walletItems" :key="'wallet' + idx"
+            class="bg-white border border-gray-200 p-6 rounded-2xl w-full sm:w-72 hover:border-blue-200 transition-all shadow-sm"
+            v-observe>
+            <div class="h-12 flex items-center justify-center mb-4 text-blue-600 font-bold text-xl uppercase tracking-wider">
+              {{ wallet.wallet_provider }}
+            </div>
+            <img v-if="wallet.wallet_image" :src="wallet.wallet_image" :alt="'QR ' + wallet.wallet_provider"
+              class="w-40 h-40 object-contain mx-auto mb-4 rounded-lg bg-gray-50 p-2 border border-gray-100" />
+            <p class="text-lg text-gray-800 font-mono mb-4">{{ wallet.wallet_number }}</p>
+            <button v-if="wallet.wallet_number" @click="copyToClipboard(wallet.wallet_number)"
+              class="text-xs text-blue-600 border border-blue-600 px-4 py-1.5 rounded-full hover:bg-blue-600 hover:text-white transition-colors">
+              <i class="fa-regular fa-copy mr-1"></i> Salin
+            </button>
+          </div>
+        </div>
+
+        <!-- Gift Delivery Address -->
+        <div v-if="giftAddresses.length" class="max-w-xl mx-auto mt-10 space-y-4">
+          <h3 class="text-lg font-serif text-blue-800" v-observe>Kirim Hadiah Fisik</h3>
+          <div v-for="(address, idx) in giftAddresses" :key="'addr' + idx"
+            class="bg-gray-50 border border-gray-200 p-6 rounded-2xl shadow-sm" v-observe>
+            <p class="text-gray-600 text-sm whitespace-pre-line leading-relaxed mb-4">{{ address }}</p>
+            <button @click="copyToClipboard(address)"
+              class="text-xs text-blue-600 border border-blue-600 px-4 py-1.5 rounded-full hover:bg-blue-600 hover:text-white transition-colors">
+              <i class="fa-regular fa-copy mr-1"></i> Salin Alamat
+            </button>
+          </div>
         </div>
       </section>
 
-      <!-- PROTOKOL KESEHATAN -->
-      <section v-if="data.healthProtocol" class="py-16 px-6 bg-gray-50 text-center border-t border-gray-200">
-         <h3 class="text-xl font-serif text-gray-800 mb-8">Protokol Kesehatan</h3>
-         <div class="flex justify-center gap-8 flex-wrap text-blue-600">
-            <div class="flex flex-col items-center gap-2 w-24">
-               <i class="fa-solid fa-mask text-3xl"></i>
-               <span class="text-xs text-gray-500">Pakai Masker</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 w-24">
-               <i class="fa-solid fa-hands-bubbles text-3xl"></i>
-               <span class="text-xs text-gray-500">Cuci Tangan</span>
-            </div>
-            <div class="flex flex-col items-center gap-2 w-24">
-               <i class="fa-solid fa-people-arrows text-3xl"></i>
-               <span class="text-xs text-gray-500">Jaga Jarak</span>
-            </div>
-         </div>
-      </section>
-
-      <!-- TURUT MENGUNDANG -->
-      <section v-if="data.turutMengundang" class="py-16 px-6 bg-white text-center border-t border-gray-200">
-         <h3 class="text-xl font-serif text-blue-800 mb-6">Turut Mengundang</h3>
-         <p class="text-gray-500 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang }}</p>
-      </section>
-
       <!-- FOOTER -->
-      <footer v-if="isSectionEnabled('footer')" class="py-12 bg-gray-100 text-center border-t border-gray-200">
-        <h2 class="font-alex text-3xl md:text-4xl text-blue-800 mb-2">{{ data.groomName }} & {{ data.brideName }}</h2>
-        <p v-if="data.footerText" class="text-gray-500 text-sm mb-4 max-w-lg mx-auto px-4">{{ data.footerText }}</p>
-        <WatermarkBadge variant="light" />
+      <footer class="py-16 md:py-20 bg-gray-50 text-center border-t border-gray-200 relative overflow-hidden">
+        <div class="relative z-10 px-6">
+          <p class="font-serif italic text-blue-800/70 text-base md:text-lg mb-3">Terima Kasih</p>
+          <h2 class="font-alex text-4xl md:text-5xl text-blue-800 mb-4">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
+          <p v-if="data.footerText" class="text-gray-500 text-sm max-w-lg mx-auto leading-relaxed mb-6">{{ data.footerText }}</p>
+          <div class="w-16 h-px bg-blue-300 mx-auto mb-6"></div>
+          <WatermarkBadge variant="light" />
+        </div>
       </footer>
 
     </div>
@@ -437,6 +458,31 @@ watch(
 )
 
 const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+// giftDeliveryAddress may arrive as an array (studio/API) or a single string
+const giftAddresses = computed(() => {
+  const raw = data.value.giftDeliveryAddress
+  const list = Array.isArray(raw) ? raw : raw ? [raw] : []
+  return list.map((a) => String(a || '').trim()).filter(Boolean)
+})
+
+// eWalletLink may arrive as an array of objects ({ wallet_provider, wallet_number, wallet_image }),
+// an array of strings, or a single legacy string like "08123456789 (Adam Syahreza - OVO/DANA)"
+const walletItems = computed(() => {
+  const raw = data.value.eWalletLink
+  const list = Array.isArray(raw) ? raw : raw && typeof raw === 'string' && raw.trim() ? [raw.trim()] : []
+  return list
+    .map((wallet) => {
+      if (!wallet) return null
+      if (typeof wallet === 'object') return wallet
+      return {
+        wallet_provider: 'E-Wallet',
+        wallet_number: String(wallet),
+        wallet_image: '',
+      }
+    })
+    .filter(Boolean)
+})
 
 const mockStories = [
   {

@@ -200,12 +200,24 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-20 px-6 bg-black text-center">
-        <h3 class="text-2xl font-serif text-[#d6b18a] mb-10" v-observe>Kami Yang Mengundang</h3>
-        <div class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" v-observe>
-           <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="p-4 bg-white/5 border border-white/10 rounded-2xl text-gray-300 text-sm italic">
+      <section v-if="isSectionEnabled('extended-family') && (data.extendedFamily?.length || data.turutMengundang)" class="py-20 px-6 bg-black text-center">
+        <h3 class="text-2xl font-serif text-[#d6b18a] mb-10" v-observe>Turut Mengundang</h3>
+        <div class="max-w-4xl mx-auto flex flex-wrap justify-center gap-4" v-observe>
+          <template v-if="Array.isArray(data.extendedFamily)">
+            <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-gray-300 text-sm italic">
               {{ person }}
-           </div>
+            </div>
+          </template>
+          <template v-else-if="typeof data.extendedFamily === 'string' && data.extendedFamily.trim()">
+            <div v-for="(person, idx) in data.extendedFamily.split(/,|\n/).map(s => s.trim()).filter(Boolean)" :key="idx" class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-gray-300 text-sm italic">
+              {{ person }}
+            </div>
+          </template>
+          <template v-else-if="data.turutMengundang">
+            <div v-for="(person, idx) in data.turutMengundang.split(/,|\n/).map(s => s.trim()).filter(Boolean)" :key="idx" class="px-5 py-2.5 bg-white/5 border border-white/10 rounded-2xl text-gray-300 text-sm italic">
+              {{ person }}
+            </div>
+          </template>
         </div>
       </section>
 
@@ -447,18 +459,15 @@
         </div>
       </section>
 
-      <!-- TURUT MENGUNDANG -->
-      <section v-if="data.turutMengundang && isSectionEnabled('extended-family')" class="py-16 px-6 bg-black text-center border-t border-[#222]">
-        <h3 class="text-xl font-serif text-[#d6b18a] mb-6">Turut Mengundang</h3>
-        <p class="text-gray-400 text-sm whitespace-pre-line leading-relaxed max-w-2xl mx-auto">{{ data.turutMengundang
-          }}</p>
-      </section>
-
       <!-- FOOTER -->
-      <footer v-if="isSectionEnabled('footer')" class="py-12 bg-[#0f0f0f] text-center border-t border-[#222]">
-        <h2 class="font-alex text-3xl md:text-4xl text-[#d6b18a] mb-2">{{ data.groomName }} & {{ data.brideName }}</h2>
-        <p v-if="data.footerText" class="text-gray-400 text-sm mb-4 max-w-lg mx-auto px-4">{{ data.footerText }}</p>
-        <WatermarkBadge variant="dark" />
+      <footer class="py-16 md:py-20 bg-[#0a0a0a] text-center border-t border-[#222] relative overflow-hidden">
+        <div class="relative z-10 px-6">
+          <p class="font-serif italic text-[#d6b18a]/80 text-base md:text-lg mb-3">Terima Kasih</p>
+          <h2 class="font-alex text-4xl md:text-5xl text-[#d6b18a] mb-4">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
+          <p v-if="data.footerText" class="text-gray-400 text-sm max-w-lg mx-auto leading-relaxed mb-6">{{ data.footerText }}</p>
+          <div class="w-16 h-px bg-[#d6b18a]/30 mx-auto mb-6"></div>
+          <WatermarkBadge variant="dark" />
+        </div>
       </footer>
 
     </div>
@@ -630,8 +639,22 @@ function formatTime(dateStr) {
 }
 
 function isSectionEnabled(key) {
-  if (data.value.selectedSections === undefined || data.value.selectedSections === null) return true
-  return data.value.selectedSections.includes(key)
+  const sections = data.value.selectedSections
+  if (sections === undefined || sections === null) return true
+  if (!Array.isArray(sections)) return true
+  const aliasMap = {
+    couple: ['couple', 'photoCouple'],
+    event: ['event', 'event-details', 'map'],
+    hero: ['hero', 'cover'],
+    'love-story': ['love-story', 'story'],
+    'dress-code': ['dress-code', 'dressCode'],
+    'extended-family': ['extended-family', 'turut-mengundang'],
+    video: ['video', 'video-prewedding'],
+    'live-streaming': ['live-streaming', 'live-stream'],
+    footer: ['footer', 'penutup'],
+  }
+  const aliases = aliasMap[key] || [key]
+  return aliases.some(a => sections.includes(a))
 }
 
 function formatStoryDate(dateStr) {

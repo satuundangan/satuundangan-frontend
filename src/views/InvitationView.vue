@@ -177,43 +177,40 @@ onMounted(async () => {
         guestName: route.query.to || orangutanData.guestName,
       }
     } else if (isDemoMode.value) {
-      // Handle Demo Mode
+      // Handle Demo Mode — render immediately with local demo data to eliminate waiting latency
       const templateSlug = route.params.templateSlug
-      let templateDefaultMusic = null
-      let templateAudioStart = 0
-      let templateAudioEnd = 0
-      let sampleContent = {}
-      let tmpl = null
-      try {
-        tmpl = await getTemplateDesignBySlug(templateSlug)
-        templateDefaultMusic = tmpl?.defaultMusic || null
-        templateAudioStart = tmpl?.defaultAudioStart ?? 0
-        templateAudioEnd = tmpl?.defaultAudioEnd ?? 0
-        sampleContent =
-          tmpl && typeof tmpl.sampleContent === 'object' && tmpl.sampleContent
-            ? tmpl.sampleContent
-            : {}
-        applyDemoSeo(tmpl)
-      } catch {
-        // no-op — demo still works without template music
-      }
-      
       const defaultDemoMusic = {
         'naruto': 'wedding-instrumental-garden.mp3',
         'one-piece': 'one-piece-luffy.mp3',
       }
-        
+
       data = {
         ...demoData,
-        ...sampleContent,
         template_slug: templateSlug,
-        guestName: route.query.to || sampleContent.guestName || demoData.guestName,
-        musicChoice: templateDefaultMusic || defaultDemoMusic[templateSlug] || demoData.musicChoice,
-        audioStart: templateDefaultMusic ? templateAudioStart : (demoData.audioStart || 0),
-        audioEnd: templateDefaultMusic ? templateAudioEnd : (demoData.audioEnd || 0),
-        show_branding: false, // demo preview is a clean (premium-look) showcase
-        designConfig: tmpl?.designConfig ?? null,
+        guestName: route.query.to || demoData.guestName,
+        musicChoice: defaultDemoMusic[templateSlug] || demoData.musicChoice,
+        audioStart: demoData.audioStart || 0,
+        audioEnd: demoData.audioEnd || 0,
+        show_branding: false,
+        designConfig: null,
       }
+
+      // Fetch extra template design details (music, seo, custom sample content) asynchronously in background
+      getTemplateDesignBySlug(templateSlug).then((tmpl) => {
+        if (!tmpl || isLiveSyncActive.value) return
+        const sampleContent = typeof tmpl.sampleContent === 'object' && tmpl.sampleContent ? tmpl.sampleContent : {}
+        applyDemoSeo(tmpl)
+        invitationData.value = {
+          ...invitationData.value,
+          ...sampleContent,
+          musicChoice: tmpl.defaultMusic || invitationData.value?.musicChoice,
+          audioStart: tmpl.defaultMusic ? (tmpl.defaultAudioStart ?? 0) : invitationData.value?.audioStart,
+          audioEnd: tmpl.defaultMusic ? (tmpl.defaultAudioEnd ?? 0) : invitationData.value?.audioEnd,
+          designConfig: tmpl.designConfig ?? invitationData.value?.designConfig,
+        }
+      }).catch(() => {
+        // no-op — demo runs instantly on local defaults
+      })
     } else {
       try {
         // Normal Mode: Fetch from API
