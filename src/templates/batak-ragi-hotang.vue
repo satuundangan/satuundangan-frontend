@@ -18,22 +18,12 @@
       </svg>
     </div>
 
-    <!-- Batak Toba Gorga Woodcarving Corner Accents (Embedded SVG) -->
-    <div class="fixed top-0 left-0 w-28 h-28 md:w-44 md:h-44 z-10 opacity-75 pointer-events-none text-[#c8963e]">
-      <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M0,0 Q60,10 60,60 Q10,60 0,0" fill="#a82b3a" fill-opacity="0.25" />
-        <path d="M10,0 Q70,25 25,70 Q0,25 10,0" stroke="#c8963e" stroke-width="1.5" />
-        <circle cx="35" cy="35" r="4.5" fill="#f7eee9" />
-        <circle cx="58" cy="58" r="3" fill="#c8963e" />
-      </svg>
+    <!-- Batak Toba Gorga Corner Accents -->
+    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none">
+      <img :src="cornerImg" alt="Corner Ornament" class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(200,150,62,0.3)]" />
     </div>
-    <div class="fixed bottom-0 right-0 w-28 h-28 md:w-44 md:h-44 z-10 opacity-75 pointer-events-none text-[#c8963e] rotate-180">
-      <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M0,0 Q60,10 60,60 Q10,60 0,0" fill="#a82b3a" fill-opacity="0.25" />
-        <path d="M10,0 Q70,25 25,70 Q0,25 10,0" stroke="#c8963e" stroke-width="1.5" />
-        <circle cx="35" cy="35" r="4.5" fill="#f7eee9" />
-        <circle cx="58" cy="58" r="3" fill="#c8963e" />
-      </svg>
+    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none rotate-180">
+      <img :src="cornerImg" alt="Corner Ornament" class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(200,150,62,0.3)]" />
     </div>
 
     <!-- Music Control -->
@@ -195,10 +185,15 @@
       <!-- KEDUA MEMPELAI -->
       <section v-if="isSectionEnabled('couple')" id="couple" class="py-24 md:py-32 px-6 bg-[#14080a]" v-observe>
         <div class="max-w-4xl mx-auto text-center space-y-16">
-          <div class="space-y-3">
+          <div class="space-y-4">
+            <div class="flex justify-center max-w-sm mx-auto mb-2">
+              <img :src="gorgaAuthenticImg" alt="Gorga Batak Toba" class="w-full h-auto object-contain drop-shadow-[0_2px_8px_rgba(200,150,62,0.3)]" />
+            </div>
             <p class="text-xs uppercase tracking-[0.3em] text-[#c8963e] font-sans font-bold">Pangoli &amp; Oroan</p>
             <h2 class="text-4xl md:text-6xl font-serif text-[#fbf6ea]">Kedua Mempelai</h2>
-            <div class="w-16 h-px bg-[#c8963e] mx-auto"></div>
+            <div class="flex justify-center max-w-xs mx-auto">
+              <img :src="dividerImg" alt="Divider Emas" class="w-full h-auto object-contain opacity-80" />
+            </div>
           </div>
 
           <div class="grid md:grid-cols-2 gap-16 md:gap-12 items-center">
@@ -269,7 +264,9 @@
           <div class="space-y-3">
             <p class="text-xs uppercase tracking-[0.3em] text-[#c8963e] font-sans font-bold">Pesta Adat &amp; Gereja</p>
             <h2 class="text-4xl md:text-6xl font-serif text-[#fbf6ea]">Partording Ni Ulaon</h2>
-            <div class="w-16 h-px bg-[#c8963e] mx-auto"></div>
+            <div class="flex justify-center max-w-xs mx-auto">
+              <img :src="dividerImg" alt="Divider Emas" class="w-full h-auto object-contain opacity-80" />
+            </div>
           </div>
 
           <div class="grid md:grid-cols-2 gap-8 items-stretch">
@@ -676,6 +673,9 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import gorgaImg from '@/assets/ornaments/gorga-batak.png'
+import gorgaAuthenticImg from '@/assets/ornaments/gorga-batak-authentic.png'
+import cornerImg from '@/assets/ornaments/batak-corner-gold.png'
+import dividerImg from '@/assets/ornaments/batak-divider-gold.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

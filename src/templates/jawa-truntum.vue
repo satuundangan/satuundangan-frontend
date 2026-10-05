@@ -14,23 +14,11 @@
     </div>
 
     <!-- Royal Gold Corner Ornaments (Batik Sulur Jawa) -->
-    <div class="fixed top-0 left-0 w-28 h-28 md:w-44 md:h-44 z-10 opacity-70 pointer-events-none text-[#c5a059]">
-      <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M0,0 Q60,10 60,60 Q10,60 0,0" fill="currentColor" fill-opacity="0.15" />
-        <path d="M0,0 Q80,15 80,80 Q15,80 0,0" stroke-width="1" />
-        <path d="M20,0 Q60,30 30,60" />
-        <circle cx="35" cy="35" r="4" fill="currentColor" />
-        <circle cx="65" cy="65" r="2.5" fill="currentColor" />
-      </svg>
+    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none">
+      <img :src="cornerImg" alt="Corner Ornament" class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(197,160,89,0.3)]" />
     </div>
-    <div class="fixed bottom-0 right-0 w-28 h-28 md:w-44 md:h-44 z-10 opacity-70 pointer-events-none text-[#c5a059] rotate-180">
-      <svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="1.5">
-        <path d="M0,0 Q60,10 60,60 Q10,60 0,0" fill="currentColor" fill-opacity="0.15" />
-        <path d="M0,0 Q80,15 80,80 Q15,80 0,0" stroke-width="1" />
-        <path d="M20,0 Q60,30 30,60" />
-        <circle cx="35" cy="35" r="4" fill="currentColor" />
-        <circle cx="65" cy="65" r="2.5" fill="currentColor" />
-      </svg>
+    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none rotate-180">
+      <img :src="cornerImg" alt="Corner Ornament" class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(197,160,89,0.3)]" />
     </div>
 
     <!-- Music Control -->
@@ -191,10 +179,15 @@
       <!-- KEDUA MEMPELAI -->
       <section v-if="isSectionEnabled('couple')" id="couple" class="py-24 md:py-32 px-6 bg-[#120d09]" v-observe>
         <div class="max-w-4xl mx-auto text-center space-y-16">
-          <div class="space-y-3">
+          <div class="space-y-4">
+            <div class="flex justify-center mb-2">
+              <img :src="gununganImg" alt="Gunungan Jawa" class="w-14 h-auto md:w-20 opacity-90 drop-shadow-[0_2px_10px_rgba(197,160,89,0.3)]" />
+            </div>
             <p class="text-xs uppercase tracking-[0.3em] text-[#c5a059] font-sans font-bold">Dhang Hyang Widhi Pangestu</p>
             <h2 class="text-4xl md:text-6xl font-serif text-[#fbf6ea]">Mempelai Pengantin</h2>
-            <div class="w-16 h-px bg-[#c5a059] mx-auto"></div>
+            <div class="flex justify-center max-w-xs mx-auto">
+              <img :src="dividerImg" alt="Divider Emas" class="w-full h-auto object-contain opacity-80" />
+            </div>
           </div>
 
           <div class="grid md:grid-cols-2 gap-16 md:gap-12 items-center">
@@ -265,7 +258,9 @@
           <div class="space-y-3">
             <p class="text-xs uppercase tracking-[0.3em] text-[#c5a059] font-sans font-bold">Dina Wigati</p>
             <h2 class="text-4xl md:text-6xl font-serif text-[#fbf6ea]">Rangkaian Titimangsa</h2>
-            <div class="w-16 h-px bg-[#c5a059] mx-auto"></div>
+            <div class="flex justify-center max-w-xs mx-auto">
+              <img :src="dividerImg" alt="Divider Emas" class="w-full h-auto object-contain opacity-80" />
+            </div>
           </div>
 
           <div class="grid md:grid-cols-2 gap-8 items-stretch">
@@ -672,6 +667,8 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import gununganImg from '@/assets/ornaments/gunungan-gold.png'
+import cornerImg from '@/assets/ornaments/jawa-corner-gold.png'
+import dividerImg from '@/assets/ornaments/jawa-divider-gold.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
