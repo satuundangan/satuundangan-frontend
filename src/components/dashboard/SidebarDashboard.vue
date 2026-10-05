@@ -125,6 +125,7 @@ const userInitial = computed(() => (userName.value || 'U').trim().charAt(0).toUp
 const primaryMenu = [
   { name: 'Dashboard', to: '/dashboard', icon: 'fa-chart-line' },
   { name: 'Undangan Saya', to: '/invitations', icon: 'fa-envelope-open-text' },
+  { name: 'Wedding Planner', to: '/planner', icon: 'fa-clipboard-check', badge: 'Free' },
   { name: 'Daftar Tamu', to: '/guests', icon: 'fa-users' },
   { name: 'Buku Tamu', to: '/guestbook', icon: 'fa-book-open' },
   { name: 'Katalog Template', to: '/templates', icon: 'fa-layer-group' },

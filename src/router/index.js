@@ -161,6 +161,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresApproval: true },
     },
     { path: '/invitations', name: 'Invitations', component: InvitationsView, meta: { requiresAuth: true, requiresApproval: true } },
+    {
+      path: '/planner',
+      name: 'WeddingPlanner',
+      component: () => import('@/views/dashboard/WeddingPlannerView.vue'),
+      meta: { title: 'Wedding Planner', requiresAuth: true, requiresApproval: true },
+    },
     { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
     { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
     { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },

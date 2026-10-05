@@ -223,6 +223,23 @@
             </template>
           </Column>
 
+          <!-- Wedding Planner Access -->
+          <Column header="Planner" style="min-width: 8rem">
+            <template #body="{ data }">
+              <span
+                v-if="data.hasWeddingPlannerAccess"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200"
+                :title="data.instagramHandle ? 'IG: ' + data.instagramHandle : 'Akses Aktif'"
+              >
+                <i class="fa-solid fa-crown text-[9px] text-amber-600"></i>
+                <span>Aktif</span>
+              </span>
+              <span v-else class="text-[11px] text-slate-400 font-medium">
+                Terkunci
+              </span>
+            </template>
+          </Column>
+
           <!-- Total Invitations -->
           <Column header="Undangan" style="min-width: 8rem">
             <template #body="{ data }">
@@ -353,6 +370,33 @@
               />
             </div>
 
+            <div v-if="editing" class="p-3.5 rounded-2xl bg-amber-50/50 border border-amber-200/60 space-y-2.5">
+              <div class="flex items-center justify-between">
+                <div>
+                  <label for="hasWeddingPlannerAccess" class="text-xs font-bold text-amber-900 block cursor-pointer flex items-center gap-1.5">
+                    <i class="fa-solid fa-crown text-amber-600 text-xs"></i>
+                    <span>Akses Wedding Planner (Gratis / VIP)</span>
+                  </label>
+                  <p class="text-[11px] text-amber-700/80">Buka akses Wedding Planner untuk akun ini (bisa untuk kompensasi)</p>
+                </div>
+                <input
+                  id="hasWeddingPlannerAccess"
+                  v-model="form.hasWeddingPlannerAccess"
+                  type="checkbox"
+                  class="h-5 w-5 rounded-md border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                />
+              </div>
+              <div v-if="form.hasWeddingPlannerAccess">
+                <label class="text-[11px] font-bold text-amber-900 block mb-1">Handle Instagram / Bukti Follow</label>
+                <input
+                  v-model="form.instagramHandle"
+                  type="text"
+                  placeholder="@username"
+                  class="w-full rounded-xl border border-amber-200 px-3 py-1.5 text-xs font-semibold outline-none focus:border-amber-400 bg-white"
+                />
+              </div>
+            </div>
+
             <div class="flex justify-end gap-2.5 pt-4 border-t border-slate-100">
               <button
                 type="button"
@@ -409,6 +453,8 @@ const form = reactive({
   email: '',
   isAdmin: false,
   isEmailVerified: false,
+  hasWeddingPlannerAccess: false,
+  instagramHandle: '',
   password: '',
 })
 
@@ -475,7 +521,15 @@ function onPage(event) {
 
 function openCreate() {
   editing.value = null
-  Object.assign(form, { name: '', email: '', isAdmin: false, isEmailVerified: false, password: '' })
+  Object.assign(form, {
+    name: '',
+    email: '',
+    isAdmin: false,
+    isEmailVerified: false,
+    hasWeddingPlannerAccess: false,
+    instagramHandle: '',
+    password: '',
+  })
   showForm.value = true
 }
 
@@ -486,6 +540,8 @@ function openEdit(user) {
     email: user.email || '',
     isAdmin: Boolean(user.isAdmin),
     isEmailVerified: Boolean(user.emailVerifiedAt),
+    hasWeddingPlannerAccess: Boolean(user.hasWeddingPlannerAccess),
+    instagramHandle: user.instagramHandle || '',
     password: '',
   })
   showForm.value = true
