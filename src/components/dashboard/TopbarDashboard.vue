@@ -19,19 +19,21 @@
         <i class="fa-solid fa-bars-staggered text-base"></i>
       </button>
 
-      <h1 class="text-base md:text-lg font-extrabold text-slate-900 truncate tracking-tight flex items-center gap-2">
+      <h1 class="text-sm md:text-lg font-extrabold text-slate-900 truncate tracking-tight flex items-center gap-2">
         {{ title }}
       </h1>
     </div>
     
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
       <router-link 
         v-if="showButton" 
         to="/templates" 
-        class="flex items-center gap-2 px-4 py-2 bg-[#a47148] text-white rounded-xl hover:bg-[#8e5e38] transition-all text-xs font-bold shadow-md shadow-[#a47148]/20 hover:scale-105 active:scale-95"
+        class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#a47148] text-white rounded-xl hover:bg-[#8e5e38] transition-all text-xs font-bold shadow-md shadow-[#a47148]/20 hover:scale-105 active:scale-95 shrink-0"
+        title="Buat Undangan Baru"
       >
         <i class="fa-solid fa-plus text-[10px]"></i>
-        <span>Buat Undangan</span>
+        <span class="hidden sm:inline">Buat Undangan</span>
+        <span class="sm:hidden text-[11px]">Buat</span>
       </router-link>
       
       <div class="flex items-center gap-2 pl-2 border-l border-slate-100">

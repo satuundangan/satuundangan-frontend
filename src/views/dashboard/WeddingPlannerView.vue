@@ -9,16 +9,18 @@
         <!-- 1. Header Section -->
         <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
           <div>
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-amber-600"></span>
-              <h2 class="text-lg md:text-xl font-black text-slate-900 tracking-tight">
-                Wedding Planner Eksklusif
-              </h2>
-              <span v-if="isUnlocked" class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300/80">
+            <div class="flex flex-wrap items-center gap-2">
+              <div class="flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-600 shrink-0"></span>
+                <h2 class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight">
+                  Wedding Planner Eksklusif
+                </h2>
+              </div>
+              <span v-if="isUnlocked" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300/80 shadow-2xs">
                 Akses Gratis Aktif ✨
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-1 max-w-xl">
+            <p class="text-xs text-slate-500 mt-1.5 max-w-xl leading-relaxed">
               Susun anggaran pernikahan, pantau checklist persiapan H-180 s/d Hari H, kelola vendor, dan susun rundown acara dalam satu dasbor rapi.
             </p>
           </div>
@@ -172,20 +174,20 @@
 
             <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <!-- Left: Wedding Overview Info -->
-              <div class="space-y-2">
-                <div class="flex items-center gap-2">
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30">
+              <div class="space-y-3">
+                <div class="flex flex-wrap items-center gap-2">
+                  <span class="inline-flex items-center px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-400/20 text-amber-300 border border-amber-400/30 shrink-0">
                     {{ planner.weddingConcept || 'Pernikahan Modern' }}
                   </span>
-                  <span v-if="planner.weddingDate" class="text-xs text-stone-300 font-mono flex items-center gap-1">
+                  <span v-if="planner.weddingDate" class="text-xs text-stone-300 font-mono inline-flex items-center gap-1.5 shrink-0 bg-white/5 px-2.5 py-0.5 rounded-full border border-white/10">
                     <i class="fa-solid fa-calendar-day text-amber-400"></i> {{ formatDate(planner.weddingDate) }}
                   </span>
-                  <span v-if="countdownDays !== null" class="text-xs font-black text-amber-400">
+                  <span v-if="countdownDays !== null" class="text-xs font-black text-amber-400 shrink-0">
                     ({{ countdownDays > 0 ? countdownDays + ' Hari Menuju Hari H' : countdownDays === 0 ? 'Hari Ini Hari H!' : 'Acara Telah Selesai' }})
                   </span>
                 </div>
 
-                <h3 class="text-xl sm:text-2xl font-black tracking-tight">
+                <h3 class="text-lg sm:text-2xl font-black tracking-tight leading-snug">
                   Status Kesiapan Pernikahan: <span class="text-amber-400">{{ overallReadinessPercent }}% Siap</span>
                 </h3>
 
