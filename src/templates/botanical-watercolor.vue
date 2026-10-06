@@ -594,8 +594,8 @@ function initScrollSpy() {
 function getMusicUrl(choice) {
   if (!choice) return null
   if (choice.startsWith('yt:')) return choice
-  if (choice.includes('/') || choice.includes('http')) return choice
-  return '/audio/romantic_music1.mp3'
+  if (choice.startsWith('http') || choice.startsWith('/')) return choice
+  return `/audio/${choice}`
 }
 
 function timeAgo(date) {

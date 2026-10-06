@@ -91,7 +91,7 @@
               <span class="w-1.5 h-1.5 rounded-full bg-[#52794C]"></span>
             </div>
 
-            <h1 class="text-4xl md:text-6xl font-serif font-black text-[#2D3E32] leading-tight tracking-tight pt-1">
+            <h1 class="text-4xl md:text-6xl font-serif font-black text-[#314E35] leading-tight tracking-tight pt-1">
               {{ data.groomName?.split(' ')[0] || data.groomName || 'Romeo' }}
               <span class="block text-2xl md:text-3xl font-serif italic font-normal text-[#E85D75] my-1">&amp;</span>
               {{ data.brideName?.split(' ')[0] || data.brideName || 'Juliet' }}
@@ -103,10 +103,10 @@
             <p class="text-[9px] uppercase tracking-[0.25em] text-[#D3415C] font-extrabold flex items-center justify-center gap-1.5">
               <span>🍓</span> Kepada Yth. Bapak/Ibu/Saudara/i <span>🍵</span>
             </p>
-            <p class="text-2xl md:text-3xl font-serif font-black text-[#2D3E32] tracking-wide">
+            <p class="text-2xl md:text-3xl font-serif font-black text-[#314E35] tracking-wide">
               {{ data.guestName || 'Tamu Undangan Terhormat' }}
             </p>
-            <p class="text-[10px] text-[#556E58] italic">
+            <p class="text-[10px] text-[#4D6B52] italic font-medium">
               Merupakan suatu kehormatan atas kehadiran Anda di hari bahagia kami
             </p>
           </div>
@@ -136,13 +136,13 @@
             Save The Date
           </div>
 
-          <h1 class="text-5xl md:text-7xl font-serif font-black text-[#2D3E32] leading-none tracking-tight">
+          <h1 class="text-5xl md:text-7xl font-serif font-black text-[#314E35] leading-none tracking-tight">
             {{ data.groomName || 'Romeo' }}
             <span class="block text-3xl md:text-4xl font-serif italic font-normal text-[#E85D75] my-2">&amp;</span>
             {{ data.brideName || 'Juliet' }}
           </h1>
 
-          <p class="font-serif italic text-base md:text-lg text-[#556E58] tracking-wider">
+          <p class="font-serif italic text-base md:text-lg text-[#436248] tracking-wider font-medium">
             {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
           </p>
 
@@ -154,7 +154,7 @@
               class="flex flex-col items-center justify-center w-16 h-18 md:w-20 md:h-22 bg-white/95 backdrop-blur-md rounded-2xl border border-[#FAD2DA] shadow-sm"
             >
               <div class="text-xl md:text-2xl font-serif font-black text-[#D3415C]">{{ val }}</div>
-              <div class="text-[9px] uppercase tracking-widest text-[#52794C] font-bold mt-0.5">{{ label }}</div>
+              <div class="text-[9px] uppercase tracking-widest text-[#3E5E44] font-bold mt-0.5">{{ label }}</div>
             </div>
           </div>
         </div>
@@ -168,7 +168,7 @@
       <section v-if="isSectionEnabled('quote')" class="py-20 px-6 bg-white/60 backdrop-blur-xs relative" v-observe>
         <div class="max-w-xl mx-auto text-center space-y-5">
           <div class="w-12 h-0.5 bg-[#E85D75] mx-auto rounded-full"></div>
-          <p class="font-serif italic text-base md:text-lg text-[#3E5142] leading-relaxed px-4">
+          <p class="font-serif italic text-base md:text-lg text-[#314E35] leading-relaxed px-4">
             "{{ data.quoteText || 'Dan di antara tanda-tanda kekuasaan-Nya ialah Dia menciptakan untukmu pasangan hidup dari jenismu sendiri, supaya kamu cenderung dan merasa tenteram kepadanya, dan dijadikan-Nya diantaramu rasa kasih dan sayang.' }}"
           </p>
           <p class="text-xs font-black text-[#D3415C] tracking-[0.25em] uppercase">
@@ -183,8 +183,8 @@
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Mempelai Bahagia</span>
-            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#2D3E32]">Dua Insan Satu Cinta</h2>
-            <p class="text-xs text-[#556E58] max-w-md mx-auto">
+            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#314E35]">Dua Insan Satu Cinta</h2>
+            <p class="text-xs text-[#436248] max-w-md mx-auto font-medium">
               Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud menyelenggarakan syukuran pernikahan putra-putri kami:
             </p>
           </div>
@@ -200,10 +200,10 @@
                 />
               </div>
               <div>
-                <h3 class="text-2xl font-serif font-black text-[#2D3E32]">{{ data.groomName || 'Romeo Monty' }}</h3>
+                <h3 class="text-2xl font-serif font-black text-[#314E35]">{{ data.groomName || 'Romeo Monty' }}</h3>
                 <p class="text-xs text-[#E85D75] font-bold mt-0.5">Mempelai Pria</p>
               </div>
-              <p class="text-xs text-[#556E58] max-w-xs leading-relaxed">
+              <p class="text-xs text-[#436248] max-w-xs leading-relaxed">
                 Putra dari {{ data.parents?.groomParents || 'Bapak Monty & Ibu Monty' }}
               </p>
               <div v-if="data.groomInstagram" class="pt-2">
@@ -228,10 +228,10 @@
                 />
               </div>
               <div>
-                <h3 class="text-2xl font-serif font-black text-[#2D3E32]">{{ data.brideName || 'Juliet Capulet' }}</h3>
+                <h3 class="text-2xl font-serif font-black text-[#314E35]">{{ data.brideName || 'Juliet Capulet' }}</h3>
                 <p class="text-xs text-[#E85D75] font-bold mt-0.5">Mempelai Wanita</p>
               </div>
-              <p class="text-xs text-[#556E58] max-w-xs leading-relaxed">
+              <p class="text-xs text-[#436248] max-w-xs leading-relaxed">
                 Putri dari {{ data.parents?.brideParents || 'Bapak Capulet & Ibu Capulet' }}
               </p>
               <div v-if="data.brideInstagram" class="pt-2">
@@ -254,25 +254,25 @@
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Jadwal & Lokasi</span>
-            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#2D3E32]">Rangkaian Acara</h2>
-            <p class="text-xs text-[#556E58]">Insya Allah akan diselenggarakan pada:</p>
+            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#314E35]">Rangkaian Acara</h2>
+            <p class="text-xs text-[#436248] font-medium">Insya Allah akan diselenggarakan pada:</p>
           </div>
 
           <div class="grid md:grid-cols-2 gap-8">
             <!-- Akad Nikah -->
             <div class="bg-white/95 backdrop-blur-md p-8 rounded-3xl border border-[#FAD2DA] shadow-sm flex flex-col justify-between space-y-6">
               <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-[#E5EFE3] text-[#52794C] flex items-center justify-center text-lg font-black shadow-xs">
+                <div class="w-12 h-12 rounded-2xl bg-[#E5EFE3] text-[#3E5E44] flex items-center justify-center text-lg font-black shadow-xs">
                   <i class="fa-solid fa-heart"></i>
                 </div>
-                <h3 class="text-2xl font-serif font-black text-[#2D3E32]">Akad Nikah</h3>
-                <div class="space-y-2 text-xs text-[#556E58]">
-                  <p class="font-bold text-sm text-[#2D3E32]">
+                <h3 class="text-2xl font-serif font-black text-[#314E35]">Akad Nikah</h3>
+                <div class="space-y-2 text-xs text-[#436248]">
+                  <p class="font-bold text-sm text-[#314E35]">
                     <i class="fa-regular fa-calendar text-[#E85D75] mr-2"></i>
                     {{ formatDate(data.akadLocation?.dateTime) }}
                   </p>
                   <p>
-                    <i class="fa-regular fa-clock text-[#52794C] mr-2"></i>
+                    <i class="fa-regular fa-clock text-[#3E5E44] mr-2"></i>
                     {{ formatTime(data.akadLocation?.dateTime) }} - Selesai
                   </p>
                   <p class="leading-relaxed pt-1">
@@ -300,14 +300,14 @@
                 <div class="w-12 h-12 rounded-2xl bg-[#FFE4E9] text-[#D3415C] flex items-center justify-center text-lg font-black shadow-xs">
                   <i class="fa-solid fa-champagne-glasses"></i>
                 </div>
-                <h3 class="text-2xl font-serif font-black text-[#2D3E32]">Resepsi Pernikahan</h3>
-                <div class="space-y-2 text-xs text-[#556E58]">
-                  <p class="font-bold text-sm text-[#2D3E32]">
+                <h3 class="text-2xl font-serif font-black text-[#314E35]">Resepsi Pernikahan</h3>
+                <div class="space-y-2 text-xs text-[#436248]">
+                  <p class="font-bold text-sm text-[#314E35]">
                     <i class="fa-regular fa-calendar text-[#E85D75] mr-2"></i>
                     {{ formatDate(data.resepsiLocation?.dateTime) }}
                   </p>
                   <p>
-                    <i class="fa-regular fa-clock text-[#52794C] mr-2"></i>
+                    <i class="fa-regular fa-clock text-[#3E5E44] mr-2"></i>
                     {{ formatTime(data.resepsiLocation?.dateTime) }} - Selesai
                   </p>
                   <p class="leading-relaxed pt-1">
@@ -336,8 +336,8 @@
       <section v-if="isSectionEnabled('dress-code')" class="py-16 px-6" v-observe>
         <div class="max-w-md mx-auto text-center space-y-5 bg-white/90 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-[#FAD2DA] shadow-sm">
           <span class="text-[10px] font-black uppercase tracking-[0.25em] text-[#E85D75]">Panduan Busana</span>
-          <h3 class="text-xl md:text-2xl font-serif font-black text-[#2D3E32]">Dress Code Tamu</h3>
-          <p class="text-xs text-[#556E58]">
+          <h3 class="text-xl md:text-2xl font-serif font-black text-[#314E35]">Dress Code Tamu</h3>
+          <p class="text-xs text-[#436248] font-medium">
             Untuk keselarasan momen foto bersama, kami menyarankan busana dengan nuansa warna berikut:
           </p>
 
@@ -347,8 +347,8 @@
               <span class="text-[9px] font-bold text-[#D3415C]">Strawberry</span>
             </div>
             <div class="flex flex-col items-center gap-1.5">
-              <span class="w-10 h-10 rounded-full bg-[#52794C] shadow-sm border-2 border-white ring-2 ring-[#52794C]/20"></span>
-              <span class="text-[9px] font-bold text-[#52794C]">Matcha</span>
+              <span class="w-10 h-10 rounded-full bg-[#3E5E44] shadow-sm border-2 border-white ring-2 ring-[#3E5E44]/20"></span>
+              <span class="text-[9px] font-bold text-[#3E5E44]">Matcha</span>
             </div>
             <div class="flex flex-col items-center gap-1.5">
               <span class="w-10 h-10 rounded-full bg-[#FFD6DE] shadow-sm border-2 border-white ring-2 ring-[#FFD6DE]/30"></span>
@@ -356,7 +356,7 @@
             </div>
             <div class="flex flex-col items-center gap-1.5">
               <span class="w-10 h-10 rounded-full bg-[#E5EFE3] shadow-sm border-2 border-white ring-2 ring-[#E5EFE3]/40"></span>
-              <span class="text-[9px] font-bold text-[#52794C]">Sage Cream</span>
+              <span class="text-[9px] font-bold text-[#3E5E44]">Sage Cream</span>
             </div>
           </div>
         </div>
@@ -367,11 +367,11 @@
         <div class="max-w-3xl mx-auto space-y-16">
           <div class="text-center space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Kisah Manis</span>
-            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#2D3E32]">Perjalanan Cinta</h2>
-            <p class="text-xs text-[#556E58]">Bagaimana secangkir matcha dan semangkuk stroberi kami berpadu</p>
+            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#314E35]">Perjalanan Cinta</h2>
+            <p class="text-xs text-[#436248] font-medium">Bagaimana secangkir matcha dan semangkuk stroberi kami berpadu</p>
           </div>
 
-          <div class="space-y-8 relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:w-0.5 before:bg-gradient-to-b before:from-[#E85D75] before:via-[#FAD2DA] before:to-[#52794C]">
+          <div class="space-y-8 relative before:absolute before:inset-0 before:left-4 md:before:left-1/2 before:w-0.5 before:bg-gradient-to-b before:from-[#E85D75] before:via-[#FAD2DA] before:to-[#3E5E44]">
             <div
               v-for="(item, idx) in (data.loveStory?.length ? data.loveStory : mockStories)"
               :key="idx"
@@ -383,8 +383,8 @@
                   <span class="inline-block px-2.5 py-0.5 rounded-full bg-[#FFF0F3] text-[#D3415C] border border-[#FAD2DA] text-[10px] font-bold">
                     {{ item.date || item.year || '2024' }}
                   </span>
-                  <h4 class="text-lg font-serif font-black text-[#2D3E32]">{{ item.title }}</h4>
-                  <p class="text-xs text-[#556E58] leading-relaxed">{{ item.description }}</p>
+                  <h4 class="text-lg font-serif font-black text-[#314E35]">{{ item.title }}</h4>
+                  <p class="text-xs text-[#436248] leading-relaxed">{{ item.description }}</p>
                 </div>
               </div>
 
@@ -400,7 +400,7 @@
         <div class="max-w-5xl mx-auto space-y-12">
           <div class="text-center space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Galeri Kenangan</span>
-            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#2D3E32]">Momen Bahagia</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#314E35]">Momen Bahagia</h2>
           </div>
 
           <GalleryInvitation
@@ -428,7 +428,7 @@
         <div class="max-w-3xl mx-auto space-y-8 text-center">
           <div class="space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Video Prewedding</span>
-            <h2 class="text-3xl font-serif font-black text-[#2D3E32]">Klip Momen Bahagia</h2>
+            <h2 class="text-3xl font-serif font-black text-[#314E35]">Klip Momen Bahagia</h2>
           </div>
 
           <div class="aspect-video w-full rounded-3xl overflow-hidden border-4 border-[#FFF0F3] shadow-lg bg-black ring-2 ring-[#FAD2DA]">
@@ -452,8 +452,8 @@
         <div class="max-w-xl mx-auto space-y-12 text-center">
           <div class="space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Tanda Kasih</span>
-            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#2D3E32]">Amplop Digital</h2>
-            <p class="text-xs text-[#556E58] max-w-sm mx-auto">
+            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#314E35]">Amplop Digital</h2>
+            <p class="text-xs text-[#436248] max-w-sm mx-auto font-medium">
               Doa restu Anda adalah karunia terindah bagi kami. Jika ingin memberikan tanda kasih secara cashless:
             </p>
           </div>
@@ -467,8 +467,8 @@
             >
               <div>
                 <span class="text-[10px] font-black uppercase text-[#D3415C] tracking-wider">{{ bank.bankName }}</span>
-                <p class="text-lg font-mono font-black text-[#2D3E32] mt-0.5">{{ bank.accountNumber }}</p>
-                <p class="text-xs text-[#556E58]">a.n. {{ bank.accountHolder }}</p>
+                <p class="text-lg font-mono font-black text-[#314E35] mt-0.5">{{ bank.accountNumber }}</p>
+                <p class="text-xs text-[#436248]">a.n. {{ bank.accountHolder }}</p>
               </div>
 
               <button
@@ -488,28 +488,28 @@
         <div class="max-w-xl mx-auto space-y-12">
           <div class="text-center space-y-2">
             <span class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Konfirmasi & Doa</span>
-            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#2D3E32]">RSVP & Ucapan</h2>
-            <p class="text-xs text-[#556E58]">Kirimkan konfirmasi kehadiran dan untaian doa restu terbaik</p>
+            <h2 class="text-3xl md:text-5xl font-serif font-black text-[#314E35]">RSVP & Ucapan</h2>
+            <p class="text-xs text-[#436248] font-medium">Kirimkan konfirmasi kehadiran dan untaian doa restu terbaik</p>
           </div>
 
           <!-- RSVP Form -->
           <form @submit.prevent="submitRsvp" class="bg-white/95 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-[#FAD2DA] shadow-sm space-y-4">
             <div>
-              <label class="block text-xs font-bold text-[#2D3E32] mb-1.5">Nama Lengkap</label>
+              <label class="block text-xs font-bold text-[#314E35] mb-1.5">Nama Lengkap</label>
               <input
                 v-model="rsvpForm.guestName"
                 type="text"
                 required
                 placeholder="Tulis nama Anda..."
-                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#2D3E32] focus:outline-none focus:border-[#E85D75]"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#314E35] focus:outline-none focus:border-[#E85D75]"
               />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-[#2D3E32] mb-1.5">Konfirmasi Kehadiran</label>
+              <label class="block text-xs font-bold text-[#314E35] mb-1.5">Konfirmasi Kehadiran</label>
               <select
                 v-model="rsvpForm.attendance"
-                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#2D3E32] focus:outline-none focus:border-[#E85D75]"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#314E35] focus:outline-none focus:border-[#E85D75]"
               >
                 <option value="hadir">Hadir</option>
                 <option value="ragu">Masih Ragu</option>
@@ -518,24 +518,24 @@
             </div>
 
             <div v-if="rsvpForm.attendance === 'hadir'">
-              <label class="block text-xs font-bold text-[#2D3E32] mb-1.5">Jumlah Tamu</label>
+              <label class="block text-xs font-bold text-[#314E35] mb-1.5">Jumlah Tamu</label>
               <input
                 v-model.number="rsvpForm.totalGuests"
                 type="number"
                 min="1"
                 max="5"
-                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#2D3E32] focus:outline-none focus:border-[#E85D75]"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#314E35] focus:outline-none focus:border-[#E85D75]"
               />
             </div>
 
             <div>
-              <label class="block text-xs font-bold text-[#2D3E32] mb-1.5">Untaian Doa & Ucapan</label>
+              <label class="block text-xs font-bold text-[#314E35] mb-1.5">Untaian Doa & Ucapan</label>
               <textarea
                 v-model="rsvpForm.message"
                 rows="3"
                 required
                 placeholder="Tulis ucapan selamat dan doa..."
-                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#2D3E32] focus:outline-none focus:border-[#E85D75]"
+                class="w-full px-4 py-2.5 rounded-xl border border-[#FAD2DA] bg-[#FFF9FA] text-xs text-[#314E35] focus:outline-none focus:border-[#E85D75]"
               ></textarea>
             </div>
 
@@ -550,7 +550,7 @@
 
           <!-- Guest Wishes List -->
           <div v-if="isSectionEnabled('wishes')" class="space-y-4 pt-4">
-            <h4 class="text-sm font-black text-[#2D3E32] flex items-center justify-between">
+            <h4 class="text-sm font-black text-[#314E35] flex items-center justify-between">
               <span>Ucapan Teman & Sahabat</span>
               <span class="text-xs text-[#E85D75] font-semibold">({{ guestMessages.length }} ucapan)</span>
             </h4>
@@ -562,16 +562,16 @@
                 class="p-4 rounded-2xl bg-white/95 border border-[#FAD2DA] space-y-1.5 shadow-2xs"
               >
                 <div class="flex items-center justify-between">
-                  <span class="text-xs font-black text-[#2D3E32]">{{ w.guestName }}</span>
+                  <span class="text-xs font-black text-[#314E35]">{{ w.guestName }}</span>
                   <span
                     class="text-[9px] px-2 py-0.5 rounded-full font-bold uppercase"
-                    :class="w.rsvpStatus === 'hadir' ? 'bg-[#FFF0F3] text-[#D3415C] border border-[#FAD2DA]' : 'bg-[#E5EFE3] text-[#52794C] border border-[#D0E2CC]'"
+                    :class="w.rsvpStatus === 'hadir' ? 'bg-[#FFF0F3] text-[#D3415C] border border-[#FAD2DA]' : 'bg-[#E5EFE3] text-[#3E5E44] border border-[#D0E2CC]'"
                   >
                     {{ w.rsvpStatus === 'hadir' ? 'Hadir' : 'Absen' }}
                   </span>
                 </div>
-                <p class="text-xs text-[#556E58] leading-relaxed">{{ w.message }}</p>
-                <div class="text-[9px] text-[#93A595] pt-1">{{ timeAgo(w.createdAt) }}</div>
+                <p class="text-xs text-[#436248] leading-relaxed">{{ w.message }}</p>
+                <div class="text-[9px] text-[#869E8A] pt-1">{{ timeAgo(w.createdAt) }}</div>
               </div>
             </div>
           </div>
@@ -582,7 +582,7 @@
       <footer class="py-16 px-6 text-center space-y-6 bg-white/90 backdrop-blur-md border-t border-[#FAD2DA] relative z-20">
         <div class="space-y-2">
           <p class="text-[10px] font-black uppercase tracking-[0.3em] text-[#E85D75]">Sampai Berjumpa di Hari Bahagia</p>
-          <h3 class="text-3xl font-serif font-black text-[#2D3E32]">
+          <h3 class="text-3xl font-serif font-black text-[#314E35]">
             {{ data.groomName?.split(' ')[0] || 'Romeo' }} &amp; {{ data.brideName?.split(' ')[0] || 'Juliet' }}
           </h3>
         </div>
@@ -753,8 +753,8 @@ function initScrollSpy() {
 function getMusicUrl(choice) {
   if (!choice) return null
   if (choice.startsWith('yt:')) return choice
-  if (choice.includes('/') || choice.includes('http')) return choice
-  return '/audio/romantic_music1.mp3'
+  if (choice.startsWith('http') || choice.startsWith('/')) return choice
+  return `/audio/${choice}`
 }
 
 function getEmbedUrlVideo(url) {

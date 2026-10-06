@@ -180,8 +180,36 @@ onMounted(async () => {
       // Handle Demo Mode — render immediately with local demo data to eliminate waiting latency
       const templateSlug = route.params.templateSlug
       const defaultDemoMusic = {
-        'naruto': 'wedding-instrumental-garden.mp3',
+        // Anime & Pop Culture
         'one-piece': 'one-piece-luffy.mp3',
+        'naruto': 'wedding-instrumental-garden.mp3',
+        'kimi-no-na-wa': 'wedding-sacred-ceremony.mp3',
+        'pixel-quest': 'wedding-acoustic-morning.mp3',
+
+        // Nusantara & Adat Heritage
+        'sunda-sabilulungan': 'wedding-warm-reception.mp3',
+        'jawa-truntum': 'wedding-sacred-ceremony.mp3',
+        'batak-ragi-hotang': 'wedding-warm-reception.mp3',
+        'dayak-ngaju-benang-bintik': 'wedding-instrumental-garden.mp3',
+        'royal-gold': 'wedding-elegant-firstdance.mp3',
+
+        // Elegan & Luxury
+        'royal-emerald': 'wedding-sacred-ceremony.mp3',
+        'dark-elegant': 'wedding-elegant-firstdance.mp3',
+        'modern-noir': 'wedding-warm-reception.mp3',
+        'editorial-magazine': 'wedding-elegant-firstdance.mp3',
+        'light-modern': 'wedding-acoustic-morning.mp3',
+
+        // Romantis, Floral & Cafe Aesthetics
+        'strawberry-matcha': 'wedding-instrumental-garden.mp3',
+        'sakura-blossom': 'wedding-romantic-aisle.mp3',
+        'botanical-watercolor': 'wedding-romantic-aisle.mp3',
+        'celestial-sparkle': 'romantic_music1.mp3',
+        'meowly-married': 'wedding-acoustic-morning.mp3',
+        'retro-nostalgia': 'wedding-warm-reception.mp3',
+        'azure-shores': 'wedding-acoustic-morning.mp3',
+        'minimalist-terra': 'romantic_music1.mp3',
+        'cyberpunk-neon': 'wedding-acoustic-morning.mp3',
       }
 
       data = {
