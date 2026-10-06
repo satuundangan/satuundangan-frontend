@@ -1,5 +1,5 @@
 <template>
-  <section id="tutorial" class="section bg-white scroll-mt-20 py-24 relative overflow-hidden">
+  <section v-if="embedId" id="tutorial" class="section bg-white scroll-mt-20 py-24 relative overflow-hidden">
     <!-- Decorative blobs -->
     <div class="absolute top-0 right-0 w-80 h-80 bg-mocha/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3"></div>
     <div class="absolute bottom-0 left-0 w-80 h-80 bg-sage/5 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3"></div>
