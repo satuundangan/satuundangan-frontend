@@ -442,22 +442,172 @@
           <!-- TAB 2: CHECKLIST COUNTDOWN H-180 -->
           <div v-else-if="activeTab === 'checklist'" class="space-y-6">
             <!-- Progress Banner -->
-            <div class="p-5 rounded-3xl bg-gradient-to-r from-emerald-900 to-teal-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div class="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-emerald-900 to-teal-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
               <div>
                 <span class="text-[10px] font-black uppercase tracking-wider text-emerald-300">Countdown & Progress Persiapan</span>
-                <h3 class="text-base font-black mt-0.5">
+                <h3 class="text-base sm:text-lg font-black mt-0.5">
                   {{ completedChecklistCount }} dari {{ totalChecklistCount }} Tugas Selesai ({{ checklistPercent }}%)
                 </h3>
                 <p class="text-xs text-emerald-200/80 mt-1">
-                  Centang tugas yang sudah kamu selesaikan agar tidak ada detail penting yang terlewat!
+                  Bagi tugas persiapan pernikahan dengan pasangan dan keluarga agar eksekusi lancar & bebas stres.
                 </p>
               </div>
               <button
                 type="button"
                 @click="openAddChecklistModal"
-                class="px-4 py-2.5 rounded-xl bg-white text-emerald-950 font-black text-xs hover:bg-emerald-50 transition-all shadow-md shrink-0 cursor-pointer"
+                class="px-4 py-2.5 rounded-xl bg-white text-emerald-950 font-black text-xs hover:bg-emerald-50 transition-all shadow-md shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
               >
-                <i class="fa-solid fa-plus mr-1"></i> Tambah Tugas Baru
+                <i class="fa-solid fa-plus text-xs"></i>
+                <span>Tambah Tugas Baru</span>
+              </button>
+            </div>
+
+            <!-- Persona & Urgency Stat Cards -->
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <!-- Groom Task Card -->
+              <div
+                @click="checklistFilter = checklistFilter === 'groom' ? 'all' : 'groom'"
+                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'groom' ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+              >
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0">
+                    👨
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[10px] font-black uppercase text-slate-400 truncate">Tugas Pria (Groom)</p>
+                    <p class="text-xs font-black text-slate-800">{{ groomCompletedCount }}/{{ groomTasksCount }} Selesai</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+              </div>
+
+              <!-- Bride Task Card -->
+              <div
+                @click="checklistFilter = checklistFilter === 'bride' ? 'all' : 'bride'"
+                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'bride' ? 'bg-pink-50 border-pink-300 ring-2 ring-pink-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+              >
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-sm shrink-0">
+                    👩
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[10px] font-black uppercase text-slate-400 truncate">Tugas Wanita (Bride)</p>
+                    <p class="text-xs font-black text-slate-800">{{ brideCompletedCount }}/{{ brideTasksCount }} Selesai</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+              </div>
+
+              <!-- Both Task Card -->
+              <div
+                @click="checklistFilter = checklistFilter === 'both' ? 'all' : 'both'"
+                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'both' ? 'bg-purple-50 border-purple-300 ring-2 ring-purple-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+              >
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shrink-0">
+                    💑
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[10px] font-black uppercase text-slate-400 truncate">Tugas Bersama</p>
+                    <p class="text-xs font-black text-slate-800">{{ bothCompletedCount }}/{{ bothTasksCount }} Selesai</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+              </div>
+
+              <!-- Urgent Task Card -->
+              <div
+                @click="checklistFilter = checklistFilter === 'urgent' ? 'all' : 'urgent'"
+                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'urgent' ? 'bg-rose-50 border-rose-300 ring-2 ring-rose-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+              >
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-sm shrink-0">
+                    🔥
+                  </div>
+                  <div class="min-w-0">
+                    <p class="text-[10px] font-black uppercase text-rose-500 truncate">Tugas Urgent</p>
+                    <p class="text-xs font-black text-slate-800">{{ urgentTasksCount }} Pending</p>
+                  </div>
+                </div>
+                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+              </div>
+            </div>
+
+            <!-- Filter Pills Bar -->
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold scrollbar-none">
+              <span class="text-[11px] text-slate-400 uppercase font-black tracking-wider mr-1 shrink-0">Filter:</span>
+              <button
+                type="button"
+                @click="checklistFilter = 'all'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer"
+                :class="checklistFilter === 'all' ? 'bg-slate-900 text-white border-slate-900 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+              >
+                Semua ({{ totalChecklistCount }})
+              </button>
+              <button
+                type="button"
+                @click="checklistFilter = 'groom'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'groom' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50'"
+              >
+                <span>👨 Pengantin Pria</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="checklistFilter === 'groom' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600'">
+                  {{ groomTasksCount }}
+                </span>
+              </button>
+              <button
+                type="button"
+                @click="checklistFilter = 'bride'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'bride' ? 'bg-pink-600 text-white border-pink-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-pink-50'"
+              >
+                <span>👩 Pengantin Wanita</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="checklistFilter === 'bride' ? 'bg-pink-700 text-white' : 'bg-slate-100 text-slate-600'">
+                  {{ brideTasksCount }}
+                </span>
+              </button>
+              <button
+                type="button"
+                @click="checklistFilter = 'both'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'both' ? 'bg-purple-600 text-white border-purple-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50'"
+              >
+                <span>💑 Bersama</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="checklistFilter === 'both' ? 'bg-purple-700 text-white' : 'bg-slate-100 text-slate-600'">
+                  {{ bothTasksCount }}
+                </span>
+              </button>
+              <button
+                type="button"
+                @click="checklistFilter = 'family'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'family' ? 'bg-amber-600 text-white border-amber-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-amber-50'"
+              >
+                <span>👥 Keluarga/Panitia</span>
+              </button>
+              <button
+                type="button"
+                @click="checklistFilter = 'urgent'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'urgent' ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-rose-700 border-rose-200 hover:bg-rose-50'"
+              >
+                <i class="fa-solid fa-fire text-xs"></i>
+                <span>Urgent</span>
+                <span v-if="urgentTasksCount > 0" class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-800">
+                  {{ urgentTasksCount }}
+                </span>
+              </button>
+              <button
+                type="button"
+                @click="checklistFilter = 'pending'"
+                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'pending' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50'"
+              >
+                <span>⏳ Belum Selesai</span>
               </button>
             </div>
 
@@ -474,7 +624,7 @@
                     <h4 class="font-black text-xs md:text-sm text-slate-900">{{ phase }}</h4>
                   </div>
                   <span class="text-[11px] font-bold text-slate-400">
-                    {{ getCompletedPhaseCount(phase) }}/{{ getPhaseTasks(phase).length }} Selesai
+                    {{ getCompletedPhaseCount(phase) }}/{{ getTotalPhaseCount(phase) }} Selesai
                   </span>
                 </div>
 
@@ -488,40 +638,90 @@
                       <input
                         type="checkbox"
                         v-model="task.isCompleted"
+                        @change="handleSavePlanner"
                         class="h-4 w-4 mt-0.5 rounded-md border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
                       />
                       <div class="min-w-0">
                         <div class="flex flex-wrap items-center gap-2">
                           <span
-                            class="text-xs font-bold"
+                            class="text-xs font-bold leading-snug"
                             :class="task.isCompleted ? 'line-through text-slate-400' : 'text-slate-900'"
                           >
                             {{ task.task }}
                           </span>
+
+                          <!-- Assignee Badge -->
+                          <span
+                            v-if="task.assignee === 'groom'"
+                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1"
+                          >
+                            <span>👨</span> Pria (Groom)
+                          </span>
+                          <span
+                            v-else-if="task.assignee === 'bride'"
+                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-pink-50 text-pink-700 border border-pink-200 flex items-center gap-1"
+                          >
+                            <span>👩</span> Wanita (Bride)
+                          </span>
+                          <span
+                            v-else-if="task.assignee === 'family'"
+                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1"
+                          >
+                            <span>👥</span> Keluarga
+                          </span>
+                          <span
+                            v-else
+                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1"
+                          >
+                            <span>💑</span> Bersama
+                          </span>
+
+                          <!-- Category Badge -->
                           <span v-if="task.category" class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-slate-100 text-slate-600 border border-slate-200">
                             {{ task.category }}
                           </span>
-                          <span v-if="task.priority === 'high'" class="px-1.5 py-0.2 rounded-md text-[9px] font-bold bg-rose-50 text-rose-700 border border-rose-200">
-                            Prioritas Tinggi
+
+                          <!-- Urgent Badge -->
+                          <span v-if="task.isUrgent" class="px-2 py-0.5 rounded-md text-[9px] font-black bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
+                            <i class="fa-solid fa-fire text-rose-500"></i> Urgent
                           </span>
                         </div>
-                        <p v-if="task.notes" class="text-[11px] text-slate-500 mt-1 leading-relaxed">
-                          💡 {{ task.notes }}
+
+                        <!-- Notes / Panduan -->
+                        <p v-if="task.notes" class="text-[11px] text-slate-500 mt-1 leading-relaxed bg-slate-50/70 p-2 rounded-xl border border-slate-100">
+                          📝 {{ task.notes }}
                         </p>
-                        <span v-if="task.dueDate" class="text-[10px] text-amber-600 font-semibold block mt-1">
-                          Tenggat: {{ task.dueDate }}
+
+                        <!-- Deadline DueDate -->
+                        <span v-if="task.dueDate" class="text-[10px] text-amber-700 font-bold flex items-center gap-1 mt-1.5">
+                          <i class="fa-regular fa-calendar-check text-amber-500"></i>
+                          <span>Tenggat: {{ task.dueDate }}</span>
                         </span>
                       </div>
                     </label>
 
-                    <button
-                      type="button"
-                      @click="deleteChecklist(task.id)"
-                      class="text-slate-300 hover:text-rose-500 p-1 text-xs shrink-0"
-                      title="Hapus tugas"
-                    >
-                      <i class="fa-solid fa-xmark"></i>
-                    </button>
+                    <div class="flex items-center gap-1 shrink-0 pt-0.5">
+                      <button
+                        type="button"
+                        @click="editChecklist(task, planner.checklists.findIndex(c => c.id === task.id))"
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
+                        title="Edit tugas"
+                      >
+                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                      </button>
+                      <button
+                        type="button"
+                        @click="deleteChecklist(task.id)"
+                        class="p-1.5 rounded-lg text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                        title="Hapus tugas"
+                      >
+                        <i class="fa-solid fa-trash text-xs"></i>
+                      </button>
+                    </div>
+                  </div>
+
+                  <div v-if="!getPhaseTasks(phase).length" class="p-6 text-center text-slate-400 text-xs">
+                    Tidak ada tugas di fase ini untuk filter yang dipilih.
                   </div>
                 </div>
               </div>
@@ -872,7 +1072,18 @@
         <Teleport to="body">
           <div v-if="showChecklistModal" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4" @click.self="showChecklistModal = false">
             <div class="w-full max-w-md bg-white rounded-3xl p-6 shadow-2xl space-y-4 border border-slate-100">
-              <h3 class="text-sm font-black text-slate-900">Tambah Tugas Checklist</h3>
+              <div class="flex items-center justify-between">
+                <h3 class="text-sm font-black text-slate-900">
+                  {{ editingChecklistIdx !== null ? 'Edit Tugas Checklist' : 'Tambah Tugas Checklist Baru' }}
+                </h3>
+                <span
+                  v-if="checklistForm.isUrgent"
+                  class="px-2 py-0.5 rounded-full text-[10px] font-black bg-rose-100 text-rose-700 flex items-center gap-1"
+                >
+                  <i class="fa-solid fa-fire text-rose-500"></i> Urgent
+                </span>
+              </div>
+
               <div class="space-y-3 text-xs">
                 <div>
                   <label class="font-bold text-slate-700 block mb-1">Fase Persiapan</label>
@@ -880,23 +1091,58 @@
                     <option v-for="p in checklistPhases" :key="p" :value="p">{{ p }}</option>
                   </select>
                 </div>
-                <div>
-                  <label class="font-bold text-slate-700 block mb-1">Kategori Tugas</label>
-                  <input v-model="checklistForm.category" type="text" placeholder="Contoh: Katering, Busana, KUA" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label class="font-bold text-slate-700 block mb-1">Penanggung Jawab (PIC)</label>
+                    <select v-model="checklistForm.assignee" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-slate-800">
+                      <option value="both">💑 Bersama (Groom & Bride)</option>
+                      <option value="groom">👨 Pengantin Pria (Groom)</option>
+                      <option value="bride">👩 Pengantin Wanita (Bride)</option>
+                      <option value="family">👥 Keluarga / Panitia</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label class="font-bold text-slate-700 block mb-1">Kategori Tugas</label>
+                    <input v-model="checklistForm.category" type="text" placeholder="Contoh: KUA, Busana, Katering" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+                  </div>
                 </div>
+
                 <div>
-                  <label class="font-bold text-slate-700 block mb-1">Nama Tugas</label>
-                  <input v-model="checklistForm.task" type="text" placeholder="Contoh: Booking MUA Pengantin" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+                  <label class="font-bold text-slate-700 block mb-1">Nama Tugas / Rencana</label>
+                  <input v-model="checklistForm.task" type="text" placeholder="Contoh: Minta surat pengantar RT/RW untuk KUA" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
                 </div>
+
                 <div>
-                  <label class="font-bold text-slate-700 block mb-1">Catatan / Panduan (Opsional)</label>
-                  <input v-model="checklistForm.notes" type="text" placeholder="Contoh: Bawa surat sehat dan foto 2x3" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+                  <label class="font-bold text-slate-700 block mb-1">Catatan, Link Dokumen, atau Kontak (Opsional)</label>
+                  <textarea
+                    v-model="checklistForm.notes"
+                    rows="2"
+                    placeholder="Contoh: Syarat bawa KTP & KK asli. Jam operasional loket 09.00 - 15.00"
+                    class="w-full border border-slate-200 rounded-xl p-2.5 font-normal resize-none"
+                  ></textarea>
                 </div>
-                <div>
-                  <label class="font-bold text-slate-700 block mb-1">Tenggat Waktu (Opsional)</label>
-                  <input v-model="checklistForm.dueDate" type="text" placeholder="Contoh: Akhir Bulan Ini" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+
+                <div class="grid grid-cols-2 gap-3 items-center">
+                  <div>
+                    <label class="font-bold text-slate-700 block mb-1">Tenggat Waktu / Deadline (Opsional)</label>
+                    <input v-model="checklistForm.dueDate" type="text" placeholder="Contoh: H-30 atau 15 Nov" class="w-full border border-slate-200 rounded-xl p-2.5 font-semibold" />
+                  </div>
+                  <div class="pt-5">
+                    <label class="flex items-center gap-2 p-2.5 rounded-xl border border-slate-200 bg-slate-50/70 hover:bg-slate-100 cursor-pointer transition-colors">
+                      <input
+                        type="checkbox"
+                        v-model="checklistForm.isUrgent"
+                        class="h-4 w-4 rounded-md border-slate-300 text-rose-600 focus:ring-rose-500 cursor-pointer"
+                      />
+                      <span class="text-xs font-bold text-rose-700 flex items-center gap-1">
+                        <i class="fa-solid fa-fire text-xs"></i> Tugas Mendesak (Urgent)
+                      </span>
+                    </label>
+                  </div>
                 </div>
               </div>
+
               <div class="flex justify-end gap-2 pt-2">
                 <button type="button" @click="showChecklistModal = false" class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600">Batal</button>
                 <button type="button" @click="saveChecklistTask" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold">Simpan</button>
@@ -1177,6 +1423,8 @@ const budgetItemForm = reactive({
 })
 
 const showChecklistModal = ref(false)
+const editingChecklistIdx = ref(null)
+const checklistFilter = ref('all') // 'all' | 'groom' | 'bride' | 'both' | 'family' | 'urgent' | 'pending'
 const checklistForm = reactive({
   id: '',
   phase: 'H-180 s/d H-120',
@@ -1184,6 +1432,8 @@ const checklistForm = reactive({
   task: '',
   notes: '',
   dueDate: '',
+  assignee: 'both', // 'groom' | 'bride' | 'both' | 'family'
+  isUrgent: false,
 })
 
 const showVendorModal = ref(false)
@@ -1264,12 +1514,35 @@ const countdownDays = computed(() => {
   return Math.ceil(diffTime / (1000 * 60 * 60 * 24))
 })
 
+const groomTasksCount = computed(() => (planner.checklists || []).filter(c => c.assignee === 'groom').length)
+const groomCompletedCount = computed(() => (planner.checklists || []).filter(c => c.assignee === 'groom' && c.isCompleted).length)
+
+const brideTasksCount = computed(() => (planner.checklists || []).filter(c => c.assignee === 'bride').length)
+const brideCompletedCount = computed(() => (planner.checklists || []).filter(c => c.assignee === 'bride' && c.isCompleted).length)
+
+const bothTasksCount = computed(() => (planner.checklists || []).filter(c => (!c.assignee || c.assignee === 'both')).length)
+const bothCompletedCount = computed(() => (planner.checklists || []).filter(c => (!c.assignee || c.assignee === 'both') && c.isCompleted).length)
+
+const urgentTasksCount = computed(() => (planner.checklists || []).filter(c => c.isUrgent && !c.isCompleted).length)
+
 function getPhaseTasks(phase) {
-  return (planner.checklists || []).filter(c => c.phase === phase)
+  const phaseList = (planner.checklists || []).filter(c => c.phase === phase)
+  if (checklistFilter.value === 'all') return phaseList
+  if (checklistFilter.value === 'groom') return phaseList.filter(c => c.assignee === 'groom')
+  if (checklistFilter.value === 'bride') return phaseList.filter(c => c.assignee === 'bride')
+  if (checklistFilter.value === 'both') return phaseList.filter(c => (!c.assignee || c.assignee === 'both'))
+  if (checklistFilter.value === 'family') return phaseList.filter(c => c.assignee === 'family')
+  if (checklistFilter.value === 'urgent') return phaseList.filter(c => c.isUrgent)
+  if (checklistFilter.value === 'pending') return phaseList.filter(c => !c.isCompleted)
+  return phaseList
 }
 
 function getCompletedPhaseCount(phase) {
-  return getPhaseTasks(phase).filter(c => c.isCompleted).length
+  return (planner.checklists || []).filter(c => c.phase === phase && c.isCompleted).length
+}
+
+function getTotalPhaseCount(phase) {
+  return (planner.checklists || []).filter(c => c.phase === phase).length
 }
 
 // Formatters
@@ -1481,13 +1754,31 @@ function deleteBudgetItem(idx) {
 
 // Checklist Modal Handlers
 function openAddChecklistModal() {
+  editingChecklistIdx.value = null
   Object.assign(checklistForm, {
     id: 'chk-' + Date.now(),
     phase: 'H-180 s/d H-120',
-    category: 'Administrasi',
+    category: 'Administrasi & Konsep',
     task: '',
     notes: '',
     dueDate: '',
+    assignee: 'both',
+    isUrgent: false,
+  })
+  showChecklistModal.value = true
+}
+
+function editChecklist(task, idx) {
+  editingChecklistIdx.value = idx
+  Object.assign(checklistForm, {
+    id: task.id || 'chk-' + Date.now(),
+    phase: task.phase || 'H-180 s/d H-120',
+    category: task.category || 'Administrasi & Konsep',
+    task: task.task || '',
+    notes: task.notes || '',
+    dueDate: task.dueDate || '',
+    assignee: task.assignee || 'both',
+    isUrgent: Boolean(task.isUrgent),
   })
   showChecklistModal.value = true
 }
@@ -1497,15 +1788,30 @@ function saveChecklistTask() {
     toast.warning('Nama tugas wajib diisi')
     return
   }
-  planner.checklists.push({
+
+  const taskData = {
     id: checklistForm.id,
     phase: checklistForm.phase,
     category: checklistForm.category,
     task: checklistForm.task,
     notes: checklistForm.notes,
     dueDate: checklistForm.dueDate,
-    isCompleted: false,
-  })
+    assignee: checklistForm.assignee,
+    isUrgent: checklistForm.isUrgent,
+  }
+
+  if (editingChecklistIdx.value !== null && planner.checklists[editingChecklistIdx.value]) {
+    planner.checklists[editingChecklistIdx.value] = {
+      ...planner.checklists[editingChecklistIdx.value],
+      ...taskData,
+    }
+  } else {
+    planner.checklists.push({
+      ...taskData,
+      isCompleted: false,
+    })
+  }
+
   showChecklistModal.value = false
   handleSavePlanner()
 }
