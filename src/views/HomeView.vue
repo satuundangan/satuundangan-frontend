@@ -67,7 +67,7 @@
 
         <div v-else class="grid md:grid-cols-3 gap-10">
           <div
-            v-for="item in filteredTemplates.slice(0, 6)"
+            v-for="item in filteredTemplates.slice(0, 12)"
             :key="item.id"
             class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group border border-gray-100 flex flex-col"
           >

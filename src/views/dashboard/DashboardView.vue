@@ -67,7 +67,19 @@
              <span class="flex items-center gap-2"><i class="fa-solid fa-bolt text-amber-500"></i> Aksi Cepat</span>
           </h3>
           
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+             <router-link to="/planner" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-amber-200/80 shadow-xs hover:border-amber-400 hover:shadow-md transition-all group relative overflow-hidden">
+                <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                   <i class="fa-solid fa-clipboard-check text-base"></i>
+                </div>
+                <div class="min-w-0">
+                   <div class="flex items-center gap-1">
+                     <span class="text-xs font-bold text-slate-900 truncate block">Wedding Planner</span>
+                   </div>
+                   <span class="text-[10px] text-slate-400 block truncate">Budget & Checklist</span>
+                </div>
+             </router-link>
+
              <router-link to="/templates" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
                 <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                    <i class="fa-solid fa-wand-magic-sparkles text-base"></i>
@@ -94,7 +106,7 @@
                 </div>
                 <div>
                    <span class="text-xs font-bold text-slate-900 block">Meja Resepsi</span>
-                   <span class="text-[10px] text-slate-400 block">Buku tamu & QR check-in</span>
+                   <span class="text-[10px] text-slate-400 block">Buku tamu & QR</span>
                 </div>
              </router-link>
              

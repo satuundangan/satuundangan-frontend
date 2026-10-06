@@ -24,35 +24,35 @@
           </div>
 
           <!-- Quick Actions -->
-          <div v-if="isUnlocked" class="flex flex-wrap items-center gap-2">
+          <div v-if="isUnlocked" class="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0 w-full sm:w-auto">
             <button
               type="button"
               @click="openSetupModal = true"
-              class="px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-amber-50 hover:bg-amber-100 border border-amber-200 text-amber-900 text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer whitespace-nowrap"
               title="Atur ulang profil dan target pernikahan"
             >
               <i class="fa-solid fa-sliders text-amber-600"></i>
-              <span>Profil Pernikahan</span>
+              <span>Profil</span>
             </button>
 
             <button
               type="button"
               @click="printRundown"
-              class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center gap-1.5 shadow-2xs cursor-pointer"
+              class="flex-1 sm:flex-none px-3.5 py-2 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-2xs cursor-pointer whitespace-nowrap"
             >
               <i class="fa-solid fa-print text-slate-500"></i>
-              <span>Cetak Rundown / PDF</span>
+              <span>Cetak PDF</span>
             </button>
 
             <button
               type="button"
               @click="handleSavePlanner"
               :disabled="saving"
-              class="px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center gap-1.5 shadow-md shadow-slate-900/10 cursor-pointer disabled:opacity-50"
+              class="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 shadow-md shadow-slate-900/10 cursor-pointer disabled:opacity-50 whitespace-nowrap"
             >
               <i v-if="saving" class="fa-solid fa-spinner fa-spin"></i>
               <i v-else class="fa-solid fa-floppy-disk"></i>
-              <span>{{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}</span>
+              <span>{{ saving ? 'Menyimpan...' : 'Simpan' }}</span>
             </button>
           </div>
         </div>
@@ -367,8 +367,8 @@
                 </button>
               </div>
 
-              <!-- Table -->
-              <div class="overflow-x-auto">
+              <!-- Desktop Table View (Hidden on Mobile) -->
+              <div class="hidden md:block overflow-x-auto">
                 <table class="w-full text-left text-xs">
                   <thead class="bg-slate-50 text-slate-400 font-black uppercase text-[10px] tracking-wider border-b border-slate-100">
                     <tr>
@@ -435,6 +435,81 @@
                     </tr>
                   </tbody>
                 </table>
+              </div>
+
+              <!-- Mobile Card View (Visible on Mobile Only) -->
+              <div class="md:hidden divide-y divide-slate-100">
+                <div
+                  v-for="(item, idx) in planner.budgetItems"
+                  :key="'mobile-' + item.id"
+                  class="p-4 space-y-3 hover:bg-slate-50/50 transition-colors"
+                >
+                  <div class="flex items-start justify-between gap-2">
+                    <div>
+                      <span class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                        {{ item.category }}
+                      </span>
+                      <h4 class="font-bold text-slate-900 text-sm mt-1">{{ item.name }}</h4>
+                      <p v-if="item.notes" class="text-[11px] text-slate-400 mt-0.5">{{ item.notes }}</p>
+                    </div>
+
+                    <span
+                      class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider shrink-0"
+                      :class="item.paidAmount >= item.actualCost
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : item.paidAmount > 0
+                        ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200'"
+                    >
+                      {{ item.paidAmount >= item.actualCost ? 'Lunas' : item.paidAmount > 0 ? 'DP' : 'Belum' }}
+                    </span>
+                  </div>
+
+                  <div class="grid grid-cols-3 gap-2 p-2.5 rounded-xl bg-slate-50 border border-slate-100 text-[11px]">
+                    <div>
+                      <span class="text-[9px] uppercase font-bold text-slate-400 block">Estimasi</span>
+                      <span class="font-mono font-bold text-slate-700">{{ formatNumber(item.estimatedCost) }}</span>
+                    </div>
+                    <div>
+                      <span class="text-[9px] uppercase font-bold text-slate-400 block">Realisasi</span>
+                      <span class="font-mono font-bold text-slate-900">{{ formatNumber(item.actualCost) }}</span>
+                    </div>
+                    <div>
+                      <span class="text-[9px] uppercase font-bold text-slate-400 block">Sisa Bayar</span>
+                      <span class="font-mono font-bold" :class="(item.actualCost - item.paidAmount) > 0 ? 'text-amber-600' : 'text-slate-400'">
+                        {{ formatNumber(item.actualCost - item.paidAmount) }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center justify-between pt-1">
+                    <span class="text-[11px] text-emerald-600 font-bold">
+                      <i class="fa-solid fa-check text-[10px] mr-1"></i>
+                      Terbayar: {{ formatNumber(item.paidAmount) }}
+                    </span>
+
+                    <div class="flex items-center gap-1">
+                      <button
+                        type="button"
+                        @click="editBudgetItem(item, idx)"
+                        class="px-2.5 py-1 rounded-lg text-slate-600 hover:bg-slate-100 text-xs font-bold border border-slate-200 flex items-center gap-1"
+                      >
+                        <i class="fa-solid fa-pen-to-square text-[10px]"></i> Edit
+                      </button>
+                      <button
+                        type="button"
+                        @click="deleteBudgetItem(idx)"
+                        class="p-1 px-2 rounded-lg text-rose-600 hover:bg-rose-50 text-xs font-bold border border-rose-200 flex items-center gap-1"
+                      >
+                        <i class="fa-solid fa-trash text-[10px]"></i>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div v-if="!planner.budgetItems?.length" class="p-8 text-center text-slate-400 text-xs">
+                  Belum ada pos biaya. Klik tombol "Tambah Pos Biaya" di atas.
+                </div>
               </div>
             </div>
           </div>

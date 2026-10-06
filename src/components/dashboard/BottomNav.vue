@@ -29,10 +29,20 @@
       <i class="fa-solid fa-plus text-base"></i>
     </router-link>
 
+    <!-- Planner -->
+    <router-link 
+      to="/planner" 
+      class="flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition-all"
+      :class="$route.path.includes('/planner') ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
+    >
+      <i class="fa-solid fa-clipboard-check text-base"></i>
+      <span class="text-[9px] font-bold tracking-tight">Planner</span>
+    </router-link>
+
     <!-- Guests -->
     <router-link 
       to="/guests" 
-      class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all"
+      class="flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition-all"
       :class="$route.path.includes('/guests') ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
     >
       <i class="fa-solid fa-users text-base"></i>
@@ -42,7 +52,7 @@
     <!-- Profile/Settings -->
     <router-link 
       to="/settings" 
-      class="flex flex-col items-center gap-1 py-1 px-2.5 rounded-xl transition-all"
+      class="flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition-all"
       :class="$route.path.includes('/settings') ? 'text-[#c89f68] font-bold' : 'text-slate-400 hover:text-white'"
     >
       <i class="fa-solid fa-user-gear text-base"></i>
