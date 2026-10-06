@@ -43,6 +43,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'jawa-truntum': '/assets/templates/jawa-truntum.png',
   'naruto': '/assets/images/naruto/naruto-cover.webp',
   'one-piece': '/assets/images/one-piece/one-piece-cover.png',
+  'strawberry-matcha': '/assets/templates/strawberry-matcha.png',
 }
 
 export function resolveTemplateThumbnail(template) {
