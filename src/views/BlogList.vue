@@ -288,9 +288,18 @@
                     <span v-else>Dapatkan Gratis ✨</span>
                   </button>
                 </form>
-                <p class="text-[11px] text-stone-400 mt-2 text-center lg:text-left">
-                  Bebas spam. Anda dapat berhenti berlangganan kapan saja.
-                </p>
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 text-xs">
+                  <p class="text-[11px] text-stone-400">
+                    Bebas spam. Akses langsung via browser.
+                  </p>
+                  <router-link
+                    to="/wedding-planner"
+                    class="text-[11px] font-bold text-[#e9cca4] hover:underline flex items-center gap-1 shrink-0"
+                  >
+                    <span>Buka Wedding Planner Online</span>
+                    <i class="pi pi-arrow-right text-[9px]"></i>
+                  </router-link>
+                </div>
               </div>
             </div>
           </div>

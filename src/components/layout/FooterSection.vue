@@ -43,6 +43,7 @@
            <h4 class="font-bold text-lg mb-6">Layanan</h4>
            <ul class="space-y-4 text-sm text-gray-400">
               <li><router-link to="/create" class="hover:text-mocha transition">Buat Undangan</router-link></li>
+              <li><router-link to="/wedding-planner" class="hover:text-mocha transition">Free Wedding Planner & Budget</router-link></li>
               <li><a href="/#templates" class="hover:text-mocha transition">Katalog Desain</a></li>
               <li><a href="/#features" class="hover:text-mocha transition">Fitur Lengkap</a></li>
               <li><a href="/#pricing" class="hover:text-mocha transition">Harga Paket</a></li>
