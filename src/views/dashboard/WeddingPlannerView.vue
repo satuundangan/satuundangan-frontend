@@ -1912,65 +1912,174 @@ function openPrintRundownModal() {
   showPrintRundownModal.value = true
 }
 
+// Alias for header Quick Action button
+function printRundown() {
+  openPrintRundownModal()
+}
+
 function generateRundownPrintHtml() {
   const weddingDateStr = planner.weddingDate ? formatDate(planner.weddingDate) : ''
-  const rowsHtml = (planner.rundown || []).map(r => `
-    <tr style="border-bottom: 1px solid #e2e8f0;">
-      <td style="padding: 10px; font-weight: bold; font-family: monospace; font-size: 13px; color: #475569;">${r.time}</td>
-      <td style="padding: 10px; font-size: 13px;">
-        <strong style="color: #0f172a;">${r.activity}</strong>
-        ${r.notes ? `<div style="color: #64748b; font-size: 11px; margin-top: 2px;">${r.notes}</div>` : ''}
+  const rowsHtml = (planner.rundown || []).map((r, idx) => `
+    <tr style="border-bottom: 1px solid #e2e8f0; background-color: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'}; page-break-inside: avoid;">
+      <td style="padding: 12px 14px; font-weight: 700; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size: 13px; color: #1e293b; white-space: nowrap; vertical-align: top;">
+        ${r.time || '-'}
       </td>
-      <td style="padding: 10px; font-size: 12px; color: #334155;">${r.location || '-'}</td>
-      <td style="padding: 10px; font-size: 12px; font-weight: bold; color: #7c3aed;">${r.pic || '-'}</td>
+      <td style="padding: 12px 14px; vertical-align: top;">
+        <div style="font-weight: 800; font-size: 13px; color: #0f172a; line-height: 1.4;">${r.activity || '-'}</div>
+        ${r.notes ? `<div style="color: #64748b; font-size: 11px; margin-top: 4px; font-style: italic; line-height: 1.4;">${r.notes}</div>` : ''}
+      </td>
+      <td style="padding: 12px 14px; font-size: 12px; color: #334155; vertical-align: top; line-height: 1.4;">
+        ${r.location || '-'}
+      </td>
+      <td style="padding: 12px 14px; font-size: 12px; font-weight: 700; color: #7c3aed; vertical-align: top; line-height: 1.4;">
+        ${r.pic || '-'}
+      </td>
     </tr>
   `).join('')
 
-  return `
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8" />
-        <title>Rundown Acara Pernikahan - SatuUndangan.id</title>
-        <style>
-          @page { size: A4 portrait; margin: 15mm; }
-          * { box-sizing: border-box; }
-          body { font-family: system-ui, -apple-system, sans-serif; color: #0f172a; margin: 0; padding: 24px; }
-          .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 14px; margin-bottom: 20px; }
-          .header h1 { font-size: 20px; margin: 0; text-transform: uppercase; letter-spacing: 1px; font-weight: 800; }
-          .header p { font-size: 12px; color: #64748b; margin: 4px 0 0; }
-          table { width: 100%; border-collapse: collapse; text-align: left; }
-          th { background: #f8fafc; padding: 10px; font-size: 11px; text-transform: uppercase; color: #475569; border-bottom: 2px solid #cbd5e1; font-weight: 800; }
-          .footer { margin-top: 30px; text-align: center; font-size: 10px; color: #94a3b8; border-top: 1px dashed #cbd5e1; padding-top: 10px; }
-        </style>
-      </head>
-      <body>
-        <div class="header">
-          <h1>Rundown Acara Pernikahan</h1>
-          <p>${weddingDateStr ? `Tanggal: ${weddingDateStr} • ` : ''}Disusun rapi menggunakan Wedding Planner SatuUndangan.id</p>
-        </div>
-        <table>
-          <thead>
-            <tr>
-              <th style="width: 20%;">Waktu</th>
-              <th style="width: 45%;">Kegiatan / Acara</th>
-              <th style="width: 20%;">Lokasi</th>
-              <th style="width: 15%;">PIC</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${rowsHtml}
-          </tbody>
-        </table>
-        <div class="footer">
-          Dicetak dari platform SatuUndangan.id • Solusi Undangan Digital & Wedding Planner Modern Indonesia
-        </div>
-      </body>
-    </html>
-  `
+  return `<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rundown Acara Pernikahan - SatuUndangan.id</title>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 12mm 15mm;
+    }
+    * {
+      box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      color: #0f172a;
+      margin: 0;
+      padding: 16px;
+      background: #ffffff;
+      font-size: 12px;
+      line-height: 1.5;
+    }
+    .container {
+      max-width: 100%;
+      margin: 0 auto;
+    }
+    .header {
+      border-bottom: 2px solid #0f172a;
+      padding-bottom: 14px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .header-titles h1 {
+      font-size: 20px;
+      font-weight: 900;
+      margin: 0 0 4px 0;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #0f172a;
+    }
+    .header-titles p {
+      font-size: 12px;
+      color: #64748b;
+      margin: 0;
+      font-weight: 500;
+    }
+    .brand-badge {
+      text-align: right;
+    }
+    .brand-name {
+      font-size: 13px;
+      font-weight: 900;
+      color: #d97706;
+      letter-spacing: 0.5px;
+    }
+    .brand-tag {
+      font-size: 10px;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      margin-top: 8px;
+    }
+    thead {
+      display: table-header-group;
+    }
+    th {
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 10px 14px;
+      border-bottom: 2px solid #cbd5e1;
+      border-top: 1px solid #e2e8f0;
+    }
+    tr {
+      page-break-inside: avoid;
+    }
+    .footer {
+      margin-top: 28px;
+      padding-top: 12px;
+      border-top: 1px dashed #cbd5e1;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 10px;
+      color: #94a3b8;
+      page-break-inside: avoid;
+    }
+    @media print {
+      body {
+        padding: 0;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-titles">
+        <h1>Rundown Acara Pernikahan</h1>
+        <p>${weddingDateStr ? `Hari & Tanggal: <strong>${weddingDateStr}</strong> • ` : ''}Total ${planner.rundown?.length || 0} Sesi Acara</p>
+      </div>
+      <div class="brand-badge">
+        <div class="brand-name">SatuUndangan.id</div>
+        <div class="brand-tag">Wedding Planner & Digital Invitation</div>
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th style="width: 18%;">Waktu</th>
+          <th style="width: 44%;">Sesi & Kegiatan</th>
+          <th style="width: 22%;">Lokasi / Ruangan</th>
+          <th style="width: 16%;">PIC / Petugas</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rowsHtml}
+      </tbody>
+    </table>
+
+    <div class="footer">
+      <div>Dokumen ini disusun rapi melalui platform <strong>SatuUndangan.id</strong></div>
+      <div>Dicetak pada: ${new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}</div>
+    </div>
+  </div>
+</body>
+</html>`
 }
 
-// Execute Print via new window with fallback to iframe
+// Safe cross-browser print execution
 function executePrintRundown() {
   if (!planner.rundown || planner.rundown.length === 0) {
     toast.warning('Belum ada jadwal rundown untuk dicetak')
@@ -1979,27 +2088,7 @@ function executePrintRundown() {
 
   const html = generateRundownPrintHtml()
 
-  try {
-    const printWindow = window.open('', '_blank', 'width=800,height=900')
-    if (printWindow) {
-      printWindow.document.open()
-      printWindow.document.write(html)
-      printWindow.document.close()
-      printWindow.focus()
-      setTimeout(() => {
-        try {
-          printWindow.print()
-        } catch (e) {
-          console.error('Print window error:', e)
-        }
-      }, 350)
-      return
-    }
-  } catch (err) {
-    console.warn('window.open blocked, falling back to hidden iframe:', err)
-  }
-
-  // Fallback: Safe isolated iframe
+  // First choice: hidden iframe (prevents aggressive browser popup blockers on mobile and desktop)
   try {
     const existingFrame = document.getElementById('satuundangan-rundown-frame')
     if (existingFrame) existingFrame.remove()
@@ -2012,31 +2101,78 @@ function executePrintRundown() {
     iframe.style.width = '0'
     iframe.style.height = '0'
     iframe.style.border = '0'
+    iframe.style.opacity = '0'
+    iframe.style.pointerEvents = 'none'
     document.body.appendChild(iframe)
 
-    const doc = iframe.contentWindow.document
-    doc.open()
-    doc.write(html)
-    doc.close()
+    const frameDoc = iframe.contentWindow.document
+    frameDoc.open()
+    frameDoc.write(html)
+    frameDoc.close()
 
     iframe.contentWindow.focus()
     setTimeout(() => {
       try {
         iframe.contentWindow.print()
+        setTimeout(() => {
+          if (iframe && iframe.parentNode) {
+            iframe.remove()
+          }
+        }, 3000)
+      } catch (err) {
+        console.warn('Iframe print error, falling back to popup window:', err)
+        fallbackPrintWindow(html)
+      }
+    }, 300)
+    return
+  } catch (err) {
+    console.warn('Iframe method failed, falling back to window.open:', err)
+    fallbackPrintWindow(html)
+  }
+}
+
+function fallbackPrintWindow(html) {
+  try {
+    const printWindow = window.open('', '_blank', 'width=850,height=900')
+    if (!printWindow) {
+      toast.error('Browser memblokir popup pencetakan. Izinkan pop-up untuk situs ini.')
+      return
+    }
+    printWindow.document.open()
+    printWindow.document.write(html)
+    printWindow.document.close()
+    printWindow.focus()
+    setTimeout(() => {
+      try {
+        printWindow.print()
       } catch (e) {
-        console.error('Iframe print error:', e)
+        console.error('Print window error:', e)
       }
     }, 350)
   } catch (e) {
     console.error('Fatal print error:', e)
-    toast.error('Gagal membuka dialog cetak. Silakan periksa pengaturan browser Anda.')
+    toast.error('Gagal membuka dialog cetak. Silakan periksa izin browser Anda.')
   }
 }
 </script>
 
 <style scoped>
 @media print {
-  .no-print {
+  @page {
+    size: A4 portrait;
+    margin: 12mm 15mm;
+  }
+
+  html, body {
+    background: #ffffff !important;
+    height: auto !important;
+    overflow: visible !important;
+  }
+
+  .no-print,
+  nav,
+  aside,
+  header {
     display: none !important;
   }
 }
