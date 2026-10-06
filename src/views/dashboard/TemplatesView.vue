@@ -44,7 +44,7 @@
            >
               <div class="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-slate-100">
                  <img 
-                   :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl)" 
+                   :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)" 
                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                    @error="(e) => { 
                      e.target.onerror = null;
@@ -117,6 +117,7 @@ import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getCategories } from '@/api/category'
+import { resolveTemplateThumbnail } from '@/utils/templateRegistry'
 
 const router = useRouter()
 const templates = ref([])
@@ -149,7 +150,11 @@ const filteredTemplates = computed(() => {
   return templates.value.filter(t => t.category && t.category.toLowerCase() === selectedCategory.value.toLowerCase())
 })
 
-function resolveImageUrl(url) {
+function resolveImageUrl(url, item = null) {
+  if (item) {
+    const resolved = resolveTemplateThumbnail(item)
+    if (resolved) url = resolved
+  }
   if (!url) return 'https://via.placeholder.com/400x500?text=No+Preview'
   if (url.startsWith('http')) return url
   const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : ''

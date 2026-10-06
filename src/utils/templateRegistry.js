@@ -34,35 +34,41 @@ export function resolveTemplateKey(slug, componentKey, registry = templateLoader
 }
 
 const LOCAL_TEMPLATE_THUMBNAILS = {
-  'kimi-no-na-wa': '/assets/templates/kimi-no-na-wa.png',
-  'meowly-married': '/assets/templates/meowly-married.png',
-  'pixel-quest': '/assets/templates/pixel-quest.png',
-  'dayak-ngaju-benang-bintik': '/assets/templates/dayak-ngaju-benang-bintik.png',
+  'azure-shores': '/assets/templates/azure-shores.png',
   'batak-ragi-hotang': '/assets/templates/batak-ragi-hotang.png',
-  'sunda-sabilulungan': '/assets/templates/sunda-sabilulungan.png',
+  'botanical-watercolor': '/assets/templates/botanical-watercolor.png',
+  'celestial-sparkle': '/assets/templates/celestial-sparkle.png',
+  'cyberpunk-neon': '/assets/templates/cyberpunk-neon.png',
+  'dark-elegant': '/assets/templates/dark-elegant.png',
+  'dayak-ngaju-benang-bintik': '/assets/templates/dayak-ngaju-benang-bintik.png',
+  'editorial-magazine': '/assets/templates/editorial-magazine.png',
   'jawa-truntum': '/assets/templates/jawa-truntum.png',
-  'naruto': '/assets/images/naruto/naruto-cover.webp',
-  'one-piece': '/assets/images/one-piece/one-piece-cover.png',
+  'kimi-no-na-wa': '/assets/templates/kimi-no-na-wa.png',
+  'light-modern': '/assets/templates/light-modern.png',
+  'meowly-married': '/assets/templates/meowly-married.png',
+  'minimalist-terra': '/assets/templates/minimalist-terra.png',
+  'modern-noir': '/assets/templates/modern-noir.png',
+  'naruto': '/assets/templates/naruto.png',
+  'one-piece': '/assets/templates/one-piece.png',
+  'pixel-quest': '/assets/templates/pixel-quest.png',
+  'retro-nostalgia': '/assets/templates/retro-nostalgia.png',
+  'royal-emerald': '/assets/templates/royal-emerald.png',
+  'royal-gold': '/assets/templates/royal-gold.png',
+  'sakura-blossom': '/assets/templates/sakura-blossom.png',
   'strawberry-matcha': '/assets/templates/strawberry-matcha.png',
+  'sunda-sabilulungan': '/assets/templates/sunda-sabilulungan.png',
 }
 
 export function resolveTemplateThumbnail(template) {
   if (!template) return ''
   const slug = normalizeTemplateKey(template.slug)
-  const thumb = template.thumbnailUrl || template.previewUrl
 
-  // If thumbnail points to known dead or stale CDN location for meowly-married / pixel-quest
-  if (
-    slug &&
-    LOCAL_TEMPLATE_THUMBNAILS[slug] &&
-    (!thumb ||
-      thumb.includes('cdn.satuundangan.id/templates/meowly-married.jpg') ||
-      thumb.includes('cdn.satuundangan.id/templates/pixel-quest.jpg') ||
-      thumb.startsWith('/demo/'))
-  ) {
+  // Prioritize crisp local screenshots captured from latest live demo templates
+  if (slug && LOCAL_TEMPLATE_THUMBNAILS[slug]) {
     return LOCAL_TEMPLATE_THUMBNAILS[slug]
   }
 
+  const thumb = template.thumbnailUrl || template.previewUrl
   if (thumb && !thumb.startsWith('/demo/')) {
     return thumb
   }
