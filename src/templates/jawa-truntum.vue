@@ -757,7 +757,9 @@ const walletItems = computed(() => {
 
 const galleryImages = computed(() => {
   if (Array.isArray(data.value.galleryImages) && data.value.galleryImages.length) {
-    return data.value.galleryImages
+    return data.value.galleryImages.map((img) =>
+      typeof img === 'object' && img?.src ? img : { src: String(img || ''), thumbnail: String(img || '') },
+    )
   }
   return []
 })
