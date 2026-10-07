@@ -14,10 +14,10 @@
     </div>
 
     <!-- Royal Gold Corner Ornaments (Batik Sulur Jawa) -->
-    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none">
+    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none">
       <img :src="cornerImg" alt="Corner Ornament" class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(197,160,89,0.3)]" />
     </div>
-    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none rotate-180">
+    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none rotate-180">
       <img :src="cornerImg" alt="Corner Ornament" class="w-full h-full object-contain filter drop-shadow-[0_2px_8px_rgba(197,160,89,0.3)]" />
     </div>
 

@@ -71,7 +71,7 @@
     </div>
 
     <!-- Royal Bugis Gold Corner Filigrees (Sulapa Eppa / Ukiran Bunga Walasuji) -->
-    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none">
+    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none">
       <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-[#d4af37]">
         <path d="M 0,0 L 40,0 C 40,15 25,25 25,40 C 25,25 15,20 0,20 Z" fill="currentColor" fill-opacity="0.25" />
         <path d="M 0,2 L 35,2 C 35,12 22,22 22,35 C 12,22 2,22 2,35 L 2,0" stroke="currentColor" stroke-width="1.5" />
@@ -84,7 +84,7 @@
         <circle cx="22" cy="45" r="2" fill="#d4af37" />
       </svg>
     </div>
-    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none rotate-180">
+    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none rotate-180">
       <svg viewBox="0 0 100 100" fill="none" class="w-full h-full text-[#d4af37]">
         <path d="M 0,0 L 40,0 C 40,15 25,25 25,40 C 25,25 15,20 0,20 Z" fill="currentColor" fill-opacity="0.25" />
         <path d="M 0,2 L 35,2 C 35,12 22,22 22,35 C 12,22 2,22 2,35 L 2,0" stroke="currentColor" stroke-width="1.5" />

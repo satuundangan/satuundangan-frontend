@@ -40,7 +40,7 @@
     </div>
 
     <!-- Royal Minang Antique Gold Corner Ornaments (Songket Pandai Sikek & Itiak Pulang Patang) -->
-    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none text-[#d4af37]">
+    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none text-[#d4af37]">
       <svg viewBox="0 0 100 100" fill="currentColor" class="w-full h-full filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]">
         <path d="M0,0 L100,0 C70,10 50,25 35,45 C20,65 10,85 0,100 Z" opacity="0.15" />
         <path d="M0,0 L70,0 C50,15 35,30 25,50 C15,70 10,85 0,70 Z" fill="none" stroke="currentColor" stroke-width="1.5" />
@@ -55,7 +55,7 @@
         <circle cx="10" cy="55" r="2" fill="currentColor" />
       </svg>
     </div>
-    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-75 pointer-events-none select-none rotate-180 text-[#d4af37]">
+    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none rotate-180 text-[#d4af37]">
       <svg viewBox="0 0 100 100" fill="currentColor" class="w-full h-full filter drop-shadow-[0_2px_8px_rgba(212,175,55,0.4)]">
         <path d="M0,0 L100,0 C70,10 50,25 35,45 C20,65 10,85 0,100 Z" opacity="0.15" />
         <path d="M0,0 L70,0 C50,15 35,30 25,50 C15,70 10,85 0,70 Z" fill="none" stroke="currentColor" stroke-width="1.5" />

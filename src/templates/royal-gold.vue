@@ -7,13 +7,13 @@
          style="background-image: url('data:image/svg+xml,%3Csvg width=\'100\' height=\'100\' viewBox=\'0 0 100 100\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cpath d=\'M50 50L0 0M50 50L100 0M50 50L100 100M50 50L0 100\' stroke=\'%23d4af37\' stroke-width=\'0.5\' fill=\'none\'/%3E%3C/svg%3E'); background-size: 60px 60px;"></div>
 
     <!-- Royal Ornaments (Embedded SVG) -->
-    <div class="fixed top-0 left-0 w-32 h-32 md:w-48 md:h-48 z-10 opacity-60 pointer-events-none text-[#d4af37]">
+    <div class="fixed top-0 left-0 w-32 h-32 md:w-48 md:h-48 z-40 opacity-75 pointer-events-none text-[#d4af37]">
        <svg viewBox="0 0 100 100" fill="currentColor">
          <path d="M0 0C20 0 40 10 50 30C60 10 80 0 100 0V5C80 5 60 15 50 35C40 15 20 5 0 5V0Z" />
          <circle cx="50" cy="45" r="3" />
        </svg>
     </div>
-    <div class="fixed bottom-0 right-0 w-32 h-32 md:w-48 md:h-48 z-10 opacity-60 pointer-events-none text-[#d4af37] rotate-180">
+    <div class="fixed bottom-0 right-0 w-32 h-32 md:w-48 md:h-48 z-40 opacity-75 pointer-events-none text-[#d4af37] rotate-180">
        <svg viewBox="0 0 100 100" fill="currentColor">
          <path d="M0 0C20 0 40 10 50 30C60 10 80 0 100 0V5C80 5 60 15 50 35C40 15 20 5 0 5V0Z" />
          <circle cx="50" cy="45" r="3" />

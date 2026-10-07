@@ -31,7 +31,7 @@
     </div>
 
     <!-- Sacred Balinese Corner Ornaments (Ukiran Patra Samblung Prada Emas) -->
-    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-80 pointer-events-none select-none text-[#dfb15b]">
+    <div class="fixed top-0 left-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none text-[#dfb15b]">
       <svg viewBox="0 0 100 100" fill="none" class="w-full h-full filter drop-shadow-[0_2px_10px_rgba(223,177,91,0.35)]">
         <!-- Corner Floral Vine Spire -->
         <path d="M0,0 L45,0 C42,12 36,20 28,26 C36,24 45,28 48,36 C50,42 46,50 38,52 C32,54 26,50 24,44 C22,38 26,30 32,28 C22,32 15,40 12,50 C9,62 14,74 20,84 L0,84 Z" fill="currentColor" opacity="0.3" />
@@ -41,7 +41,7 @@
         <circle cx="10" cy="36" r="2.5" fill="#f7e5aa" />
       </svg>
     </div>
-    <div class="fixed top-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-80 pointer-events-none select-none -scale-x-100 text-[#dfb15b]">
+    <div class="fixed top-0 right-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none -scale-x-100 text-[#dfb15b]">
       <svg viewBox="0 0 100 100" fill="none" class="w-full h-full filter drop-shadow-[0_2px_10px_rgba(223,177,91,0.35)]">
         <path d="M0,0 L45,0 C42,12 36,20 28,26 C36,24 45,28 48,36 C50,42 46,50 38,52 C32,54 26,50 24,44 C22,38 26,30 32,28 C22,32 15,40 12,50 C9,62 14,74 20,84 L0,84 Z" fill="currentColor" opacity="0.3" />
         <path d="M2,2 L35,2 C30,10 24,18 16,22 C22,24 28,30 26,38 C24,44 18,46 14,42 C10,38 12,30 18,26 C12,30 6,38 4,48 L2,48 Z" fill="url(#goldGradient)" />
@@ -50,7 +50,7 @@
         <circle cx="10" cy="36" r="2.5" fill="#f7e5aa" />
       </svg>
     </div>
-    <div class="fixed bottom-0 left-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-80 pointer-events-none select-none -scale-y-100 text-[#dfb15b]">
+    <div class="fixed bottom-0 left-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none -scale-y-100 text-[#dfb15b]">
       <svg viewBox="0 0 100 100" fill="none" class="w-full h-full filter drop-shadow-[0_2px_10px_rgba(223,177,91,0.35)]">
         <path d="M0,0 L45,0 C42,12 36,20 28,26 C36,24 45,28 48,36 C50,42 46,50 38,52 C32,54 26,50 24,44 C22,38 26,30 32,28 C22,32 15,40 12,50 C9,62 14,74 20,84 L0,84 Z" fill="currentColor" opacity="0.3" />
         <path d="M2,2 L35,2 C30,10 24,18 16,22 C22,24 28,30 26,38 C24,44 18,46 14,42 C10,38 12,30 18,26 C12,30 6,38 4,48 L2,48 Z" fill="url(#goldGradient)" />
@@ -59,7 +59,7 @@
         <circle cx="10" cy="36" r="2.5" fill="#f7e5aa" />
       </svg>
     </div>
-    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-10 opacity-80 pointer-events-none select-none rotate-180 text-[#dfb15b]">
+    <div class="fixed bottom-0 right-0 w-24 h-24 md:w-36 md:h-36 z-40 opacity-85 pointer-events-none select-none rotate-180 text-[#dfb15b]">
       <svg viewBox="0 0 100 100" fill="none" class="w-full h-full filter drop-shadow-[0_2px_10px_rgba(223,177,91,0.35)]">
         <path d="M0,0 L45,0 C42,12 36,20 28,26 C36,24 45,28 48,36 C50,42 46,50 38,52 C32,54 26,50 24,44 C22,38 26,30 32,28 C22,32 15,40 12,50 C9,62 14,74 20,84 L0,84 Z" fill="currentColor" opacity="0.3" />
         <path d="M2,2 L35,2 C30,10 24,18 16,22 C22,24 28,30 26,38 C24,44 18,46 14,42 C10,38 12,30 18,26 C12,30 6,38 4,48 L2,48 Z" fill="url(#goldGradient)" />

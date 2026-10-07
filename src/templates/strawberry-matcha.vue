@@ -11,7 +11,7 @@
     <div class="fixed bottom-[20%] right-[10%] w-80 h-80 bg-[#E8F0E4] rounded-full blur-[90px] opacity-70 pointer-events-none"></div>
 
     <!-- Floating Strawberry Blossoms & Matcha Tea Leaves -->
-    <div class="fixed inset-0 pointer-events-none z-10 overflow-hidden">
+    <div class="fixed inset-0 pointer-events-none z-40 overflow-hidden">
       <div v-for="n in 14" :key="n" class="floating-petal" :style="getPetalStyle(n)">
         <svg v-if="n % 2 === 0" viewBox="0 0 24 24" fill="none" class="w-full h-full text-[#E85D75]">
           <!-- Strawberry Heart / Blossom -->
