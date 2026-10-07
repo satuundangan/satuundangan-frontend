@@ -187,6 +187,8 @@ onMounted(async () => {
         'pixel-quest': 'wedding-acoustic-morning.mp3',
 
         // Nusantara & Adat Heritage
+        'bali-payas-agung': 'wedding-sacred-ceremony.mp3',
+        'minang-suntiang-emas': 'wedding-sacred-ceremony.mp3',
         'sunda-sabilulungan': 'wedding-warm-reception.mp3',
         'jawa-truntum': 'wedding-sacred-ceremony.mp3',
         'batak-ragi-hotang': 'wedding-warm-reception.mp3',

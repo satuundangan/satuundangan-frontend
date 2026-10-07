@@ -14,16 +14,19 @@ const fakeRegistry = {
 }
 
 describe('templateRegistry', () => {
-  it('templateComponentKeys includes all 24 SFCs in src/templates/', () => {
-    expect(templateComponentKeys).toHaveLength(24)
+  it('templateComponentKeys includes all 27 SFCs in src/templates/', () => {
+    expect(templateComponentKeys).toHaveLength(27)
     expect(templateComponentKeys).toContain('dark-elegant')
     expect(templateComponentKeys).toContain('one-piece')
     expect(templateComponentKeys).toContain('naruto')
     expect(templateComponentKeys).toContain('dynamic-theme')
+    expect(templateComponentKeys).toContain('bali-payas-agung')
     expect(templateComponentKeys).toContain('batak-ragi-hotang')
+    expect(templateComponentKeys).toContain('bugis-saoraja')
     expect(templateComponentKeys).toContain('jawa-truntum')
     expect(templateComponentKeys).toContain('sunda-sabilulungan')
     expect(templateComponentKeys).toContain('dayak-ngaju-benang-bintik')
+    expect(templateComponentKeys).toContain('minang-suntiang-emas')
     expect(templateComponentKeys).toContain('strawberry-matcha')
   })
 

@@ -33,12 +33,14 @@ export function resolveTemplateKey(slug, componentKey, registry = templateLoader
   return FALLBACK_TEMPLATE_KEY
 }
 
-const THUMB_VERSION = 'v=20261007e'
+const THUMB_VERSION = 'v=20261007f'
 
 const LOCAL_TEMPLATE_THUMBNAILS = {
   'azure-shores': `/assets/templates/azure-shores.png?${THUMB_VERSION}`,
+  'bali-payas-agung': `/assets/templates/bali-payas-agung.png?${THUMB_VERSION}`,
   'batak-ragi-hotang': `/assets/templates/batak-ragi-hotang.png?${THUMB_VERSION}`,
   'botanical-watercolor': `/assets/templates/botanical-watercolor.png?${THUMB_VERSION}`,
+  'bugis-saoraja': `/assets/templates/bugis-saoraja.png?${THUMB_VERSION}`,
   'celestial-sparkle': `/assets/templates/celestial-sparkle.png?${THUMB_VERSION}`,
   'cyberpunk-neon': `/assets/templates/cyberpunk-neon.png?${THUMB_VERSION}`,
   'dark-elegant': `/assets/templates/dark-elegant.png?${THUMB_VERSION}`,
@@ -49,6 +51,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'kimi-no-na-wa': `/assets/templates/kimi-no-na-wa.png?${THUMB_VERSION}`,
   'light-modern': `/assets/templates/light-modern.png?${THUMB_VERSION}`,
   'meowly-married': `/assets/templates/meowly-married.png?${THUMB_VERSION}`,
+  'minang-suntiang-emas': `/assets/templates/minang-suntiang-emas.png?${THUMB_VERSION}`,
   'minimalist-terra': `/assets/templates/minimalist-terra.png?${THUMB_VERSION}`,
   'modern-noir': `/assets/templates/modern-noir.png?${THUMB_VERSION}`,
   'naruto': `/assets/templates/naruto.png?${THUMB_VERSION}`,
