@@ -5,6 +5,8 @@
 // the Cloudflare Pages Functions esbuild step via a relative import out of `functions/`). Nothing
 // in the Vue app imports this module, so it never ships in the client bundle.
 
+import { resolveThemeSeo } from '../utils/themeSeoData.js'
+
 export const CANONICAL_ORIGIN = 'https://www.satuundangan.id'
 
 // Referenced as the default og:image everywhere in this module. The asset itself does not exist
@@ -132,6 +134,15 @@ export function resolveStaticSeo(pathname) {
 export function blogSlugFrom(pathname) {
   const key = normalizePath(pathname)
   const match = key.match(/^\/blog\/([^/]+)$/)
+  return match ? match[1] : null
+}
+
+export { resolveThemeSeo }
+
+/** Extract the slug from exactly `/tema/<one-segment>`; `null` for anything else. */
+export function themeSlugFrom(pathname) {
+  const key = normalizePath(pathname)
+  const match = key.match(/^\/tema\/([^/]+)$/)
   return match ? match[1] : null
 }
 

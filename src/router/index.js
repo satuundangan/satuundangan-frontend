@@ -173,6 +173,13 @@ const router = createRouter({
       component: () => import('@/views/WeddingPlannerPublicView.vue'),
       meta: { title: 'Free Wedding Planner & Kalkulator Budget' },
     },
+    {
+      path: '/tools/love-calculator',
+      alias: ['/kalkulator-cinta', '/kalkulator-weton'],
+      name: 'LoveCalculator',
+      component: () => import('@/views/tools/LoveCalculatorView.vue'),
+      meta: { title: 'Kalkulator Kecocokan Cinta & Weton Jodoh Jawa Modern' },
+    },
     { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
     { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
     { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },
@@ -298,6 +305,15 @@ const router = createRouter({
     },
     { path: '/guests', name: 'Guests', component: GuestsView },
     {
+      path: '/tema',
+      redirect: '/templates',
+    },
+    {
+      path: '/tema/:slug',
+      name: 'theme-category',
+      component: () => import('@/views/seo/ThemeCategoryView.vue'),
+    },
+    {
       path: '/demo/:templateSlug',
       name: 'demo',
       component: Invitation,
@@ -373,6 +389,8 @@ router.beforeEach(async (to, _from, next) => {
     document.title = `${to.meta.title} | Satu Undangan`
   } else if (to.name === 'invitation') {
     document.title = 'Loading Invitation... | Satu Undangan'
+  } else if (to.name === 'theme-category') {
+    // Dynamic meta title set by ThemeCategoryView based on theme slug
   } else {
     document.title = defaultTitle
   }

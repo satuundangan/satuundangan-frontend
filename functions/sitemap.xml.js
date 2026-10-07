@@ -36,6 +36,56 @@ const FALLBACK_SITEMAP = `<?xml version="1.0" encoding="UTF-8"?>
     <priority>0.5</priority>
   </url>
   <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-jawa</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-sunda</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-minang</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-palembang</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-betawi</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-bali</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-adat-batak</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-islami</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-modern-minimalis</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://www.satuundangan.id/tema/undangan-digital-quiet-luxury</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>https://www.satuundangan.id/terms</loc>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>

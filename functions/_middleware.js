@@ -14,8 +14,10 @@ import {
   blogSlugFrom,
   escapeHtml,
   resolveStaticSeo,
+  resolveThemeSeo,
   seoFromArticle,
   shouldSkipSeo,
+  themeSlugFrom,
 } from '../src/seo/seoRoutes.js'
 
 async function fetchArticle(url, slug) {
@@ -101,6 +103,7 @@ export async function onRequest(context) {
   if (!(response.headers.get('content-type') || '').includes('text/html')) return response
 
   const slug = blogSlugFrom(url.pathname)
+  const themeSlug = themeSlugFrom(url.pathname)
   let seo
   if (slug) {
     const article = await fetchArticle(url, slug)
@@ -114,6 +117,8 @@ export async function onRequest(context) {
         url: CANONICAL_ORIGIN + url.pathname,
       }
     }
+  } else if (themeSlug) {
+    seo = resolveThemeSeo(url.pathname)
   } else {
     seo = resolveStaticSeo(url.pathname)
   }

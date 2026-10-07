@@ -184,6 +184,7 @@ const menuItems = [
   { text: 'Katalog Desain', href: '#templates' },
   { text: 'Fitur', href: '#features' },
   { text: 'Wedding Planner', href: '/wedding-planner' },
+  { text: 'Kalkulator Jodoh', href: '/tools/love-calculator' },
   { text: 'Harga', href: '#pricing' },
   { text: 'Testimoni', href: '#testimonials' },
   { text: 'Blog & Tips', href: '/blog' },
