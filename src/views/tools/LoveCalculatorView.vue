@@ -679,7 +679,10 @@
       <!-- ================================================== -->
       <!-- SECTION 2: HIGH-CONVERTING CALL-TO-ACTION BANNER   -->
       <!-- ================================================== -->
-      <section class="relative rounded-3xl p-8 sm:p-12 overflow-hidden bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white shadow-2xl space-y-8">
+      <section
+        v-if="nameResult || wetonResult"
+        class="relative rounded-3xl p-8 sm:p-12 overflow-hidden bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white shadow-2xl space-y-8 animate-fade-in"
+      >
         <!-- Background Ambient Sparkles -->
         <div class="absolute -top-16 -right-16 w-64 h-64 bg-amber-500/20 rounded-full blur-3xl pointer-events-none"></div>
         <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -1389,8 +1392,8 @@ const toggleFaq = (idx) => {
 
 const faqs = [
   {
-    q: 'Bagaimana cara kerja perhitungan Chemistry Nama Cinta?',
-    a: 'Algoritma kami menggunakan metode deterministic polynomial hashing pada nama kedua pasangan. Hasilnya konsisten (nama yang sama selalu menghasilkan skor yang sama) dalam rentang frekuensi romantis (78% - 99%) yang menyenangkan untuk dibagikan ke pasangan atau media sosial.'
+    q: 'Bagaimana kecocokan nama pasangan dihitung?',
+    a: 'Perhitungan ini memadukan harmoni nama kalian berdua untuk melihat chemistry, bahasa cinta, dan kekompakan karakter. Hasilnya selalu konsisten dan dirancang khusus agar seru dibagikan ke pasangan atau media sosial!'
   },
   {
     q: 'Bagaimana rumus perhitungan Weton Jodoh Primbon Jawa dihitung?',
