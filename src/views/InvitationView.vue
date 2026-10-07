@@ -181,6 +181,7 @@ onMounted(async () => {
       const templateSlug = route.params.templateSlug
       const defaultDemoMusic = {
         // Anime & Pop Culture
+        'demon-slayer': 'wedding-retro-adventure.mp3',
         'one-piece': 'one-piece-luffy.mp3',
         'naruto': 'wedding-instrumental-garden.mp3',
         'kimi-no-na-wa': 'wedding-sacred-ceremony.mp3',

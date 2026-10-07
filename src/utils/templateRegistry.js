@@ -46,6 +46,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'cyberpunk-neon': `/assets/templates/cyberpunk-neon.png?${THUMB_VERSION}`,
   'dark-elegant': `/assets/templates/dark-elegant.png?${THUMB_VERSION}`,
   'dayak-ngaju-benang-bintik': `/assets/templates/dayak-ngaju-benang-bintik.png?${THUMB_VERSION}`,
+  'demon-slayer': `/assets/templates/demon-slayer.png?${THUMB_VERSION}`,
   'editorial-magazine': `/assets/templates/editorial-magazine.png?${THUMB_VERSION}`,
   'islami-emas': `/assets/templates/islami-emas.png?${THUMB_VERSION}`,
   'jawa-truntum': `/assets/templates/jawa-truntum.png?${THUMB_VERSION}`,
