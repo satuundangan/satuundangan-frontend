@@ -192,11 +192,15 @@ onMounted(async () => {
         'sunda-sabilulungan': 'wedding-warm-reception.mp3',
         'jawa-truntum': 'wedding-sacred-ceremony.mp3',
         'batak-ragi-hotang': 'wedding-warm-reception.mp3',
+        'betawi-palang-pintu': 'wedding-warm-reception.mp3',
         'dayak-ngaju-benang-bintik': 'wedding-instrumental-garden.mp3',
+        'palembang-aesan-gede': 'wedding-sacred-ceremony.mp3',
         'royal-gold': 'wedding-elegant-firstdance.mp3',
 
         // Elegan & Luxury
+        'moroccan-marrakech-gold': 'wedding-sacred-ceremony.mp3',
         'royal-emerald': 'wedding-sacred-ceremony.mp3',
+        'old-money-monogram': 'wedding-elegant-firstdance.mp3',
         'dark-elegant': 'wedding-elegant-firstdance.mp3',
         'modern-noir': 'wedding-warm-reception.mp3',
         'editorial-magazine': 'wedding-elegant-firstdance.mp3',
