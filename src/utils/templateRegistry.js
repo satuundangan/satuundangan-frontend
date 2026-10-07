@@ -62,6 +62,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'one-piece': `/assets/templates/one-piece.png?${THUMB_VERSION}`,
   'palembang-aesan-gede': `/assets/templates/palembang-aesan-gede.png?${THUMB_VERSION}`,
   'pixel-quest': `/assets/templates/pixel-quest.png?${THUMB_VERSION}`,
+  'purrfect-match': `/assets/templates/purrfect-match.png?${THUMB_VERSION}`,
   'retro-nostalgia': `/assets/templates/retro-nostalgia.png?${THUMB_VERSION}`,
   'royal-emerald': `/assets/templates/royal-emerald.png?${THUMB_VERSION}`,
   'royal-gold': `/assets/templates/royal-gold.png?${THUMB_VERSION}`,
