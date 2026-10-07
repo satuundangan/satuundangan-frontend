@@ -309,6 +309,16 @@
                   <b class="text-slate-800">Prediksi Pelaminan:</b> {{ nameResult.narratives.future }}
                 </div>
               </div>
+
+              <!-- Candaan & Fakta Unik Pasangan -->
+              <div v-if="nameResult.narratives.quirk" class="flex items-start gap-3">
+                <div class="w-6 h-6 rounded-lg bg-pink-100 text-pink-700 font-bold flex items-center justify-center shrink-0 text-xs mt-0.5">
+                  <i class="fa-solid fa-face-laugh-squint"></i>
+                </div>
+                <div>
+                  <b class="text-slate-800">Bumbu Candaan:</b> {{ nameResult.narratives.quirk }}
+                </div>
+              </div>
             </div>
 
             <!-- Love Language Match Badge -->
@@ -909,6 +919,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
+import { calculateLoveScore as computeLoveResult } from '@/utils/loveCalculator.js'
 
 // --- Tabs State ---
 const activeTab = ref('name') // 'name' | 'weton'
@@ -954,92 +965,17 @@ function calculateLoveScore() {
   nameResult.value = null
   animatedScore.value = 0
 
-  // Normalize order so Ardi + Citra == Citra + Ardi
-  const clean1 = n1.toLowerCase().replace(/[^a-z0-9]/g, '')
-  const clean2 = n2.toLowerCase().replace(/[^a-z0-9]/g, '')
-  const combined = [clean1, clean2].sort().join('&')
-  const baseHash = computeHash(combined)
-
-  // Viral Sweet Score: 78% to 99%
-  const finalScore = 78 + (baseHash % 22)
-
-  // Sub scores
-  const hashComm = computeHash(combined + '_comm')
-  const hashRomance = computeHash(combined + '_romance')
-  const hashTeam = computeHash(combined + '_team')
-
-  const subScores = {
-    comm: 80 + (hashComm % 19),
-    romance: 82 + (hashRomance % 18),
-    teamwork: 79 + (hashTeam % 20)
-  }
-
-  // Titles based on score
-  let title = 'Soulmate Tak Terpisahkan'
-  let tagline = 'Kalian berdua memiliki resonansi batin yang saling melengkapi dalam suka maupun duka.'
-  if (finalScore >= 96) {
-    title = 'Pasangan Jiwa Sejati (Twin Flames)'
-    tagline = 'Frekuensi cinta kalian sangat langka dan sakral. Saling terikat erat secara batin & visi masa depan.'
-  } else if (finalScore >= 92) {
-    title = 'Dua Hati Satu Frekuensi (Harmoni Sempurna)'
-    tagline = 'Candaan selalu nyambung, obrolan mengalir tanpa jeda, dan saling mengerti bahkan tanpa kata.'
-  } else if (finalScore >= 87) {
-    title = 'Soulmate Tak Terpisahkan (Saling Menggenapi)'
-    tagline = 'Kekuatan terbesar kalian adalah menjadi tempat pulang paling tenang di kala lelah melanda.'
-  } else if (finalScore >= 82) {
-    title = 'Kisah Kasih Romantis & Hangat (Best Friends in Love)'
-    tagline = 'Berangkat dari kenyamanan persahabatan tulus yang menjelma jadi komitmen cinta abadi.'
-  } else {
-    title = 'Dua Karakter Saling Menumbuhkan (Dynamic Duo)'
-    tagline = 'Perbedaan karakter kalian justru jadi bumbu manis yang selalu memicu rasa kagum setiap hari.'
-  }
-
-  // Narrative variations based on hash
-  const narrativesPool = [
-    {
-      style: 'Tipe pasangan yang hobi deep-talk larut malam sambil berkendara atau ngopi santai berdua.',
-      strength: 'Kepekaan emosional tinggi. Saat yang satu sedih, yang lain langsung sigap jadi pendengar terbaik.',
-      future: 'Sangat cocok membina rumah tangga mandiri yang penuh tawa, kehangatan, dan disayangi banyak sahabat.'
-    },
-    {
-      style: 'Suka saling melempar lelucon receh namun selalu saling menguatkan dalam urusan karir & mimpi besar.',
-      strength: 'Transparansi tanpa rahasia. Kalian saling jujur apa adanya tanpa rasa takut dihakimi.',
-      future: 'Siap melangkah ke pelaminan dengan pondasi finansial dan mental yang solid.'
-    },
-    {
-      style: 'Kombinasi antara perencana matang dan pembawa keceriaan yang saling menyeimbangkan tempo hidup.',
-      strength: 'Saling menghargai waktu dan selalu menemukan alasan baru untuk jatuh cinta setiap hari.',
-      future: 'Kalian ditakdirkan membangun keluarga yang harmonis dan menjadi inspirasi bagi orang sekitar.'
-    }
-  ]
-  const narrative = narrativesPool[baseHash % narrativesPool.length]
-
-  const loveLanguages = [
-    'Quality Time & Words of Affirmation',
-    'Acts of Service & Physical Touch',
-    'Words of Affirmation & Receiving Gifts',
-    'Quality Time & Acts of Service'
-  ]
-  const loveLanguage = loveLanguages[baseHash % loveLanguages.length]
+  const calculated = computeLoveResult(n1, n2)
 
   setTimeout(() => {
     isNameCalculating.value = false
-    nameResult.value = {
-      score: finalScore,
-      displayName1: n1,
-      displayName2: n2,
-      title,
-      tagline,
-      subScores,
-      narratives: narrative,
-      loveLanguage
-    }
+    nameResult.value = calculated
 
     // Scroll smoothly to result
     nextTick(() => {
       const el = document.getElementById('name-result-section')
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-      animateCounter(finalScore)
+      animateCounter(calculated.score)
     })
   }, 600)
 }

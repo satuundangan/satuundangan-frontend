@@ -352,25 +352,142 @@ export function calculateLoveScore(name1, name2) {
     teamwork: Math.max(1, Math.min(100, 79 + (hashTeam % 20))),
   }
 
+  // Rich Taglines Pool (Modulo-based variety per bracket)
+  const taglinesHigh = [
+    'Frekuensi cinta kalian sangat langka dan sakral. Saling terikat erat secara batin & visi masa depan.',
+    'Dua jiwa yang ditakdirkan saling melengkapi seumur hidup. Cinta kalian teduh dan selalu menguatkan.',
+    'Ibarat kunci dan gemboknya: presisi, saling menjaga, dan tak tergantikan oleh siapapun.',
+    'Koneksi batin kalian melampaui kata-kata. Cukup tatapan mata, kalian sudah tahu apa yang dirasakan.',
+  ]
+  const taglinesMidHigh = [
+    'Candaan selalu nyambung, obrolan mengalir tanpa jeda, dan saling mengerti bahkan tanpa sepatah kata.',
+    'Satu frekuensi dalam selera humor, musik, hingga impian masa depan. Tak pernah kehabisan topik bahasan!',
+    'Partner hidup terbaik! Mulai dari urusan receh sampai obrolan serius masa depan selalu klik seketika.',
+    'Ketemu orang yang selera jokes-nya sama persis itu anugerah langka, dan kalian berhasil menemukannya.',
+  ]
+  const taglinesMid = [
+    'Kekuatan terbesar kalian adalah menjadi tempat pulang paling tenang di kala lelah melanda dunia luar.',
+    'Saling meredakan badai dan menjadi jangkar ketenangan. Pelukan terbaik selalu ada di sisi pasangan.',
+    'Hubungan yang dewasa dan menyejukkan. Kalian adalah definisi rumah sesungguhnya bagi satu sama lain.',
+    'Saling menggenapi kekurangan dengan kelembutan. Bahagia kalian sederhana: cukup bersama.',
+  ]
+  const taglinesWarm = [
+    'Berangkat dari kenyamanan persahabatan tulus yang menjelma jadi komitmen cinta suci tak terpisahkan.',
+    'Teman bertengkar manja, sahabat curhat terbaik, sekaligus kekasih sejati tempat melabuhkan hati.',
+    'Hubungan tanpa jaim! Kalian bisa jadi diri sendiri seutuhnya sambil tetap saling mencintai tanpa syarat.',
+    'Bukan cuma pasangan kekasih, kalian adalah sahabat seumur hidup yang tak pernah membosankan.',
+  ]
+  const taglinesDynamic = [
+    'Perbedaan karakter kalian justru jadi bumbu manis yang selalu memicu rasa kagum dan penasaran setiap hari.',
+    'Yang satu tenang meneduhkan, yang satu ceria menghidupkan suasana. Perpaduan kontras yang sempurna!',
+    'Dua kepribadian berbeda yang saling menyeimbangkan tempo hidup. Hubungan kalian selalu dinamis dan berwarna.',
+    'Saling belajar dan saling melengkapi sudut pandang. Cinta kalian tumbuh subur karena kedewasaan.',
+  ]
+
   let title = 'Soulmate Tak Terpisahkan'
-  let tagline = 'Kalian berdua memiliki resonansi batin yang saling melengkapi dalam suka maupun duka.'
+  let tagline = ''
 
   if (finalScore >= 96) {
     title = 'Pasangan Jiwa Sejati (Twin Flames)'
-    tagline = 'Frekuensi cinta kalian sangat langka dan sakral. Saling terikat erat secara batin & visi masa depan.'
+    tagline = taglinesHigh[baseHash % taglinesHigh.length]
   } else if (finalScore >= 92) {
     title = 'Dua Hati Satu Frekuensi (Harmoni Sempurna)'
-    tagline = 'Candaan selalu nyambung, obrolan mengalir tanpa jeda, dan saling mengerti bahkan tanpa kata.'
+    tagline = taglinesMidHigh[baseHash % taglinesMidHigh.length]
   } else if (finalScore >= 87) {
     title = 'Soulmate Tak Terpisahkan (Saling Menggenapi)'
-    tagline = 'Kekuatan terbesar kalian adalah menjadi tempat pulang paling tenang di kala lelah melanda.'
+    tagline = taglinesMid[baseHash % taglinesMid.length]
   } else if (finalScore >= 82) {
     title = 'Kisah Kasih Romantis & Hangat (Best Friends in Love)'
-    tagline = 'Berangkat dari kenyamanan persahabatan tulus yang menjelma jadi komitmen cinta abadi.'
+    tagline = taglinesWarm[baseHash % taglinesWarm.length]
   } else {
     title = 'Dua Karakter Saling Menumbuhkan (Dynamic Duo)'
-    tagline = 'Perbedaan karakter kalian justru jadi bumbu manis yang selalu memicu rasa kagum setiap hari.'
+    tagline = taglinesDynamic[baseHash % taglinesDynamic.length]
   }
+
+  // 1. Gaya Interaksi & Candaan (12 Variasi Unik & Lucu)
+  const stylesPool = [
+    'Candaan receh selalu nyambung 24/7. Hal sepele atau meme random di medsos bisa bikin kalian berdua ketawa sampai nangis bareng.',
+    'Tipe pasangan yang hobi deep-talk larut malam di mobil, teras rumah, atau warung kopi santai berdua sampai lupa waktu.',
+    'Suka saling ledek manja dan perang stiker WhatsApp, tapi kalau salah satu ngambek, langsung gercep pesan makanan manis kesukaan buat baikan.',
+    'Saling mengerti hanya lewat lirikan mata di tengah keramaian acara keluarga atau kumpul teman tanpa butuh sepatah kata pun.',
+    'Kombinasi antara si tukang heboh pembawa keceriaan dan si kalem bijak penenang suasana yang saling menyeimbangkan tempo.',
+    'Agenda kencan favorit kalian adalah keliling berburu kuliner kaki lima, nyobain spot kopi baru, lalu ngobrolin rencana masa depan.',
+    'Kalau belanja bareng, yang satu rajin cek promo & diskon, yang satu lagi santai masukin camilan ke keranjang sambil senyum-senyum.',
+    'Saling kirim video reels lucu tiap jam kerja. Ketemu sore harinya langsung heboh ngebahas ulang dengan penuh tawa.',
+    'Bisa mendadak maraton nonton drama/film seharian sambil ngemil tanpa rasa canggung, nyaman menikmati waktu berdua.',
+    'Yang satu pengambil keputusan cepat dan spontan, yang satu lagi analis teliti yang memastikan semua rencana berjalan rapi.',
+    'Hobi bikin panggilan sayang atau julukan lucu sendiri yang kalau didengar orang lain pasti bikin senyum-senyum sendiri.',
+    'Gaya pacaran santai tanpa jaim: dari outfit kondangan yang elegan sampai outfit daster/kaos oblong saat santai di rumah tetap serasi.',
+  ]
+
+  // 2. Kekuatan Utama Hubungan (12 Variasi Positif & Menguatkan)
+  const strengthsPool = [
+    'Kepekaan emosional luar biasa. Saat salah satu ada beban pikiran, yang lain langsung sigap jadi pendengar setia tanpa menghakimi.',
+    'Transparansi total tanpa rahasia. Kalian bisa bicara terbuka tentang finansial, keluarga, dan impian tanpa takut disalahpahami.',
+    'Manajemen konflik dewasa: pantang tidur dalam kondisi marah dan selalu mengutamakan pelukan serta solusi dibanding menang sendiri.',
+    'Saling jadi supporter nomor satu saat mengejar karir dan ambisi pribadi, tak pernah ada rasa tersaingi satu sama lain.',
+    'Daya tahan adaptasi tinggi. Masalah sebesar apapun bisa dihadapi tenang karena kalian memandangnya sebagai tantangan tim bersama.',
+    'Rasa percaya yang kokoh bagai benteng. Kalian saling memberi ruang bertumbuh mandiri tanpa rasa cemas atau posesif berlebihan.',
+    'Selalu menemukan alasan baru untuk jatuh cinta setiap hari, bahkan pada hal-hal kecil seperti cara pasangan tersenyum atau tertawa.',
+    'Kesabaran ekstra dan saling memaafkan dengan tulus. Tahu kapan harus mengalah dan kapan harus saling menguatkan.',
+    'Sinergi finansial dan perencanaan masa depan yang solid. Saling menghargai jerih payah dan punya visi tabungan bersama yang jelas.',
+    'Pondasi persahabatan yang kuat. Menjadikan pasangan bukan hanya kekasih, tapi juga teman berpetualang dan partner hidup terbaik.',
+    'Kemampuan menenangkan hati saat dunia luar bising. Kehadiran pasangan selalu menjadi oase peredam stres terbaik sepulang kerja.',
+    'Keseimbangan antara logika dan perasaan. Yang satu mengingatkan realita dengan bijak, yang satu memberi kehangatan dan rasa nyaman.',
+  ]
+
+  // 3. Prediksi Pelaminan & Rumah Tangga (12 Variasi Masa Depan Indah)
+  const futuresPool = [
+    'Sangat cocok membina rumah tangga mandiri nan hangat, sering jadi tempat kumpul favorit sahabat karena suasananya selalu bikin betah.',
+    'Siap melangkah ke pelaminan dengan kesiapan mental dan visi yang matang. Hari bahagia kalian bakal jadi momen paling berkesan.',
+    'Rumah tangga kalian diprediksi penuh tawa anak-anak, aroma masakan lezat di akhir pekan, dan tradisi liburan keluarga yang seru.',
+    'Pasangan panutan di lingkungan sekitar! Dikenal rukun, dermawan, gemar berbagi kebahagiaan, dan saling memuliakan di depan keluarga besar.',
+    'Tim impian dalam mengarungi biduk pernikahan: keuangan tertata rapi, impian punya rumah impian terwujud, dan cinta tetap awet muda.',
+    'Konsep pernikahan idaman kalian bakal elegan, hangat, dan intim. Para tamu undangan bisa merasakan ketulusan cinta kalian berdua.',
+    'Dikaruniai rezeki yang mengalir lapang setelah menikah karena kedua belah pihak saling meridhoi dan mendoakan di setiap sujud.',
+    'Rumah tangga yang mandiri, kompak, dan berdaya. Kalian bakal jadi duet sukses yang saling melipatgandakan berkah hidup.',
+    'Tipe keluarga yang punya tradisi deep-talk mingguan dan kencan berdua meski nanti sudah punya momongan dan sibuk bekerja.',
+    'Pernikahan yang langgeng hingga rambut memutih, tetap bergandengan tangan mesra saat jalan santai di pagi hari seperti saat pacaran.',
+    'Pondasi cinta yang tahan banting menghadapi dinamika kehidupan modern. Selalu kompak dan jadi teladan bagi generasi selanjutnya.',
+    'Sudah sangat siap sebar undangan! Semesta mendukung langkah kalian berdua untuk segera mengikat janji suci di pelaminan.',
+  ]
+
+  // 4. Candaan / Fun Quirk Unik Pasangan (12 Bumbu Candaan)
+  const quirksPool = [
+    'Kerap bingung milih menu makan siang ("Terserah kamu"), tapi ujung-ujungnya malah pesan makanan favorit yang sama.',
+    'Salah satu jago nyetir dan satu lagi jadi asisten navigasi yang sibuk nyetel playlist lagu romantis & nyiapin camilan.',
+    'Sering kompak ngomong kalimat yang sama persis di detik yang bersamaan sampai harus tos bareng.',
+    'Punya kode rahasia atau lirikan khusus kalau sudah mulai capek di acara umum dan pengen cepet-cepet pulang santai berdua.',
+    'Perdebatan paling sengit biasanya cuma seputar: suhu AC kamar kedinginan atau mau nonton genre film horor vs komedi.',
+    'Salah satu suka foto estetik, yang satu lagi dengan sabar dan ikhlas jadi fotografer pribadi sampai dapat angle terbaik.',
+    'Kalau salah satu sakit, yang lain mendadak berubah jadi dokter pribadi super perhatian yang siap bawain obat dan bubur hangat.',
+    'Sering pura-pura lupa hari jadi atau momen spesial cuma demi ngasih kejutan manis yang bikin pasangan terharu bahagia.',
+    'Saling hapal kebiasaan aneh masing-masing saat bangun tidur dan tetap merasa pasangan adalah orang paling manis sedunia.',
+    'Suka adu jago masak di dapur, meski hasilnya kadang eksperimen unik yang tetap dimakan habis sambil ketawa bareng.',
+    'Punya playlist lagu berdua yang wajib diputar setiap kali road-trip atau terjebak macet di jalan raya.',
+    'Salah satu pencatat wishlist barang idaman, yang satu lagi diam-diam mewujudkannya pas ulang tahun atau momen anniversary.',
+  ]
+
+  // 5. Kombinasi Bahasa Cinta Utama (8 Kombinasi)
+  const loveLanguagesPool = [
+    'Quality Time & Words of Affirmation (Suka Mengobrol & Apresiasi Kata Manis)',
+    'Acts of Service & Physical Touch (Bahasa Perhatian Nyata & Pelukan Hangat)',
+    'Words of Affirmation & Receiving Gifts (Pujian Tulus & Kejutan Manis Tak Terduga)',
+    'Quality Time & Acts of Service (Suka Menghabiskan Waktu Berdua & Sigap Membantu)',
+    'Physical Touch & Quality Time (Sentuhan Penuh Kasih & Kehadiran Utuh Tanpa Gadget)',
+    'Acts of Service & Words of Affirmation (Bekerja Sama Kompak & Saling Mendukung Karir)',
+    'Receiving Gifts & Quality Time (Perhatian Lewat Kado Personal & Kencan Berdua)',
+    'Words of Affirmation & Physical Touch (Saling Menguatkan Mental & Genggaman Tangan Erat)',
+  ]
+
+  const narrative = {
+    style: stylesPool[baseHash % stylesPool.length],
+    strength: strengthsPool[(baseHash * 7 + 13) % strengthsPool.length],
+    future: futuresPool[(baseHash * 13 + 37) % futuresPool.length],
+    quirk: quirksPool[(baseHash * 19 + 53) % quirksPool.length],
+  }
+
+  const loveLanguage = loveLanguagesPool[(baseHash * 3 + 7) % loveLanguagesPool.length]
 
   return {
     score: finalScore,
@@ -379,6 +496,9 @@ export function calculateLoveScore(name1, name2) {
     title,
     tagline,
     subScores,
+    narratives: narrative,
+    loveLanguage,
     hash: baseHash,
   }
 }
+
