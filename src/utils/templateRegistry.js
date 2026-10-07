@@ -33,7 +33,7 @@ export function resolveTemplateKey(slug, componentKey, registry = templateLoader
   return FALLBACK_TEMPLATE_KEY
 }
 
-const THUMB_VERSION = 'v=20261007f'
+const THUMB_VERSION = 'v=20261007g'
 
 const LOCAL_TEMPLATE_THUMBNAILS = {
   'azure-shores': `/assets/templates/azure-shores.png?${THUMB_VERSION}`,
@@ -55,6 +55,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'minang-suntiang-emas': `/assets/templates/minang-suntiang-emas.png?${THUMB_VERSION}`,
   'minimalist-terra': `/assets/templates/minimalist-terra.png?${THUMB_VERSION}`,
   'modern-noir': `/assets/templates/modern-noir.png?${THUMB_VERSION}`,
+  'moroccan-marrakech-gold': `/assets/templates/moroccan-marrakech-gold.png?${THUMB_VERSION}`,
   'naruto': `/assets/templates/naruto.png?${THUMB_VERSION}`,
   'old-money-monogram': `/assets/templates/old-money-monogram.png?${THUMB_VERSION}`,
   'one-piece': `/assets/templates/one-piece.png?${THUMB_VERSION}`,
