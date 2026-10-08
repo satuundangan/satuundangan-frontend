@@ -389,6 +389,85 @@
                     <p v-if="validationErrors.photoCouple" class="form-error mt-2">{{ validationErrors.photoCouple }}</p>
                   </div>
 
+                  <div v-if="isTiaraNoirInvitation" class="md:col-span-2 rounded-2xl border border-slate-200 bg-[#f8f7f4] p-5 md:p-6 space-y-5">
+                    <div>
+                      <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Khusus undangan Refda &amp; Tiara</p>
+                      <h3 class="mt-1 font-serif text-lg font-semibold text-dark">Gaya Noir Celestial</h3>
+                      <p class="mt-1 text-xs leading-relaxed text-slate-500">Atur tipografi dan media sampul. Foto akan tampil hitam-putih dengan kontras yang lembut.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                      <label class="space-y-2">
+                        <span class="form-label">Font nama</span>
+                        <select v-model="formData.designSettings.fontFamily" class="form-input">
+                          <option value="Cormorant Garamond">Cormorant Garamond</option>
+                          <option value="Libre Baskerville">Libre Baskerville</option>
+                          <option value="DM Sans">DM Sans</option>
+                        </select>
+                      </label>
+
+                      <label class="space-y-2">
+                        <span class="form-label flex items-center justify-between">
+                          <span>Ukuran nama</span>
+                          <span class="text-mocha">{{ Math.round(formData.designSettings.titleScale * 100) }}%</span>
+                        </span>
+                        <input
+                          v-model.number="formData.designSettings.titleScale"
+                          type="range"
+                          min="0.8"
+                          max="1.2"
+                          step="0.05"
+                          class="w-full accent-[#a47148]"
+                        />
+                        <span class="block text-[10px] text-slate-500">Geser untuk mengecilkan atau membesarkan nama.</span>
+                      </label>
+                    </div>
+
+                    <div class="space-y-3 border-t border-slate-200 pt-4">
+                      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <label class="space-y-2">
+                          <span class="form-label">Format latar</span>
+                          <select
+                            v-model="formData.designSettings.backgroundType"
+                            class="form-input"
+                            @change="handleNoirBackgroundTypeChange"
+                          >
+                            <option value="image">Foto / JPG</option>
+                            <option value="video">Video MP4</option>
+                          </select>
+                        </label>
+                        <label class="flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-slate-300 bg-white px-4 text-xs font-semibold text-slate-700 hover:border-mocha hover:text-mocha">
+                          <input
+                            type="file"
+                            :accept="formData.designSettings.backgroundType === 'video' ? 'video/mp4,video/webm' : 'image/jpeg,image/png,image/webp'"
+                            class="sr-only"
+                            @change="handleNoirBackgroundUpload"
+                          />
+                          <i :class="formData.designSettings.backgroundType === 'video' ? 'fa-solid fa-video' : 'fa-solid fa-image'"></i>
+                          <span>Pilih {{ formData.designSettings.backgroundType === 'video' ? 'video' : 'foto' }}</span>
+                        </label>
+                      </div>
+                      <p class="text-[10px] leading-relaxed text-slate-500">Video akan diputar tanpa suara. Maksimal 25 MB; jika tidak memilih foto, foto sampul utama dipakai sebagai latar.</p>
+
+                      <div v-if="noirBackgroundPreviewUrl" class="relative overflow-hidden rounded-xl border border-slate-200 bg-black">
+                        <video
+                          v-if="formData.designSettings.backgroundType === 'video'"
+                          :src="noirBackgroundPreviewUrl"
+                          class="h-36 w-full object-cover"
+                          muted
+                          playsinline
+                          controls
+                        ></video>
+                        <img v-else :src="noirBackgroundPreviewUrl" alt="Pratinjau latar sampul" class="h-36 w-full object-cover grayscale" />
+                        <button
+                          type="button"
+                          class="absolute right-2 top-2 rounded-lg bg-black/70 px-3 py-2 text-[10px] font-bold text-white"
+                          @click="clearNoirBackground"
+                        >Hapus latar pilihan</button>
+                      </div>
+                    </div>
+                  </div>
+
                   <!-- denah upload (optional) -->
                   <div v-if="sections.denah" data-field="denah">
                     <label class="form-label">Denah Lokasi / Acara</label>
@@ -887,7 +966,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { useRouter, useRoute } from 'vue-router'
+import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
 import { analytics } from '@/api/analytics'
@@ -922,6 +1001,9 @@ const getInitialTemplate = () => {
 }
 const selectedTemplate = ref(getInitialTemplate())
 const audioList = ref([])
+const hasUnsavedChanges = ref(false)
+const isHydrating = ref(true)
+const noirBackgroundPreview = ref('')
 
 const showLogin = ref(false)
 const authMode = ref('login')
@@ -1093,8 +1175,15 @@ const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menci
 
 // Form State
 const formData = ref({
-  title: '', brideName: '', groomName: '', bridePhoto: '', bridePhotoFile: null,
+  title: '', slug: '', brideName: '', groomName: '', bridePhoto: '', bridePhotoFile: null,
   groomPhoto: '', groomPhotoFile: null, photoCouple: '', photoCoupleFile: null,
+  designSettings: {
+    fontFamily: 'Cormorant Garamond',
+    titleScale: 1,
+    backgroundType: 'image',
+    backgroundUrl: '',
+    backgroundFile: null,
+  },
   gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
   akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
   music: '', youtubeUrl: '', denah: '', denahFile: null,
@@ -1130,6 +1219,16 @@ const formData = ref({
   wishesState: true,
   rsvpState: true
 })
+
+const isTiaraNoirInvitation = computed(
+  () => formData.value.slug === 'refda-tiara' || selectedTemplate.value.slug === 'refda-tiara-noir',
+)
+const noirBackgroundPreviewUrl = computed(
+  () =>
+    noirBackgroundPreview.value ||
+    formData.value.designSettings.backgroundUrl ||
+    (formData.value.designSettings.backgroundType === 'image' ? formData.value.photoCouple : ''),
+)
 
 // Custom subdomain live availability check (tier Eksklusif)
 const subdomainStatus = ref({ state: 'idle', message: '', normalized: '' })
@@ -1369,6 +1468,12 @@ const syncDataToPreview = (data) => {
         musicChoice: data.music === 'custom' ? data.musicPreview : data.music,
         audioStart: Number(data.audioStart) || 0,
         audioEnd: Number(data.audioEnd) || 0,
+        designSettings: {
+          fontFamily: data.designSettings?.fontFamily,
+          titleScale: data.designSettings?.titleScale,
+          backgroundType: data.designSettings?.backgroundType,
+          backgroundUrl: noirBackgroundPreview.value || data.designSettings?.backgroundUrl,
+        },
         selectedSections: getCanonicalSelectedSections()
       }
     }
@@ -1434,33 +1539,65 @@ watch(isAuthenticated, (newVal) => {
 })
 
 const saveDraft = (data) => {
-  if (route.params.id) return
   try {
     const cleanedFormData = cleanForDraft(data)
     const draftData = { formData: cleanedFormData, sections: { ...sections.value }, timestamp: Date.now() }
-    localStorage.setItem('invitation_form_draft', JSON.stringify(draftData))
-    localStorage.setItem('selectedSections', JSON.stringify(Object.keys(sections.value).filter(k => sections.value[k])))
+    const draftKey = route.params.id ? `invitation_draft_${route.params.id}` : 'invitation_form_draft'
+    localStorage.setItem(draftKey, JSON.stringify(draftData))
+    if (!route.params.id) {
+      localStorage.setItem('selectedSections', JSON.stringify(Object.keys(sections.value).filter(k => sections.value[k])))
+    }
   } catch (e) {}
 }
 
+
 const clearDraft = () => {
   localStorage.removeItem('invitation_form_draft')
+  if (route.params.id) localStorage.removeItem(`invitation_draft_${route.params.id}`)
   localStorage.removeItem('selectedSections')
   localStorage.removeItem('nova_draft')
 }
 
 // Watch both formData and sections to sync & save draft
 watch(formData, (newVal) => {
+  if (isHydrating.value) return
+  hasUnsavedChanges.value = true
   syncDataToPreview(newVal)
   saveDraft(newVal)
 }, { deep: true })
 
 watch(sections, (newVal) => {
+  if (isHydrating.value) return
+  hasUnsavedChanges.value = true
   syncDataToPreview(formData.value)
   saveDraft(formData.value)
 }, { deep: true })
 
+
+const handleBeforeUnload = (e) => {
+  if (hasUnsavedChanges.value) {
+    e.preventDefault();
+    e.returnValue = '';
+  }
+}
+
+
+onBeforeRouteLeave((to, from, next) => {
+  if (hasUnsavedChanges.value) {
+    const answer = window.confirm('Ada perubahan yang belum disimpan. Yakin ingin keluar?')
+    if (answer) {
+      next()
+    } else {
+      next(false)
+    }
+  } else {
+    next()
+  }
+})
+
 onMounted(async () => {
+  window.addEventListener('beforeunload', handleBeforeUnload)
+
   const template = localStorage.getItem('selectedTemplate')
   
   if (!template && !route.params.id) {
@@ -1570,9 +1707,9 @@ onMounted(async () => {
   }
 
   // Process Edit Mode if ID present in route params
-  if (route.params.id) {
-    handleEditMode(route.params.id)
-  }
+  if (route.params.id) await handleEditMode(route.params.id)
+  isHydrating.value = false
+  await nextTick()
 
   // Fallback timeout to clear loading screen if something fails or race condition occurs
   setTimeout(() => {
@@ -1603,6 +1740,8 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
+  window.removeEventListener('beforeunload', handleBeforeUnload)
+  if (noirBackgroundPreview.value.startsWith('blob:')) URL.revokeObjectURL(noirBackgroundPreview.value)
   if (resizeObserver) {
     resizeObserver.disconnect()
   }
@@ -1617,6 +1756,32 @@ async function handleEditMode(id) {
      const res = await getInvitationById(id)
      const data = res.data || res
      mapPayloadToFormData(data)
+
+     const draftKey = `invitation_draft_${id}`
+     const savedDraft = localStorage.getItem(draftKey)
+     let restoredDraft = false
+     if (savedDraft) {
+        try {
+           const draft = JSON.parse(savedDraft)
+           const ageInDays = (Date.now() - Number(draft.timestamp || 0)) / (1000 * 60 * 60 * 24)
+           if (draft.formData && ageInDays < 30) {
+              deepMerge(formData.value, draft.formData)
+              if (draft.sections && typeof draft.sections === 'object') {
+                 Object.keys(draft.sections).forEach(key => {
+                    sections.value[key] = draft.sections[key]
+                 })
+              }
+              restoredDraft = true
+              toast.info('Perubahan terakhir dipulihkan dari draf lokal.')
+           } else {
+              localStorage.removeItem(draftKey)
+           }
+        } catch {
+           localStorage.removeItem(draftKey)
+        }
+     }
+     await nextTick()
+     hasUnsavedChanges.value = restoredDraft
   } catch (error) {
      console.error("Failed to load invitation", error)
      if (error.response?.status === 403) {
@@ -1687,6 +1852,24 @@ function mapPayloadToFormData(payload) {
    }
 
    formData.value.title = payload.title || ''
+   formData.value.slug = payload.slug || ''
+   formData.value.designSettings = {
+     fontFamily: 'Cormorant Garamond',
+     titleScale: 1,
+     backgroundType: 'image',
+     backgroundUrl: '',
+     backgroundFile: null,
+     ...(payload.designSettings || content.designSettings || {}),
+     backgroundFile: null,
+   }
+   noirBackgroundPreview.value = formData.value.designSettings.backgroundUrl || ''
+   if (formData.value.slug === 'refda-tiara') {
+     selectedTemplate.value = {
+       ...selectedTemplate.value,
+       name: 'Noir Celestial',
+       slug: 'refda-tiara-noir',
+     }
+   }
    formData.value.subdomain = payload.subdomain || payload.content?.subdomain || ''
    formData.value.package = payload.package || payload.content?.package || 'basic'
    formData.value.brideName = payload.brideName || ''
@@ -2006,6 +2189,40 @@ async function handleMusicUpload(e) {
    const reader = new FileReader(); reader.onload = () => { formData.value.musicPreview = reader.result; formData.value.musicFile = file }; reader.readAsDataURL(file)
 }
 
+function handleNoirBackgroundUpload(e) {
+   const file = e.target.files?.[0]
+   if (!file) return
+   const isVideo = file.type.startsWith('video/') || /\.(mp4|webm)$/i.test(file.name)
+   const isImage = file.type.startsWith('image/') || /\.(jpe?g|png|webp)$/i.test(file.name)
+   if (!isVideo && !isImage) {
+      toast.error('Pilih foto JPG/PNG/WebP atau video MP4/WebM.')
+      e.target.value = ''
+      return
+   }
+   if (file.size > 25 * 1024 * 1024) {
+      toast.error('Ukuran media latar maksimal 25 MB.')
+      e.target.value = ''
+      return
+   }
+   if (noirBackgroundPreview.value.startsWith('blob:')) URL.revokeObjectURL(noirBackgroundPreview.value)
+   formData.value.designSettings.backgroundType = isVideo ? 'video' : 'image'
+   formData.value.designSettings.backgroundUrl = ''
+   formData.value.designSettings.backgroundFile = file
+   noirBackgroundPreview.value = URL.createObjectURL(file)
+   e.target.value = ''
+}
+
+function handleNoirBackgroundTypeChange() {
+   clearNoirBackground()
+}
+
+function clearNoirBackground() {
+   if (noirBackgroundPreview.value.startsWith('blob:')) URL.revokeObjectURL(noirBackgroundPreview.value)
+   noirBackgroundPreview.value = ''
+   formData.value.designSettings.backgroundUrl = ''
+   formData.value.designSettings.backgroundFile = null
+}
+
 // Convert a base64 data: URL back into a File so it can be uploaded.
 function dataUrlToFile(dataUrl, baseName) {
    const [header, b64] = dataUrl.split(',')
@@ -2037,6 +2254,17 @@ async function uploadAllFiles() {
    add(fd.groomPhotoFile, fd.groomPhoto, 'groom', (url) => formData.value.groomPhoto = url, 'Foto Mempelai Pria')
    add(fd.photoCoupleFile, fd.photoCouple, 'couple', (url) => formData.value.photoCouple = url, 'Foto Sampul')
    add(fd.denahFile, fd.denah, 'denah', (url) => formData.value.denah = url, 'Foto Denah')
+   if (fd.designSettings.backgroundFile) {
+      filesToUpload.push({
+        file: fd.designSettings.backgroundFile,
+        setter: (url) => {
+          formData.value.designSettings.backgroundUrl = url
+          formData.value.designSettings.backgroundFile = null
+          noirBackgroundPreview.value = url
+        },
+        name: 'Latar Sampul',
+      })
+   }
    if (fd.musicFile) filesToUpload.push({ file: fd.musicFile, setter: (url) => formData.value.music = url, name: 'File Musik' })
    else if (fd.music === 'custom') add(null, fd.musicPreview, 'music', (url) => formData.value.music = url, 'File Musik')
    fd.gallery.forEach((item, i) => add(item.file, item.preview, `gallery-${i}`, (url) => formData.value.gallery[i].preview = url, `Galeri Foto ${i+1}`))
@@ -2091,7 +2319,7 @@ async function saveAndPreview() {
       }
 
       const payload = {
-         title: formData.value.title, slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+         title: formData.value.title, slug: formData.value.slug || formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
          parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
          akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
@@ -2106,6 +2334,7 @@ async function saveAndPreview() {
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
          eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, ...resolveQuoteForSave(formData.value), religion: formData.value.religion || null,
+         designSettings: formData.value.designSettings,
          subdomain: formData.value.subdomain ? subdomainStatus.value.normalized : '',
          package: formData.value.package || 'basic'
       }
@@ -2140,6 +2369,7 @@ async function saveAndPreview() {
       })
 
       clearDraft()
+      hasUnsavedChanges.value = false
       toast.success("Berhasil menyimpan data undangan!")
       router.push({ path: '/preview', query: { slug: result.slug } })
    } catch (error) { 
