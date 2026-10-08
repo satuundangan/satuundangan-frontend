@@ -27,6 +27,9 @@ const props = defineProps({
   subdomainMode: { type: Boolean, default: false },
 })
 
+const TIARA_INVITATION_SLUG = 'refda-tiara'
+const TIARA_TEMPLATE_KEY = 'refda-tiara-noir'
+
 const route = useRoute()
 const router = useRouter()
 // In subdomain mode the route has no :slug — resolve label from the host.
@@ -219,8 +222,49 @@ onMounted(async () => {
         'cyberpunk-neon': 'wedding-acoustic-morning.mp3',
       }
 
+      const tiaraDemoData =
+        templateSlug === TIARA_TEMPLATE_KEY
+          ? {
+              id: 0,
+              title: 'The wedding of us',
+              groomName: 'Muhammad Refda',
+              groomPhotoUrl: '/assets/images/refda-tiara/refda.png',
+              brideName: 'Uk Tiara Ayu',
+              bridePhotoUrl: '/assets/images/refda-tiara/tiara.png',
+              guestName: route.query.to || 'Tamu Undangan',
+              quoteText:
+                'Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang.',
+              quoteSource: 'QS. Ar-Rum: 21',
+              dateTime: '2026-11-22T09:00:00.000Z',
+              isSingleEvent: true,
+              mergeEvents: true,
+              akadLocation: {
+                dateTime: '2026-11-22T09:00:00.000Z',
+                mapUrl: '',
+                description: '',
+              },
+              resepsiLocation: {
+                dateTime: '2026-11-22T09:00:00.000Z',
+                mapUrl: '',
+                description: '',
+              },
+              galleryImages: [],
+              loveStory: [],
+              bankAccounts: [],
+              giftDeliveryAddress: [],
+              selectedSections: ['hero', 'quote', 'couple', 'event', 'rsvp'],
+              designSettings: {
+                fontFamily: 'Cormorant Garamond',
+                titleScale: 1,
+                backgroundType: 'image',
+                backgroundUrl: '',
+              },
+            }
+          : {}
+
       data = {
         ...demoData,
+        ...tiaraDemoData,
         template_slug: templateSlug,
         guestName: route.query.to || demoData.guestName,
         musicChoice: defaultDemoMusic[templateSlug] || demoData.musicChoice,
@@ -238,6 +282,7 @@ onMounted(async () => {
         invitationData.value = {
           ...invitationData.value,
           ...sampleContent,
+          ...tiaraDemoData,
           musicChoice: tmpl.defaultMusic || invitationData.value?.musicChoice,
           audioStart: tmpl.defaultMusic ? (tmpl.defaultAudioStart ?? 0) : invitationData.value?.audioStart,
           audioEnd: tmpl.defaultMusic ? (tmpl.defaultAudioEnd ?? 0) : invitationData.value?.audioEnd,
@@ -277,7 +322,10 @@ onMounted(async () => {
           slug: rawData.slug,
           audioStart: Number((rawData.content || rawData).audioStart) || 0,
           audioEnd: Number((rawData.content || rawData).audioEnd) || 0,
-          template_slug: rawData.template_slug || rawData.templateName,
+          template_slug:
+            rawData.slug === TIARA_INVITATION_SLUG
+              ? TIARA_TEMPLATE_KEY
+              : rawData.template_slug || rawData.templateName,
           show_branding: rawData.show_branding ?? false,
           is_published: rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished,
           guestName: response?.guest?.name,
