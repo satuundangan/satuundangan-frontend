@@ -13,6 +13,27 @@
           <p class="text-muted">Desain premium untuk hari spesialmu.</p>
         </div>
 
+        <!-- Search Bar -->
+        <div class="max-w-md mx-auto mb-6">
+          <div class="relative flex items-center">
+            <i class="fa-solid fa-magnifying-glass absolute left-4 text-stone-400 text-sm pointer-events-none"></i>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="Cari tema, adat, anime, kucing, warna (cth: minang, wibu, meow)..."
+              class="w-full pl-11 pr-10 py-3 rounded-full bg-stone-50 border border-stone-200 focus:bg-white focus:border-mocha focus:ring-2 focus:ring-mocha/20 text-xs sm:text-sm text-dark placeholder:text-stone-400 outline-none transition-all shadow-xs"
+            />
+            <button
+              v-if="searchQuery"
+              @click="searchQuery = ''"
+              class="absolute right-3.5 w-6 h-6 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-600 flex items-center justify-center text-xs transition"
+              title="Hapus pencarian"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </div>
+
         <!-- Filter Groups -->
         <div class="space-y-3 mb-10">
           <!-- Filter: Gaya (curated filterGroup) -->
@@ -619,20 +640,50 @@
 
         <!-- Main Content -->
         <div class="flex-1 flex flex-col min-w-0 min-h-0 bg-white relative">
-          <!-- Header Modal -->
+          <!-- Header Modal with Integrated Search -->
           <div
-            class="shrink-0 p-5 border-b border-gray-200 flex justify-between items-center bg-white z-10 shadow-sm"
+            class="shrink-0 p-4 sm:p-5 border-b border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white z-20 shadow-sm"
           >
-            <div>
-              <h3 class="text-xl font-bold text-dark font-serif">Pilih Template</h3>
-              <p class="text-sm text-muted hidden sm:block">Pilih desain terbaik untuk acaramu.</p>
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-lg sm:text-xl font-bold text-dark font-serif">Pilih Template</h3>
+                <p class="text-xs text-muted hidden sm:block">Pilih desain terbaik untuk acaramu ({{ modalFilteredTemplates.length }} pilihan).</p>
+              </div>
+              <button
+                @click="showModal = false"
+                class="sm:hidden w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
             </div>
-            <button
-              @click="showModal = false"
-              class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition"
-            >
-              <i class="fa-solid fa-xmark"></i>
-            </button>
+
+            <!-- Modal Search Input -->
+            <div class="flex items-center gap-2 flex-1 sm:max-w-xs sm:ml-auto">
+              <div class="relative w-full">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                <input
+                  v-model="modalSearchQuery"
+                  type="text"
+                  placeholder="Cari tema, adat, anime, meow..."
+                  class="w-full pl-9 pr-8 py-2 rounded-full bg-gray-50 border border-gray-200 focus:bg-white focus:border-mocha focus:ring-2 focus:ring-mocha/20 text-xs text-dark placeholder:text-gray-400 outline-none transition-all shadow-2xs"
+                />
+                <button
+                  v-if="modalSearchQuery"
+                  @click="modalSearchQuery = ''"
+                  class="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center text-[10px] transition"
+                  title="Hapus pencarian"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+              </div>
+
+              <button
+                @click="showModal = false"
+                class="hidden sm:flex w-8 h-8 rounded-full bg-gray-100 items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition shrink-0"
+              >
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
           </div>
 
           <!-- Mobile Filter Tabs: Gaya -->
@@ -679,11 +730,11 @@
               <div class="animate-spin text-mocha text-3xl">⏳</div>
             </div>
             <div
-              v-else-if="filteredTemplates.length > 0"
+              v-else-if="modalFilteredTemplates.length > 0"
               class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 pb-4"
             >
               <div
-                v-for="item in filteredTemplates"
+                v-for="item in modalFilteredTemplates"
                 :key="item.id"
                 :ref="(el) => (templateRefs[item.id] = el)"
                 @click="selectTemplate(item.id)"
@@ -726,42 +777,45 @@
                         "
                       />
 
-                      <!-- Price Tag -->
-                      <div class="absolute bottom-1.5 left-1.5 z-20">
+                      <!-- Price Tag: Solid high-contrast badge (visible on all light/dark thumbnails) -->
+                      <div class="absolute bottom-1.5 left-1.5 z-40">
                         <div
-                          class="bg-dark/80 backdrop-blur-md text-white px-2 py-0.5 rounded text-[9px] font-bold border border-white/10"
+                          class="bg-slate-900 text-amber-300 font-extrabold px-2 py-0.5 rounded-md text-[10px] shadow-md border border-slate-700/80 flex items-center gap-1"
                         >
-                          {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                          <i class="fa-solid fa-tag text-[8px] text-amber-400"></i>
+                          <span>{{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}</span>
                         </div>
                       </div>
 
-                      <!-- Preview Button -->
-                      <div class="absolute top-1.5 right-1.5 flex gap-1.5 z-40">
+                      <!-- Preview Button (z-50 always above selection overlay so demo is clickable) -->
+                      <div class="absolute top-1.5 right-1.5 flex gap-1.5 z-50">
                         <a
                           :href="'/demo/' + item.slug"
                           target="_blank"
                           @click.stop
-                          class="bg-white/95 hover:bg-white text-mocha px-2.5 py-1 rounded text-[9px] font-bold shadow-sm flex items-center gap-1 transition-all hover:scale-105 border border-mocha/10 pointer-events-auto"
+                          class="bg-white hover:bg-mocha hover:text-white text-slate-900 px-2.5 py-1 rounded-md text-[10px] font-bold shadow-md flex items-center gap-1 transition-all hover:scale-105 border border-slate-200 pointer-events-auto"
+                          title="Buka Demo Undangan"
                         >
-                          <i class="fa-solid fa-eye"></i> Demo
+                          <i class="fa-solid fa-eye text-mocha group-hover:text-white"></i>
+                          <span>Demo</span>
                         </a>
                       </div>
-                    </div>
-                  </div>
 
-                  <!-- Selected Overlay -->
-                  <div
-                    v-if="selectedTemplate === item.id"
-                    class="absolute inset-0 bg-mocha/40 backdrop-blur-[1px] flex items-center justify-center animate-fade-in z-30 pointer-events-none"
-                  >
-                    <div class="bg-white rounded-full p-2 shadow-lg scale-110">
-                      <svg class="w-6 h-6 text-mocha" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                          fill-rule="evenodd"
-                          d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                          clip-rule="evenodd"
-                        />
-                      </svg>
+                      <!-- Selected Overlay (Behind buttons, clean non-obscuring checkmark) -->
+                      <div
+                        v-if="selectedTemplate === item.id"
+                        class="absolute inset-0 bg-mocha/25 flex items-center justify-center animate-fade-in z-30 pointer-events-none"
+                      >
+                        <div class="bg-white/95 text-mocha rounded-full p-2.5 shadow-xl scale-110 border border-mocha/20">
+                          <svg class="w-6 h-6 text-mocha" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                              fill-rule="evenodd"
+                              d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                              clip-rule="evenodd"
+                            />
+                          </svg>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -814,16 +868,32 @@
             </div>
             <div
               v-else
-              class="h-full flex flex-col items-center justify-center text-center text-gray-400 space-y-4"
+              class="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-gray-400 space-y-4 py-12"
             >
               <div
-                class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center text-3xl grayscale opacity-50"
+                class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-2xl text-stone-400"
               >
-                📦
+                <i class="fa-solid fa-magnifying-glass"></i>
               </div>
-              <div>
-                <p class="font-medium text-gray-600">Tidak ada template ditemukan</p>
-                <p class="text-sm">Coba ubah filter gaya atau paket.</p>
+              <div class="space-y-1">
+                <p class="font-bold text-dark text-base">Tidak ada template yang cocok</p>
+                <p class="text-xs text-muted max-w-xs mx-auto">
+                  Kata kunci "{{ modalSearchQuery }}" tidak ditemukan pada filter aktif. Coba kata kunci lain atau reset filter.
+                </p>
+              </div>
+              <div class="flex items-center gap-2 pt-2">
+                <button
+                  @click="modalSearchQuery = ''"
+                  class="px-4 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition"
+                >
+                  Hapus Kata Kunci
+                </button>
+                <button
+                  @click="selectedCategory = 'all'; selectedTier = 'all'; modalSearchQuery = ''"
+                  class="px-4 py-2 rounded-full bg-mocha hover:bg-[#8e5e39] text-white font-bold text-xs transition"
+                >
+                  Reset Semua Filter
+                </button>
               </div>
             </div>
           </div>
@@ -1107,11 +1177,17 @@ function checkScrollPosition() {
   showMobileSticky.value = scrollY > 400 && !nearBottom && !showModal.value
 }
 
-// Filter Logic — chips come from the admin-curated `filterGroup` (style) and
-// `category` (package tier) fields, NOT from raw `tags` (tags stay in the DB
-// for search/SEO only, see D-01).
+// Filter & Search Logic
+const searchQuery = ref('')
+const modalSearchQuery = ref('')
+
 const filteredTemplates = computed(() =>
-  filterTemplates(templates.value, selectedCategory.value, selectedTier.value),
+  filterTemplates(templates.value, selectedCategory.value, selectedTier.value, searchQuery.value),
+)
+
+// In modal, users can also search across all templates or current category
+const modalFilteredTemplates = computed(() =>
+  filterTemplates(templates.value, selectedCategory.value, selectedTier.value, modalSearchQuery.value),
 )
 
 const styleCategories = computed(() => buildStyleFilters(templates.value))

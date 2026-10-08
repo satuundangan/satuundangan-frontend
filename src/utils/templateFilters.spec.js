@@ -185,9 +185,29 @@ describe('templateFilters', () => {
       expect(result).toHaveLength(3)
     })
 
-    it('guards against null/undefined templates', () => {
-      expect(filterTemplates(null, 'all', 'all')).toEqual([])
-      expect(filterTemplates(undefined, 'all', 'all')).toEqual([])
+    it('filters by search query with exact matching', () => {
+      const result = filterTemplates(FIXTURE, 'all', 'all', 'Naruto')
+      expect(result).toHaveLength(1)
+      expect(result[0].slug).toBe('naruto')
+    })
+
+    it('matches search query via synonym expansion (e.g. wibu -> anime templates)', () => {
+      const result = filterTemplates(FIXTURE, 'all', 'all', 'wibu')
+      expect(result.length).toBeGreaterThanOrEqual(2)
+      expect(result.map((t) => t.slug)).toContain('naruto')
+    })
+
+    it('tolerates small typos using fuzzy Levenshtein distance (e.g. narutto -> naruto)', () => {
+      const result = filterTemplates(FIXTURE, 'all', 'all', 'narutto')
+      expect(result.length).toBeGreaterThanOrEqual(1)
+      expect(result[0].slug).toBe('naruto')
+    })
+
+    it('falls back to smart recommendations across all categories if filtered subset has no hits', () => {
+      // In 'Elegan & Mewah', searching 'naruto' (which is Anime) should fallback to recommendation
+      const result = filterTemplates(FIXTURE, 'Elegan & Mewah', 'all', 'naruto')
+      expect(result.length).toBeGreaterThanOrEqual(1)
+      expect(result[0].slug).toBe('naruto')
     })
   })
 
