@@ -698,9 +698,9 @@
         <div class="absolute -bottom-16 -left-16 w-64 h-64 bg-rose-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
         <div class="relative z-10 text-center max-w-2xl mx-auto space-y-4">
-          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/20 border border-amber-400/30 text-amber-300 text-xs font-black uppercase tracking-widest">
-            <i class="fa-solid fa-sparkles"></i>
-            <span>Langkah Berikutnya Menuju Hari Bahagia</span>
+          <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 border border-emerald-400/30 text-emerald-300 text-xs font-black uppercase tracking-widest">
+            <i class="fa-solid fa-circle-check text-emerald-400"></i>
+            <span>100% Bebas Coba Desain Dulu • Tanpa Biaya di Awal</span>
           </div>
 
           <h2 class="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-white leading-tight">
@@ -710,27 +710,44 @@
             </span>
           </h2>
 
-          <p class="text-sm sm:text-base text-stone-300 leading-relaxed">
-            Coba gratis ratusan template eksklusif SatuUndangan berdua sekarang. Jadi dalam 5 menit, praktis sebar lewat WhatsApp, dan buat tamu terkesan!
+          <p class="text-sm sm:text-base text-stone-300 leading-relaxed max-w-xl mx-auto">
+            Bebas bikin &amp; coba ratusan desain undangan pernikahan berdua gratis sekarang! Edit nama, foto, dan lagu sepuasnya sampai pas di hati. <strong class="text-amber-300 font-semibold">Kamu hanya bayar saat sudah siap menyebarkan link undangan ke tamu.</strong>
           </p>
 
-          <!-- Buttons -->
-          <div class="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3.5">
-            <a
-              href="/#templates"
-              class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 to-rose-500 hover:from-amber-600 hover:to-rose-600 text-white font-extrabold text-sm tracking-wide transition-all shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
-            >
-              <i class="fa-solid fa-palette text-amber-200"></i>
-              <span>Pilih Desain Undangan Impian</span>
-            </a>
+          <!-- Trust Badges (Zero-Risk) -->
+          <div class="flex flex-wrap items-center justify-center gap-3 sm:gap-6 pt-1 text-xs text-stone-300">
+            <span class="inline-flex items-center gap-1.5 font-medium text-emerald-300">
+              <i class="fa-solid fa-check text-[11px]"></i> Bikin &amp; Edit Gratis Sepuasnya
+            </span>
+            <span class="inline-flex items-center gap-1.5 font-medium text-amber-300">
+              <i class="fa-solid fa-check text-[11px]"></i> Tanpa Kartu Kredit / DP
+            </span>
+            <span class="inline-flex items-center gap-1.5 font-medium text-rose-300">
+              <i class="fa-solid fa-check text-[11px]"></i> Bayar Cuma Pas Mau Sebar
+            </span>
+          </div>
 
+          <!-- Buttons -->
+          <div class="pt-3 flex flex-col sm:flex-row items-center justify-center gap-3.5">
             <router-link
               to="/create"
+              class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-amber-500 via-rose-500 to-amber-600 hover:from-amber-600 hover:to-rose-600 text-white font-extrabold text-sm tracking-wide transition-all shadow-xl shadow-amber-500/30 hover:scale-105 active:scale-95 flex items-center justify-center gap-2.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-wand-magic-sparkles text-amber-200"></i>
+              <span>Mulai Desain Undangan Gratis</span>
+            </router-link>
+
+            <a
+              href="/#templates"
               class="w-full sm:w-auto px-7 py-4 rounded-full bg-white/10 hover:bg-white/20 border border-white/20 text-white font-bold text-sm transition-all hover:scale-105 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
             >
-              <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
-              <span>Buka Studio Editor Gratis</span>
-            </router-link>
+              <i class="fa-solid fa-palette text-amber-300"></i>
+              <span>Lihat Katalog Tema (33+ Pilihan)</span>
+            </a>
+          </div>
+
+          <div class="pt-2 text-[11px] text-stone-400">
+            <span>💡 Tidak ada komitmen • Simpan draf kapan saja • Bayar hanya saat publish</span>
           </div>
 
           <div class="pt-2">
@@ -1008,6 +1025,8 @@ function shareNameResultWA() {
 Skor Chemistry: ${nameResult.value.score}% (${nameResult.value.title})
 "${nameResult.value.tagline}"
 
+💡 Di SatuUndangan bisa bikin & coba-coba desain undangan pernikahan GRATIS dulu loh (bayar cuma pas mau sebar link)!
+
 Cek kecocokanmu dan pasanganmu di: https://satuundangan.id/tools/love-calculator`
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
 }
@@ -1018,7 +1037,9 @@ function copyNameResult() {
 Persentase: ${nameResult.value.score}%
 Predikat: ${nameResult.value.title}
 Catatan: "${nameResult.value.tagline}"
-Cek gratis di: https://satuundangan.id/tools/love-calculator`
+
+✨ Info: Bisa bikin & coba desain undangan digital berdua GRATIS dulu tanpa biaya di awal:
+https://satuundangan.id/tools/love-calculator`
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
@@ -1275,6 +1296,8 @@ Total Neptu Jodoh: ${r.totalNeptu} -> Sisa ${r.category.remainder}: ${r.category
 Makna & Nasihat:
 "${r.category.modernWisdom}"
 
+💡 Di SatuUndangan bisa bikin & coba-coba desain undangan pernikahan GRATIS dulu loh (bayar cuma pas mau sebar link)!
+
 Cek weton pernikahanmu di: https://satuundangan.id/tools/love-calculator`
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
 }
@@ -1288,7 +1311,9 @@ Wanita: ${r.brideName} (${r.bride.wetonName}, Neptu ${r.bride.neptu})
 Total Neptu: ${r.totalNeptu} (Dibagi 8 = Sisa ${r.category.remainder}: ${r.category.name})
 Kategori: ${r.category.title}
 Nasihat Bijak: "${r.category.modernWisdom}"
-Cek gratis: https://satuundangan.id/tools/love-calculator`
+
+✨ Info: Bisa bikin & coba desain undangan digital berdua GRATIS dulu tanpa biaya di awal:
+https://satuundangan.id/tools/love-calculator`
 
   if (navigator.clipboard) {
     navigator.clipboard.writeText(text).then(() => {

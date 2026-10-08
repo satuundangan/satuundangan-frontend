@@ -23,7 +23,13 @@
         </div>
       </div>
 
-      <div class="flex items-center gap-4">
+      <div class="flex items-center gap-3 md:gap-4">
+        <!-- Free Design & Preview Reassurance Pill -->
+        <div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[10px] font-bold">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>Gratis Desain &amp; Preview • Bayar Hanya Saat Sebar</span>
+        </div>
+
         <!-- Draft status indicator -->
         <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:inline-block">
           Draf Otomatis Tersimpan
