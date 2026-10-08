@@ -29,34 +29,48 @@
         </p>
 
         <!-- Mode / Tab Switcher -->
-        <div class="pt-3 flex justify-center">
-          <div class="inline-flex p-1.5 bg-white/90 backdrop-blur-md border border-stone-200/80 rounded-2xl shadow-md">
+        <div class="pt-5 flex justify-center">
+          <div class="inline-flex flex-wrap justify-center p-1.5 bg-white/95 backdrop-blur-md border border-stone-200/90 rounded-2xl shadow-lg gap-1">
             <button
               type="button"
               @click="activeTab = 'name'"
               :class="[
-                'flex items-center gap-2.5 px-5 sm:px-7 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 cursor-pointer',
+                'flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 cursor-pointer',
                 activeTab === 'name'
                   ? 'bg-rose-500 text-white shadow-md shadow-rose-500/25 scale-[1.02]'
                   : 'text-slate-600 hover:text-rose-600 hover:bg-rose-50/50'
               ]"
             >
               <i class="fa-solid fa-heart-pulse text-sm"></i>
-              <span>Chemistry Nama Cinta</span>
+              <span>Chemistry Nama</span>
             </button>
 
             <button
               type="button"
               @click="activeTab = 'weton'"
               :class="[
-                'flex items-center gap-2.5 px-5 sm:px-7 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 cursor-pointer',
+                'flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 cursor-pointer',
                 activeTab === 'weton'
                   ? 'bg-amber-600 text-white shadow-md shadow-amber-600/25 scale-[1.02]'
                   : 'text-slate-600 hover:text-amber-700 hover:bg-amber-50/50'
               ]"
             >
               <i class="fa-solid fa-moon text-sm"></i>
-              <span>Weton Jodoh Jawa (Neptu)</span>
+              <span>Weton Jawa (Neptu)</span>
+            </button>
+
+            <button
+              type="button"
+              @click="activeTab = 'zodiac'"
+              :class="[
+                'flex items-center gap-2 px-4 sm:px-6 py-3 rounded-xl font-bold text-xs sm:text-sm transition-all duration-300 cursor-pointer',
+                activeTab === 'zodiac'
+                  ? 'bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md shadow-indigo-600/25 scale-[1.02]'
+                  : 'text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/50'
+              ]"
+            >
+              <i class="fa-solid fa-sparkles text-sm text-amber-300"></i>
+              <span>Kecocokan Zodiak</span>
             </button>
           </div>
         </div>
@@ -64,7 +78,7 @@
     </header>
 
     <!-- Main Content Container -->
-    <main class="max-w-4xl mx-auto px-4 sm:px-6 pb-24 space-y-12">
+    <main class="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 pb-24 space-y-12">
       <!-- ========================================== -->
       <!-- TAB 1: CHEMISTRY NAMA CINTA (FUN MATCHER) -->
       <!-- ========================================== -->
@@ -73,55 +87,61 @@
         <div class="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-xl shadow-stone-200/50 relative overflow-hidden">
           <div class="absolute -top-12 -right-12 w-40 h-40 bg-rose-100/40 rounded-full blur-2xl pointer-events-none"></div>
 
-          <div class="text-center max-w-lg mx-auto mb-8 space-y-2">
-            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+          <div class="text-center max-w-lg mx-auto mb-10 pt-2 space-y-3">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-50 text-rose-600 text-[11px] font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-sparkles text-amber-500"></i>
+              <span>Cek Getaran Hati Berdua</span>
+            </div>
+            <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
               Cek Skor Chemistry Nama Berdua
             </h2>
-            <p class="text-xs sm:text-sm text-slate-500">
+            <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
               Masukkan nama lengkap atau panggilanmu dan pasangan. Algoritma deterministic kami akan menghitung frekuensi kecocokan cinta kalian.
             </p>
           </div>
 
-          <form @submit.prevent="calculateLoveScore" class="space-y-6">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 relative">
+          <form @submit.prevent="calculateLoveScore" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 relative items-center">
               <!-- Name 1 -->
-              <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  <i class="fa-solid fa-user text-rose-400 mr-1.5"></i> Nama Kamu
+              <div class="space-y-2.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                  <span><i class="fa-solid fa-user text-rose-400 mr-1.5"></i> Nama Kamu</span>
+                  <span class="text-[10px] text-slate-400 font-normal lowercase">(nama lengkap/panggilan)</span>
                 </label>
                 <div class="relative">
                   <input
                     v-model="nameForm.name1"
                     type="text"
                     placeholder="Contoh: Rian Aditya"
-                    class="w-full px-4 py-3.5 pl-11 rounded-2xl bg-stone-50/70 border border-stone-200 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-rose-100 transition-all text-sm font-medium text-slate-800 placeholder:text-slate-400"
+                    class="w-full px-5 py-4 pl-12 rounded-2xl bg-stone-50/80 border border-stone-200/90 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-rose-100 transition-all text-sm font-semibold text-slate-800 placeholder:text-slate-400 shadow-2xs"
                     required
                   />
-                  <div class="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400">
+                  <div class="absolute left-4.5 top-1/2 -translate-y-1/2 text-rose-400 text-base">
                     <i class="fa-regular fa-heart"></i>
                   </div>
                 </div>
               </div>
 
               <!-- Romantic Connector Badge (Center Desktop) -->
-              <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-9 h-9 rounded-full bg-rose-50 border border-rose-200 text-rose-500 items-center justify-center text-xs shadow-sm">
-                <i class="fa-solid fa-plus"></i>
+              <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border-2 border-rose-200 text-rose-500 items-center justify-center text-sm shadow-md hover:scale-110 transition-transform">
+                <i class="fa-solid fa-heart text-rose-500 text-xs"></i>
               </div>
 
               <!-- Name 2 -->
-              <div class="space-y-2">
-                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider">
-                  <i class="fa-solid fa-heart text-rose-400 mr-1.5"></i> Nama Pasangan
+              <div class="space-y-2.5">
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center justify-between">
+                  <span><i class="fa-solid fa-heart text-rose-400 mr-1.5"></i> Nama Pasangan</span>
+                  <span class="text-[10px] text-slate-400 font-normal lowercase">(nama lengkap/panggilan)</span>
                 </label>
                 <div class="relative">
                   <input
                     v-model="nameForm.name2"
                     type="text"
                     placeholder="Contoh: Putri Maharani"
-                    class="w-full px-4 py-3.5 pl-11 rounded-2xl bg-stone-50/70 border border-stone-200 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-rose-100 transition-all text-sm font-medium text-slate-800 placeholder:text-slate-400"
+                    class="w-full px-5 py-4 pl-12 rounded-2xl bg-stone-50/80 border border-stone-200/90 focus:border-rose-400 focus:bg-white focus:outline-none focus:ring-4 focus:ring-rose-100 transition-all text-sm font-semibold text-slate-800 placeholder:text-slate-400 shadow-2xs"
                     required
                   />
-                  <div class="absolute left-4 top-1/2 -translate-y-1/2 text-rose-400">
+                  <div class="absolute left-4.5 top-1/2 -translate-y-1/2 text-rose-500 text-base">
                     <i class="fa-solid fa-heart"></i>
                   </div>
                 </div>
@@ -687,10 +707,327 @@
       </section>
 
       <!-- ================================================== -->
+      <!-- TAB 3: KALKULATOR KECOCOKAN ZODIAK & ASTROLOGI     -->
+      <!-- ================================================== -->
+      <section v-show="activeTab === 'zodiac'" class="space-y-8 animate-fadeIn">
+        <!-- Input Card -->
+        <div class="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-xl shadow-stone-200/50 relative overflow-hidden">
+          <div class="absolute -top-12 -right-12 w-48 h-48 bg-indigo-100/40 rounded-full blur-2xl pointer-events-none"></div>
+
+          <div class="text-center max-w-lg mx-auto mb-10 pt-2 space-y-3">
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-[11px] font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-sparkles text-amber-500"></i>
+              <span>Astrologi Cinta &amp; Harmoni 4 Elemen</span>
+            </div>
+            <h2 class="font-serif text-2xl sm:text-3xl lg:text-4xl font-bold text-slate-900 tracking-tight">
+              Kecocokan Zodiak Pasangan
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-500 leading-relaxed">
+              Pilih zodiak atau masukkan tanggal lahir berdua untuk melihat harmoni elemen cinta (Api, Tanah, Udara, Air) serta dinamika hubungan kalian.
+            </p>
+          </div>
+
+          <form @submit.prevent="calculateZodiac" class="space-y-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 relative">
+              <!-- Pasangan 1 (Kamu) -->
+              <div class="p-6 rounded-2xl bg-stone-50/70 border border-stone-200/80 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-stone-200">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-indigo-100 text-indigo-700 flex items-center justify-center text-xs font-bold">
+                      <i class="fa-solid fa-user"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-800">Zodiak Kamu</h3>
+                  </div>
+                  <span v-if="selectedZodiac1" class="text-xs font-bold text-indigo-600">
+                    {{ selectedZodiac1.symbol }} {{ selectedZodiac1.name }}
+                  </span>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold text-slate-600">Nama Kamu (Opsional)</label>
+                  <input
+                    v-model="zodiacForm.name1"
+                    type="text"
+                    placeholder="Contoh: Rian"
+                    class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all text-sm font-medium text-slate-800"
+                  />
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold text-slate-600">Pilih Zodiak</label>
+                  <select
+                    v-model="zodiacForm.zodiac1Id"
+                    class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all text-sm font-medium text-slate-800 cursor-pointer"
+                  >
+                    <option value="" disabled>-- Pilih Tanda Zodiak --</option>
+                    <option v-for="z in ZODIAC_SIGNS" :key="z.id" :value="z.id">
+                      {{ z.symbol }} {{ z.name }} ({{ z.dateRange }}) • Elemen {{ z.element }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="space-y-1.5 pt-1">
+                  <div class="text-[11px] text-slate-400 flex items-center gap-1">
+                    <i class="fa-regular fa-calendar text-[10px]"></i>
+                    <span>Atau deteksi otomatis dari tanggal lahir:</span>
+                  </div>
+                  <input
+                    v-model="zodiacForm.dob1"
+                    type="date"
+                    @change="onZodiacDob1Change"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-200 text-xs font-medium text-slate-700 focus:border-indigo-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              <!-- Romantic Connector Badge (Center Desktop) -->
+              <div class="hidden md:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-white border-2 border-indigo-200 text-indigo-600 items-center justify-center text-sm shadow-md hover:scale-110 transition-transform">
+                <i class="fa-solid fa-sparkles text-xs"></i>
+              </div>
+
+              <!-- Pasangan 2 -->
+              <div class="p-6 rounded-2xl bg-stone-50/70 border border-stone-200/80 space-y-4">
+                <div class="flex items-center justify-between pb-2 border-b border-stone-200">
+                  <div class="flex items-center gap-2">
+                    <div class="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center text-xs font-bold">
+                      <i class="fa-solid fa-heart"></i>
+                    </div>
+                    <h3 class="text-sm font-bold text-slate-800">Zodiak Pasangan</h3>
+                  </div>
+                  <span v-if="selectedZodiac2" class="text-xs font-bold text-rose-600">
+                    {{ selectedZodiac2.symbol }} {{ selectedZodiac2.name }}
+                  </span>
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold text-slate-600">Nama Pasangan (Opsional)</label>
+                  <input
+                    v-model="zodiacForm.name2"
+                    type="text"
+                    placeholder="Contoh: Sarah"
+                    class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all text-sm font-medium text-slate-800"
+                  />
+                </div>
+
+                <div class="space-y-2">
+                  <label class="block text-xs font-bold text-slate-600">Pilih Zodiak</label>
+                  <select
+                    v-model="zodiacForm.zodiac2Id"
+                    class="w-full px-4 py-3 rounded-xl bg-white border border-stone-200 focus:border-indigo-500 focus:outline-none focus:ring-4 focus:ring-indigo-100 transition-all text-sm font-medium text-slate-800 cursor-pointer"
+                  >
+                    <option value="" disabled>-- Pilih Tanda Zodiak --</option>
+                    <option v-for="z in ZODIAC_SIGNS" :key="z.id" :value="z.id">
+                      {{ z.symbol }} {{ z.name }} ({{ z.dateRange }}) • Elemen {{ z.element }}
+                    </option>
+                  </select>
+                </div>
+
+                <div class="space-y-1.5 pt-1">
+                  <div class="text-[11px] text-slate-400 flex items-center gap-1">
+                    <i class="fa-regular fa-calendar text-[10px]"></i>
+                    <span>Atau deteksi otomatis dari tanggal lahir:</span>
+                  </div>
+                  <input
+                    v-model="zodiacForm.dob2"
+                    type="date"
+                    @change="onZodiacDob2Change"
+                    class="w-full px-3.5 py-2.5 rounded-xl bg-white border border-stone-200 text-xs font-medium text-slate-700 focus:border-indigo-500 focus:outline-none"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="pt-2 text-center">
+              <button
+                type="submit"
+                :disabled="isZodiacCalculating || !zodiacForm.zodiac1Id || !zodiacForm.zodiac2Id"
+                class="w-full sm:w-auto px-10 py-4 rounded-2xl bg-gradient-to-r from-purple-600 via-indigo-600 to-rose-600 hover:from-purple-700 hover:to-rose-700 text-white font-bold text-sm tracking-wide transition-all shadow-lg shadow-indigo-600/25 hover:shadow-xl hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-3 mx-auto cursor-pointer"
+              >
+                <i v-if="isZodiacCalculating" class="fa-solid fa-spinner fa-spin text-base"></i>
+                <i v-else class="fa-solid fa-sparkles text-amber-300"></i>
+                <span>{{ isZodiacCalculating ? 'Membaca Konstelasi Bintang...' : 'Hitung Kecocokan Zodiak Sekarang' }}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Zodiac Result Display Card -->
+        <div
+          v-if="zodiacResult"
+          id="zodiac-result-section"
+          class="bg-white rounded-3xl p-6 sm:p-10 border border-stone-200/80 shadow-2xl space-y-8 relative overflow-hidden animate-scaleUp"
+        >
+          <!-- Ribbon Top -->
+          <div class="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-purple-600 via-indigo-500 to-rose-500"></div>
+
+          <!-- Couple Header Tag -->
+          <div class="text-center space-y-2 pt-2">
+            <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-bold uppercase tracking-wider">
+              <i class="fa-solid fa-sparkles text-amber-500"></i>
+              Analisis Kompatibilitas Zodiak
+            </span>
+            <h3 class="font-serif text-2xl sm:text-3xl font-bold text-slate-900">
+              {{ zodiacResult.name1 }} ({{ zodiacResult.zodiac1.name }}) &amp; {{ zodiacResult.name2 }} ({{ zodiacResult.zodiac2.name }})
+            </h3>
+          </div>
+
+          <!-- Zodiac Match Score & Badges -->
+          <div class="flex flex-col items-center justify-center space-y-4">
+            <div class="p-6 sm:p-8 rounded-3xl bg-gradient-to-br from-indigo-950 via-slate-900 to-purple-950 text-white text-center w-full max-w-xl shadow-xl space-y-3 relative overflow-hidden">
+              <div class="absolute -top-10 -right-10 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
+              <div class="text-xs uppercase tracking-widest text-indigo-300 font-bold">
+                Tingkat Kecocokan Astrologi
+              </div>
+              <div class="font-serif text-5xl sm:text-6xl font-extrabold text-amber-300">
+                {{ zodiacResult.score }}<span class="text-2xl text-rose-300">%</span>
+              </div>
+              <div class="inline-block px-4 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-xs sm:text-sm font-bold text-white">
+                {{ zodiacResult.elementTitle }}
+              </div>
+              <p class="text-xs sm:text-sm text-stone-300 max-w-md mx-auto pt-1 leading-relaxed">
+                {{ zodiacResult.elementDynamic }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Two Signs Cards Side by Side -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Sign 1 -->
+            <div class="p-5 rounded-2xl bg-[#FAF7F2] border border-indigo-200/70 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <span class="text-lg">{{ zodiacResult.zodiac1.symbol }}</span> {{ zodiacResult.zodiac1.name }}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold" :class="zodiacResult.zodiac1.bgBadge">
+                  Elemen {{ zodiacResult.zodiac1.element }}
+                </span>
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                <b>Karakter Khas:</b> {{ zodiacResult.zodiac1.traits }}
+              </p>
+              <div class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-xl border border-stone-200/50">
+                <b>Gaya Mencintai:</b> {{ zodiacResult.zodiac1.loveStyle }}
+              </div>
+            </div>
+
+            <!-- Sign 2 -->
+            <div class="p-5 rounded-2xl bg-[#FAF7F2] border border-rose-200/70 space-y-3">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
+                  <span class="text-lg">{{ zodiacResult.zodiac2.symbol }}</span> {{ zodiacResult.zodiac2.name }}
+                </span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold" :class="zodiacResult.zodiac2.bgBadge">
+                  Elemen {{ zodiacResult.zodiac2.element }}
+                </span>
+              </div>
+              <p class="text-xs text-slate-600 leading-relaxed">
+                <b>Karakter Khas:</b> {{ zodiacResult.zodiac2.traits }}
+              </p>
+              <div class="text-xs text-slate-600 bg-white/80 p-2.5 rounded-xl border border-stone-200/50">
+                <b>Gaya Mencintai:</b> {{ zodiacResult.zodiac2.loveStyle }}
+              </div>
+            </div>
+          </div>
+
+          <!-- Radar / Subscore Breakdown -->
+          <div class="p-5 rounded-2xl bg-indigo-50/40 border border-indigo-100 space-y-4">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-chart-simple text-indigo-600"></i>
+              Dimensi Kompatibilitas Bintang
+            </h4>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div class="space-y-1.5 bg-white p-3.5 rounded-xl border border-indigo-100/60">
+                <div class="flex justify-between text-xs font-semibold text-slate-700">
+                  <span>Komunikasi &amp; Deep Talk</span>
+                  <span class="text-indigo-600 font-bold">{{ zodiacResult.subScores.communication }}%</span>
+                </div>
+                <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div class="h-full bg-indigo-500 rounded-full" :style="{ width: `${zodiacResult.subScores.communication}%` }"></div>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 bg-white p-3.5 rounded-xl border border-indigo-100/60">
+                <div class="flex justify-between text-xs font-semibold text-slate-700">
+                  <span>Ikatan Emosional &amp; Kepekaan</span>
+                  <span class="text-rose-600 font-bold">{{ zodiacResult.subScores.emotionalBond }}%</span>
+                </div>
+                <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div class="h-full bg-rose-500 rounded-full" :style="{ width: `${zodiacResult.subScores.emotionalBond}%` }"></div>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 bg-white p-3.5 rounded-xl border border-indigo-100/60">
+                <div class="flex justify-between text-xs font-semibold text-slate-700">
+                  <span>Visi Masa Depan &amp; Rumah Tangga</span>
+                  <span class="text-emerald-600 font-bold">{{ zodiacResult.subScores.lifeGoals }}%</span>
+                </div>
+                <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div class="h-full bg-emerald-500 rounded-full" :style="{ width: `${zodiacResult.subScores.lifeGoals}%` }"></div>
+                </div>
+              </div>
+
+              <div class="space-y-1.5 bg-white p-3.5 rounded-xl border border-indigo-100/60">
+                <div class="flex justify-between text-xs font-semibold text-slate-700">
+                  <span>Romantisme &amp; Passion</span>
+                  <span class="text-amber-600 font-bold">{{ zodiacResult.subScores.romancePassion }}%</span>
+                </div>
+                <div class="h-2 rounded-full bg-slate-100 overflow-hidden">
+                  <div class="h-full bg-amber-500 rounded-full" :style="{ width: `${zodiacResult.subScores.romancePassion}%` }"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Marriage Advice Banner -->
+          <div class="p-5 rounded-2xl bg-white border border-stone-200/90 shadow-xs space-y-2">
+            <h5 class="font-bold text-slate-900 text-sm flex items-center gap-2">
+              <i class="fa-solid fa-rings-wedding text-indigo-600"></i>
+              <span>Nasihat Menuju Pelaminan:</span>
+            </h5>
+            <p class="text-xs sm:text-sm text-slate-700 leading-relaxed">
+              "{{ zodiacResult.marriageAdvice }}"
+            </p>
+          </div>
+
+          <!-- Share & Copy Actions -->
+          <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              type="button"
+              @click="shareZodiacResultWA"
+              class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i class="fa-brands fa-whatsapp text-lg"></i>
+              <span>Bagikan Hasil Zodiak ke WhatsApp</span>
+            </button>
+
+            <button
+              type="button"
+              @click="copyZodiacResult"
+              class="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-white hover:bg-stone-50 border border-stone-200 text-slate-700 font-bold text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer"
+            >
+              <i :class="copiedZodiac ? 'fa-solid fa-check text-emerald-600' : 'fa-regular fa-copy text-slate-500'"></i>
+              <span>{{ copiedZodiac ? 'Tersalin ke Clipboard!' : 'Salin Teks Hasil Zodiak' }}</span>
+            </button>
+
+            <button
+              type="button"
+              @click="resetZodiacForm"
+              class="w-full sm:w-auto px-5 py-3.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-slate-600 font-medium text-xs sm:text-sm transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+            >
+              <i class="fa-solid fa-rotate-left text-xs"></i>
+              <span>Cek Zodiak Lain</span>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================================================== -->
       <!-- SECTION 2: HIGH-CONVERTING CALL-TO-ACTION BANNER   -->
       <!-- ================================================== -->
       <section
-        v-if="nameResult || wetonResult"
+        v-if="nameResult || wetonResult || zodiacResult"
         class="relative rounded-3xl p-8 sm:p-12 overflow-hidden bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white shadow-2xl space-y-8 animate-fade-in"
       >
         <!-- Background Ambient Sparkles -->
@@ -936,10 +1273,16 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
-import { calculateLoveScore as computeLoveResult } from '@/utils/loveCalculator.js'
+import {
+  calculateLoveScore as computeLoveResult,
+  ZODIAC_SIGNS,
+  getZodiacFromDate,
+  getZodiacById,
+  calculateZodiacPair,
+} from '@/utils/loveCalculator.js'
 
 // --- Tabs State ---
-const activeTab = ref('name') // 'name' | 'weton'
+const activeTab = ref('name') // 'name' | 'weton' | 'zodiac'
 
 // --- Tab 1: Chemistry Nama Cinta State ---
 const nameForm = reactive({
@@ -1336,14 +1679,115 @@ watch(
   () => nameForm.name1,
   (val) => {
     if (val && !wetonForm.groomName) wetonForm.groomName = val
+    if (val && !zodiacForm.name1) zodiacForm.name1 = val
   }
 )
 watch(
   () => nameForm.name2,
   (val) => {
     if (val && !wetonForm.brideName) wetonForm.brideName = val
+    if (val && !zodiacForm.name2) zodiacForm.name2 = val
   }
 )
+
+// --- Tab 3: Zodiac Compatibility State & Logic ---
+const zodiacForm = reactive({
+  name1: '',
+  zodiac1Id: 'leo',
+  dob1: '',
+  name2: '',
+  zodiac2Id: 'libra',
+  dob2: ''
+})
+const isZodiacCalculating = ref(false)
+const zodiacResult = ref(null)
+const copiedZodiac = ref(false)
+
+const selectedZodiac1 = computed(() => getZodiacById(zodiacForm.zodiac1Id))
+const selectedZodiac2 = computed(() => getZodiacById(zodiacForm.zodiac2Id))
+
+function onZodiacDob1Change() {
+  if (zodiacForm.dob1) {
+    const detected = getZodiacFromDate(zodiacForm.dob1)
+    if (detected) zodiacForm.zodiac1Id = detected.id
+  }
+}
+
+function onZodiacDob2Change() {
+  if (zodiacForm.dob2) {
+    const detected = getZodiacFromDate(zodiacForm.dob2)
+    if (detected) zodiacForm.zodiac2Id = detected.id
+  }
+}
+
+function calculateZodiac() {
+  if (!zodiacForm.zodiac1Id || !zodiacForm.zodiac2Id) return
+  isZodiacCalculating.value = true
+
+  setTimeout(() => {
+    try {
+      zodiacResult.value = calculateZodiacPair(
+        zodiacForm.zodiac1Id,
+        zodiacForm.zodiac2Id,
+        zodiacForm.name1,
+        zodiacForm.name2
+      )
+    } finally {
+      isZodiacCalculating.value = false
+      nextTick(() => {
+        const el = document.getElementById('zodiac-result-section')
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    }
+  }, 450)
+}
+
+function shareZodiacResultWA() {
+  if (!zodiacResult.value) return
+  const r = zodiacResult.value
+  const text = `✨ Ramalan Kompatibilitas Zodiak Cinta:
+♈ ${r.name1} (${r.zodiac1.name} • Elemen ${r.zodiac1.element}) & ${r.name2} (${r.zodiac2.name} • Elemen ${r.zodiac2.element})
+Skor Kecocokan Bintang: ${r.score}% (${r.elementTitle})
+
+Dinamika Cinta:
+"${r.elementDynamic}"
+
+Nasihat Menuju Pelaminan:
+"${r.marriageAdvice}"
+
+💡 Di SatuUndangan bisa coba desain undangan digital GRATIS dulu berdua (bayar cuma pas mau sebar link)!
+
+Cek kecocokan zodiak & weton kalian di: https://satuundangan.id/tools/love-calculator`
+  window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
+}
+
+function copyZodiacResult() {
+  if (!zodiacResult.value) return
+  const r = zodiacResult.value
+  const text = `✨ Hasil Kompatibilitas Zodiak Cinta
+Pasangan: ${r.name1} (${r.zodiac1.name}) & ${r.name2} (${r.zodiac2.name})
+Skor Kecocokan: ${r.score}% (${r.elementTitle})
+Dinamika Hubungan: "${r.elementDynamic}"
+Nasihat Pelaminan: "${r.marriageAdvice}"
+
+✨ Info: Bisa coba & bikin draf undangan pernikahan gratis sepuasnya di:
+https://satuundangan.id/tools/love-calculator`
+
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      copiedZodiac.value = true
+      setTimeout(() => (copiedZodiac.value = false), 2500)
+    })
+  }
+}
+
+function resetZodiacForm() {
+  zodiacForm.name1 = ''
+  zodiacForm.dob1 = ''
+  zodiacForm.name2 = ''
+  zodiacForm.dob2 = ''
+  zodiacResult.value = null
+}
 
 // --- FAQ Accordion State ---
 const openFaqIndex = ref(0)

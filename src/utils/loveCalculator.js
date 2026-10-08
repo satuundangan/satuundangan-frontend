@@ -502,3 +502,320 @@ export function calculateLoveScore(name1, name2) {
   }
 }
 
+// ============================================================================
+// 3. ZODIAC (ASTROLOGY) COMPATIBILITY ENGINE
+// ============================================================================
+
+export const ZODIAC_SIGNS = [
+  {
+    id: 'aries',
+    name: 'Aries',
+    symbol: '♈',
+    element: 'Api',
+    dateRange: '21 Mar - 19 Apr',
+    startMonth: 3,
+    startDay: 21,
+    endMonth: 4,
+    endDay: 19,
+    traits: 'Pemberani, penuh gairah, spontan, dan berjiwa pemimpin.',
+    loveStyle: 'Mencintai dengan intens, ekspresif, dan suka kejutan romantis spontan.',
+    color: 'from-red-500 to-amber-500',
+    accentText: 'text-rose-600',
+    bgBadge: 'bg-rose-50 border-rose-200 text-rose-700',
+  },
+  {
+    id: 'taurus',
+    name: 'Taurus',
+    symbol: '♉',
+    element: 'Tanah',
+    dateRange: '20 Apr - 20 Mei',
+    startMonth: 4,
+    startDay: 20,
+    endMonth: 5,
+    endDay: 20,
+    traits: 'Setia, sabar, dapat diandalkan, dan pencinta kenyamanan estetika.',
+    loveStyle: 'Sangat setia, mendambakan kepastian jangka panjang, dan suka memanjakan pasangan.',
+    color: 'from-emerald-500 to-teal-600',
+    accentText: 'text-emerald-600',
+    bgBadge: 'bg-emerald-50 border-emerald-200 text-emerald-700',
+  },
+  {
+    id: 'gemini',
+    name: 'Gemini',
+    symbol: '♊',
+    element: 'Udara',
+    dateRange: '21 Mei - 20 Jun',
+    startMonth: 5,
+    startDay: 21,
+    endMonth: 6,
+    endDay: 20,
+    traits: 'Komunikatif, cerdas, ceria, dan berwawasan luas.',
+    loveStyle: 'Butuh obrolan mendalam (deep talk), humor cerdas, dan variasi kencan yang tidak monoton.',
+    color: 'from-amber-400 to-yellow-500',
+    accentText: 'text-amber-600',
+    bgBadge: 'bg-amber-50 border-amber-200 text-amber-700',
+  },
+  {
+    id: 'cancer',
+    name: 'Cancer',
+    symbol: '♋',
+    element: 'Air',
+    dateRange: '21 Jun - 22 Jul',
+    startMonth: 6,
+    startDay: 21,
+    endMonth: 7,
+    endDay: 22,
+    traits: 'Penyayang, intuitif, hangat, dan sangat protektif terhadap keluarga.',
+    loveStyle: 'Mencurahkan kehangatan tanpa batas, peka perasaan, dan merawat rumah tangga penuh cinta.',
+    color: 'from-sky-400 to-indigo-500',
+    accentText: 'text-sky-600',
+    bgBadge: 'bg-sky-50 border-sky-200 text-sky-700',
+  },
+  {
+    id: 'leo',
+    name: 'Leo',
+    symbol: '♌',
+    element: 'Api',
+    dateRange: '23 Jul - 22 Agu',
+    startMonth: 7,
+    startDay: 23,
+    endMonth: 8,
+    endDay: 22,
+    traits: 'Hangat, percaya diri, dermawan, karismatik, dan berhati emas.',
+    loveStyle: 'Bangga memamerkan pasangannya, royal memberikan perhatian dan hadiah, serta pelindung tangguh.',
+    color: 'from-amber-500 to-orange-500',
+    accentText: 'text-orange-600',
+    bgBadge: 'bg-amber-50 border-amber-200 text-amber-700',
+  },
+  {
+    id: 'virgo',
+    name: 'Virgo',
+    symbol: '♍',
+    element: 'Tanah',
+    dateRange: '23 Agu - 22 Sep',
+    startMonth: 8,
+    startDay: 23,
+    endMonth: 9,
+    endDay: 22,
+    traits: 'Detail, teliti, berdedikasi tinggi, dan selalu siap membantu.',
+    loveStyle: 'Membuktikan cinta lewat tindakan nyata (acts of service), selalu memikirkan masa depan keluarga.',
+    color: 'from-teal-500 to-emerald-600',
+    accentText: 'text-teal-600',
+    bgBadge: 'bg-teal-50 border-teal-200 text-teal-700',
+  },
+  {
+    id: 'libra',
+    name: 'Libra',
+    symbol: '♎',
+    element: 'Udara',
+    dateRange: '23 Sep - 22 Okt',
+    startMonth: 9,
+    startDay: 23,
+    endMonth: 10,
+    endDay: 22,
+    traits: 'Diplomatis, romantis, adil, memesona, dan harmonis.',
+    loveStyle: 'Pasangan sejati yang mengutamakan kedamaian, estetika pesta cinta, dan rasa saling menghargai.',
+    color: 'from-rose-400 to-pink-500',
+    accentText: 'text-pink-600',
+    bgBadge: 'bg-pink-50 border-pink-200 text-pink-700',
+  },
+  {
+    id: 'scorpio',
+    name: 'Scorpio',
+    symbol: '♏',
+    element: 'Air',
+    dateRange: '23 Okt - 21 Nov',
+    startMonth: 10,
+    startDay: 23,
+    endMonth: 11,
+    endDay: 21,
+    traits: 'Setia tanpa batas, misterius, berwibawa, dan punya intuisi tajam.',
+    loveStyle: 'Ikatan emosional sangat mendalam, protektif, dan loyalitas seumur hidup.',
+    color: 'from-purple-600 to-rose-700',
+    accentText: 'text-purple-600',
+    bgBadge: 'bg-purple-50 border-purple-200 text-purple-700',
+  },
+  {
+    id: 'sagittarius',
+    name: 'Sagittarius',
+    symbol: '♐',
+    element: 'Api',
+    dateRange: '22 Nov - 21 Des',
+    startMonth: 11,
+    startDay: 22,
+    endMonth: 12,
+    endDay: 21,
+    traits: 'Berjiwa bebas, optimis, suka petualangan, dan jujur apa adanya.',
+    loveStyle: 'Menjadikan pasangan sebagai teman petualangan seru dan partner menggapai cita-cita tinggi.',
+    color: 'from-indigo-500 to-violet-600',
+    accentText: 'text-indigo-600',
+    bgBadge: 'bg-indigo-50 border-indigo-200 text-indigo-700',
+  },
+  {
+    id: 'capricorn',
+    name: 'Capricorn',
+    symbol: '♑',
+    element: 'Tanah',
+    dateRange: '22 Des - 19 Jan',
+    startMonth: 12,
+    startDay: 22,
+    endMonth: 1,
+    endDay: 19,
+    traits: 'Pekerja keras, bertanggung jawab, matang, dan berorientasi masa depan.',
+    loveStyle: 'Komitmen kokoh bagai karang, mempersiapkan pondasi finansial dan rumah tangga yang mapan.',
+    color: 'from-slate-600 to-stone-700',
+    accentText: 'text-stone-700',
+    bgBadge: 'bg-stone-100 border-stone-200 text-stone-800',
+  },
+  {
+    id: 'aquarius',
+    name: 'Aquarius',
+    symbol: '♒',
+    element: 'Udara',
+    dateRange: '20 Jan - 18 Feb',
+    startMonth: 1,
+    startDay: 20,
+    endMonth: 2,
+    endDay: 18,
+    traits: 'Visioner, unik, berpikiran terbuka, dan penuh ide kreatif.',
+    loveStyle: 'Cinta berawal dari persahabatan yang kuat, saling memberi kebebasan berekspresi tanpa rasa terkekang.',
+    color: 'from-cyan-500 to-blue-600',
+    accentText: 'text-cyan-600',
+    bgBadge: 'bg-cyan-50 border-cyan-200 text-cyan-700',
+  },
+  {
+    id: 'pisces',
+    name: 'Pisces',
+    symbol: '♓',
+    element: 'Air',
+    dateRange: '19 Feb - 20 Mar',
+    startMonth: 2,
+    startDay: 19,
+    endMonth: 3,
+    endDay: 20,
+    traits: 'Empatis, penuh imajinasi, lembut hatinya, dan puitis.',
+    loveStyle: 'Kisah cinta dongeng yang tulus, sangat perhatian pada hal-hal emosional kecil yang menyentuh hati.',
+    color: 'from-teal-400 to-blue-500',
+    accentText: 'text-teal-600',
+    bgBadge: 'bg-teal-50 border-teal-200 text-teal-700',
+  },
+]
+
+/**
+ * Determine Zodiac Sign from birth date
+ * @param {string|Date} dateInput
+ * @returns {object} Zodiac sign object
+ */
+export function getZodiacFromDate(dateInput) {
+  if (!dateInput) return null
+  const d = new Date(dateInput)
+  if (isNaN(d.getTime())) return null
+
+  const month = d.getMonth() + 1 // 1..12
+  const day = d.getDate()
+
+  // Match against date bounds
+  if ((month === 3 && day >= 21) || (month === 4 && day <= 19)) return ZODIAC_SIGNS[0] // Aries
+  if ((month === 4 && day >= 20) || (month === 5 && day <= 20)) return ZODIAC_SIGNS[1] // Taurus
+  if ((month === 5 && day >= 21) || (month === 6 && day <= 20)) return ZODIAC_SIGNS[2] // Gemini
+  if ((month === 6 && day >= 21) || (month === 7 && day <= 22)) return ZODIAC_SIGNS[3] // Cancer
+  if ((month === 7 && day >= 23) || (month === 8 && day <= 22)) return ZODIAC_SIGNS[4] // Leo
+  if ((month === 8 && day >= 23) || (month === 9 && day <= 22)) return ZODIAC_SIGNS[5] // Virgo
+  if ((month === 9 && day >= 23) || (month === 10 && day <= 22)) return ZODIAC_SIGNS[6] // Libra
+  if ((month === 10 && day >= 23) || (month === 11 && day <= 21)) return ZODIAC_SIGNS[7] // Scorpio
+  if ((month === 11 && day >= 22) || (month === 12 && day <= 21)) return ZODIAC_SIGNS[8] // Sagittarius
+  if ((month === 12 && day >= 22) || (month === 1 && day <= 19)) return ZODIAC_SIGNS[9] // Capricorn
+  if ((month === 1 && day >= 20) || (month === 2 && day <= 18)) return ZODIAC_SIGNS[10] // Aquarius
+  return ZODIAC_SIGNS[11] // Pisces
+}
+
+export function getZodiacById(id) {
+  return ZODIAC_SIGNS.find((z) => z.id.toLowerCase() === (id || '').toLowerCase()) || null
+}
+
+/**
+ * Calculate astrology compatibility between two zodiac signs
+ */
+export function calculateZodiacPair(sign1Input, sign2Input, name1 = '', name2 = '') {
+  const z1 = typeof sign1Input === 'string' ? (getZodiacById(sign1Input) || getZodiacFromDate(sign1Input)) : sign1Input
+  const z2 = typeof sign2Input === 'string' ? (getZodiacById(sign2Input) || getZodiacFromDate(sign2Input)) : sign2Input
+
+  if (!z1 || !z2) {
+    throw new Error('Kedua tanda zodiak harus valid.')
+  }
+
+  // Elements matching matrix
+  // Api + Udara: saling mengobarkan & memberi semangat (High 92 - 97%)
+  // Air + Tanah: saling menyuburkan & menumbuhkan (High 93 - 98%)
+  // Same Element: pemahaman instan (High 90 - 95%)
+  // Api + Air: penuh gairah & intens (82 - 88%)
+  // Api + Tanah: stabil dan saling melengkapi jika sabar (83 - 89%)
+  // Udara + Air: puitis & kreatif (84 - 90%)
+  // Udara + Tanah: praktis & terencana (81 - 87%)
+  const e1 = z1.element
+  const e2 = z2.element
+
+  let baseScore = 85
+  let elementDynamic = ''
+  let elementTitle = ''
+
+  if (e1 === e2) {
+    baseScore = 93
+    elementTitle = `Harmoni Satu Elemen (${e1})`
+    elementDynamic = `Kalian berdua bernaung di elemen ${e1} yang sama! Ada pemahaman instan tanpa perlu banyak penjelasan. Nilai-nilai kehidupan dan cara merespons dunia sangat seirama.`
+  } else if ((e1 === 'Api' && e2 === 'Udara') || (e1 === 'Udara' && e2 === 'Api')) {
+    baseScore = 96
+    elementTitle = 'Api & Udara: Saling Mengobarkan Inspirasi'
+    elementDynamic = 'Kombinasi luar biasa! Udara memberi ruang dan ide segar, sementara Api memberi semangat dan kehangatan. Hubungan kalian selalu hidup dan tak pernah membosankan.'
+  } else if ((e1 === 'Tanah' && e2 === 'Air') || (e1 === 'Air' && e2 === 'Tanah')) {
+    baseScore = 97
+    elementTitle = 'Tanah & Air: Hubungan yang Saling Menyuburkan'
+    elementDynamic = 'Paduan serasi bagai air yang menyirami benih di tanah subur. Tanah memberikan rasa aman dan stabilitas, sedangkan Air memberikan kelembutan dan curahan kasih sayang.'
+  } else if ((e1 === 'Api' && e2 === 'Air') || (e1 === 'Air' && e2 === 'Api')) {
+    baseScore = 86
+    elementTitle = 'Api & Air: Gairah yang Menghangatkan'
+    elementDynamic = 'Hubungan penuh daya tarik yang memikat. Butuh seni saling menyesuaikan: Api belajar menenangkan tempo dan Air belajar menerima keterusterangan yang hangat.'
+  } else if ((e1 === 'Api' && e2 === 'Tanah') || (e1 === 'Tanah' && e2 === 'Api')) {
+    baseScore = 87
+    elementTitle = 'Api & Tanah: Pondasi & Api Semangat'
+    elementDynamic = 'Saling melengkapi dengan seimbang. Tanah memastikan rencana rumah tangga terstruktur aman, sementara Api menjadi mesin penggerak yang penuh antusiasme.'
+  } else if ((e1 === 'Udara' && e2 === 'Air') || (e1 === 'Air' && e2 === 'Udara')) {
+    baseScore = 88
+    elementTitle = 'Udara & Air: Paduan Logika & Perasaan Indah'
+    elementDynamic = 'Kisah cinta puitis nan cerdas! Udara menghadirkan perspektif objektif dan komunikasi lancar, sementara Air membawa empati dan kedalaman rasa yang menyentuh hati.'
+  } else {
+    // Udara + Tanah
+    baseScore = 86
+    elementTitle = 'Udara & Tanah: Visi Kreatif Bertemu Realitas Nyata'
+    elementDynamic = 'Duet solid dalam membangun kehidupan! Ide-ide brilian Udara mampu dieksekusi secara nyata dan terukur oleh kesabaran dan ketekunan Tanah.'
+  }
+
+  // Consistent micro-seed from pair IDs
+  const combinedSeed = (z1.name + z2.name).split('').reduce((acc, c) => acc + c.charCodeAt(0), 0)
+  const scoreAdjust = (combinedSeed % 5) // 0..4
+  const finalScore = Math.min(99, Math.max(80, baseScore + scoreAdjust))
+
+  // Subscores
+  const subScores = {
+    communication: Math.min(100, Math.max(78, 85 + ((combinedSeed * 3) % 15))),
+    emotionalBond: Math.min(100, Math.max(80, 86 + ((combinedSeed * 7) % 14))),
+    lifeGoals: Math.min(100, Math.max(82, 88 + ((combinedSeed * 11) % 12))),
+    romancePassion: Math.min(100, Math.max(80, 87 + ((combinedSeed * 13) % 13))),
+  }
+
+  // Romantic advice
+  const marriageAdvice = `Pernikahan antara ${z1.name} dan ${z2.name} memiliki daya tarik ${elementTitle.toLowerCase()}. Jadikan perbedaan sudut pandang sebagai kekayaan bersama dan terus rayakan momen-momen intim berdua.`
+
+  return {
+    score: finalScore,
+    zodiac1: z1,
+    zodiac2: z2,
+    name1: name1.trim() || z1.name,
+    name2: name2.trim() || z2.name,
+    elementTitle,
+    elementDynamic,
+    subScores,
+    marriageAdvice,
+  }
+}
+

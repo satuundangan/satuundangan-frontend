@@ -12,6 +12,10 @@ import {
   calculateWetonPair,
   computeHash,
   calculateLoveScore,
+  ZODIAC_SIGNS,
+  getZodiacFromDate,
+  getZodiacById,
+  calculateZodiacPair,
 } from './loveCalculator.js'
 
 describe('Love & Weton Calculator Utility (loveCalculator.js)', () => {
@@ -312,4 +316,48 @@ describe('Love & Weton Calculator Utility (loveCalculator.js)', () => {
       expect(hash1).toBeGreaterThan(0)
     })
   })
+
+  describe('Zodiac & Astrology Compatibility Logic', () => {
+    it('accurately identifies zodiac signs from dates', () => {
+      // Aries (21 Mar - 19 Apr)
+      expect(getZodiacFromDate('1998-03-25').name).toBe('Aries')
+      expect(getZodiacFromDate('1998-04-10').name).toBe('Aries')
+
+      // Taurus (20 Apr - 20 Mei)
+      expect(getZodiacFromDate('1995-05-05').name).toBe('Taurus')
+
+      // Leo (23 Jul - 22 Agu)
+      expect(getZodiacFromDate('1996-08-15').name).toBe('Leo')
+
+      // Scorpio (23 Okt - 21 Nov)
+      expect(getZodiacFromDate('1997-11-05').name).toBe('Scorpio')
+
+      // Capricorn (22 Des - 19 Jan)
+      expect(getZodiacFromDate('1999-12-25').name).toBe('Capricorn')
+      expect(getZodiacFromDate('2000-01-10').name).toBe('Capricorn')
+
+      // Pisces (19 Feb - 20 Mar)
+      expect(getZodiacFromDate('2001-03-05').name).toBe('Pisces')
+    })
+
+    it('calculates zodiac compatibility between elements', () => {
+      // Aries (Api) + Gemini (Udara)
+      const res1 = calculateZodiacPair('aries', 'gemini', 'Rian', 'Sarah')
+      expect(res1.score).toBeGreaterThanOrEqual(90)
+      expect(res1.elementTitle).toContain('Api & Udara')
+      expect(res1.zodiac1.name).toBe('Aries')
+      expect(res1.zodiac2.name).toBe('Gemini')
+
+      // Taurus (Tanah) + Cancer (Air)
+      const res2 = calculateZodiacPair('taurus', 'cancer')
+      expect(res2.score).toBeGreaterThanOrEqual(90)
+      expect(res2.elementTitle).toContain('Tanah & Air')
+
+      // Same Element: Leo (Api) + Aries (Api)
+      const res3 = calculateZodiacPair('leo', 'aries')
+      expect(res3.score).toBeGreaterThanOrEqual(90)
+      expect(res3.elementTitle).toContain('Harmoni Satu Elemen')
+    })
+  })
 })
+
