@@ -598,67 +598,229 @@
                 </div>
 
                 <div class="flex flex-col gap-6">
-                  <div class="space-y-4">
-                    <label class="form-label">Pilih Lagu</label>
-                    <select v-model="formData.music" class="form-input font-semibold" @change="formData.musicPreview = ''">
-                      <option value="">Pilih Musik Preset</option>
-                      <option v-for="audio in audioList" :key="audio.id" :value="audio.url">
-                        {{ audio.title }}
-                      </option>
-                      <option value="custom" v-if="canCustomMusic">Upload Musik Sendiri (.mp3)</option>
-                      <option value="custom" v-else disabled>Upload Musik Sendiri (💎 Premium)</option>
-                    </select>
+                  <!-- Mode Selection Tabs: Preset Library vs Upload Custom -->
+                  <div class="flex items-center gap-2 p-1.5 bg-gray-100/80 rounded-2xl border border-gray-200/60">
+                    <button
+                      type="button"
+                      @click="formData.music = formData.music === 'custom' ? '' : formData.music"
+                      :class="[
+                        'flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer',
+                        formData.music !== 'custom' 
+                          ? 'bg-white text-dark shadow-xs' 
+                          : 'text-slate-500 hover:text-dark'
+                      ]"
+                    >
+                      <i class="fa-solid fa-list-music text-mocha"></i>
+                      <span>Pustaka Musik ({{ audioList.length }})</span>
+                    </button>
 
-                    <!-- Custom MP3 File Selection -->
-                    <div v-if="formData.music === 'custom' && canCustomMusic" class="bg-gray-50 p-5 rounded-2xl border-2 border-dashed border-gray-200 animate-fade-in mt-4">
-                      <div v-if="!formData.musicPreview" class="text-center">
-                        <input type="file" accept="audio/mp3,audio/mpeg" @change="handleMusicUpload" class="hidden" id="musicUpload" />
+                    <button
+                      type="button"
+                      @click="formData.music = 'custom'; if (!canCustomMusic) formData.musicPreview = ''"
+                      :class="[
+                        'flex-1 py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer',
+                        formData.music === 'custom' 
+                          ? 'bg-white text-mocha shadow-xs' 
+                          : 'text-slate-500 hover:text-dark'
+                      ]"
+                    >
+                      <i class="fa-solid fa-cloud-arrow-up"></i>
+                      <span>Upload Lagu Sendiri</span>
+                      <span v-if="!canCustomMusic" class="text-[9px] bg-amber-100 text-amber-800 font-extrabold px-1.5 py-0.5 rounded-full flex items-center gap-1">
+                        <i class="fa-solid fa-gem text-[8px]"></i> Premium
+                      </span>
+                    </button>
+                  </div>
+
+                  <!-- MODE 1: PRESET MUSIC LIBRARY WITH SEARCH -->
+                  <div v-if="formData.music !== 'custom'" class="space-y-4 animate-fade-in">
+                    <!-- Search Input & Category Pills -->
+                    <div class="space-y-3">
+                      <div class="relative">
+                        <input
+                          v-model="musicSearchQuery"
+                          type="text"
+                          placeholder="Cari judul lagu, artis, atau genre..."
+                          class="w-full pl-10 pr-9 py-2.5 rounded-xl border border-gray-200 focus:border-mocha focus:ring-2 focus:ring-mocha/20 text-xs text-dark placeholder:text-gray-400 outline-none transition-all"
+                        />
+                        <div class="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none">
+                          <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                        <button
+                          v-if="musicSearchQuery"
+                          type="button"
+                          @click="musicSearchQuery = ''"
+                          class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs p-1"
+                        >
+                          <i class="fa-solid fa-xmark"></i>
+                        </button>
+                      </div>
+
+                      <!-- Category Chips Filter -->
+                      <div v-if="musicCategories.length > 1" class="flex items-center gap-1.5 flex-wrap">
+                        <button
+                          type="button"
+                          @click="musicCategoryFilter = 'all'"
+                          :class="[
+                            'px-2.5 py-1 rounded-lg text-[10px] font-bold transition-colors cursor-pointer',
+                            musicCategoryFilter === 'all'
+                              ? 'bg-mocha text-white shadow-2xs'
+                              : 'bg-gray-100 text-slate-600 hover:bg-gray-200'
+                          ]"
+                        >
+                          Semua ({{ audioList.length }})
+                        </button>
+                        <button
+                          v-for="cat in musicCategories"
+                          :key="cat"
+                          type="button"
+                          @click="musicCategoryFilter = cat"
+                          :class="[
+                            'px-2.5 py-1 rounded-lg text-[10px] font-bold capitalize transition-colors cursor-pointer',
+                            musicCategoryFilter === cat
+                              ? 'bg-mocha text-white shadow-2xs'
+                              : 'bg-gray-100 text-slate-600 hover:bg-gray-200'
+                          ]"
+                        >
+                          {{ cat }}
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Audio Tracks List / Selector -->
+                    <div class="max-h-60 overflow-y-auto space-y-1.5 pr-1 divide-y divide-gray-50 border border-gray-100 rounded-2xl p-2 bg-gray-50/40">
+                      <div
+                        v-for="audio in filteredAudioList"
+                        :key="audio.id"
+                        @click="formData.music = audio.url; formData.musicPreview = ''"
+                        :class="[
+                          'p-2.5 rounded-xl flex items-center justify-between gap-3 cursor-pointer transition-all',
+                          formData.music === audio.url 
+                            ? 'bg-mocha/10 border border-mocha/30 text-mocha' 
+                            : 'hover:bg-white text-slate-700'
+                        ]"
+                      >
+                        <div class="flex items-center gap-3 min-w-0">
+                          <div 
+                            :class="[
+                              'w-8 h-8 rounded-lg flex items-center justify-center shrink-0 text-xs',
+                              formData.music === audio.url ? 'bg-mocha text-white' : 'bg-gray-200/80 text-gray-500'
+                            ]"
+                          >
+                            <i :class="formData.music === audio.url ? 'fa-solid fa-volume-high' : 'fa-solid fa-music'"></i>
+                          </div>
+                          <div class="min-w-0">
+                            <p class="text-xs font-bold truncate leading-tight">{{ audio.title }}</p>
+                            <span v-if="audio.category" class="text-[9px] uppercase tracking-wider text-slate-400 font-semibold">{{ audio.category }}</span>
+                          </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 shrink-0">
+                          <span v-if="formData.music === audio.url" class="text-[10px] font-black bg-mocha text-white px-2 py-0.5 rounded-full">
+                            Terpilih
+                          </span>
+                          <span v-else class="text-[10px] font-semibold text-slate-400 group-hover:text-mocha">
+                            Pilih
+                          </span>
+                        </div>
+                      </div>
+
+                      <!-- Empty State -->
+                      <div v-if="filteredAudioList.length === 0" class="py-6 text-center text-slate-400 space-y-1">
+                        <i class="fa-solid fa-music-slash text-xl mb-1 text-slate-300"></i>
+                        <p class="text-xs font-medium">Lagu "{{ musicSearchQuery }}" tidak ditemukan</p>
+                        <button type="button" @click="musicSearchQuery = ''; musicCategoryFilter = 'all'" class="text-[11px] text-mocha font-bold hover:underline cursor-pointer">
+                          Reset Pencarian
+                        </button>
+                      </div>
+                    </div>
+
+                    <!-- Audio preview player for preset music -->
+                    <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col bg-white p-4 rounded-2xl border border-mocha/20 shadow-xs animate-fade-in space-y-2">
+                      <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-dark flex items-center gap-1.5">
+                          <i class="fa-solid fa-circle-play text-mocha"></i>
+                          Pratinjau Lagu Terpilih
+                        </span>
+                        <button type="button" @click="formData.music = ''" class="text-[10px] font-bold text-red-500 hover:text-red-700 cursor-pointer">
+                          Hapus Pilihan
+                        </button>
+                      </div>
+                      <audio :src="formData.music" controls class="w-full rounded-full shadow-inner h-9"></audio>
+                    </div>
+                  </div>
+
+                  <!-- MODE 2: CUSTOM MP3 UPLOAD (TIER PREMIUM & EKSKLUSIF ONLY) -->
+                  <div v-else class="space-y-4 animate-fade-in">
+                    <!-- Allowed Tier Upload Box -->
+                    <div v-if="canCustomMusic" class="space-y-4">
+                      <div v-if="!formData.musicPreview" class="bg-gray-50 p-6 rounded-2xl border-2 border-dashed border-gray-200 hover:border-mocha/40 transition-colors text-center">
+                        <input type="file" accept="audio/mp3,audio/mpeg,audio/wav" @change="handleMusicUpload" class="hidden" id="musicUpload" />
                         <label for="musicUpload" class="cursor-pointer flex flex-col items-center">
-                          <div class="w-12 h-12 bg-white rounded-xl shadow-sm flex items-center justify-center text-mocha text-xl mb-2">
+                          <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-mocha text-2xl mb-2.5">
                             <i class="fa-solid fa-cloud-arrow-up"></i>
                           </div>
-                          <p class="text-xs font-bold text-dark mb-0.5">Upload File MP3</p>
-                          <p class="text-[9px] text-gray-400 uppercase tracking-widest">Maksimal 10MB</p>
+                          <p class="text-xs font-bold text-dark mb-0.5">Klik untuk Upload File Musik Sendiri</p>
+                          <p class="text-[10px] text-gray-500">Format MP3 / WAV, Maksimal 10MB</p>
+                          <span class="mt-2.5 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[9px] font-extrabold uppercase tracking-wider">
+                            <i class="fa-solid fa-circle-check text-[8px]"></i> Akses {{ formData.package === 'eksklusif' ? 'Eksklusif' : 'Premium' }} Aktif
+                          </span>
                         </label>
                       </div>
 
-                      <div v-else class="space-y-3">
-                        <div class="flex items-center justify-between">
-                          <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 bg-mocha text-white rounded-lg flex items-center justify-center text-sm">
+                      <div v-else class="bg-white p-5 rounded-2xl border border-gray-200 shadow-xs space-y-4">
+                        <div class="flex items-center justify-between pb-3 border-b border-gray-100">
+                          <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 bg-mocha text-white rounded-xl flex items-center justify-center text-base shrink-0">
                               <i class="fa-solid fa-file-audio"></i>
                             </div>
-                            <div>
-                              <p class="text-[10px] font-bold text-dark">File Terpilih</p>
-                              <p class="text-[9px] text-gray-500 truncate max-w-[150px]">{{ formData.musicFile?.name || 'Lagu Custom' }}</p>
+                            <div class="min-w-0">
+                              <p class="text-xs font-bold text-dark truncate">{{ formData.musicFile?.name || 'Lagu Custom Pengantin' }}</p>
+                              <p class="text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-check"></i> Musik Siap Digunakan
+                              </p>
                             </div>
                           </div>
-                          <button @click="formData.musicPreview = ''; formData.musicFile = null" class="text-[9px] font-bold text-red-500 uppercase tracking-widest hover:text-red-700">Ganti</button>
+                          <button 
+                            type="button"
+                            @click="formData.musicPreview = ''; formData.musicFile = null" 
+                            class="text-[10px] font-bold text-red-500 hover:text-red-700 uppercase tracking-wider px-2.5 py-1 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
+                          >
+                            Ganti File
+                          </button>
                         </div>
 
-                        <!-- Trimmer component -->
+                        <!-- Audio Trimmer Component -->
                         <AudioTrimmer
-                           :url="formData.musicPreview"
-                           :initialStart="formData.audioStart"
-                           :initialEnd="formData.audioEnd"
-                           @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
+                          :url="formData.musicPreview"
+                          :initialStart="formData.audioStart"
+                          :initialEnd="formData.audioEnd"
+                          @update:trim="({start, end}) => { formData.audioStart = start; formData.audioEnd = end }"
                         />
                       </div>
                     </div>
 
-                    <!-- Custom MP3 locked message -->
-                    <div v-if="formData.music === 'custom' && !canCustomMusic" class="bg-amber-50 p-4 rounded-xl border border-amber-100 flex gap-2.5 mt-4">
-                      <i class="fa-solid fa-gem text-amber-500 mt-0.5 text-sm"></i>
-                      <p class="text-[10px] md:text-xs text-amber-900 leading-relaxed">
-                        Fitur <strong>Upload Musik Sendiri</strong> hanya tersedia untuk <strong>paket Premium &amp; Eksklusif</strong>. Pilih musik preset, atau upgrade paket saat checkout.
-                      </p>
+                    <!-- Locked State for Basic Tier -->
+                    <div v-else class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-6 rounded-2xl border border-amber-200/80 space-y-3.5 text-center">
+                      <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-xl mx-auto shadow-2xs">
+                        <i class="fa-solid fa-lock"></i>
+                      </div>
+                      <div class="space-y-1">
+                        <h4 class="font-bold text-amber-950 text-sm">Fitur Khusus Paket Premium &amp; Eksklusif</h4>
+                        <p class="text-[11px] text-amber-800/90 leading-relaxed max-w-md mx-auto">
+                          Upload file musik custom (.mp3 pilihanmu sendiri) hanya tersedia untuk <strong>Paket Premium &amp; Eksklusif</strong>. Paket Basic dapat menggunakan puluhan lagu romantis di <strong>Pustaka Musik</strong> gratis.
+                        </p>
+                      </div>
+                      <div class="pt-1 flex items-center justify-center gap-2">
+                        <button
+                          type="button"
+                          @click="formData.music = ''"
+                          class="px-4 py-2 rounded-xl bg-white border border-amber-300 text-amber-900 font-bold text-xs hover:bg-amber-100/50 transition-all cursor-pointer"
+                        >
+                          Pilih dari Pustaka Musik
+                        </button>
+                      </div>
                     </div>
-                  </div>
-
-                  <!-- Audio preview player for preset music — full width row -->
-                  <div v-if="formData.music && formData.music !== 'custom'" class="flex flex-col bg-gray-50/50 p-4 rounded-2xl border border-gray-100 animate-fade-in">
-                    <span class="text-[9px] font-bold text-mocha uppercase tracking-widest mb-2 block">Dengarkan Lagu:</span>
-                    <audio :src="formData.music" controls class="w-full rounded-full shadow-inner"></audio>
                   </div>
                 </div>
               </div>
@@ -1042,6 +1204,31 @@ const audioList = ref([])
 const hasUnsavedChanges = ref(false)
 const isHydrating = ref(true)
 const noirBackgroundPreview = ref('')
+const musicSearchQuery = ref('')
+const musicCategoryFilter = ref('all')
+
+const musicCategories = computed(() => {
+  const cats = new Set()
+  audioList.value.forEach(a => {
+    if (a.category) cats.add(a.category)
+  })
+  return Array.from(cats)
+})
+
+const filteredAudioList = computed(() => {
+  let list = audioList.value || []
+  if (musicCategoryFilter.value !== 'all') {
+    list = list.filter(a => (a.category || '').toLowerCase() === musicCategoryFilter.value.toLowerCase())
+  }
+  const q = musicSearchQuery.value.trim().toLowerCase()
+  if (q) {
+    list = list.filter(a => 
+      (a.title || '').toLowerCase().includes(q) || 
+      (a.category || '').toLowerCase().includes(q)
+    )
+  }
+  return list
+})
 
 const showLogin = ref(false)
 const authMode = ref('login')
