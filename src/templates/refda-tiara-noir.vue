@@ -167,8 +167,8 @@
           <article v-for="item in events" :key="item.label" class="event-card">
             <p class="eyebrow">{{ item.label }}</p>
             <h3>{{ formatDate(item.dateTime) }}</h3>
-            <p class="event-time">{{ formatTime(item.dateTime) }}</p>
-            <p v-if="item.description" class="event-place">{{ item.description }}</p>
+            <p class="event-time">{{ eventTimeRange(item) }}</p>
+            <p class="event-place">{{ item.description || DEFAULT_VENUE }}</p>
             <a v-if="eventMapUrl(item)" :href="eventMapUrl(item)" target="_blank" rel="noopener noreferrer">
               Lihat lokasi <span aria-hidden="true">↗</span>
             </a>
@@ -184,7 +184,7 @@
         <div class="video-intro">
           <span class="section-number">VIDEO / KENANGAN</span>
           <h2 class="section-title">Sepotong cerita kami</h2>
-          <p>Kenangan kecil yang ingin kami bagikan sebelum hari istimewa tiba.</p>
+          <p>Setelah 3 tahun bersama, Kami memutuskan untuk hidup selamanya</p>
         </div>
         <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl }">
           <iframe
@@ -233,8 +233,8 @@
 
       <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="rsvp-section">
         <span class="section-number">07 / KONFIRMASI</span>
-        <h2 class="section-title">Kami berharap Anda hadir</h2>
-        <p class="rsvp-intro">Mohon luangkan waktu untuk mengabarkan kehadiran Anda.</p>
+        <h2 class="section-title">Kehadiran Anda Sangat Berarti</h2>
+        <p class="rsvp-intro">Mohon konfirmasikan kehadiran Anda melalui formulir berikut.</p>
 
         <form class="rsvp-form" @submit.prevent="submitRSVP">
           <label for="rsvp-name">Nama</label>
@@ -258,7 +258,7 @@
             </div>
           </fieldset>
 
-          <label for="rsvp-message">Ucapan dan doa <span>(opsional)</span></label>
+          <label for="rsvp-message" class="rsvp-message-label">Ucapan dan doa <span>(opsional)</span></label>
           <textarea id="rsvp-message" v-model.trim="rsvp.message" rows="4"></textarea>
           <button class="submit-button" type="submit" :disabled="isSubmitting">
             {{ isSubmitting ? 'Mengirim…' : 'Kirim konfirmasi' }}
@@ -284,6 +284,10 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
 })
+
+const DEFAULT_EVENT_START = '08:00'
+const DEFAULT_EVENT_END = '12:30'
+const DEFAULT_VENUE = 'Lume Coffee'
 
 const toast = useToast()
 const musicControl = ref(null)
@@ -422,12 +426,19 @@ function formatDate(value) {
     : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-function formatTime(value) {
-  if (!value) return ''
-  const date = new Date(value)
-  return Number.isNaN(date.getTime())
-    ? ''
-    : `${date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`
+function eventTimeRange(item) {
+  const date = item?.dateTime ? new Date(item.dateTime) : null
+  const start =
+    date && !Number.isNaN(date.getTime())
+      ? date.toLocaleTimeString('id-ID', {
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+          timeZone: 'Asia/Jakarta',
+        })
+      : DEFAULT_EVENT_START
+  const end = item?.endTime || data.value.eventEndTime || DEFAULT_EVENT_END
+  return `${String(start).replace(':', '.')} – ${String(end).replace(':', '.')} WIB`
 }
 
 function openInvitation() {
@@ -643,6 +654,7 @@ onUnmounted(() => {
 .rsvp-form label,
 .rsvp-form legend { color: #4f4d48; font-size: .62rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
 .rsvp-form label span { color: #8a877f; font-weight: 400; letter-spacing: .04em; text-transform: none; }
+.rsvp-form label.rsvp-message-label { margin-top: .5rem; font-size: .85rem; letter-spacing: .14em; text-align: center; }
 .rsvp-form input,
 .rsvp-form textarea { width: 100%; min-height: 48px; margin-bottom: .75rem; padding: .75rem .2rem; border: 0; border-bottom: 1px solid rgba(24, 24, 23, .5); border-radius: 0; color: #181817; background: transparent; font: inherit; }
 .rsvp-form textarea { min-height: 100px; resize: vertical; }
@@ -669,6 +681,7 @@ onUnmounted(() => {
   .event-section,
   .rsvp-section { margin-right: -1rem; margin-left: -1rem; }
   .page-masthead { font-size: .52rem; letter-spacing: .1em; }
+  .rsvp-section .section-title { max-width: 340px; font-size: clamp(1.75rem, 8.4vw, 2.2rem); }
   .invitation-content { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
   .section-nav {
     position: fixed;
