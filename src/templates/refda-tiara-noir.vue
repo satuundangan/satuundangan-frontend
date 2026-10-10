@@ -93,74 +93,113 @@
 
     <div v-if="!showCover" ref="scroller" class="noir-scroller">
       <section id="home" data-nav="home" class="snap-section hero-section">
-        <p class="eyebrow">The beginning of always</p>
-        <h1 class="hero-names">
-          <span>{{ data.groomName || 'Muhammad Refda' }}</span>
-          <span class="ampersand">&amp;</span>
-          <span>{{ data.brideName || 'Uk Tiara Ayu' }}</span>
-        </h1>
-        <div class="hero-rule"><span></span><i aria-hidden="true">✳</i><span></span></div>
-        <p class="hero-date">{{ formatDate(eventDate) }}</p>
-        <p v-if="heroCopy" class="hero-copy">{{ heroCopy }}</p>
-        <p v-else class="hero-copy">
-          Dengan memohon rahmat dan ridha Allah SWT, kami bermaksud mengundang Anda untuk hadir
-          dalam hari bahagia kami.
-        </p>
+        <div class="section-inner">
+          <div class="arch">
+            <div class="arch__outer" aria-hidden="true"></div>
+            <div class="arch__offset" aria-hidden="true"></div>
+            <div class="arch__frame">
+              <img :src="heroPhotoSrc" :alt="`${data.groomName || 'Refda'} dan ${data.brideName || 'Tiara'}`" @error="usePortraitFallback($event, 'refda')" />
+              <svg class="arch__sparkle" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
+            </div>
+          </div>
+          <p class="eyebrow">The beginning of always</p>
+          <h1 class="hero-names">
+            <span>{{ data.groomName || 'Muhammad Refda' }}</span>
+            <span class="ampersand">&amp;</span>
+            <span>{{ data.brideName || 'Uk Tiara Ayu' }}</span>
+          </h1>
+          <div class="hero-rule">
+            <span></span>
+            <svg class="hero-rule__star" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
+            <span></span>
+          </div>
+          <p class="hero-date">{{ formatDate(eventDate) }}</p>
+          <p v-if="heroCopy" class="hero-copy">{{ heroCopy }}</p>
+          <p v-else class="hero-copy">
+            Dengan memohon rahmat dan ridha Allah SWT, kami bermaksud mengundang Anda untuk hadir
+            dalam hari bahagia kami.
+          </p>
+        </div>
       </section>
 
       <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
-        <span class="section-number">DOA</span>
-        <blockquote>“{{ data.quoteText }}”</blockquote>
-        <p v-if="data.quoteSource" class="quote-source">{{ data.quoteSource }}</p>
+        <div class="section-inner">
+          <p class="eyebrow">DOA</p>
+          <span class="quote-mark" aria-hidden="true">“</span>
+          <blockquote>{{ data.quoteText }}</blockquote>
+          <span class="quote-line" aria-hidden="true"></span>
+          <p v-if="data.quoteSource" class="quote-source">{{ data.quoteSource }}</p>
+        </div>
       </section>
 
-      <section v-if="sectionVisibility.couple" id="couple" data-nav="couple" class="snap-section couple-section">
-        <span class="section-number">MEMPELAI</span>
-        <div class="couple-grid">
-          <article class="person-card">
-            <img :src="groomPhotoSrc" :alt="data.groomName || 'Refda'" @error="usePortraitFallback($event, 'refda')" />
-            <p class="eyebrow">Mempelai pria</p>
-            <h2>{{ data.groomName || 'Muhammad Refda' }}</h2>
-            <p v-if="groomParents">{{ groomParents }}</p>
-          </article>
-          <div class="couple-divider" aria-hidden="true">&amp;</div>
-          <article class="person-card">
-            <img :src="bridePhotoSrc" :alt="data.brideName || 'Tiara'" @error="usePortraitFallback($event, 'tiara')" />
-            <p class="eyebrow">Mempelai wanita</p>
-            <h2>{{ data.brideName || 'Uk Tiara Ayu' }}</h2>
-            <p v-if="brideParents">{{ brideParents }}</p>
-          </article>
+      <section v-if="sectionVisibility.couple" id="couple" data-nav="couple" class="snap-section groom-section">
+        <div class="section-inner">
+          <div class="arch">
+            <div class="arch__outer" aria-hidden="true"></div>
+            <div class="arch__offset" aria-hidden="true"></div>
+            <div class="arch__frame">
+              <img :src="groomPhotoSrc" :alt="data.groomName || 'Refda'" @error="usePortraitFallback($event, 'refda')" />
+              <svg class="arch__sparkle" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
+            </div>
+          </div>
+          <p class="eyebrow">Mempelai Pria</p>
+          <h2 class="person-name">{{ data.groomName || 'Muhammad Refda' }}</h2>
+          <p v-if="data.groomOrder" class="person-order">Putra ke-{{ data.groomOrder }} dari:</p>
+          <p v-if="groomParents" class="person-parents">{{ groomParents }}</p>
+        </div>
+      </section>
+
+      <section v-if="sectionVisibility.couple" id="couple-bride" data-nav="couple" class="snap-section bride-section">
+        <div class="section-inner">
+          <div class="arch arch--mirror">
+            <div class="arch__outer" aria-hidden="true"></div>
+            <div class="arch__offset" aria-hidden="true"></div>
+            <div class="arch__frame">
+              <img :src="bridePhotoSrc" :alt="data.brideName || 'Tiara'" @error="usePortraitFallback($event, 'tiara')" />
+              <svg class="arch__sparkle" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
+            </div>
+          </div>
+          <p class="eyebrow">Mempelai Wanita</p>
+          <h2 class="person-name">{{ data.brideName || 'Uk Tiara Ayu' }}</h2>
+          <p v-if="data.brideOrder" class="person-order">Putri ke-{{ data.brideOrder }} dari:</p>
+          <p v-if="brideParents" class="person-parents">{{ brideParents }}</p>
         </div>
       </section>
 
       <section v-if="sectionVisibility.story" id="story" data-nav="story" class="snap-section story-section">
-        <span class="section-number">CERITA</span>
-        <h2 class="section-title">Jalan yang mempertemukan</h2>
-        <div class="story-list">
-          <article v-for="(story, index) in data.loveStory" :key="`${story.title}-${index}`">
-            <span>{{ String(index + 1).padStart(2, '0') }}</span>
-            <div>
+        <div class="section-inner">
+          <p class="eyebrow">CERITA</p>
+          <h2 class="section-title">Cerita Kami</h2>
+          <div class="story-scroll">
+            <article v-for="(story, index) in data.loveStory" :key="`${story.title}-${index}`" class="story-card">
+              <span class="story-index">{{ String(index + 1).padStart(2, '0') }}</span>
               <p class="story-date">{{ story.date }}</p>
               <h3>{{ story.title }}</h3>
-              <p>{{ story.description || story.content }}</p>
-            </div>
-          </article>
+              <p class="story-text">{{ story.description || story.content }}</p>
+            </article>
+          </div>
         </div>
       </section>
 
       <section v-if="sectionVisibility.event" id="event" data-nav="event" class="snap-section event-section">
-        <span class="section-number">ACARA</span>
-        <h2 class="section-title">Hari istimewa kami</h2>
-        <div class="event-grid">
-          <article v-for="item in events" :key="item.label" class="event-card">
-            <p class="eyebrow">{{ item.label }}</p>
-            <h3>{{ formatDate(item.dateTime) }}</h3>
-            <p class="event-time">{{ eventTimeRange() }}</p>
-            <p class="event-place">{{ item.description || DEFAULT_VENUE }}</p>
-            <a v-if="eventMapUrl(item)" :href="eventMapUrl(item)" target="_blank" rel="noopener noreferrer">
-              Lihat lokasi <span aria-hidden="true">↗</span>
-            </a>
-          </article>
+        <div class="section-inner">
+          <p class="eyebrow">ACARA</p>
+          <h2 class="section-title">Hari istimewa kami</h2>
+          <div class="event-grid" :class="{ 'is-multi': events.length > 1 }">
+            <article v-for="item in events" :key="item.label" class="event-card">
+              <p class="eyebrow">{{ item.label }}</p>
+              <h3>{{ formatDate(item.dateTime) }}</h3>
+              <p class="event-time">{{ eventTimeRange() }}</p>
+              <p class="event-place">{{ item.description || DEFAULT_VENUE }}</p>
+              <a v-if="eventMapUrl(item)" class="event-cta" :href="eventMapUrl(item)" target="_blank" rel="noopener noreferrer">
+                Lihat lokasi <span aria-hidden="true">↗</span>
+              </a>
+            </article>
+          </div>
+          <div v-if="data.dressCode" class="dress-code">
+            <p class="eyebrow">Dress code</p>
+            <p class="dress-code__text">{{ data.dressCode }}</p>
+          </div>
         </div>
       </section>
 
@@ -356,6 +395,9 @@ const backgroundUrl = computed(() => {
   return isPlaceholderMedia(data.value.photoCoupleUrl) ? '' : data.value.photoCoupleUrl
 })
 const groomPhotoSrc = computed(() => isPlaceholderMedia(data.value.groomPhotoUrl) ? '/assets/images/refda-tiara/refda.png' : data.value.groomPhotoUrl)
+const heroPhotoSrc = computed(() =>
+  !isPlaceholderMedia(data.value.photoCoupleUrl) ? data.value.photoCoupleUrl : groomPhotoSrc.value,
+)
 const bridePhotoSrc = computed(() => isPlaceholderMedia(data.value.bridePhotoUrl) ? '/assets/images/refda-tiara/tiara.png' : data.value.bridePhotoUrl)
 const groomParents = computed(() => {
   const value = data.value.parents?.groomParents || data.value.groomParents || ''
@@ -458,6 +500,7 @@ const sectionVisibility = computed(() => ({
   rsvp: isSectionEnabled('rsvp'),
 }))
 
+const STAR_PATH = 'M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10L12 0Z'
 const ENVELOPE_ICON = [
   'M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z',
   'M22 7l-10 6L2 7',
@@ -698,7 +741,7 @@ onUnmounted(() => {
 
 .cover-content { position: relative; z-index: 2; width: min(760px, 100%); padding: 3rem 1.5rem; text-align: center; }
 .hairline { display: block; width: 48px; height: 1px; margin: .9rem auto 1.6rem; background: linear-gradient(90deg, transparent, rgba(244, 242, 237, .6), transparent); }
-.eyebrow,
+.eyebrow { color: rgba(244, 242, 237, .7); font-size: .62rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
 .section-number { color: var(--muted); font-size: .65rem; font-weight: 600; letter-spacing: .27em; text-transform: uppercase; }
 .cover-names { display: grid; justify-items: center; gap: .03em; font-family: var(--title-font); font-size: clamp(2.2rem, calc(10vw * var(--title-scale)), 5rem); font-weight: 500; line-height: .96; letter-spacing: -.055em; overflow-wrap: anywhere; }
 .ampersand { color: #bcbab3; font-family: var(--title-font); font-size: .53em; font-style: italic; font-weight: 400; line-height: 1.2; }
@@ -713,45 +756,62 @@ onUnmounted(() => {
 
 .noir-scroller { height: 100%; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scroll-behavior: smooth; scroll-snap-type: y proximity; scrollbar-width: none; padding-bottom: 0; }
 .noir-scroller::-webkit-scrollbar { display: none; }
-.snap-section { min-height: 100vh; min-height: 100svh; scroll-snap-align: start; padding: 3.5rem 1.25rem calc(6.5rem + env(safe-area-inset-bottom)); }
+.snap-section { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; min-height: 100svh; scroll-snap-align: start; padding: 3.5rem 1.25rem calc(6.5rem + env(safe-area-inset-bottom)); }
 
-.hero-section { display: grid; align-content: center; justify-items: center; text-align: center; }
-.hero-names { display: grid; justify-items: center; gap: .08em; max-width: 100%; margin: 2rem 0 1.5rem; font-family: var(--title-font); font-size: clamp(2.3rem, calc(9vw * var(--title-scale)), 5.6rem); font-weight: 500; line-height: .98; letter-spacing: -.055em; overflow-wrap: anywhere; }
-.hero-rule { display: flex; align-items: center; gap: 1rem; color: #c4c0b8; }
-.hero-rule span { width: 42px; height: 1px; background: var(--line); }
-.hero-rule i { font-size: .72rem; font-style: normal; }
-.hero-date { margin: 1rem 0; color: var(--muted); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; }
-.hero-copy { max-width: 440px; margin: 1rem auto 0; color: #c4c2bc; font-family: var(--title-font); font-size: 1.1rem; line-height: 1.7; }
-
+.hero-section,
+.groom-section,
+.story-section { background: #0c0c0c; }
 .quote-section,
-.event-section,
-.rsvp-section { color: #181817; background: var(--paper); }
-.quote-section blockquote { max-width: 760px; margin: 2rem auto 1.2rem; font-family: var(--title-font); font-size: clamp(1.4rem, 4vw, 2.35rem); line-height: 1.4; text-align: center; }
-.quote-source { color: #77746d; font-size: .66rem; letter-spacing: .15em; text-align: center; text-transform: uppercase; }
-.section-number { display: block; color: #85827b; }
-.section-title { max-width: 650px; margin: 1.2rem auto 2.6rem; font-family: var(--title-font); font-size: clamp(2rem, 5vw, 3.6rem); font-weight: 500; line-height: 1.05; text-align: center; }
-.quote-section .section-number,
-.event-section .section-number,
-.rsvp-section .section-number { max-width: 760px; margin: 0 auto; }
+.bride-section,
+.event-section { background: #101010; }
+.snap-section + .snap-section { border-top: 1px solid rgba(239, 237, 231, .08); }
+.section-inner { display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 640px; margin: 0 auto; padding: 0 1.5rem; text-align: center; }
+.section-title { max-width: 650px; margin: 1rem auto 2rem; font-family: var(--title-font); font-size: clamp(2rem, calc(8vw * var(--title-scale)), 3.6rem); font-weight: 500; line-height: 1.05; color: var(--text); text-align: center; }
 
-.couple-section,
-.story-section,
-.gallery-section,
-.gift-section { padding-top: 5rem; }
-.couple-grid { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; gap: 2rem; margin-top: 2.5rem; text-align: center; }
-.person-card img,
-.portrait-placeholder { width: min(100%, 260px); aspect-ratio: 4 / 5; margin: 0 auto 1.5rem; object-fit: cover; filter: grayscale(1); }
-.portrait-placeholder { display: grid; place-items: center; border: 1px solid var(--line); color: #c4c0b8; font-family: var(--title-font); font-size: 5rem; }
-.person-card h2 { margin: .55rem 0; font-family: var(--title-font); font-size: clamp(1.65rem, 4vw, 2.5rem); font-weight: 500; }
-.person-card > p:last-child { color: var(--muted); font-family: var(--title-font); font-size: .95rem; line-height: 1.6; }
-.couple-divider { color: #aaa79f; font-family: var(--title-font); font-size: 2rem; font-style: italic; }
+/* Arch-framed grayscale photo */
+.arch { position: relative; flex: none; width: 12rem; height: 16.5rem; margin: 0 auto 1.6rem; }
+.arch__outer { display: none; position: absolute; inset: -1rem; border: 1px solid rgba(244, 242, 237, .12); border-radius: 12rem 12rem 3rem 3rem; }
+.arch__offset { position: absolute; inset: 0; border: 1px solid rgba(244, 242, 237, .3); border-radius: 999px 999px 1.5rem 1.5rem; transform: translate(-.75rem, .75rem); }
+.arch--mirror .arch__offset { transform: translate(.75rem, .75rem); }
+.arch__frame { position: relative; width: 100%; height: 100%; overflow: hidden; border: 1.5px solid rgba(244, 242, 237, .45); border-radius: 999px 999px 1.5rem 1.5rem; background: linear-gradient(to top, #141414, #0c0c0c); box-shadow: 0 20px 40px rgba(0, 0, 0, .5); }
+.arch__frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; filter: grayscale(1); }
+.arch__sparkle { position: absolute; top: 1rem; right: 1.2rem; width: 12px; height: 12px; color: var(--paper); opacity: .7; animation: star-pulse 3s ease-in-out infinite; }
 
-.story-list { display: grid; gap: 1rem; max-width: 760px; margin: 2rem auto 0; }
-.story-list article { display: grid; grid-template-columns: 3rem 1fr; gap: 1rem; padding: 1.4rem 0; border-top: 1px solid var(--line); }
-.story-list article > span { color: #aaa79f; font-family: var(--title-font); font-size: 1.25rem; }
+.hero-names { display: grid; justify-items: center; gap: .08em; max-width: 100%; margin: 1.1rem 0 1.1rem; font-family: var(--title-font); font-size: clamp(2.3rem, calc(9vw * var(--title-scale)), 5.6rem); font-weight: 500; line-height: .98; letter-spacing: -.055em; overflow-wrap: anywhere; }
+.hero-rule { display: flex; align-items: center; gap: 1rem; color: var(--paper); }
+.hero-rule span { width: 42px; height: 1px; background: rgba(244, 242, 237, .35); }
+.hero-rule__star { width: 12px; height: 12px; animation: spin-slow 12s linear infinite; }
+.hero-date { margin: 1rem 0 .4rem; color: var(--muted); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; }
+.hero-copy { max-width: 440px; margin: .8rem auto 0; color: #c4c2bc; font-family: var(--title-font); font-size: 1.1rem; line-height: 1.7; }
+
+.quote-mark { margin-top: 1.4rem; color: rgba(244, 242, 237, .25); font-family: var(--title-font); font-size: 5rem; line-height: .6; }
+.quote-section blockquote { max-width: 34rem; margin: 1.2rem 0; color: var(--text); font-family: var(--title-font); font-size: clamp(1.25rem, 4.5vw, 2rem); font-style: italic; line-height: 1.5; }
+.quote-line { display: block; width: 1px; height: 48px; margin: .6rem 0; background: rgba(244, 242, 237, .3); }
+.quote-source { color: var(--muted); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; }
+
+.person-name { margin: .6rem 0 .5rem; color: var(--text); font-family: var(--title-font); font-size: clamp(1.9rem, calc(8vw * var(--title-scale)), 3rem); font-weight: 500; line-height: 1.1; overflow-wrap: anywhere; }
+.person-order { margin: .2rem 0; color: var(--muted); font-family: var(--title-font); font-size: 1rem; font-style: italic; }
+.person-parents { max-width: 28rem; margin: .2rem 0 0; color: var(--text); font-family: var(--title-font); font-size: 1.15rem; line-height: 1.5; }
+
+.story-scroll { width: 100%; max-height: 60vh; max-height: 60svh; padding: .25rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; text-align: left; }
+.story-scroll::-webkit-scrollbar { display: none; }
+.story-card { display: grid; gap: .45rem; margin-bottom: 1rem; padding: 1.5rem; border: 1px solid rgba(244, 242, 237, .18); border-radius: 2rem; background: rgba(255, 255, 255, .02); }
+.story-index { color: var(--muted); font-family: var(--title-font); font-size: 1.25rem; }
 .story-date { color: var(--muted); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; }
-.story-list h3 { margin: .35rem 0; font-family: var(--title-font); font-size: 1.6rem; font-weight: 500; }
-.story-list article div > p:last-child { color: #c4c2bc; font-size: .84rem; line-height: 1.75; }
+.story-card h3 { margin: 0; color: var(--text); font-family: var(--title-font); font-size: 1.6rem; font-weight: 500; }
+.story-text { color: #c4c2bc; font-size: .84rem; line-height: 1.75; }
+
+.event-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; width: 100%; }
+.event-card { display: flex; flex-direction: column; align-items: center; padding: 2rem 1.5rem; border: 1px solid rgba(244, 242, 237, .2); border-radius: 2rem; background: #141414; }
+.event-card h3 { margin: 1.1rem 0 .25rem; color: var(--text); font-family: var(--title-font); font-size: 1.75rem; font-weight: 500; }
+.event-time { color: var(--muted); font-size: .72rem; letter-spacing: .12em; }
+.event-place { margin-top: 1rem; color: #c4c2bc; font-family: var(--title-font); font-size: 1rem; line-height: 1.55; }
+.event-cta { display: flex; width: 100%; min-height: 44px; align-items: center; justify-content: center; gap: .6rem; margin-top: 1.4rem; padding: .85rem 1.4rem; border: 1px solid var(--paper); border-radius: 999px; color: var(--ink); background: var(--paper); font-size: .65rem; font-weight: 600; letter-spacing: .13em; text-decoration: none; text-transform: uppercase; transition: color .25s ease, background .25s ease; }
+.event-cta:hover,
+.event-cta:focus-visible { color: var(--paper); background: transparent; }
+.event-cta:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+.dress-code { width: 100%; margin-top: 1.25rem; padding: 1.25rem; border: 1px dashed rgba(244, 242, 237, .25); border-radius: 1.5rem; }
+.dress-code__text { margin-top: .5rem; color: var(--text); font-family: var(--title-font); font-size: 1.1rem; font-style: italic; }
 
 .video-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 390px); align-items: center; gap: clamp(2rem, 7vw, 6rem); padding-top: 5rem; border-bottom: 1px solid var(--line); }
 .video-intro .section-number { color: var(--muted); }
@@ -763,18 +823,17 @@ onUnmounted(() => {
 .video-frame video { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
 .video-frame video { filter: grayscale(1); }
 
-.event-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 760px; margin: 0 auto; }
-.event-card { min-height: 230px; padding: 1.7rem; border: 1px solid rgba(24, 24, 23, .16); }
-.event-card h3 { margin: 1.3rem 0 .25rem; font-family: var(--title-font); font-size: 1.75rem; font-weight: 500; }
-.event-time { color: #65635e; font-size: .72rem; letter-spacing: .12em; }
-.event-place { min-height: 2.5rem; margin-top: 1rem; color: #55534f; font-family: var(--title-font); font-size: .95rem; line-height: 1.55; }
-.event-card a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .6rem; margin-top: 1rem; padding: .85rem 1.4rem; border: 1px solid #181817; color: var(--paper); background: #181817; font-size: .65rem; font-weight: 600; letter-spacing: .13em; text-decoration: none; text-transform: uppercase; transition: color .25s ease, background .25s ease; }
-.event-card a:hover,
-.event-card a:focus-visible { color: #181817; background: var(--paper); }
-.event-card a:focus-visible { outline: 2px solid #181817; outline-offset: 3px; }
+.rsvp-section { color: #181817; background: var(--paper); }
+.rsvp-section .section-number { display: block; max-width: 760px; margin: 0 auto; color: #85827b; }
+.section-number { display: block; }
+.rsvp-section .section-title { color: #181817; }
 
 .rundown-section { padding-top: 5rem; border-bottom: 1px solid var(--line); }
 .rundown-section .section-number { max-width: 560px; margin: 0 auto; color: var(--muted); }
+.rundown-section .section-title,
+.video-section .section-title,
+.gallery-section .section-title,
+.gift-section .section-title { color: var(--text); }
 .rundown-list { position: relative; display: grid; gap: 0; max-width: 560px; margin: 0 auto; padding: 0; list-style: none; }
 .rundown-list::before { content: ''; position: absolute; top: .6rem; bottom: .6rem; left: 4.6rem; width: 1px; background: var(--line); }
 .rundown-list li { position: relative; display: grid; grid-template-columns: 4rem 1fr; gap: 1.5rem; align-items: baseline; padding: .85rem 0; }
@@ -826,10 +885,15 @@ onUnmounted(() => {
 .glass-nav__label { max-width: 100%; padding: 0; overflow: hidden; font-size: .5rem; font-weight: 600; letter-spacing: .02em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap; }
 .is-crowded .glass-nav__label { overflow: visible; text-overflow: clip; }
 @media (min-width: 768px) {
+  .arch { width: 16rem; height: 22rem; }
+  .arch__outer { display: block; }
+  .event-grid.is-multi { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .glass-nav__label { font-size: .6rem; }
   .cover-frame { border-radius: 5rem; }
 }
 
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+@keyframes star-pulse { 0%, 100% { opacity: .35; transform: scale(.85); } 50% { opacity: .85; transform: scale(1.15); } }
 @keyframes twinkle { 0%, 100% { opacity: .15; transform: scale(.8); } 50% { opacity: .85; transform: scale(1.25); } }
 @keyframes drift { 0% { opacity: 0; transform: translate3d(-8px, 12px, 0); } 20% { opacity: .8; } 55% { opacity: .35; transform: translate3d(32px, -28px, 0); } 100% { opacity: 0; transform: translate3d(70px, -8px, 0); } }
 
@@ -840,13 +904,6 @@ onUnmounted(() => {
   .rundown-list::before { left: 4rem; }
   .rundown-list li::before { left: calc(4rem - 3px); }
   .rundown-list span { font-size: 1.05rem; }
-  .couple-grid { grid-template-columns: 1fr; gap: 1.5rem; }
-  .couple-divider { line-height: .5; }
-  .person-card img,
-  .portrait-placeholder { width: min(78%, 250px); }
-  .event-grid { grid-template-columns: 1fr; }
-  .event-card { min-height: 0; }
-  .event-card a { display: flex; width: 100%; }
   .video-section { grid-template-columns: 1fr; gap: 2rem; }
   .video-intro { text-align: center; }
   .video-intro .section-title { text-align: center; }
