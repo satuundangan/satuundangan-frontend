@@ -27,16 +27,16 @@
     <div v-if="showCover" class="cover-screen" aria-label="Sampul undangan">
       <div class="cover-media" aria-hidden="true">
         <video
-          v-if="backgroundType === 'video' && backgroundUrl"
+          v-if="backgroundType === 'video' && /\.(?:mp4|webm)(?:[?#]|$)/i.test(backgroundUrl)"
           :src="backgroundUrl"
-          :poster="data.photoCoupleUrl || undefined"
+          :poster="isPlaceholderMedia(data.photoCoupleUrl) ? undefined : data.photoCoupleUrl"
           muted
           loop
           playsinline
           :autoplay="!prefersReducedMotion"
           class="cover-image"
         ></video>
-        <img v-else-if="backgroundUrl" :src="backgroundUrl" alt="" class="cover-image" />
+        <img v-else-if="backgroundType !== 'video' && backgroundUrl" :src="backgroundUrl" alt="" class="cover-image" />
         <div class="cover-shade"></div>
         <div class="star-field">
           <span
@@ -93,9 +93,10 @@
 
       <nav class="section-nav" aria-label="Navigasi undangan">
         <a href="#home">Awal</a>
-        <a v-if="isSectionEnabled('quote')" href="#quote">Doa</a>
+        <a v-if="isSectionEnabled('quote') && data.quoteText" href="#quote">Doa</a>
         <a v-if="isSectionEnabled('couple') || isSectionEnabled('photoCouple')" href="#couple">Mempelai</a>
         <a v-if="isSectionEnabled('event')" href="#event">Acara</a>
+        <a v-if="isSectionEnabled('video') && (youtubeEmbedUrl || directVideoUrl)" href="#video">Video</a>
         <a v-if="isSectionEnabled('rsvp')" href="#rsvp">RSVP</a>
       </nav>
 
@@ -128,19 +129,17 @@
         <span class="section-number">02 / MEMPELAI</span>
         <div class="couple-grid">
           <article class="person-card">
-            <img v-if="data.groomPhotoUrl" :src="data.groomPhotoUrl" :alt="data.groomName" />
-            <div v-else class="portrait-placeholder" aria-hidden="true">R</div>
+            <img :src="groomPhotoSrc" :alt="data.groomName || 'Refda'" @error="usePortraitFallback($event, 'refda')" />
             <p class="eyebrow">Mempelai pria</p>
             <h2>{{ data.groomName || 'Muhammad Refda' }}</h2>
-            <p>{{ data.parents?.groomParents || data.groomParents || '' }}</p>
+            <p v-if="groomParents">{{ groomParents }}</p>
           </article>
           <div class="couple-divider" aria-hidden="true">&amp;</div>
           <article class="person-card">
-            <img v-if="data.bridePhotoUrl" :src="data.bridePhotoUrl" :alt="data.brideName" />
-            <div v-else class="portrait-placeholder" aria-hidden="true">T</div>
+            <img :src="bridePhotoSrc" :alt="data.brideName || 'Tiara'" @error="usePortraitFallback($event, 'tiara')" />
             <p class="eyebrow">Mempelai wanita</p>
             <h2>{{ data.brideName || 'Uk Tiara Ayu' }}</h2>
-            <p>{{ data.parents?.brideParents || data.brideParents || '' }}</p>
+            <p v-if="brideParents">{{ brideParents }}</p>
           </article>
         </div>
       </section>
@@ -169,10 +168,42 @@
             <h3>{{ formatDate(item.dateTime) }}</h3>
             <p class="event-time">{{ formatTime(item.dateTime) }}</p>
             <p v-if="item.description" class="event-place">{{ item.description }}</p>
-            <a v-if="item.mapUrl" :href="item.mapUrl" target="_blank" rel="noreferrer">
+            <a v-if="eventMapUrl(item)" :href="eventMapUrl(item)" target="_blank" rel="noopener noreferrer">
               Lihat lokasi <span aria-hidden="true">↗</span>
             </a>
           </article>
+        </div>
+      </section>
+
+      <section
+        v-if="isSectionEnabled('video') && (youtubeEmbedUrl || directVideoUrl)"
+        id="video"
+        class="video-section"
+      >
+        <div class="video-intro">
+          <span class="section-number">VIDEO / KENANGAN</span>
+          <h2 class="section-title">Sepotong cerita kami</h2>
+          <p>Kenangan kecil yang ingin kami bagikan sebelum hari istimewa tiba.</p>
+        </div>
+        <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl }">
+          <iframe
+            v-if="youtubeEmbedUrl"
+            :src="youtubeEmbedUrl"
+            title="Video Refda dan Tiara"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowfullscreen
+            loading="lazy"
+            referrerpolicy="strict-origin-when-cross-origin"
+          ></iframe>
+          <video
+            v-else
+            :src="directVideoUrl"
+            :poster="directVideoUrl.startsWith('/assets/videos/refda-tiara/') ? '/assets/videos/refda-tiara/poster.jpg' : undefined"
+            controls
+            playsinline
+            preload="metadata"
+            aria-label="Video Refda dan Tiara"
+          ></video>
         </div>
       </section>
 
@@ -278,9 +309,42 @@ const fireflies = Array.from({ length: 7 }, (_, index) => ({
 
 const designSettings = computed(() => data.value.designSettings || {})
 const backgroundType = computed(() => designSettings.value.backgroundType || 'image')
-const backgroundUrl = computed(
-  () => designSettings.value.backgroundUrl || data.value.photoCoupleUrl || '',
-)
+const isPlaceholderMedia = (url) => !url || /\/(?:default-groom|default-bride|default-couple)\.(?:png|jpe?g|webp)(?:\?|$)/i.test(url)
+const backgroundUrl = computed(() => {
+  if (designSettings.value.backgroundUrl) return designSettings.value.backgroundUrl
+  if (backgroundType.value === 'video') return ''
+  return isPlaceholderMedia(data.value.photoCoupleUrl) ? '' : data.value.photoCoupleUrl
+})
+const groomPhotoSrc = computed(() => isPlaceholderMedia(data.value.groomPhotoUrl) ? '/assets/images/refda-tiara/refda.png' : data.value.groomPhotoUrl)
+const bridePhotoSrc = computed(() => isPlaceholderMedia(data.value.bridePhotoUrl) ? '/assets/images/refda-tiara/tiara.png' : data.value.bridePhotoUrl)
+const groomParents = computed(() => {
+  const value = data.value.parents?.groomParents || data.value.groomParents || ''
+  return /^bapak\s*&\s*ibu\s+refda$/i.test(value.trim()) ? '' : value
+})
+const brideParents = computed(() => {
+  const value = data.value.parents?.brideParents || data.value.brideParents || ''
+  return /^bapak\s*&\s*ibu\s+tiara$/i.test(value.trim()) ? '' : value
+})
+const videoSource = computed(() => String(data.value.videoPrewedding || '').trim())
+const youtubeEmbedUrl = computed(() => {
+  try {
+    const url = new URL(videoSource.value)
+    const host = url.hostname.toLowerCase()
+    let id = ''
+    if (host === 'youtu.be' || host === 'www.youtu.be') id = url.pathname.slice(1)
+    else if (['youtube.com', 'www.youtube.com', 'm.youtube.com', 'www.youtube-nocookie.com'].includes(host)) {
+      id = url.searchParams.get('v') || url.pathname.match(/^\/(?:embed|shorts)\/([^/]+)/)?.[1] || ''
+    }
+    return /^[a-zA-Z0-9_-]{11}$/.test(id) ? `https://www.youtube-nocookie.com/embed/${id}?rel=0` : ''
+  } catch { return '' }
+})
+const directVideoUrl = computed(() => {
+  const source = videoSource.value
+  if (source.startsWith('blob:')) return source
+  if (!/\.(?:mp4|webm)(?:[?#]|$)/i.test(source)) return ''
+  if (source.startsWith('/') && !source.startsWith('//')) return source
+  try { return new URL(source).protocol === 'https:' ? source : '' } catch { return '' }
+})
 const titleScale = computed(() => {
   const scale = Number(designSettings.value.titleScale)
   return Number.isFinite(scale) ? Math.min(1.2, Math.max(0.8, scale)) : 1
@@ -337,6 +401,7 @@ function isSectionEnabled(key) {
     'love-story': ['love-story', 'loveStory', 'story'],
     gallery: ['gallery'],
     gift: ['gift', 'digital-envelope'],
+    video: ['video', 'video-prewedding'],
   }
   return (aliases[key] || [key]).some((item) => selected.includes(item))
 }
@@ -370,10 +435,30 @@ function openInvitation() {
 
 function copyText(value) {
   if (!value) return
-  navigator.clipboard?.writeText(value).then(
+  if (!navigator.clipboard?.writeText) {
+    toast.error('Nomor rekening belum bisa disalin.')
+    return
+  }
+  navigator.clipboard.writeText(value).then(
     () => toast.success('Nomor rekening disalin.'),
     () => toast.error('Nomor rekening belum bisa disalin.'),
   )
+}
+
+function usePortraitFallback(event, person) {
+  const fallback = `/assets/images/refda-tiara/${person}.png`
+  if (!event.target.src.endsWith(fallback)) event.target.src = fallback
+}
+
+function eventMapUrl(item) {
+  if (item.mapUrl && !/example/i.test(item.mapUrl)) {
+    try {
+      const url = new URL(item.mapUrl)
+      if (['https:', 'http:'].includes(url.protocol)) return url.href
+    } catch { /* Fall back to a search using the venue. */ }
+  }
+  if (!item.description) return ''
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(item.description)}`
 }
 
 async function submitRSVP() {
@@ -481,9 +566,10 @@ onUnmounted(() => {
 
 .invitation-content { max-width: 1100px; margin: 0 auto; padding: 0 1.25rem; }
 .page-masthead { display: flex; justify-content: space-between; padding: 1.2rem 0; border-bottom: 1px solid var(--line); color: var(--muted); font-size: .62rem; letter-spacing: .16em; text-transform: uppercase; }
-.section-nav { position: sticky; top: 0; z-index: 20; display: flex; justify-content: center; gap: clamp(1rem, 5vw, 3.5rem); padding: 1rem .5rem; border-bottom: 1px solid var(--line); background: rgba(12, 12, 12, .92); backdrop-filter: blur(12px); }
-.section-nav a { color: var(--muted); font-size: .63rem; letter-spacing: .15em; text-decoration: none; text-transform: uppercase; }
+.section-nav { position: sticky; top: 0; z-index: 20; display: flex; justify-content: center; gap: clamp(1rem, 5vw, 3.5rem); border-bottom: 1px solid var(--line); background: rgba(12, 12, 12, .92); backdrop-filter: blur(12px); }
+.section-nav a { display: inline-flex; min-height: 48px; align-items: center; color: var(--muted); font-size: .63rem; letter-spacing: .15em; text-decoration: none; text-transform: uppercase; white-space: nowrap; }
 .section-nav a:hover { color: var(--paper); }
+.invitation-content section[id] { scroll-margin-top: 64px; }
 
 .hero-section { display: grid; min-height: 76vh; align-content: center; justify-items: center; padding: 6rem 1rem; text-align: center; }
 .hero-names { display: grid; justify-items: center; gap: .08em; max-width: 100%; margin: 2rem 0 1.5rem; font-family: var(--title-font); font-size: clamp(2.3rem, calc(9vw * var(--title-scale)), 5.6rem); font-weight: 500; line-height: .98; letter-spacing: -.055em; overflow-wrap: anywhere; }
@@ -522,6 +608,16 @@ onUnmounted(() => {
 .story-date { color: var(--muted); font-size: .62rem; letter-spacing: .18em; text-transform: uppercase; }
 .story-list h3 { margin: .35rem 0; font-family: var(--title-font); font-size: 1.6rem; font-weight: 500; }
 .story-list article div > p:last-child { color: #c4c2bc; font-size: .84rem; line-height: 1.75; }
+
+.video-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 390px); align-items: center; gap: clamp(2rem, 7vw, 6rem); padding: 6rem 0; border-bottom: 1px solid var(--line); }
+.video-intro .section-number { color: var(--muted); }
+.video-intro .section-title { margin: 1.2rem 0 1.5rem; text-align: left; }
+.video-intro > p { max-width: 30ch; color: var(--muted); font-family: var(--title-font); font-size: 1.3rem; line-height: 1.5; }
+.video-frame { width: 100%; max-width: 390px; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid var(--line); background: #151515; }
+.video-frame.is-youtube { aspect-ratio: 16 / 9; }
+.video-frame iframe,
+.video-frame video { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
+.video-frame video { filter: grayscale(1); }
 
 .event-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; max-width: 760px; margin: 0 auto; }
 .event-card { min-height: 230px; padding: 1.7rem; border: 1px solid rgba(24, 24, 23, .16); }
@@ -566,9 +662,13 @@ onUnmounted(() => {
   .cover-content { padding-top: 4rem; }
   .guest-line { margin-top: 2.7rem; }
   .invitation-content { padding-right: 1rem; padding-left: 1rem; }
+  .quote-section,
+  .event-section,
+  .rsvp-section { margin-right: -1rem; margin-left: -1rem; }
   .page-masthead { font-size: .52rem; letter-spacing: .1em; }
-  .section-nav { justify-content: space-between; gap: .4rem; }
-  .section-nav a { font-size: .55rem; letter-spacing: .1em; }
+  .section-nav { justify-content: flex-start; gap: 1.2rem; margin: 0 -1rem; padding: 0 1rem; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: none; }
+  .section-nav::-webkit-scrollbar { display: none; }
+  .section-nav a { flex: 0 0 auto; font-size: .6rem; letter-spacing: .1em; }
   .hero-section { min-height: 70vh; padding: 5rem .25rem; }
   .couple-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .couple-divider { line-height: .5; }
@@ -576,6 +676,12 @@ onUnmounted(() => {
   .portrait-placeholder { width: min(78%, 250px); }
   .event-grid { grid-template-columns: 1fr; }
   .event-card { min-height: 0; }
+  .video-section { grid-template-columns: 1fr; gap: 2rem; padding: 4.5rem 0; }
+  .video-intro { text-align: center; }
+  .video-intro .section-title { text-align: center; }
+  .video-intro > p { margin: 0 auto; font-size: 1.15rem; }
+  .video-frame { max-width: 330px; margin: 0 auto; }
+  .video-frame.is-youtube { max-width: 100%; }
   .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .gallery-grid img:last-child:nth-child(odd) { grid-column: span 2; aspect-ratio: 16 / 9; }
 }
