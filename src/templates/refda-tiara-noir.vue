@@ -11,6 +11,14 @@
       class="z-[70]"
     />
 
+    <canvas
+      v-if="!showCover"
+      ref="petalCanvas"
+      class="petal-canvas"
+      aria-hidden="true"
+      :data-running="petalsRunning ? 'true' : 'false'"
+    ></canvas>
+
     <div v-if="!showCover" class="firefly-field" aria-hidden="true">
       <span
         v-for="firefly in fireflies"
@@ -403,10 +411,17 @@ const prefersReducedMotion = ref(false)
 const scroller = ref(null)
 const navInner = ref(null)
 const activeSection = ref('home')
+const petalCanvas = ref(null)
+const petalsRunning = ref(false)
 const guestMessages = ref([])
 const isLoadingWishes = ref(false)
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 let spyObserver = null
+let petalFrame = null
+let petals = []
+let petalCtx = null
+let petalWidth = 0
+let petalHeight = 0
 let reducedMotionQuery = null
 let onReducedMotionChange = null
 
@@ -629,12 +644,92 @@ function scrollToSection(id) {
   activeSection.value = id
 }
 
+// Pale cream petals on a canvas (royal's particle engine shape, noir colours).
+const PETAL_COLORS = ['#f4f2ed', '#e8e4da']
+
+function createPetal(scatter) {
+  return {
+    x: Math.random() * petalWidth,
+    y: scatter ? Math.random() * petalHeight : -50,
+    size: 3 + Math.random() * 6,
+    speed: 0.2 + Math.random() * 0.4,
+    swing: Math.random() * 1.5,
+    swingStep: Math.random() * 100,
+    opacity: 0.06 + Math.random() * 0.16,
+    flip: Math.random() * Math.PI,
+    flipSpeed: 0.005 + Math.random() * 0.01,
+    color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
+  }
+}
+
+function sizePetalCanvas() {
+  const canvas = petalCanvas.value
+  if (!canvas) return
+  const ratio = Math.min(window.devicePixelRatio || 1, 2)
+  petalWidth = window.innerWidth
+  petalHeight = window.innerHeight
+  canvas.width = petalWidth * ratio
+  canvas.height = petalHeight * ratio
+  petalCtx = canvas.getContext('2d')
+  petalCtx.setTransform(ratio, 0, 0, ratio, 0, 0)
+}
+
+function drawPetals() {
+  petalCtx.clearRect(0, 0, petalWidth, petalHeight)
+  petals.forEach((petal) => {
+    petal.y += petal.speed
+    petal.swingStep += 0.005
+    petal.x += Math.sin(petal.swingStep) * petal.swing
+    petal.flip += petal.flipSpeed
+    if (petal.y > petalHeight + 50) Object.assign(petal, createPetal(false))
+    petalCtx.save()
+    petalCtx.translate(petal.x, petal.y)
+    petalCtx.rotate(petal.flip)
+    petalCtx.scale(Math.sin(petal.flip), 1)
+    petalCtx.globalAlpha = petal.opacity
+    petalCtx.fillStyle = petal.color
+    petalCtx.beginPath()
+    petalCtx.moveTo(0, 0)
+    petalCtx.bezierCurveTo(petal.size, -petal.size / 2, petal.size, petal.size, 0, petal.size)
+    petalCtx.bezierCurveTo(-petal.size, petal.size, -petal.size, -petal.size / 2, 0, 0)
+    petalCtx.fill()
+    petalCtx.restore()
+  })
+  petalFrame = requestAnimationFrame(drawPetals)
+}
+
+function startPetals() {
+  if (prefersReducedMotion.value || !petalCanvas.value || petalFrame) return
+  sizePetalCanvas()
+  const count = Math.min(24, window.innerWidth < 768 ? 18 : 24)
+  petals = Array.from({ length: count }, () => createPetal(true))
+  petalsRunning.value = true
+  petalFrame = requestAnimationFrame(drawPetals)
+}
+
+function stopPetals() {
+  if (petalFrame) cancelAnimationFrame(petalFrame)
+  petalFrame = null
+  petalCtx?.clearRect(0, 0, petalWidth, petalHeight)
+  petalsRunning.value = false
+}
+
+function onPetalResize() {
+  if (petalFrame) sizePetalCanvas()
+}
+
+function onVisibilityChange() {
+  if (document.hidden) stopPetals()
+  else startPetals()
+}
+
 async function openInvitation() {
   musicControl.value?.play()
   showCover.value = false
   await nextTick()
   scroller.value?.scrollTo({ top: 0 })
   initScrollSpy()
+  startPetals()
 }
 
 watch(navItems, () => {
@@ -767,11 +862,18 @@ onMounted(() => {
   prefersReducedMotion.value = reducedMotionQuery?.matches || false
   onReducedMotionChange = (event) => {
     prefersReducedMotion.value = event.matches
+    if (event.matches) stopPetals()
+    else if (!showCover.value) startPetals()
   }
   reducedMotionQuery?.addEventListener?.('change', onReducedMotionChange)
+  window.addEventListener('resize', onPetalResize)
+  document.addEventListener('visibilitychange', onVisibilityChange)
 })
 
 onUnmounted(() => {
+  stopPetals()
+  window.removeEventListener('resize', onPetalResize)
+  document.removeEventListener('visibilitychange', onVisibilityChange)
   if (spyObserver) spyObserver.disconnect()
   spyObserver = null
   reducedMotionQuery?.removeEventListener?.('change', onReducedMotionChange)
@@ -780,7 +882,7 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
 
 .noir-invitation {
   --ink: #0c0c0c;
@@ -811,7 +913,7 @@ onUnmounted(() => {
 .cover-fade-leave-active { transition: opacity .8s ease; }
 .cover-fade-leave-to { opacity: 0; }
 
-.glow-blob { position: absolute; width: 18rem; height: 18rem; border-radius: 50%; background: rgba(244, 242, 237, .06); filter: blur(120px); pointer-events: none; }
+.glow-blob { animation: glow-pulse 8s ease-in-out infinite; position: absolute; width: 18rem; height: 18rem; border-radius: 50%; background: rgba(244, 242, 237, .06); filter: blur(120px); pointer-events: none; }
 .glow-blob--top { top: -4rem; left: -5rem; }
 .glow-blob--bottom { right: -5rem; bottom: -4rem; }
 .cover-frame { position: absolute; z-index: 1; inset: 1rem; border: 1px solid rgba(244, 242, 237, .18); border-radius: 3rem; pointer-events: none; }
@@ -827,6 +929,7 @@ onUnmounted(() => {
 .cover-image { width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); }
 .cover-shade { background: linear-gradient(180deg, rgba(5, 5, 5, .46), rgba(5, 5, 5, .78) 72%, #080808); }
 .star-field { overflow: hidden; }
+.petal-canvas { position: fixed; z-index: 15; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .firefly-field { position: fixed; z-index: 19; inset: 0; overflow: hidden; pointer-events: none; }
 .star,
 .firefly { position: absolute; border-radius: 50%; pointer-events: none; }
@@ -862,7 +965,7 @@ onUnmounted(() => {
 .section-title { max-width: 650px; margin: 1rem auto 2rem; font-family: var(--title-font); font-size: clamp(2rem, calc(8vw * var(--title-scale)), 3.6rem); font-weight: 500; line-height: 1.05; color: var(--text); text-align: center; }
 
 /* Arch-framed grayscale photo */
-.arch { position: relative; flex: none; width: 12rem; height: 16.5rem; margin: 0 auto 1.6rem; }
+.arch { position: relative; flex: none; width: 12rem; height: 16.5rem; margin: 0 auto 2.1rem; }
 .arch__outer { display: none; position: absolute; inset: -1rem; border: 1px solid rgba(244, 242, 237, .12); border-radius: 12rem 12rem 3rem 3rem; }
 .arch__offset { position: absolute; inset: 0; border: 1px solid rgba(244, 242, 237, .3); border-radius: 999px 999px 1.5rem 1.5rem; transform: translate(-.75rem, .75rem); }
 .arch--mirror .arch__offset { transform: translate(.75rem, .75rem); }
@@ -963,7 +1066,7 @@ onUnmounted(() => {
 
 .wishes { display: flex; flex-direction: column; align-items: center; gap: .8rem; width: 100%; max-width: 540px; margin-top: 2rem; }
 .wishes-state { color: var(--muted); font-size: .8rem; }
-.wishes-list { display: grid; gap: .6rem; width: 100%; max-height: 22rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; text-align: left; }
+.wishes-list { display: grid; gap: .6rem; width: 100%; max-height: 28rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; text-align: left; }
 .wishes-list::-webkit-scrollbar { display: none; }
 .wish-card { padding: .9rem 1rem; border: 1px solid rgba(244, 242, 237, .12); border-radius: 1.25rem; background: rgba(255, 255, 255, .03); }
 .wish-head { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; }
@@ -1002,6 +1105,7 @@ onUnmounted(() => {
   .cover-frame { border-radius: 5rem; }
 }
 
+@keyframes glow-pulse { 0%, 100% { opacity: .6; } 50% { opacity: 1; } }
 @keyframes spin-slow { to { transform: rotate(360deg); } }
 @keyframes star-pulse { 0%, 100% { opacity: .35; transform: scale(.85); } 50% { opacity: .85; transform: scale(1.15); } }
 @keyframes twinkle { 0%, 100% { opacity: .15; transform: scale(.8); } 50% { opacity: .85; transform: scale(1.25); } }
@@ -1018,6 +1122,11 @@ onUnmounted(() => {
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+  .noir-scroller { scroll-behavior: auto; }
+  .cover-fade-leave-active { transition: none; }
   .firefly { opacity: .65 !important; animation: none !important; transform: none !important; }
+  .hero-rule__star,
+  .arch__sparkle,
+  .glow-blob { animation: none !important; }
 }
 </style>
