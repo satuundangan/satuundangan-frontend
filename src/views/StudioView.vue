@@ -473,6 +473,42 @@
                         >Hapus latar pilihan</button>
                       </div>
                     </div>
+
+                    <div class="space-y-4 border-t border-slate-200 pt-5">
+                      <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Teks &amp; waktu acara</p>
+
+                      <label class="block space-y-2">
+                        <span class="form-label">Teks sambutan di halaman awal (hero)</span>
+                        <textarea
+                          v-model="formData.designSettings.heroCopy"
+                          rows="3"
+                          maxlength="400"
+                          class="form-input"
+                          placeholder="Dengan memohon rahmat dan ridha Allah SWT, kami bermaksud mengundang Anda untuk hadir dalam hari bahagia kami."
+                        ></textarea>
+                        <span class="flex items-center justify-between text-xs text-slate-500">
+                          <span>Kosongkan untuk memakai teks bawaan.</span>
+                          <span data-testid="hero-copy-counter">{{ (formData.designSettings.heroCopy || '').length }}/400</span>
+                        </span>
+                      </label>
+
+                      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        <label class="space-y-2">
+                          <span class="form-label">Jam mulai acara</span>
+                          <input v-model="formData.designSettings.eventStartTime" type="time" class="form-input" placeholder="08:00" />
+                        </label>
+                        <label class="space-y-2">
+                          <span class="form-label">Jam selesai acara</span>
+                          <input v-model="formData.designSettings.eventEndTime" type="time" class="form-input" placeholder="12:30" />
+                        </label>
+                      </div>
+                      <p class="text-xs text-slate-500">Kosongkan untuk memakai 08.00 – 12.30 WIB.</p>
+
+                      <label class="flex items-center gap-3">
+                        <input v-model="formData.designSettings.hideRundown" type="checkbox" class="h-4 w-4 rounded border-slate-300" />
+                        <span class="form-label !mb-0">Sembunyikan rundown</span>
+                      </label>
+                    </div>
                   </div>
 
                   <!-- denah upload (optional) -->
@@ -1417,6 +1453,10 @@ const formData = ref({
     backgroundType: 'image',
     backgroundUrl: '',
     backgroundFile: null,
+    heroCopy: '',
+    eventStartTime: '',
+    eventEndTime: '',
+    hideRundown: false,
   },
   gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
   akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
@@ -1712,6 +1752,10 @@ const syncDataToPreview = (data) => {
           titleScale: data.designSettings?.titleScale,
           backgroundType: data.designSettings?.backgroundType,
           backgroundUrl: noirBackgroundPreview.value || data.designSettings?.backgroundUrl,
+          heroCopy: data.designSettings?.heroCopy,
+          eventStartTime: data.designSettings?.eventStartTime,
+          eventEndTime: data.designSettings?.eventEndTime,
+          hideRundown: !!data.designSettings?.hideRundown,
         },
         selectedSections: getCanonicalSelectedSections()
       }
@@ -2114,6 +2158,10 @@ function mapPayloadToFormData(payload) {
      backgroundType: 'image',
      backgroundUrl: '',
      backgroundFile: null,
+     heroCopy: '',
+     eventStartTime: '',
+     eventEndTime: '',
+     hideRundown: false,
      ...(payload.designSettings || content.designSettings || {}),
      backgroundFile: null,
    }
