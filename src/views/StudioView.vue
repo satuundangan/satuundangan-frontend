@@ -545,13 +545,13 @@
                   </div>
                   <div>
                     <h3 class="font-bold text-dark text-sm">Video Prewedding</h3>
-                    <p class="text-[9px] text-muted uppercase tracking-widest font-black">Link YouTube Video</p>
+                    <p class="text-[9px] text-muted uppercase tracking-widest font-black">Video untuk undangan</p>
                   </div>
                 </div>
 
                 <div>
                   <div class="flex items-center justify-between mb-1.5">
-                    <label class="form-label mb-0">URL Video YouTube</label>
+                    <label class="form-label mb-0">URL Video YouTube atau MP4</label>
                     <span class="text-[11px] text-mocha font-medium flex items-center gap-1">
                       <i class="fa-brands fa-youtube"></i> Mendukung Link & Shorts
                     </span>
@@ -567,8 +567,16 @@
                   </p>
                 </div>
 
+                <div v-if="isTiaraNoirInvitation" class="space-y-3 rounded-2xl border border-slate-200 p-4">
+                  <label class="form-label">Atau unggah video MP4 / WebM</label>
+                  <input type="file" accept="video/mp4,video/webm" class="block w-full text-sm text-slate-700" :disabled="isPreweddingUploading" @change="handlePreweddingVideoUpload" />
+                  <p class="text-xs text-slate-500">Maksimal 25 MB. Video diunggah saat dipilih agar tetap tersedia setelah tab ditutup; simpan undangan untuk menayangkannya.</p>
+                  <p v-if="isPreweddingUploading" role="status" class="text-xs font-semibold text-slate-700">Mengunggah video…</p>
+                  <video v-if="noirVideoPreviewUrl" :src="noirVideoPreviewUrl" controls playsinline preload="metadata" class="mx-auto max-h-64 w-full rounded-lg bg-black object-contain"></video>
+                </div>
+
                 <!-- Tutorial YouTube Unlisted (Tidak Publik) -->
-                <div class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 text-xs space-y-2.5">
+                <div v-if="!isTiaraNoirInvitation" class="bg-amber-50/70 border border-amber-200/80 rounded-2xl p-4 text-xs space-y-2.5">
                   <div class="flex items-center gap-2 font-bold text-amber-900">
                     <i class="fa-solid fa-circle-question text-amber-600 text-sm"></i>
                     <span>Ingin video hanya bisa ditonton di undangan (Privat)?</span>
@@ -1204,6 +1212,8 @@ const audioList = ref([])
 const hasUnsavedChanges = ref(false)
 const isHydrating = ref(true)
 const noirBackgroundPreview = ref('')
+const noirVideoPreview = ref('')
+const isPreweddingUploading = ref(false)
 const musicSearchQuery = ref('')
 const musicCategoryFilter = ref('all')
 
@@ -1229,7 +1239,6 @@ const filteredAudioList = computed(() => {
   }
   return list
 })
-
 const showLogin = ref(false)
 const authMode = ref('login')
 const auth = useAuthStore()
@@ -1454,6 +1463,10 @@ const noirBackgroundPreviewUrl = computed(
     formData.value.designSettings.backgroundUrl ||
     (formData.value.designSettings.backgroundType === 'image' ? formData.value.photoCouple : ''),
 )
+const noirVideoPreviewUrl = computed(() => {
+  const source = noirVideoPreview.value || formData.value.youtubeUrl || ''
+  return source.startsWith('blob:') || /\.(?:mp4|webm)(?:[?#]|$)/i.test(source) ? source : ''
+})
 
 // Custom subdomain live availability check (tier Eksklusif)
 const subdomainStatus = ref({ state: 'idle', message: '', normalized: '' })
@@ -1693,6 +1706,7 @@ const syncDataToPreview = (data) => {
         musicChoice: data.music === 'custom' ? data.musicPreview : data.music,
         audioStart: Number(data.audioStart) || 0,
         audioEnd: Number(data.audioEnd) || 0,
+        videoPrewedding: noirVideoPreview.value || data.youtubeUrl || '',
         designSettings: {
           fontFamily: data.designSettings?.fontFamily,
           titleScale: data.designSettings?.titleScale,
@@ -1967,6 +1981,7 @@ onMounted(async () => {
 onUnmounted(() => {
   window.removeEventListener('beforeunload', handleBeforeUnload)
   if (noirBackgroundPreview.value.startsWith('blob:')) URL.revokeObjectURL(noirBackgroundPreview.value)
+  if (noirVideoPreview.value.startsWith('blob:')) URL.revokeObjectURL(noirVideoPreview.value)
   if (resizeObserver) {
     resizeObserver.disconnect()
   }
@@ -2045,11 +2060,26 @@ function mapPayloadToFormData(payload) {
      slug: template.slug || payload.template_slug || content.template_slug || normalizeTemplateSlug(templateName)
    }
 
+   if (Object.keys(sectionOptions.value).length === 0) {
+      const templateSections = Array.isArray(template.sections) ? template.sections : []
+      sectionOptions.value = templateSections.length
+         ? Object.fromEntries(templateSections.filter(s => s.is_enabled !== false).map(s => {
+              const key = s.section?.key || s.key
+              return [key, s.section?.label || s.label || sectionOptionsLabelMap[key] || key]
+           }).filter(([key]) => key))
+         : { ...sectionOptionsLabelMap }
+   }
+   if (payload.slug === 'refda-tiara') sectionOptions.value.video = sectionOptionsLabelMap.video
+
    const activeSections = Array.isArray(payload.selectedSections)
       ? payload.selectedSections
       : Array.isArray(payload.content?.selectedSections)
          ? payload.content.selectedSections
          : null
+
+   if (!activeSections && payload.slug === 'refda-tiara') {
+      Object.keys(sectionOptions.value).forEach(key => { sections.value[key] = true })
+   }
 
    if (activeSections) {
       // Clear current sections first
@@ -2098,10 +2128,13 @@ function mapPayloadToFormData(payload) {
    formData.value.subdomain = payload.subdomain || payload.content?.subdomain || ''
    formData.value.package = payload.package || payload.content?.package || 'basic'
    formData.value.brideName = payload.brideName || ''
-   formData.value.bridePhoto = payload.bridePhotoUrl || ''
+   formData.value.bridePhoto = payload.slug === 'refda-tiara' && /\/default-bride\./i.test(payload.bridePhotoUrl || '')
+      ? '/assets/images/refda-tiara/tiara.png' : payload.bridePhotoUrl || ''
    formData.value.groomName = payload.groomName || ''
-   formData.value.groomPhoto = payload.groomPhotoUrl || ''
-   formData.value.photoCouple = payload.photoCoupleUrl || ''
+   formData.value.groomPhoto = payload.slug === 'refda-tiara' && /\/default-groom\./i.test(payload.groomPhotoUrl || '')
+      ? '/assets/images/refda-tiara/refda.png' : payload.groomPhotoUrl || ''
+   formData.value.photoCouple = payload.slug === 'refda-tiara' && /\/default-couple\./i.test(payload.photoCoupleUrl || '')
+      ? '' : payload.photoCoupleUrl || ''
    if (payload.parents) {
       formData.value.brideParents = payload.parents.brideParents || ''
       formData.value.groomParents = payload.parents.groomParents || ''
@@ -2216,7 +2249,7 @@ function validateForm() {
    }
 
    // Cover photo validation
-   if (!data.photoCouple && !data.photoCoupleFile) { 
+   if (!isTiaraNoirInvitation.value && !data.photoCouple && !data.photoCoupleFile) {
      validationErrors.value.photoCouple = 'Foto sampul (cover) wajib diisi'
      isValid = false 
    }
@@ -2448,6 +2481,34 @@ function clearNoirBackground() {
    formData.value.designSettings.backgroundFile = null
 }
 
+async function handlePreweddingVideoUpload(event) {
+   const file = event.target.files?.[0]
+   event.target.value = ''
+   if (!file) return
+   if (!['video/mp4', 'video/webm'].includes(file.type) || file.size > 25 * 1024 * 1024) {
+      toast.error('Pilih video MP4/WebM berukuran maksimal 25 MB.')
+      return
+   }
+   if (noirVideoPreview.value.startsWith('blob:')) URL.revokeObjectURL(noirVideoPreview.value)
+   noirVideoPreview.value = URL.createObjectURL(file)
+   isPreweddingUploading.value = true
+   try {
+      const result = await uploadFileApi(file)
+      if (!result.fileUrl) throw new Error('URL video tidak diterima dari server.')
+      URL.revokeObjectURL(noirVideoPreview.value)
+      noirVideoPreview.value = ''
+      formData.value.youtubeUrl = result.fileUrl
+      sections.value.video = true
+      toast.success('Video terunggah. Simpan undangan untuk menayangkannya.')
+   } catch (error) {
+      URL.revokeObjectURL(noirVideoPreview.value)
+      noirVideoPreview.value = ''
+      toast.error(error.message || 'Gagal mengunggah video.')
+   } finally {
+      isPreweddingUploading.value = false
+   }
+}
+
 // Convert a base64 data: URL back into a File so it can be uploaded.
 function dataUrlToFile(dataUrl, baseName) {
    const [header, b64] = dataUrl.split(',')
@@ -2517,6 +2578,10 @@ async function uploadAllFiles() {
 
 // Saving invitation API submit
 async function saveAndPreview() {
+   if (isPreweddingUploading.value) {
+      toast.info('Tunggu video selesai diunggah sebelum menyimpan undangan.')
+      return
+   }
    if (!validateForm()) return
    // Block save if a custom subdomain was typed but isn't confirmed available
    if (formData.value.subdomain?.trim() && subdomainStatus.value.state !== 'available') {
