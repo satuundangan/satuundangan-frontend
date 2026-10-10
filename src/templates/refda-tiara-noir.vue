@@ -118,7 +118,7 @@
       </section>
 
       <section v-if="isSectionEnabled('quote') && data.quoteText" id="quote" class="quote-section">
-        <span class="section-number">01 / DOA</span>
+        <span class="section-number">DOA</span>
         <blockquote>“{{ data.quoteText }}”</blockquote>
         <p v-if="data.quoteSource" class="quote-source">{{ data.quoteSource }}</p>
       </section>
@@ -128,7 +128,7 @@
         id="couple"
         class="couple-section"
       >
-        <span class="section-number">02 / MEMPELAI</span>
+        <span class="section-number">MEMPELAI</span>
         <div class="couple-grid">
           <article class="person-card">
             <img :src="groomPhotoSrc" :alt="data.groomName || 'Refda'" @error="usePortraitFallback($event, 'refda')" />
@@ -147,7 +147,7 @@
       </section>
 
       <section v-if="isSectionEnabled('love-story') && data.loveStory?.length" class="story-section">
-        <span class="section-number">03 / CERITA</span>
+        <span class="section-number">CERITA</span>
         <h2 class="section-title">Jalan yang mempertemukan</h2>
         <div class="story-list">
           <article v-for="(story, index) in data.loveStory" :key="`${story.title}-${index}`">
@@ -162,7 +162,7 @@
       </section>
 
       <section v-if="isSectionEnabled('event')" id="event" class="event-section">
-        <span class="section-number">04 / ACARA</span>
+        <span class="section-number">ACARA</span>
         <h2 class="section-title">Hari istimewa kami</h2>
         <div class="event-grid">
           <article v-for="item in events" :key="item.label" class="event-card">
@@ -178,7 +178,7 @@
       </section>
 
       <section v-if="showRundown" id="rundown" class="rundown-section">
-        <span class="section-number">05 / RUNDOWN</span>
+        <span class="section-number">RUNDOWN</span>
         <h2 class="section-title">Susunan acara</h2>
         <ol class="rundown-list">
           <li v-for="(item, index) in rundownItems" :key="`${item.time}-${index}`">
@@ -224,7 +224,7 @@
         v-if="isSectionEnabled('gallery') && data.galleryImages?.length"
         class="gallery-section"
       >
-        <span class="section-number">06 / POTRET</span>
+        <span class="section-number">POTRET</span>
         <h2 class="section-title">Sebuah jeda, untuk dikenang</h2>
         <div class="gallery-grid">
           <img v-for="(src, index) in data.galleryImages" :key="`${src}-${index}`" :src="src" alt="Potret Refda dan Tiara" loading="lazy" />
@@ -232,7 +232,7 @@
       </section>
 
       <section v-if="isSectionEnabled('gift') && hasGiftDetails" class="gift-section">
-        <span class="section-number">07 / TANDA KASIH</span>
+        <span class="section-number">TANDA KASIH</span>
         <h2 class="section-title">Doa Anda adalah hadiah terbaik</h2>
         <article v-for="(account, index) in data.bankAccounts || []" :key="`${account.accountNumber}-${index}`" class="gift-card">
           <p class="eyebrow">{{ account.bankName }}</p>
