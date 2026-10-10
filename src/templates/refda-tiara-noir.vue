@@ -1009,7 +1009,6 @@ onUnmounted(() => {
 .dress-code { width: 100%; margin-top: 1.25rem; padding: 1.25rem; border: 1px dashed rgba(244, 242, 237, .25); border-radius: 1.5rem; }
 .dress-code__text { margin-top: .5rem; color: var(--text); font-family: var(--title-font); font-size: 1.1rem; font-style: italic; }
 
-.video-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 390px); align-items: center; gap: clamp(2rem, 7vw, 6rem); padding-top: 5rem; border-bottom: 1px solid var(--line); }
 .rundown-section,
 .gallery-section,
 .rsvp-section { background: #0c0c0c; }
@@ -1027,7 +1026,7 @@ onUnmounted(() => {
 .rundown-list span { color: var(--text); font-family: var(--title-font); font-size: 1.1rem; line-height: 1.4; }
 
 .video-copy { max-width: 30ch; margin: 0 auto 1.5rem; color: var(--muted); font-family: var(--title-font); font-size: 1.15rem; line-height: 1.5; }
-.video-frame { width: 100%; max-width: 330px; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.5rem; background: #151515; }
+.video-frame { width: 100%; max-width: 330px; margin: 0 auto; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.5rem; background: #151515; }
 .video-frame.is-youtube { max-width: 100%; aspect-ratio: 16 / 9; }
 .video-frame iframe,
 .video-frame video { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
