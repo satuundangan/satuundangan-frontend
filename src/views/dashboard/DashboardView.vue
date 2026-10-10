@@ -144,12 +144,23 @@
               </div>
            </div>
 
+           <div v-else-if="invitationLoadError" class="py-10 px-4 text-center space-y-3">
+              <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-xl border border-amber-100">
+                 <i class="fa-solid fa-triangle-exclamation"></i>
+              </div>
+              <h4 class="font-bold text-slate-800 text-sm">Daftar undangan belum bisa dimuat</h4>
+              <p class="text-xs text-slate-500 max-w-sm mx-auto">{{ invitationLoadError }}</p>
+              <router-link v-if="invitationRequiresLogin" :to="{ name: 'home', query: { login: 'true', redirect: '/dashboard' } }" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
+                 <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i> Masuk kembali
+              </router-link>
+           </div>
+
            <div v-else-if="invitations.length === 0" class="py-12 text-center space-y-3">
               <div class="w-14 h-14 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center mx-auto text-xl border border-slate-100">
                  <i class="fa-solid fa-envelope-open"></i>
               </div>
               <h4 class="font-bold text-slate-800 text-sm">Belum Ada Undangan Dibuat</h4>
-              <p class="text-xs text-slate-400 max-w-xs mx-auto">Mulai perjalananmu membuat undangan digital elegan hanya dalam hitungan menit.</p>
+              <p class="text-xs text-slate-400 max-w-xs mx-auto">Jika Anda mencari undangan yang sudah dibuat, pastikan masuk dengan akun pemiliknya.</p>
               <router-link to="/templates" class="inline-flex items-center gap-2 px-5 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-all shadow-sm">
                  <i class="fa-solid fa-plus text-[10px]"></i> Buat Undangan Pertama
               </router-link>
@@ -259,6 +270,8 @@ const statsData = ref({
   total_responses: 0
 })
 const loading = ref(true)
+const invitationLoadError = ref('')
+const invitationRequiresLogin = ref(false)
 const isSidebarOpen = ref(window.innerWidth >= 768)
 
 const userName = computed(() => auth.user?.name || auth.user?.username || 'Pengguna')
@@ -312,6 +325,11 @@ onMounted(async () => {
     
     if (invRes.status === 'fulfilled') {
       invitations.value = Array.isArray(invRes.value) ? invRes.value : (invRes.value.data || [])
+    } else {
+      invitationRequiresLogin.value = invRes.reason?.status === 401
+      invitationLoadError.value = invitationRequiresLogin.value
+        ? 'Sesi login sudah tidak berlaku. Masuk kembali dengan akun Tiara untuk melihat undangan.'
+        : 'Periksa koneksi, lalu muat ulang halaman dashboard.'
     }
     
     if (statsRes.status === 'fulfilled') {

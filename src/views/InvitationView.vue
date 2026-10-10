@@ -12,6 +12,7 @@ import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { featuresFor } from '@/config/packageFeatures'
 import { onMounted, ref, computed, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
 import QRCode from 'qrcode'
 import {
   templateLoaders,
@@ -32,6 +33,7 @@ const TIARA_TEMPLATE_KEY = 'refda-tiara-noir'
 
 const route = useRoute()
 const router = useRouter()
+const auth = useAuthStore()
 // In subdomain mode the route has no :slug — resolve label from the host.
 const subdomainLabel = props.subdomainMode ? getCustomSubdomain() : null
 const slug = route.params.slug
@@ -41,6 +43,7 @@ const loading = ref(true)
 const error = ref(null)
 const isPrivateAccessLocked = ref(false)
 const isPreviewMode = ref(false)
+const isOwnerPreview = ref(false)
 const isInsideFrame = ref(false)
 const isDemoMode = ref(false)
 const guestData = ref(null)
@@ -311,7 +314,7 @@ onMounted(async () => {
         // Check if invitation is active or if we are in preview mode
         const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         
-        if (!isPublished && !isPreviewMode.value) {
+        if (!isPublished && !isPreviewMode.value && !isOwnerPreview.value) {
           error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
           loading.value = false
           return
@@ -506,12 +509,21 @@ function applyDemoSeo(tmpl) {
 }
 
 async function fetchInvitationData(slug) {
+  isOwnerPreview.value = false
   try {
     let response
     if (props.subdomainMode && subdomainLabel) {
       response = await getInvitationBySubdomain(subdomainLabel)
     } else if (isPreviewMode.value) {
       response = await getMyInvitationBySlug(slug)
+    } else if (route.name === 'invitation.owner' && auth.token) {
+      try {
+        response = await getMyInvitationBySlug(slug)
+        isOwnerPreview.value = true
+      } catch {
+        response = await getInvitationBySlug(slug)
+        isOwnerPreview.value = false
+      }
     } else if (route.params.guestSlug) {
       response = await getInvitationWithGuest(slug, route.params.guestSlug)
     } else {

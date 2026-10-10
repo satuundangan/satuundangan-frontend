@@ -319,6 +319,12 @@ const router = createRouter({
       component: Invitation,
     },
     {
+      path: '/inv/:slug',
+      name: 'invitation.owner',
+      component: Invitation,
+      meta: { title: 'Undangan' },
+    },
+    {
       path: '/inv/:slug/:guestSlug',
       name: 'invitation.guest',
       component: Invitation,

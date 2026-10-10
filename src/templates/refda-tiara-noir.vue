@@ -1,6 +1,7 @@
 <template>
   <main class="noir-invitation" :style="themeStyle">
     <MusicControl
+      ref="musicControl"
       v-if="data.musicChoice"
       :src="getMusicUrl(data.musicChoice)"
       :audioStart="data.audioStart"
@@ -285,6 +286,7 @@ const props = defineProps({
 })
 
 const toast = useToast()
+const musicControl = ref(null)
 const data = computed(() => props.data || {})
 const showCover = ref(true)
 const isSubmitting = ref(false)
@@ -429,6 +431,7 @@ function formatTime(value) {
 }
 
 function openInvitation() {
+  musicControl.value?.play()
   showCover.value = false
   window.scrollTo({ top: 0, behavior: prefersReducedMotion.value ? 'auto' : 'smooth' })
 }
@@ -666,9 +669,30 @@ onUnmounted(() => {
   .event-section,
   .rsvp-section { margin-right: -1rem; margin-left: -1rem; }
   .page-masthead { font-size: .52rem; letter-spacing: .1em; }
-  .section-nav { justify-content: flex-start; gap: 1.2rem; margin: 0 -1rem; padding: 0 1rem; overflow-x: auto; overscroll-behavior-inline: contain; scrollbar-width: none; }
-  .section-nav::-webkit-scrollbar { display: none; }
-  .section-nav a { flex: 0 0 auto; font-size: .6rem; letter-spacing: .1em; }
+  .invitation-content { padding-bottom: calc(5rem + env(safe-area-inset-bottom)); }
+  .section-nav {
+    position: fixed;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    justify-content: space-around;
+    gap: .25rem;
+    padding: .75rem .5rem calc(.75rem + env(safe-area-inset-bottom));
+    border-top: 1px solid var(--line);
+    border-bottom: 0;
+  }
+  .section-nav a {
+    display: flex;
+    min-height: 44px;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    font-size: .55rem;
+    letter-spacing: .1em;
+    text-align: center;
+  }
   .hero-section { min-height: 70vh; padding: 5rem .25rem; }
   .couple-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .couple-divider { line-height: .5; }
