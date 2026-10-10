@@ -97,6 +97,7 @@
         <a v-if="isSectionEnabled('quote') && data.quoteText" href="#quote">Doa</a>
         <a v-if="isSectionEnabled('couple') || isSectionEnabled('photoCouple')" href="#couple">Mempelai</a>
         <a v-if="isSectionEnabled('event')" href="#event">Acara</a>
+        <a v-if="showRundown" href="#rundown">Rundown</a>
         <a v-if="isSectionEnabled('video') && (youtubeEmbedUrl || directVideoUrl)" href="#video">Video</a>
         <a v-if="isSectionEnabled('rsvp')" href="#rsvp">RSVP</a>
       </nav>
@@ -167,13 +168,24 @@
           <article v-for="item in events" :key="item.label" class="event-card">
             <p class="eyebrow">{{ item.label }}</p>
             <h3>{{ formatDate(item.dateTime) }}</h3>
-            <p class="event-time">{{ eventTimeRange(item) }}</p>
+            <p class="event-time">{{ eventTimeRange() }}</p>
             <p class="event-place">{{ item.description || DEFAULT_VENUE }}</p>
             <a v-if="eventMapUrl(item)" :href="eventMapUrl(item)" target="_blank" rel="noopener noreferrer">
               Lihat lokasi <span aria-hidden="true">↗</span>
             </a>
           </article>
         </div>
+      </section>
+
+      <section v-if="showRundown" id="rundown" class="rundown-section">
+        <span class="section-number">05 / RUNDOWN</span>
+        <h2 class="section-title">Susunan acara</h2>
+        <ol class="rundown-list">
+          <li v-for="(item, index) in rundownItems" :key="`${item.time}-${index}`">
+            <time>{{ item.time }}</time>
+            <span>{{ item.title }}</span>
+          </li>
+        </ol>
       </section>
 
       <section
@@ -212,7 +224,7 @@
         v-if="isSectionEnabled('gallery') && data.galleryImages?.length"
         class="gallery-section"
       >
-        <span class="section-number">05 / POTRET</span>
+        <span class="section-number">06 / POTRET</span>
         <h2 class="section-title">Sebuah jeda, untuk dikenang</h2>
         <div class="gallery-grid">
           <img v-for="(src, index) in data.galleryImages" :key="`${src}-${index}`" :src="src" alt="Potret Refda dan Tiara" loading="lazy" />
@@ -220,7 +232,7 @@
       </section>
 
       <section v-if="isSectionEnabled('gift') && hasGiftDetails" class="gift-section">
-        <span class="section-number">06 / TANDA KASIH</span>
+        <span class="section-number">07 / TANDA KASIH</span>
         <h2 class="section-title">Doa Anda adalah hadiah terbaik</h2>
         <article v-for="(account, index) in data.bankAccounts || []" :key="`${account.accountNumber}-${index}`" class="gift-card">
           <p class="eyebrow">{{ account.bankName }}</p>
@@ -232,7 +244,7 @@
       </section>
 
       <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="rsvp-section">
-        <span class="section-number">07 / KONFIRMASI</span>
+        <span class="section-number">08 / KONFIRMASI</span>
         <h2 class="section-title">Kehadiran Anda Sangat Berarti</h2>
         <p class="rsvp-intro">Mohon konfirmasikan kehadiran Anda melalui formulir berikut.</p>
 
@@ -288,6 +300,17 @@ const props = defineProps({
 const DEFAULT_EVENT_START = '08:00'
 const DEFAULT_EVENT_END = '12:30'
 const DEFAULT_VENUE = 'Lume Coffee'
+const DEFAULT_RUNDOWN = [
+  { time: '08.00', title: 'Tamu hadir & snack box' },
+  { time: '08.15', title: 'Pembukaan & mempelai memasuki tempat akad' },
+  { time: '08.40', title: 'Akad nikah (ijab kabul)' },
+  { time: '09.05', title: 'Sungkeman' },
+  { time: '09.30', title: 'Adat Jawa' },
+  { time: '10.00', title: 'Resepsi — makan, foto bersama, ramah tamah' },
+  { time: '11.00', title: 'Games & lempar bunga' },
+  { time: '11.30', title: 'Karaoke keluarga' },
+  { time: '12.30', title: 'Selesai' },
+]
 
 const toast = useToast()
 const musicControl = ref(null)
@@ -387,6 +410,12 @@ const events = computed(() => {
     { label: 'Resepsi', ...resepsi },
   ].filter((event) => event.dateTime || event.description || event.mapUrl)
 })
+const showRundown = computed(() => !data.value.hideRundown)
+const rundownItems = computed(() => {
+  const custom = data.value.rundown
+  const items = Array.isArray(custom) ? custom.filter((i) => i && (i.time || i.title)) : []
+  return items.length ? items : DEFAULT_RUNDOWN
+})
 const giftAddresses = computed(() => {
   const value = data.value.giftDeliveryAddress
   return Array.isArray(value) ? value : value ? [value] : []
@@ -426,18 +455,11 @@ function formatDate(value) {
     : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-function eventTimeRange(item) {
-  const date = item?.dateTime ? new Date(item.dateTime) : null
-  const start =
-    date && !Number.isNaN(date.getTime())
-      ? date.toLocaleTimeString('id-ID', {
-          hour: '2-digit',
-          minute: '2-digit',
-          hour12: false,
-          timeZone: 'Asia/Jakarta',
-        })
-      : DEFAULT_EVENT_START
-  const end = item?.endTime || data.value.eventEndTime || DEFAULT_EVENT_END
+// The displayed time is pinned (not derived from dateTime): the stored dateTime
+// may be a UTC value that would render at the wrong WIB hour.
+function eventTimeRange() {
+  const start = data.value.eventStartTime || DEFAULT_EVENT_START
+  const end = data.value.eventEndTime || DEFAULT_EVENT_END
   return `${String(start).replace(':', '.')} – ${String(end).replace(':', '.')} WIB`
 }
 
@@ -638,7 +660,19 @@ onUnmounted(() => {
 .event-card h3 { margin: 1.3rem 0 .25rem; font-family: var(--title-font); font-size: 1.75rem; font-weight: 500; }
 .event-time { color: #65635e; font-size: .72rem; letter-spacing: .12em; }
 .event-place { min-height: 2.5rem; margin-top: 1rem; color: #55534f; font-family: var(--title-font); font-size: .95rem; line-height: 1.55; }
-.event-card a { display: inline-flex; gap: .6rem; margin-top: .8rem; color: #151515; font-size: .65rem; letter-spacing: .13em; text-decoration: none; text-transform: uppercase; }
+.event-card a { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; gap: .6rem; margin-top: 1rem; padding: .85rem 1.4rem; border: 1px solid #181817; color: var(--paper); background: #181817; font-size: .65rem; font-weight: 600; letter-spacing: .13em; text-decoration: none; text-transform: uppercase; transition: color .25s ease, background .25s ease; }
+.event-card a:hover,
+.event-card a:focus-visible { color: #181817; background: var(--paper); }
+.event-card a:focus-visible { outline: 2px solid #181817; outline-offset: 3px; }
+
+.rundown-section { padding: 5rem 0; border-bottom: 1px solid var(--line); }
+.rundown-section .section-number { max-width: 560px; margin: 0 auto; color: var(--muted); }
+.rundown-list { position: relative; display: grid; gap: 0; max-width: 560px; margin: 0 auto; padding: 0; list-style: none; }
+.rundown-list::before { content: ''; position: absolute; top: .6rem; bottom: .6rem; left: 4.6rem; width: 1px; background: var(--line); }
+.rundown-list li { position: relative; display: grid; grid-template-columns: 4rem 1fr; gap: 1.5rem; align-items: baseline; padding: .85rem 0; }
+.rundown-list li::before { content: ''; position: absolute; top: 1.3rem; left: calc(4.6rem - 3px); width: 7px; height: 7px; border-radius: 50%; background: var(--paper); }
+.rundown-list time { color: var(--muted); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-align: right; }
+.rundown-list span { color: var(--text); font-family: var(--title-font); font-size: 1.2rem; line-height: 1.4; }
 
 .gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
 .gallery-grid img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1); }
@@ -691,21 +725,27 @@ onUnmounted(() => {
     left: 0;
     z-index: 80;
     justify-content: space-around;
-    gap: .25rem;
-    padding: .75rem .5rem calc(.75rem + env(safe-area-inset-bottom));
+    gap: .1rem;
+    padding: .75rem .25rem calc(.75rem + env(safe-area-inset-bottom));
     border-top: 1px solid var(--line);
     border-bottom: 0;
   }
   .section-nav a {
     display: flex;
     min-height: 44px;
-    flex: 1;
+    flex: 1 1 0;
+    min-width: 0;
     align-items: center;
     justify-content: center;
-    font-size: .55rem;
-    letter-spacing: .1em;
+    font-size: .5rem;
+    letter-spacing: .04em;
     text-align: center;
   }
+  .rundown-section { padding: 4rem 0; }
+  .rundown-list li { grid-template-columns: 3.4rem 1fr; gap: 1.25rem; }
+  .rundown-list::before { left: 4rem; }
+  .rundown-list li::before { left: calc(4rem - 3px); }
+  .rundown-list span { font-size: 1.05rem; }
   .hero-section { min-height: 70vh; padding: 5rem .25rem; }
   .couple-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .couple-divider { line-height: .5; }
@@ -713,6 +753,7 @@ onUnmounted(() => {
   .portrait-placeholder { width: min(78%, 250px); }
   .event-grid { grid-template-columns: 1fr; }
   .event-card { min-height: 0; }
+  .event-card a { display: flex; width: 100%; }
   .video-section { grid-template-columns: 1fr; gap: 2rem; padding: 4.5rem 0; }
   .video-intro { text-align: center; }
   .video-intro .section-title { text-align: center; }
