@@ -198,7 +198,7 @@
           <video
             v-else
             :src="directVideoUrl"
-            :poster="directVideoUrl.startsWith('/assets/videos/refda-tiara/') ? '/assets/videos/refda-tiara/poster.jpg' : undefined"
+            :poster="directVideoUrl.includes('/assets/videos/refda-tiara/prewedding.mp4') ? '/assets/videos/refda-tiara/poster.jpg' : bridePhotoSrc"
             controls
             playsinline
             preload="metadata"
