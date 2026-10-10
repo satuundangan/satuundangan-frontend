@@ -204,103 +204,146 @@
       </section>
 
       <section v-if="sectionVisibility.rundown" id="rundown" data-nav="rundown" class="snap-section rundown-section">
-        <span class="section-number">RUNDOWN</span>
-        <h2 class="section-title">Susunan acara</h2>
-        <ol class="rundown-list">
-          <li v-for="(item, index) in rundownItems" :key="`${item.time}-${index}`">
-            <time>{{ item.time }}</time>
-            <span>{{ item.title }}</span>
-          </li>
-        </ol>
+        <div class="section-inner">
+          <p class="eyebrow">RUNDOWN</p>
+          <h2 class="section-title">Susunan acara</h2>
+          <div class="panel-card">
+            <ol class="rundown-list">
+              <li v-for="(item, index) in rundownItems" :key="`${item.time}-${index}`">
+                <time>{{ item.time }}</time>
+                <span>{{ item.title }}</span>
+              </li>
+            </ol>
+          </div>
+        </div>
       </section>
 
       <section v-if="sectionVisibility.video" id="video" data-nav="video" class="snap-section video-section">
-        <div class="video-intro">
-          <span class="section-number">VIDEO / KENANGAN</span>
+        <div class="section-inner">
+          <p class="eyebrow">VIDEO / KENANGAN</p>
           <h2 class="section-title">Sepotong cerita kami</h2>
-          <p>Setelah 3 tahun bersama, Kami memutuskan untuk hidup selamanya</p>
-        </div>
-        <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl }">
-          <iframe
-            v-if="youtubeEmbedUrl"
-            :src="youtubeEmbedUrl"
-            title="Video Refda dan Tiara"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            allowfullscreen
-            loading="lazy"
-            referrerpolicy="strict-origin-when-cross-origin"
-          ></iframe>
-          <video
-            v-else
-            :src="directVideoUrl"
-            :poster="directVideoUrl.includes('/assets/videos/refda-tiara/prewedding.mp4') ? '/assets/videos/refda-tiara/poster.jpg' : bridePhotoSrc"
-            controls
-            playsinline
-            preload="metadata"
-            aria-label="Video Refda dan Tiara"
-          ></video>
+          <p class="video-copy">Setelah 3 tahun bersama, Kami memutuskan untuk hidup selamanya</p>
+          <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl }">
+            <iframe
+              v-if="youtubeEmbedUrl"
+              :src="youtubeEmbedUrl"
+              title="Video Refda dan Tiara"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowfullscreen
+              loading="lazy"
+              referrerpolicy="strict-origin-when-cross-origin"
+            ></iframe>
+            <video
+              v-else
+              :src="directVideoUrl"
+              :poster="directVideoUrl.includes('/assets/videos/refda-tiara/prewedding.mp4') ? '/assets/videos/refda-tiara/poster.jpg' : bridePhotoSrc"
+              controls
+              playsinline
+              preload="metadata"
+              aria-label="Video Refda dan Tiara"
+            ></video>
+          </div>
         </div>
       </section>
 
       <section v-if="sectionVisibility.gallery" id="gallery" data-nav="gallery" class="snap-section gallery-section">
-        <span class="section-number">POTRET</span>
-        <h2 class="section-title">Sebuah jeda, untuk dikenang</h2>
-        <div class="gallery-grid">
-          <img v-for="(item, index) in galleryItems" :key="`${item.src}-${index}`" :src="item.src" :alt="item.alt" loading="lazy" />
+        <div class="section-inner">
+          <p class="eyebrow">POTRET</p>
+          <h2 class="section-title">Sebuah jeda, untuk dikenang</h2>
+          <div class="gallery-card">
+            <GalleryInvitation :items="galleryItems" />
+          </div>
         </div>
       </section>
 
       <section v-if="sectionVisibility.gift" id="gift" data-nav="gift" class="snap-section gift-section">
-        <span class="section-number">TANDA KASIH</span>
-        <h2 class="section-title">Doa Anda adalah hadiah terbaik</h2>
-        <article v-for="(account, index) in data.bankAccounts || []" :key="`${account.accountNumber}-${index}`" class="gift-card">
-          <p class="eyebrow">{{ account.bankName }}</p>
-          <strong>{{ account.accountNumber }}</strong>
-          <span>{{ account.accountName }}</span>
-          <button type="button" @click="copyText(account.accountNumber)">Salin nomor rekening</button>
-        </article>
-        <p v-for="(address, index) in giftAddresses" :key="index" class="gift-address">{{ address }}</p>
+        <div class="section-inner">
+          <p class="eyebrow">TANDA KASIH</p>
+          <h2 class="section-title">Doa Anda adalah hadiah terbaik</h2>
+          <article v-for="(account, index) in data.bankAccounts || []" :key="`${account.accountNumber}-${index}`" class="gift-card">
+            <p class="eyebrow">{{ account.bankName }}</p>
+            <strong class="gift-number">{{ account.accountNumber }}</strong>
+            <span class="gift-holder">{{ account.accountName }}</span>
+            <button type="button" class="gift-copy" @click="copyText(account.accountNumber)">Salin nomor rekening</button>
+          </article>
+          <article v-for="(address, index) in giftAddresses" :key="`address-${index}`" class="gift-card">
+            <p class="eyebrow">Kirim kado</p>
+            <p class="gift-address">{{ address }}</p>
+            <button type="button" class="gift-copy" @click="copyText(address)">Salin alamat</button>
+          </article>
+        </div>
       </section>
 
       <section v-if="sectionVisibility.rsvp" id="rsvp" data-nav="rsvp" class="snap-section rsvp-section">
-        <span class="section-number">KONFIRMASI</span>
-        <h2 class="section-title">Kehadiran Anda Sangat Berarti</h2>
-        <p class="rsvp-intro">Mohon konfirmasikan kehadiran Anda melalui formulir berikut.</p>
+        <div class="section-inner">
+          <p class="eyebrow">KONFIRMASI</p>
+          <h2 class="section-title">Kehadiran Anda Sangat Berarti</h2>
+          <p class="rsvp-intro">Mohon konfirmasikan kehadiran Anda melalui formulir berikut.</p>
 
-        <form class="rsvp-form" @submit.prevent="submitRSVP">
-          <label for="rsvp-name">Nama</label>
-          <input id="rsvp-name" v-model.trim="rsvp.name" type="text" autocomplete="name" required />
+          <form class="rsvp-form panel-card" @submit.prevent="submitRSVP">
+            <label for="rsvp-name">Nama</label>
+            <input id="rsvp-name" v-model.trim="rsvp.name" type="text" autocomplete="name" required />
 
-          <fieldset>
-            <legend>Kehadiran</legend>
-            <div class="attendance-options">
-              <button
-                type="button"
-                :aria-pressed="rsvp.attendance === 'hadir'"
-                :class="{ selected: rsvp.attendance === 'hadir' }"
-                @click="rsvp.attendance = 'hadir'"
-              >Hadir</button>
-              <button
-                type="button"
-                :aria-pressed="rsvp.attendance === 'tidak'"
-                :class="{ selected: rsvp.attendance === 'tidak' }"
-                @click="rsvp.attendance = 'tidak'"
-              >Berhalangan</button>
+            <fieldset>
+              <legend>Kehadiran</legend>
+              <div class="attendance-options">
+                <button
+                  type="button"
+                  :aria-pressed="rsvp.attendance === 'hadir'"
+                  :class="{ selected: rsvp.attendance === 'hadir' }"
+                  @click="rsvp.attendance = 'hadir'"
+                >Hadir</button>
+                <button
+                  type="button"
+                  :aria-pressed="rsvp.attendance === 'tidak'"
+                  :class="{ selected: rsvp.attendance === 'tidak' }"
+                  @click="rsvp.attendance = 'tidak'"
+                >Berhalangan</button>
+              </div>
+            </fieldset>
+
+            <div v-if="rsvp.attendance === 'hadir'" class="rsvp-guests">
+              <label for="rsvp-guests">Jumlah tamu</label>
+              <input id="rsvp-guests" v-model.number="rsvp.totalGuests" type="number" min="1" max="10" inputmode="numeric" />
             </div>
-          </fieldset>
 
-          <label for="rsvp-message" class="rsvp-message-label">Ucapan dan doa <span>(opsional)</span></label>
-          <textarea id="rsvp-message" v-model.trim="rsvp.message" rows="4"></textarea>
-          <button class="submit-button" type="submit" :disabled="isSubmitting">
-            {{ isSubmitting ? 'Mengirim…' : 'Kirim konfirmasi' }}
-          </button>
-        </form>
+            <label for="rsvp-message" class="rsvp-message-label">Ucapan dan doa <span>(opsional)</span></label>
+            <textarea id="rsvp-message" v-model.trim="rsvp.message" rows="4"></textarea>
+            <button class="submit-button" type="submit" :disabled="isSubmitting">
+              {{ isSubmitting ? 'Mengirim…' : 'Kirim konfirmasi' }}
+            </button>
+          </form>
+
+          <div class="wishes">
+            <p class="eyebrow">Ucapan &amp; doa</p>
+            <p v-if="isLoadingWishes" class="wishes-state">Memuat ucapan…</p>
+            <p v-else-if="guestMessages.length === 0" class="wishes-state">Belum ada ucapan. Jadilah yang pertama.</p>
+            <div class="wishes-list" aria-live="polite">
+              <article v-for="(msg, index) in guestMessages" :key="msg.id || `${msg.guestName}-${index}`" class="wish-card">
+                <div class="wish-head">
+                  <strong class="wish-name">{{ msg.guestName }}</strong>
+                  <span class="wish-time">{{ timeAgo(msg.createdAt) }}</span>
+                </div>
+                <div class="wish-meta">
+                  <span class="wish-badge" :class="msg.rsvpStatus === 'hadir' ? 'is-attending' : 'is-absent'">
+                    {{ msg.rsvpStatus === 'hadir' ? 'Hadir' : 'Berhalangan' }}
+                  </span>
+                  <span v-if="msg.rsvpStatus === 'hadir' && msg.totalGuests > 0" class="wish-guests">{{ msg.totalGuests }} orang</span>
+                </div>
+                <p v-if="msg.message && msg.message !== '-'" class="wish-text">{{ msg.message }}</p>
+              </article>
+            </div>
+          </div>
+        </div>
       </section>
 
       <footer id="closing" data-nav="rsvp" class="snap-section closing-section">
-        <span class="eyebrow">Terima kasih atas doa dan kehadiran Anda</span>
-        <p>{{ data.groomName || 'Muhammad Refda' }} <span>&amp;</span> {{ data.brideName || 'Uk Tiara Ayu' }}</p>
-        <small>{{ data.footerText || 'Dengan penuh rasa syukur, Refda & Tiara' }}</small>
+        <div class="section-inner">
+          <svg class="closing-star" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
+          <p class="eyebrow">Terima kasih atas doa dan kehadiran Anda</p>
+          <p class="closing-names">{{ data.groomName || 'Muhammad Refda' }} <span>&amp;</span> {{ data.brideName || 'Uk Tiara Ayu' }}</p>
+          <small>{{ data.footerText || 'Dengan penuh rasa syukur, Refda & Tiara' }}</small>
+        </div>
       </footer>
     </div>
 
@@ -328,7 +371,8 @@
 <script setup>
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useToast } from 'vue-toastification'
-import { createGuestMessage } from '@/api/guestMessage'
+import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
+import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 
 const props = defineProps({
@@ -359,6 +403,8 @@ const prefersReducedMotion = ref(false)
 const scroller = ref(null)
 const navInner = ref(null)
 const activeSection = ref('home')
+const guestMessages = ref([])
+const isLoadingWishes = ref(false)
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 let spyObserver = null
 let reducedMotionQuery = null
@@ -610,13 +656,49 @@ watch(activeSection, () => {
 function copyText(value) {
   if (!value) return
   if (!navigator.clipboard?.writeText) {
-    toast.error('Nomor rekening belum bisa disalin.')
+    toast.error('Belum bisa disalin.')
     return
   }
   navigator.clipboard.writeText(value).then(
-    () => toast.success('Nomor rekening disalin.'),
-    () => toast.error('Nomor rekening belum bisa disalin.'),
+    () => toast.success('Berhasil disalin.'),
+    () => toast.error('Belum bisa disalin.'),
   )
+}
+
+function timeAgo(date) {
+  const time = new Date(date).getTime()
+  if (!date || Number.isNaN(time)) return ''
+  const seconds = Math.max(0, Math.floor((Date.now() - time) / 1000))
+  if (seconds < 60) return 'Baru saja'
+  const minutes = Math.floor(seconds / 60)
+  if (minutes < 60) return `${minutes} menit lalu`
+  const hours = Math.floor(minutes / 60)
+  if (hours < 24) return `${hours} jam lalu`
+  const days = Math.floor(hours / 24)
+  if (days < 30) return `${days} hari lalu`
+  return `${Math.floor(days / 30)} bulan lalu`
+}
+
+async function loadWishes() {
+  const id = data.value.id
+  if (!id || id === 0 || id === 'live-preview') {
+    const now = Date.now()
+    guestMessages.value = [
+      { guestName: 'Keluarga Besar', rsvpStatus: 'hadir', totalGuests: 2, message: 'Selamat menempuh hidup baru, semoga menjadi keluarga yang sakinah, mawaddah, warahmah.', createdAt: new Date(now - 12 * 60 * 1000).toISOString() },
+      { guestName: 'Sahabat Kampus', rsvpStatus: 'hadir', totalGuests: 1, message: 'Bahagia selalu untuk kalian berdua.', createdAt: new Date(now - 3 * 60 * 60 * 1000).toISOString() },
+      { guestName: 'Rekan Kerja', rsvpStatus: 'tidak', totalGuests: 0, message: 'Mohon maaf belum bisa hadir, doa terbaik untuk kalian.', createdAt: new Date(now - 26 * 60 * 60 * 1000).toISOString() },
+    ]
+    return
+  }
+  isLoadingWishes.value = true
+  try {
+    const result = await getGuestMessagesByInvitationId(id)
+    guestMessages.value = Array.isArray(result) ? result : result?.data || []
+  } catch {
+    guestMessages.value = []
+  } finally {
+    isLoadingWishes.value = false
+  }
 }
 
 function usePortraitFallback(event, person) {
@@ -649,10 +731,20 @@ async function submitRSVP() {
       guestName: rsvp.value.name,
       message: rsvp.value.message || '-',
       rsvpStatus: rsvp.value.attendance,
-      totalGuests: rsvp.value.attendance === 'hadir' ? 1 : 0,
+      totalGuests:
+        rsvp.value.attendance === 'hadir'
+          ? Math.min(10, Math.max(1, Number(rsvp.value.totalGuests) || 1))
+          : 0,
     })
     toast.success('Terima kasih atas konfirmasi Anda.')
-    rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
+    const guestName = data.value.guestName
+    rsvp.value = {
+      name: guestName && guestName !== 'Tamu Undangan' ? guestName : '',
+      attendance: 'hadir',
+      totalGuests: 1,
+      message: '',
+    }
+    await loadWishes()
   } catch {
     toast.error('Konfirmasi belum terkirim. Silakan coba kembali.')
   } finally {
@@ -667,6 +759,8 @@ watch(
   },
   { immediate: true },
 )
+
+watch(() => data.value.id, loadWishes, { immediate: true })
 
 onMounted(() => {
   reducedMotionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)') || null
@@ -742,7 +836,6 @@ onUnmounted(() => {
 .cover-content { position: relative; z-index: 2; width: min(760px, 100%); padding: 3rem 1.5rem; text-align: center; }
 .hairline { display: block; width: 48px; height: 1px; margin: .9rem auto 1.6rem; background: linear-gradient(90deg, transparent, rgba(244, 242, 237, .6), transparent); }
 .eyebrow { color: rgba(244, 242, 237, .7); font-size: .62rem; font-weight: 600; letter-spacing: .3em; text-transform: uppercase; }
-.section-number { color: var(--muted); font-size: .65rem; font-weight: 600; letter-spacing: .27em; text-transform: uppercase; }
 .cover-names { display: grid; justify-items: center; gap: .03em; font-family: var(--title-font); font-size: clamp(2.2rem, calc(10vw * var(--title-scale)), 5rem); font-weight: 500; line-height: .96; letter-spacing: -.055em; overflow-wrap: anywhere; }
 .ampersand { color: #bcbab3; font-family: var(--title-font); font-size: .53em; font-style: italic; font-weight: 400; line-height: 1.2; }
 .cover-date { margin-top: 1.5rem; color: rgba(239, 237, 231, .8); font-size: .66rem; letter-spacing: .2em; text-transform: uppercase; }
@@ -814,61 +907,78 @@ onUnmounted(() => {
 .dress-code__text { margin-top: .5rem; color: var(--text); font-family: var(--title-font); font-size: 1.1rem; font-style: italic; }
 
 .video-section { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, 390px); align-items: center; gap: clamp(2rem, 7vw, 6rem); padding-top: 5rem; border-bottom: 1px solid var(--line); }
-.video-intro .section-number { color: var(--muted); }
-.video-intro .section-title { margin: 1.2rem 0 1.5rem; text-align: left; }
-.video-intro > p { max-width: 30ch; color: var(--muted); font-family: var(--title-font); font-size: 1.3rem; line-height: 1.5; }
-.video-frame { width: 100%; max-width: 390px; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid var(--line); background: #151515; }
-.video-frame.is-youtube { aspect-ratio: 16 / 9; }
+.rundown-section,
+.gallery-section,
+.rsvp-section { background: #0c0c0c; }
+.video-section,
+.gift-section,
+.closing-section { background: #101010; }
+
+.panel-card { width: 100%; padding: 1.75rem 1.25rem; border: 1px solid rgba(244, 242, 237, .15); border-radius: 2rem; background: #141414; text-align: left; }
+
+.rundown-list { position: relative; display: grid; margin: 0; padding: 0; list-style: none; }
+.rundown-list::before { content: ''; position: absolute; top: .6rem; bottom: .6rem; left: 4.35rem; width: 1px; background: var(--line); }
+.rundown-list li { position: relative; display: grid; grid-template-columns: 3.6rem 1fr; gap: 1.5rem; align-items: baseline; padding: .7rem 0; }
+.rundown-list li::before { content: ''; position: absolute; top: 1.15rem; left: calc(4.35rem - 3px); width: 7px; height: 7px; border-radius: 50%; background: var(--paper); }
+.rundown-list time { color: var(--muted); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-align: right; }
+.rundown-list span { color: var(--text); font-family: var(--title-font); font-size: 1.1rem; line-height: 1.4; }
+
+.video-copy { max-width: 30ch; margin: 0 auto 1.5rem; color: var(--muted); font-family: var(--title-font); font-size: 1.15rem; line-height: 1.5; }
+.video-frame { width: 100%; max-width: 330px; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.5rem; background: #151515; }
+.video-frame.is-youtube { max-width: 100%; aspect-ratio: 16 / 9; }
 .video-frame iframe,
 .video-frame video { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
 .video-frame video { filter: grayscale(1); }
 
-.rsvp-section { color: #181817; background: var(--paper); }
-.rsvp-section .section-number { display: block; max-width: 760px; margin: 0 auto; color: #85827b; }
-.section-number { display: block; }
-.rsvp-section .section-title { color: #181817; }
+.gallery-card { width: 100%; padding: 1rem .25rem; border: 1px solid rgba(244, 242, 237, .15); border-radius: 2rem; background: #141414; }
+.gallery-card :deep(img) { filter: grayscale(1); }
+/* GalleryInvitation teleports its lightbox to <body>, so scoped/:deep rules cannot reach it; keep noir photos grayscale there too. */
+:global(.lightbox-overlay .lightbox-image) { filter: grayscale(1); }
 
-.rundown-section { padding-top: 5rem; border-bottom: 1px solid var(--line); }
-.rundown-section .section-number { max-width: 560px; margin: 0 auto; color: var(--muted); }
-.rundown-section .section-title,
-.video-section .section-title,
-.gallery-section .section-title,
-.gift-section .section-title { color: var(--text); }
-.rundown-list { position: relative; display: grid; gap: 0; max-width: 560px; margin: 0 auto; padding: 0; list-style: none; }
-.rundown-list::before { content: ''; position: absolute; top: .6rem; bottom: .6rem; left: 4.6rem; width: 1px; background: var(--line); }
-.rundown-list li { position: relative; display: grid; grid-template-columns: 4rem 1fr; gap: 1.5rem; align-items: baseline; padding: .85rem 0; }
-.rundown-list li::before { content: ''; position: absolute; top: 1.3rem; left: calc(4.6rem - 3px); width: 7px; height: 7px; border-radius: 50%; background: var(--paper); }
-.rundown-list time { color: var(--muted); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-align: right; }
-.rundown-list span { color: var(--text); font-family: var(--title-font); font-size: 1.2rem; line-height: 1.4; }
+.gift-card { display: grid; justify-items: center; gap: .55rem; width: 100%; margin-bottom: 1rem; padding: 1.5rem; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.5rem; background: linear-gradient(135deg, #171717, #0f0f0f); text-align: center; }
+.gift-number { color: var(--text); font-family: var(--title-font); font-size: 1.6rem; font-weight: 500; letter-spacing: .04em; }
+.gift-holder { color: var(--muted); font-size: .8rem; }
+.gift-address { color: var(--text); font-family: var(--title-font); font-size: 1.05rem; line-height: 1.6; }
+.gift-copy { min-height: 44px; margin-top: .5rem; padding: .65rem 1.2rem; border: 1px solid rgba(244, 242, 237, .4); border-radius: 999px; color: var(--paper); background: transparent; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
+.gift-copy:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
 
-.gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
-.gallery-grid img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; filter: grayscale(1); }
-.gift-section { text-align: center; }
-.gift-card { display: grid; justify-items: center; gap: .55rem; max-width: 420px; margin: 1rem auto; padding: 1.5rem; border: 1px solid var(--line); }
-.gift-card strong { font-family: var(--title-font); font-size: 1.7rem; font-weight: 500; letter-spacing: .04em; }
-.gift-card > span { color: var(--muted); font-size: .8rem; }
-.gift-card button { min-height: 44px; margin-top: .5rem; padding: .65rem 1rem; border: 1px solid var(--line); color: var(--text); background: transparent; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase; }
-.gift-address { color: var(--muted); font-family: var(--title-font); font-size: 1rem; line-height: 1.6; }
-
-.rsvp-intro { margin: -1.4rem auto 2rem; color: #66635d; font-family: var(--title-font); text-align: center; }
-.rsvp-form { display: grid; gap: .75rem; max-width: 540px; margin: 0 auto; }
+.rsvp-intro { margin: -1rem auto 1.6rem; color: var(--muted); font-family: var(--title-font); text-align: center; }
+.rsvp-form { display: grid; gap: .6rem; max-width: 540px; }
 .rsvp-form label,
-.rsvp-form legend { color: #4f4d48; font-size: .62rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
-.rsvp-form label span { color: #8a877f; font-weight: 400; letter-spacing: .04em; text-transform: none; }
-.rsvp-form label.rsvp-message-label { margin-top: .5rem; font-size: .85rem; letter-spacing: .14em; text-align: center; }
+.rsvp-form legend { color: rgba(244, 242, 237, .7); font-size: .62rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.rsvp-form label span { color: var(--muted); font-weight: 400; letter-spacing: .04em; text-transform: none; }
+.rsvp-form label.rsvp-message-label { margin-top: .5rem; color: var(--text); font-size: .85rem; letter-spacing: .14em; text-align: center; }
 .rsvp-form input,
-.rsvp-form textarea { width: 100%; min-height: 48px; margin-bottom: .75rem; padding: .75rem .2rem; border: 0; border-bottom: 1px solid rgba(24, 24, 23, .5); border-radius: 0; color: #181817; background: transparent; font: inherit; }
+.rsvp-form textarea { width: 100%; min-height: 48px; padding: .75rem 1rem; border: 1px solid rgba(244, 242, 237, .2); border-radius: .9rem; color: var(--text); background: #0c0c0c; font: inherit; }
+.rsvp-form input:focus,
+.rsvp-form textarea:focus { border-color: var(--paper); outline: none; }
 .rsvp-form textarea { min-height: 100px; resize: vertical; }
 .rsvp-form fieldset { margin: .5rem 0; padding: 0; border: 0; }
+.rsvp-guests { display: grid; gap: .6rem; }
 .attendance-options { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .7rem; }
-.attendance-options button { min-height: 48px; border: 1px solid #232321; color: #232321; background: transparent; font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; }
-.attendance-options button.selected { color: var(--paper); background: #181817; }
-.submit-button { min-height: 50px; margin-top: .4rem; border: 1px solid #181817; color: var(--paper); background: #181817; font-size: .66rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
+.attendance-options button { min-height: 48px; border: 1px solid rgba(244, 242, 237, .35); border-radius: 999px; color: var(--paper); background: transparent; font-size: .66rem; letter-spacing: .1em; text-transform: uppercase; }
+.attendance-options button.selected { border-color: var(--paper); color: var(--ink); background: var(--paper); }
+.submit-button { min-height: 50px; margin-top: .4rem; border: 1px solid var(--paper); border-radius: 999px; color: var(--ink); background: var(--paper); font-size: .66rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase; }
 .submit-button:disabled { opacity: .6; }
 
-.closing-section { display: grid; align-content: center; justify-items: center; gap: 1rem; text-align: center; }
-.closing-section > p { margin: 0; font-family: var(--title-font); font-size: clamp(2rem, 6vw, 3.6rem); }
-.closing-section > p span { color: #aaa79f; font-style: italic; }
+.wishes { display: flex; flex-direction: column; align-items: center; gap: .8rem; width: 100%; max-width: 540px; margin-top: 2rem; }
+.wishes-state { color: var(--muted); font-size: .8rem; }
+.wishes-list { display: grid; gap: .6rem; width: 100%; max-height: 22rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; text-align: left; }
+.wishes-list::-webkit-scrollbar { display: none; }
+.wish-card { padding: .9rem 1rem; border: 1px solid rgba(244, 242, 237, .12); border-radius: 1.25rem; background: rgba(255, 255, 255, .03); }
+.wish-head { display: flex; align-items: baseline; justify-content: space-between; gap: .75rem; }
+.wish-name { color: var(--text); font-weight: 600; }
+.wish-time { color: var(--muted); font-size: .62rem; }
+.wish-meta { display: flex; align-items: center; gap: .6rem; margin-top: .4rem; }
+.wish-badge { padding: .15rem .6rem; border: 1px solid rgba(244, 242, 237, .45); border-radius: 999px; color: var(--paper); font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; }
+.wish-badge.is-absent { border-color: rgba(170, 168, 162, .35); color: var(--muted); }
+.wish-guests { color: var(--muted); font-size: .68rem; }
+.wish-text { margin-top: .5rem; color: var(--muted); font-family: var(--title-font); font-size: 1rem; font-style: italic; line-height: 1.5; }
+
+.closing-star { width: 14px; height: 14px; color: var(--paper); }
+.closing-names { margin: 0; color: var(--text); font-family: var(--title-font); font-size: clamp(2rem, 6vw, 3.6rem); }
+.closing-names span { color: #aaa79f; font-style: italic; }
+.closing-section .section-inner { gap: 1rem; }
 .closing-section small { max-width: 430px; color: var(--muted); font-family: var(--title-font); font-size: .95rem; line-height: 1.6; }
 
 /* Fixed bottom glass navigation */
@@ -901,17 +1011,9 @@ onUnmounted(() => {
   .guest-line { margin-top: 2.2rem; }
   .rsvp-section .section-title { max-width: 340px; font-size: clamp(1.75rem, 8.4vw, 2.2rem); }
   .rundown-list li { grid-template-columns: 3.4rem 1fr; gap: 1.25rem; }
-  .rundown-list::before { left: 4rem; }
-  .rundown-list li::before { left: calc(4rem - 3px); }
+  .rundown-list::before { left: 4.025rem; }
+  .rundown-list li::before { left: calc(4.025rem - 3px); }
   .rundown-list span { font-size: 1.05rem; }
-  .video-section { grid-template-columns: 1fr; gap: 2rem; }
-  .video-intro { text-align: center; }
-  .video-intro .section-title { text-align: center; }
-  .video-intro > p { margin: 0 auto; font-size: 1.15rem; }
-  .video-frame { max-width: 330px; margin: 0 auto; }
-  .video-frame.is-youtube { max-width: 100%; }
-  .gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .gallery-grid img:last-child:nth-child(odd) { grid-column: span 2; aspect-ratio: 16 / 9; }
 }
 
 @media (prefers-reduced-motion: reduce) {
