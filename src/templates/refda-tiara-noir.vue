@@ -111,7 +111,8 @@
         </h1>
         <div class="hero-rule"><span></span><i aria-hidden="true">✳</i><span></span></div>
         <p class="hero-date">{{ formatDate(eventDate) }}</p>
-        <p class="hero-copy">
+        <p v-if="heroCopy" class="hero-copy">{{ heroCopy }}</p>
+        <p v-else class="hero-copy">
           Dengan memohon rahmat dan ridha Allah SWT, kami bermaksud mengundang Anda untuk hadir
           dalam hari bahagia kami.
         </p>
@@ -320,6 +321,11 @@ const isSubmitting = ref(false)
 const prefersReducedMotion = ref(false)
 const invitationContent = ref(null)
 const rsvp = ref({ name: '', attendance: 'hadir', message: '' })
+
+// Paste the hero text between the quotes to override the default invitation line.
+// `data.heroCopy` (from the invitation content) takes priority when set.
+const HERO_COPY = ''
+const heroCopy = computed(() => String(data.value.heroCopy || HERO_COPY).trim())
 
 const stars = Array.from({ length: 42 }, (_, index) => ({
   id: index,
