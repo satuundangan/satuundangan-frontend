@@ -322,11 +322,6 @@ const prefersReducedMotion = ref(false)
 const invitationContent = ref(null)
 const rsvp = ref({ name: '', attendance: 'hadir', message: '' })
 
-// Paste the hero text between the quotes to override the default invitation line.
-// `data.heroCopy` (from the invitation content) takes priority when set.
-const HERO_COPY = ''
-const heroCopy = computed(() => String(data.value.heroCopy || HERO_COPY).trim())
-
 const stars = Array.from({ length: 42 }, (_, index) => ({
   id: index,
   left: `${(index * 47 + 9) % 100}%`,
@@ -343,6 +338,13 @@ const fireflies = Array.from({ length: 7 }, (_, index) => ({
 }))
 
 const designSettings = computed(() => data.value.designSettings || {})
+
+// Studio writes `designSettings.heroCopy`. `data.heroCopy` and `HERO_COPY` are legacy
+// fallbacks. When all are empty the template's default sentence (v-else) is shown.
+const HERO_COPY = ''
+const heroCopy = computed(() =>
+  String(designSettings.value.heroCopy || data.value.heroCopy || HERO_COPY || '').trim(),
+)
 const backgroundType = computed(() => designSettings.value.backgroundType || 'image')
 const isPlaceholderMedia = (url) => !url || /\/(?:default-groom|default-bride|default-couple)\.(?:png|jpe?g|webp)(?:\?|$)/i.test(url)
 const backgroundUrl = computed(() => {
@@ -416,7 +418,9 @@ const events = computed(() => {
     { label: 'Resepsi', ...resepsi },
   ].filter((event) => event.dateTime || event.description || event.mapUrl)
 })
-const showRundown = computed(() => !data.value.hideRundown)
+const showRundown = computed(
+  () => !(designSettings.value.hideRundown || data.value.hideRundown),
+)
 const rundownItems = computed(() => {
   const custom = data.value.rundown
   const items = Array.isArray(custom) ? custom.filter((i) => i && (i.time || i.title)) : []
@@ -464,8 +468,9 @@ function formatDate(value) {
 // The displayed time is pinned (not derived from dateTime): the stored dateTime
 // may be a UTC value that would render at the wrong WIB hour.
 function eventTimeRange() {
-  const start = data.value.eventStartTime || DEFAULT_EVENT_START
-  const end = data.value.eventEndTime || DEFAULT_EVENT_END
+  const start =
+    designSettings.value.eventStartTime || data.value.eventStartTime || DEFAULT_EVENT_START
+  const end = designSettings.value.eventEndTime || data.value.eventEndTime || DEFAULT_EVENT_END
   return `${String(start).replace(':', '.')} – ${String(end).replace(':', '.')} WIB`
 }
 
