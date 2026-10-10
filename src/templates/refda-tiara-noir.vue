@@ -244,7 +244,7 @@
       </section>
 
       <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="rsvp-section">
-        <span class="section-number">08 / KONFIRMASI</span>
+        <span class="section-number">KONFIRMASI</span>
         <h2 class="section-title">Kehadiran Anda Sangat Berarti</h2>
         <p class="rsvp-intro">Mohon konfirmasikan kehadiran Anda melalui formulir berikut.</p>
 
