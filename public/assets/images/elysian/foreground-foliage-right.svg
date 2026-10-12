@@ -1,0 +1,76 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 650" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <linearGradient id="leafGradR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#4a5f4f" />
+      <stop offset="60%" stop-color="#2d3d31" />
+      <stop offset="100%" stop-color="#1b251e" />
+    </linearGradient>
+    <linearGradient id="leafHighlightR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#76947c" />
+      <stop offset="100%" stop-color="#3d5242" />
+    </linearGradient>
+    <linearGradient id="roseGradR" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f5e1cb" />
+      <stop offset="50%" stop-color="#dfb996" />
+      <stop offset="100%" stop-color="#a87c56" />
+    </linearGradient>
+    <linearGradient id="stemGradR" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3a4b3d" />
+      <stop offset="100%" stop-color="#1d261e" />
+    </linearGradient>
+    <filter id="softShadowR" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#0b100d" flood-opacity="0.45" />
+    </filter>
+  </defs>
+
+  <g filter="url(#softShadowR)" transform="translate(500, 0) scale(-1, 1)">
+    <!-- Mirrored Branch & Foliage matching Left Elegance -->
+    <path d="M-40 680 Q80 520 120 380 T260 140 Q320 60 390 -20" fill="none" stroke="url(#stemGradR)" stroke-width="8" stroke-linecap="round" />
+    <path d="M40 560 Q160 480 200 360" fill="none" stroke="url(#stemGradR)" stroke-width="5" stroke-linecap="round" />
+    <path d="M110 400 Q200 380 280 320" fill="none" stroke="url(#stemGradR)" stroke-width="4" stroke-linecap="round" />
+    <path d="M180 250 Q280 230 330 160" fill="none" stroke="url(#stemGradR)" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Leaves -->
+    <path d="M0 620 C40 580 80 570 90 530 C60 520 20 540 0 620 Z" fill="url(#leafGradR)" />
+    <path d="M0 620 Q50 560 90 530" fill="none" stroke="url(#leafHighlightR)" stroke-width="1.2" opacity="0.7" />
+
+    <path d="M50 540 C110 510 130 480 150 430 C110 440 70 470 50 540 Z" fill="url(#leafHighlightR)" />
+    <path d="M50 540 Q110 480 150 430" fill="none" stroke="#a3c4a9" stroke-width="1.2" opacity="0.6" />
+
+    <path d="M120 460 C170 420 220 420 230 370 C190 370 140 400 120 460 Z" fill="url(#leafGradR)" />
+    <path d="M120 460 Q180 410 230 370" fill="none" stroke="url(#leafHighlightR)" stroke-width="1.2" opacity="0.7" />
+
+    <path d="M180 370 C240 360 270 330 310 300 C270 290 220 310 180 370 Z" fill="url(#leafHighlightR)" />
+    <path d="M180 370 Q240 330 310 300" fill="none" stroke="#a3c4a9" stroke-width="1.2" opacity="0.6" />
+
+    <path d="M210 280 C270 260 290 220 330 180 C290 180 240 210 210 280 Z" fill="url(#leafGradR)" />
+    <path d="M210 280 Q270 230 330 180" fill="none" stroke="url(#leafHighlightR)" stroke-width="1.2" opacity="0.7" />
+
+    <path d="M280 170 C340 140 370 100 410 60 C370 60 320 90 280 170 Z" fill="url(#leafHighlightR)" />
+
+    <ellipse cx="140" cy="500" rx="20" ry="40" transform="rotate(-35 140 500)" fill="url(#leafGradR)" />
+    <ellipse cx="190" cy="330" rx="16" ry="32" transform="rotate(-50 190 330)" fill="url(#leafGradR)" />
+    <ellipse cx="270" cy="220" rx="14" ry="28" transform="rotate(-40 270 220)" fill="url(#leafGradR)" />
+
+    <!-- Champagne Rose Main Bloom -->
+    <g transform="translate(140, 410)">
+      <circle cx="0" cy="0" r="42" fill="url(#roseGradR)" opacity="0.95" />
+      <path d="M-30 -10 C-30 -30 0 -42 20 -35 C40 -28 42 -5 30 20 C18 42 -10 40 -25 25 Z" fill="#ecd3b8" opacity="0.9" />
+      <path d="M-20 -5 C-20 -22 5 -28 18 -22 C30 -16 30 0 20 16 C10 30 -5 28 -16 16 Z" fill="#f8e8d6" />
+      <path d="M-8 -3 Q0 -14 10 -6 Q16 4 6 12 Q-6 12 -7 2 Q-7 -5 2 -7" fill="none" stroke="#b2845c" stroke-width="2.5" stroke-linecap="round" />
+    </g>
+
+    <!-- Champagne Rose Bud -->
+    <g transform="translate(240, 260) scale(0.65)">
+      <circle cx="0" cy="0" r="32" fill="url(#roseGradR)" />
+      <path d="M-22 -8 C-22 -22 0 -30 15 -25 C28 -20 30 -5 22 15 C14 30 -8 28 -18 18 Z" fill="#f8e8d6" />
+      <path d="M-6 -2 Q0 -10 7 -4 Q11 3 4 8" fill="none" stroke="#b2845c" stroke-width="2" stroke-linecap="round" />
+    </g>
+
+    <circle cx="90" cy="370" r="5" fill="#e9c882" />
+    <circle cx="105" cy="355" r="4" fill="#e9c882" />
+    <circle cx="78" cy="385" r="4.5" fill="#e9c882" />
+    <circle cx="210" cy="210" r="4.5" fill="#e9c882" />
+    <circle cx="225" cy="195" r="4" fill="#e9c882" />
+  </g>
+</svg>

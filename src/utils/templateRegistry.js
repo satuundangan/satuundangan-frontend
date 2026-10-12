@@ -48,6 +48,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'dayak-ngaju-benang-bintik': `/assets/templates/dayak-ngaju-benang-bintik.png?${THUMB_VERSION}`,
   'demon-slayer': `/assets/templates/demon-slayer.png?${THUMB_VERSION}`,
   'editorial-magazine': `/assets/templates/editorial-magazine.png?${THUMB_VERSION}`,
+  'elysian-parallax': `/assets/templates/elysian-parallax.png?${THUMB_VERSION}`,
   'islami-emas': `/assets/templates/islami-emas.png?${THUMB_VERSION}`,
   'jawa-truntum': `/assets/templates/jawa-truntum.png?${THUMB_VERSION}`,
   'kimi-no-na-wa': `/assets/templates/kimi-no-na-wa.png?${THUMB_VERSION}`,

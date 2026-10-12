@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 700" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="goldArch" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fdf5e2" />
+      <stop offset="25%" stop-color="#dfb974" />
+      <stop offset="50%" stop-color="#9d7838" />
+      <stop offset="75%" stop-color="#e8cf96" />
+      <stop offset="100%" stop-color="#b68945" />
+    </linearGradient>
+    <linearGradient id="goldTrim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f9f1d8" />
+      <stop offset="50%" stop-color="#c99e52" />
+      <stop offset="100%" stop-color="#7a5a22" />
+    </linearGradient>
+    <filter id="archGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000000" flood-opacity="0.35" />
+    </feDropShadow>
+  </defs>
+
+  <g filter="url(#archGlow)">
+    <!-- Outer Arch Contour -->
+    <path d="M40 700 L40 240 C40 120 134 24 250 24 C366 24 460 120 460 240 L460 700" fill="none" stroke="url(#goldArch)" stroke-width="4.5" />
+    
+    <!-- Inner Fine Hairline Arch -->
+    <path d="M54 700 L54 244 C54 132 142 42 250 42 C358 42 446 132 446 244 L446 700" fill="none" stroke="url(#goldTrim)" stroke-width="1.5" stroke-dasharray="8 4" opacity="0.85" />
+
+    <!-- Keystone Crest (Top Crown) -->
+    <g transform="translate(250, 24)">
+      <polygon points="0,-16 12,-6 10,12 -10,12 -12,-6" fill="url(#goldArch)" />
+      <circle cx="0" cy="0" r="3" fill="#ffffff" />
+    </g>
+
+    <!-- Ornamental Corner Flourishes (Left & Right Imposts) -->
+    <g transform="translate(40, 240)">
+      <circle cx="0" cy="0" r="7" fill="url(#goldArch)" />
+      <path d="M-10 -15 Q-5 0 0 0 Q5 0 10 -15" fill="none" stroke="url(#goldTrim)" stroke-width="2" />
+    </g>
+    <g transform="translate(460, 240)">
+      <circle cx="0" cy="0" r="7" fill="url(#goldArch)" />
+      <path d="M-10 -15 Q-5 0 0 0 Q5 0 10 -15" fill="none" stroke="url(#goldTrim)" stroke-width="2" />
+    </g>
+  </g>
+</svg>

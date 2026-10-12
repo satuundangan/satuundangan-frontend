@@ -208,6 +208,7 @@ onMounted(async () => {
         'moroccan-marrakech-gold': 'wedding-sacred-ceremony.mp3',
         'royal-emerald': 'wedding-sacred-ceremony.mp3',
         'old-money-monogram': 'wedding-elegant-firstdance.mp3',
+        'elysian-parallax': 'wedding-romantic-aisle.mp3',
         'dark-elegant': 'wedding-elegant-firstdance.mp3',
         'modern-noir': 'wedding-warm-reception.mp3',
         'editorial-magazine': 'wedding-elegant-firstdance.mp3',

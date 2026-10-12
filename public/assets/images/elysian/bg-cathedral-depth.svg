@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 900" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bgGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#141a15" />
+      <stop offset="40%" stop-color="#1c241e" />
+      <stop offset="80%" stop-color="#28332b" />
+      <stop offset="100%" stop-color="#19201a" />
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="50%" cy="40%" r="50%">
+      <stop offset="0%" stop-color="#fdf4dc" stop-opacity="0.35" />
+      <stop offset="45%" stop-color="#e9c882" stop-opacity="0.15" />
+      <stop offset="100%" stop-color="#1c241e" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="mistGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#28332b" stop-opacity="0" />
+      <stop offset="70%" stop-color="#f4eee1" stop-opacity="0.12" />
+      <stop offset="100%" stop-color="#141a15" stop-opacity="0.7" />
+    </linearGradient>
+    <linearGradient id="castleGrad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2d3a31" stop-opacity="0.6" />
+      <stop offset="100%" stop-color="#141a15" stop-opacity="0.9" />
+    </linearGradient>
+  </defs>
+
+  <!-- Sky Base -->
+  <rect width="1200" height="900" fill="url(#bgGrad)" />
+
+  <!-- Warm Atmospheric Golden Glow -->
+  <circle cx="600" cy="380" r="480" fill="url(#sunGlow)" />
+
+  <!-- Distant Mountain Silhouettes -->
+  <path d="M0 520 Q220 420 440 480 T900 450 Q1060 410 1200 490 L1200 900 L0 900 Z" fill="#1b241d" opacity="0.65" />
+  <path d="M0 580 Q320 490 620 540 T1200 520 L1200 900 L0 900 Z" fill="#18201a" opacity="0.85" />
+
+  <!-- Grand Roman Arched Palace / Cathedral Silhouette in Distance -->
+  <g fill="url(#castleGrad)" opacity="0.75">
+    <!-- Center Grand Dome & Arch -->
+    <path d="M520 460 L520 380 Q600 310 680 380 L680 460 Z" />
+    <path d="M550 460 L550 400 Q600 350 650 400 L650 460 Z" fill="#28332b" opacity="0.8" />
+    <!-- Spires & Turrets -->
+    <path d="M430 470 L460 470 L445 350 Z" />
+    <path d="M740 470 L770 470 L755 350 Z" />
+    <path d="M480 470 L510 470 L495 320 Z" />
+    <path d="M690 470 L720 470 L705 320 Z" />
+    <!-- Colonnade Pillars -->
+    <rect x="360" y="440" width="16" height="60" rx="3" />
+    <rect x="390" y="440" width="16" height="60" rx="3" />
+    <rect x="794" y="440" width="16" height="60" rx="3" />
+    <rect x="824" y="440" width="16" height="60" rx="3" />
+  </g>
+
+  <!-- Rolling Terrace Steps & Garden Trellis Silhouette -->
+  <path d="M0 660 Q300 600 600 630 T1200 610 L1200 900 L0 900 Z" fill="#151b16" />
+  <path d="M0 740 Q400 700 800 720 T1200 710 L1200 900 L0 900 Z" fill="#111612" />
+
+  <!-- Subtle Starlight / Firefly Dust -->
+  <g fill="#e9c882" opacity="0.5">
+    <circle cx="210" cy="220" r="1.8" />
+    <circle cx="340" cy="180" r="2.2" />
+    <circle cx="580" cy="140" r="1.5" />
+    <circle cx="720" cy="190" r="2.0" />
+    <circle cx="890" cy="160" r="1.8" />
+    <circle cx="980" cy="240" r="2.4" />
+    <circle cx="450" cy="260" r="1.4" />
+    <circle cx="640" cy="230" r="1.6" />
+  </g>
+
+  <!-- Atmospheric Ground Fog / Mist Layer -->
+  <rect x="0" y="550" width="1200" height="350" fill="url(#mistGrad)" />
+</svg>
