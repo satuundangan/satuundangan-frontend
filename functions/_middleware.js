@@ -18,6 +18,28 @@ import {
   shouldSkipSeo,
 } from '../src/seo/seoRoutes.js'
 
+const SECURITY_HEADERS = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'Content-Security-Policy':
+    "default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; form-action 'self' https://api.satuundangan.id https://*.midtrans.com https://*.veritrans.co.id; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://challenges.cloudflare.com https://app.midtrans.com https://app.sandbox.midtrans.com https://*.cloudfront.net https://*.midtrans.com https://*.veritrans.co.id https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com https://*.cloudfront.net; font-src 'self' data: https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https:; media-src 'self' data: blob: https:; connect-src 'self' https://api.satuundangan.id https://api-js.mixpanel.com https://*.mixpanel.com https://*.google-analytics.com https://challenges.cloudflare.com https://*.cloudflare.com https://*.midtrans.com https://*.veritrans.co.id https://*.cloudfront.net https://nominatim.openstreetmap.org; frame-src 'self' https://www.youtube.com https://youtube.com https://www.youtube-nocookie.com https://maps.google.com https://www.google.com https://challenges.cloudflare.com https://*.midtrans.com https://*.veritrans.co.id; worker-src 'self' blob:; manifest-src 'self'; upgrade-insecure-requests",
+  'X-Frame-Options': 'SAMEORIGIN',
+  'Permissions-Policy':
+    'camera=(self), microphone=(), geolocation=(), payment=(self "https://app.midtrans.com" "https://app.sandbox.midtrans.com")',
+}
+
+function addSecurityHeaders(response) {
+  const headers = new Headers(response.headers)
+  for (const [name, value] of Object.entries(SECURITY_HEADERS)) {
+    headers.set(name, value)
+  }
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  })
+}
+
 async function fetchArticle(url, slug) {
   try {
     const res = await fetch(
@@ -92,13 +114,17 @@ export async function onRequest(context) {
   const { request, next } = context
   const url = new URL(request.url)
 
-  if (request.method !== 'GET' && request.method !== 'HEAD') return next()
-  if (shouldSkipSeo(url.pathname)) return next()
+  if (request.method !== 'GET' && request.method !== 'HEAD') {
+    return addSecurityHeaders(await next())
+  }
+  if (shouldSkipSeo(url.pathname)) return addSecurityHeaders(await next())
 
   const response = await next()
 
-  if (response.status !== 200) return response
-  if (!(response.headers.get('content-type') || '').includes('text/html')) return response
+  if (response.status !== 200) return addSecurityHeaders(response)
+  if (!(response.headers.get('content-type') || '').includes('text/html')) {
+    return addSecurityHeaders(response)
+  }
 
   const slug = blogSlugFrom(url.pathname)
   let seo
@@ -118,7 +144,7 @@ export async function onRequest(context) {
     seo = resolveStaticSeo(url.pathname)
   }
 
-  if (!seo) return response
+  if (!seo) return addSecurityHeaders(response)
 
-  return rewrite(response, seo)
+  return addSecurityHeaders(rewrite(response, seo))
 }
