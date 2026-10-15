@@ -7,6 +7,7 @@ import {
   getCustomSubdomain,
 } from '@/api/invitation'
 import { demoData } from '@/api/demoData'
+import { getDemoPreset } from '@/api/templateDemoPresets'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { featuresFor } from '@/config/packageFeatures'
@@ -185,45 +186,49 @@ onMounted(async () => {
     } else if (isDemoMode.value) {
       // Handle Demo Mode — render immediately with local demo data to eliminate waiting latency
       const templateSlug = route.params.templateSlug
+      const demoPreset = getDemoPreset(templateSlug)
+
       const defaultDemoMusic = {
         // Anime & Pop Culture
-        'demon-slayer': 'wedding-retro-adventure.mp3',
+        'demon-slayer': 'wedding-instrumental-garden.mp3',
         'one-piece': 'one-piece-luffy.mp3',
         'naruto': 'wedding-instrumental-garden.mp3',
-        'kimi-no-na-wa': 'wedding-sacred-ceremony.mp3',
-        'pixel-quest': 'wedding-acoustic-morning.mp3',
+        'kimi-no-na-wa': 'wedding-romantic-aisle.mp3',
+        'pixel-quest': 'gaming-8bit-chiptune.mp3',
 
         // Nusantara & Adat Heritage
-        'bali-payas-agung': 'wedding-sacred-ceremony.mp3',
+        'bali-payas-agung': 'traditional-gamelan-bali.ogg',
         'minang-suntiang-emas': 'wedding-sacred-ceremony.mp3',
-        'sunda-sabilulungan': 'wedding-warm-reception.mp3',
-        'jawa-truntum': 'wedding-sacred-ceremony.mp3',
+        'sunda-sabilulungan': 'traditional-degung-sunda.wav',
+        'jawa-truntum': 'traditional-gamelan-jawa.ogg',
         'batak-ragi-hotang': 'wedding-warm-reception.mp3',
         'betawi-palang-pintu': 'wedding-warm-reception.mp3',
         'dayak-ngaju-benang-bintik': 'wedding-instrumental-garden.mp3',
         'palembang-aesan-gede': 'wedding-sacred-ceremony.mp3',
-        'royal-gold': 'wedding-elegant-firstdance.mp3',
+        'royal-gold': 'classical-canon-in-d.mp3',
 
         // Elegan & Luxury
         'moroccan-marrakech-gold': 'wedding-sacred-ceremony.mp3',
-        'royal-emerald': 'wedding-sacred-ceremony.mp3',
-        'old-money-monogram': 'wedding-elegant-firstdance.mp3',
-        'elysian-parallax': 'wedding-romantic-aisle.mp3',
-        'dark-elegant': 'wedding-elegant-firstdance.mp3',
-        'modern-noir': 'wedding-warm-reception.mp3',
-        'editorial-magazine': 'wedding-elegant-firstdance.mp3',
+        'royal-emerald': 'classical-canon-in-d.mp3',
+        'old-money-monogram': 'classical-canon-in-d.mp3',
+        'elysian-parallax': 'classical-canon-in-d.mp3',
+        'dark-elegant': 'classical-clair-de-lune.ogg',
+        'modern-noir': 'classical-clair-de-lune.ogg',
+        'editorial-magazine': 'classical-canon-in-d.mp3',
         'light-modern': 'wedding-acoustic-morning.mp3',
 
         // Romantis, Floral & Cafe Aesthetics
-        'strawberry-matcha': 'wedding-instrumental-garden.mp3',
+        'strawberry-matcha': 'wedding-acoustic-morning.mp3',
         'sakura-blossom': 'wedding-romantic-aisle.mp3',
         'botanical-watercolor': 'wedding-romantic-aisle.mp3',
         'celestial-sparkle': 'romantic_music1.mp3',
         'meowly-married': 'wedding-acoustic-morning.mp3',
+        'purrfect-match': 'wedding-acoustic-morning.mp3',
         'retro-nostalgia': 'wedding-warm-reception.mp3',
-        'azure-shores': 'wedding-acoustic-morning.mp3',
+        'azure-shores': 'wedding-romantic-aisle.mp3',
         'minimalist-terra': 'romantic_music1.mp3',
         'cyberpunk-neon': 'wedding-acoustic-morning.mp3',
+        'islami-emas': 'wedding-sacred-ceremony.mp3',
       }
 
       const tiaraDemoData =
@@ -271,14 +276,20 @@ onMounted(async () => {
             }
           : {}
 
+      const rawMusic = demoPreset.musicChoice || defaultDemoMusic[templateSlug] || demoData.musicChoice
+      const normalizedMusic = rawMusic.startsWith('/') || rawMusic.startsWith('http') || rawMusic.startsWith('yt:')
+        ? rawMusic
+        : `/audio/${rawMusic}`
+
       data = {
         ...demoData,
+        ...demoPreset,
         ...tiaraDemoData,
         template_slug: templateSlug,
-        guestName: route.query.to || demoData.guestName,
-        musicChoice: defaultDemoMusic[templateSlug] || demoData.musicChoice,
-        audioStart: demoData.audioStart || 0,
-        audioEnd: demoData.audioEnd || 0,
+        guestName: route.query.to || demoPreset.guestName || demoData.guestName,
+        musicChoice: normalizedMusic,
+        audioStart: demoPreset.audioStart ?? demoData.audioStart ?? 0,
+        audioEnd: demoPreset.audioEnd ?? demoData.audioEnd ?? 0,
         show_branding: false,
         designConfig: null,
       }
@@ -288,11 +299,20 @@ onMounted(async () => {
         if (!tmpl || isLiveSyncActive.value) return
         const sampleContent = typeof tmpl.sampleContent === 'object' && tmpl.sampleContent ? tmpl.sampleContent : {}
         applyDemoSeo(tmpl)
+
+        const rawBackendMusic = tmpl.defaultMusic && !tmpl.defaultMusic.includes('cheerful') && !tmpl.defaultMusic.includes('retro-adventure')
+          ? tmpl.defaultMusic
+          : null
+        const backendMusic = rawBackendMusic
+          ? (rawBackendMusic.startsWith('/') || rawBackendMusic.startsWith('http') ? rawBackendMusic : `/audio/${rawBackendMusic}`)
+          : null
+
         invitationData.value = {
           ...invitationData.value,
           ...sampleContent,
+          ...demoPreset,
           ...tiaraDemoData,
-          musicChoice: tmpl.defaultMusic || invitationData.value?.musicChoice,
+          musicChoice: backendMusic || invitationData.value?.musicChoice,
           audioStart: tmpl.defaultMusic ? (tmpl.defaultAudioStart ?? 0) : invitationData.value?.audioStart,
           audioEnd: tmpl.defaultMusic ? (tmpl.defaultAudioEnd ?? 0) : invitationData.value?.audioEnd,
           designConfig: tmpl.designConfig ?? invitationData.value?.designConfig,
