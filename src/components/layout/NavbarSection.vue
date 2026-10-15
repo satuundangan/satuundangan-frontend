@@ -25,17 +25,109 @@
       </router-link>
 
       <!-- Desktop Menu -->
-      <ul class="hidden md:flex items-center gap-8">
-        <li v-for="item in menuItems" :key="item.text">
+      <ul class="hidden md:flex items-center gap-7">
+        <li>
           <a
-            :href="getHref(item)"
-            @click.prevent="handleNavClick(item)"
+            :href="getHref({ href: '#templates' })"
+            @click.prevent="handleNavClick({ href: '#templates' })"
             :class="[
               'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
               isScrolled ? 'text-dark' : 'text-dark/80'
             ]"
           >
-            {{ item.text }}
+            Katalog Desain
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </li>
+        <li>
+          <a
+            :href="getHref({ href: '#features' })"
+            @click.prevent="handleNavClick({ href: '#features' })"
+            :class="[
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
+              isScrolled ? 'text-dark' : 'text-dark/80'
+            ]"
+          >
+            Fitur
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </li>
+        <li>
+          <a
+            :href="getHref({ href: '#pricing' })"
+            @click.prevent="handleNavClick({ href: '#pricing' })"
+            :class="[
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
+              isScrolled ? 'text-dark' : 'text-dark/80'
+            ]"
+          >
+            Harga
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </li>
+
+        <!-- Tools Dropdown -->
+        <li class="relative" ref="toolsDropdownRef">
+          <button
+            @click="toolsDropdownOpen = !toolsDropdownOpen"
+            type="button"
+            :class="[
+              'text-sm font-medium transition-all duration-300 py-1 hover:text-mocha flex items-center gap-1.5 cursor-pointer',
+              isScrolled ? 'text-dark' : 'text-dark/80',
+              toolsDropdownOpen ? 'text-mocha font-semibold' : ''
+            ]"
+          >
+            <span>Tools Gratis</span>
+            <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200" :class="{ 'rotate-180': toolsDropdownOpen }"></i>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <transition name="dropdown-fade">
+            <div
+              v-if="toolsDropdownOpen"
+              class="absolute left-0 mt-3 w-64 bg-white border border-stone-200/80 rounded-2xl shadow-xl py-2 z-50 backdrop-blur-md"
+            >
+              <router-link
+                to="/wedding-planner"
+                @click="toolsDropdownOpen = false"
+                class="flex items-start gap-3 px-4 py-2.5 hover:bg-stone-50 transition-colors group"
+              >
+                <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-calculator text-xs"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-dark group-hover:text-mocha transition-colors">Wedding Planner</p>
+                  <p class="text-[11px] text-muted leading-tight mt-0.5">Budget calculator & susunan acara</p>
+                </div>
+              </router-link>
+
+              <router-link
+                to="/tools/love-calculator"
+                @click="toolsDropdownOpen = false"
+                class="flex items-start gap-3 px-4 py-2.5 hover:bg-stone-50 transition-colors group"
+              >
+                <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
+                  <i class="fa-solid fa-heart text-xs"></i>
+                </div>
+                <div>
+                  <p class="text-xs font-bold text-dark group-hover:text-mocha transition-colors">Kalkulator Jodoh</p>
+                  <p class="text-[11px] text-muted leading-tight mt-0.5">Cek chemistry nama & weton Jawa</p>
+                </div>
+              </router-link>
+            </div>
+          </transition>
+        </li>
+
+        <li>
+          <a
+            :href="getHref({ href: '/blog' })"
+            @click.prevent="handleNavClick({ href: '/blog' })"
+            :class="[
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
+              isScrolled ? 'text-dark' : 'text-dark/80'
+            ]"
+          >
+            Blog &amp; Tips
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
           </a>
         </li>
@@ -110,14 +202,20 @@
              </button>
           </div>
 
-          <ul class="space-y-6 flex-1">
+          <ul class="space-y-4 flex-1 overflow-y-auto pr-1">
             <li v-for="item in menuItems" :key="item.text">
               <a
                 :href="getHref(item)"
                 @click.prevent="handleNavClick(item)"
-                class="text-lg font-medium text-dark hover:text-mocha block border-b border-gray-100 pb-2 cursor-pointer"
+                class="text-base font-medium text-dark hover:text-mocha flex items-center justify-between border-b border-gray-100 pb-2.5 cursor-pointer"
               >
-                {{ item.text }}
+                <span>{{ item.text }}</span>
+                <span
+                  v-if="item.badge"
+                  class="text-[9px] uppercase tracking-wider font-bold bg-amber-50 text-amber-700 px-2 py-0.5 rounded-full border border-amber-200"
+                >
+                  {{ item.badge }}
+                </span>
               </a>
             </li>
           </ul>
@@ -178,15 +276,17 @@ const userName = computed(() => auth.user?.name || null)
 
 const toast = useToast()
 const dropdownOpen = ref(false)
-const dropdownRef = ref(null);
+const dropdownRef = ref(null)
+
+const toolsDropdownOpen = ref(false)
+const toolsDropdownRef = ref(null)
 
 const menuItems = [
   { text: 'Katalog Desain', href: '#templates' },
   { text: 'Fitur', href: '#features' },
-  { text: 'Wedding Planner', href: '/wedding-planner' },
-  { text: 'Kalkulator Jodoh', href: '/tools/love-calculator' },
   { text: 'Harga', href: '#pricing' },
-  { text: 'Testimoni', href: '#testimonials' },
+  { text: 'Wedding Planner', href: '/wedding-planner', badge: 'Tools' },
+  { text: 'Kalkulator Jodoh', href: '/tools/love-calculator', badge: 'Tools' },
   { text: 'Blog & Tips', href: '/blog' },
 ]
 
@@ -233,6 +333,11 @@ const handleNavClick = (item) => {
 onClickOutside(dropdownRef, () => {
   dropdownOpen.value = false
 })
+
+onClickOutside(toolsDropdownRef, () => {
+  toolsDropdownOpen.value = false
+})
+
 const toggleDropdown = () => {
   dropdownOpen.value = !dropdownOpen.value
 }
@@ -289,5 +394,15 @@ onUnmounted(() => {
 .slide-fade-leave-to {
   transform: translateX(100%);
   opacity: 0;
+}
+
+.dropdown-fade-enter-active,
+.dropdown-fade-leave-active {
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.dropdown-fade-enter-from,
+.dropdown-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.96);
 }
 </style>

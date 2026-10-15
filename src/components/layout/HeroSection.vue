@@ -158,19 +158,6 @@
              />
           </div>
         </div>
-
-        <!-- Floating Live Feature Pill -->
-        <div class="absolute -bottom-4 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-xl px-4 py-2 rounded-full shadow-[0_15px_30px_-10px_rgba(0,0,0,0.2)] border border-stone-200/80 z-20 flex items-center gap-3 whitespace-nowrap hover:scale-105 transition-transform duration-300">
-           <div class="flex items-center gap-1.5">
-             <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-             <span class="text-xs font-semibold text-stone-700">Musik & RSVP Aktif</span>
-           </div>
-           <span class="w-1 h-1 rounded-full bg-stone-300"></span>
-           <div class="flex items-center gap-1 text-xs text-amber-600 font-semibold">
-             <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i>
-             <span>Desain Mewah</span>
-           </div>
-        </div>
       </div>
 
     </div>
