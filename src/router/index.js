@@ -143,6 +143,12 @@ const router = createRouter({
       meta: { title: 'Pantau Anak Krakatau' },
     },
     {
+      path: '/smoke-studio',
+      name: 'smoke-studio',
+      component: () => import('@/views/SmokeStudioView.vue'),
+      meta: { title: 'Studio Kabut' },
+    },
+    {
       path: '/affiliate/register',
       name: 'affiliate-register',
       redirect: '/',
