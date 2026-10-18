@@ -473,6 +473,7 @@
                         >Hapus latar pilihan</button>
                       </div>
                     </div>
+
                     <div class="space-y-4 border-t border-slate-200 pt-5">
                       <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-slate-500">Teks &amp; waktu acara</p>
 
