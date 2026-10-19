@@ -2,8 +2,7 @@
   <main class="noir-invitation" :style="themeStyle">
     <MusicControl
       ref="musicControl"
-      v-if="data.musicChoice"
-      :src="getMusicUrl(data.musicChoice)"
+      :src="musicSrc"
       :audioStart="data.audioStart"
       :audioEnd="data.audioEnd"
       primaryColor="#111111"
@@ -132,11 +131,11 @@
 
       <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
         <div class="section-inner">
-          <p class="eyebrow">DOA</p>
+          <p class="eyebrow">KATA-KATA</p>
           <span class="quote-mark" aria-hidden="true">“</span>
-          <blockquote>{{ data.quoteText }}</blockquote>
+          <blockquote>{{ quoteText }}</blockquote>
           <span class="quote-line" aria-hidden="true"></span>
-          <p v-if="data.quoteSource" class="quote-source">{{ data.quoteSource }}</p>
+          <p v-if="quoteSource" class="quote-source">{{ quoteSource }}</p>
         </div>
       </section>
 
@@ -204,6 +203,13 @@
               </a>
             </article>
           </div>
+          <div class="calendar-actions">
+            <p class="eyebrow">Simpan tanggalnya</p>
+            <div class="calendar-actions__buttons">
+              <a class="calendar-btn" :href="googleCalendarUrl" target="_blank" rel="noopener noreferrer">Google Calendar</a>
+              <button class="calendar-btn" type="button" @click="downloadIcs">Apple / Outlook (.ics)</button>
+            </div>
+          </div>
           <div v-if="data.dressCode" class="dress-code">
             <p class="eyebrow">Dress code</p>
             <p class="dress-code__text">{{ data.dressCode }}</p>
@@ -222,6 +228,13 @@
                 <span>{{ item.title }}</span>
               </li>
             </ol>
+          </div>
+          <div class="shoot-us">
+            <p class="shoot-us__title">📸 Capture Our Best Moment &amp; WIN 50K</p>
+            <p class="shoot-us__text">Silakan isi form ini di hari H</p>
+            <a class="event-cta" :href="SHOOT_US_URL" target="_blank" rel="noopener noreferrer">
+              Shoot Us <span aria-hidden="true">↗</span>
+            </a>
           </div>
         </div>
       </section>
@@ -387,19 +400,28 @@ const props = defineProps({
   data: { type: Object, default: () => ({}) },
 })
 
-const DEFAULT_EVENT_START = '08:00'
-const DEFAULT_EVENT_END = '12:30'
+const DEFAULT_EVENT_START = '08:30'
+const DEFAULT_EVENT_END = '13:00'
 const DEFAULT_VENUE = 'Lume Coffee'
+const DEFAULT_MUSIC = '/audio/carpenters-i-wont-last-a-day-without-you.mp3'
+const SHOOT_US_URL =
+  'https://docs.google.com/forms/d/e/1FAIpQLSc2GJhzGoOOZqfXz4QZL7bSPyecp-v8LCnvFI_RWa5ZED1i7Q/viewform?usp=header'
+const DEFAULT_QUOTE = [
+  "When there's no gettin' over that rainbow,",
+  "When my smallest of dreams won't come true,",
+  'I can take all the madness the world has to give.',
+  "But I won't last a day without you!",
+].join('\n')
+const DEFAULT_QUOTE_SOURCE = 'The Carpenters'
 const DEFAULT_RUNDOWN = [
-  { time: '08.00', title: 'Tamu hadir & snack box' },
-  { time: '08.15', title: 'Pembukaan & mempelai memasuki tempat akad' },
-  { time: '08.40', title: 'Akad nikah (ijab kabul)' },
-  { time: '09.05', title: 'Sungkeman' },
-  { time: '09.30', title: 'Adat Jawa' },
-  { time: '10.00', title: 'Resepsi — makan, foto bersama, ramah tamah' },
-  { time: '11.00', title: 'Games & lempar bunga' },
-  { time: '11.30', title: 'Karaoke keluarga' },
-  { time: '12.30', title: 'Selesai' },
+  { time: '08.30', title: 'Tamu memasuki ballroom & pembagian snack box — pembukaan MC, sambutan keluarga mempelai pria' },
+  { time: '09.00', title: 'Akad nikah — tilawah & prosesi ijab kabul' },
+  { time: '09.30', title: 'Mempelai wanita memasuki tempat akad' },
+  { time: '09.40', title: 'Prosesi sungkeman' },
+  { time: '10.00', title: 'Acara adat Jawa' },
+  { time: '10.30', title: 'Resepsi — makan, speech, sesi mingle & foto bersama keluarga dan teman' },
+  { time: '11.30', title: 'Games & lempar bunga — masing-masing dapat 50K' },
+  { time: '12.00', title: 'Penutupan MC & karaoke keluarga (hingga 13.00)' },
 ]
 
 const toast = useToast()
@@ -441,6 +463,16 @@ const fireflies = Array.from({ length: 7 }, (_, index) => ({
 }))
 
 const designSettings = computed(() => data.value.designSettings || {})
+
+// Only a custom uploaded track (path/URL) overrides the couple's chosen song.
+const musicSrc = computed(() => {
+  const choice = data.value.musicChoice
+  return choice && (choice.includes('/') || choice.includes('http')) ? getMusicUrl(choice) : DEFAULT_MUSIC
+})
+const quoteText = computed(() => String(data.value.quoteText || '').trim() || DEFAULT_QUOTE)
+const quoteSource = computed(() =>
+  data.value.quoteText ? data.value.quoteSource : data.value.quoteSource || DEFAULT_QUOTE_SOURCE,
+)
 
 // Studio writes `designSettings.heroCopy`. `data.heroCopy` and `HERO_COPY` are legacy
 // fallbacks. When all are empty the template's default sentence (v-else) is shown.
@@ -550,7 +582,7 @@ const galleryItems = computed(() =>
 // Single source of truth for both the bottom nav and every section v-if.
 const sectionVisibility = computed(() => ({
   home: true,
-  quote: isSectionEnabled('quote') && !!data.value.quoteText,
+  quote: !!quoteText.value,
   couple: isSectionEnabled('couple') || isSectionEnabled('photoCouple'),
   story: isSectionEnabled('love-story') && (data.value.loveStory?.length || 0) > 0,
   event: isSectionEnabled('event'),
@@ -568,7 +600,7 @@ const ENVELOPE_ICON = [
 ]
 const NAV_DEFS = [
   { id: 'home', label: 'Awal', icon: ['M3 10.5 12 3l9 7.5', 'M5 9.5V21h14V9.5', 'M10 21v-6h4v6'] },
-  { id: 'quote', label: 'Doa', icon: ['M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z', 'M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z'] },
+  { id: 'quote', label: 'Kata', icon: ['M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z', 'M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z'] },
   { id: 'couple', label: 'Mempelai', icon: ['M20.8 5.6a5.5 5.5 0 0 0-7.8 0L12 6.7l-1-1.1a5.5 5.5 0 0 0-7.8 7.8l1 1.1L12 22l7.8-7.5 1-1.1a5.5 5.5 0 0 0 0-7.8z'] },
   { id: 'story', label: 'Cerita', icon: ['M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z', 'M16 8 2 22', 'M17.5 15H9'] },
   { id: 'event', label: 'Acara', icon: ['M8 2v4', 'M16 2v4', 'M3 8h18', 'M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z'] },
@@ -618,6 +650,74 @@ function eventTimeRange() {
     designSettings.value.eventStartTime || data.value.eventStartTime || DEFAULT_EVENT_START
   const end = designSettings.value.eventEndTime || data.value.eventEndTime || DEFAULT_EVENT_END
   return `${String(start).replace(':', '.')} – ${String(end).replace(':', '.')} WIB`
+}
+
+function calendarWindow() {
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Asia/Jakarta',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(new Date(eventDate.value))
+  const get = (type) => parts.find((p) => p.type === type)?.value || ''
+  const day = `${get('year')}${get('month')}${get('day')}`
+  const clock = (value) => `${String(value).replace(':', '')}00`
+  const start = designSettings.value.eventStartTime || data.value.eventStartTime || DEFAULT_EVENT_START
+  const end = designSettings.value.eventEndTime || data.value.eventEndTime || DEFAULT_EVENT_END
+  return { start: `${day}T${clock(start)}`, end: `${day}T${clock(end)}` }
+}
+const calendarInfo = computed(() => {
+  const event = events.value[0] || {}
+  return {
+    title: `Pernikahan ${data.value.groomName || 'Refda'} & ${data.value.brideName || 'Tiara'}`,
+    location: event.description || DEFAULT_VENUE,
+    details: `Undangan pernikahan ${data.value.groomName || 'Refda'} & ${data.value.brideName || 'Tiara'}`,
+  }
+})
+const googleCalendarUrl = computed(() => {
+  if (!eventDate.value || Number.isNaN(new Date(eventDate.value).getTime())) return '#'
+  const { start, end } = calendarWindow()
+  const info = calendarInfo.value
+  const query = new URLSearchParams({
+    action: 'TEMPLATE',
+    text: info.title,
+    dates: `${start}/${end}`,
+    ctz: 'Asia/Jakarta',
+    details: info.details,
+    location: info.location,
+  })
+  return `https://calendar.google.com/calendar/render?${query.toString()}`
+})
+
+function downloadIcs() {
+  if (!eventDate.value || Number.isNaN(new Date(eventDate.value).getTime())) return
+  const { start, end } = calendarWindow()
+  const info = calendarInfo.value
+  const escapeIcs = (text) => String(text).replace(/([,;\\])/g, '\\$1').replace(/\n/g, '\\n')
+  const lines = [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Satu Undangan//Refda Tiara//ID',
+    'BEGIN:VEVENT',
+    `UID:refda-tiara-${start}@satuundangan.id`,
+    `DTSTAMP:${new Date().toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')}`,
+    `DTSTART;TZID=Asia/Jakarta:${start}`,
+    `DTEND;TZID=Asia/Jakarta:${end}`,
+    `SUMMARY:${escapeIcs(info.title)}`,
+    `LOCATION:${escapeIcs(info.location)}`,
+    `DESCRIPTION:${escapeIcs(info.details)}`,
+    'END:VEVENT',
+    'END:VCALENDAR',
+  ]
+  const blob = new Blob([lines.join('\r\n')], { type: 'text/calendar;charset=utf-8' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'pernikahan-refda-tiara.ics'
+  document.body.appendChild(link)
+  link.click()
+  link.remove()
+  setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
 function initScrollSpy() {
@@ -981,7 +1081,7 @@ onUnmounted(() => {
 .hero-copy { max-width: 440px; margin: .8rem auto 0; color: #c4c2bc; font-family: var(--title-font); font-size: 1.1rem; line-height: 1.7; }
 
 .quote-mark { margin-top: 1.4rem; color: rgba(244, 242, 237, .25); font-family: var(--title-font); font-size: 5rem; line-height: .6; }
-.quote-section blockquote { max-width: 34rem; margin: 1.2rem 0; color: var(--text); font-family: var(--title-font); font-size: clamp(1.25rem, 4.5vw, 2rem); font-style: italic; line-height: 1.5; }
+.quote-section blockquote { max-width: 34rem; white-space: pre-line; margin: 1.2rem 0; color: var(--text); font-family: var(--title-font); font-size: clamp(1.25rem, 4.5vw, 2rem); font-style: italic; line-height: 1.5; }
 .quote-line { display: block; width: 1px; height: 48px; margin: .6rem 0; background: rgba(244, 242, 237, .3); }
 .quote-source { color: var(--muted); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; }
 
@@ -1006,6 +1106,15 @@ onUnmounted(() => {
 .event-cta:hover,
 .event-cta:focus-visible { color: var(--paper); background: transparent; }
 .event-cta:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+.calendar-actions { width: 100%; margin-top: 1.25rem; text-align: center; }
+.calendar-actions__buttons { display: grid; gap: .6rem; margin-top: .8rem; }
+.calendar-btn { display: flex; min-height: 44px; align-items: center; justify-content: center; padding: .75rem 1.2rem; border: 1px solid rgba(244, 242, 237, .35); border-radius: 999px; color: var(--text); background: transparent; font-size: .65rem; font-weight: 600; letter-spacing: .13em; text-decoration: none; text-transform: uppercase; cursor: pointer; transition: color .25s ease, background .25s ease; }
+.calendar-btn:hover,
+.calendar-btn:focus-visible { color: var(--ink); background: var(--paper); }
+.calendar-btn:focus-visible { outline: 2px solid var(--paper); outline-offset: 3px; }
+.shoot-us { width: 100%; margin-top: 1.25rem; padding: 1.5rem 1.25rem; border: 1px dashed rgba(244, 242, 237, .25); border-radius: 1.5rem; text-align: center; }
+.shoot-us__title { color: var(--text); font-family: var(--title-font); font-size: 1.25rem; line-height: 1.4; }
+.shoot-us__text { margin-top: .4rem; color: var(--muted); font-size: .8rem; }
 .dress-code { width: 100%; margin-top: 1.25rem; padding: 1.25rem; border: 1px dashed rgba(244, 242, 237, .25); border-radius: 1.5rem; }
 .dress-code__text { margin-top: .5rem; color: var(--text); font-family: var(--title-font); font-size: 1.1rem; font-style: italic; }
 
