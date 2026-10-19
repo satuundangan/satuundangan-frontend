@@ -121,6 +121,14 @@
         </div>
       </section>
 
+      <section id="couple-photo" data-nav="home" class="snap-section couple-photo-section">
+        <div class="section-inner">
+          <figure class="couple-photo">
+            <img :src="couplePhotoSrc" :alt="`${data.groomName || 'Refda'} dan ${data.brideName || 'Tiara'}`" loading="lazy" />
+          </figure>
+        </div>
+      </section>
+
       <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
         <div class="section-inner">
           <p class="eyebrow">KATA-KATA</p>
@@ -483,6 +491,10 @@ const backgroundUrl = computed(() => {
   return isPlaceholderMedia(data.value.photoCoupleUrl) ? '' : data.value.photoCoupleUrl
 })
 const groomPhotoSrc = computed(() => isPlaceholderMedia(data.value.groomPhotoUrl) ? '/assets/images/refda-tiara/refda.png' : data.value.groomPhotoUrl)
+const DEFAULT_COUPLE_PHOTO = '/assets/images/refda-tiara/couple-v1.webp'
+const couplePhotoSrc = computed(() =>
+  isPlaceholderMedia(data.value.photoCoupleUrl) ? DEFAULT_COUPLE_PHOTO : data.value.photoCoupleUrl,
+)
 const bridePhotoSrc = computed(() => isPlaceholderMedia(data.value.bridePhotoUrl) ? '/assets/images/refda-tiara/tiara.png' : data.value.bridePhotoUrl)
 const groomParents = computed(() => {
   const value = data.value.parents?.groomParents || data.value.groomParents || ''
@@ -1091,6 +1103,8 @@ onUnmounted(() => {
 .hero-rule span { width: 42px; height: 1px; background: rgba(244, 242, 237, .35); }
 .hero-rule__star { width: 12px; height: 12px; animation: spin-slow 12s linear infinite; }
 .hero-date { margin: 1rem 0 .4rem; color: var(--muted); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; }
+.couple-photo { width: 100%; max-width: 22rem; margin: 0 auto; padding: .5rem; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.75rem; background: #141414; }
+.couple-photo img { display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: 1.25rem; object-fit: cover; filter: grayscale(1) contrast(1.05); }
 .hero-copy { max-width: 440px; margin: .8rem auto 0; color: #c4c2bc; font-family: var(--title-font); font-size: 1.1rem; line-height: 1.7; }
 
 .quote-mark { margin-top: 1.4rem; color: rgba(244, 242, 237, .25); font-family: var(--title-font); font-size: 5rem; line-height: .6; }
