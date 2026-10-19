@@ -257,7 +257,7 @@
             <video
               v-else
               :src="directVideoUrl"
-              :poster="directVideoUrl.includes('/assets/videos/refda-tiara/prewedding.mp4') ? '/assets/videos/refda-tiara/poster.jpg' : bridePhotoSrc"
+              :poster="directVideoUrl === PREWEDDING_VIDEO ? PREWEDDING_POSTER : bridePhotoSrc"
               controls
               playsinline
               preload="metadata"
@@ -500,7 +500,14 @@ const brideParents = computed(() => {
   const value = data.value.parents?.brideParents || data.value.brideParents || ''
   return /^bapak\s*&\s*ibu\s+tiara$/i.test(value.trim()) ? '' : value
 })
-const videoSource = computed(() => String(data.value.videoPrewedding || '').trim())
+const PREWEDDING_VIDEO = '/assets/videos/refda-tiara/prewedding-v2.mp4'
+const PREWEDDING_POSTER = '/assets/videos/refda-tiara/poster-v2.jpg'
+// /assets/* is cached as immutable, so the replaced video ships under a new filename and
+// invitations still pointing at the old one are mapped here.
+const videoSource = computed(() => {
+  const source = String(data.value.videoPrewedding || '').trim()
+  return source === '/assets/videos/refda-tiara/prewedding.mp4' ? PREWEDDING_VIDEO : source
+})
 const youtubeEmbedUrl = computed(() => {
   try {
     const url = new URL(videoSource.value)
