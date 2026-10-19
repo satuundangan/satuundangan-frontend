@@ -506,7 +506,10 @@ const PREWEDDING_POSTER = '/assets/videos/refda-tiara/poster-v2.jpg'
 // invitations still pointing at the old one are mapped here.
 const videoSource = computed(() => {
   const source = String(data.value.videoPrewedding || '').trim()
-  return source === '/assets/videos/refda-tiara/prewedding.mp4' ? PREWEDDING_VIDEO : source
+  // The stored value may be relative or an absolute satuundangan.id URL.
+  return /^(?:https?:\/\/[^/]+)?\/assets\/videos\/refda-tiara\/prewedding\.mp4(?:[?#].*)?$/.test(source)
+    ? PREWEDDING_VIDEO
+    : source
 })
 const youtubeEmbedUrl = computed(() => {
   try {
