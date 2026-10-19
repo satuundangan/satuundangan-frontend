@@ -246,7 +246,7 @@
         <div class="section-inner">
           <p class="eyebrow">VIDEO / KENANGAN</p>
           <h2 class="section-title">Sepotong cerita kami</h2>
-          <p class="video-copy">Setelah 3 tahun bersama, Kami memutuskan untuk hidup selamanya</p>
+          <p class="video-copy">Setelah 3 tahun menjalin asmara, kami memutuskan untuk menua bersama.</p>
           <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl }">
             <iframe
               v-if="youtubeEmbedUrl"
