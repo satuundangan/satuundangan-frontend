@@ -132,7 +132,7 @@
       <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
         <div class="section-inner">
           <span class="quote-mark" aria-hidden="true">“</span>
-          <blockquote>{{ quoteText }}</blockquote>
+          <blockquote :class="{ 'is-lyric': !data.quoteText }">{{ quoteText }}</blockquote>
           <span class="quote-line" aria-hidden="true"></span>
           <p v-if="quoteSource" class="quote-source">{{ quoteSource }}</p>
         </div>
@@ -1108,6 +1108,8 @@ onUnmounted(() => {
 
 .quote-mark { margin-top: 1.4rem; color: rgba(244, 242, 237, .25); font-family: var(--title-font); font-size: 5rem; line-height: .6; }
 .quote-section blockquote { max-width: 34rem; white-space: pre-line; margin: 1.2rem 0; color: var(--text); font-family: var(--title-font); font-size: clamp(1.25rem, 4.5vw, 2rem); font-style: italic; line-height: 1.5; }
+/* Default lyric: one line per verse, scaled to the viewport so none wraps. */
+.quote-section blockquote.is-lyric { max-width: none; font-size: min(4.3vw, 1.6rem); white-space: pre; }
 .quote-line { display: block; width: 1px; height: 48px; margin: .6rem 0; background: rgba(244, 242, 237, .3); }
 .quote-source { color: var(--muted); font-size: .66rem; letter-spacing: .15em; text-transform: uppercase; }
 
