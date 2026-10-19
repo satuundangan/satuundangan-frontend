@@ -131,7 +131,6 @@
 
       <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
         <div class="section-inner">
-          <p class="eyebrow">KATA-KATA</p>
           <span class="quote-mark" aria-hidden="true">“</span>
           <blockquote>{{ quoteText }}</blockquote>
           <span class="quote-line" aria-hidden="true"></span>
@@ -416,7 +415,7 @@ const DEFAULT_QUOTE = [
   'I can take all the madness the world has to give.',
   "But I won't last a day without you!",
 ].join('\n')
-const DEFAULT_QUOTE_SOURCE = 'The Carpenters'
+const DEFAULT_QUOTE_SOURCE = '- The Carpenters -'
 const DEFAULT_RUNDOWN = [
   { time: '08.30', title: 'Tamu memasuki ballroom & pembagian snack box — pembukaan MC, sambutan keluarga mempelai pria' },
   { time: '09.00', title: 'Akad nikah — tilawah & prosesi ijab kabul' },
