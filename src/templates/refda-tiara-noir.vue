@@ -189,7 +189,10 @@
               <p class="eyebrow">{{ item.label }}</p>
               <h3>{{ formatDate(item.dateTime) }}</h3>
               <p class="event-time">{{ eventTimeRange() }}</p>
-              <p class="event-place">{{ item.description || DEFAULT_VENUE }}</p>
+              <p class="event-place">
+                <strong class="event-place__name">{{ eventPlace(item).name }}</strong>
+                <span v-if="eventPlace(item).address" class="event-place__address">{{ eventPlace(item).address }}</span>
+              </p>
               <a v-if="eventMapUrl(item)" class="event-cta" :href="eventMapUrl(item)" target="_blank" rel="noopener noreferrer">
                 Lihat lokasi <span aria-hidden="true">↗</span>
               </a>
@@ -395,6 +398,7 @@ const props = defineProps({
 const DEFAULT_EVENT_START = '08:30'
 const DEFAULT_EVENT_END = '13:00'
 const DEFAULT_VENUE = 'Lume Coffee'
+const VENUE_ROOM = 'Ballroom Lt. 2'
 const DEFAULT_MUSIC = '/audio/carpenters-i-wont-last-a-day-without-you.mp3'
 const SHOOT_US_URL =
   'https://docs.google.com/forms/d/e/1FAIpQLSc2GJhzGoOOZqfXz4QZL7bSPyecp-v8LCnvFI_RWa5ZED1i7Q/viewform?usp=header'
@@ -408,7 +412,6 @@ const DEFAULT_QUOTE_SOURCE = 'The Carpenters'
 const DEFAULT_RUNDOWN = [
   { time: '08.30', title: 'Tamu memasuki ballroom & pembagian snack box — pembukaan MC, sambutan keluarga mempelai pria' },
   { time: '09.00', title: 'Akad nikah — tilawah & prosesi ijab kabul' },
-  { time: '09.30', title: 'Mempelai wanita memasuki tempat akad' },
   { time: '09.40', title: 'Prosesi sungkeman' },
   { time: '10.00', title: 'Acara adat Jawa' },
   { time: '10.30', title: 'Resepsi — makan, speech, sesi mingle & foto bersama keluarga dan teman' },
@@ -651,6 +654,17 @@ function eventTimeRange() {
   return `${String(start).replace(':', '.')} – ${String(end).replace(':', '.')} WIB`
 }
 
+// "Name, Jl. address" -> name on top (with the room) and the street address below.
+function eventPlace(item) {
+  const text = String(item?.description || DEFAULT_VENUE).trim()
+  const match = text.match(/^(.*?),\s*(Jl\..*)$/i)
+  const name = (match ? match[1] : text).trim()
+  return {
+    name: /ballroom/i.test(name) ? name : `${name} (${VENUE_ROOM})`,
+    address: match ? match[2].trim() : '',
+  }
+}
+
 function calendarWindow() {
   const parts = new Intl.DateTimeFormat('en-CA', {
     timeZone: 'Asia/Jakarta',
@@ -669,7 +683,7 @@ const calendarInfo = computed(() => {
   const event = events.value[0] || {}
   return {
     title: `Pernikahan ${data.value.groomName || 'Refda'} & ${data.value.brideName || 'Tiara'}`,
-    location: event.description || DEFAULT_VENUE,
+    location: [eventPlace(event).name, eventPlace(event).address].filter(Boolean).join(', '),
     details: `Undangan pernikahan ${data.value.groomName || 'Refda'} & ${data.value.brideName || 'Tiara'}`,
   }
 })
@@ -1114,6 +1128,8 @@ onUnmounted(() => {
 .shoot-us { width: 100%; margin-top: 1.25rem; padding: 1.5rem 1.25rem; border: 1px dashed rgba(244, 242, 237, .25); border-radius: 1.5rem; text-align: center; }
 .shoot-us__title { color: var(--text); font-family: var(--title-font); font-size: 1.25rem; line-height: 1.4; }
 .shoot-us__text { margin-top: .4rem; color: var(--muted); font-size: .8rem; }
+.event-place__name { display: block; color: var(--text); font-weight: 500; }
+.event-place__address { display: block; margin-top: .25rem; }
 .dress-code { width: 100%; margin-top: 1.25rem; padding: 1.25rem; border: 1px dashed rgba(244, 242, 237, .25); border-radius: 1.5rem; }
 .dress-code__text { margin-top: .5rem; color: var(--text); font-family: var(--title-font); font-size: 1.1rem; font-style: italic; }
 
