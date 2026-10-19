@@ -101,14 +101,6 @@
     <div v-if="!showCover" ref="scroller" class="noir-scroller">
       <section id="home" data-nav="home" class="snap-section hero-section">
         <div class="section-inner">
-          <div class="arch">
-            <div class="arch__outer" aria-hidden="true"></div>
-            <div class="arch__offset" aria-hidden="true"></div>
-            <div class="arch__frame">
-              <img :src="heroPhotoSrc" :alt="`${data.groomName || 'Refda'} dan ${data.brideName || 'Tiara'}`" @error="usePortraitFallback($event, 'refda')" />
-              <svg class="arch__sparkle" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
-            </div>
-          </div>
           <p class="eyebrow">The beginning of always</p>
           <h1 class="hero-names">
             <span>{{ data.groomName || 'Muhammad Refda' }}</span>
@@ -488,9 +480,6 @@ const backgroundUrl = computed(() => {
   return isPlaceholderMedia(data.value.photoCoupleUrl) ? '' : data.value.photoCoupleUrl
 })
 const groomPhotoSrc = computed(() => isPlaceholderMedia(data.value.groomPhotoUrl) ? '/assets/images/refda-tiara/refda.png' : data.value.groomPhotoUrl)
-const heroPhotoSrc = computed(() =>
-  !isPlaceholderMedia(data.value.photoCoupleUrl) ? data.value.photoCoupleUrl : groomPhotoSrc.value,
-)
 const bridePhotoSrc = computed(() => isPlaceholderMedia(data.value.bridePhotoUrl) ? '/assets/images/refda-tiara/tiara.png' : data.value.bridePhotoUrl)
 const groomParents = computed(() => {
   const value = data.value.parents?.groomParents || data.value.groomParents || ''
