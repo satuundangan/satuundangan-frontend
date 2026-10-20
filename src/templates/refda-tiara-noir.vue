@@ -121,16 +121,11 @@
         </div>
       </section>
 
-      <section id="couple-photo" data-nav="home" class="snap-section couple-photo-section">
+      <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
         <div class="section-inner">
           <figure class="couple-photo">
             <img :src="couplePhotoSrc" :alt="`${data.groomName || 'Refda'} dan ${data.brideName || 'Tiara'}`" loading="lazy" />
           </figure>
-        </div>
-      </section>
-
-      <section v-if="sectionVisibility.quote" id="quote" data-nav="quote" class="snap-section quote-section">
-        <div class="section-inner">
           <span class="quote-mark" aria-hidden="true">“</span>
           <blockquote :class="{ 'is-lyric': !data.quoteText }">{{ quoteText }}</blockquote>
           <span class="quote-line" aria-hidden="true"></span>
@@ -364,8 +359,8 @@
         <div class="section-inner">
           <svg class="closing-star" viewBox="0 0 24 24" aria-hidden="true"><path :d="STAR_PATH" fill="currentColor" /></svg>
           <p class="eyebrow">Terima kasih atas doa dan kehadiran Anda</p>
-          <p class="closing-names">{{ data.groomName || 'Muhammad Refda' }} <span>&amp;</span> {{ data.brideName || 'Uk Tiara Ayu' }}</p>
-          <small>{{ data.footerText || 'Dengan penuh rasa syukur, Refda & Tiara' }}</small>
+          <p class="closing-names">Di Hari Bahagia Kami</p>
+          <small>Refda &amp; Tiara</small>
         </div>
       </footer>
     </div>
@@ -1102,7 +1097,9 @@ onUnmounted(() => {
 .hero-rule span { width: 42px; height: 1px; background: rgba(244, 242, 237, .35); }
 .hero-rule__star { width: 12px; height: 12px; animation: spin-slow 12s linear infinite; }
 .hero-date { margin: 1rem 0 .4rem; color: var(--muted); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase; }
-.couple-photo { width: 100%; max-width: 22rem; margin: 0 auto; padding: .5rem; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.75rem; background: #141414; }
+.couple-photo { width: 100%; max-width: 22rem; margin: 0 auto 1rem; padding: .5rem; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.75rem; background: #141414; }
+.couple-photo + .eyebrow,
+.couple-photo + .quote-mark { margin-top: 0; }
 .couple-photo img { display: block; width: 100%; aspect-ratio: 1 / 1; border-radius: 1.25rem; object-fit: cover; filter: grayscale(1) contrast(1.05); }
 .hero-copy { max-width: 440px; margin: .8rem auto 0; color: #c4c2bc; font-family: var(--title-font); font-size: 1.1rem; line-height: 1.7; }
 
