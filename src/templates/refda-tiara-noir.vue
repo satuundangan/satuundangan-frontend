@@ -241,7 +241,7 @@
           <p class="eyebrow">VIDEO / KENANGAN</p>
           <h2 class="section-title">Sepotong cerita kami</h2>
           <p class="video-copy">Setelah 3 tahun menjalin asmara, kami memutuskan untuk menua bersama.</p>
-          <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl }">
+          <div class="video-frame" :class="{ 'is-youtube': !!youtubeEmbedUrl, 'is-landscape': directVideoUrl === PREWEDDING_VIDEO }">
             <iframe
               v-if="youtubeEmbedUrl"
               :src="youtubeEmbedUrl"
@@ -253,11 +253,14 @@
             ></iframe>
             <video
               v-else
+              ref="videoEl"
               :src="directVideoUrl"
               :poster="directVideoUrl === PREWEDDING_VIDEO ? PREWEDDING_POSTER : bridePhotoSrc"
-              controls
+              :controls="videoNeedsControls"
+              muted
+              loop
               playsinline
-              preload="metadata"
+              preload="auto"
               aria-label="Video Refda dan Tiara"
             ></video>
           </div>
@@ -423,6 +426,9 @@ const DEFAULT_RUNDOWN = [
 
 const toast = useToast()
 const musicControl = ref(null)
+const videoEl = ref(null)
+const videoNeedsControls = ref(false)
+let videoObserver = null
 const data = computed(() => props.data || {})
 const showCover = ref(true)
 const isSubmitting = ref(false)
@@ -498,14 +504,15 @@ const brideParents = computed(() => {
   const value = data.value.parents?.brideParents || data.value.brideParents || ''
   return /^bapak\s*&\s*ibu\s+tiara$/i.test(value.trim()) ? '' : value
 })
-const PREWEDDING_VIDEO = '/assets/videos/refda-tiara/prewedding-v2.mp4'
-const PREWEDDING_POSTER = '/assets/videos/refda-tiara/poster-v2.jpg'
+const PREWEDDING_VIDEO = '/assets/videos/refda-tiara/prewedding-v3.mp4'
+const PREWEDDING_POSTER = '/assets/videos/refda-tiara/poster-v3.jpg'
 // /assets/* is cached as immutable, so the replaced video ships under a new filename and
 // invitations still pointing at the old one are mapped here.
 const videoSource = computed(() => {
   const source = String(data.value.videoPrewedding || '').trim()
-  // The stored value may be relative or an absolute satuundangan.id URL.
-  return /^(?:https?:\/\/[^/]+)?\/assets\/videos\/refda-tiara\/prewedding\.mp4(?:[?#].*)?$/.test(source)
+  // The stored value may be relative or an absolute satuundangan.id URL; any earlier
+  // version of the couple's video maps to the current one.
+  return /^(?:https?:\/\/[^/]+)?\/assets\/videos\/refda-tiara\/prewedding(?:-v\d+)?\.mp4(?:[?#].*)?$/.test(source)
     ? PREWEDDING_VIDEO
     : source
 })
@@ -739,6 +746,28 @@ function downloadIcs() {
   setTimeout(() => URL.revokeObjectURL(url), 1000)
 }
 
+// The clip is muted and has no audio track, so playing it never touches the music. It plays
+// while on screen; if the browser refuses autoplay, fall back to visible controls.
+function initVideoAutoplay() {
+  if (videoObserver) videoObserver.disconnect()
+  videoObserver = null
+  const el = videoEl.value
+  if (!el || typeof IntersectionObserver === 'undefined') return
+  videoObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          el.play().catch(() => { videoNeedsControls.value = true })
+        } else {
+          el.pause()
+        }
+      })
+    },
+    { threshold: 0.4 },
+  )
+  videoObserver.observe(el)
+}
+
 function initScrollSpy() {
   if (spyObserver) spyObserver.disconnect()
   spyObserver = null
@@ -848,6 +877,7 @@ async function openInvitation() {
   await nextTick()
   scroller.value?.scrollTo({ top: 0 })
   initScrollSpy()
+  initVideoAutoplay()
   startPetals()
 }
 
@@ -995,6 +1025,8 @@ onUnmounted(() => {
   document.removeEventListener('visibilitychange', onVisibilityChange)
   if (spyObserver) spyObserver.disconnect()
   spyObserver = null
+  if (videoObserver) videoObserver.disconnect()
+  videoObserver = null
   reducedMotionQuery?.removeEventListener?.('change', onReducedMotionChange)
   if (scroller.value) scroller.value.scrollTop = 0
 })
@@ -1163,6 +1195,7 @@ onUnmounted(() => {
 
 .video-copy { max-width: 30ch; margin: 0 auto 1.5rem; color: var(--muted); font-family: var(--title-font); font-size: 1.15rem; line-height: 1.5; }
 .video-frame { width: 100%; max-width: 330px; margin: 0 auto; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.5rem; background: #151515; }
+.video-frame.is-landscape { max-width: 100%; aspect-ratio: 4 / 3; }
 .video-frame.is-youtube { max-width: 100%; aspect-ratio: 16 / 9; }
 .video-frame iframe,
 .video-frame video { display: block; width: 100%; height: 100%; border: 0; object-fit: contain; }
