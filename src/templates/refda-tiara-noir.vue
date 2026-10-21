@@ -406,7 +406,7 @@ const DEFAULT_VENUE = 'Lume Coffee'
 const VENUE_ROOM = 'Ballroom Lt. 2'
 const DEFAULT_MUSIC = '/audio/carpenters-i-wont-last-a-day-without-you.mp3'
 const SHOOT_US_URL =
-  'https://docs.google.com/forms/d/e/1FAIpQLSc2GJhzGoOOZqfXz4QZL7bSPyecp-v8LCnvFI_RWa5ZED1i7Q/viewform?usp=header'
+  'https://docs.google.com/forms/d/1ABCzMvdLBBNT8-hqq_vkT1vfhuqp9ccBvAZBhzqSbN4/viewform'
 const DEFAULT_QUOTE = [
   "When there's no gettin' over that rainbow,",
   "When my smallest of dreams won't come true,",
