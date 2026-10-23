@@ -241,7 +241,7 @@ onMounted(async () => {
               brideName: 'Uk Tiara Ayu',
               bridePhotoUrl: '/assets/images/refda-tiara/tiara.png',
               photoCoupleUrl: '',
-              videoPrewedding: '/assets/videos/refda-tiara/prewedding.mp4',
+              videoPrewedding: '/assets/videos/refda-tiara/prewedding-v3.mp4',
               parents: { groomParents: '', brideParents: '' },
               guestName: route.query.to || 'Tamu Undangan',
               quoteText:

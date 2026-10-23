@@ -143,6 +143,12 @@ const router = createRouter({
       meta: { title: 'Pantau Anak Krakatau' },
     },
     {
+      path: '/smoke-studio',
+      name: 'smoke-studio',
+      component: () => import('@/views/SmokeStudioView.vue'),
+      meta: { title: 'Studio Kabut' },
+    },
+    {
       path: '/affiliate/register',
       name: 'affiliate-register',
       redirect: '/',
@@ -296,6 +302,13 @@ const router = createRouter({
       name: 'admin-whatsapp-bot',
       component: () => import('@/views/admin/AdminWhatsappBot.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'WhatsApp Bot' },
+    },
+    {
+      path: '/admin/social-studio',
+      alias: ['/tools/social-studio', '/social-studio', '/ig-studio'],
+      name: 'admin-social-studio',
+      component: () => import('@/views/admin/SocialStudioView.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Social Media Studio' },
     },
     {
       path: '/admin/logs',
