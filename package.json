@@ -38,6 +38,7 @@
     "html-to-image": "^1.11.13",
     "html5-qrcode": "^2.3.8",
     "idb-keyval": "^6.2.2",
+    "jszip": "^3.10.2",
     "mixpanel-browser": "^2.80.0",
     "pinia": "^3.0.3",
     "primeicons": "^7.0.0",
