@@ -146,6 +146,7 @@ const navItems = [
   { label: 'Promo Code', to: '/admin/promo-codes', icon: 'pi-percentage' },
   { label: 'WhatsApp Bot', to: '/admin/whatsapp-bot', icon: 'pi-whatsapp' },
   { label: 'Artikel & Blog', to: '/admin/articles', icon: 'pi-file-edit' },
+  { label: 'Social Studio (IG)', to: '/admin/social-studio', icon: 'pi-camera' },
   { label: 'Activity & Error Logs', to: '/admin/logs', icon: 'pi-history' },
 ];
 

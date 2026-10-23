@@ -35,6 +35,7 @@
     "@tiptap/vue-3": "^3.31.3",
     "@vueuse/core": "^13.4.0",
     "axios": "^1.11.0",
+    "html-to-image": "^1.11.13",
     "html5-qrcode": "^2.3.8",
     "idb-keyval": "^6.2.2",
     "mixpanel-browser": "^2.80.0",
