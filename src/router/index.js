@@ -186,13 +186,6 @@ const router = createRouter({
       component: () => import('@/views/tools/LoveCalculatorView.vue'),
       meta: { title: 'Kalkulator Kecocokan Cinta & Weton Jodoh Jawa Modern' },
     },
-    {
-      path: '/tools/social-studio',
-      alias: ['/social-studio', '/ig-studio'],
-      name: 'social-studio',
-      component: () => import('@/views/admin/SocialStudioView.vue'),
-      meta: { title: 'Social Media Studio (IG Kit)' },
-    },
     { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
     { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
     { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },
@@ -312,6 +305,7 @@ const router = createRouter({
     },
     {
       path: '/admin/social-studio',
+      alias: ['/tools/social-studio', '/social-studio', '/ig-studio'],
       name: 'admin-social-studio',
       component: () => import('@/views/admin/SocialStudioView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Social Media Studio' },
