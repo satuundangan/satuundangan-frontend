@@ -958,7 +958,7 @@
                       <span class="text-lg font-black text-white">Rp 49.000</span>
                     </div>
                     <span class="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-1 rounded-md border border-emerald-500/30">
-                      Aktif 1 Tahun
+                      Aktif Selamanya
                     </span>
                   </div>
                 </div>
@@ -1009,7 +1009,7 @@
                 {{ currentSlide.title }}
               </h2>
               <p class="text-[24px] opacity-80 mb-8 max-w-[800px] mx-auto">
-                {{ currentSlide.subtitle || '100% Tanpa Watermark, Aktif 1 Tahun Penuh, Sekali Bayar!' }}
+                {{ currentSlide.subtitle || '100% Tanpa Watermark, Aktif Selamanya, Sekali Bayar!' }}
               </p>
 
               <!-- 3 Column Pricing Cards -->
@@ -1021,7 +1021,7 @@
                     <span class="text-4xl font-black text-stone-900 mt-2 block">Rp 49.000</span>
                     <ul class="mt-6 space-y-3 text-[18px] text-stone-600 font-medium">
                       <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Bebas Semua Tema</li>
-                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Aktif 1 Tahun</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Aktif Selamanya</li>
                       <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Tanpa Watermark</li>
                       <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Galeri 8 Foto</li>
                     </ul>
@@ -1295,7 +1295,7 @@
                   </div>
                   <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
                     <span class="text-emerald-600 font-bold">A:</span>
-                    <span>{{ currentSlide.faqA3 || 'Aktif 1 tahun penuh, bisa diakses kapan saja sebelum & sesudah resepsi.' }}</span>
+                    <span>{{ currentSlide.faqA3 || 'Aktif selamanya tanpa batas waktu, kenangan bahagiamu tersimpan aman.' }}</span>
                   </div>
                 </div>
               </div>
@@ -1662,7 +1662,7 @@ const FULL_CAROUSEL_DECKS = [
         type: 'pricing',
         badge: 'HARGA TRANSPARAN',
         title: 'Fitur Sultan, Harga Teman.',
-        subtitle: '100% Tanpa Watermark, Aktif 1 Tahun Penuh, Sekali Bayar!',
+        subtitle: '100% Tanpa Watermark, Aktif Selamanya, Sekali Bayar!',
         paletteId: 'ivory',
         fontFamily: 'font-serif',
         fontSize: 56,
@@ -1919,7 +1919,7 @@ const FULL_CAROUSEL_DECKS = [
         faqQ2: 'Apakah ada watermark logo di undangan?',
         faqA2: '100% bebas watermark untuk semua paket. Undangan tampil eksklusif, rapi, dan profesional.',
         faqQ3: 'Berapa lama masa aktif undangannya?',
-        faqA3: 'Aktif 1 tahun penuh, bisa diakses kapan saja sebelum & sesudah resepsi.',
+        faqA3: 'Aktif selamanya tanpa batas waktu, kenangan bahagiamu tersimpan aman.',
         paletteId: 'ivory',
         fontFamily: 'font-serif',
         fontSize: 54,
@@ -1980,7 +1980,7 @@ const FULL_CAROUSEL_DECKS = [
         type: 'pricing',
         badge: 'HARGA TRANSPARAN',
         title: 'Paket Hemat, Fitur Lengkap',
-        subtitle: '100% Tanpa Watermark, Aktif 1 Tahun Penuh, Sekali Bayar!',
+        subtitle: '100% Tanpa Watermark, Aktif Selamanya, Sekali Bayar!',
         paletteId: 'ivory',
         fontFamily: 'font-serif',
         fontSize: 54,
@@ -2149,7 +2149,7 @@ function addNewSlide() {
     faqQ2: 'Apakah ada watermark logo di undangan?',
     faqA2: '100% Bebas Watermark untuk semua paket.',
     faqQ3: 'Berapa lama masa aktif undangannya?',
-    faqA3: 'Aktif 1 tahun penuh, bisa diakses sebelum & sesudah resepsi.',
+    faqA3: 'Aktif selamanya tanpa batas waktu, kenangan bahagiamu tersimpan aman.',
     ctaPromo: 'KODE: NIKAHHEMAT',
     ctaAction: 'Klik Link di Bio @satuundangan_id',
     templateSlug: 'meowly-married',
@@ -2364,7 +2364,7 @@ async function exportAllSlidesZip() {
 // Copy Caption & Hashtags
 function copyInstagramCaption() {
   const current = currentSlide.value
-  const caption = `${current.title}\n\n${current.subtitle || ''}\n\n✨ Bikin undangan pernikahan digital estetik & anti-ribet mulai 49rb di @satuundangan_id!\n\nFitur lengkap:\n✅ 30+ Pilihan Tema (Adat Nusantara, Luxury, Anime, Cat Lovers)\n✅ Bebas Watermark & Aktif 1 Tahun Penuh\n✅ Sebar WA Otomatis & QR Code Buku Tamu\n✅ Free Wedding Planner & Kalkulator Weton\n\n👉 Coba buat gratis sekarang: Klik link di bio @satuundangan_id\n\n.\n#undanganpernikahan #undangandigital #undanganonline #weddinginvitation #tipsnikah #persiapanpernikahan #nikahhemat #undanganpernikahandigital #satuundangan`
+  const caption = `${current.title}\n\n${current.subtitle || ''}\n\n✨ Bikin undangan pernikahan digital estetik & anti-ribet mulai 49rb di @satuundangan_id!\n\nFitur lengkap:\n✅ 30+ Pilihan Tema (Adat Nusantara, Luxury, Anime, Cat Lovers)\n✅ Bebas Watermark & Aktif Selamanya\n✅ Sebar WA Otomatis & QR Code Buku Tamu\n✅ Free Wedding Planner & Kalkulator Weton\n\n👉 Coba buat gratis sekarang: Klik link di bio @satuundangan_id\n\n.\n#undanganpernikahan #undangandigital #undanganonline #weddinginvitation #tipsnikah #persiapanpernikahan #nikahhemat #undanganpernikahandigital #satuundangan`
 
   navigator.clipboard.writeText(caption)
   toast.success('Caption & Hashtags berhasil disalin ke clipboard! 📋')
