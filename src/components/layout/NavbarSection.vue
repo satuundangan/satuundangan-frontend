@@ -28,6 +28,19 @@
       <ul class="hidden md:flex items-center gap-7">
         <li>
           <a
+            :href="getHref({ href: '#pricing' })"
+            @click.prevent="handleNavClick({ href: '#pricing' })"
+            :class="[
+              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
+              isScrolled ? 'text-dark' : 'text-dark/80'
+            ]"
+          >
+            Harga
+            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
+          </a>
+        </li>
+        <li>
+          <a
             :href="getHref({ href: '#templates' })"
             @click.prevent="handleNavClick({ href: '#templates' })"
             :class="[
@@ -49,19 +62,6 @@
             ]"
           >
             Fitur
-            <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
-          </a>
-        </li>
-        <li>
-          <a
-            :href="getHref({ href: '#pricing' })"
-            @click.prevent="handleNavClick({ href: '#pricing' })"
-            :class="[
-              'text-sm font-medium transition-all duration-300 relative py-1 hover:text-mocha group cursor-pointer',
-              isScrolled ? 'text-dark' : 'text-dark/80'
-            ]"
-          >
-            Harga
             <span class="absolute bottom-0 left-0 w-0 h-0.5 bg-mocha transition-all duration-300 group-hover:w-full"></span>
           </a>
         </li>
@@ -282,9 +282,9 @@ const toolsDropdownOpen = ref(false)
 const toolsDropdownRef = ref(null)
 
 const menuItems = [
+  { text: 'Harga', href: '#pricing' },
   { text: 'Katalog Desain', href: '#templates' },
   { text: 'Fitur', href: '#features' },
-  { text: 'Harga', href: '#pricing' },
   { text: 'Wedding Planner', href: '/wedding-planner', badge: 'Tools' },
   { text: 'Kalkulator Jodoh', href: '/tools/love-calculator', badge: 'Tools' },
   { text: 'Blog & Tips', href: '/blog' },

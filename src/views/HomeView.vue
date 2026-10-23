@@ -5,7 +5,167 @@
     <!-- Hero Section -->
     <HeroSection @create-invitation="showModal = true" />
 
-    <!-- Template Section (Immediate discovery after hero) -->
+    <!-- Pricing Section -->
+    <section id="pricing" class="section bg-ivory scroll-mt-20 py-20 border-t border-stone-200/60">
+      <div class="max-w-6xl mx-auto px-6">
+        <div class="text-center mb-16">
+          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block"
+            >Harga</span
+          >
+          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">
+            Pilih Paket Sesuai Kebutuhanmu
+          </h2>
+          <p class="text-muted max-w-2xl mx-auto text-lg">
+            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-8 items-center">
+          <div
+            v-for="plan in pricingPlans"
+            :key="plan.name"
+            @click="choosePlan(plan.id)"
+            :class="[
+              'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300 cursor-pointer',
+              plan.highlighted
+                ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
+                : 'border border-gray-100 shadow-lg hover:shadow-xl',
+              selectedPlan === plan.id ? 'ring-2 ring-mocha ring-offset-2' : '',
+            ]"
+          >
+            <!-- Best Seller Badge -->
+            <div
+              v-if="plan.highlighted"
+              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase"
+            >
+              Best Seller
+            </div>
+
+            <div class="mb-6">
+              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
+              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
+            </div>
+
+            <div class="mb-8">
+              <div v-if="plan.originalPrice" class="flex items-center gap-2 mb-1.5">
+                <span class="text-sm text-gray-400 line-through">{{ plan.originalPrice }}</span>
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-50 text-rose-600 tracking-wide">
+                  HEMAT {{ plan.discount }}
+                </span>
+              </div>
+              <div class="flex items-baseline gap-1">
+                <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
+                <span class="text-muted text-sm">/undangan</span>
+              </div>
+            </div>
+
+            <ul class="space-y-4 mb-8 flex-1">
+              <li
+                v-for="feat in plan.features"
+                :key="feat.label"
+                class="flex items-start gap-3 text-sm"
+              >
+                <!-- Check Icon -->
+                <svg
+                  v-if="feat.included"
+                  class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+                <!-- X Icon -->
+                <svg
+                  v-else
+                  class="w-5 h-5 shrink-0 text-red-400 mt-0.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+                <span
+                  :class="
+                    feat.included
+                      ? 'text-dark/80'
+                      : 'text-red-400 line-through decoration-red-300/60'
+                  "
+                  >{{ feat.label }}</span
+                >
+              </li>
+            </ul>
+
+            <button
+              @click.stop="choosePlan(plan.id)"
+              :class="[
+                'w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300',
+                plan.highlighted
+                  ? 'bg-mocha text-white shadow-lg shadow-mocha/20 hover:bg-mocha/90 hover:-translate-y-0.5'
+                  : 'bg-ivory text-mocha border-2 border-mocha/20 hover:border-mocha hover:bg-mocha hover:text-white',
+              ]"
+            >
+              Mulai Buat Undangan
+            </button>
+          </div>
+        </div>
+
+        <!-- Payment Partners & Trustmarks -->
+        <div class="mt-16 text-center border-t border-gray-200/80 pt-10">
+          <p class="text-xs uppercase tracking-widest font-extrabold text-gray-400 mb-6">
+            Metode Pembayaran Aman & Instan via Midtrans (Bank Indonesia Licensed)
+          </p>
+
+          <!-- Badges Grid -->
+          <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 max-w-4xl mx-auto">
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-red-600 flex items-center gap-1.5">
+              <i class="fa-solid fa-qrcode text-red-500"></i> QRIS
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-wide text-blue-800">
+              BCA
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-yellow-600">
+              Mandiri
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-teal-600">
+              BNI
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-blue-700">
+              BRI
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-cyan-600">
+              GoPay
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-wide text-purple-700">
+              OVO
+            </span>
+            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-orange-500">
+              ShopeePay
+            </span>
+          </div>
+
+          <!-- Guarantee Highlights -->
+          <div class="flex flex-wrap items-center justify-center gap-6 mt-8 text-xs text-gray-500 font-medium">
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-lock text-emerald-600"></i>
+              <span>Enkripsi SSL 256-bit Aman</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-bolt text-amber-500"></i>
+              <span>Aktivasi Otomatis Real-time</span>
+            </div>
+            <div class="flex items-center gap-2">
+              <i class="fa-solid fa-headset text-mocha"></i>
+              <span>Bantuan CS WhatsApp Siap Bantu</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Template Section (Immediate discovery after pricing) -->
     <section id="templates" class="section bg-white scroll-mt-20">
       <div class="max-w-6xl mx-auto px-6">
         <div class="text-center mb-12">
@@ -256,166 +416,6 @@
 
     <!-- Tutorial Section (TikTok / Video Guide) -->
     <TutorialSection />
-
-    <!-- Pricing Section -->
-    <section id="pricing" class="section bg-ivory scroll-mt-20 py-24">
-      <div class="max-w-6xl mx-auto px-6">
-        <div class="text-center mb-16">
-          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block"
-            >Harga</span
-          >
-          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">
-            Pilih Paket Sesuai Kebutuhanmu
-          </h2>
-          <p class="text-muted max-w-2xl mx-auto text-lg">
-            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
-          </p>
-        </div>
-
-        <div class="grid md:grid-cols-3 gap-8 items-center">
-          <div
-            v-for="plan in pricingPlans"
-            :key="plan.name"
-            @click="choosePlan(plan.id)"
-            :class="[
-              'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300 cursor-pointer',
-              plan.highlighted
-                ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
-                : 'border border-gray-100 shadow-lg hover:shadow-xl',
-              selectedPlan === plan.id ? 'ring-2 ring-mocha ring-offset-2' : '',
-            ]"
-          >
-            <!-- Best Seller Badge -->
-            <div
-              v-if="plan.highlighted"
-              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase"
-            >
-              Best Seller
-            </div>
-
-            <div class="mb-6">
-              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
-              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
-            </div>
-
-            <div class="mb-8">
-              <div v-if="plan.originalPrice" class="flex items-center gap-2 mb-1.5">
-                <span class="text-sm text-gray-400 line-through">{{ plan.originalPrice }}</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-50 text-rose-600 tracking-wide">
-                  HEMAT {{ plan.discount }}
-                </span>
-              </div>
-              <div class="flex items-baseline gap-1">
-                <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
-                <span class="text-muted text-sm">/undangan</span>
-              </div>
-            </div>
-
-            <ul class="space-y-4 mb-8 flex-1">
-              <li
-                v-for="feat in plan.features"
-                :key="feat.label"
-                class="flex items-start gap-3 text-sm"
-              >
-                <!-- Check Icon -->
-                <svg
-                  v-if="feat.included"
-                  class="w-5 h-5 shrink-0 text-emerald-500 mt-0.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-                <!-- X Icon -->
-                <svg
-                  v-else
-                  class="w-5 h-5 shrink-0 text-red-400 mt-0.5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  stroke-width="2.5"
-                >
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                </svg>
-                <span
-                  :class="
-                    feat.included
-                      ? 'text-dark/80'
-                      : 'text-red-400 line-through decoration-red-300/60'
-                  "
-                  >{{ feat.label }}</span
-                >
-              </li>
-            </ul>
-
-            <button
-              @click.stop="choosePlan(plan.id)"
-              :class="[
-                'w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-300',
-                plan.highlighted
-                  ? 'bg-mocha text-white shadow-lg shadow-mocha/20 hover:bg-mocha/90 hover:-translate-y-0.5'
-                  : 'bg-ivory text-mocha border-2 border-mocha/20 hover:border-mocha hover:bg-mocha hover:text-white',
-              ]"
-            >
-              Mulai Buat Undangan
-            </button>
-          </div>
-        </div>
-
-        <!-- Payment Partners & Trustmarks -->
-        <div class="mt-16 text-center border-t border-gray-200/80 pt-10">
-          <p class="text-xs uppercase tracking-widest font-extrabold text-gray-400 mb-6">
-            Metode Pembayaran Aman & Instan via Midtrans (Bank Indonesia Licensed)
-          </p>
-
-          <!-- Badges Grid -->
-          <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 max-w-4xl mx-auto">
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-red-600 flex items-center gap-1.5">
-              <i class="fa-solid fa-qrcode text-red-500"></i> QRIS
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-wide text-blue-800">
-              BCA
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-yellow-600">
-              Mandiri
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-teal-600">
-              BNI
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-blue-700">
-              BRI
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-cyan-600">
-              GoPay
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-tight text-purple-700">
-              OVO
-            </span>
-            <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-bold tracking-tight text-orange-500">
-              ShopeePay
-            </span>
-          </div>
-
-          <!-- Guarantee Highlights -->
-          <div class="flex flex-wrap items-center justify-center gap-6 mt-8 text-xs text-gray-500 font-medium">
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-lock text-emerald-600"></i>
-              <span>Enkripsi SSL 256-bit Aman</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-bolt text-amber-500"></i>
-              <span>Aktivasi Otomatis Real-time</span>
-            </div>
-            <div class="flex items-center gap-2">
-              <i class="fa-solid fa-headset text-mocha"></i>
-              <span>Bantuan CS WhatsApp Siap Bantu</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
     <!-- Testimonials Section -->
     <section id="testimonials" class="section bg-ivory relative overflow-hidden">
