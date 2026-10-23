@@ -45,7 +45,7 @@
     </nav>
 
     <!-- SUB-PANEL: Tool Drawer (Clean Studio White) -->
-    <div class="w-84 shrink-0 bg-white border-r border-stone-200/80 flex flex-col h-full z-20 overflow-hidden shadow-sm">
+    <div class="w-88 shrink-0 bg-white border-r border-stone-200/80 flex flex-col h-full z-20 overflow-hidden shadow-sm">
       <!-- Drawer Header -->
       <div class="px-5 py-4 border-b border-stone-100 flex items-center justify-between">
         <div>
@@ -63,57 +63,88 @@
       <div class="flex-1 overflow-y-auto p-5 space-y-6 custom-scrollbar text-xs">
         <!-- TAB 1: TEMPLATES & PRESETS -->
         <div v-if="activeTab === 'templates'" class="space-y-5">
-          <!-- 9-Grid Rescue Presets -->
-          <div class="p-4 rounded-2xl bg-[#fffaf3] border border-amber-200/60 shadow-xs space-y-2.5">
+          <!-- 1. FULL CAROUSEL DECK PRESETS (Loads All Slides at Once!) -->
+          <div class="p-4 rounded-2xl bg-[#fffaf3] border border-amber-200/70 shadow-xs space-y-3">
             <div class="flex items-center justify-between">
               <span class="font-bold text-mocha flex items-center gap-1.5">
-                <i class="pi pi-bolt text-xs text-amber-500"></i> 9-Grid Rescue Presets
+                <i class="pi pi-sparkles text-xs text-amber-500"></i> Full Carousel Decks
               </span>
-              <span class="text-[9px] bg-white px-2 py-0.5 rounded-full border border-amber-200 text-stone-500 font-semibold">1-Klik Terapkan</span>
+              <span class="text-[9px] bg-amber-500/10 text-amber-800 px-2 py-0.5 rounded-full font-bold">1-Klik 5-7 Slide</span>
             </div>
             <p class="text-[11px] text-stone-600 leading-relaxed">
-              Pilih konsep teruji dari Playbook IG Revamp:
+              Langsung muat 1 paket carousel cerita lengkap (Cover s/d CTA) ke timeline bawah:
             </p>
-            <div class="grid grid-cols-2 gap-1.5 pt-1">
+            <div class="space-y-1.5">
               <button
-                v-for="preset in PLAYBOOK_PRESETS"
-                :key="preset.id"
-                @click="applyPreset(preset)"
-                class="px-2.5 py-2 rounded-xl bg-white hover:bg-mocha/5 hover:border-mocha/40 border border-amber-100 text-stone-700 hover:text-mocha transition-all text-left truncate flex items-center gap-1.5 shadow-xs"
+                v-for="deck in FULL_CAROUSEL_DECKS"
+                :key="deck.id"
+                @click="loadFullCarouselDeck(deck)"
+                class="w-full px-3 py-2.5 rounded-xl bg-white hover:bg-mocha/5 hover:border-mocha/40 border border-amber-200/80 text-stone-800 hover:text-mocha transition-all flex items-center justify-between shadow-xs group"
               >
-                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 shrink-0"></span>
-                <span class="truncate font-medium text-[11px]">{{ preset.label }}</span>
+                <div class="flex items-center gap-2 truncate">
+                  <span class="w-2 h-2 rounded-full bg-amber-500 shrink-0"></span>
+                  <span class="font-bold text-xs truncate">{{ deck.title }}</span>
+                </div>
+                <span class="text-[10px] bg-stone-100 group-hover:bg-mocha/10 group-hover:text-mocha text-stone-500 px-2 py-0.5 rounded-md font-semibold shrink-0">
+                  {{ deck.slides.length }} Slide
+                </span>
               </button>
             </div>
           </div>
 
-          <!-- Layout Type -->
+          <!-- 2. PILIHAN 12 TIPE LAYOUT -->
           <div>
-            <label class="block font-bold text-stone-800 mb-2">Pilih Tipe Layout</label>
-            <div class="grid grid-cols-2 gap-2">
+            <div class="flex items-center justify-between mb-2">
+              <label class="block font-bold text-stone-800">Pilih Tipe Layout Slide</label>
+              <span class="text-[10px] text-stone-400 font-semibold">{{ TEMPLATE_TYPES.length }} Pilihan</span>
+            </div>
+            <div class="grid grid-cols-3 gap-2">
               <button
                 v-for="t in TEMPLATE_TYPES"
                 :key="t.id"
                 @click="currentSlide.type = t.id"
-                class="p-3 rounded-2xl border text-left transition-all flex items-center gap-2.5"
+                class="p-2.5 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5 shadow-xs"
                 :class="
                   currentSlide.type === t.id
-                    ? 'bg-mocha/10 border-mocha text-mocha font-bold shadow-xs'
-                    : 'bg-stone-50 border-stone-200/80 text-stone-600 hover:bg-stone-100'
+                    ? 'bg-mocha text-white border-mocha font-bold shadow-md shadow-mocha/20'
+                    : 'bg-stone-50 border-stone-200 text-stone-600 hover:bg-stone-100 hover:text-stone-900'
                 "
               >
-                <i :class="['pi', t.icon, 'text-sm text-mocha']"></i>
-                <span class="text-xs truncate">{{ t.name }}</span>
+                <i :class="['pi', t.icon, 'text-sm', currentSlide.type === t.id ? 'text-white' : 'text-mocha']"></i>
+                <span class="text-[10px] leading-tight">{{ t.name }}</span>
               </button>
             </div>
           </div>
 
-          <!-- Template Mockup Picker (if in Showcase Mode) -->
-          <div v-if="currentSlide.type === 'showcase'" class="space-y-2">
-            <label class="block font-bold text-stone-800">Pilih Desain Undangan</label>
+          <!-- 3. SINKRONISASI MASSAL (DECK WIDE TOOLS) -->
+          <div class="p-3.5 rounded-2xl bg-stone-50 border border-stone-200 space-y-2">
+            <span class="font-bold text-stone-800 text-[11px] block">Sinkronisasi Seluruh Slide</span>
+            <div class="grid grid-cols-2 gap-2">
+              <button
+                @click="applyPaletteToAll(currentPal)"
+                class="px-2.5 py-2 rounded-xl bg-white border border-stone-200 hover:border-mocha text-stone-700 hover:text-mocha font-bold text-[10px] flex items-center justify-center gap-1 shadow-xs transition-colors"
+                title="Terapkan palet warna saat ini ke semua slide di carousel"
+              >
+                <i class="pi pi-palette text-xs text-mocha"></i>
+                <span>Samakan Warna</span>
+              </button>
+              <button
+                @click="applyFontToAll"
+                class="px-2.5 py-2 rounded-xl bg-white border border-stone-200 hover:border-mocha text-stone-700 hover:text-mocha font-bold text-[10px] flex items-center justify-center gap-1 shadow-xs transition-colors"
+                title="Terapkan jenis font saat ini ke semua slide di carousel"
+              >
+                <i class="pi pi-pencil text-xs text-mocha"></i>
+                <span>Samakan Font</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Layout Specific Pickers -->
+          <div v-if="currentSlide.type === 'showcase'" class="space-y-2 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Pilih Desain Mockup Undangan</label>
             <select
               v-model="currentSlide.templateSlug"
-              class="w-full px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha focus:ring-2 focus:ring-mocha/20 outline-none capitalize shadow-xs"
+              class="w-full px-3 py-2.5 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha outline-none capitalize shadow-xs"
             >
               <option v-for="tpl in TEMPLATE_LIST" :key="tpl.slug" :value="tpl.slug">
                 {{ tpl.name }}
@@ -122,7 +153,7 @@
           </div>
         </div>
 
-        <!-- TAB 2: TEXT & TYPOGRAPHY -->
+        <!-- TAB 2: TEXT & CONTENT EDITOR -->
         <div v-if="activeTab === 'text'" class="space-y-4">
           <!-- Category Badge -->
           <div>
@@ -130,19 +161,19 @@
             <input
               v-model="currentSlide.badge"
               type="text"
-              placeholder="Contoh: TIPS NIKAH, ADAT NUSANTARA"
-              class="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha focus:ring-2 focus:ring-mocha/20 outline-none shadow-xs"
+              placeholder="Contoh: TIPS NIKAH, BONGKAR BIAYA"
+              class="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha outline-none shadow-xs"
             />
           </div>
 
           <!-- Title / Headline -->
           <div>
-            <label class="block font-semibold text-stone-700 mb-1">Headline Utama (Hook)</label>
+            <label class="block font-semibold text-stone-700 mb-1">Headline Utama</label>
             <textarea
               v-model="currentSlide.title"
               rows="3"
               placeholder="Tulis headline pemikat..."
-              class="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha focus:ring-2 focus:ring-mocha/20 outline-none leading-relaxed shadow-xs"
+              class="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha outline-none leading-relaxed shadow-xs"
             ></textarea>
           </div>
 
@@ -151,14 +182,16 @@
             <label class="block font-semibold text-stone-700 mb-1">Subtitle / Keterangan</label>
             <textarea
               v-model="currentSlide.subtitle"
-              rows="3"
+              rows="2"
               placeholder="Tulis penjelasan..."
-              class="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha focus:ring-2 focus:ring-mocha/20 outline-none leading-relaxed shadow-xs"
+              class="w-full px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-800 text-xs focus:bg-white focus:border-mocha outline-none leading-relaxed shadow-xs"
             ></textarea>
           </div>
 
-          <!-- Points list for Slide Edukasi -->
-          <div v-if="currentSlide.type === 'body'" class="space-y-2">
+          <!-- DYNAMIC CONTENT BY LAYOUT TYPE -->
+
+          <!-- 1. Slide Edukasi: Points List -->
+          <div v-if="currentSlide.type === 'body'" class="space-y-2 pt-2 border-t border-stone-100">
             <label class="block font-semibold text-stone-700">Daftar Poin</label>
             <div v-for="(p, i) in currentSlide.points" :key="i" class="flex gap-2 items-center">
               <span class="font-bold text-mocha w-4 text-center">{{ i + 1 }}</span>
@@ -179,9 +212,132 @@
             </button>
           </div>
 
+          <!-- 2. Comparison (Versus): Kiri vs Kanan -->
+          <div v-if="currentSlide.type === 'comparison'" class="space-y-3 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Konten Perbandingan (Versus)</label>
+            <div class="space-y-2">
+              <span class="text-[11px] font-bold text-rose-600 block">Sisi Kiri (Masalah / Konvensional):</span>
+              <input v-model="currentSlide.versusLeftTitle" placeholder="Judul Kiri (cth: Cetak Fisik)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs" />
+              <textarea v-model="currentSlide.versusLeftPoints" rows="2" placeholder="Poin kiri (pisahkan koma)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs"></textarea>
+            </div>
+            <div class="space-y-2">
+              <span class="text-[11px] font-bold text-emerald-600 block">Sisi Kanan (Solusi Satu Undangan):</span>
+              <input v-model="currentSlide.versusRightTitle" placeholder="Judul Kanan (cth: Satu Undangan)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs" />
+              <textarea v-model="currentSlide.versusRightPoints" rows="2" placeholder="Poin kanan (pisahkan koma)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs"></textarea>
+            </div>
+          </div>
+
+          <!-- 3. Testimonial Content -->
+          <div v-if="currentSlide.type === 'testimonial'" class="space-y-2.5 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Konten Ulasan Pengantin</label>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Nama Mempelai</label>
+              <input v-model="currentSlide.testiAuthor" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs" />
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Kota / Asal</label>
+              <input v-model="currentSlide.testiRole" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs" />
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Rating Bintang</label>
+              <input type="number" v-model.number="currentSlide.testiRating" min="1" max="5" class="w-16 px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs font-bold text-amber-500" />
+            </div>
+          </div>
+
+          <!-- 4. Weton Jodoh Jawa -->
+          <div v-if="currentSlide.type === 'weton'" class="space-y-2 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Hitungan Primbon Jawa</label>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] text-stone-500 block mb-0.5">Weton Pria</label>
+                <input v-model="currentSlide.wetonPria" class="w-full px-2.5 py-1.5 rounded bg-stone-50 border border-stone-200 text-xs" />
+              </div>
+              <div>
+                <label class="text-[10px] text-stone-500 block mb-0.5">Weton Wanita</label>
+                <input v-model="currentSlide.wetonWanita" class="w-full px-2.5 py-1.5 rounded bg-stone-50 border border-stone-200 text-xs" />
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Hasil Kecocokan</label>
+              <input v-model="currentSlide.wetonStatus" class="w-full px-2.5 py-1.5 rounded bg-stone-50 border border-stone-200 text-xs font-bold text-mocha" />
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Makna Penafsiran</label>
+              <textarea v-model="currentSlide.wetonMakna" rows="2" class="w-full px-2.5 py-1.5 rounded bg-stone-50 border border-stone-200 text-xs"></textarea>
+            </div>
+          </div>
+
+          <!-- 5. Chat Bubble Simulation -->
+          <div v-if="currentSlide.type === 'chat_bubble'" class="space-y-2 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Dialog Chat WhatsApp</label>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Pesan Pertama (Mempelai Pria/Wanita)</label>
+              <textarea v-model="currentSlide.chatMsg1" rows="2" class="w-full px-2.5 py-1.5 rounded bg-stone-50 border border-stone-200 text-xs"></textarea>
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Balasan Kedua (Solusi Satu Undangan)</label>
+              <textarea v-model="currentSlide.chatMsg2" rows="2" class="w-full px-2.5 py-1.5 rounded bg-stone-50 border border-stone-200 text-xs"></textarea>
+            </div>
+          </div>
+
+          <!-- 6. Bento Grid Fitur -->
+          <div v-if="currentSlide.type === 'bento'" class="space-y-3 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Item Bento Grid (4 Fitur)</label>
+            <div v-for="(b, idx) in (currentSlide.bentoItems || defaultBentoItems)" :key="idx" class="p-2.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1.5">
+              <span class="text-[10px] font-bold text-mocha">Fitur 0{{ idx + 1 }}</span>
+              <input v-model="b.title" placeholder="Judul Fitur" class="w-full px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs font-semibold" />
+              <input v-model="b.desc" placeholder="Keterangan singkat" class="w-full px-2.5 py-1 rounded-lg bg-white border border-stone-200 text-xs" />
+            </div>
+          </div>
+
+          <!-- 7. FAQ / Tanya Jawab Manten -->
+          <div v-if="currentSlide.type === 'faq'" class="space-y-3 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Tanya Jawab Manten (FAQ)</label>
+            <div class="space-y-2">
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <span class="text-[10px] font-bold text-mocha">Pertanyaan 1</span>
+                <input v-model="currentSlide.faqQ1" class="w-full px-2.5 py-1 rounded bg-white border border-stone-200 text-xs font-semibold" />
+                <textarea v-model="currentSlide.faqA1" rows="2" class="w-full px-2.5 py-1 rounded bg-white border border-stone-200 text-xs" placeholder="Jawaban"></textarea>
+              </div>
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <span class="text-[10px] font-bold text-mocha">Pertanyaan 2</span>
+                <input v-model="currentSlide.faqQ2" class="w-full px-2.5 py-1 rounded bg-white border border-stone-200 text-xs font-semibold" />
+                <textarea v-model="currentSlide.faqA2" rows="2" class="w-full px-2.5 py-1 rounded bg-white border border-stone-200 text-xs" placeholder="Jawaban"></textarea>
+              </div>
+              <div class="p-2.5 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                <span class="text-[10px] font-bold text-mocha">Pertanyaan 3</span>
+                <input v-model="currentSlide.faqQ3" class="w-full px-2.5 py-1 rounded bg-white border border-stone-200 text-xs font-semibold" />
+                <textarea v-model="currentSlide.faqA3" rows="2" class="w-full px-2.5 py-1 rounded bg-white border border-stone-200 text-xs" placeholder="Jawaban"></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- 8. Closing Call to Action (CTA) -->
+          <div v-if="currentSlide.type === 'cta'" class="space-y-2 pt-2 border-t border-stone-100">
+            <label class="block font-bold text-stone-800">Pengaturan Closing CTA</label>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Kode Promo / Voucher</label>
+              <input v-model="currentSlide.ctaPromo" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs font-mono font-bold" />
+            </div>
+            <div>
+              <label class="text-[10px] text-stone-500 block mb-0.5">Instruksi Aksi</label>
+              <input v-model="currentSlide.ctaAction" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs" />
+            </div>
+          </div>
+
           <!-- Typography Controls -->
           <div class="pt-4 border-t border-stone-100 space-y-3.5">
-            <label class="block font-bold text-stone-800">Pengaturan Tipografi</label>
+            <div class="flex items-center justify-between">
+              <label class="block font-bold text-stone-800">Pengaturan Tipografi</label>
+              <button
+                @click="applyFontToAll"
+                class="text-[10px] text-mocha font-bold hover:underline flex items-center gap-1"
+                title="Terapkan font ini ke semua slide di carousel"
+              >
+                <i class="pi pi-sync text-[9px]"></i>
+                <span>Terapkan ke Semua</span>
+              </button>
+            </div>
             <div>
               <label class="text-[11px] text-stone-500 block mb-1">Jenis Huruf (Font Family)</label>
               <select
@@ -195,7 +351,6 @@
               </select>
             </div>
 
-            <!-- Font Size Slider -->
             <div>
               <div class="flex items-center justify-between text-[11px] text-stone-500 mb-1">
                 <span>Ukuran Judul</span>
@@ -204,14 +359,13 @@
               <input
                 type="range"
                 v-model.number="currentSlide.fontSize"
-                min="40"
+                min="38"
                 max="96"
                 step="2"
                 class="w-full accent-mocha cursor-pointer"
               />
             </div>
 
-            <!-- Alignment & Casing -->
             <div class="flex items-center justify-between pt-1">
               <span class="text-[11px] text-stone-500">Format Huruf</span>
               <div class="flex items-center gap-1 bg-stone-100 rounded-xl p-0.5 border border-stone-200">
@@ -240,7 +394,39 @@
 
         <!-- TAB 3: COLORS & PALETTE -->
         <div v-if="activeTab === 'colors'" class="space-y-4">
-          <label class="block font-bold text-stone-800 mb-1">Preset Palet Brand</label>
+          <!-- Scope Toggle -->
+          <div class="flex items-center justify-between p-2.5 rounded-2xl bg-stone-50 border border-stone-200 shadow-xs">
+            <span class="text-[11px] font-bold text-stone-700">Terapkan Perubahan Ke:</span>
+            <div class="flex items-center gap-1 bg-white rounded-xl p-0.5 border border-stone-200 text-[10px]">
+              <button
+                @click="applyScope = 'current'"
+                class="px-2.5 py-1 rounded-lg font-bold transition-all"
+                :class="applyScope === 'current' ? 'bg-mocha text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'"
+              >
+                Slide Ini
+              </button>
+              <button
+                @click="applyScope = 'all'"
+                class="px-2.5 py-1 rounded-lg font-bold transition-all"
+                :class="applyScope === 'all' ? 'bg-mocha text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'"
+              >
+                Semua Slide
+              </button>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between">
+            <label class="block font-bold text-stone-800">Preset Palet Brand</label>
+            <button
+              @click="applyPaletteToAll(currentPal)"
+              class="text-[10px] text-mocha font-bold hover:underline flex items-center gap-1"
+              title="Samakan warna semua slide dengan palet saat ini"
+            >
+              <i class="pi pi-sync text-[9px]"></i>
+              <span>Terapkan ke Semua</span>
+            </button>
+          </div>
+
           <div class="grid grid-cols-1 gap-2">
             <button
               v-for="pal in PALETTES"
@@ -265,7 +451,6 @@
           <div class="pt-4 border-t border-stone-100 space-y-3.5">
             <div class="flex items-center justify-between">
               <label class="font-bold text-stone-800">Kustomisasi HEX Manual</label>
-              <!-- CLEAR / RESET BUTTON -->
               <button
                 @click="clearCustomHex"
                 :disabled="!hasCustomHex"
@@ -305,8 +490,8 @@
             </div>
 
             <!-- Background Pattern Switcher -->
-            <div class="pt-2">
-              <span class="text-[11px] text-stone-600 font-semibold block mb-1.5">Tekstur Latar Belakang</span>
+            <div class="pt-2 space-y-2">
+              <span class="text-[11px] text-stone-600 font-semibold block mb-1">Tekstur Latar Belakang</span>
               <div class="grid grid-cols-3 gap-1.5">
                 <button
                   v-for="pat in [
@@ -322,6 +507,13 @@
                   {{ pat.label }}
                 </button>
               </div>
+              <button
+                @click="applyBgPatternToAll"
+                class="w-full py-1.5 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-600 text-[10px] font-bold transition-colors flex items-center justify-center gap-1 shadow-xs"
+              >
+                <i class="pi pi-check text-[9px] text-mocha"></i>
+                <span>Terapkan Latar ke Semua Slide</span>
+              </button>
             </div>
           </div>
         </div>
@@ -395,7 +587,7 @@
 
     <!-- MAIN STAGE & TIMELINE -->
     <div class="flex-1 flex flex-col h-full bg-[#eeebe5] relative overflow-hidden">
-      <!-- TOP CONTROL TOOLBAR (Studio Clean White) -->
+      <!-- TOP CONTROL TOOLBAR -->
       <header class="h-16 border-b border-stone-200 bg-white px-6 flex items-center justify-between shadow-xs z-10">
         <!-- Left: Undo, Redo, Dimensions -->
         <div class="flex items-center gap-3">
@@ -578,7 +770,7 @@
               </div>
             </div>
 
-            <!-- CANVAS BODY: TYPE 1 - COVER -->
+            <!-- CANVAS BODY: TYPE 1 - COVER HOOK -->
             <div
               v-if="currentSlide.type === 'cover'"
               class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto"
@@ -609,13 +801,12 @@
                 {{ currentSlide.subtitle }}
               </p>
 
-              <!-- Custom Uploaded Photo Preview if present -->
               <div v-if="currentSlide.customImage" class="mt-8 mx-auto w-[360px] h-[360px] rounded-3xl overflow-hidden shadow-2xl border-4 border-white/80">
                 <img :src="currentSlide.customImage" class="w-full h-full object-cover" />
               </div>
             </div>
 
-            <!-- CANVAS BODY: TYPE 2 - BODY -->
+            <!-- CANVAS BODY: TYPE 2 - BODY (POINTS) -->
             <div
               v-if="currentSlide.type === 'body'"
               class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto space-y-6"
@@ -635,7 +826,6 @@
                 {{ currentSlide.subtitle }}
               </p>
 
-              <!-- Points Stack -->
               <div class="space-y-4">
                 <div
                   v-for="(point, i) in currentSlide.points"
@@ -659,7 +849,78 @@
               </div>
             </div>
 
-            <!-- CANVAS BODY: TYPE 3 - SHOWCASE -->
+            <!-- CANVAS BODY: TYPE 3 - COMPARISON (VERSUS / SPLIT CARD) -->
+            <div
+              v-if="currentSlide.type === 'comparison'"
+              class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto"
+            >
+              <div class="text-center mb-8">
+                <h2
+                  :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                  :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.75}px`, color: activePrimary }"
+                  class="font-black leading-tight"
+                >
+                  {{ currentSlide.title }}
+                </h2>
+                <p v-if="currentSlide.subtitle" class="text-[22px] opacity-80 mt-2">
+                  {{ currentSlide.subtitle }}
+                </p>
+              </div>
+
+              <!-- Two Column Versus Grid -->
+              <div class="grid grid-cols-2 gap-8">
+                <!-- Left: Problem / Fisik -->
+                <div class="p-8 rounded-3xl border-2 border-rose-300 bg-rose-50/70 shadow-lg flex flex-col justify-between">
+                  <div>
+                    <div class="flex items-center gap-2 mb-4 text-rose-600 font-black text-2xl uppercase tracking-wider">
+                      <i class="pi pi-times-circle text-2xl"></i>
+                      <span>{{ currentSlide.versusLeftTitle || 'Undangan Fisik' }}</span>
+                    </div>
+                    <ul class="space-y-4 text-stone-700 text-[20px]">
+                      <li
+                        v-for="(pt, idx) in (currentSlide.versusLeftPoints || 'Biaya cetak Rp 3-5 Juta,80% cuma dibuang ke tempat sampah,Repot antar satu per satu & ongkir mahal').split(',')"
+                        :key="idx"
+                        class="flex items-start gap-2.5 font-medium"
+                      >
+                        <span class="text-rose-500 font-bold shrink-0">✕</span>
+                        <span>{{ pt.trim() }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <span class="mt-8 text-center text-xs font-bold text-rose-500 uppercase tracking-widest block bg-rose-100 py-2 rounded-xl">
+                    Boros Biaya & Waktu
+                  </span>
+                </div>
+
+                <!-- Right: Satu Undangan Solusi -->
+                <div class="p-8 rounded-3xl border-2 border-emerald-400 bg-emerald-50/90 shadow-xl flex flex-col justify-between relative transform -translate-y-2">
+                  <span class="absolute -top-3.5 right-6 bg-emerald-600 text-white text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow">
+                    Pilihan Cerdas
+                  </span>
+                  <div>
+                    <div class="flex items-center gap-2 mb-4 text-emerald-800 font-black text-2xl uppercase tracking-wider">
+                      <i class="pi pi-check-circle text-2xl text-emerald-600"></i>
+                      <span>{{ currentSlide.versusRightTitle || 'Satu Undangan' }}</span>
+                    </div>
+                    <ul class="space-y-4 text-stone-800 text-[20px]">
+                      <li
+                        v-for="(pt, idx) in (currentSlide.versusRightPoints || 'Cukup bayar Rp 79.000 sekali,Sebar ke ribuan tamu via WhatsApp 1 klik,Tamu scan QR bebas antre di resepsi,Hemat 2.9 juta buat upgrade menu katering').split(',')"
+                        :key="idx"
+                        class="flex items-start gap-2.5 font-bold"
+                      >
+                        <span class="text-emerald-600 font-extrabold shrink-0">✓</span>
+                        <span>{{ pt.trim() }}</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <span class="mt-8 text-center text-xs font-bold text-emerald-800 uppercase tracking-widest block bg-emerald-100 py-2 rounded-xl">
+                    Hemat Jutaan Rupiah
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 4 - SHOWCASE MOCKUP -->
             <div v-if="currentSlide.type === 'showcase'" class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto text-center">
               <div class="mb-6">
                 <span class="text-sm uppercase font-bold tracking-[0.3em] opacity-70 block mb-2" :style="{ color: activeAccent }">
@@ -704,7 +965,197 @@
               </div>
             </div>
 
-            <!-- CANVAS BODY: TYPE 4 - TWEET -->
+            <!-- CANVAS BODY: TYPE 5 - TESTIMONIAL / REVIEW -->
+            <div v-if="currentSlide.type === 'testimonial'" class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto">
+              <div
+                class="p-14 rounded-[36px] border shadow-xl backdrop-blur-md relative"
+                :style="{ backgroundColor: currentPal.cardBg || '#ffffff', borderColor: activePrimary + '25' }"
+              >
+                <!-- 5 Stars -->
+                <div class="flex items-center gap-2 text-amber-400 text-3xl mb-8">
+                  <i v-for="star in (currentSlide.testiRating || 5)" :key="star" class="pi pi-star-fill"></i>
+                </div>
+
+                <!-- Review Quote -->
+                <p class="font-serif italic text-[36px] leading-[1.45] text-stone-800 mb-10">
+                  "{{ currentSlide.title }}"
+                </p>
+
+                <!-- Author info -->
+                <div class="flex items-center justify-between border-t border-stone-200/80 pt-8">
+                  <div class="flex items-center gap-5">
+                    <div class="w-18 h-18 rounded-full overflow-hidden border-2 border-mocha/30 shadow bg-stone-100 flex items-center justify-center text-mocha font-serif text-2xl font-black">
+                      {{ (currentSlide.testiAuthor || 'Rani & Aldi')[0] }}
+                    </div>
+                    <div>
+                      <span class="font-bold text-[28px] text-stone-900 block">{{ currentSlide.testiAuthor || 'Rani & Aldi Pratama' }}</span>
+                      <span class="text-[20px] text-stone-500 font-medium">{{ currentSlide.testiRole || 'Pengantin (Bandung)' }}</span>
+                    </div>
+                  </div>
+                  <span class="px-4 py-2 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200 text-sm font-bold flex items-center gap-1.5">
+                    <i class="pi pi-verified"></i> Verified Couple
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 6 - PRICE LIST (3 TIERS) -->
+            <div v-if="currentSlide.type === 'pricing'" class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto text-center">
+              <h2
+                :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.8}px`, color: activePrimary }"
+                class="font-black leading-tight mb-3"
+              >
+                {{ currentSlide.title }}
+              </h2>
+              <p class="text-[24px] opacity-80 mb-8 max-w-[800px] mx-auto">
+                {{ currentSlide.subtitle || '100% Tanpa Watermark, Aktif 1 Tahun Penuh, Sekali Bayar!' }}
+              </p>
+
+              <!-- 3 Column Pricing Cards -->
+              <div class="grid grid-cols-3 gap-6 text-left">
+                <!-- Basic -->
+                <div class="p-8 rounded-3xl border bg-white/95 text-stone-900 shadow-xl flex flex-col justify-between">
+                  <div>
+                    <span class="text-xs font-bold text-stone-500 uppercase tracking-widest block">Paket Basic</span>
+                    <span class="text-4xl font-black text-stone-900 mt-2 block">Rp 49.000</span>
+                    <ul class="mt-6 space-y-3 text-[18px] text-stone-600 font-medium">
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Bebas Semua Tema</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Aktif 1 Tahun</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Tanpa Watermark</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-500"></i> Galeri 8 Foto</li>
+                    </ul>
+                  </div>
+                  <span class="mt-8 text-xs font-bold text-center block text-stone-400">Cocok untuk Intimate</span>
+                </div>
+
+                <!-- Premium (Best Seller) -->
+                <div class="p-8 rounded-3xl border-2 border-mocha bg-[#fffaf3] text-stone-900 shadow-2xl flex flex-col justify-between relative transform -translate-y-3">
+                  <span class="absolute -top-4 right-6 bg-mocha text-white text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow">
+                    Best Seller
+                  </span>
+                  <div>
+                    <span class="text-xs font-bold text-mocha uppercase tracking-widest block">Paket Premium</span>
+                    <span class="text-4xl font-black text-mocha mt-2 block">Rp 79.000</span>
+                    <ul class="mt-6 space-y-3 text-[18px] text-stone-800 font-bold">
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Galeri 20 Foto</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Upload Musik Sendiri</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Subdomain Kustom</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> QR Code Buku Tamu</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Cerita Cinta (Timeline)</li>
+                    </ul>
+                  </div>
+                  <span class="mt-8 text-xs font-bold text-center block text-mocha bg-mocha/10 py-2 rounded-xl">Paling Banyak Dipilih</span>
+                </div>
+
+                <!-- Eksklusif -->
+                <div class="p-8 rounded-3xl border bg-stone-900 text-white shadow-xl flex flex-col justify-between">
+                  <div>
+                    <span class="text-xs font-bold text-amber-400 uppercase tracking-widest block">Paket Eksklusif</span>
+                    <span class="text-4xl font-black text-white mt-2 block">Rp 99.000</span>
+                    <ul class="mt-6 space-y-3 text-[18px] text-stone-300 font-medium">
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-amber-400"></i> Galeri 35 Foto</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-amber-400"></i> Video Prewedding</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-amber-400"></i> Live Streaming Link</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-amber-400"></i> Panduan Dress Code</li>
+                    </ul>
+                  </div>
+                  <span class="mt-8 text-xs font-bold text-center block text-amber-300">Fitur Terlengkap</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 7 - WETON JODOH -->
+            <div v-if="currentSlide.type === 'weton'" class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto text-center">
+              <span class="text-sm uppercase font-bold tracking-[0.3em] opacity-70 block mb-2" :style="{ color: activeAccent }">
+                Primbon Jawa Modern • Satu Undangan
+              </span>
+              <h2
+                :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.85}px`, color: activePrimary }"
+                class="font-black leading-tight mb-8"
+              >
+                {{ currentSlide.title }}
+              </h2>
+
+              <div
+                class="p-12 rounded-3xl border shadow-xl max-w-[850px] mx-auto w-full"
+                :style="{ backgroundColor: currentPal.cardBg || currentPal.bg, borderColor: activeAccent + '44' }"
+              >
+                <div class="flex items-center justify-around mb-8">
+                  <div class="text-center">
+                    <span class="text-xs uppercase font-bold tracking-widest opacity-60 block">Weton Pria</span>
+                    <span class="font-serif text-3xl font-bold mt-1 block" :style="{ color: activePrimary }">
+                      {{ currentSlide.wetonPria || 'Senin Wage (8)' }}
+                    </span>
+                  </div>
+                  <div class="w-14 h-14 rounded-full bg-mocha/10 text-mocha flex items-center justify-center font-bold text-2xl">
+                    +
+                  </div>
+                  <div class="text-center">
+                    <span class="text-xs uppercase font-bold tracking-widest opacity-60 block">Weton Wanita</span>
+                    <span class="font-serif text-3xl font-bold mt-1 block" :style="{ color: activePrimary }">
+                      {{ currentSlide.wetonWanita || 'Minggu Legi (10)' }}
+                    </span>
+                  </div>
+                </div>
+
+                <div class="py-4 px-8 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-mocha font-serif text-3xl font-black mb-5">
+                  Hasil: "{{ currentSlide.wetonStatus || 'RATU (Neptu 18)' }}"
+                </div>
+
+                <p class="text-[24px] leading-relaxed opacity-90 font-medium">
+                  {{ currentSlide.wetonMakna || 'Pasangan ini memang sudah jodohnya. Dihormati tetangga & keluarga, rezeki lancar berlimpah.' }}
+                </p>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 8 - CHAT BUBBLE SIMULATION -->
+            <div v-if="currentSlide.type === 'chat_bubble'" class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto">
+              <div class="text-center mb-8">
+                <span class="text-sm uppercase font-bold tracking-[0.3em] opacity-70 block mb-2" :style="{ color: activeAccent }">
+                  Realita Calon Pengantin
+                </span>
+                <h2
+                  :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                  :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.75}px`, color: activePrimary }"
+                  class="font-black leading-tight"
+                >
+                  {{ currentSlide.title }}
+                </h2>
+              </div>
+
+              <!-- Chat Container -->
+              <div class="max-w-[850px] mx-auto w-full p-8 rounded-3xl bg-[#efeae2] border border-stone-300 shadow-xl space-y-6">
+                <!-- Message 1: Left Bubble -->
+                <div class="flex items-start gap-3">
+                  <div class="w-12 h-12 rounded-full bg-stone-300 flex items-center justify-center text-stone-700 font-bold shrink-0">
+                    👰
+                  </div>
+                  <div class="bg-white p-5 rounded-2xl rounded-tl-none shadow-sm max-w-[550px]">
+                    <span class="text-xs font-bold text-stone-400 block mb-1">Calon Istri</span>
+                    <p class="text-[22px] text-stone-800 leading-snug">
+                      {{ currentSlide.chatMsg1 || 'Sayang, vendor katering sama dekor udah oke. Tapi biaya cetak 500 undangan kertas 3 juta lebih... budget kita jebol 😭' }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Message 2: Right Bubble -->
+                <div class="flex items-start justify-end gap-3">
+                  <div class="bg-[#d9fdd3] p-5 rounded-2xl rounded-tr-none shadow-sm max-w-[550px] text-left">
+                    <span class="text-xs font-bold text-emerald-700 block mb-1">Calon Suami</span>
+                    <p class="text-[22px] text-stone-800 leading-snug font-medium">
+                      {{ currentSlide.chatMsg2 || 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon! 😍' }}
+                    </p>
+                  </div>
+                  <div class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold shrink-0">
+                    🤵
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 9 - TWEET / QUOTE -->
             <div v-if="currentSlide.type === 'tweet'" class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto">
               <div
                 class="p-12 rounded-[36px] border shadow-xl backdrop-blur-md"
@@ -736,6 +1187,172 @@
                   <div class="flex items-center gap-8 font-semibold">
                     <span><strong class="text-stone-800">1,420</strong> Retweets</span>
                     <span><strong class="text-stone-800">8,930</strong> Likes</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 10 - BENTO GRID FITUR -->
+            <div
+              v-if="currentSlide.type === 'bento'"
+              class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto"
+            >
+              <div class="text-center mb-8">
+                <span class="text-sm uppercase font-bold tracking-[0.3em] opacity-70 block mb-2" :style="{ color: activeAccent }">
+                  Fitur Unggulan • Satu Undangan
+                </span>
+                <h2
+                  :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                  :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.75}px`, color: activePrimary }"
+                  class="font-black leading-tight"
+                >
+                  {{ currentSlide.title }}
+                </h2>
+                <p v-if="currentSlide.subtitle" class="text-[22px] opacity-80 mt-2 max-w-[750px] mx-auto">
+                  {{ currentSlide.subtitle }}
+                </p>
+              </div>
+
+              <!-- 2x2 Bento Grid -->
+              <div class="grid grid-cols-2 gap-6 max-w-[900px] mx-auto w-full">
+                <div
+                  v-for="(item, idx) in (currentSlide.bentoItems || defaultBentoItems)"
+                  :key="idx"
+                  class="p-7 rounded-3xl border shadow-md flex flex-col justify-between"
+                  :style="{
+                    backgroundColor: currentPal.cardBg || '#ffffff',
+                    borderColor: activePrimary + '25',
+                  }"
+                >
+                  <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-white text-2xl mb-4 shadow-sm" :style="{ backgroundColor: activePrimary }">
+                    <i :class="['pi', item.icon || 'pi-star']"></i>
+                  </div>
+                  <div>
+                    <h3 class="font-bold text-[24px] mb-2" :style="{ color: activePrimary }">{{ item.title }}</h3>
+                    <p class="text-[19px] opacity-80 leading-snug" :style="{ color: activeText }">{{ item.desc }}</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 11 - FAQ / TANYA JAWAB -->
+            <div
+              v-if="currentSlide.type === 'faq'"
+              class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto space-y-6"
+            >
+              <div class="text-center mb-4">
+                <span class="text-sm uppercase font-bold tracking-[0.3em] opacity-70 block mb-1" :style="{ color: activeAccent }">
+                  Tanya Jawab Manten • Satu Undangan
+                </span>
+                <h2
+                  :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                  :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.75}px`, color: activePrimary }"
+                  class="font-black leading-tight"
+                >
+                  {{ currentSlide.title }}
+                </h2>
+              </div>
+
+              <div class="space-y-4 max-w-[920px] mx-auto w-full">
+                <!-- Q1 -->
+                <div
+                  class="p-6 rounded-2xl border shadow-sm space-y-2"
+                  :style="{ backgroundColor: currentPal.cardBg || '#ffffff', borderColor: activePrimary + '25' }"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-0.5 rounded-lg text-xs font-black text-white shrink-0" :style="{ backgroundColor: activePrimary }">Q</span>
+                    <span class="font-bold text-[22px]" :style="{ color: activePrimary }">{{ currentSlide.faqQ1 || 'Bisa sebar berapa banyak tamu?' }}</span>
+                  </div>
+                  <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
+                    <span class="text-emerald-600 font-bold">A:</span>
+                    <span>{{ currentSlide.faqA1 || 'Unlimited! Tanpa kuota dan bebas kirim ke ribuan tamu tanpa biaya tambahan.' }}</span>
+                  </div>
+                </div>
+
+                <!-- Q2 -->
+                <div
+                  class="p-6 rounded-2xl border shadow-sm space-y-2"
+                  :style="{ backgroundColor: currentPal.cardBg || '#ffffff', borderColor: activePrimary + '25' }"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-0.5 rounded-lg text-xs font-black text-white shrink-0" :style="{ backgroundColor: activePrimary }">Q</span>
+                    <span class="font-bold text-[22px]" :style="{ color: activePrimary }">{{ currentSlide.faqQ2 || 'Apakah ada watermark logo di undangan?' }}</span>
+                  </div>
+                  <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
+                    <span class="text-emerald-600 font-bold">A:</span>
+                    <span>{{ currentSlide.faqA2 || '100% bebas watermark! Undangan tampil eksklusif dan profesional.' }}</span>
+                  </div>
+                </div>
+
+                <!-- Q3 -->
+                <div
+                  class="p-6 rounded-2xl border shadow-sm space-y-2"
+                  :style="{ backgroundColor: currentPal.cardBg || '#ffffff', borderColor: activePrimary + '25' }"
+                >
+                  <div class="flex items-center gap-3">
+                    <span class="px-2.5 py-0.5 rounded-lg text-xs font-black text-white shrink-0" :style="{ backgroundColor: activePrimary }">Q</span>
+                    <span class="font-bold text-[22px]" :style="{ color: activePrimary }">{{ currentSlide.faqQ3 || 'Berapa lama masa aktif undangannya?' }}</span>
+                  </div>
+                  <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
+                    <span class="text-emerald-600 font-bold">A:</span>
+                    <span>{{ currentSlide.faqA3 || 'Aktif 1 tahun penuh, bisa diakses kapan saja sebelum & sesudah resepsi.' }}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- CANVAS BODY: TYPE 12 - CALL TO ACTION (CTA CLOSING) -->
+            <div
+              v-if="currentSlide.type === 'cta'"
+              class="relative z-10 px-20 flex-1 flex flex-col justify-center my-auto text-center"
+            >
+              <div
+                class="max-w-[850px] mx-auto w-full p-12 rounded-[40px] border shadow-2xl backdrop-blur-md"
+                :style="{ backgroundColor: currentPal.cardBg || '#ffffff', borderColor: activeAccent + '40' }"
+              >
+                <!-- Save Reminder Pill -->
+                <div
+                  class="inline-flex items-center gap-2 px-5 py-2 rounded-full text-sm font-black uppercase tracking-wider mb-6 shadow-sm border"
+                  :style="{ backgroundColor: activeAccent + '22', color: activePrimary, borderColor: activeAccent + '60' }"
+                >
+                  <i class="pi pi-bookmark-fill text-amber-500"></i>
+                  <span>Simpan Postingan Ini Biar Nggak Lupa!</span>
+                </div>
+
+                <h2
+                  :class="[currentSlide.fontFamily || 'font-serif', currentSlide.isUppercase ? 'uppercase' : '']"
+                  :style="{ fontSize: `${(currentSlide.fontSize || 66) * 0.85}px`, color: activePrimary }"
+                  class="font-black leading-tight mb-4"
+                >
+                  {{ currentSlide.title || 'Mulai Buat Undangan Impianmu Sekarang' }}
+                </h2>
+
+                <p class="text-[24px] opacity-80 leading-relaxed mb-8 max-w-[650px] mx-auto" :style="{ color: activeText }">
+                  {{ currentSlide.subtitle || 'Daftar gratis dalam 2 menit, pilih tema adat atau modern, dan sebar undangan sepuasnya!' }}
+                </p>
+
+                <!-- Promo Code Box -->
+                <div
+                  class="p-5 rounded-2xl border-2 border-dashed mb-8 flex items-center justify-between max-w-[500px] mx-auto"
+                  :style="{ borderColor: activeAccent, backgroundColor: activeAccent + '15' }"
+                >
+                  <div class="text-left">
+                    <span class="text-xs uppercase font-bold tracking-widest block opacity-70">Diskon Followers Baru</span>
+                    <span class="font-mono text-2xl font-black" :style="{ color: activePrimary }">{{ currentSlide.ctaPromo || 'KODE: NIKAHHEMAT' }}</span>
+                  </div>
+                  <span class="px-3.5 py-1.5 rounded-xl bg-amber-500 text-white font-bold text-xs uppercase shadow">
+                    Diskon 30%
+                  </span>
+                </div>
+
+                <!-- Account Badge Callout -->
+                <div class="flex items-center justify-center gap-4 pt-4 border-t border-stone-200">
+                  <div class="w-14 h-14 rounded-full overflow-hidden border border-amber-600/30 bg-white p-0.5 shadow-sm">
+                    <img src="/logo_satuundangan.png" class="w-full h-full object-contain" />
+                  </div>
+                  <div class="text-left">
+                    <span class="font-bold text-2xl block text-stone-900">@satuundangan_id</span>
+                    <span class="text-sm text-mocha font-bold">👉 {{ currentSlide.ctaAction || 'Klik Link di Bio Profil Instagram' }}</span>
                   </div>
                 </div>
               </div>
@@ -932,7 +1549,7 @@ const PALETTES = [
   { id: 'dark', name: 'Dark Elegant', bg: '#141417', cardBg: '#1f1f24', text: '#f8fafc', primary: '#d4af37', accent: '#f59e0b' },
 ]
 
-// Stickers List (from public/assets/images/)
+// Stickers List
 const STICKERS_LIST = [
   { id: 'cat-paw', name: 'Cat Paw 🐾', file: '/assets/images/clay-cat-paw.png' },
   { id: 'clay-heart', name: 'Heart 3D ❤️', file: '/assets/images/clay-heart.png' },
@@ -942,7 +1559,7 @@ const STICKERS_LIST = [
   { id: 'clay-envelope', name: 'Amplop', file: '/assets/images/luxury-clay-envelope.png' },
 ]
 
-// Ornaments List (from public/assets/ornaments/)
+// Ornaments List
 const ORNAMENTS_LIST = [
   { id: 'siger', name: 'Siger Sunda', file: '/assets/ornaments/siger-gold.png' },
   { id: 'gunungan', name: 'Gunungan Jawa', file: '/assets/ornaments/gunungan-gold.png' },
@@ -950,12 +1567,28 @@ const ORNAMENTS_LIST = [
   { id: 'dayak', name: 'Talawang Dayak', file: '/assets/ornaments/dayak-talawang.png' },
 ]
 
-// Template Types
+// 12 Rich Template Layout Types
 const TEMPLATE_TYPES = [
   { id: 'cover', name: 'Cover Hook', icon: 'pi-bookmark' },
   { id: 'body', name: 'Slide Edukasi', icon: 'pi-list' },
+  { id: 'comparison', name: 'Perbandingan (Versus)', icon: 'pi-arrows-h' },
   { id: 'showcase', name: 'Mockup Tema', icon: 'pi-mobile' },
-  { id: 'tweet', name: 'Tweet / Quote', icon: 'pi-comment' },
+  { id: 'bento', name: 'Bento Grid Fitur', icon: 'pi-th-large' },
+  { id: 'faq', name: 'FAQ / Tanya Jawab', icon: 'pi-question-circle' },
+  { id: 'testimonial', name: 'Review Pengantin', icon: 'pi-star' },
+  { id: 'pricing', name: 'Tabel Harga', icon: 'pi-tag' },
+  { id: 'weton', name: 'Weton Jodoh', icon: 'pi-heart' },
+  { id: 'chat_bubble', name: 'Simulasi Chat WA', icon: 'pi-comments' },
+  { id: 'tweet', name: 'Tweet / Quote', icon: 'pi-twitter' },
+  { id: 'cta', name: 'Closing & CTA', icon: 'pi-arrow-circle-right' },
+]
+
+// Default Bento Items
+const defaultBentoItems = [
+  { icon: 'pi-wallet', title: 'Amplop Digital Cashless', desc: 'QRIS & Rekening Bank langsung ke kamu tanpa potongan sepeserpun.' },
+  { icon: 'pi-qrcode', title: 'Buku Tamu QR Code', desc: 'Check-in cepat di meja resepsi dan bebas antre catat buku manual.' },
+  { icon: 'pi-whatsapp', title: 'WhatsApp Sebar 1-Klik', desc: 'Format pesan personal ramah dengan nama masing-masing tamu.' },
+  { icon: 'pi-map-marker', title: 'Navigasi Google Maps', desc: 'Petunjuk arah akurat langsung ke lokasi agar tamu tidak tersesat.' },
 ]
 
 // Template List
@@ -972,85 +1605,423 @@ const TEMPLATE_LIST = [
   { slug: 'pixel-quest', name: 'Pixel Quest 8-Bit' },
 ]
 
-// Initial Multi-Slide Deck State
-const slides = ref([
+// 6 FULL CAROUSEL DECKS (Loads 4 to 6 slides in 1-Click!)
+const FULL_CAROUSEL_DECKS = [
   {
-    id: 1,
-    type: 'cover',
-    badge: 'TIPS HEMAT NIKAH',
-    title: 'Cetak 500 Undangan Kertas Buat Dibuang ke Tong Sampah? 😭',
-    subtitle: 'Bukan pelit, tapi smart budgeting! Yuk hitung perbandingan riilnya.',
-    paletteId: 'ivory',
-    fontFamily: 'font-serif',
-    fontSize: 66,
-    textAlign: 'left',
-    isUppercase: false,
-    bgPattern: 'glow',
-    customBg: '',
-    customPrimary: '',
-    customAccent: '',
-    customText: '',
-    points: [],
-    templateSlug: 'meowly-married',
-    selectedStickers: [],
-    selectedOrnament: null,
-    customImage: null,
-  },
-  {
-    id: 2,
-    type: 'body',
-    badge: 'KALKULASI BIAYA',
-    title: 'Realita Undangan Fisik vs Digital',
-    subtitle: 'Simak hitungan riil pos anggaran berikut:',
-    paletteId: 'ivory',
-    fontFamily: 'font-serif',
-    fontSize: 56,
-    textAlign: 'left',
-    isUppercase: false,
-    bgPattern: 'glow',
-    customBg: '',
-    customPrimary: '',
-    customAccent: '',
-    customText: '',
-    points: [
-      'Cetak fisik 500 pcs x Rp 6.000 = Rp 3.000.000',
-      'Fakta: 80% cuma dibaca 2 menit lalu masuk tempat sampah',
-      'Pakai Satu Undangan cukup 79 ribu, hemat Rp 2.921.000!',
+    id: 'deck-budget',
+    title: 'Post 2: Bongkar Budget 500 Undangan',
+    slides: [
+      {
+        id: 1,
+        type: 'cover',
+        badge: 'BONGKAR BUDGET NIKAH',
+        title: 'Cetak 500 Undangan Kertas Buat Dibuang ke Tong Sampah? 😭',
+        subtitle: 'Bukan pelit, tapi smart budgeting! Yuk hitung perbandingan riilnya.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 66,
+        textAlign: 'left',
+        isUppercase: false,
+        bgPattern: 'glow',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 2,
+        type: 'comparison',
+        badge: 'PERBANDINGAN RIIL',
+        title: 'Realita Fisik vs Digital',
+        subtitle: 'Selisih anggarannya bisa buat nambah menu prasmanan!',
+        versusLeftTitle: 'Undangan Kertas',
+        versusLeftPoints: 'Biaya cetak Rp 3-5 Juta,80% cuma dibuang ke tempat sampah,Repot keliling bagi-bagi & bensin boros',
+        versusRightTitle: 'Satu Undangan',
+        versusRightPoints: 'Cukup Rp 79.000 sekali bayar,Sebar ke ribuan tamu via WA 1 klik,Tamu scan QR bebas antre di resepsi,Hemat 2.9 juta buat upgrade katering',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 56,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 3,
+        type: 'chat_bubble',
+        badge: 'RELATABLE STORY',
+        title: 'Drama Calon Manten H-60',
+        chatMsg1: 'Sayang, vendor katering sama dekor udah oke. Tapi biaya cetak 500 undangan kertas 3 juta lebih... budget kita jebol 😭',
+        chatMsg2: 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon! 😍',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 56,
+        textAlign: 'center',
+        selectedStickers: ['/assets/images/clay-heart.png'],
+        selectedOrnament: null,
+      },
+      {
+        id: 4,
+        type: 'pricing',
+        badge: 'HARGA TRANSPARAN',
+        title: 'Fitur Sultan, Harga Teman.',
+        subtitle: '100% Tanpa Watermark, Aktif 1 Tahun Penuh, Sekali Bayar!',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 56,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 5,
+        type: 'testimonial',
+        badge: 'ULASAN PENGANTIN',
+        title: 'Sangat puas dengan hasilnya! Tamu-tamu undangan banyak yang memuji lagunya enak dan desainnya berkelas banget.',
+        testiAuthor: 'Rani & Aldi Pratama',
+        testiRole: 'Pengantin (Bandung)',
+        testiRating: 5,
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
     ],
-    templateSlug: 'meowly-married',
-    selectedStickers: ['/assets/images/clay-heart.png'],
-    selectedOrnament: null,
-    customImage: null,
   },
   {
-    id: 3,
-    type: 'showcase',
-    badge: 'PILIHAN TEMA',
-    title: 'Desain Eksklusif Siap Pakai',
-    subtitle: 'Mulai dari Adat Nusantara sakral sampai tema 3D Cat Lovers lucu!',
-    paletteId: 'ivory',
-    fontFamily: 'font-serif',
-    fontSize: 54,
-    textAlign: 'center',
-    isUppercase: false,
-    bgPattern: 'glow',
-    customBg: '',
-    customPrimary: '',
-    customAccent: '',
-    customText: '',
-    points: [],
-    templateSlug: 'meowly-married',
-    selectedStickers: ['/assets/images/clay-cat-paw.png'],
-    selectedOrnament: null,
-    customImage: null,
+    id: 'deck-adat',
+    title: 'Post 1: Heritage Adat Nusantara',
+    slides: [
+      {
+        id: 11,
+        type: 'cover',
+        badge: 'HERITAGE NUSANTARA',
+        title: 'Menikah dengan Adat, Tetap Modern & Elegan',
+        subtitle: 'Sentuhan ornamen sakral Minangkabau berpadu estetika smartphone modern.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 66,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: '/assets/ornaments/siger-gold.png',
+      },
+      {
+        id: 12,
+        type: 'showcase',
+        badge: 'TEMA MINANG',
+        title: 'Minang Suntiang Emas',
+        subtitle: 'Kemegahan mahkota suntiang Minangkabau berbalut marun dan emas Rumah Gadang.',
+        templateSlug: 'minang-suntiang-emas',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 13,
+        type: 'showcase',
+        badge: 'TEMA JAWA',
+        title: 'Jawa Truntum Keraton',
+        subtitle: 'Sakralnya motif batik truntum berpadu alunan gamelan Jawa yang menenangkan.',
+        templateSlug: 'jawa-truntum',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: '/assets/ornaments/gunungan-gold.png',
+      },
+      {
+        id: 14,
+        type: 'showcase',
+        badge: 'TEMA SUNDA',
+        title: 'Sunda Sabilulungan',
+        subtitle: 'Keanggunan mahkota Siger priangan berpadu alunan merdu degung Sunda.',
+        templateSlug: 'sunda-sabilulungan',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: '/assets/ornaments/siger-gold.png',
+      },
+      {
+        id: 15,
+        type: 'body',
+        badge: 'KENAPA SATU UNDANGAN?',
+        title: 'Fitur Adat Terlengkap di Indonesia',
+        subtitle: 'Didesain khusus untuk menghormati tradisi leluhur tanpa kehilangan sentuhan teknologi:',
+        points: [
+          'Tersedia lagu tradisional preset (Gamelan Jawa, Degung Sunda, Gamelan Bali)',
+          'Dukungan seksi Turut Mengundang untuk keluarga besar & sesepuh',
+          'Integrasi Google Maps ke gedung / masjid akad agar tamu tak tersesat',
+          'Kirim undangan personal via WhatsApp dalam 1 klik',
+        ],
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+    ],
   },
-])
+  {
+    id: 'deck-cat',
+    title: 'Post 4: Anabul Cat Lovers (3D Clay)',
+    slides: [
+      {
+        id: 21,
+        type: 'cover',
+        badge: 'CAT LOVERS EDITION 🐾',
+        title: 'Undangan Nikah Khusus Anabul Parents Pertama di Indonesia!',
+        subtitle: 'Animasi 3D clay telapak kucing pastel imut siap meriahkan hari bahagiamu.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 64,
+        textAlign: 'left',
+        selectedStickers: ['/assets/images/clay-cat-paw.png'],
+        selectedOrnament: null,
+      },
+      {
+        id: 22,
+        type: 'showcase',
+        badge: 'MEOWLY MARRIED',
+        title: 'Tema Meowly Married',
+        subtitle: 'Amplop pastel lipat 3D, cap telapak kucing gemas, dan galeri foto anabul kesayangan.',
+        templateSlug: 'meowly-married',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: ['/assets/images/luxury-clay-cats.png'],
+        selectedOrnament: null,
+      },
+      {
+        id: 23,
+        type: 'body',
+        badge: 'FITUR ANABUL',
+        title: 'Kenapa Pasangan Cat Lovers Suka Banget?',
+        subtitle: 'Bukan cuma lucu, tapi punya fitur super lengkap buat pernikahanmu:',
+        points: [
+          'Cover amplop animasi telapak kucing interaktif',
+          'Bisa upload foto berdua bareng kucing peliharaan',
+          'Amplop digital QRIS cashless & nomor rekening bank',
+          'RSVP online & buku tamu bebas antre',
+        ],
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 52,
+        textAlign: 'left',
+        selectedStickers: ['/assets/images/clay-heart.png'],
+        selectedOrnament: null,
+      },
+    ],
+  },
+  {
+    id: 'deck-weton',
+    title: 'Post 6: Weton Jodoh Jawa Modern',
+    slides: [
+      {
+        id: 31,
+        type: 'cover',
+        badge: 'PRIMBON JAWA MODERN',
+        title: 'Kamu & Doi Masuk Kategori Apa? Cek Jodohmu di Sini!',
+        subtitle: 'Hitung kecocokan neptu weton kalian secara gratis pakai kalkulator Satu Undangan.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 64,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: '/assets/ornaments/gunungan-gold.png',
+      },
+      {
+        id: 32,
+        type: 'weton',
+        badge: 'SIMULASI NEPTU',
+        title: 'Simulasi Weton Neptu 18',
+        wetonPria: 'Senin Wage (8)',
+        wetonWanita: 'Minggu Legi (10)',
+        wetonStatus: 'RATU (Neptu 18)',
+        wetonMakna: 'Pasangan ini memang sudah jodohnya. Dihormati tetangga & keluarga, rezeki lancar berlimpah.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 33,
+        type: 'body',
+        badge: 'GRATIS DI WEB',
+        title: 'Mau Cek Weton Kamu & Pasangan?',
+        subtitle: 'Tersedia kalkulator weton online otomatis di web Satu Undangan:',
+        points: [
+          'Pilih tanggal lahir kamu & pasangan',
+          'Sistem otomatis menghitung hari pasarannya (Wage, Kliwon, Legi, dll)',
+          'Dapatkan tafsir Primbon Jawa modern yang santun & bijak',
+          '100% Gratis tanpa dipungut biaya apapun!',
+        ],
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 52,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+    ],
+  },
+  {
+    id: 'deck-features',
+    title: 'Post 3: 4 Fitur Rahasia Undangan Digital',
+    slides: [
+      {
+        id: 41,
+        type: 'cover',
+        badge: 'FITUR RAHASIA',
+        title: 'Bikin Tamu Takjub dengan 4 Fitur Sultan Ini!',
+        subtitle: 'Bukan sekadar link website biasa, tapi pengalaman resepsi digital tak terlupakan bagi tamu.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 64,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 42,
+        type: 'bento',
+        badge: '4 FITUR UNGGULAN',
+        title: 'Semua Kebutuhan Resepsimu Ada di Sini',
+        subtitle: 'Terintegrasi otomatis dalam satu link undangan digital:',
+        bentoItems: [
+          { icon: 'pi-wallet', title: 'Amplop Digital Cashless', desc: 'QRIS & Rekening Bank langsung ke rekeningmu tanpa potongan sepeserpun.' },
+          { icon: 'pi-qrcode', title: 'Buku Tamu QR Code', desc: 'Scan check-in cepat di meja resepsi, bebas antre tulis buku tamu manual.' },
+          { icon: 'pi-whatsapp', title: 'Kirim WhatsApp 1-Klik', desc: 'Sapaan ramah dengan nama masing-masing tamu secara personal & otomatis.' },
+          { icon: 'pi-map-marker', title: 'Navigasi Google Maps', desc: 'Petunjuk arah akurat & live traffic agar tamu tidak tersesat ke gedung.' },
+        ],
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 43,
+        type: 'faq',
+        badge: 'TANYA JAWAB',
+        title: 'Pertanyaan yang Paling Sering Ditanyakan',
+        faqQ1: 'Bisa sebar berapa banyak tamu?',
+        faqA1: 'Unlimited! Tanpa kuota dan bebas kirim ke ribuan tamu tanpa biaya tambahan sepeserpun.',
+        faqQ2: 'Apakah ada watermark logo di undangan?',
+        faqA2: '100% bebas watermark untuk semua paket. Undangan tampil eksklusif, rapi, dan profesional.',
+        faqQ3: 'Berapa lama masa aktif undangannya?',
+        faqA3: 'Aktif 1 tahun penuh, bisa diakses kapan saja sebelum & sesudah resepsi.',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 44,
+        type: 'cta',
+        badge: 'COBA SEKARANG',
+        title: 'Siap Bikin Undangan Impianmu Hari Ini?',
+        subtitle: 'Daftar gratis dalam 2 menit, pilih tema favoritmu, dan nikmati kemudahan sebar undangan digital!',
+        ctaPromo: 'KODE: NIKAHHEMAT',
+        ctaAction: 'Klik Link di Bio @satuundangan_id',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 56,
+        textAlign: 'center',
+        selectedStickers: ['/assets/images/clay-heart.png'],
+        selectedOrnament: null,
+      },
+    ],
+  },
+  {
+    id: 'deck-promo',
+    title: 'Post 5: Promo Spesial Mulai 49 Ribu',
+    slides: [
+      {
+        id: 51,
+        type: 'cover',
+        badge: 'PROMO SPESIAL',
+        title: 'Mau Undangan Estetik Tanpa Bikin Kantong Jebol? 💸',
+        subtitle: 'Dapatkan 30+ pilihan tema pernikahan mewah mulai Rp 49.000 sekali bayar!',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 64,
+        textAlign: 'left',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 52,
+        type: 'showcase',
+        badge: 'PILIHAN TEMA',
+        title: '30+ Tema Estetik & Adat Nusantara',
+        subtitle: 'Dari adat Minang, Jawa, Sunda, Bali hingga Modern Minimalis & Animasi 3D Clay.',
+        templateSlug: 'meowly-married',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 53,
+        type: 'pricing',
+        badge: 'HARGA TRANSPARAN',
+        title: 'Paket Hemat, Fitur Lengkap',
+        subtitle: '100% Tanpa Watermark, Aktif 1 Tahun Penuh, Sekali Bayar!',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 54,
+        textAlign: 'center',
+        selectedStickers: [],
+        selectedOrnament: null,
+      },
+      {
+        id: 54,
+        type: 'cta',
+        badge: 'KLAIM PROMO',
+        title: 'Klaim Diskon 30% Khusus Followers!',
+        subtitle: 'Gunakan kode promo di bawah saat checkout di website satuundangan.id:',
+        ctaPromo: 'KODE: SIKAT30',
+        ctaAction: 'Klik Link di Bio @satuundangan_id',
+        paletteId: 'ivory',
+        fontFamily: 'font-serif',
+        fontSize: 56,
+        textAlign: 'center',
+        selectedStickers: ['/assets/images/luxury-clay-rings.png'],
+        selectedOrnament: null,
+      },
+    ],
+  },
+]
 
+// Initial Multi-Slide Deck State
+const slides = ref(JSON.parse(JSON.stringify(FULL_CAROUSEL_DECKS[0].slides)))
 const currentSlideIndex = ref(0)
 const currentSlide = computed(() => slides.value[currentSlideIndex.value] || slides.value[0])
 const currentPal = computed(() => PALETTES.find((p) => p.id === currentSlide.value.paletteId) || PALETTES[0])
+const applyScope = ref('current') // 'current' or 'all'
 
-// Active Colors (Respects custom HEX or fallback to palette)
+// Load Entire Carousel Deck
+function loadFullCarouselDeck(deck) {
+  slides.value = JSON.parse(JSON.stringify(deck.slides))
+  currentSlideIndex.value = 0
+  toast.success(`Berhasil memuat "${deck.title}" (${deck.slides.length} slide sekaligus)! 🚀`)
+}
+
+// Active Colors
 const activeBg = computed(() => currentSlide.value.customBg || currentPal.value.bg)
 const activePrimary = computed(() => currentSlide.value.customPrimary || currentPal.value.primary)
 const activeAccent = computed(() => currentSlide.value.customAccent || currentPal.value.accent)
@@ -1166,12 +2137,21 @@ function addNewSlide() {
     fontSize: 56,
     textAlign: 'left',
     isUppercase: false,
-    bgPattern: 'glow',
+    bgPattern: currentSlide.value.bgPattern || 'glow',
     customBg: '',
     customPrimary: '',
     customAccent: '',
     customText: '',
     points: ['Poin pertama yang menarik', 'Poin kedua yang menguatkan hook'],
+    bentoItems: JSON.parse(JSON.stringify(defaultBentoItems)),
+    faqQ1: 'Bisa sebar berapa banyak tamu?',
+    faqA1: 'Unlimited! Tanpa kuota dan bebas kirim ke ribuan tamu.',
+    faqQ2: 'Apakah ada watermark logo di undangan?',
+    faqA2: '100% Bebas Watermark untuk semua paket.',
+    faqQ3: 'Berapa lama masa aktif undangannya?',
+    faqA3: 'Aktif 1 tahun penuh, bisa diakses sebelum & sesudah resepsi.',
+    ctaPromo: 'KODE: NIKAHHEMAT',
+    ctaAction: 'Klik Link di Bio @satuundangan_id',
     templateSlug: 'meowly-married',
     selectedStickers: [],
     selectedOrnament: null,
@@ -1217,11 +2197,44 @@ function removePoint(idx) {
 }
 
 function applyPalette(pal) {
-  currentSlide.value.paletteId = pal.id
-  clearCustomHex()
+  if (applyScope.value === 'all') {
+    applyPaletteToAll(pal)
+  } else {
+    currentSlide.value.paletteId = pal.id
+    clearCustomHex()
+    toast.info(`Palet ${pal.name} diterapkan ke slide ini!`)
+  }
+}
+
+function applyPaletteToAll(pal) {
+  slides.value.forEach((s) => {
+    s.paletteId = pal.id
+    s.customBg = ''
+    s.customPrimary = ''
+    s.customAccent = ''
+    s.customText = ''
+  })
+  toast.success(`Palet "${pal.name}" diterapkan ke SEMUA (${slides.value.length}) slide! 🎨`)
+}
+
+function applyFontToAll() {
+  const currentFont = currentSlide.value.fontFamily || 'font-serif'
+  slides.value.forEach((s) => {
+    s.fontFamily = currentFont
+  })
+  toast.success(`Font diterapkan ke SEMUA (${slides.value.length}) slide! ✍️`)
+}
+
+function applyBgPatternToAll() {
+  const currentPat = currentSlide.value.bgPattern || 'glow'
+  slides.value.forEach((s) => {
+    s.bgPattern = currentPat
+  })
+  toast.success(`Tekstur latar diterapkan ke SEMUA (${slides.value.length}) slide! ✨`)
 }
 
 function toggleSticker(stk) {
+  if (!currentSlide.value.selectedStickers) currentSlide.value.selectedStickers = []
   const arr = currentSlide.value.selectedStickers
   const idx = arr.indexOf(stk.file)
   if (idx > -1) {
@@ -1248,73 +2261,6 @@ function handleFileUpload(e) {
     toast.success('Foto berhasil diupload ke kanvas!')
   }
   reader.readAsDataURL(file)
-}
-
-// 9-Grid Playbook Presets
-const PLAYBOOK_PRESETS = [
-  {
-    id: 'post1',
-    label: 'Post 1: Adat Nusantara',
-    type: 'showcase',
-    paletteId: 'ivory',
-    badge: 'HERITAGE NUSANTARA',
-    title: 'Menikah dengan Adat, Tetap Modern & Elegan',
-    subtitle: 'Sentuhan ornamen sakral Minangkabau berpadu estetika smartphone modern.',
-    templateSlug: 'minang-suntiang-emas',
-  },
-  {
-    id: 'post2',
-    label: 'Post 2: Kalkulasi Budget',
-    type: 'cover',
-    paletteId: 'ivory',
-    badge: 'BONGKAR BUDGET',
-    title: 'Cetak 500 Undangan Kertas Buat Dibuang ke Tong Sampah? 😭',
-    subtitle: 'Bukan pelit, tapi smart budgeting! Yuk hitung perbandingan riilnya.',
-  },
-  {
-    id: 'post3',
-    label: 'Post 3: QR Code Tamu',
-    type: 'body',
-    paletteId: 'dark',
-    badge: 'FITUR RESEPSI',
-    title: 'Resepsi Bebas Drama Antre di Meja Buku Tamu',
-    subtitle: 'Kenapa fitur QR Code Check-In Satu Undangan bikin tamu terkesan:',
-    points: [
-      'Tamu cukup tunjukkan QR di undangan HP',
-      'Penerima tamu scan 1 detik, langsung tercatat',
-      'Gak ada antrean panjang & pulpen macet di meja depan',
-    ],
-  },
-  {
-    id: 'post4',
-    label: 'Post 4: Anabul Cat Lovers',
-    type: 'showcase',
-    paletteId: 'ivory',
-    badge: 'SPECIAL NICHE 🐾',
-    title: 'Undangan Nikah Khusus Anabul Parents Pertama di Indonesia!',
-    subtitle: 'Animasi 3D clay telapak kucing pastel imut siap meriahkan hari bahagiamu.',
-    templateSlug: 'meowly-married',
-  },
-  {
-    id: 'post_tweet',
-    label: 'Quote: Curhat Manten',
-    type: 'tweet',
-    paletteId: 'ivory',
-    badge: 'CURHAT MANTEN',
-    title: 'Ternyata debat milih vendor katering & warna suvenir jauh lebih menguras emosi daripada skripsi 😭 Untung urusan undangan 5 menit kelar di satuundangan.id',
-  },
-]
-
-function applyPreset(preset) {
-  currentSlide.value.type = preset.type
-  currentSlide.value.paletteId = preset.paletteId
-  currentSlide.value.badge = preset.badge
-  currentSlide.value.title = preset.title
-  if (preset.subtitle) currentSlide.value.subtitle = preset.subtitle
-  if (preset.points) currentSlide.value.points = [...preset.points]
-  if (preset.templateSlug) currentSlide.value.templateSlug = preset.templateSlug
-  clearCustomHex()
-  toast.success(`Preset "${preset.label}" berhasil dimuat!`)
 }
 
 // Single Slide Export
