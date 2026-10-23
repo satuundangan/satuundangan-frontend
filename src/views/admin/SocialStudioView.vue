@@ -40,7 +40,7 @@
         <h2 class="font-bold text-sm text-slate-100 flex items-center gap-2">
           <span>{{ currentTabTitle }}</span>
         </h2>
-        <span class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">Canva Studio</span>
+        <span class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-2 py-0.5 rounded-full border border-amber-500/30">IG Creator</span>
       </div>
 
       <!-- Drawer Content -->
@@ -158,7 +158,7 @@
 
           <!-- Typography Controls -->
           <div class="pt-3 border-t border-slate-800 space-y-3">
-            <label class="block font-bold text-slate-300">Pengaturan Tipografi Canva</label>
+            <label class="block font-bold text-slate-300">Pengaturan Tipografi</label>
             <div>
               <label class="text-[11px] text-slate-400 block mb-1">Jenis Huruf (Font Family)</label>
               <select
