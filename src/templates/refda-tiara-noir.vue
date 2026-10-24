@@ -401,7 +401,7 @@ const props = defineProps({
 })
 
 const DEFAULT_EVENT_START = '08:30'
-const DEFAULT_EVENT_END = '13:00'
+const DEFAULT_EVENT_END = '12:00'
 const DEFAULT_VENUE = 'Lume Coffee'
 const VENUE_ROOM = 'Ballroom Lt. 2'
 const DEFAULT_MUSIC = '/audio/carpenters-i-wont-last-a-day-without-you.mp3'
@@ -421,7 +421,7 @@ const DEFAULT_RUNDOWN = [
   { time: '10.00', title: 'Acara adat Jawa' },
   { time: '10.30', title: 'Resepsi — makan, speech, sesi mingle & foto bersama keluarga dan teman' },
   { time: '11.30', title: 'Games & lempar bunga — masing-masing dapat 50K' },
-  { time: '12.00', title: 'Penutupan MC & karaoke keluarga (hingga 13.00)' },
+  { time: '12.00', title: 'Penutupan MC & karaoke keluarga' },
 ]
 
 const toast = useToast()
