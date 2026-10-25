@@ -8,7 +8,33 @@ import {
 } from './telemetry.js'
 
 describe('Telemetry & Dev Mode Exclusion', () => {
+  let storage = {}
+
   beforeEach(() => {
+    storage = {}
+    const mockLocalStorage = {
+      getItem: vi.fn((k) => storage[k] ?? null),
+      setItem: vi.fn((k, v) => {
+        storage[k] = String(v)
+      }),
+      removeItem: vi.fn((k) => {
+        delete storage[k]
+      }),
+      clear: vi.fn(() => {
+        storage = {}
+      }),
+    }
+    Object.defineProperty(window, 'localStorage', {
+      value: mockLocalStorage,
+      writable: true,
+      configurable: true,
+    })
+    Object.defineProperty(globalThis, 'localStorage', {
+      value: mockLocalStorage,
+      writable: true,
+      configurable: true,
+    })
+
     localStorage.clear()
     delete window.__EXCLUDE_TELEMETRY__
     // Reset window location search

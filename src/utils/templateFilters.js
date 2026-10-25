@@ -199,7 +199,7 @@ export function scoreTemplateMatch(template, query) {
   return totalScore
 }
 
-export function filterTemplates(templates, styleId, packageId, searchQuery = '') {
+export function filterTemplates(templates, styleId, packageId, searchQuery = '', sortBy = 'newest') {
   const list = safeList(templates)
   const style = normalize(styleId).toLowerCase()
   const pkg = normalize(packageId).toLowerCase()
@@ -214,7 +214,27 @@ export function filterTemplates(templates, styleId, packageId, searchQuery = '')
     return styleMatch && pkgMatch
   })
 
-  if (!query) return baseFiltered
+  // Sort helper to ensure newest templates are first by default
+  const applySort = (arr) => {
+    const res = [...arr]
+    if (sortBy === 'oldest') {
+      res.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0))
+    } else if (sortBy === 'name' || sortBy === 'name_asc') {
+      res.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'id'))
+    } else if (sortBy === 'name_desc') {
+      res.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'id'))
+    } else if (sortBy === 'price_asc') {
+      res.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
+    } else if (sortBy === 'price_desc') {
+      res.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+    } else {
+      // 'newest' (default: highest id first)
+      res.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))
+    }
+    return res
+  }
+
+  if (!query) return applySort(baseFiltered)
 
   // Score matches
   const scored = baseFiltered
@@ -223,7 +243,7 @@ export function filterTemplates(templates, styleId, packageId, searchQuery = '')
       score: scoreTemplateMatch(template, query),
     }))
     .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.score - a.score || (Number(b.template?.id) || 0) - (Number(a.template?.id) || 0))
 
   if (scored.length > 0) {
     return scored.map((item) => item.template)
@@ -237,7 +257,7 @@ export function filterTemplates(templates, styleId, packageId, searchQuery = '')
       score: scoreTemplateMatch(template, query),
     }))
     .filter((item) => item.score > 0)
-    .sort((a, b) => b.score - a.score)
+    .sort((a, b) => b.score - a.score || (Number(b.template?.id) || 0) - (Number(a.template?.id) || 0))
 
   return allScored.map((item) => item.template)
 }

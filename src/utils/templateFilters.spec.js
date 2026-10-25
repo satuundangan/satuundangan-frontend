@@ -209,6 +209,37 @@ describe('templateFilters', () => {
       expect(result.length).toBeGreaterThanOrEqual(1)
       expect(result[0].slug).toBe('naruto')
     })
+
+    it('orders templates by newest first (highest id) by default', () => {
+      const templatesWithId = [
+        { id: 1, name: 'Old Template', slug: 'old-template', category: 'Basic', filterGroup: 'Modern' },
+        { id: 50, name: 'Newest Template', slug: 'newest-template', category: 'Premium', filterGroup: 'Modern' },
+        { id: 25, name: 'Mid Template', slug: 'mid-template', category: 'Basic', filterGroup: 'Modern' },
+      ]
+      const result = filterTemplates(templatesWithId, 'all', 'all')
+      expect(result.map((t) => t.id)).toEqual([50, 25, 1])
+    })
+
+    it('supports custom sortBy parameter (oldest, name_asc, price_asc, price_desc)', () => {
+      const sample = [
+        { id: 1, name: 'Zebra Theme', price: 100000, category: 'Basic', filterGroup: 'Modern' },
+        { id: 2, name: 'Alpha Theme', price: 50000, category: 'Basic', filterGroup: 'Modern' },
+      ]
+      expect(filterTemplates(sample, 'all', 'all', '', 'oldest').map((t) => t.id)).toEqual([1, 2])
+      expect(filterTemplates(sample, 'all', 'all', '', 'name_asc').map((t) => t.id)).toEqual([2, 1])
+      expect(filterTemplates(sample, 'all', 'all', '', 'price_asc').map((t) => t.id)).toEqual([2, 1])
+      expect(filterTemplates(sample, 'all', 'all', '', 'price_desc').map((t) => t.id)).toEqual([1, 2])
+    })
+
+    it('prioritizes newer templates when search relevance scores are equal', () => {
+      const searchSample = [
+        { id: 5, name: 'Romantic Rose 1', slug: 'romantic-rose-1', category: 'Basic', filterGroup: 'Romantis' },
+        { id: 45, name: 'Romantic Rose 2', slug: 'romantic-rose-2', category: 'Basic', filterGroup: 'Romantis' },
+      ]
+      const result = filterTemplates(searchSample, 'all', 'all', 'Romantic')
+      expect(result[0].id).toBe(45)
+      expect(result[1].id).toBe(5)
+    })
   })
 
   describe('resolveFilterId', () => {

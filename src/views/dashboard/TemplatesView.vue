@@ -12,21 +12,39 @@
               <p class="text-xs text-slate-400 mt-1">Temukan tema undangan yang paling pas untuk momen spesialmu.</p>
            </div>
            
-           <!-- Category Pills Filter -->
-           <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar select-none">
-              <button 
-                v-for="cat in categories" 
-                :key="cat.id" 
-                @click="selectedCategory = cat.id"
-                :class="[
-                   'whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-bold transition-all border',
-                   selectedCategory === cat.id 
-                     ? 'bg-[#a47148] text-white border-[#a47148] shadow-md shadow-[#a47148]/20' 
-                     : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-[#a47148]'
-                ]"
-              >
-                 {{ cat.name }}
-              </button>
+           <!-- Filter & Sort Container -->
+           <div class="flex flex-wrap items-center gap-2">
+             <!-- Category Pills Filter -->
+             <div class="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar select-none">
+                <button 
+                  v-for="cat in categories" 
+                  :key="cat.id" 
+                  @click="selectedCategory = cat.id"
+                  :class="[
+                     'whitespace-nowrap px-4 py-1.5 rounded-xl text-xs font-bold transition-all border',
+                     selectedCategory === cat.id 
+                       ? 'bg-[#a47148] text-white border-[#a47148] shadow-md shadow-[#a47148]/20' 
+                       : 'bg-white text-slate-500 border-slate-200 hover:border-slate-300 hover:text-[#a47148]'
+                  ]"
+                >
+                   {{ cat.name }}
+                </button>
+             </div>
+
+             <!-- Sort Order Selector -->
+             <div class="relative shrink-0">
+               <select
+                 v-model="selectedSort"
+                 class="appearance-none bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-3 py-1.5 pr-7 focus:outline-none focus:ring-2 focus:ring-[#a47148]/20 focus:border-[#a47148] cursor-pointer shadow-xs transition-all"
+               >
+                 <option value="newest">✨ Terbaru</option>
+                 <option value="name_asc">🔤 Nama A-Z</option>
+                 <option value="price_asc">🏷️ Harga: Terendah</option>
+                 <option value="price_desc">💎 Harga: Tertinggi</option>
+                 <option value="oldest">🕰️ Terlama</option>
+               </select>
+               <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
+             </div>
            </div>
         </div>
 
@@ -123,6 +141,7 @@ const router = useRouter()
 const templates = ref([])
 const categories = ref([{ id: 'all', name: 'Semua' }])
 const selectedCategory = ref('all')
+const selectedSort = ref('newest')
 const loading = ref(true)
 const isSidebarOpen = ref(window.innerWidth >= 768)
 
@@ -146,8 +165,25 @@ onMounted(async () => {
 })
 
 const filteredTemplates = computed(() => {
-  if (selectedCategory.value === 'all') return templates.value
-  return templates.value.filter(t => t.category && t.category.toLowerCase() === selectedCategory.value.toLowerCase())
+  let list = templates.value
+  if (selectedCategory.value !== 'all') {
+    list = list.filter(t => t.category && t.category.toLowerCase() === selectedCategory.value.toLowerCase())
+  }
+
+  const sorted = [...list]
+  if (selectedSort.value === 'oldest') {
+    sorted.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0))
+  } else if (selectedSort.value === 'name_asc') {
+    sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'id'))
+  } else if (selectedSort.value === 'price_asc') {
+    sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
+  } else if (selectedSort.value === 'price_desc') {
+    sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
+  } else {
+    // Default: 'newest' (highest id first)
+    sorted.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))
+  }
+  return sorted
 })
 
 function resolveImageUrl(url, item = null) {

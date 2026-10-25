@@ -1124,7 +1124,8 @@ onMounted(async () => {
 
     if (tplData) {
       const rawTplData = Array.isArray(tplData) ? tplData : tplData.data || []
-      templates.value = Array.isArray(rawTplData) ? rawTplData : []
+      const list = Array.isArray(rawTplData) ? rawTplData : []
+      templates.value = [...list].sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))
     }
 
     // Restore ?gaya=/?paket= from the URL, sanitized against the chips that
