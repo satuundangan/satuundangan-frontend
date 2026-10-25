@@ -51,6 +51,22 @@
       class="z-[65]"
     />
 
+    <!-- Studio / Live Preview Quick Gate Toggle Bar (Visible in iframe or preview mode) -->
+    <div
+      v-if="isPreviewMode || isInsideFrame"
+      class="fixed top-3 left-3 z-[80] flex items-center gap-2 bg-[#1B1B1B]/90 text-[#F5F2EC] px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wider shadow-lg backdrop-blur-xs border border-white/20 select-none animate-fade-in"
+    >
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      <span>Studio Preview</span>
+      <button
+        type="button"
+        @click="toggleGate"
+        class="ml-1 px-2.5 py-0.5 bg-white/20 hover:bg-white/30 rounded-full text-[9px] uppercase tracking-widest transition-colors cursor-pointer"
+      >
+        {{ showWelcome ? 'Lihat Isi' : 'Lihat Cover' }}
+      </button>
+    </div>
+
     <!-- Bottom Navigation Bar (Standard SatuUndangan Floating Nav) -->
     <nav
       v-if="!showWelcome"
@@ -1014,6 +1030,10 @@ const isPreviewMode = computed(() => {
   )
 })
 
+const isInsideFrame = computed(() => {
+  return typeof window !== 'undefined' && (window.self !== window.top || route.query.frame === 'true')
+})
+
 // Groom & Bride display names
 const groomFirstName = computed(() => {
   return (
@@ -1111,6 +1131,17 @@ function openInvitation() {
     if (el) el.classList.remove('opacity-0')
     initScrollSpy()
   }, 100)
+}
+
+function toggleGate() {
+  showWelcome.value = !showWelcome.value
+  if (!showWelcome.value) {
+    setTimeout(() => {
+      const el = document.getElementById('main-content')
+      if (el) el.classList.remove('opacity-0')
+      initScrollSpy()
+    }, 100)
+  }
 }
 
 // Countdown
