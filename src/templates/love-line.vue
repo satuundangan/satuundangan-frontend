@@ -51,9 +51,9 @@
       class="z-[65]"
     />
 
-    <!-- Studio / Live Preview Quick Gate Toggle Bar (Visible in iframe or preview mode) -->
+    <!-- Studio / Live Preview Quick Gate Toggle Bar (Visible only inside iframe) -->
     <div
-      v-if="isPreviewMode || isInsideFrame"
+      v-if="isInsideFrame"
       class="fixed top-3 left-3 z-[80] flex items-center gap-2 bg-[#1B1B1B]/90 text-[#F5F2EC] px-3 py-1.5 rounded-full text-[10px] font-semibold tracking-wider shadow-lg backdrop-blur-xs border border-white/20 select-none animate-fade-in"
     >
       <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
