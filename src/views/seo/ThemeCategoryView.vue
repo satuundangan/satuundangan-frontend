@@ -446,6 +446,7 @@ const FALLBACK_TEMPLATE_META = {
   'moroccan-marrakech-gold': { name: 'Moroccan Marrakech', category: 'Islami & Syar\'i', price: 49000, isPremium: true },
   'light-modern': { name: 'Light Modern', category: 'Modern', price: 0, isPremium: false },
   'minimalist-terra': { name: 'Minimalist Terra', category: 'Modern', price: 0, isPremium: false },
+  'love-line': { name: 'Love Line', category: 'Modern', price: 49000, isPremium: true },
   'editorial-magazine': { name: 'Editorial Magazine', category: 'Modern', price: 49000, isPremium: true },
   'old-money-monogram': { name: 'Old Money Monogram', category: 'Quiet Luxury', price: 79000, isPremium: true },
   'royal-emerald': { name: 'Royal Emerald', category: 'Quiet Luxury', price: 49000, isPremium: true },

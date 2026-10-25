@@ -862,7 +862,7 @@ Wassalamu'alaikum Warahmatullahi Wabarakatuh`,
     colorAccent: '#57534e',
     badgeBg: 'bg-stone-100 text-stone-800 border-stone-200',
     gradientBg: 'from-stone-900/10 via-stone-800/5 to-transparent',
-    curatedTemplateSlugs: ['light-modern', 'minimalist-terra', 'editorial-magazine', 'botanical-watercolor'],
+    curatedTemplateSlugs: ['light-modern', 'love-line', 'minimalist-terra', 'editorial-magazine', 'botanical-watercolor'],
     keywords: [
       'undangan digital modern minimalis',
       'undangan website aesthetic',

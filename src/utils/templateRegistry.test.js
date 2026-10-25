@@ -14,8 +14,9 @@ const fakeRegistry = {
 }
 
 describe('templateRegistry', () => {
-  it('templateComponentKeys includes all 35 SFCs in src/templates/', () => {
-    expect(templateComponentKeys).toHaveLength(35)
+  it('templateComponentKeys includes all 37 SFCs in src/templates/', () => {
+    expect(templateComponentKeys).toHaveLength(37)
+    expect(templateComponentKeys).toContain('love-line')
     expect(templateComponentKeys).toContain('elysian-parallax')
     expect(templateComponentKeys).toContain('purrfect-match')
     expect(templateComponentKeys).toContain('demon-slayer')

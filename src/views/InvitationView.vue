@@ -226,6 +226,7 @@ onMounted(async () => {
         'purrfect-match': 'wedding-acoustic-morning.mp3',
         'retro-nostalgia': 'wedding-warm-reception.mp3',
         'azure-shores': 'wedding-romantic-aisle.mp3',
+        'love-line': 'wedding-acoustic-morning.mp3',
         'minimalist-terra': 'romantic_music1.mp3',
         'cyberpunk-neon': 'wedding-acoustic-morning.mp3',
         'islami-emas': 'wedding-sacred-ceremony.mp3',

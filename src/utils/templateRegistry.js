@@ -53,6 +53,7 @@ const LOCAL_TEMPLATE_THUMBNAILS = {
   'jawa-truntum': `/assets/templates/jawa-truntum.png?${THUMB_VERSION}`,
   'kimi-no-na-wa': `/assets/templates/kimi-no-na-wa.png?${THUMB_VERSION}`,
   'light-modern': `/assets/templates/light-modern.png?${THUMB_VERSION}`,
+  'love-line': `/assets/templates/love-line.png?${THUMB_VERSION}`,
   'meowly-married': `/assets/templates/meowly-married.png?${THUMB_VERSION}`,
   'minang-suntiang-emas': `/assets/templates/minang-suntiang-emas.png?${THUMB_VERSION}`,
   'minimalist-terra': `/assets/templates/minimalist-terra.png?${THUMB_VERSION}`,

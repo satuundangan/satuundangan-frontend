@@ -978,6 +978,71 @@ export const TEMPLATE_DEMO_PRESETS = {
     ]
   },
 
+  'love-line': {
+    title: 'The Wedding of Julian & Nadine',
+    slug: 'julian-nadine',
+    coupleName: 'Julian & Nadine',
+    groomName: 'Julian Pratama, S.Ars.',
+    brideName: 'Nadine Azzahra, S.Ds.',
+    groomNickname: 'Julian',
+    brideNickname: 'Nadine',
+    parents: {
+      groomParents: 'Bpk. Hendra Pratama & Ibu Rina Wulandari',
+      brideParents: 'Bpk. Ir. Gunawan Wibowo & Ibu Maya Safitri',
+    },
+    quoteText:
+      'Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.',
+    quoteSource: 'QS. Ar-Rum: 21',
+    dateTime: '2027-11-20T08:00:00.000Z',
+    akadLocation: {
+      mapUrl: 'https://maps.app.goo.gl/uXvG7T7uYxM2YxXz5',
+      description: 'The Glass House, Plataran Menteng, Jl. HOS Cokroaminoto No. 42, Menteng, Jakarta Pusat',
+      dateTime: '2027-11-20T08:00:00.000Z',
+    },
+    resepsiLocation: {
+      mapUrl: 'https://maps.app.goo.gl/uXvG7T7uYxM2YxXz5',
+      description: 'Grand Ballroom Plataran Menteng, Jl. HOS Cokroaminoto No. 42, Menteng, Jakarta Pusat',
+      dateTime: '2027-11-20T11:00:00.000Z',
+    },
+    dressCode: 'Nuansa Terracotta, Dusty Peach, Warm Beige, atau Earth Tone',
+    musicChoice: 'wedding-acoustic-morning.mp3',
+    bankAccounts: [
+      { bankName: 'BCA', accountNumber: '8820194821', accountName: 'Julian Pratama' },
+      { bankName: 'Bank Mandiri', accountNumber: '137001928471', accountName: 'Nadine Azzahra' },
+    ],
+    extendedFamily: [
+      'Keluarga Besar Bpk. Hendra Pratama (Jakarta)',
+      'Keluarga Besar Bpk. Ir. Gunawan Wibowo (Bandung)',
+      'Segenap Sahabat & Kerabat Tercinta'
+    ],
+    socialMediaBrides: {
+      instagram: 'nadineazzahra',
+    },
+    socialMediaGroom: {
+      instagram: 'julianpratama',
+    },
+    loveStory: [
+      {
+        date: '14 Februari 2022',
+        title: 'Garis yang Bersilangan',
+        description: 'Bermula dari perjumpaan tidak sengaja di sebuah pameran seni arsitektur dan desain di Jakarta Selatan. Dari percakapan singkat tentang estetika garis dan ruang, kami menyadari ada rasa hangat yang tak ingin kami sudahi.',
+        image: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1000&auto=format&fit=crop',
+      },
+      {
+        date: '28 Oktober 2024',
+        title: 'Menyatukan Dua Langkah',
+        description: 'Melewati berbagai musim kehidupan bersama, belajar saling memahami dan bertumbuh dalam kebaikan. Di bawah langit senja tepi pantai Yogyakarta, kami saling mengucap janji untuk terus berjalan berdampingan.',
+        image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop',
+      },
+      {
+        date: '18 Mei 2026',
+        title: 'Ikatan Satu Garis Abadi',
+        description: 'Di hadapan kedua keluarga besar tercinta, lamaran resmi terucap dengan penuh rasa syukur. Sebuah awal dari lembaran baru menuju mahligai pernikahan suci.',
+        image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000&auto=format&fit=crop',
+      },
+    ],
+  },
+
   'celestial-sparkle': {
     title: 'Starlight Romance: Brian & Elena',
     slug: 'brian-elena',
