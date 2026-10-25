@@ -1,17 +1,20 @@
 <template>
-  <div class="love-line-root relative min-h-screen bg-[#FAF6F4] text-[#2A221E] font-grotesk overflow-x-hidden selection:bg-[#A05A4F]/20 selection:text-[#A05A4F]">
+  <div class="love-line-page min-h-screen bg-[#EFECE5] text-[#1B1B1B] font-montserrat flex justify-center selection:bg-[#1B1B1B] selection:text-[#F5F2EC]">
 
-    <!-- Subtle Continuous Line Background Texture & Watermark -->
-    <div class="fixed inset-0 pointer-events-none z-0 opacity-25 select-none overflow-hidden">
-      <!-- Continuous line decorative SVG curves -->
-      <svg class="absolute -top-24 -left-24 w-[500px] h-[500px] text-[#A05A4F]/20" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1.2">
-        <path d="M 50,150 C 120,50 200,220 280,120 C 340,40 380,260 250,320 C 120,380 30,220 50,150 Z" stroke-dasharray="3 3" />
-        <path d="M 120,80 C 180,140 140,240 220,280 C 300,320 360,180 300,100" />
-      </svg>
-      <svg class="absolute -bottom-32 -right-24 w-[550px] h-[550px] text-[#A05A4F]/20" viewBox="0 0 400 400" fill="none" stroke="currentColor" stroke-width="1.2">
-        <path d="M 80,320 C 160,380 240,220 320,300 C 380,360 360,140 240,100 C 120,60 40,200 80,320 Z" stroke-dasharray="4 4" />
-      </svg>
-    </div>
+    <!-- Global SVG Duotone Filter matching our-wedding.link -->
+    <svg width="0" height="0" class="absolute pointer-events-none opacity-0 select-none" aria-hidden="true">
+      <filter id="owduo-love-line" color-interpolation-filters="sRGB">
+        <feColorMatrix
+          type="matrix"
+          values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"
+        />
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.106 0.961" />
+          <feFuncG type="table" tableValues="0.106 0.949" />
+          <feFuncB type="table" tableValues="0.106 0.925" />
+        </feComponentTransfer>
+      </filter>
+    </svg>
 
     <!-- Music Control Component -->
     <MusicControl
@@ -19,851 +22,764 @@
       :src="getMusicUrl(data.musicChoice)"
       :audioStart="data.audioStart"
       :audioEnd="data.audioEnd"
-      primaryColor="#FAF6F4"
-      accentColor="#A05A4F"
+      primaryColor="#1B1B1B"
+      accentColor="#F5F2EC"
       class="z-[65]"
     />
 
-    <!-- Bottom Navigation Bar (Mobile / Compact) -->
-    <nav
-      v-if="!showWelcome"
-      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/90 backdrop-blur-md border border-[#A05A4F]/20 rounded-full shadow-xl shadow-[#A05A4F]/10 px-4 py-2.5 max-w-[94%] md:max-w-md w-full flex items-center justify-between no-scrollbar transition-all duration-500 animate-slide-up"
-    >
-      <button
-        v-for="item in navItems"
-        :key="item.id"
-        @click="scrollToSection(item.id)"
-        type="button"
-        class="flex flex-col items-center gap-1 min-w-[38px] transition-all duration-300 relative group shrink-0"
-        :class="activeSection === item.id ? 'text-[#A05A4F] scale-105 font-bold' : 'text-[#7D6E68] hover:text-[#A05A4F]'"
-      >
-        <i :class="[item.icon, 'text-sm md:text-base transition-transform group-hover:scale-110']"></i>
-        <span class="text-[8px] md:text-[9px] font-mono tracking-wider uppercase">{{ item.label }}</span>
-        <span
-          class="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-[#A05A4F] transition-all duration-300"
-          :class="activeSection === item.id ? 'opacity-100 scale-100' : 'opacity-0 scale-0'"
-        ></span>
-      </button>
-    </nav>
+    <!-- Main Container Column (Width constrained exactly like the original template: 390px - 414px) -->
+    <div class="w-full max-w-[414px] min-h-screen bg-[#F5F2EC] shadow-2xl relative overflow-x-hidden flex flex-col justify-start">
 
-    <!-- WELCOME / GATE COVER SCREEN -->
-    <transition name="fade">
-      <div
-        v-if="showWelcome"
-        class="fixed inset-0 z-[70] flex flex-col items-center justify-center text-center px-6 bg-[#FAF6F4] overflow-hidden"
-      >
-        <!-- Background Decorative Arch Lines -->
-        <div class="absolute inset-4 md:inset-8 border border-[#A05A4F]/25 rounded-[32px] md:rounded-[48px] pointer-events-none"></div>
-        <div class="absolute inset-6 md:inset-10 border border-[#A05A4F]/10 rounded-[28px] md:rounded-[44px] pointer-events-none"></div>
+      <!-- COVER SCREEN (GATE) -->
+      <transition name="fade">
+        <div
+          v-if="showWelcome"
+          class="fixed inset-0 z-[70] flex justify-center bg-[#EFECE5] overflow-y-auto"
+        >
+          <div class="w-full max-w-[414px] h-[844px] min-h-[844px] bg-[#F5F2EC] relative shadow-2xl overflow-hidden select-none">
+            
+            <!-- Top Eyebrow -->
+            <p
+              class="font-montserrat text-[11.5px] text-[#1B1B1B]/85 tracking-[0.6px] lowercase absolute top-[138px] left-[20px] w-[350px] text-center z-10"
+            >
+              kamu diundang ke pernikahan kami
+            </p>
 
-        <!-- Continuous Line Lovers Illustration (SVG) -->
-        <div class="relative z-10 w-full max-w-md space-y-6 md:space-y-8 animate-fade-in-up">
-          
-          <!-- Mono Eyebrow -->
-          <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#A05A4F]/10 border border-[#A05A4F]/20 text-[#A05A4F] font-mono text-[9px] md:text-[10px] tracking-widest uppercase">
-            <span>●</span>
-            <span>The Wedding Invitation</span>
-            <span>●</span>
-          </div>
-
-          <!-- Couple Title with Cursive Ampersand -->
-          <div class="space-y-1 md:space-y-2">
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-[#2A221E] uppercase leading-none font-grotesk">
-              {{ data.groomNickname || data.groomName?.split(' ')[0] || 'Julian' }}
+            <!-- Groom Name: Elang (Mr Dafoe, 54px, left-aligned) -->
+            <h1
+              class="font-dafoe text-[54px] text-[#1B1B1B] leading-none absolute top-[156px] left-[70px] w-[300px] text-left z-10"
+            >
+              {{ data.groomNickname || data.groomName?.split(' ')[0] || 'Elang' }}
             </h1>
-            <div class="flex items-center justify-center gap-3">
-              <span class="w-8 h-px bg-[#A05A4F]/40"></span>
-              <span class="font-script text-3xl md:text-4xl text-[#A05A4F] lowercase -my-1">&</span>
-              <span class="w-8 h-px bg-[#A05A4F]/40"></span>
+
+            <!-- Ampersand: & (Mr Dafoe, 40px, red #C8242C) -->
+            <p
+              class="font-dafoe text-[40px] text-[#C8242C] leading-none absolute top-[204px] left-[104px] w-[60px] text-left z-10"
+            >
+              &amp;
+            </p>
+
+            <!-- Bride Name: Laila (Mr Dafoe, 54px, left-aligned) -->
+            <h1
+              class="font-dafoe text-[54px] text-[#1B1B1B] leading-none absolute top-[222px] left-[128px] w-[260px] text-left z-10"
+            >
+              {{ data.brideNickname || data.brideName?.split(' ')[0] || 'Laila' }}
+            </h1>
+
+            <!-- Botanical Flourish (top left of illustration) -->
+            <div class="absolute top-[316px] left-[46px] w-[22px] h-[22px] z-10 pointer-events-none">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
             </div>
-            <h1 class="text-4xl md:text-6xl font-bold tracking-tight text-[#2A221E] uppercase leading-none font-grotesk">
-              {{ data.brideNickname || data.brideName?.split(' ')[0] || 'Nadine' }}
-            </h1>
-          </div>
 
-          <!-- Continuous Line Heart Artwork -->
-          <div class="w-20 h-20 md:w-24 md:h-24 mx-auto text-[#A05A4F] opacity-80 my-2">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" class="w-full h-full">
-              <path d="M 20,40 C 20,25 35,15 50,30 C 65,15 80,25 80,40 C 80,65 50,85 50,85 C 50,85 20,65 20,40 Z" />
-              <path d="M 35,45 C 42,38 48,45 52,48 C 58,40 65,42 66,48" stroke-width="1.2" />
-              <path d="M 50,85 C 50,85 55,92 65,95 C 75,98 85,92 92,85" stroke-dasharray="2 3" stroke-width="1.2" />
-            </svg>
-          </div>
+            <!-- Authentic Center Continuous Line Couple Illustration -->
+            <div class="absolute top-[284px] left-[70px] w-[236px] h-[291px] z-[5] pointer-events-none">
+              <img
+                src="/assets/templates/love-line/2297f990-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Continuous Line Couple"
+                class="w-full h-full object-contain"
+              />
+            </div>
 
-          <!-- Guest Greeting Card (Polaroid Style) -->
-          <div class="bg-white/90 backdrop-blur-sm border border-[#A05A4F]/20 p-5 md:p-6 rounded-2xl shadow-lg shadow-[#A05A4F]/5 space-y-2 max-w-sm mx-auto">
-            <p class="font-mono text-[9px] md:text-[10px] tracking-widest text-[#7D6E68] uppercase">
+            <!-- Handwritten Annotation: lebih baik bersama (Caveat 18px, rotated -16deg) -->
+            <p
+              class="font-caveat text-[18px] text-[#1B1B1B]/90 leading-tight absolute top-[470px] left-[270px] w-[110px] text-left z-10 -rotate-[16deg]"
+            >
+              lebih baik bersama
+            </p>
+
+            <!-- Small Botanical Flourish next to handwritten annotation -->
+            <div class="absolute top-[516px] left-[322px] w-[14px] h-[14px] z-10 pointer-events-none">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
+            </div>
+
+            <!-- Guest Greeting Label -->
+            <p
+              class="font-montserrat text-[10px] text-[#1B1B1B]/70 tracking-[0.6px] absolute top-[596px] left-[30px] w-[330px] text-center z-10"
+            >
               Kepada Yth. Bapak/Ibu/Saudara/i
             </p>
-            <p class="text-xl md:text-2xl font-bold text-[#2A221E] tracking-tight">
+
+            <!-- Guest Name -->
+            <p
+              class="font-montserrat text-[19px] font-bold text-[#1B1B1B] absolute top-[612px] left-[30px] w-[330px] text-center z-10 truncate"
+            >
               {{ data.guestName || 'Tamu Undangan' }}
             </p>
-            <p class="text-[11px] text-[#7D6E68] italic font-serif">
-              Merupakan suatu kehormatan atas kehadiran & doa restu Anda
-            </p>
-          </div>
 
-          <!-- Open Invitation Button -->
-          <div class="pt-2">
-            <button
-              @click="openInvitation"
-              type="button"
-              class="group relative inline-flex items-center justify-center gap-3 px-8 py-3.5 md:py-4 bg-[#A05A4F] hover:bg-[#8D4B41] text-white font-mono text-xs md:text-sm tracking-widest uppercase rounded-full shadow-lg shadow-[#A05A4F]/25 hover:shadow-xl hover:shadow-[#A05A4F]/35 hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
-            >
-              <i class="fa-solid fa-envelope-open text-xs transition-transform group-hover:scale-125"></i>
-              <span>Buka Undangan</span>
-              <i class="fa-solid fa-arrow-right text-[10px] transition-transform group-hover:translate-x-1"></i>
-            </button>
-          </div>
-
-        </div>
-      </div>
-    </transition>
-
-    <!-- MAIN INVITATION CONTENT -->
-    <div
-      v-if="!showWelcome"
-      id="main-content"
-      class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth"
-    >
-
-      <!-- 1. HERO SECTION -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-12 relative pt-12 pb-24">
-        <div class="max-w-4xl mx-auto w-full text-center space-y-8" v-observe>
-          
-          <!-- Monospace Issue Badge -->
-          <div class="flex items-center justify-center gap-4 text-[#A05A4F] font-mono text-[10px] md:text-xs tracking-widest uppercase">
-            <span class="w-8 h-px bg-[#A05A4F]/40"></span>
-            <span>LOVE LINE // VOL. 01</span>
-            <span class="w-8 h-px bg-[#A05A4F]/40"></span>
-          </div>
-
-          <!-- Couple Names -->
-          <div class="space-y-2">
-            <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold uppercase tracking-tight text-[#2A221E] leading-[0.95]">
-              {{ data.groomName }}
-            </h1>
-            <div class="flex items-center justify-center gap-4 my-2">
-              <span class="w-12 md:w-20 h-px bg-[#A05A4F]/30"></span>
-              <span class="font-script text-3xl md:text-5xl text-[#A05A4F] lowercase -my-2">&</span>
-              <span class="w-12 md:w-20 h-px bg-[#A05A4F]/30"></span>
+            <!-- Buka Undangan Button (Authentic Pill Style) -->
+            <div class="absolute top-[662px] left-0 w-full flex justify-center z-20">
+              <button
+                type="button"
+                @click="openInvitation"
+                class="gc-tombol-buka-btn inline-flex items-center justify-center gap-2.5 px-9 py-3.5 bg-[#1B1B1B] hover:bg-black text-[#F5F2EC] font-montserrat text-[11px] font-semibold tracking-[0.24em] uppercase rounded-full shadow-[0_3px_0_rgba(0,0,0,0.15),0_12px_22px_-14px_rgba(0,0,0,0.6)] hover:shadow-xl active:scale-95 transition-all duration-300 cursor-pointer"
+              >
+                <svg viewBox="0 0 16 16" width="13" height="13" fill="currentColor">
+                  <path fill-rule="evenodd" d="M1 8a.5.5 0 0 1 .5-.5h11.793l-3.147-3.146a.5.5 0 0 1 .708-.708l4 4a.5.5 0 0 1 0 .708l-4 4a.5.5 0 0 1-.708-.708L13.293 8.5H1.5A.5.5 0 0 1 1 8z" />
+                </svg>
+                <span>Buka Undangan</span>
+              </button>
             </div>
-            <h1 class="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-bold uppercase tracking-tight text-[#2A221E] leading-[0.95]">
-              {{ data.brideName }}
-            </h1>
-          </div>
 
-          <!-- Wedding Date in Space Mono -->
-          <p class="font-mono text-xs md:text-sm tracking-[0.25em] text-[#7D6E68] uppercase font-semibold">
-            {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
+          </div>
+        </div>
+      </transition>
+
+      <!-- OPENED INVITATION CONTENT -->
+      <div v-show="!showWelcome" class="w-full flex flex-col transition-opacity duration-1000">
+
+        <!-- ==================== SECTION 1: PEMBUKA & AYAT ==================== -->
+        <section class="pt-11 pb-12 px-7 text-center flex flex-col items-center relative">
+          <!-- Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] lowercase">
+            dengan penuh syukur
           </p>
 
-          <!-- Featured Polaroid Photo with Washi Tape Effect -->
-          <div class="relative max-w-sm md:max-w-md mx-auto pt-4">
-            <!-- Simulated Washi Tape Accent -->
-            <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-24 h-6 bg-[#D4A373]/50 backdrop-blur-xs rotate-[-2deg] z-20 shadow-xs border border-white/40"></div>
-
-            <div class="bg-white p-4 pb-8 rounded-lg shadow-2xl shadow-[#A05A4F]/10 border border-[#A05A4F]/10 rotate-[1deg] hover:rotate-0 transition-transform duration-700">
-              <div class="aspect-[4/5] bg-[#F5ECE8] rounded overflow-hidden relative">
-                <img
-                  :src="data.photoCoupleUrl || data.groomPhotoUrl || heroPlaceholder"
-                  alt="Couple Photo"
-                  class="w-full h-full object-cover filter contrast-[1.03] hover:scale-105 transition-transform duration-1000"
-                />
-              </div>
-              <div class="mt-4 flex items-center justify-between px-2 text-[#7D6E68] font-mono text-[9px] md:text-[10px] tracking-widest uppercase">
-                <span>EST. {{ currentYear }}</span>
-                <span>TOGETHER FOREVER</span>
-              </div>
+          <!-- Main Couple Photo with Authentic Duotone Filter & Flower Stamp -->
+          <div class="relative mt-3.5 w-[250px] h-[300px] overflow-hidden bg-[#EFECE5] shadow-sm">
+            <img
+              :src="data.heroImage || data.photoCoupleUrl || '/assets/templates/love-line/68257d80-cb47-11f1-8e64-a9fec9085fda.jpg'"
+              alt="Mempelai"
+              class="w-full h-full object-cover duotone-photo"
+            />
+            <!-- Overlapping Flower Stamp -->
+            <div class="absolute -top-3 -right-3 w-[78px] h-[78px] pointer-events-none opacity-80">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
             </div>
           </div>
 
-          <!-- Countdown Timer Cards (Space Mono Style) -->
-          <div class="pt-4 max-w-lg mx-auto">
-            <p class="font-mono text-[10px] md:text-xs uppercase tracking-widest text-[#7D6E68] mb-3">
-              Counting Down To The Sacred Day
+          <!-- Description Text 1 -->
+          <p class="font-montserrat text-[13px] text-[#1B1B1B] leading-[1.6] max-w-[310px] mt-4.5">
+            Dengan memohon rahmat Tuhan, kami bermaksud menikah. Kehadiran dan doamu akan membuat hari itu jauh lebih bahagia.
+          </p>
+
+          <!-- Caveat Scripture / Quote -->
+          <p class="font-caveat text-[17px] text-[#1B1B1B]/90 leading-[1.35] max-w-[310px] mt-4">
+            {{ data.quoteText || 'Dan di antara tanda-tanda kebesaran-Nya, Dia menciptakan pasangan untukmu agar kamu merasa tenteram.' }}
+          </p>
+        </section>
+
+        <!-- ==================== SECTION 2: MEMPELAI ==================== -->
+        <section id="couple" class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] lowercase">
+            dua orang, satu cerita
+          </p>
+
+          <!-- Section Heading (Rotated -4deg) -->
+          <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none mt-1.5 -rotate-[4deg]">
+            Mempelai
+          </h2>
+
+          <!-- GROOM BLOCK -->
+          <div class="w-full flex flex-col items-center mt-3.5">
+            <!-- Photo Container with Relative Badges -->
+            <div class="relative w-[240px] h-[300px] overflow-visible my-2">
+              <img
+                :src="data.groomPhoto || data.groomPhotoUrl || '/assets/templates/love-line/684b7c10-cb47-11f1-8e64-a9fec9085fda.jpg'"
+                alt="Elang Prakoso"
+                class="w-full h-full object-cover duotone-photo shadow-sm"
+              />
+              <!-- 'si dia' in Caveat (Red #C8242C, rotated -14deg) -->
+              <span class="font-caveat text-[26px] text-[#C8242C] absolute -bottom-3 -left-3 -rotate-[14deg] z-10 pointer-events-none select-none">
+                si dia
+              </span>
+              <!-- Botanical Flourish (top right) -->
+              <div class="absolute -top-4 -right-4 w-[75px] h-[75px] z-10 pointer-events-none opacity-85">
+                <img
+                  src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                  alt="Flourish"
+                  class="w-full h-full object-contain"
+                />
+              </div>
+            </div>
+
+            <!-- Groom Name (Mr Dafoe, rotated -3deg) -->
+            <h3 class="font-dafoe text-[38px] text-[#1B1B1B] leading-none mt-2.5 -rotate-[3deg]">
+              {{ data.groomName || 'Elang Prakoso' }}
+            </h3>
+
+            <!-- Groom Parents -->
+            <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] mt-2">
+              putra dari
             </p>
-            <div class="grid grid-cols-4 gap-2 md:gap-3">
-              <div
-                v-for="(val, label) in countdown"
-                :key="label"
-                class="bg-white border border-[#A05A4F]/20 rounded-xl p-3 md:p-4 text-center shadow-sm"
+            <p class="font-montserrat text-[13px] text-[#1B1B1B] leading-relaxed mt-0.5">
+              {{ data.parents?.groomParents || 'Bapak Bambang Prakoso & Ibu Sri Lestari' }}
+            </p>
+
+            <!-- Instagram Button -->
+            <div v-if="data.socialMediaGroom?.instagram" class="mt-3.5">
+              <a
+                :href="formatInstagramUrl(data.socialMediaGroom.instagram)"
+                target="_blank"
+                class="inline-flex items-center gap-1.5 px-5 py-1.5 rounded-full border border-[#1B1B1B] text-[11px] font-montserrat font-medium text-[#1B1B1B] hover:bg-[#1B1B1B] hover:text-[#F5F2EC] active:scale-95 transition-all"
               >
-                <div class="text-2xl md:text-3xl font-mono font-bold text-[#A05A4F]">{{ val }}</div>
-                <div class="text-[8px] md:text-[9px] font-mono uppercase tracking-wider text-[#7D6E68] mt-1">{{ label }}</div>
-              </div>
+                <i class="pi pi-instagram text-[12px]"></i>
+                <span>@{{ cleanInstagram(data.socialMediaGroom.instagram) }}</span>
+              </a>
             </div>
           </div>
 
-          <!-- Animated Scroll Down Indicator -->
-          <div class="pt-6 animate-bounce text-[#A05A4F]/60">
-            <i class="fa-solid fa-arrow-down text-lg"></i>
+          <!-- Ampersand Divider (& in Dafoe, Red #C8242C) -->
+          <div class="font-dafoe text-[40px] text-[#C8242C] leading-none my-6">
+            &amp;
           </div>
 
-        </div>
-      </section>
-
-      <!-- 2. QUOTE SECTION -->
-      <section
-        id="quote"
-        v-if="isSectionEnabled('quote')"
-        class="py-20 md:py-28 px-6 bg-[#F3EDE8] relative overflow-hidden"
-        v-observe
-      >
-        <div class="max-w-3xl mx-auto text-center space-y-6 relative z-10">
-          
-          <!-- Continuous Floral Line Divider -->
-          <div class="w-16 h-16 mx-auto text-[#A05A4F] opacity-75">
-            <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
-              <path d="M 50,10 C 50,30 35,40 25,50 C 15,60 30,75 50,75 C 70,75 85,60 75,50 C 65,40 50,30 50,10 Z" />
-              <path d="M 50,75 L 50,95" />
-              <path d="M 50,85 C 40,82 35,88 35,88" />
-              <path d="M 50,80 C 60,77 65,83 65,83" />
-            </svg>
-          </div>
-
-          <!-- Quote Card -->
-          <div class="space-y-4">
-            <span class="font-serif text-5xl md:text-6xl text-[#A05A4F]/30 leading-none block">“</span>
-            <p class="text-base sm:text-lg md:text-xl font-serif italic text-[#2A221E] leading-relaxed max-w-2xl mx-auto px-4 -mt-6">
-              {{ data.quoteText || defaultQuoteText }}
-            </p>
-            <p class="font-mono text-[10px] md:text-xs font-bold text-[#A05A4F] tracking-widest uppercase pt-2">
-              — {{ data.quoteSource || 'QS. Ar-Rum: 21' }}
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- 3. THE COUPLE SECTION -->
-      <section
-        id="couple"
-        v-if="isSectionEnabled('couple')"
-        class="py-24 md:py-32 px-6 md:px-12 relative"
-      >
-        <div class="max-w-5xl mx-auto space-y-16 md:space-y-24">
-          
-          <!-- Section Title Header -->
-          <div class="text-center space-y-2" v-observe>
-            <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-              [ 02 // THE COUPLE ]
-            </div>
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#2A221E]">
-              Mempelai Yang Berbahagia
-            </h2>
-            <p class="text-xs md:text-sm text-[#7D6E68] max-w-md mx-auto">
-              Dengan memohon rahmat dan ridho Allah SWT, kami bermaksud mengikat janji suci pernikahan:
-            </p>
-          </div>
-
-          <!-- Couple Grid (Groom & Bride) -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
-            
-            <!-- Groom Card -->
-            <div class="bg-white p-6 md:p-8 rounded-3xl border border-[#A05A4F]/15 shadow-xl shadow-[#A05A4F]/5 text-center space-y-6 relative group hover:-translate-y-1 transition-all duration-500" v-observe>
-              <!-- Monogram Badge -->
-              <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#A05A4F] text-white font-mono text-[9px] uppercase px-4 py-1 rounded-full tracking-widest shadow-md">
-                The Groom
-              </div>
-
-              <!-- Photo with Arch Frame & Line Contour -->
-              <div class="w-48 h-64 mx-auto rounded-t-full rounded-b-2xl overflow-hidden border-2 border-[#A05A4F]/30 p-1.5 bg-[#FAF6F4]">
+          <!-- BRIDE BLOCK -->
+          <div class="w-full flex flex-col items-center">
+            <!-- Photo Container with Relative Badges -->
+            <div class="relative w-[240px] h-[300px] overflow-visible my-2">
+              <img
+                :src="data.bridePhoto || data.bridePhotoUrl || '/assets/templates/love-line/685f2b20-cb47-11f1-8e64-a9fec9085fda.jpg'"
+                alt="Laila Anindita"
+                class="w-full h-full object-cover duotone-photo shadow-sm"
+              />
+              <!-- 'si cantik' in Caveat (Red #C8242C, rotated 12deg) -->
+              <span class="font-caveat text-[26px] text-[#C8242C] absolute -top-3 -right-3 rotate-[12deg] z-10 pointer-events-none select-none">
+                si cantik
+              </span>
+              <!-- Botanical Flourish (bottom left) -->
+              <div class="absolute -bottom-3 -left-3 w-[56px] h-[56px] z-10 pointer-events-none opacity-85">
                 <img
-                  :src="data.groomPhotoUrl || groomPlaceholder"
-                  alt="Groom Photo"
-                  class="w-full h-full object-cover rounded-t-full rounded-b-xl group-hover:scale-105 transition-transform duration-700"
+                  src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                  alt="Flourish"
+                  class="w-full h-full object-contain"
                 />
               </div>
-
-              <div class="space-y-2">
-                <h3 class="text-2xl md:text-3xl font-bold text-[#2A221E] tracking-tight">
-                  {{ data.groomName }}
-                </h3>
-                <p v-if="data.parents?.groomParents" class="text-xs text-[#7D6E68] leading-relaxed">
-                  Putra dari <span class="font-semibold text-[#2A221E]">{{ data.parents.groomParents }}</span>
-                </p>
-              </div>
-
-              <!-- Instagram Button -->
-              <div v-if="data.socialMediaGroom?.instagram">
-                <a
-                  :href="formatInstagramUrl(data.socialMediaGroom.instagram)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#A05A4F]/30 text-[#A05A4F] hover:bg-[#A05A4F] hover:text-white font-mono text-[10px] tracking-wider uppercase transition-colors"
-                >
-                  <i class="fa-brands fa-instagram text-xs"></i>
-                  <span>@{{ cleanInstagram(data.socialMediaGroom.instagram) }}</span>
-                </a>
-              </div>
             </div>
 
-            <!-- Bride Card -->
-            <div class="bg-white p-6 md:p-8 rounded-3xl border border-[#A05A4F]/15 shadow-xl shadow-[#A05A4F]/5 text-center space-y-6 relative group hover:-translate-y-1 transition-all duration-500" v-observe>
-              <!-- Monogram Badge -->
-              <div class="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#A05A4F] text-white font-mono text-[9px] uppercase px-4 py-1 rounded-full tracking-widest shadow-md">
-                The Bride
-              </div>
+            <!-- Bride Name (Mr Dafoe, rotated 2deg) -->
+            <h3 class="font-dafoe text-[38px] text-[#1B1B1B] leading-none mt-2.5 rotate-[2deg]">
+              {{ data.brideName || 'Laila Anindita' }}
+            </h3>
 
-              <!-- Photo with Arch Frame & Line Contour -->
-              <div class="w-48 h-64 mx-auto rounded-t-full rounded-b-2xl overflow-hidden border-2 border-[#A05A4F]/30 p-1.5 bg-[#FAF6F4]">
-                <img
-                  :src="data.bridePhotoUrl || bridePlaceholder"
-                  alt="Bride Photo"
-                  class="w-full h-full object-cover rounded-t-full rounded-b-xl group-hover:scale-105 transition-transform duration-700"
-                />
-              </div>
+            <!-- Bride Parents -->
+            <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] mt-2">
+              putri dari
+            </p>
+            <p class="font-montserrat text-[13px] text-[#1B1B1B] leading-relaxed mt-0.5">
+              {{ data.parents?.brideParents || 'Bapak Dedi Supriyadi & Ibu Endang Rahayu' }}
+            </p>
 
-              <div class="space-y-2">
-                <h3 class="text-2xl md:text-3xl font-bold text-[#2A221E] tracking-tight">
-                  {{ data.brideName }}
-                </h3>
-                <p v-if="data.parents?.brideParents" class="text-xs text-[#7D6E68] leading-relaxed">
-                  Putri dari <span class="font-semibold text-[#2A221E]">{{ data.parents.brideParents }}</span>
-                </p>
-              </div>
-
-              <!-- Instagram Button -->
-              <div v-if="data.socialMediaBrides?.instagram">
-                <a
-                  :href="formatInstagramUrl(data.socialMediaBrides.instagram)"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#A05A4F]/30 text-[#A05A4F] hover:bg-[#A05A4F] hover:text-white font-mono text-[10px] tracking-wider uppercase transition-colors"
-                >
-                  <i class="fa-brands fa-instagram text-xs"></i>
-                  <span>@{{ cleanInstagram(data.socialMediaBrides.instagram) }}</span>
-                </a>
-              </div>
+            <!-- Instagram Button -->
+            <div v-if="data.socialMediaBrides?.instagram" class="mt-3.5">
+              <a
+                :href="formatInstagramUrl(data.socialMediaBrides.instagram)"
+                target="_blank"
+                class="inline-flex items-center gap-1.5 px-5 py-1.5 rounded-full border border-[#1B1B1B] text-[11px] font-montserrat font-medium text-[#1B1B1B] hover:bg-[#1B1B1B] hover:text-[#F5F2EC] active:scale-95 transition-all"
+              >
+                <i class="pi pi-instagram text-[12px]"></i>
+                <span>@{{ cleanInstagram(data.socialMediaBrides.instagram) }}</span>
+              </a>
             </div>
-
           </div>
+        </section>
 
-        </div>
-      </section>
+        <!-- ==================== SECTION 3: TANGGAL & TEMPAT ==================== -->
+        <section id="event" class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] lowercase">
+            detail hari bahagia kami
+          </p>
 
-      <!-- 4. WEDDING EVENT / SCHEDULE SECTION -->
-      <section
-        id="event"
-        v-if="isSectionEnabled('event')"
-        class="py-24 md:py-32 px-6 md:px-12 bg-[#F3EDE8] relative"
-      >
-        <div class="max-w-5xl mx-auto space-y-16">
-          
-          <!-- Header -->
-          <div class="text-center space-y-2" v-observe>
-            <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-              [ 03 // SAVE THE DATE ]
-            </div>
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#2A221E]">
-              Waktu & Lokasi Acara
+          <!-- Headings (Rotated -4deg) -->
+          <div class="mt-2 -rotate-[4deg] space-y-0">
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none">
+              Tanggal
             </h2>
-            <p class="text-xs md:text-sm text-[#7D6E68] max-w-md mx-auto">
-              Insya Allah rangkaian acara pernikahan kami akan diselenggarakan pada:
-            </p>
-          </div>
-
-          <!-- Event Cards -->
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
-            
-            <!-- Akad Card -->
-            <div class="bg-white p-6 md:p-8 rounded-3xl border border-[#A05A4F]/20 shadow-lg space-y-6 text-center relative overflow-hidden" v-observe>
-              <div class="inline-block px-4 py-1 rounded-full bg-[#A05A4F]/10 text-[#A05A4F] font-mono text-[10px] tracking-widest uppercase font-semibold">
-                Akad Nikah
-              </div>
-
-              <div class="space-y-1">
-                <p class="text-2xl md:text-3xl font-bold text-[#2A221E]">
-                  {{ formatDate(data.akadLocation?.dateTime || data.dateTime) }}
-                </p>
-                <p class="font-mono text-xs md:text-sm text-[#A05A4F] font-semibold">
-                  Pukul {{ formatTime(data.akadLocation?.dateTime || data.dateTime) }} WIB
-                </p>
-              </div>
-
-              <div class="w-12 h-px bg-[#A05A4F]/30 mx-auto"></div>
-
-              <div class="space-y-2">
-                <p class="text-sm font-bold text-[#2A221E] uppercase tracking-wider">
-                  Tempat Pelaksanaan
-                </p>
-                <p class="text-xs md:text-sm text-[#7D6E68] leading-relaxed max-w-sm mx-auto">
-                  {{ data.akadLocation?.description || 'Plataran Menteng, Jakarta Pusat' }}
-                </p>
-              </div>
-
-              <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
-                <a
-                  v-if="data.akadLocation?.mapUrl"
-                  :href="data.akadLocation.mapUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#A05A4F] hover:bg-[#8D4B41] text-white rounded-full font-mono text-[10px] md:text-xs tracking-wider uppercase shadow-md transition-all hover:scale-105"
-                >
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span>Google Maps</span>
-                </a>
-                <button
-                  type="button"
-                  @click="saveToCalendar('Akad Nikah', data.akadLocation)"
-                  class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#A05A4F]/30 text-[#A05A4F] hover:bg-[#FAF6F4] rounded-full font-mono text-[10px] md:text-xs tracking-wider uppercase transition-colors"
-                >
-                  <i class="fa-regular fa-calendar-plus"></i>
-                  <span>Simpan Kalender</span>
-                </button>
-              </div>
-            </div>
-
-            <!-- Resepsi Card -->
-            <div class="bg-white p-6 md:p-8 rounded-3xl border border-[#A05A4F]/20 shadow-lg space-y-6 text-center relative overflow-hidden" v-observe>
-              <div class="inline-block px-4 py-1 rounded-full bg-[#A05A4F]/10 text-[#A05A4F] font-mono text-[10px] tracking-widest uppercase font-semibold">
-                Resepsi Pernikahan
-              </div>
-
-              <div class="space-y-1">
-                <p class="text-2xl md:text-3xl font-bold text-[#2A221E]">
-                  {{ formatDate(data.resepsiLocation?.dateTime || data.dateTime) }}
-                </p>
-                <p class="font-mono text-xs md:text-sm text-[#A05A4F] font-semibold">
-                  Pukul {{ formatTime(data.resepsiLocation?.dateTime || data.dateTime) }} WIB
-                </p>
-              </div>
-
-              <div class="w-12 h-px bg-[#A05A4F]/30 mx-auto"></div>
-
-              <div class="space-y-2">
-                <p class="text-sm font-bold text-[#2A221E] uppercase tracking-wider">
-                  Tempat Pelaksanaan
-                </p>
-                <p class="text-xs md:text-sm text-[#7D6E68] leading-relaxed max-w-sm mx-auto">
-                  {{ data.resepsiLocation?.description || 'Grand Ballroom Plataran Menteng, Jakarta Pusat' }}
-                </p>
-              </div>
-
-              <div class="pt-2 flex flex-wrap items-center justify-center gap-3">
-                <a
-                  v-if="data.resepsiLocation?.mapUrl"
-                  :href="data.resepsiLocation.mapUrl"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-2 px-5 py-2.5 bg-[#A05A4F] hover:bg-[#8D4B41] text-white rounded-full font-mono text-[10px] md:text-xs tracking-wider uppercase shadow-md transition-all hover:scale-105"
-                >
-                  <i class="fa-solid fa-location-dot"></i>
-                  <span>Google Maps</span>
-                </a>
-                <button
-                  type="button"
-                  @click="saveToCalendar('Resepsi Pernikahan', data.resepsiLocation)"
-                  class="inline-flex items-center gap-2 px-5 py-2.5 bg-white border border-[#A05A4F]/30 text-[#A05A4F] hover:bg-[#FAF6F4] rounded-full font-mono text-[10px] md:text-xs tracking-wider uppercase transition-colors"
-                >
-                  <i class="fa-regular fa-calendar-plus"></i>
-                  <span>Simpan Kalender</span>
-                </button>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Dress Code Callout -->
-          <div v-if="data.dressCode" class="bg-white/80 border border-[#A05A4F]/20 rounded-2xl p-6 text-center max-w-xl mx-auto space-y-2" v-observe>
-            <p class="font-mono text-[10px] uppercase tracking-widest text-[#A05A4F] font-semibold">
-              <i class="fa-solid fa-shirt mr-1"></i> Dress Code
-            </p>
-            <p class="text-xs md:text-sm text-[#2A221E] font-medium">
-              {{ data.dressCode }}
-            </p>
-          </div>
-
-        </div>
-      </section>
-
-      <!-- 5. LOVE STORY (Connected by the "Love Line") -->
-      <section
-        id="story"
-        v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)"
-        class="py-24 md:py-32 px-6 md:px-12 relative"
-      >
-        <div class="max-w-4xl mx-auto space-y-16">
-          
-          <!-- Header -->
-          <div class="text-center space-y-2" v-observe>
-            <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-              [ 04 // OUR LOVE LINE ]
-            </div>
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#2A221E]">
-              Kisah Cinta Kami
+            <h2 class="font-dafoe text-[40px] text-[#1B1B1B] leading-none -mt-1">
+              &amp; Tempat
             </h2>
-            <p class="text-xs md:text-sm text-[#7D6E68] max-w-md mx-auto">
-              Setiap kisah memiliki awal, namun bersama kita menjadikannya abadi.
-            </p>
           </div>
 
-          <!-- Connected Timeline with Continuous SVG Vertical Line -->
-          <div class="relative">
-            <!-- Vertical Line Track -->
-            <div class="absolute left-4 md:left-1/2 top-4 bottom-4 w-px bg-gradient-to-b from-[#A05A4F]/20 via-[#A05A4F]/60 to-[#A05A4F]/20 -translate-x-1/2 hidden sm:block"></div>
+          <!-- Date Item -->
+          <div class="flex items-center gap-4 mt-6 text-left w-full max-w-[270px]">
+            <img
+              src="/assets/templates/love-line/21edd6e0-c95e-11f1-bea3-415a8cc57c30.png"
+              alt="Date Icon"
+              class="w-8 h-8 object-contain shrink-0"
+            />
+            <div>
+              <p class="font-montserrat text-[15px] font-semibold tracking-wider text-[#1B1B1B]">
+                {{ formatNumericDate(data.akadLocation?.dateTime || data.dateTime) }}
+              </p>
+            </div>
+          </div>
 
-            <div class="space-y-12 md:space-y-16">
+          <!-- Time Item -->
+          <div class="flex items-center gap-4 mt-4.5 text-left w-full max-w-[270px]">
+            <img
+              src="/assets/templates/love-line/21d4f7b0-c95e-11f1-bea3-415a8cc57c30.png"
+              alt="Time Icon"
+              class="w-8 h-8 object-contain shrink-0"
+            />
+            <div>
+              <p class="font-montserrat text-[15px] font-semibold tracking-wider text-[#1B1B1B]">
+                {{ formatTime(data.akadLocation?.dateTime || data.dateTime) }} WIB
+              </p>
+            </div>
+          </div>
+
+          <!-- Place Item -->
+          <div class="flex items-start gap-4 mt-4.5 text-left w-full max-w-[270px]">
+            <img
+              src="/assets/templates/love-line/221e5cc0-c95e-11f1-bea3-415a8cc57c30.png"
+              alt="Location Icon"
+              class="w-8 h-8 object-contain shrink-0 mt-0.5"
+            />
+            <div>
+              <p class="font-montserrat text-[15px] font-semibold tracking-wider text-[#1B1B1B]">
+                {{ data.akadLocation?.title || 'Villa Mawar' }}
+              </p>
+              <p class="font-montserrat text-[12px] text-[#1B1B1B]/75 leading-relaxed mt-0.5">
+                {{ data.akadLocation?.description || 'Jl. Bukit Indah No. 8, Bogor' }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Countdown Boxes -->
+          <div class="mt-8 w-full max-w-[320px] p-4 bg-[#EFECE5]/80 rounded-2xl border border-[#1B1B1B]/10">
+            <p class="font-montserrat text-[10px] uppercase tracking-[0.25em] text-[#1B1B1B]/60 mb-3 text-center">
+              Menghitung Hari
+            </p>
+            <div class="grid grid-cols-4 gap-2 text-center">
+              <div v-for="(val, unit) in countdown" :key="unit" class="bg-[#F5F2EC] py-2 px-1 rounded-xl shadow-xs">
+                <span class="block font-montserrat text-xl font-bold text-[#1B1B1B]">{{ val }}</span>
+                <span class="block font-montserrat text-[9px] uppercase tracking-wider text-[#1B1B1B]/70 mt-0.5">{{ unit }}</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="flex flex-col sm:flex-row gap-3 mt-7 w-full max-w-[280px]">
+            <a
+              v-if="data.akadLocation?.mapUrl"
+              :href="data.akadLocation.mapUrl"
+              target="_blank"
+              class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-[#1B1B1B] text-[#F5F2EC] text-[11px] font-montserrat font-semibold tracking-[0.2em] uppercase rounded-full shadow-md active:scale-95 transition-all"
+            >
+              <i class="pi pi-map-marker text-[12px]"></i>
+              <span>Buka Peta</span>
+            </a>
+            <button
+              type="button"
+              @click="saveToCalendar('Pernikahan', data.akadLocation)"
+              class="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 border border-[#1B1B1B] text-[#1B1B1B] text-[11px] font-montserrat font-semibold tracking-[0.2em] uppercase rounded-full hover:bg-[#1B1B1B] hover:text-[#F5F2EC] active:scale-95 transition-all"
+            >
+              <i class="pi pi-calendar text-[12px]"></i>
+              <span>Kalender</span>
+            </button>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 4: JADWAL / RUNDOWN ==================== -->
+        <section class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] lowercase">
+            susunan acara
+          </p>
+
+          <!-- Heading with Flower Stamp -->
+          <div class="relative mt-1.5 inline-block">
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -rotate-[4deg]">
+              Jadwal
+            </h2>
+            <div class="absolute -top-1 -right-5 w-[18px] h-[18px] pointer-events-none opacity-80">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          <!-- Rundown Items -->
+          <div class="mt-7 w-full max-w-[280px] flex flex-col items-center space-y-4">
+            <div
+              v-for="(item, idx) in (data.rundown || rundownItems)"
+              :key="idx"
+              class="w-full flex flex-col items-center text-center"
+            >
+              <p class="font-montserrat text-[16px] font-bold text-[#1B1B1B] tracking-wide">
+                {{ item.time }}
+              </p>
+              <p class="font-montserrat text-[14px] text-[#1B1B1B] mt-0.5">
+                {{ item.title }}
+              </p>
+              <!-- Authentic short horizontal divider -->
+              <div v-if="idx < (data.rundown || rundownItems).length - 1" class="w-9 h-[1.5px] bg-[#1B1B1B]/80 mt-4"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 5: CERITA (ZIG-ZAG TIMELINE) ==================== -->
+        <section class="pt-11 pb-12 px-4 text-center flex flex-col items-center relative">
+          <!-- Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] lowercase">
+            perjalanan kami
+          </p>
+
+          <!-- Heading with Flower Stamp -->
+          <div class="relative mt-1.5 inline-block">
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -rotate-[4deg]">
+              Cerita
+            </h2>
+            <div class="absolute -top-1 -right-5 w-[18px] h-[18px] pointer-events-none opacity-80">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
+            </div>
+          </div>
+
+          <!-- Zig-Zag Timeline Container matching original layout -->
+          <div class="mt-7 w-full relative">
+            <!-- Center Vertical Line -->
+            <div class="absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-[2px] bg-[#1B1B1B]/80 z-0"></div>
+
+            <!-- Story Items -->
+            <div class="flex flex-col space-y-8 relative z-10">
               <div
                 v-for="(story, idx) in effectiveStories"
                 :key="idx"
-                class="relative flex flex-col md:flex-row items-center gap-6 md:gap-12"
-                :class="idx % 2 === 0 ? 'md:flex-row-reverse' : ''"
-                v-observe
+                class="gc-cerita-item relative min-h-[196px] w-full"
               >
-                <!-- Timeline Node Marker -->
-                <div class="hidden sm:flex absolute left-4 md:left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-[#FAF6F4] border-2 border-[#A05A4F] items-center justify-center font-mono text-[10px] font-bold text-[#A05A4F] z-10 shadow-sm">
-                  {{ idx + 1 }}
-                </div>
+                <!-- Center Dot -->
+                <div class="absolute top-[54px] left-1/2 -translate-x-1/2 w-[10px] h-[10px] rounded-full bg-[#1B1B1B] z-20"></div>
 
-                <!-- Story Text Card -->
-                <div class="w-full md:w-1/2 bg-white p-6 md:p-8 rounded-2xl border border-[#A05A4F]/15 shadow-md space-y-3">
-                  <div class="flex items-center justify-between">
-                    <span class="font-mono text-[10px] md:text-xs text-[#A05A4F] font-bold tracking-widest uppercase">
-                      {{ story.date }}
-                    </span>
-                    <span class="sm:hidden font-mono text-[10px] text-gray-400">#{{ idx + 1 }}</span>
+                <!-- Odd Item (idx % 2 === 0): Photo on Left, Text on Right -->
+                <div v-if="idx % 2 === 0" class="w-full h-full relative">
+                  <!-- Photo on Left (136x160 with wobble animation) -->
+                  <div class="absolute top-[16px] left-[20px] sm:left-[30px] w-[136px] h-[160px] gc-goyang z-10 shadow-sm bg-[#EFECE5]">
+                    <img
+                      :src="story.image || defaultStoryPhoto(idx)"
+                      :alt="story.title"
+                      class="w-full h-full object-cover duotone-photo"
+                    />
                   </div>
-                  <h3 class="text-xl md:text-2xl font-bold text-[#2A221E] tracking-tight">
-                    {{ story.title }}
-                  </h3>
-                  <p class="text-xs md:text-sm text-[#7D6E68] leading-relaxed">
-                    {{ story.description }}
-                  </p>
+                  <!-- Text on Right (ml-[55%], left-aligned) -->
+                  <div class="ml-[54%] mr-4 pt-6 text-left">
+                    <h4 class="font-caveat text-[22px] text-[#1B1B1B] leading-tight font-semibold">
+                      {{ story.title }}
+                    </h4>
+                    <p class="font-montserrat text-[12px] text-[#1B1B1B]/85 leading-relaxed mt-1">
+                      {{ story.description }}
+                    </p>
+                  </div>
                 </div>
 
-                <!-- Story Photo (Polaroid Frame) -->
-                <div class="w-full md:w-1/2 flex justify-center">
-                  <div class="bg-white p-3 pb-6 rounded-lg shadow-lg border border-[#A05A4F]/10 max-w-[280px] w-full rotate-[-1deg] hover:rotate-0 transition-transform duration-500">
-                    <div class="aspect-[4/3] bg-[#F5ECE8] rounded overflow-hidden">
-                      <img
-                        :src="story.image || defaultStoryPlaceholder"
-                        :alt="story.title"
-                        class="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
-                      />
-                    </div>
+                <!-- Even Item (idx % 2 === 1): Photo on Right, Text on Left -->
+                <div v-else class="w-full h-full relative">
+                  <!-- Photo on Right (136x160 with alternate wobble) -->
+                  <div class="absolute top-[16px] right-[20px] sm:right-[30px] w-[136px] h-[160px] gc-goyang gc-goyang-b z-10 shadow-sm bg-[#EFECE5]">
+                    <img
+                      :src="story.image || defaultStoryPhoto(idx)"
+                      :alt="story.title"
+                      class="w-full h-full object-cover duotone-photo"
+                    />
+                  </div>
+                  <!-- Text on Left (mr-[55%], right-aligned) -->
+                  <div class="mr-[54%] ml-4 pt-6 text-right">
+                    <h4 class="font-caveat text-[22px] text-[#1B1B1B] leading-tight font-semibold">
+                      {{ story.title }}
+                    </h4>
+                    <p class="font-montserrat text-[12px] text-[#1B1B1B]/85 leading-relaxed mt-1">
+                      {{ story.description }}
+                    </p>
                   </div>
                 </div>
 
               </div>
             </div>
           </div>
+        </section>
 
-        </div>
-      </section>
+        <!-- ==================== SECTION 6: GALERI ==================== -->
+        <section class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 tracking-[0.6px] lowercase">
+            momen kami
+          </p>
 
-      <!-- 6. GALLERY SECTION -->
-      <section
-        id="gallery"
-        v-if="isSectionEnabled('gallery') && galleryItems.length"
-        class="py-24 md:py-32 px-6 md:px-12 bg-[#F3EDE8] relative"
-      >
-        <div class="max-w-5xl mx-auto space-y-16">
-          
-          <!-- Header -->
-          <div class="text-center space-y-2" v-observe>
-            <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-              [ 05 // SWEET MEMORIES ]
-            </div>
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#2A221E]">
-              Galeri Kenangan
+          <!-- Heading with Flower Stamp -->
+          <div class="relative mt-1.5 inline-block">
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -rotate-[4deg]">
+              Galeri
             </h2>
-            <p class="text-xs md:text-sm text-[#7D6E68] max-w-md mx-auto">
-              Untaian momen indah perjalanan kebersamaan kami yang terabadikan.
-            </p>
+            <div class="absolute -top-1 -right-5 w-[16px] h-[16px] pointer-events-none opacity-80">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
+            </div>
           </div>
 
-          <!-- Gallery Grid -->
-          <div v-observe>
-            <GalleryInvitation :items="galleryItems" />
+          <!-- 2x2 Photo Grid with Duotone Filter -->
+          <div class="mt-7 grid grid-cols-2 gap-3 w-full max-w-[340px]">
+            <div
+              v-for="(img, idx) in effectiveGallery.slice(0, 4)"
+              :key="idx"
+              @click="openGallery(img)"
+              class="aspect-[4/5] overflow-hidden bg-[#EFECE5] shadow-xs cursor-pointer group"
+            >
+              <img
+                :src="img"
+                :alt="`Galeri ${idx + 1}`"
+                class="w-full h-full object-cover duotone-photo group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 7: DRESS CODE ==================== -->
+        <section class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Subtitle / Eyebrow -->
+          <p class="font-montserrat text-[11px] text-[#1B1B1B]/75 leading-relaxed max-w-[310px]">
+            kehadiranmu adalah hadiah terbesar, tapi kami akan senang bila kamu berbusana dalam palet warna kami
+          </p>
+
+          <!-- Headings (Rotated -5deg) -->
+          <div class="mt-4 -rotate-[5deg]">
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none">
+              Dress
+            </h2>
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -mt-2">
+              Code
+            </h2>
           </div>
 
-        </div>
-      </section>
-
-      <!-- 7. VIDEO PREWEDDING (IF ENABLED) -->
-      <section
-        id="video"
-        v-if="isSectionEnabled('video') && data.videoPrewedding"
-        class="py-20 md:py-28 px-6 md:px-12 bg-white relative"
-        v-observe
-      >
-        <div class="max-w-4xl mx-auto space-y-8 text-center">
-          <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-            [ PREWEDDING CINEMATIC ]
+          <!-- Color Swatches (5 Circles matching authentic colors) -->
+          <div class="flex items-center justify-center gap-2.5 mt-7">
+            <div
+              v-for="(color, idx) in dressCodeColors"
+              :key="idx"
+              class="w-[26px] h-[26px] rounded-full shadow-sm border border-black/10 transition-transform hover:scale-110"
+              :style="{ backgroundColor: color }"
+            ></div>
           </div>
-          <h2 class="text-3xl md:text-4xl font-bold uppercase tracking-tight text-[#2A221E]">
-            Momen Kebersamaan
-          </h2>
-          <div class="aspect-video max-w-3xl mx-auto rounded-3xl overflow-hidden shadow-2xl border-2 border-[#A05A4F]/20">
-            <iframe
-              :src="data.videoPrewedding"
-              title="Prewedding Video"
-              class="w-full h-full"
-              frameborder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowfullscreen
+        </section>
+
+        <!-- ==================== SECTION 8: KONFIRMASI (RSVP) ==================== -->
+        <section id="rsvp" class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Envelope Continuous Line Illustration -->
+          <div class="w-full max-w-[340px] pointer-events-none mb-4">
+            <img
+              src="/assets/templates/love-line/233c76f0-c95e-11f1-bea3-415a8cc57c30.png"
+              alt="Konfirmasi RSVP"
+              class="w-full h-auto object-contain"
             />
           </div>
-        </div>
-      </section>
 
-      <!-- 8. WEDDING GIFT / AMPLOP DIGITAL -->
-      <section
-        id="gift"
-        v-if="isSectionEnabled('gift')"
-        class="py-24 md:py-32 px-6 md:px-12 relative"
-      >
-        <div class="max-w-3xl mx-auto space-y-12 text-center">
-          
-          <!-- Header -->
-          <div class="space-y-2" v-observe>
-            <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-              [ 06 // WEDDING GIFT ]
+          <!-- Heading (Rotated -4deg) -->
+          <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -rotate-[4deg]">
+            Konfirmasi
+          </h2>
+          <p class="font-montserrat text-[12px] text-[#1B1B1B]/80 leading-relaxed max-w-[280px] mt-2">
+            Kabari kami kehadiranmu lewat formulir di bawah ini, ya.
+          </p>
+
+          <!-- RSVP Form with Authentic Clean Underline Inputs -->
+          <form @submit.prevent="submitRSVP" class="gc-borang mt-6 w-full max-w-[320px] text-left space-y-4">
+            <!-- Guest Name -->
+            <div>
+              <label class="block text-[11px] font-montserrat uppercase tracking-wider text-[#1B1B1B]/70 mb-1">
+                Nama Lengkap
+              </label>
+              <input
+                v-model="rsvp.name"
+                type="text"
+                placeholder="Tuliskan nama Anda"
+                required
+                class="w-full bg-transparent border-0 border-b border-[#1B1B1B]/40 focus:border-[#1B1B1B] px-0 py-2 text-[13px] font-montserrat outline-none transition-colors"
+              />
             </div>
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#2A221E]">
-              Tanda Kasih
-            </h2>
-            <p class="text-xs md:text-sm text-[#7D6E68] max-w-md mx-auto leading-relaxed">
-              Doa restu Anda merupakan karunia terindah bagi kami. Namun apabila hendak memberikan tanda kasih, Anda dapat mengirimkannya melalui:
-            </p>
-          </div>
 
-          <!-- Bank Accounts Grid -->
-          <div v-if="effectiveBankAccounts.length" class="grid grid-cols-1 md:grid-cols-2 gap-6" v-observe>
-            <div
-              v-for="(acc, idx) in effectiveBankAccounts"
-              :key="idx"
-              class="bg-white p-6 rounded-2xl border border-[#A05A4F]/20 shadow-md text-left space-y-3 relative group"
-            >
-              <div class="flex items-center justify-between">
-                <span class="font-mono text-xs font-bold text-[#A05A4F] uppercase tracking-wider">
-                  {{ acc.bankName }}
-                </span>
-                <i class="fa-solid fa-credit-card text-[#A05A4F]/40 text-sm"></i>
-              </div>
-              <div class="space-y-0.5">
-                <p class="text-lg md:text-xl font-mono font-bold text-[#2A221E] tracking-wider select-all">
-                  {{ acc.accountNumber }}
-                </p>
-                <p class="text-xs text-[#7D6E68]">
-                  a.n. <span class="font-medium text-[#2A221E]">{{ acc.accountName }}</span>
-                </p>
-              </div>
-              <button
-                type="button"
-                @click="copyText(acc.accountNumber, 'Nomor rekening')"
-                class="w-full mt-2 py-2 bg-[#FAF6F4] hover:bg-[#A05A4F] text-[#A05A4F] hover:text-white rounded-xl font-mono text-[10px] tracking-wider uppercase transition-colors flex items-center justify-center gap-2 cursor-pointer font-bold border border-[#A05A4F]/20"
+            <!-- Attendance -->
+            <div>
+              <label class="block text-[11px] font-montserrat uppercase tracking-wider text-[#1B1B1B]/70 mb-1">
+                Konfirmasi Kehadiran
+              </label>
+              <select
+                v-model="rsvp.attendance"
+                class="w-full bg-transparent border-0 border-b border-[#1B1B1B]/40 focus:border-[#1B1B1B] px-0 py-2 text-[13px] font-montserrat outline-none cursor-pointer"
               >
-                <i class="fa-regular fa-copy"></i>
-                <span>Salin No. Rekening</span>
-              </button>
+                <option value="hadir" class="bg-[#F5F2EC] text-[#1B1B1B]">Ya, saya akan hadir</option>
+                <option value="tidak_hadir" class="bg-[#F5F2EC] text-[#1B1B1B]">Maaf, belum bisa hadir</option>
+              </select>
             </div>
-          </div>
 
-          <!-- Gift Delivery Address -->
-          <div v-if="giftAddresses.length" class="bg-white p-6 md:p-8 rounded-2xl border border-[#A05A4F]/20 shadow-md text-center space-y-4 max-w-xl mx-auto" v-observe>
-            <div class="inline-block px-3 py-1 rounded-full bg-[#A05A4F]/10 text-[#A05A4F] font-mono text-[10px] uppercase font-semibold">
-              <i class="fa-solid fa-gift mr-1"></i> Kirim Kado Fisik
-            </div>
-            <div v-for="(addr, idx) in giftAddresses" :key="idx" class="space-y-2">
-              <p class="text-xs md:text-sm text-[#2A221E] leading-relaxed">
-                {{ addr }}
-              </p>
-              <button
-                type="button"
-                @click="copyText(addr, 'Alamat pengiriman')"
-                class="inline-flex items-center gap-2 px-5 py-2 bg-[#FAF6F4] hover:bg-[#A05A4F] text-[#A05A4F] hover:text-white rounded-full font-mono text-[10px] tracking-wider uppercase transition-colors cursor-pointer border border-[#A05A4F]/20 font-bold"
+            <!-- Total Guests -->
+            <div v-if="rsvp.attendance === 'hadir'">
+              <label class="block text-[11px] font-montserrat uppercase tracking-wider text-[#1B1B1B]/70 mb-1">
+                Jumlah Hadir
+              </label>
+              <select
+                v-model="rsvp.totalGuests"
+                class="w-full bg-transparent border-0 border-b border-[#1B1B1B]/40 focus:border-[#1B1B1B] px-0 py-2 text-[13px] font-montserrat outline-none cursor-pointer"
               >
-                <i class="fa-regular fa-copy"></i>
-                <span>Salin Alamat</span>
-              </button>
+                <option :value="1" class="bg-[#F5F2EC] text-[#1B1B1B]">1 Orang</option>
+                <option :value="2" class="bg-[#F5F2EC] text-[#1B1B1B]">2 Orang</option>
+                <option :value="3" class="bg-[#F5F2EC] text-[#1B1B1B]">3 Orang</option>
+              </select>
             </div>
-          </div>
 
-        </div>
-      </section>
-
-      <!-- 9. RSVP & WISHES SECTION -->
-      <section
-        id="rsvp"
-        v-if="isSectionEnabled('rsvp')"
-        class="py-24 md:py-32 px-6 md:px-12 bg-[#F3EDE8] relative"
-      >
-        <div class="max-w-2xl mx-auto space-y-12">
-          
-          <!-- Header -->
-          <div class="text-center space-y-2" v-observe>
-            <div class="font-mono text-[10px] md:text-xs text-[#A05A4F] tracking-widest uppercase">
-              [ 07 // RSVP & BLESSINGS ]
+            <!-- Message / Wishes -->
+            <div>
+              <label class="block text-[11px] font-montserrat uppercase tracking-wider text-[#1B1B1B]/70 mb-1">
+                Pesan / Doa
+              </label>
+              <textarea
+                v-model="rsvp.message"
+                rows="3"
+                placeholder="Tuliskan ucapan dan doa Anda..."
+                class="w-full bg-transparent border-0 border-b border-[#1B1B1B]/40 focus:border-[#1B1B1B] px-0 py-2 text-[13px] font-montserrat outline-none transition-colors resize-none"
+              ></textarea>
             </div>
-            <h2 class="text-3xl md:text-5xl font-bold uppercase tracking-tight text-[#2A221E]">
-              Konfirmasi Kehadiran
-            </h2>
-            <p class="text-xs md:text-sm text-[#7D6E68]">
-              Mohon konfirmasi kehadiran serta berikan doa restu Anda:
-            </p>
-          </div>
 
-          <!-- RSVP Form Card -->
-          <div class="bg-white p-6 md:p-10 rounded-3xl border border-[#A05A4F]/20 shadow-xl space-y-6" v-observe>
-            <form @submit.prevent="submitRSVP" class="space-y-5">
-              
-              <!-- Guest Name Field -->
-              <div class="space-y-1.5 text-left">
-                <label class="font-mono text-[10px] uppercase tracking-wider text-[#7D6E68] font-bold block">
-                  Nama Anda
-                </label>
-                <input
-                  v-model="rsvp.name"
-                  type="text"
-                  required
-                  placeholder="Masukkan nama Anda"
-                  class="w-full px-4 py-3 rounded-xl bg-[#FAF6F4] border border-[#A05A4F]/20 text-[#2A221E] text-sm focus:outline-none focus:border-[#A05A4F] transition-colors"
-                />
-              </div>
-
-              <!-- Attendance Choice -->
-              <div class="space-y-1.5 text-left">
-                <label class="font-mono text-[10px] uppercase tracking-wider text-[#7D6E68] font-bold block">
-                  Konfirmasi Kehadiran
-                </label>
-                <div class="grid grid-cols-3 gap-2">
-                  <button
-                    type="button"
-                    @click="rsvp.attendance = 'hadir'"
-                    class="py-2.5 px-3 rounded-xl font-mono text-[10px] md:text-xs uppercase tracking-wider transition-all border cursor-pointer text-center font-bold"
-                    :class="rsvp.attendance === 'hadir' ? 'bg-[#A05A4F] text-white border-[#A05A4F] shadow-sm' : 'bg-[#FAF6F4] text-[#7D6E68] border-[#A05A4F]/20 hover:border-[#A05A4F]'"
-                  >
-                    Hadir
-                  </button>
-                  <button
-                    type="button"
-                    @click="rsvp.attendance = 'tidak hadir'"
-                    class="py-2.5 px-3 rounded-xl font-mono text-[10px] md:text-xs uppercase tracking-wider transition-all border cursor-pointer text-center font-bold"
-                    :class="rsvp.attendance === 'tidak hadir' ? 'bg-[#A05A4F] text-white border-[#A05A4F] shadow-sm' : 'bg-[#FAF6F4] text-[#7D6E68] border-[#A05A4F]/20 hover:border-[#A05A4F]'"
-                  >
-                    Berhalangan
-                  </button>
-                  <button
-                    type="button"
-                    @click="rsvp.attendance = 'ragu'"
-                    class="py-2.5 px-3 rounded-xl font-mono text-[10px] md:text-xs uppercase tracking-wider transition-all border cursor-pointer text-center font-bold"
-                    :class="rsvp.attendance === 'ragu' ? 'bg-[#A05A4F] text-white border-[#A05A4F] shadow-sm' : 'bg-[#FAF6F4] text-[#7D6E68] border-[#A05A4F]/20 hover:border-[#A05A4F]'"
-                  >
-                    Masih Ragu
-                  </button>
-                </div>
-              </div>
-
-              <!-- Number of Guests -->
-              <div v-if="rsvp.attendance === 'hadir'" class="space-y-1.5 text-left">
-                <label class="font-mono text-[10px] uppercase tracking-wider text-[#7D6E68] font-bold block">
-                  Jumlah Kehadiran (Orang)
-                </label>
-                <select
-                  v-model="rsvp.totalGuests"
-                  class="w-full px-4 py-3 rounded-xl bg-[#FAF6F4] border border-[#A05A4F]/20 text-[#2A221E] text-sm focus:outline-none focus:border-[#A05A4F] transition-colors"
-                >
-                  <option :value="1">1 Orang</option>
-                  <option :value="2">2 Orang</option>
-                  <option :value="3">3 Orang</option>
-                  <option :value="4">4 Orang</option>
-                </select>
-              </div>
-
-              <!-- Message / Wishes -->
-              <div class="space-y-1.5 text-left">
-                <label class="font-mono text-[10px] uppercase tracking-wider text-[#7D6E68] font-bold block">
-                  Ucapan & Doa Restu
-                </label>
-                <textarea
-                  v-model="rsvp.message"
-                  rows="3"
-                  placeholder="Tuliskan ucapan dan doa terbaik Anda untuk kedua mempelai..."
-                  class="w-full px-4 py-3 rounded-xl bg-[#FAF6F4] border border-[#A05A4F]/20 text-[#2A221E] text-sm focus:outline-none focus:border-[#A05A4F] transition-colors resize-none"
-                ></textarea>
-              </div>
-
-              <!-- Submit Button -->
+            <!-- Submit Button -->
+            <div class="pt-2 text-center">
               <button
                 type="submit"
                 :disabled="isSubmittingRsvp"
-                class="w-full py-3.5 bg-[#A05A4F] hover:bg-[#8D4B41] text-white font-mono text-xs uppercase tracking-widest rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer font-bold disabled:opacity-50"
+                class="w-full py-3 bg-[#1B1B1B] text-[#F5F2EC] font-montserrat text-[11px] font-semibold tracking-[0.2em] uppercase rounded-full shadow-md hover:bg-black active:scale-95 transition-all disabled:opacity-50 cursor-pointer"
               >
-                <span v-if="isSubmittingRsvp" class="animate-spin"><i class="fa-solid fa-circle-notch"></i></span>
-                <span v-else><i class="fa-regular fa-paper-plane mr-1"></i> Kirim Konfirmasi</span>
+                {{ isSubmittingRsvp ? 'Mengirim...' : 'Kirim Konfirmasi' }}
               </button>
+            </div>
+          </form>
+        </section>
 
-            </form>
-          </div>
-
-          <!-- Submitted Wishes List -->
-          <div v-if="submittedWishes.length" class="space-y-4 text-left" v-observe>
-            <p class="font-mono text-[10px] md:text-xs text-[#A05A4F] font-bold tracking-widest uppercase text-center">
-              Untaian Doa Dari Para Sahabat ({{ submittedWishes.length }})
-            </p>
-            <div class="max-h-80 overflow-y-auto space-y-3 no-scrollbar pr-1">
-              <div
-                v-for="(wish, idx) in submittedWishes"
-                :key="idx"
-                class="bg-white p-4 rounded-xl border border-[#A05A4F]/15 shadow-xs space-y-1.5"
-              >
-                <div class="flex items-center justify-between">
-                  <p class="font-bold text-xs md:text-sm text-[#2A221E]">{{ wish.name }}</p>
-                  <span
-                    class="font-mono text-[9px] uppercase px-2 py-0.5 rounded-full"
-                    :class="wish.rsvpStatus === 'hadir' ? 'bg-emerald-50 text-emerald-700' : 'bg-gray-100 text-gray-600'"
-                  >
-                    {{ wish.rsvpStatus === 'hadir' ? 'Hadir' : 'Berhalangan' }}
-                  </span>
-                </div>
-                <p class="text-xs text-[#7D6E68] leading-relaxed">{{ wish.message }}</p>
-              </div>
+        <!-- ==================== SECTION 9: DOA & UCAPAN ==================== -->
+        <section class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Heading with Flower Stamp -->
+          <div class="relative inline-block">
+            <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -rotate-[4deg]">
+              Doa &amp; Ucapan
+            </h2>
+            <div class="absolute -top-1 -right-5 w-[16px] h-[16px] pointer-events-none opacity-80">
+              <img
+                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                alt="Flourish"
+                class="w-full h-full object-contain"
+              />
             </div>
           </div>
-
-        </div>
-      </section>
-
-      <!-- 10. TURUT MENGUNDANG / EXTENDED FAMILY -->
-      <section
-        v-if="effectiveFamily.length"
-        class="py-16 md:py-20 px-6 text-center bg-white border-t border-[#A05A4F]/15"
-        v-observe
-      >
-        <div class="max-w-2xl mx-auto space-y-4">
-          <p class="font-mono text-[10px] md:text-xs text-[#A05A4F] uppercase tracking-widest font-bold">
-            Turut Mengundang
+          <p class="font-montserrat text-[12px] text-[#1B1B1B]/80 leading-relaxed max-w-[280px] mt-2">
+            Tinggalkan doa dan harapan terbaikmu untuk kami.
           </p>
-          <div class="space-y-1.5">
-            <p
-              v-for="(family, idx) in effectiveFamily"
+
+          <!-- Wishes List -->
+          <div class="mt-6 w-full max-w-[340px] space-y-3 max-h-[360px] overflow-y-auto pr-1">
+            <div
+              v-for="(item, idx) in submittedWishes"
               :key="idx"
-              class="text-xs md:text-sm text-[#7D6E68]"
+              class="p-4 bg-white/55 backdrop-blur-xs rounded-[14px] border border-black/10 text-left"
             >
-              {{ family }}
-            </p>
+              <div class="flex items-center justify-between">
+                <p class="font-montserrat text-[13px] font-bold text-[#1B1B1B]">
+                  {{ item.name }}
+                </p>
+                <span
+                  class="font-montserrat text-[9px] uppercase tracking-wider px-2 py-0.5 rounded-full"
+                  :class="item.rsvpStatus === 'hadir' ? 'bg-[#7A8063]/20 text-[#7A8063]' : 'bg-[#A35A4A]/20 text-[#A35A4A]'"
+                >
+                  {{ item.rsvpStatus === 'hadir' ? 'Hadir' : 'Absen' }}
+                </span>
+              </div>
+              <p class="font-montserrat text-[12px] text-[#1B1B1B]/80 leading-relaxed mt-1.5">
+                {{ item.message }}
+              </p>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <!-- 11. FOOTER SECTION -->
-      <footer class="py-16 md:py-20 px-6 text-center space-y-6 bg-[#FAF6F4]">
-        <div class="max-w-xl mx-auto space-y-3">
-          <div class="w-12 h-px bg-[#A05A4F]/40 mx-auto"></div>
-          <p class="font-serif italic text-xs md:text-sm text-[#7D6E68] leading-relaxed">
-            Merupakan suatu kehormatan dan kebahagiaan bagi kami apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu kepada kami.
+        <!-- ==================== SECTION 10: TANDA KASIH ==================== -->
+        <section class="pt-11 pb-12 px-6 text-center flex flex-col items-center relative">
+          <!-- Heading (Rotated -4deg) -->
+          <h2 class="font-dafoe text-[48px] text-[#1B1B1B] leading-none -rotate-[4deg]">
+            Tanda Kasih
+          </h2>
+          <p class="font-montserrat text-[12px] text-[#1B1B1B]/80 leading-relaxed max-w-[310px] mt-2">
+            Doa restumu sudah lebih dari cukup. Bila ingin memberi lebih, kami menerimanya dengan penuh syukur.
           </p>
-          <p class="font-mono text-[10px] uppercase tracking-widest text-[#A05A4F] font-bold">
-            Julian & Nadine
-          </p>
-        </div>
 
-        <!-- Official SatuUndangan Watermark Badge -->
-        <WatermarkBadge variant="light" />
-      </footer>
+          <!-- Bank Account Cards -->
+          <div class="mt-6 w-full max-w-[320px] space-y-3">
+            <div
+              v-for="(acc, idx) in effectiveBankAccounts"
+              :key="idx"
+              class="p-4 bg-white/60 rounded-[14px] border border-black/10 text-left flex items-center justify-between shadow-xs"
+            >
+              <div>
+                <p class="font-montserrat text-[11px] font-bold uppercase tracking-wider text-[#1B1B1B]">
+                  {{ acc.bankName }}
+                </p>
+                <p class="font-montserrat text-[14px] font-semibold text-[#1B1B1B] tracking-wider mt-0.5">
+                  {{ acc.accountNumber }}
+                </p>
+                <p class="font-montserrat text-[11px] text-[#1B1B1B]/70 mt-0.5">
+                  a.n {{ acc.accountName }}
+                </p>
+              </div>
+              <button
+                type="button"
+                @click="copyText(acc.accountNumber, acc.bankName)"
+                class="px-3.5 py-1.5 bg-[#1B1B1B] text-[#F5F2EC] text-[10px] font-montserrat font-semibold uppercase tracking-wider rounded-full active:scale-95 transition-all cursor-pointer"
+              >
+                Salin
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ==================== SECTION 11: PENUTUP ==================== -->
+        <section class="pt-11 pb-16 px-6 text-center flex flex-col items-center relative">
+          <!-- Hands Line Art Illustration -->
+          <div class="w-full max-w-[200px] pointer-events-none mb-4">
+            <img
+              src="/assets/templates/love-line/21299c80-c95e-11f1-bea3-415a8cc57c30.png"
+              alt="Penutup"
+              class="w-full h-auto object-contain"
+            />
+          </div>
+
+          <p class="font-montserrat text-[13px] text-[#1B1B1B] leading-relaxed max-w-[300px]">
+            Terima kasih sudah jadi bagian dari cerita kami. Sampai jumpa di hari bahagia!
+          </p>
+
+          <!-- Couple Signatures in Dafoe Calligraphy -->
+          <div class="mt-6 space-y-0 text-center">
+            <h3 class="font-dafoe text-[44px] text-[#1B1B1B] leading-none -rotate-[3deg]">
+              {{ data.groomNickname || data.groomName?.split(' ')[0] || 'Elang' }}
+            </h3>
+            <p class="font-dafoe text-[32px] text-[#C8242C] leading-none -mt-1">
+              &amp;
+            </p>
+            <h3 class="font-dafoe text-[44px] text-[#1B1B1B] leading-none rotate-[2deg] -mt-1">
+              {{ data.brideNickname || data.brideName?.split(' ')[0] || 'Laila' }}
+            </h3>
+          </div>
+
+          <!-- SatuUndangan Watermark -->
+          <div class="mt-12">
+            <WatermarkBadge />
+          </div>
+        </section>
+
+      </div>
 
     </div>
 
@@ -873,7 +789,6 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
-import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
@@ -898,75 +813,15 @@ watch(
 )
 
 const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
-const currentYear = new Date().getFullYear()
 
-// Fallbacks and Placeholders
-const heroPlaceholder = 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974&auto=format&fit=crop'
-const groomPlaceholder = 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop'
-const bridePlaceholder = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=1000&auto=format&fit=crop'
-const defaultStoryPlaceholder = 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000&auto=format&fit=crop'
-const defaultQuoteText =
-  'Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda bagi kaum yang berpikir.'
-
-// Welcome Gate Screen State
+// Cover Screen
 const showWelcome = ref(true)
 
 function openInvitation() {
   showWelcome.value = false
-  setTimeout(() => {
-    const el = document.getElementById('main-content')
-    if (el) el.classList.remove('opacity-0')
-    initScrollSpy()
-  }, 100)
 }
 
-// Navigation Items with Scrollspy
-const navItems = computed(() => {
-  const items = [
-    { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
-    { id: 'quote', label: 'Ayat', icon: 'fa-solid fa-quote-left', key: 'quote' },
-    { id: 'couple', label: 'Mempelai', icon: 'fa-solid fa-heart', key: 'couple' },
-    { id: 'event', label: 'Acara', icon: 'fa-solid fa-calendar-day', key: 'event' },
-    { id: 'story', label: 'Cerita', icon: 'fa-solid fa-book-open', key: 'love-story' },
-    { id: 'gallery', label: 'Galeri', icon: 'fa-solid fa-images', key: 'gallery' },
-    { id: 'gift', label: 'Kado', icon: 'fa-solid fa-gift', key: 'gift' },
-    { id: 'rsvp', label: 'RSVP', icon: 'fa-solid fa-envelope', key: 'rsvp' },
-  ]
-  return items.filter((item) => {
-    if (item.id === 'home') return true
-    if (item.id === 'story') return isSectionEnabled('love-story') && (effectiveStories.value.length > 0 || isPreviewMode.value)
-    if (item.id === 'gallery') return isSectionEnabled('gallery') && galleryItems.value.length > 0
-    return isSectionEnabled(item.key)
-  })
-})
-
-const activeSection = ref('home')
-
-function scrollToSection(id) {
-  const el = document.getElementById(id)
-  if (el) el.scrollIntoView({ behavior: 'smooth' })
-  activeSection.value = id
-}
-
-function initScrollSpy() {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          activeSection.value = entry.target.id
-        }
-      })
-    },
-    { threshold: 0.35 },
-  )
-
-  navItems.value.forEach((item) => {
-    const el = document.getElementById(item.id)
-    if (el) observer.observe(el)
-  })
-}
-
-// Countdown Logic
+// Countdown
 const countdown = ref({ Hari: '00', Jam: '00', Menit: '00', Detik: '00' })
 let countdownInterval = null
 
@@ -975,7 +830,7 @@ function updateCountdown() {
     data.value.akadLocation?.dateTime ||
     data.value.resepsiLocation?.dateTime ||
     data.value.dateTime ||
-    '2027-11-20T08:00:00.000Z'
+    '2028-02-28T15:00:00.000Z'
   const target = new Date(targetDateStr).getTime()
   const now = new Date().getTime()
   const diff = target - now
@@ -998,42 +853,35 @@ function updateCountdown() {
   }
 }
 
-// Custom Scroll Observation Directive
-const vObserve = {
-  mounted: (el) => {
-    el.classList.add('opacity-0', 'translate-y-8', 'transition-all', 'duration-700')
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach((entry) => {
-        if (entry.isIntersecting) {
-          el.classList.remove('opacity-0', 'translate-y-8')
-          el.classList.add('opacity-100', 'translate-y-0')
-          observer.unobserve(el)
-        }
-      })
-    })
-    observer.observe(el)
-  },
-}
+// Rundown
+const rundownItems = [
+  { time: '15:00', title: 'Akad nikah' },
+  { time: '16:00', title: 'Ramah tamah' },
+  { time: '18:00', title: 'Makan malam' },
+  { time: '19:30', title: 'Pesta dansa' },
+]
 
-// Stories Fallback
-const mockStories = [
+// Stories
+const defaultStories = [
   {
-    date: '14 Feb 2022',
-    title: 'Garis yang Bersilangan',
-    description: 'Bermula dari perjumpaan tidak sengaja di sebuah pameran seni arsitektur dan desain di Jakarta Selatan. Dari percakapan singkat tentang estetika garis dan ruang, kami menyadari ada rasa hangat yang tak ingin kami sudahi.',
-    image: 'https://images.unsplash.com/photo-1522673607200-164d1b6ce486?q=80&w=1000&auto=format&fit=crop',
+    title: 'Pertama kenal',
+    description: 'Berawal dari obrolan singkat di kedai kopi, ternyata nyambung sampai lupa waktu.',
+    image: '/assets/templates/love-line/67e60380-cb47-11f1-8e64-a9fec9085fda.jpg',
   },
   {
-    date: '28 Okt 2024',
-    title: 'Menyatukan Dua Langkah',
-    description: 'Melewati berbagai musim kehidupan bersama, belajar saling memahami dan bertumbuh dalam kebaikan. Di bawah langit senja, kami saling mengucap janji untuk terus berjalan berdampingan.',
-    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=1000&auto=format&fit=crop',
+    title: 'Jalan bareng',
+    description: 'Hujan, macet, dan payung yang kekecilan. Semuanya terasa lucu kalau dijalani berdua.',
+    image: '/assets/templates/love-line/67ca3e20-cb47-11f1-8e64-a9fec9085fda.jpg',
   },
   {
-    date: '18 Mei 2026',
-    title: 'Ikatan Satu Garis Abadi',
-    description: 'Di hadapan kedua keluarga besar tercinta, lamaran resmi terucap dengan penuh rasa syukur. Sebuah awal dari lembaran baru menuju mahligai pernikahan suci.',
-    image: 'https://images.unsplash.com/photo-1515934751635-c81c6bc9a2d8?q=80&w=1000&auto=format&fit=crop',
+    title: 'Lamaran',
+    description: 'Satu pertanyaan sederhana, satu jawaban paling cepat yang pernah ada: iya.',
+    image: '/assets/templates/love-line/681243a0-cb47-11f1-8e64-a9fec9085fda.jpg',
+  },
+  {
+    title: 'Menuju halal',
+    description: 'Sekarang kami siap memulai babak baru, dan kamu ikut jadi saksinya.',
+    image: '/assets/templates/love-line/673fd870-cb47-11f1-8e64-a9fec9085fda.jpg',
   },
 ]
 
@@ -1041,18 +889,46 @@ const effectiveStories = computed(() => {
   if (data.value.loveStory && data.value.loveStory.length > 0) {
     return data.value.loveStory
   }
-  return mockStories
+  return defaultStories
 })
 
-// Gallery Items
-const galleryItems = computed(() => {
-  const images = data.value.galleryImages || []
-  return images.map((src, i) => ({
-    src,
-    thumbnail: src,
-    alt: `Moment ${i + 1}`,
-  }))
+function defaultStoryPhoto(idx) {
+  const p = [
+    '/assets/templates/love-line/67e60380-cb47-11f1-8e64-a9fec9085fda.jpg',
+    '/assets/templates/love-line/67ca3e20-cb47-11f1-8e64-a9fec9085fda.jpg',
+    '/assets/templates/love-line/681243a0-cb47-11f1-8e64-a9fec9085fda.jpg',
+    '/assets/templates/love-line/673fd870-cb47-11f1-8e64-a9fec9085fda.jpg',
+  ]
+  return p[idx % p.length]
+}
+
+// Gallery Photos
+const defaultGalleryPhotos = [
+  '/assets/templates/love-line/67645060-cb47-11f1-8e64-a9fec9085fda.jpg',
+  '/assets/templates/love-line/677a4960-cb47-11f1-8e64-a9fec9085fda.jpg',
+  '/assets/templates/love-line/67946110-cb47-11f1-8e64-a9fec9085fda.jpg',
+  '/assets/templates/love-line/67a83730-cb47-11f1-8e64-a9fec9085fda.jpg',
+]
+
+const effectiveGallery = computed(() => {
+  if (data.value.galleryImages && data.value.galleryImages.length > 0) {
+    return data.value.galleryImages
+  }
+  return defaultGalleryPhotos
 })
+
+function openGallery(url) {
+  window.open(url, '_blank')
+}
+
+// Dress code swatches
+const dressCodeColors = [
+  '#2B2B2B', // Charcoal
+  '#7A8063', // Sage Olive
+  '#C9B79C', // Warm Khaki
+  '#E8DCCB', // Alabaster Cream
+  '#A35A4A', // Terracotta Clay
+]
 
 // Bank Accounts
 const effectiveBankAccounts = computed(() => {
@@ -1060,52 +936,30 @@ const effectiveBankAccounts = computed(() => {
     return data.value.bankAccounts
   }
   return [
-    { bankName: 'BCA', accountNumber: '8820194821', accountName: data.value.groomName || 'Julian Pratama' },
-    { bankName: 'Bank Mandiri', accountNumber: '137001928471', accountName: data.value.brideName || 'Nadine Azzahra' },
+    { bankName: 'BCA', accountNumber: '7829104821', accountName: data.value.groomName || 'Elang Prakoso' },
+    { bankName: 'Bank Mandiri', accountNumber: '137001928471', accountName: data.value.brideName || 'Laila Anindita' },
   ]
 })
 
-// Gift Delivery Address
-const giftAddresses = computed(() => {
-  const raw = data.value.giftDeliveryAddress
-  const list = Array.isArray(raw) ? raw : raw ? [raw] : []
-  return list.map((a) => String(a || '').trim()).filter(Boolean)
-})
-
-// Turut Mengundang / Extended Family
-const effectiveFamily = computed(() => {
-  if (data.value.extendedFamily && Array.isArray(data.value.extendedFamily)) {
-    return data.value.extendedFamily
-  }
-  if (data.value.turutMengundang) {
-    return String(data.value.turutMengundang).split('\n').filter(Boolean)
-  }
-  return []
-})
-
-// RSVP State
+// RSVP
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })
 const isSubmittingRsvp = ref(false)
 const submittedWishes = ref([
   {
     name: 'Dimas & Sekar',
     rsvpStatus: 'hadir',
-    message: 'Selamat berbahagia Julian & Nadine! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah selamanya.',
+    message: 'Selamat berbahagia Elang & Laila! Semoga menjadi keluarga sakinah mawaddah warahmah selamanya.',
   },
   {
     name: 'Alifia Rahman',
     rsvpStatus: 'hadir',
-    message: 'MasyaAllah tabarakallah, so happy for both of you! Lancar sampai hari H ya.',
+    message: 'Lancar sampai hari H ya berdua, can’t wait to celebrate with you guys!',
   },
 ])
 
 async function submitRSVP() {
   if (!rsvp.value.name?.trim()) {
-    toast.error('Mohon isi nama Anda.')
-    return
-  }
-  if (!rsvp.value.attendance) {
-    toast.error('Mohon pilih konfirmasi kehadiran.')
+    toast.error('Mohon isi nama kamu.')
     return
   }
 
@@ -1125,30 +979,24 @@ async function submitRSVP() {
       rsvpStatus: rsvp.value.attendance,
       message: rsvp.value.message || 'Hadir dan mendoakan kedua mempelai.',
     })
-    toast.success(`Terima kasih ${rsvp.value.name}, konfirmasi Anda telah tercatat!`)
+    toast.success('Konfirmasi kamu berhasil dikirim!')
     rsvp.value = { name: '', attendance: 'hadir', totalGuests: 1, message: '' }
   } catch (err) {
     console.error('Failed to submit RSVP:', err)
-    toast.error('Gagal mengirim RSVP. Silakan coba lagi.')
+    toast.error('Gagal mengirim konfirmasi. Coba lagi ya.')
   } finally {
     isSubmittingRsvp.value = false
   }
 }
 
-// Copy Text Helper
 function copyText(val, label) {
   if (!val) return
   navigator.clipboard.writeText(val).then(
-    () => {
-      toast.success(`${label} berhasil disalin!`)
-    },
-    () => {
-      toast.error('Gagal menyalin teks.')
-    },
+    () => toast.success(`${label} berhasil disalin!`),
+    () => toast.error('Gagal menyalin teks.'),
   )
 }
 
-// Google Calendar Helper
 function saveToCalendar(title, locationObj) {
   if (!locationObj?.dateTime) return
   const start = locationObj.dateTime.replace(/-|:|\.\d\d\d/g, '')
@@ -1156,31 +1004,33 @@ function saveToCalendar(title, locationObj) {
     .toISOString()
     .replace(/-|:|\.\d\d\d/g, '')
   const url = `https://www.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
-    `${title}: ${data.value.coupleName || 'Pernikahan'}`,
+    `${title}: ${data.value.coupleName || 'Pernikahan Elang & Laila'}`,
   )}&dates=${start}/${end}&details=${encodeURIComponent(
     data.value.title || 'Undangan Pernikahan',
-  )}&location=${encodeURIComponent(locationObj.description || '')}`
+  )}&location=${encodeURIComponent(locationObj.description || 'Villa Mawar, Bogor')}`
   window.open(url, '_blank')
 }
 
-// Utilities
 function getMusicUrl(choice) {
   if (!choice) return null
   if (choice.startsWith('yt:') || choice.startsWith('http') || choice.startsWith('/')) return choice
   return `/audio/${choice}`
 }
 
-function formatDate(dateStr) {
-  if (!dateStr) return '-'
+function formatNumericDate(dateStr) {
+  if (!dateStr) return '28.02.2028'
   const d = new Date(dateStr)
-  if (isNaN(d.getTime())) return '-'
-  return d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  if (isNaN(d.getTime())) return '28.02.2028'
+  const day = String(d.getDate()).padStart(2, '0')
+  const month = String(d.getMonth() + 1).padStart(2, '0')
+  const year = d.getFullYear()
+  return `${day}.${month}.${year}`
 }
 
 function formatTime(dateStr) {
-  if (!dateStr) return '-'
+  if (!dateStr) return '15:00'
   const d = new Date(dateStr)
-  if (isNaN(d.getTime())) return '-'
+  if (isNaN(d.getTime())) return '15:00'
   return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 }
 
@@ -1193,28 +1043,6 @@ function cleanInstagram(handle) {
   return String(handle || '')
     .trim()
     .replace(/^@/, '')
-}
-
-function isSectionEnabled(key) {
-  const sections = data.value.selectedSections
-  if (sections === undefined || sections === null) return true
-  if (!Array.isArray(sections)) return true
-  const aliasMap = {
-    couple: ['couple', 'photoCouple'],
-    event: ['event', 'event-details', 'map'],
-    hero: ['hero', 'cover'],
-    'love-story': ['love-story', 'story'],
-    'dress-code': ['dress-code', 'dressCode'],
-    'live-streaming': ['live-streaming', 'liveStreaming'],
-    'extended-family': ['extended-family', 'turut-mengundang'],
-    gift: ['gift', 'amplop'],
-    rsvp: ['rsvp', 'wishes', 'message'],
-    video: ['video'],
-    gallery: ['gallery'],
-    quote: ['quote'],
-  }
-  const checkKeys = aliasMap[key] || [key]
-  return checkKeys.some((k) => sections.includes(k))
 }
 
 function initData() {
@@ -1236,71 +1064,63 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Alex+Brush&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;500;600;700&family=Montserrat:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=Mr+Dafoe&display=swap');
 
-.font-grotesk {
-  font-family: 'Space Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+.font-dafoe {
+  font-family: 'Mr Dafoe', cursive;
 }
 
-.font-mono {
-  font-family: 'Space Mono', monospace;
+.font-caveat {
+  font-family: 'Caveat', cursive;
 }
 
-.font-serif {
-  font-family: 'Playfair Display', Georgia, serif;
+.font-montserrat {
+  font-family: 'Montserrat', sans-serif;
 }
 
-.font-script {
-  font-family: 'Alex Brush', cursive;
+/* Authentic warm duotone filter matching our-wedding.link */
+.duotone-photo {
+  filter: url('#owduo-love-line');
+  transition: filter 0.5s ease;
+}
+
+.duotone-photo:hover {
+  filter: none;
+}
+
+/* Animasi: garis bergoyang seperti gambar tangan (stop-motion hand-drawn jitter) */
+.gc-goyang {
+  animation: gc-goyang 1.2s steps(1) infinite;
+  transform-origin: 50% 80%;
+}
+
+.gc-goyang-b {
+  animation-delay: -0.6s;
+}
+
+@keyframes gc-goyang {
+  0% { transform: rotate(-0.5deg) translate(0, 0); }
+  33% { transform: rotate(0.4deg) translate(0.5px, -0.5px); }
+  66% { transform: rotate(-0.2deg) translate(-0.5px, 0.5px); }
+}
+
+/* Animasi detak jantung lembut */
+.gc-denyut {
+  animation: gc-denyut 1.6s ease-in-out infinite;
+}
+
+@keyframes gc-denyut {
+  0%, 100% { transform: scale(1) rotate(-8deg); }
+  50% { transform: scale(1.18) rotate(6deg); }
 }
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0.8s ease;
+  transition: opacity 0.6s ease;
 }
 
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-
-.animate-fade-in-up {
-  animation: fadeInUp 0.9s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
-
-@keyframes slideUp {
-  from {
-    transform: translate(-50%, 100%);
-    opacity: 0;
-  }
-  to {
-    transform: translate(-50%, 0);
-    opacity: 1;
-  }
-}
-
-/* Custom Scrollbar */
-.no-scrollbar::-webkit-scrollbar {
-  display: none;
-}
-.no-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
 }
 </style>
