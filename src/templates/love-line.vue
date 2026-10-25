@@ -1,7 +1,7 @@
 <template>
   <div class="love-line-template relative min-h-screen bg-[#F5F2EC] text-[#1B1B1B] font-montserrat overflow-x-hidden selection:bg-[#1B1B1B] selection:text-[#F5F2EC]">
 
-    <!-- Global SVG Duotone Filter matching our-wedding.link -->
+    <!-- Global SVG Duotone & Line Art Filters matching our-wedding.link -->
     <svg width="0" height="0" class="absolute pointer-events-none opacity-0 select-none" aria-hidden="true">
       <filter id="owduo-love-line" color-interpolation-filters="sRGB">
         <feColorMatrix
@@ -12,6 +12,30 @@
           <feFuncR type="table" tableValues="0.106 0.961" />
           <feFuncG type="table" tableValues="0.106 0.949" />
           <feFuncB type="table" tableValues="0.106 0.925" />
+        </feComponentTransfer>
+      </filter>
+      <!-- Charcoal line filter for transparent white PNG line art to match #1B1B1B -->
+      <filter id="owduo-charcoal" color-interpolation-filters="sRGB">
+        <feColorMatrix
+          type="matrix"
+          values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"
+        />
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.106 0.106" />
+          <feFuncG type="table" tableValues="0.106 0.106" />
+          <feFuncB type="table" tableValues="0.106 0.106" />
+        </feComponentTransfer>
+      </filter>
+      <!-- Crimson red accent filter for heart flourishes to match #C8242C -->
+      <filter id="owduo-red" color-interpolation-filters="sRGB">
+        <feColorMatrix
+          type="matrix"
+          values="0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0.2126 0.7152 0.0722 0 0  0 0 0 1 0"
+        />
+        <feComponentTransfer>
+          <feFuncR type="table" tableValues="0.784 0.784" />
+          <feFuncG type="table" tableValues="0.141 0.141" />
+          <feFuncB type="table" tableValues="0.173 0.173" />
         </feComponentTransfer>
       </filter>
     </svg>
@@ -51,78 +75,103 @@
       </div>
     </nav>
 
-    <!-- ==================== COVER SCREEN (GATE / SAMPUL) ==================== -->
+    <!-- ==================== COVER SCREEN (FULL WIDE GATE / SAMPUL) ==================== -->
     <transition name="fade">
       <div
         v-if="showWelcome"
-        class="fixed inset-0 z-[70] flex items-center justify-center bg-[#EFECE5] overflow-y-auto p-4 sm:p-6"
+        class="fixed inset-0 z-[70] w-full h-full min-h-screen flex flex-col items-center justify-between text-center px-4 sm:px-6 py-6 sm:py-8 md:py-10 bg-[#F5F2EC] overflow-y-auto transition-all duration-1000 select-none"
       >
-        <div class="w-full max-w-[420px] h-[844px] max-h-screen bg-[#F5F2EC] relative rounded-3xl sm:rounded-[2.5rem] shadow-2xl overflow-hidden select-none flex flex-col justify-between p-8 text-center border border-[#1B1B1B]/10">
-          
-          <!-- Top Eyebrow -->
-          <div class="pt-6 sm:pt-10 space-y-2">
-            <p class="font-montserrat text-[11.5px] text-[#1B1B1B]/80 tracking-[0.6px] lowercase">
-              kamu diundang ke pernikahan kami
-            </p>
-            <div class="w-10 mx-auto opacity-70">
-              <img
-                src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
-                alt="Flourish"
-                class="w-full h-auto object-contain"
-              />
-            </div>
-          </div>
+        <!-- Floating Subtle Botanical Line Flourishes for Desktop / Tablet -->
+        <div class="hidden md:block absolute top-8 left-10 w-24 h-24 lg:w-32 lg:h-32 opacity-25 pointer-events-none -rotate-12">
+          <img
+            src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+            alt="Flourish"
+            class="w-full h-full object-contain flourish-red"
+          />
+        </div>
+        <div class="hidden md:block absolute bottom-10 right-10 w-28 h-28 lg:w-36 lg:h-36 opacity-25 pointer-events-none rotate-45">
+          <img
+            src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+            alt="Flourish"
+            class="w-full h-full object-contain flourish-red"
+          />
+        </div>
 
-          <!-- Staggered Calligraphy Names -->
-          <div class="relative py-2 w-full max-w-[320px] mx-auto text-left">
-            <h1 class="font-dafoe text-5xl sm:text-6xl text-[#1B1B1B] leading-none pl-4">
+        <!-- Top Eyebrow -->
+        <div class="space-y-2 pt-2 relative z-10 animate-fade-in shrink-0">
+          <p class="font-montserrat text-[11px] sm:text-xs md:text-sm text-[#1B1B1B]/80 tracking-[0.25em] lowercase">
+            kamu diundang ke pernikahan kami
+          </p>
+          <div class="w-8 sm:w-10 mx-auto opacity-70">
+            <img
+              src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+              alt="Heart Flourish"
+              class="w-full h-auto object-contain flourish-red gc-denyut"
+            />
+          </div>
+        </div>
+
+        <!-- Center Couple Calligraphy & Continuous Line Illustration -->
+        <div class="my-auto py-2 sm:py-4 flex flex-col items-center space-y-2 sm:space-y-4 relative z-10 animate-fade-in-up w-full max-w-xl">
+          <!-- Staggered Diagonal Calligraphy Names matching our-wedding.link -->
+          <div class="relative py-1 w-full max-w-[280px] sm:max-w-[340px] md:max-w-[400px] mx-auto text-left">
+            <h1 class="font-dafoe text-5xl sm:text-6xl md:text-7xl text-[#1B1B1B] leading-none pl-4">
               {{ groomFirstName }}
             </h1>
-            <p class="font-dafoe text-3xl sm:text-4xl text-[#C8242C] leading-none pl-12 -my-1">
+            <p class="font-dafoe text-3xl sm:text-4xl text-[#C8242C] leading-none pl-14 sm:pl-16 -my-1 select-none">
               &amp;
             </p>
-            <h1 class="font-dafoe text-5xl sm:text-6xl text-[#1B1B1B] leading-none pl-16">
+            <h1 class="font-dafoe text-5xl sm:text-6xl md:text-7xl text-[#1B1B1B] leading-none pl-20 sm:pl-28">
               {{ brideFirstName }}
             </h1>
           </div>
 
           <!-- Continuous Line Couple Illustration with Stop-Motion Wobble -->
-          <div class="relative w-48 sm:w-56 mx-auto my-1">
+          <div class="relative w-44 sm:w-52 md:w-56 mx-auto pt-1">
             <img
               src="/assets/templates/love-line/2297f990-c95e-11f1-bea3-415a8cc57c30.png"
               alt="Continuous Line Couple"
-              class="w-full h-auto object-contain gc-goyang mx-auto"
+              class="w-full h-auto object-contain gc-goyang mx-auto line-art-charcoal"
             />
-            <p class="font-caveat text-xl sm:text-2xl text-[#1B1B1B]/90 absolute -bottom-2 -right-4 -rotate-[14deg] select-none">
-              lebih baik bersama
+            <div class="absolute -bottom-2 -right-4 sm:-right-8 flex items-center gap-1.5 select-none -rotate-[14deg]">
+              <p class="font-caveat text-lg sm:text-xl md:text-2xl text-[#1B1B1B]/90 whitespace-nowrap">
+                lebih baik bersama
+              </p>
+              <div class="w-3.5 h-3.5 opacity-80">
+                <img
+                  src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
+                  alt="Heart"
+                  class="w-full h-full object-contain flourish-red gc-denyut"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Guest Greeting & Open Button -->
+        <div class="w-full max-w-sm mx-auto space-y-3 pb-2 sm:pb-4 relative z-10 animate-fade-in-up shrink-0">
+          <div>
+            <p class="font-montserrat text-[10px] sm:text-xs text-[#1B1B1B]/70 tracking-widest uppercase">
+              Kepada Yth. Bapak/Ibu/Saudara/i
+            </p>
+            <p class="font-montserrat text-lg sm:text-xl md:text-2xl font-bold text-[#1B1B1B] mt-0.5 truncate px-4">
+              {{ data.guestName || 'Tamu Undangan' }}
             </p>
           </div>
 
-          <!-- Bottom Guest Greeting & Open Button -->
-          <div class="space-y-4 pb-4 sm:pb-6">
-            <div>
-              <p class="font-montserrat text-[10px] text-[#1B1B1B]/70 tracking-[0.6px] uppercase">
-                Kepada Yth. Bapak/Ibu/Saudara/i
-              </p>
-              <p class="font-montserrat text-lg sm:text-xl font-bold text-[#1B1B1B] mt-0.5 truncate px-4">
-                {{ data.guestName || 'Tamu Undangan' }}
-              </p>
-            </div>
-
-            <!-- Buka Undangan Button -->
-            <div>
-              <button
-                type="button"
-                @click="openInvitation"
-                class="inline-flex items-center justify-center gap-2.5 px-8 sm:px-10 py-3.5 bg-[#1B1B1B] hover:bg-black text-[#F5F2EC] font-montserrat text-[11px] font-semibold tracking-[0.24em] uppercase rounded-full shadow-[0_3px_0_rgba(0,0,0,0.15),0_12px_22px_-14px_rgba(0,0,0,0.6)] hover:shadow-xl active:scale-95 transition-all duration-300 cursor-pointer"
-              >
-                <i class="fa-solid fa-envelope-open text-xs"></i>
-                <span>Buka Undangan</span>
-              </button>
-            </div>
+          <!-- Buka Undangan Button (Pill style matching target) -->
+          <div class="pt-1">
+            <button
+              type="button"
+              @click="openInvitation"
+              class="inline-flex items-center justify-center gap-2.5 px-8 sm:px-10 py-3 sm:py-3.5 bg-[#1B1B1B] hover:bg-black text-[#F5F2EC] font-montserrat text-xs sm:text-sm font-semibold tracking-[0.24em] uppercase rounded-full shadow-[0_4px_14px_rgba(0,0,0,0.25)] hover:shadow-2xl active:scale-95 transition-all duration-300 cursor-pointer"
+            >
+              <i class="fa-solid fa-arrow-right text-xs"></i>
+              <span>Buka Undangan</span>
+            </button>
           </div>
-
         </div>
+
       </div>
     </transition>
 
@@ -156,7 +205,7 @@
               <img
                 src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                 alt="Flourish"
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain flourish-red"
               />
             </div>
           </div>
@@ -212,7 +261,7 @@
                   <img
                     src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                     alt="Flourish"
-                    class="w-full h-full object-contain"
+                    class="w-full h-full object-contain flourish-red"
                   />
                 </div>
               </div>
@@ -263,7 +312,7 @@
                   <img
                     src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                     alt="Flourish"
-                    class="w-full h-full object-contain"
+                    class="w-full h-full object-contain flourish-red"
                   />
                 </div>
               </div>
@@ -326,7 +375,7 @@
                 <img
                   src="/assets/templates/love-line/21edd6e0-c95e-11f1-bea3-415a8cc57c30.png"
                   alt="Calendar"
-                  class="w-10 h-10 object-contain"
+                  class="w-10 h-10 object-contain line-art-charcoal"
                 />
                 <h3 class="font-montserrat text-lg md:text-xl font-bold uppercase tracking-wider text-[#1B1B1B]">
                   Akad Nikah
@@ -362,7 +411,7 @@
                 <img
                   src="/assets/templates/love-line/21d4f7b0-c95e-11f1-bea3-415a8cc57c30.png"
                   alt="Clock"
-                  class="w-10 h-10 object-contain"
+                  class="w-10 h-10 object-contain line-art-charcoal"
                 />
                 <h3 class="font-montserrat text-lg md:text-xl font-bold uppercase tracking-wider text-[#1B1B1B]">
                   Resepsi Pernikahan
@@ -427,7 +476,7 @@
               <img
                 src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                 alt="Flourish"
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain flourish-red"
               />
             </div>
           </div>
@@ -469,7 +518,7 @@
               <img
                 src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                 alt="Flourish"
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain flourish-red"
               />
             </div>
           </div>
@@ -551,7 +600,7 @@
               <img
                 src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                 alt="Flourish"
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain flourish-red"
               />
             </div>
           </div>
@@ -638,7 +687,7 @@
               <img
                 src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                 alt="Flourish"
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain flourish-red"
               />
             </div>
           </div>
@@ -667,7 +716,7 @@
             <img
               src="/assets/templates/love-line/233c76f0-c95e-11f1-bea3-415a8cc57c30.png"
               alt="Konfirmasi RSVP"
-              class="w-full h-auto object-contain"
+              class="w-full h-auto object-contain line-art-charcoal"
             />
           </div>
 
@@ -760,7 +809,7 @@
               <img
                 src="/assets/templates/love-line/21bd5100-c95e-11f1-bea3-415a8cc57c30.png"
                 alt="Flourish"
-                class="w-full h-full object-contain"
+                class="w-full h-full object-contain flourish-red"
               />
             </div>
           </div>
@@ -867,7 +916,7 @@
             <img
               src="/assets/templates/love-line/21299c80-c95e-11f1-bea3-415a8cc57c30.png"
               alt="Penutup"
-              class="w-full h-auto object-contain"
+              class="w-full h-auto object-contain line-art-charcoal"
             />
           </div>
 
@@ -1392,6 +1441,15 @@ onUnmounted(() => {
 @keyframes gc-denyut {
   0%, 100% { transform: scale(1) rotate(-8deg); }
   50% { transform: scale(1.18) rotate(6deg); }
+}
+
+/* Authentic line art & flourish filters */
+.line-art-charcoal {
+  filter: url('#owduo-charcoal');
+}
+
+.flourish-red {
+  filter: url('#owduo-red');
 }
 
 .fade-enter-active,
