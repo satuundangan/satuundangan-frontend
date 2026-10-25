@@ -1370,7 +1370,7 @@ Equip your finest attire, bring your warmest wishes, and let's unlock this new a
     colorAccent: '#15803d',
     badgeBg: 'bg-emerald-100 text-emerald-800 border-emerald-200',
     gradientBg: 'from-emerald-950/20 via-stone-900/5 to-transparent',
-    curatedTemplateSlugs: ['botanical-watercolor', 'strawberry-matcha', 'sakura-blossom', 'azure-shores'],
+    curatedTemplateSlugs: ['botanical-watercolor', 'strawberry-matcha', 'doodle-sage-love', 'sakura-blossom', 'azure-shores'],
     keywords: [
       'undangan pernikahan rustic floral',
       'undangan digital botanical watercolor',

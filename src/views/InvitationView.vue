@@ -229,6 +229,7 @@ onMounted(async () => {
         'minimalist-terra': 'romantic_music1.mp3',
         'cyberpunk-neon': 'wedding-acoustic-morning.mp3',
         'islami-emas': 'wedding-sacred-ceremony.mp3',
+        'doodle-sage-love': 'wedding-acoustic-morning.mp3',
       }
 
       const tiaraDemoData =

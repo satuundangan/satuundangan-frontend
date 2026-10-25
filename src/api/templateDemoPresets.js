@@ -1207,6 +1207,77 @@ export const TEMPLATE_DEMO_PRESETS = {
       { bankName: 'BCA', accountNumber: '7720194821', accountName: 'Bryan Nicholas' },
       { bankName: 'Bank Mandiri', accountNumber: '137001928471', accountName: 'Olivia Felicia' }
     ]
+  },
+
+  'doodle-sage-love': {
+    title: 'The Wedding of Dewi & Riyandi',
+    slug: 'dewi-riyandi',
+    coupleName: 'Dewi & Riyandi',
+    groomName: 'Riyandi Alfriansyah',
+    brideName: 'Dewi Anggraeni',
+    groomNickname: 'Riyandi',
+    brideNickname: 'Dewi',
+    groomPhotoUrl: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=600&q=80',
+    bridePhotoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=600&q=80',
+    photoCoupleUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80',
+    parents: {
+      groomParents: 'Putra Ke-6 dari Bpk. Eko dan Ibu Linda',
+      brideParents: 'Putri Pertama dari Bpk. Dudi dan Ibu Meylani',
+    },
+    quoteText: 'Dan di antara tanda-tanda kebesaran-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya dan Dia menjadikan antaramu rasa kasih dan sayang.',
+    quoteSource: 'Q.S. Ar-Rum Ayat 21',
+    dateTime: '2026-11-29T08:00:00.000Z',
+    eventStartTime: '08.00',
+    eventEndTime: '16.00 WIB',
+    akadLocation: {
+      mapUrl: 'https://maps.google.com/?q=Love+Garden+Resto+Cafe+Bogor',
+      description: 'Love Garden Resto & Cafe, Jl. Veteran No.66, Bogor Tengah, Kota Bogor',
+      dateTime: '2026-11-29T08:00:00.000Z',
+    },
+    resepsiLocation: {
+      mapUrl: 'https://maps.google.com/?q=Love+Garden+Resto+Cafe+Bogor',
+      description: 'Love Garden Resto & Cafe, Jl. Veteran No.66, Bogor Tengah, Kota Bogor',
+      dateTime: '2026-11-29T11:00:00.000Z',
+    },
+    dressCode: 'Sage Green, Soft Rose, Cream & Pastel Doodle Chic',
+    musicChoice: 'wedding-acoustic-morning.mp3',
+    bankAccounts: [
+      { bankName: 'MANDIRI', accountNumber: '1330022334455', accountName: 'Dewi Anggraeni' },
+      { bankName: 'BCA', accountNumber: '8831122334', accountName: 'Riyandi Alfriansyah' }
+    ],
+    giftDeliveryAddress: {
+      recipient: 'Dewi Anggraeni & Riyandi',
+      phone: '0812-3456-7890',
+      address: 'Jl. Pajajaran Indah No. 24, Baranangsiang, Bogor Timur, Kota Bogor 16143'
+    },
+    galleryImages: [
+      'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=600&q=80',
+      'https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?auto=format&fit=crop&w=600&q=80'
+    ],
+    loveStory: [
+      {
+        year: '2021',
+        title: 'Pertemuan Pertama',
+        description: 'Sebuah secangkir kopi di sudut kota Bogor yang tak sengaja menjadi saksi tatap mata pertama kami.'
+      },
+      {
+        year: '2023',
+        title: 'Menjalin Komitmen',
+        description: 'Setelah ribuan cerita dan perjalanan bersama, kami sepakat untuk melangkah ke arah yang sama.'
+      },
+      {
+        year: '2025',
+        title: 'Hari Pertunangan',
+        description: 'Di hadapan kedua keluarga besar, sebuah janji terucap untuk saling menjaga selamanya.'
+      },
+      {
+        year: '2026',
+        title: 'Menuju Babak Baru',
+        description: 'Dengan penuh cinta dan rasa syukur, kami mengikat janji suci pernikahan.'
+      }
+    ]
   }
 }
 
