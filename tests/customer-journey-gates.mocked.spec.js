@@ -61,6 +61,42 @@ test('checkout remembers the draft package through email verification', async ({
   await expect(page.getByText('Basic Invitation')).toBeVisible()
 })
 
+test('checkout never presents a missing package price as free', async ({ page }) => {
+  let packageAvailable = false
+  await page.addInitScript(() => localStorage.setItem('token', 'mock-token'))
+  await page.route('**/api/user/me', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ id: 1, name: 'Test Customer', isApproved: true, emailVerifiedAt: '2026-10-26T00:00:00.000Z' }),
+    }),
+  )
+  await page.route('**/api/payment/packages', (route) =>
+    route.fulfill({
+      status: packageAvailable ? 200 : 503,
+      contentType: 'application/json',
+      body: JSON.stringify(packageAvailable ? [{ id: 'basic', label: 'Basic', price: 49000 }] : { message: 'Unavailable' }),
+    }),
+  )
+  await page.route('**/api/invitation/my/slug/test-undangan', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ id: 42, slug: 'test-undangan', package: 'basic', isPublished: false, content: {} }),
+    }),
+  )
+
+  await page.goto(`${baseUrl}/checkout?slug=test-undangan`)
+  await expect(page.getByText('Paket dan harga belum dapat dimuat.')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Bayar Sekarang' })).toBeDisabled()
+  await expect(page.getByText('GRATIS', { exact: true })).toHaveCount(0)
+
+  packageAvailable = true
+  await page.getByRole('button', { name: 'Coba Lagi' }).click()
+  await expect(page.getByText('Basic Invitation')).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Bayar Sekarang' })).toBeEnabled()
+})
+
 test('Midtrans success waits for backend confirmation before showing share action', async ({ page }) => {
   await page.route('**/api/payment/status/order-1', (route) =>
     route.fulfill({
