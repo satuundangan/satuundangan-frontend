@@ -61,6 +61,45 @@ test('checkout remembers the draft package through email verification', async ({
   await expect(page.getByText('Basic Invitation')).toBeVisible()
 })
 
+test('Google login callback resumes the selected invitation checkout', async ({ page }) => {
+  await page.addInitScript(() =>
+    localStorage.setItem('redirect_after_login', '/checkout?slug=test-undangan&package=basic'),
+  )
+  await page.route('**/api/user/me', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        id: 1,
+        name: 'Google Customer',
+        email: 'google@example.test',
+        provider: 'google',
+        isApproved: true,
+        emailVerifiedAt: null,
+      }),
+    }),
+  )
+  await page.route('**/api/payment/packages', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify([{ id: 'basic', label: 'Basic', price: 49000 }]),
+    }),
+  )
+  await page.route('**/api/invitation/my/slug/test-undangan', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ id: 42, slug: 'test-undangan', package: 'basic', isPublished: false, content: {} }),
+    }),
+  )
+
+  await page.goto(`${baseUrl}/auth/callback?token=mock-google-token`)
+  await expect(page).toHaveURL(/\/checkout\?slug=test-undangan&package=basic$/)
+  await expect(page.getByText('Basic Invitation')).toBeVisible()
+  expect(await page.evaluate(() => localStorage.getItem('token'))).toBe('mock-google-token')
+})
+
 test('checkout never presents a missing package price as free', async ({ page }) => {
   let packageAvailable = false
   await page.addInitScript(() => localStorage.setItem('token', 'mock-token'))
