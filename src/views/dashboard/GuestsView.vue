@@ -262,7 +262,7 @@
               </div>
               <div class="flex items-center gap-2 flex-wrap">
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-green-50 text-green-700 text-[11px] font-bold border border-green-100">
-                  <i class="fa-solid fa-circle-check text-[10px]"></i> Hadir: {{ rsvpAttendingCount }}
+                  <i class="fa-solid fa-circle-check text-[10px]"></i> Hadir: {{ rsvpAttendingCount }} tamu ({{ rsvpAttendingPax }} orang)
                 </span>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-100">
                   <i class="fa-solid fa-circle-xmark text-[10px]"></i> Tidak Hadir: {{ rsvpDeclinedCount }}
@@ -1231,6 +1231,11 @@ const sentPercentage = computed(() => {
 })
 
 const rsvpAttendingCount = computed(() => guests.value.filter((g) => g.rsvpStatus === 'hadir').length)
+const rsvpAttendingPax = computed(() =>
+  guests.value
+    .filter((g) => g.rsvpStatus === 'hadir')
+    .reduce((total, guest) => total + Math.max(1, Number(guest.pax) || 1), 0),
+)
 const rsvpDeclinedCount = computed(() => guests.value.filter((g) => g.rsvpStatus === 'tidak').length)
 const rsvpPendingCount = computed(
   () => guests.value.filter((g) => g.rsvpStatus !== 'hadir' && g.rsvpStatus !== 'tidak').length,
