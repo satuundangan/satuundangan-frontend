@@ -334,7 +334,7 @@
                   {{ item.name }}
                 </h4>
                 <div class="text-mocha font-bold">
-                  {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                  Desain gratis
                 </div>
               </div>
 
@@ -782,8 +782,7 @@
                         <div
                           class="bg-slate-900 text-amber-300 font-extrabold px-2 py-0.5 rounded-md text-[10px] shadow-md border border-slate-700/80 flex items-center gap-1"
                         >
-                          <i class="fa-solid fa-tag text-[8px] text-amber-400"></i>
-                          <span>{{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}</span>
+                          Desain gratis
                         </div>
                       </div>
 
@@ -1261,14 +1260,6 @@ function previewImageClass(item) {
       ? 'w-full h-full object-cover'
       : 'max-w-full max-h-full object-contain'
   return `${fit} rounded-md shadow-xl group-hover:scale-105 transition-transform duration-500`
-}
-
-function formatPrice(price) {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(price)
 }
 
 function goToCreate() {

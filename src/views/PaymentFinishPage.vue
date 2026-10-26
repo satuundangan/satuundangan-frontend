@@ -34,7 +34,7 @@
 
         <div class="grid gap-3 sm:grid-cols-2">
           <button
-            v-if="status === 'success' && invitationSlug"
+            v-if="isConfirmedSuccess && invitationSlug"
             @click="goToInvitation"
             class="btn-primary flex w-full items-center justify-center gap-2 !py-3"
           >
@@ -43,7 +43,16 @@
           </button>
 
           <button
-            v-if="status !== 'success'"
+            v-if="isConfirmedSuccess"
+            @click="goToGuests"
+            class="btn-outline flex w-full items-center justify-center gap-2 !py-3"
+          >
+            <i class="fa-solid fa-users"></i>
+            Tambah Tamu & Bagikan
+          </button>
+
+          <button
+            v-if="!isConfirmedSuccess"
             @click="refreshStatus"
             :disabled="checking || !orderId"
             class="btn-outline flex w-full items-center justify-center gap-2 !py-3"
@@ -55,7 +64,7 @@
           <button
             @click="router.push('/dashboard')"
             class="btn-primary flex w-full items-center justify-center gap-2 !py-3"
-            :class="{ 'sm:col-span-2': status !== 'success' || !invitationSlug }"
+            :class="{ 'sm:col-span-2': !isConfirmedSuccess || !invitationSlug }"
           >
             <i class="fa-solid fa-gauge"></i>
             Ke Dashboard
@@ -81,6 +90,7 @@ const router = useRouter()
 const checking = ref(true)
 const status = ref('pending')
 const statusSource = ref('midtrans')
+const isConfirmedSuccess = computed(() => status.value === 'success' && statusSource.value === 'backend')
 const invitationSlug = ref(null)
 const orderId = computed(() => String(route.query.order_id || ''))
 const midtransTransactionStatus = computed(() => String(route.query.transaction_status || ''))
@@ -97,7 +107,7 @@ const state = computed(() => {
     }
   }
 
-  if (status.value === 'success') {
+  if (isConfirmedSuccess.value) {
     return {
       title: 'Pembayaran Berhasil',
       description: 'Pembayaran sudah dikonfirmasi dan undangan kamu sudah aktif.',
@@ -197,5 +207,9 @@ function goToInvitation() {
   }
 
   router.push('/dashboard')
+}
+
+function goToGuests() {
+  router.push({ path: '/guests', query: invitationSlug.value ? { slug: invitationSlug.value } : {} })
 }
 </script>

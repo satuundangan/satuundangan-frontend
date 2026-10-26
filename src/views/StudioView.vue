@@ -1079,7 +1079,7 @@
             <!-- Browser address input -->
             <div class="flex-1 max-w-md mx-auto bg-white border border-slate-200/60 rounded-lg px-3 py-1 text-[10px] text-slate-400 text-center truncate shadow-sm flex items-center justify-center gap-1">
               <i class="fa-solid fa-lock text-[8px] text-emerald-500"></i>
-              <span>satuundangan.com/{{ formData.slug || 'slug-undangan' }}</span>
+              <span>{{ previewHost }}/inv/{{ formData.slug || 'slug-undangan' }}</span>
             </div>
             <!-- Empty placeholder to balance spacing -->
             <div class="w-12"></div>
@@ -1229,6 +1229,7 @@ import AuthModal from '@/components/modal/AuthModal.vue'
 
 const router = useRouter()
 const route = useRoute()
+const previewHost = window.location.host
 const toast = useToast()
 
 const activeTab = ref('features')

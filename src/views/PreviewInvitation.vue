@@ -82,8 +82,8 @@
             <button @click="handlePublish" :disabled="isPublishing" 
                class="px-5 py-2.5 sm:px-6 rounded-full text-xs sm:text-sm font-bold text-white bg-mocha hover:bg-mocha/90 shadow-lg shadow-mocha/20 transition-all hover:-translate-y-0.5 flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed">
                <span v-if="isPublishing" class="animate-spin"><i class="fa-solid fa-circle-notch"></i></span>
-               <span v-else>{{ isEditMode ? 'Simpan Perubahan' : 'Lanjut Pembayaran' }}</span>
-               <i v-if="!isPublishing" :class="isEditMode ? 'fa-solid fa-save' : 'fa-solid fa-arrow-right'"></i>
+               <span v-else>{{ isPublished ? 'Selesai' : 'Lanjut Pembayaran' }}</span>
+               <i v-if="!isPublishing" :class="isPublished ? 'fa-solid fa-check' : 'fa-solid fa-arrow-right'"></i>
             </button>
         </div>
     </div>
@@ -112,11 +112,12 @@ const authMode = ref('login')
 const isFullscreen = ref(false)
 const previewContainer = ref(null)
 const iframeUrl = ref('')
-const isEditMode = ref(!!localStorage.getItem('editInvitationId'))
+const invitationId = ref(null)
+const isPublished = ref(false)
 const isActionBarVisible = ref(true)
 
 function goBack() {
-   router.push('/create/form')
+   router.push(invitationId.value ? `/invitation/${invitationId.value}/edit` : '/invitations')
 }
 
 function toggleFullscreen() {
@@ -152,7 +153,7 @@ const handlePublish = async () => {
        return
     }
 
-    router.push(`/checkout?slug=${slug}`)
+    router.push(isPublished.value ? '/invitations' : `/checkout?slug=${slug}`)
   } catch (error) {
     console.error('Publish error:', error)
     alert('Gagal memproses undangan: ' + (error.response?.data?.message || error.message))
@@ -169,6 +170,8 @@ onMounted(async () => {
         // Just verify it exists or get details if needed
         const res = await getMyInvitationBySlug(slugParam)
         const data = res.data || res
+        invitationId.value = data.id || null
+        isPublished.value = Boolean(data.isPublished ?? data.is_published)
         iframeUrl.value = `/${data.slug}?preview=true&frame=true`
      } catch (err) {
         console.error("Failed to fetch invitation for preview", err)

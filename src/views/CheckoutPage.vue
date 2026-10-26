@@ -202,6 +202,10 @@
               <!-- Package / Tier Selector -->
               <div class="mb-8 space-y-2">
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Pilih Paket</p>
+                <div v-if="packagesError" class="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900">
+                  {{ packagesError }}
+                  <button type="button" class="ml-2 font-bold underline" @click="loadPricingPackages">Coba Lagi</button>
+                </div>
                 <button
                   v-for="pkg in packages"
                   :key="pkg.id"
@@ -242,7 +246,7 @@
                       {{ invitation?.template_slug?.replace('-', ' ') || 'Dark Elegant' }}
                     </p>
                   </div>
-                  <p class="font-bold text-mocha">{{ formatCurrency(planPrice) }}</p>
+                  <p class="font-bold text-mocha">{{ currentPackage ? formatCurrency(planPrice) : 'Harga belum tersedia' }}</p>
                 </div>
 
                 <!-- Promo Code Input -->
@@ -299,7 +303,7 @@
                 <div class="space-y-3">
                   <div class="flex justify-between text-sm text-gray-500">
                     <span>Subtotal</span>
-                    <span>{{ formatCurrency(planPrice) }}</span>
+                    <span>{{ currentPackage ? formatCurrency(planPrice) : '—' }}</span>
                   </div>
                   <div v-if="appliedPromo" class="flex justify-between text-sm">
                     <span class="text-green-600">
@@ -329,12 +333,13 @@
                     <p v-if="appliedPromo" class="text-xs text-gray-400 line-through">
                       {{ formatCurrency(planPrice) }}
                     </p>
-                    <span
+                    <span v-if="currentPackage"
                       class="text-3xl font-extrabold"
                       :class="finalPrice === 0 ? 'text-green-600' : 'text-mocha'"
                     >
                       {{ finalPrice === 0 ? 'GRATIS' : formatCurrency(finalPrice) }}
                     </span>
+                    <span v-else class="text-sm font-bold text-amber-700">Harga belum tersedia</span>
                   </div>
                 </div>
                 <p class="text-[10px] text-gray-400 text-right">Termasuk PPN 11% (jika ada)</p>
@@ -343,7 +348,7 @@
               <!-- Action -->
               <div class="space-y-4">
                 <button
-                  :disabled="loading"
+                  :disabled="loading || !currentPackage"
                   @click="handleCheckout"
                   class="btn-primary w-full !py-5 flex items-center justify-center gap-3 group text-lg shadow-xl shadow-mocha/20"
                 >
@@ -358,6 +363,7 @@
                 <!-- Payment Simulation (Dev only) -->
                 <button
                   v-if="isDevelopment"
+                  :disabled="!currentPackage"
                   @click="simulatePaymentSuccess"
                   class="w-full py-3 border-2 border-dashed border-sage text-sage font-bold rounded-xl hover:bg-sage/5 transition-all text-sm"
                 >
@@ -441,8 +447,20 @@ const handleRelogin = () => {
   router.push('/')
 }
 
+function goToEmailVerification() {
+  if (invitation.value?.slug) {
+    const returnPath = router.resolve({
+      name: 'checkout',
+      query: { slug: invitation.value.slug, package: selectedPackage.value },
+    }).fullPath
+    localStorage.setItem('pendingCheckoutPath', returnPath)
+  }
+  router.push({ name: 'Settings' })
+}
+
 // Pricing tiers (loaded from backend — single source of truth)
 const packages = ref([])
+const packagesError = ref('')
 const selectedPackage = ref('premium') // default to Best Seller
 
 const currentPackage = computed(
@@ -493,16 +511,27 @@ watch(selectedPackage, () => {
   if (appliedPromo.value) removePromo()
 })
 
-onMounted(async () => {
-  // Load pricing tiers (best-effort; non-blocking for invitation load)
+async function loadPricingPackages() {
+  packagesError.value = ''
   try {
-    packages.value = await getPackages()
+    const result = await getPackages()
+    if (!Array.isArray(result) || result.length === 0) throw new Error('Paket tidak tersedia')
+    packages.value = result
     // Honor a pre-selected tier from query (?package=eksklusif)
     const q = route.query.package
     if (q && packages.value.some((p) => p.id === q)) selectedPackage.value = q
+    else if (invitation.value && packages.value.some((p) => p.id === invitation.value.package)) {
+      selectedPackage.value = invitation.value.package
+    }
   } catch (e) {
     console.error('Gagal memuat paket:', e)
+    packages.value = []
+    packagesError.value = 'Paket dan harga belum dapat dimuat.'
   }
+}
+
+onMounted(async () => {
+  await loadPricingPackages()
 
   const slug = route.query.slug
   if (!slug) return
@@ -520,6 +549,14 @@ onMounted(async () => {
     }
 
     invitation.value = invData
+    // A package chosen before editing is stored on the draft. Only an explicit
+    // checkout URL choice should override it.
+    if (
+      !packages.value.some((pkg) => pkg.id === route.query.package) &&
+      packages.value.some((pkg) => pkg.id === invData.package)
+    ) {
+      selectedPackage.value = invData.package
+    }
   } catch (err) {
     if (
       err.message?.includes('not the owner') ||
@@ -545,10 +582,10 @@ onMounted(async () => {
 })
 
 const simulatePaymentSuccess = async () => {
-  if (!invitation.value) return
+  if (!invitation.value || !currentPackage.value) return
   if (!isEmailVerified.value) {
     toast.warning('Verifikasi email dulu sebelum publish undangan.')
-    router.push('/dashboard/settings')
+    goToEmailVerification()
     return
   }
 
@@ -573,6 +610,10 @@ const simulatePaymentSuccess = async () => {
 
 const handleCheckout = async () => {
   if (!invitation.value) return
+  if (!currentPackage.value) {
+    toast.error('Muat paket dan harga terlebih dahulu sebelum melanjutkan.')
+    return
+  }
 
   if (!authStore.user?.email) {
     alert('Mohon login terlebih dahulu')
@@ -581,7 +622,7 @@ const handleCheckout = async () => {
 
   if (!isEmailVerified.value) {
     toast.warning('Verifikasi email dulu sebelum melanjutkan pembayaran.')
-    router.push('/dashboard/settings')
+    goToEmailVerification()
     return
   }
 
@@ -592,7 +633,8 @@ const handleCheckout = async () => {
     const data = await createPayment(payload)
 
     if (data.is_free) {
-      router.push(`/${invitation.value.slug}`)
+      toast.success('Undangan sudah aktif. Tambahkan tamu untuk mulai membagikannya.')
+      router.push({ path: '/guests', query: { slug: invitation.value.slug } })
       return
     }
 

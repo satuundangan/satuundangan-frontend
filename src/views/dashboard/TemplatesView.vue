@@ -85,9 +85,6 @@
                     <i class="fa-solid fa-eye text-xs"></i>
                  </a>
 
-                 <span v-if="item.isPremium" class="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 font-black text-[9px] uppercase tracking-wider shadow-sm">
-                   Premium
-                 </span>
               </div>
               
               <div class="p-4 flex flex-col flex-1">
@@ -98,7 +95,7 @@
                  
                  <div class="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
                     <div class="font-black text-xs text-slate-900">
-                       {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                       Desain gratis
                     </div>
                     <div class="flex gap-1">
                        <span 
@@ -195,10 +192,6 @@ function resolveImageUrl(url, item = null) {
   if (url.startsWith('http')) return url
   const baseUrl = import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : ''
   return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`
-}
-
-function formatPrice(price) {
-  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(price)
 }
 
 function goToCreate(item) {
