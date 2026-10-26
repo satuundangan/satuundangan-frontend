@@ -189,7 +189,7 @@
                   </div>
                   <div class="text-right">
                     <span class="text-sm md:text-base font-black text-emerald-600">
-                      Terkirim: {{ sentGuestsCount }} / {{ totalGuestsCount }}
+                      Ditandai terkirim: {{ sentGuestsCount }} / {{ totalGuestsCount }}
                     </span>
                     <span class="text-xs font-black text-slate-500 ml-1">({{ sentPercentage }}%)</span>
                   </div>
@@ -206,7 +206,7 @@
                 <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
                   <span class="flex items-center gap-1">
                     <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                    <span>{{ sentGuestsCount }} sudah terkirim</span>
+                    <span>{{ sentGuestsCount }} ditandai terkirim</span>
                   </span>
                   <span class="flex items-center gap-1">
                     <i class="fa-regular fa-clock text-amber-500"></i>
@@ -389,7 +389,7 @@
                       :title="guest.statusSend === 'sent' ? 'Klik untuk tandai Belum Terkirim' : 'Klik untuk tandai Sudah Terkirim'"
                     >
                       <i :class="guest.statusSend === 'sent' ? 'fa-solid fa-check text-[9px]' : 'fa-regular fa-clock text-[9px]'"></i>
-                      <span>{{ guest.statusSend === 'sent' ? 'Terkirim' : 'Belum Terkirim' }}</span>
+                      <span>{{ guest.statusSend === 'sent' ? 'Ditandai Terkirim' : 'Belum Terkirim' }}</span>
                     </button>
                   </td>
                   <td class="px-6 py-4">
@@ -470,7 +470,7 @@
                     : 'bg-amber-50 text-amber-700 border-amber-200'"
                 >
                   <i :class="guest.statusSend === 'sent' ? 'fa-solid fa-check text-[9px]' : 'fa-regular fa-clock text-[9px]'"></i>
-                  <span>{{ guest.statusSend === 'sent' ? 'Terkirim' : 'Belum Terkirim' }}</span>
+                  <span>{{ guest.statusSend === 'sent' ? 'Ditandai Terkirim' : 'Belum Terkirim' }}</span>
                 </button>
 
                 <div class="text-xs">
@@ -544,7 +544,7 @@
               Template Pesan WhatsApp
             </h3>
             <p class="text-xs text-slate-400 mt-0.5">
-              Sesuaikan pesan undangan otomatis yang akan terkirim ke WhatsApp setiap tamu.
+              Sesuaikan pesan yang disiapkan untuk setiap tamu sebelum dibuka di WhatsApp.
             </p>
           </div>
           <button
@@ -685,7 +685,7 @@
               </h3>
             </div>
             <p class="text-[11px] text-slate-400 mt-0.5">
-              Mode sebar cepat personal: buka WhatsApp & otomatis tandai terkirim ke antrean berikutnya.
+              Buka WhatsApp untuk tiap tamu, lalu tandai setelah kamu menekan Kirim di WhatsApp.
             </p>
           </div>
           <button
@@ -702,9 +702,9 @@
             <i class="fa-solid fa-circle-check"></i>
           </div>
           <div class="space-y-1">
-            <h4 class="text-xl font-black text-slate-900">Semua Undangan Terkirim! 🎉</h4>
+            <h4 class="text-xl font-black text-slate-900">Semua Tamu Ditandai Terkirim! 🎉</h4>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">
-              Luar biasa! Seluruh {{ totalGuestsCount }} tamu dalam daftar undangan telah berhasil ditandai terkirim via WhatsApp.
+              Seluruh {{ totalGuestsCount }} tamu dalam daftar undangan telah ditandai terkirim.
             </p>
           </div>
           <div class="pt-4 flex justify-center gap-3">
@@ -769,12 +769,21 @@
           <div v-if="currentQueueGuest" class="space-y-2.5 pt-2">
             <button
               type="button"
-              @click="markAndSendCurrentInQueue"
+              @click="openCurrentInQueue"
               class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-all cursor-pointer"
             >
               <i class="fa-brands fa-whatsapp text-lg"></i>
-              <span>Buka WhatsApp & Tandai Terkirim</span>
+              <span>Buka WhatsApp</span>
               <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+            </button>
+
+            <button
+              v-if="openedQueueGuestId === currentQueueGuest.id"
+              type="button"
+              @click="confirmCurrentInQueue"
+              class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-xs transition-colors"
+            >
+              Saya sudah menekan Kirim di WhatsApp — Tandai Terkirim
             </button>
 
             <div class="grid grid-cols-3 gap-2">
@@ -795,7 +804,7 @@
                 title="Tandai status Terkirim tanpa membuka WhatsApp"
               >
                 <i class="fa-solid fa-check text-emerald-600 text-xs"></i>
-                <span>Tandai Saja</span>
+                <span>Sudah Kirim</span>
               </button>
 
               <button
@@ -1056,6 +1065,13 @@
             <i class="fa-brands fa-whatsapp text-lg"></i> Buka WhatsApp
           </button>
         </div>
+        <button
+          v-if="shareWhatsAppOpened"
+          @click="confirmSingleGuestSent"
+          class="mt-3 w-full rounded-xl bg-slate-900 py-3 text-xs font-bold text-white hover:bg-slate-800"
+        >
+          Saya sudah menekan Kirim di WhatsApp — Tandai Terkirim
+        </button>
       </div>
     </div>
 
@@ -1127,6 +1143,7 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
 import Topbar from '@/components/dashboard/TopbarDashboard.vue'
 import BottomNav from '@/components/dashboard/BottomNav.vue'
@@ -1151,6 +1168,7 @@ import {
 } from '@/utils/whatsappDistribution'
 
 const toast = useToast()
+const route = useRoute()
 const invitations = ref([])
 const selectedInvitationId = ref(null)
 const guests = ref([])
@@ -1174,6 +1192,7 @@ const shareMessage = ref('')
 const shareUrl = ref('')
 const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
+const shareWhatsAppOpened = ref(false)
 const updatingGuestAccess = ref(false)
 const newGuest = ref({ name: '', group: '', phoneNumber: '' })
 
@@ -1186,6 +1205,7 @@ const templateTextareaRef = ref(null)
 // Queue Runner (Mode Kirim Cepat) state
 const showQueueModal = ref(false)
 const queueIndex = ref(0)
+const openedQueueGuestId = ref(null)
 
 // Export Links Modal state
 const showExportModal = ref(false)
@@ -1316,7 +1336,7 @@ async function fetchInvitations() {
     const data = Array.isArray(res) ? res : res.data || []
     invitations.value = data
     if (data.length > 0 && !selectedInvitationId.value) {
-      selectedInvitationId.value = data[0].id
+      selectedInvitationId.value = data.find((inv) => inv.slug === route.query.slug)?.id || data[0].id
     }
   } catch (error) {
     toast.error('Gagal memuat undangan')
@@ -1430,53 +1450,48 @@ function startQueueRunner() {
     return
   }
   if (!featuresFor(currentInvitation.value?.package).whatsapp) {
-    toast.warning('Kirim undangan via WhatsApp tersedia untuk paket Premium & Eksklusif.')
+    toast.warning('Paket undangan ini belum mendukung pengiriman via WhatsApp.')
     return
   }
   queueIndex.value = 0
+  openedQueueGuestId.value = null
   showQueueModal.value = true
 }
 
-async function markAndSendCurrentInQueue() {
+function openCurrentInQueue() {
   const guest = currentQueueGuest.value
   if (!guest) return
 
   const message = formatGuestMessage(currentInvitation.value?.whatsappMessageTemplate, guest)
   const waUrl = buildWhatsAppUrl(guest.phoneNumber, message)
-
-  // Open WhatsApp in new tab
   window.open(waUrl, '_blank')
+  openedQueueGuestId.value = guest.id
+}
 
-  // Optimistic update status
-  guest.statusSend = 'sent'
+async function markGuestAsSent(guest) {
   try {
     await updateGuest(guest.id, { statusSend: 'sent' })
-    toast.success(`Terkirim ke ${guest.name}`)
+    guest.statusSend = 'sent'
+    toast.success(`Ditandai terkirim: ${guest.name}`)
+    return true
   } catch (err) {
-    console.error('Failed to update status in queue:', err)
+    console.error('Failed to update guest status:', err)
+    toast.error('Gagal memperbarui status pengiriman')
+    return false
   }
+}
 
-  // Adjust queue pointer if at the end of remaining list
-  if (queueIndex.value >= unsentGuests.value.length && unsentGuests.value.length > 0) {
-    queueIndex.value = unsentGuests.value.length - 1
-  }
+async function confirmCurrentInQueue() {
+  const guest = currentQueueGuest.value
+  if (!guest || openedQueueGuestId.value !== guest.id) return
+  if (await markGuestAsSent(guest)) openedQueueGuestId.value = null
 }
 
 async function markSentOnlyInQueue() {
   const guest = currentQueueGuest.value
   if (!guest) return
 
-  guest.statusSend = 'sent'
-  try {
-    await updateGuest(guest.id, { statusSend: 'sent' })
-    toast.success(`Ditandai terkirim ke ${guest.name}`)
-  } catch (err) {
-    console.error('Failed to mark as sent:', err)
-  }
-
-  if (queueIndex.value >= unsentGuests.value.length && unsentGuests.value.length > 0) {
-    queueIndex.value = unsentGuests.value.length - 1
-  }
+  if (await markGuestAsSent(guest)) openedQueueGuestId.value = null
 }
 
 function nextInQueue() {
@@ -1748,10 +1763,11 @@ async function openShareModal(guest) {
     return
   }
   if (!featuresFor(currentInvitation.value?.package).whatsapp) {
-    toast.warning('Kirim undangan via WhatsApp tersedia untuk paket Premium & Eksklusif.')
+    toast.warning('Paket undangan ini belum mendukung pengiriman via WhatsApp.')
     return
   }
   selectedGuestForShare.value = guest
+  shareWhatsAppOpened.value = false
   showShareModal.value = true
   loadingMessage.value = true
   try {
@@ -1771,21 +1787,21 @@ async function openShareModal(guest) {
   }
 }
 
-async function sendWhatsApp() {
+function sendWhatsApp() {
   if (!selectedGuestForShare.value) return
   const guest = selectedGuestForShare.value
   const waUrl = buildWhatsAppUrl(guest.phoneNumber, shareMessage.value)
   window.open(waUrl, '_blank')
+  shareWhatsAppOpened.value = true
+}
 
-  if (guest.statusSend !== 'sent') {
-    guest.statusSend = 'sent'
-    try {
-      await updateGuest(guest.id, { statusSend: 'sent' })
-    } catch (err) {
-      console.error('Failed to update status:', err)
-    }
+async function confirmSingleGuestSent() {
+  const guest = selectedGuestForShare.value
+  if (!guest || !shareWhatsAppOpened.value) return
+  if (guest.statusSend === 'sent' || (await markGuestAsSent(guest))) {
+    showShareModal.value = false
+    shareWhatsAppOpened.value = false
   }
-  showShareModal.value = false
 }
 
 // Generic Clipboard Copy

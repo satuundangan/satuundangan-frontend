@@ -198,7 +198,7 @@
                        </div>
                        <p class="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1.5">
                           <i class="fa-solid fa-link text-[10px] text-slate-300"></i>
-                          <span>satuundangan.id/inv/{{ inv.slug }}</span>
+                          <span>{{ invitationBaseUrl }}/inv/{{ inv.slug }}</span>
                        </p>
                     </div>
                  </div>
@@ -264,6 +264,7 @@ import { useToast } from "vue-toastification"
 const toast = useToast()
 const auth = useAuthStore()
 const invitations = ref([])
+const invitationBaseUrl = window.location.origin
 const statsData = ref({
   total_invitations: 0,
   total_guests: 0,

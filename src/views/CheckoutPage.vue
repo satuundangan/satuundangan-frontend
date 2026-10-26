@@ -441,6 +441,17 @@ const handleRelogin = () => {
   router.push('/')
 }
 
+function goToEmailVerification() {
+  if (invitation.value?.slug) {
+    const returnPath = router.resolve({
+      name: 'checkout',
+      query: { slug: invitation.value.slug, package: selectedPackage.value },
+    }).fullPath
+    localStorage.setItem('pendingCheckoutPath', returnPath)
+  }
+  router.push({ name: 'Settings' })
+}
+
 // Pricing tiers (loaded from backend — single source of truth)
 const packages = ref([])
 const selectedPackage = ref('premium') // default to Best Seller
@@ -520,6 +531,14 @@ onMounted(async () => {
     }
 
     invitation.value = invData
+    // A package chosen before editing is stored on the draft. Only an explicit
+    // checkout URL choice should override it.
+    if (
+      !packages.value.some((pkg) => pkg.id === route.query.package) &&
+      packages.value.some((pkg) => pkg.id === invData.package)
+    ) {
+      selectedPackage.value = invData.package
+    }
   } catch (err) {
     if (
       err.message?.includes('not the owner') ||
@@ -548,7 +567,7 @@ const simulatePaymentSuccess = async () => {
   if (!invitation.value) return
   if (!isEmailVerified.value) {
     toast.warning('Verifikasi email dulu sebelum publish undangan.')
-    router.push('/dashboard/settings')
+    goToEmailVerification()
     return
   }
 
@@ -581,7 +600,7 @@ const handleCheckout = async () => {
 
   if (!isEmailVerified.value) {
     toast.warning('Verifikasi email dulu sebelum melanjutkan pembayaran.')
-    router.push('/dashboard/settings')
+    goToEmailVerification()
     return
   }
 
@@ -592,7 +611,8 @@ const handleCheckout = async () => {
     const data = await createPayment(payload)
 
     if (data.is_free) {
-      router.push(`/${invitation.value.slug}`)
+      toast.success('Undangan sudah aktif. Tambahkan tamu untuk mulai membagikannya.')
+      router.push({ path: '/guests', query: { slug: invitation.value.slug } })
       return
     }
 

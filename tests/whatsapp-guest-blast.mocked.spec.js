@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-const BASE_URL = 'http://localhost:5173'
+const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5173'
 
 const mockUser = {
   id: 101,
@@ -149,7 +149,7 @@ test.describe('WhatsApp Guest Blast & Link Distribution E2E Journey', () => {
 
     // 1. Verify Counters
     // Total: 3, Sent: 1 (Budi), Unsent: 2 (Ani, Citra)
-    await expect(page.getByText('1 sudah terkirim')).toBeVisible()
+    await expect(page.getByText('1 ditandai terkirim')).toBeVisible()
     await expect(page.getByText('2 belum terkirim')).toBeVisible()
 
     // 2. Status Filtering
@@ -176,8 +176,8 @@ test.describe('WhatsApp Guest Blast & Link Distribution E2E Journey', () => {
     await toggleAniBtn.click()
 
     // Ani is now sent! Sent counter should update to 2, unsent to 1
-    await expect(page.getByText('2 sudah terkirim')).toBeVisible()
-    await expect(page.getByText('1 belum terkirim')).toBeVisible()
+    await expect(page.getByText('2 ditandai terkirim')).toBeVisible()
+    await expect(page.getByText('1 belum terkirim', { exact: true })).toBeVisible()
 
     // 4. Open Queue Runner (Asisten Sebar WhatsApp)
     const startBlastBtn = page.getByRole('button', { name: /Mulai Sebar WhatsApp/i })
@@ -193,11 +193,15 @@ test.describe('WhatsApp Guest Blast & Link Distribution E2E Journey', () => {
     await expect(previewBubble).toContainText('Romeo & Juliet')
     await expect(previewBubble).toContainText('/inv/romeo-juliet/token-citra-3')
 
-    // Click "Tandai Saja"
-    await page.getByRole('button', { name: /Tandai Saja/i }).click()
+    // Opening WhatsApp is not proof that the customer pressed Send.
+    await page.evaluate(() => { window.open = () => ({}) })
+    await page.getByRole('button', { name: /Buka WhatsApp/ }).last().click()
+    await expect(page.getByText('2 ditandai terkirim')).toBeVisible()
+    await expect(page.getByText('1 belum terkirim', { exact: true })).toBeVisible()
+    await page.getByRole('button', { name: /Saya sudah menekan Kirim/i }).click()
 
     // Queue reaches 100% complete state
-    await expect(page.getByText('Semua Undangan Terkirim! 🎉')).toBeVisible()
+    await expect(page.getByText('Semua Tamu Ditandai Terkirim! 🎉')).toBeVisible()
     await page.getByRole('button', { name: /Selesai & Tutup/i }).click()
 
     // 5. Verify Template Modal
