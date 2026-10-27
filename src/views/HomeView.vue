@@ -1102,7 +1102,7 @@ const testimonials = [
     id: 2,
     name: 'Dimas & Annisa Putri',
     role: 'Pengantin (Jakarta)',
-    text: 'Fitur sebar WhatsApp otomatis dan QR Code buku tamunya ngebantu banget! Pas hari H resepsi meja depan lancar tanpa antrean panjang. Recommended!',
+    text: 'Fitur pesan WhatsApp siap kirim dan QR Code buku tamunya ngebantu banget! Pas hari H resepsi meja depan lancar tanpa antrean panjang. Recommended!',
     avatar: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=200&q=80',
     rating: 5,
   },

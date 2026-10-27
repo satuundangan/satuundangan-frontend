@@ -49,8 +49,8 @@ const features = [
   {
     icon: 'fa-brands fa-whatsapp',
     badge: 'Favorit',
-    title: 'Sebar WhatsApp Otomatis',
-    description: 'Impor nama tamu dari Excel/HP, buat link personal otomatis, dan sebar via WhatsApp dalam 1 klik tanpa repot.'
+    title: 'Bagikan via WhatsApp',
+    description: 'Impor nama tamu dari Excel/HP, buat tautan personal, lalu buka pesan siap kirim di WhatsApp untuk tiap tamu.'
   },
   {
     icon: 'fa-solid fa-qrcode',

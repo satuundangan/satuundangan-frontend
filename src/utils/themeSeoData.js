@@ -137,7 +137,7 @@ Rawuh saha donga pangestu panjenengan dados bingahing manah kawulo sakulowarga. 
       { icon: 'fa-solid fa-crown', title: 'Motif Mahkota Siger', desc: 'Lambang kehormatan, kebijaksanaan, dan pesona putri Sunda.' },
       { icon: 'fa-solid fa-music', title: 'Alunan Kecapi Suling', desc: 'Harmoni Parahyangan yang menyejukkan sanubari pendengar.' },
       { icon: 'fa-solid fa-heart', title: 'Rundown Saweran & Ngaras', desc: 'Panduan tata urutan adat Sunda terstruktur rapi untuk tamu.' },
-      { icon: 'fa-solid fa-paper-plane', title: 'Sebar WhatsApp Otomatis', desc: 'Kirim undangan personal dengan nama tamu sopan dan terhormat.' },
+      { icon: 'fa-solid fa-paper-plane', title: 'Bagikan via WhatsApp', desc: 'Siapkan pesan undangan personal dengan nama tamu, lalu kirim melalui WhatsApp.' },
     ],
     traditionGuide: {
       title: 'Tahapan Prosesi Sakral Pernikahan Adat Sunda',
