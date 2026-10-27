@@ -1531,7 +1531,10 @@ async function fetchMessages(invId) {
   loadingMessages.value = true
   try {
     const res = await getGuestMessagesByInvitationId(invId)
-    messages.value = Array.isArray(res) ? res : res.data || []
+    const entries = Array.isArray(res) ? res : res.data || []
+    messages.value = entries.filter(
+      (entry) => typeof entry.message === 'string' && entry.message.trim().length > 0,
+    )
   } catch (e) {
     console.error(e)
     toast.error("Gagal memuat pesan ucapan")
