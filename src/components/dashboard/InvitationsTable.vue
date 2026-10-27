@@ -22,7 +22,7 @@
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center gap-1.5 text-blue-600 font-bold">
-                <span>satuundangan.id/inv/{{ invite.slug }}</span>
+                <span>{{ invitationBaseUrl }}/inv/{{ invite.slug }}</span>
                 <button @click="copyLink(invite.slug)" class="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Salin Link">
                   <i class="fa-solid fa-copy text-xs"></i>
                 </button>
@@ -116,6 +116,7 @@
 import { useToast } from 'vue-toastification'
 
 const toast = useToast()
+const invitationBaseUrl = window.location.origin
 
 defineProps({
   invitations: { type: Array, required: true },

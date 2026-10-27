@@ -159,7 +159,7 @@
             </div>
             <h3 class="text-xl font-black text-slate-900">6. Terkoneksi ke Undangan Digital & Meja Resepsi</h3>
             <p class="text-sm text-slate-600 leading-relaxed">
-              Ekosistem terintegrasi: setelah merencanakan anggaran dan checklist, buat undangan digitalmu, kelola daftar tamu, sebar via WhatsApp otomatis, dan gunakan Scanner QR Buku Tamu di meja penerima tamu hari H.
+              Ekosistem terintegrasi: setelah merencanakan anggaran dan checklist, buat undangan digitalmu, kelola daftar tamu, siapkan pesan pribadi untuk dibagikan via WhatsApp, dan gunakan Scanner QR Buku Tamu di meja penerima tamu hari H.
             </p>
             <ul class="text-xs text-slate-600 space-y-2 pt-2 font-medium">
               <li class="flex items-center gap-2"><i class="fa-solid fa-check text-emerald-600"></i> Sinkronisasi daftar tamu & rekap RSVP riil</li>

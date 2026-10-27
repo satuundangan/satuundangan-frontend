@@ -58,7 +58,7 @@ const steps = [
   { title: "Pilih Template", description: "Pilih tema eksklusif yang sesuai seleramu.", icon: 'fa-solid fa-palette' },
   { title: "Isi Data", description: "Lengkapi data mempelai, acara, dan galeri foto.", icon: 'fa-solid fa-file-signature' },
   { title: "Live Preview", description: "Lihat hasil undanganmu secara real-time.", icon: 'fa-solid fa-mobile-screen' },
-  { title: "Bagikan", description: "Undangan siap disebar ke semua tamu.", icon: 'fa-solid fa-paper-plane' },
+  { title: "Aktifkan & Bagikan", description: "Pilih paket, selesaikan pembayaran, lalu bagikan undangan yang sudah aktif.", icon: 'fa-solid fa-paper-plane' },
 ]
 
 defineEmits(['create-invitation'])
