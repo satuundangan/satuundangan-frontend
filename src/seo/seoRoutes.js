@@ -25,7 +25,7 @@ export const STATIC_ROUTE_SEO = {
   '/': {
     title: 'Satu Undangan - Buat Undangan Digital Pernikahan',
     description:
-      'Buat undangan pernikahan digital impianmu dengan fitur premium, sebar WhatsApp otomatis, dan Free Wedding Planner & Kalkulator Budget terpadu.',
+      'Buat undangan pernikahan digital impianmu dengan fitur premium, pesan pribadi siap dibagikan via WhatsApp, dan Free Wedding Planner & Kalkulator Budget terpadu.',
     canonicalPath: '/',
     ogType: 'website',
   },
