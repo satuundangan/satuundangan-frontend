@@ -69,7 +69,7 @@
                                     <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                                  </div>
                                  <div data-field="brideParents">
-                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                    <label class="form-label">Nama Orang Tua <span class="text-gray-400 font-normal">(opsional)</span></label>
                                     <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
                                     <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
                                  </div>
@@ -105,7 +105,7 @@
                                     <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                                  </div>
                                  <div data-field="groomParents">
-                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                    <label class="form-label">Nama Orang Tua <span class="text-gray-400 font-normal">(opsional)</span></label>
                                     <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
                                     <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
                                  </div>
@@ -920,10 +920,8 @@ function validateStep(step) {
    let isValid = true
    if (step === 1) {
       if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
-      if (!data.brideParents?.trim()) { validationErrors.value.brideParents = 'Nama orang tua wanita wajib diisi'; isValid = false }
       if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
       if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
-      if (!data.groomParents?.trim()) { validationErrors.value.groomParents = 'Nama orang tua pria wajib diisi'; isValid = false }
       if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
       if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
    } else if (step === 2) {
