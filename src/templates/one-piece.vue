@@ -426,6 +426,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -612,18 +613,18 @@ function getMusicUrl(choice) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   return isNaN(date.getTime())
     ? '-'
-    : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+    : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   return isNaN(date.getTime())
     ? '-'
-    : date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    : date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE })
 }
 
 function isSectionEnabled(key) {
