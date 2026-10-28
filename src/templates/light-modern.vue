@@ -110,7 +110,7 @@
             <div v-for="(story, index) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="index"
               class="flex flex-col md:flex-row gap-6 md:gap-12 items-center group" v-observe>
               <div :class="['w-full md:w-1/2', index % 2 !== 0 ? 'md:order-2' : '']">
-                <div class="relative overflow-hidden rounded-[2.5rem] shadow-xl aspect-video grayscale group-hover:grayscale-0 transition-all duration-700 border-4 border-white ring-1 ring-gray-100">
+                <div class="relative overflow-hidden rounded-[2.5rem] shadow-xl aspect-video md:grayscale md:group-hover:grayscale-0 transition-all duration-700 border-4 border-white ring-1 ring-gray-100">
                   <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x300'" class="w-full h-full object-cover" />
                   <div v-else class="w-full h-full bg-blue-50 flex items-center justify-center">
                     <i class="fa-solid fa-heart text-blue-200 text-3xl"></i>
@@ -142,13 +142,12 @@
               <div
                 class="relative bg-white rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-gray-100 shadow-xl">
                 <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x600'"
-                  class="w-full h-[400px] md:h-[500px] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                  class="w-full h-[400px] md:h-[500px] object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-700" />
                 <div
                   class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-white to-transparent p-6 md:p-8 text-center pt-24">
                   <h3 class="text-2xl md:text-3xl font-alex text-blue-800">{{ data.groomName }}</h3>
-                  <p class="text-xs md:text-sm text-gray-500 mt-2">Putra dari Bpk. {{
-                    getParentName(data.parents?.groomParents, 0) }} & Ibu {{ getParentName(data.parents?.groomParents,
-                    1) }}</p>
+                  <p v-if="formatParents(data.parents?.groomParents)" class="text-xs md:text-sm text-gray-500 mt-2">
+                    Putra dari {{ formatParents(data.parents?.groomParents) }}</p>
                   <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)"
                     target="_blank" class="inline-block mt-4 text-blue-400 hover:text-blue-600 transition-colors">
                     <i class="fa-brands fa-instagram text-xl"></i>
@@ -165,13 +164,12 @@
               <div
                 class="relative bg-white rounded-[2rem] md:rounded-[3rem] overflow-hidden border border-gray-100 shadow-xl">
                 <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x600'"
-                  class="w-full h-[400px] md:h-[500px] object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
+                  class="w-full h-[400px] md:h-[500px] object-cover md:grayscale md:group-hover:grayscale-0 transition-all duration-700" />
                 <div
                   class="absolute bottom-0 inset-x-0 bg-gradient-to-t from-white to-transparent p-6 md:p-8 text-center pt-24">
                   <h3 class="text-2xl md:text-3xl font-alex text-blue-800">{{ data.brideName }}</h3>
-                  <p class="text-xs md:text-sm text-gray-500 mt-2">Putri dari Bpk. {{
-                    getParentName(data.parents?.brideParents, 0) }} & Ibu {{ getParentName(data.parents?.brideParents,
-                    1) }}</p>
+                  <p v-if="formatParents(data.parents?.brideParents)" class="text-xs md:text-sm text-gray-500 mt-2">
+                    Putri dari {{ formatParents(data.parents?.brideParents) }}</p>
                   <a v-if="data.socialMediaBrides?.instagram"
                     :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank"
                     class="inline-block mt-4 text-blue-400 hover:text-blue-600 transition-colors">
@@ -221,7 +219,7 @@
               <div
                 class="absolute -right-10 -top-10 text-8xl md:text-9xl text-blue-50 group-hover:rotate-12 transition-transform">
                 💍</div>
-              <h3 class="text-xl md:text-2xl font-serif text-gray-800 mb-2">Akad Nikah</h3>
+              <h3 class="text-xl md:text-2xl font-serif text-gray-800 mb-2">{{ ceremonyLabel }}</h3>
               <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 my-6 text-blue-600">
                 <div class="text-center">
                   <i class="fa-regular fa-calendar text-lg md:text-xl mb-1"></i>
@@ -598,11 +596,24 @@ function getMusicUrl(choice) {
   return `/audio/${choice}`
 }
 
-function getParentName(parentString, index) {
-  if (!parentString) return '...'
-  const parts = parentString.split('&')
-  return parts[index]?.trim() || (index === 0 ? parentString : '')
+// "Ayah & Ibu" -> "Bpk. Ayah & Ibu Ibu" unless already titled; a single name is shown as
+// typed; empty hides the line.
+const PARENT_TITLE_RE = /^(bpk|bapak|ibu|alm|almh|almarhum|almarhumah)\b/i
+function formatParents(parentString) {
+  const raw = String(parentString || '').trim()
+  if (!raw) return ''
+  const [father, mother] = raw.split('&').map((s) => s.trim())
+  if (!mother) return raw
+  const withTitle = (name, title) => (PARENT_TITLE_RE.test(name) ? name : `${title} ${name}`)
+  return `${withTitle(father, 'Bpk.')} & ${withTitle(mother, 'Ibu')}`
 }
+
+const ceremonyLabel = computed(() => {
+  const religion = data.value.religion
+  if (religion === 'kristen' || religion === 'katolik') return 'Pemberkatan Nikah'
+  if (religion && religion !== 'islam') return 'Upacara Pernikahan'
+  return 'Akad Nikah'
+})
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
