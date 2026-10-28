@@ -615,25 +615,28 @@ const ceremonyLabel = computed(() => {
   return 'Akad Nikah'
 })
 
+// Events are labelled WIB, so render them in Jakarta time for every guest, wherever they are.
+const EVENT_TIME_ZONE = 'Asia/Jakarta'
+
 function formatDate(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
   if (isNaN(date.getTime())) return '-'
-  return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
   const date = new Date(dateStr)
   if (isNaN(date.getTime())) return '-'
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatStoryDate(dateStr) {
   if (!dateStr) return 'Our Memory'
   const date = new Date(dateStr)
   if (isNaN(date.getTime())) return 'Our Memory'
-  return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatInstagramUrl(handle) {

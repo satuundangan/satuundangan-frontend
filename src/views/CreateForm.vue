@@ -648,11 +648,11 @@ const syncDataToPreview = (data) => {
             },
             isSingleEvent: data.isSingleEvent,
             akadLocation: data.isSingleEvent 
-               ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-               : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+               ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+               : { dateTime: wibInputToISO(data.akadDateTime), mapUrl: data.akadMap, description: data.akadDesc },
             resepsiLocation: data.isSingleEvent
-               ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-               : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+               ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+               : { dateTime: wibInputToISO(data.resepsiDateTime), mapUrl: data.resepsiMap, description: data.resepsiDesc },
             ...resolveQuoteForSave(data),
             loveStory: (data.loveStories || []).map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
             galleryImages: (data.gallery || []).map(img => img.preview),

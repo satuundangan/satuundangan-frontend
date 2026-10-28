@@ -1707,6 +1707,24 @@ watch(activeTab, () => {
   })
 })
 
+// Event times are entered and shown as WIB (templates print "WIB"), so anchor them to +07:00
+// instead of the editor's browser timezone.
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000
+const formatISOToLocalInput = (isoString) => {
+   if (!isoString) return ''
+   const d = new Date(isoString)
+   if (isNaN(d.getTime())) return ''
+   return new Date(d.getTime() + WIB_OFFSET_MS).toISOString().slice(0, 16)
+}
+const wibInputToISO = (localInput) => {
+   if (!localInput) return ''
+   const value = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(localInput)
+      ? `${localInput.length === 16 ? `${localInput}:00` : localInput}+07:00`
+      : localInput
+   const d = new Date(value)
+   return isNaN(d.getTime()) ? '' : d.toISOString()
+}
+
 // Debounced Live Preview Sync Logic
 const syncDataToPreview = (data) => {
   try {
@@ -1727,11 +1745,11 @@ const syncDataToPreview = (data) => {
         religion: data.religion,
         isSingleEvent: data.isSingleEvent,
         akadLocation: data.isSingleEvent 
-           ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-           : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+           ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+           : { dateTime: wibInputToISO(data.akadDateTime), mapUrl: data.akadMap, description: data.akadDesc },
         resepsiLocation: data.isSingleEvent
-           ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-           : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+           ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+           : { dateTime: wibInputToISO(data.resepsiDateTime), mapUrl: data.resepsiMap, description: data.resepsiDesc },
         ...resolveQuoteForSave(data),
         loveStory: (data.loveStories || []).map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
         galleryImages: (data.gallery || []).map(img => img.preview),
@@ -2084,24 +2102,6 @@ async function handleEditMode(id) {
 }
 
 // Convert ISO UTC dates to input format (local time YYYY-MM-DDTHH:mm)
-// Event times are entered and shown as WIB (templates print "WIB"), so anchor them to +07:00
-// instead of the editor's browser timezone.
-const WIB_OFFSET_MS = 7 * 60 * 60 * 1000
-const formatISOToLocalInput = (isoString) => {
-   if (!isoString) return ''
-   const d = new Date(isoString)
-   if (isNaN(d.getTime())) return ''
-   return new Date(d.getTime() + WIB_OFFSET_MS).toISOString().slice(0, 16)
-}
-const wibInputToISO = (localInput) => {
-   if (!localInput) return ''
-   const value = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(localInput)
-      ? `${localInput.length === 16 ? `${localInput}:00` : localInput}+07:00`
-      : localInput
-   const d = new Date(value)
-   return isNaN(d.getTime()) ? '' : d.toISOString()
-}
-
 function mapPayloadToFormData(payload) {
    // Resolve template info
    const template = payload.templateDesign || payload.content?.templateDesign || {}
