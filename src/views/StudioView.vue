@@ -1724,6 +1724,7 @@ const syncDataToPreview = (data) => {
           brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
           groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
         },
+        religion: data.religion,
         isSingleEvent: data.isSingleEvent,
         akadLocation: data.isSingleEvent 
            ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
@@ -2083,12 +2084,22 @@ async function handleEditMode(id) {
 }
 
 // Convert ISO UTC dates to input format (local time YYYY-MM-DDTHH:mm)
+// Event times are entered and shown as WIB (templates print "WIB"), so anchor them to +07:00
+// instead of the editor's browser timezone.
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000
 const formatISOToLocalInput = (isoString) => {
    if (!isoString) return ''
    const d = new Date(isoString)
    if (isNaN(d.getTime())) return ''
-   const pad = (n) => n.toString().padStart(2, '0')
-   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+   return new Date(d.getTime() + WIB_OFFSET_MS).toISOString().slice(0, 16)
+}
+const wibInputToISO = (localInput) => {
+   if (!localInput) return ''
+   const value = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(localInput)
+      ? `${localInput.length === 16 ? `${localInput}:00` : localInput}+07:00`
+      : localInput
+   const d = new Date(value)
+   return isNaN(d.getTime()) ? '' : d.toISOString()
 }
 
 function mapPayloadToFormData(payload) {
@@ -2657,8 +2668,8 @@ async function saveAndPreview() {
          title: formData.value.title, slug: formData.value.slug || formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
          parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
-         akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
-         resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
+         akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? wibInputToISO(formData.value.dateTime) : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? wibInputToISO(formData.value.akadDateTime) : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
+         resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? wibInputToISO(formData.value.dateTime) : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? wibInputToISO(formData.value.resepsiDateTime) : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: getSelectedTemplateDesignId(), loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, content: s.description || '', description: s.description || '', image: s.photo })),
          musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'), isCustomMusic: formData.value.music === 'custom' || Boolean(formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart, audioEnd: formData.value.audioEnd, encryptedGuestName: formData.value.encryptedGuest === 'ya', galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
