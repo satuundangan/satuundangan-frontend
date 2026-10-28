@@ -5,6 +5,14 @@ export const createGuestMessage = (data, legacyPayload) => {
     ? { ...legacyPayload, invitationId: Number(data) }
     : { ...data }
 
+  // Older invitation designs use `name` and `attendance`; the API DTO uses
+  // `guestName` and `rsvpStatus`. Normalize them at this shared boundary.
+  payload.guestName ??= payload.name
+  payload.rsvpStatus ??= payload.attendance
+  delete payload.name
+  delete payload.attendance
+  if (payload.rsvpStatus && payload.rsvpStatus !== 'hadir') payload.totalGuests = 0
+
   // Personal invitation links carry the guest's access token in the path.
   // Attach it once here so every design keeps the dashboard RSVP in sync.
   if (!payload.guestId && !payload.guestSlug && typeof window !== 'undefined') {
