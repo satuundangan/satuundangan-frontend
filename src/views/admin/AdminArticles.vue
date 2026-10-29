@@ -90,6 +90,8 @@
       </button>
     </div>
 
+    <ArticleEditorialPanel />
+
     <!-- Status Filter Tabs -->
     <div class="mb-6 flex gap-2">
       <button
@@ -281,6 +283,7 @@
 <script setup>
 import { ref, watch, computed, onBeforeUnmount } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import ArticleEditorialPanel from '@/components/admin/ArticleEditorialPanel.vue'
 import {
   fetchAdminArticles,
   fetchAdminArticleBotStatus,

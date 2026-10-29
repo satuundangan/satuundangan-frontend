@@ -214,6 +214,40 @@
               </label>
             </div>
             <p class="text-xs" :class="draftStatusClass" role="status">{{ draftStatusText }}</p>
+            <div class="flex flex-wrap gap-2 border-t border-slate-100 pt-3">
+              <button
+                ref="previewTrigger"
+                type="button"
+                class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50"
+                @click="openPreview"
+              >
+                Pratinjau
+              </button>
+              <button
+                type="button"
+                class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50"
+                :disabled="!isEditing || linkCheck.loading"
+                :title="isEditing ? '' : 'Simpan draft lebih dulu agar tautan dapat dicek'"
+                @click="runLinkCheck"
+              >
+                {{ linkCheck.loading ? 'Memeriksa…' : 'Cek tautan & gambar' }}
+              </button>
+            </div>
+            <div v-if="linkCheck.error" role="alert" class="text-xs text-rose-700">{{ linkCheck.error }}</div>
+            <div v-else-if="linkCheck.result" class="text-xs" data-testid="link-check">
+              <p class="font-semibold">
+                {{ linkCheck.result.checked }} tautan dicek: {{ linkCheck.result.broken }} rusak,
+                {{ linkCheck.result.notChecked }} tidak dapat dicek.
+              </p>
+              <p class="text-slate-500">Memeriksa versi yang tersimpan di server.</p>
+              <ul class="mt-1 space-y-1">
+                <li v-for="item in linkCheck.result.results.filter((r) => r.status !== 'ok')" :key="item.url" class="break-all">
+                  <span :class="item.status === 'rusak' ? 'text-rose-700' : 'text-amber-700'">{{ item.status === 'rusak' ? 'Rusak' : 'Tidak dicek' }}</span>
+                  · {{ item.kind }} · {{ item.url }} <span class="text-slate-500">({{ item.note }})</span>
+                </li>
+              </ul>
+              <p class="mt-1 text-slate-500">{{ linkCheck.result.note }}</p>
+            </div>
             <div class="flex gap-2">
               <button
                 @click="saveArticle('draft')"
@@ -430,17 +464,31 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="previewOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+      @keydown.esc="closePreview"
+    >
+      <div role="dialog" aria-modal="true" aria-labelledby="preview-title" class="flex h-[85vh] w-full max-w-3xl flex-col rounded-2xl bg-white shadow-xl">
+        <div class="flex items-center justify-between border-b border-slate-200 px-5 py-3">
+          <h2 id="preview-title" class="text-sm font-bold">Pratinjau artikel</h2>
+          <button ref="previewClose" type="button" class="rounded-lg border border-slate-200 px-3 py-1 text-xs" @click="closePreview">Tutup</button>
+        </div>
+        <iframe title="Pratinjau artikel" sandbox="" :srcdoc="previewDoc" class="h-full w-full flex-1 rounded-b-2xl"></iframe>
+      </div>
+    </div>
   </AdminShell>
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeUnmount, onMounted } from 'vue'
+import { ref, computed, watch, nextTick, reactive, onBeforeUnmount, onMounted } from 'vue'
 import { useRoute, useRouter, onBeforeRouteLeave, onBeforeRouteUpdate } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import { fetchAdminArticle, createAdminArticle, updateAdminArticle } from '@/api/admin.js'
 import {
   fetchArticleRevisions,
   restoreArticleRevision,
+  checkArticleLinks,
 } from '@/api/articleEditorial.js'
 import { useAuthStore } from '@/stores/auth.js'
 import {
@@ -952,6 +1000,43 @@ const warnBeforeUnload = (event) => {
   if (!isDirty.value) return
   event.preventDefault()
   event.returnValue = ''
+}
+
+// Preview: rendered in a script-less sandboxed frame so article HTML can never run code in the admin
+const previewOpen = ref(false)
+const previewTrigger = ref(null)
+const previewClose = ref(null)
+const escapeHtml = (value) =>
+  String(value ?? '').replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char])
+const previewDoc = computed(() => {
+  const body = editor.value?.getHTML() ?? form.value.content ?? ''
+  const cover = form.value.coverImage && /^https?:\/\//.test(form.value.coverImage) ? `<img src="${escapeHtml(form.value.coverImage)}" alt="" style="width:100%;border-radius:12px;margin-bottom:16px" />` : ''
+  return `<!doctype html><html lang="id"><head><meta charset="utf-8"><style>body{font-family:system-ui,sans-serif;max-width:680px;margin:24px auto;padding:0 16px;line-height:1.7;color:#1e293b}img{max-width:100%;height:auto}h1{line-height:1.25}blockquote{border-left:4px solid #e2e8f0;margin:0;padding-left:12px;color:#64748b}pre{background:#0f172a;color:#e2e8f0;padding:12px;border-radius:8px;overflow:auto}a{color:#2563eb}</style></head><body>${cover}<h1>${escapeHtml(form.value.title || 'Judul artikel')}</h1><p style="color:#64748b">${escapeHtml(form.value.excerpt)}</p>${body}</body></html>`
+})
+async function openPreview() {
+  previewOpen.value = true
+  await nextTick()
+  previewClose.value?.focus()
+}
+async function closePreview() {
+  previewOpen.value = false
+  await nextTick()
+  previewTrigger.value?.focus()
+}
+
+// Link and image check on the saved server version
+const linkCheck = reactive({ loading: false, error: '', result: null })
+async function runLinkCheck() {
+  linkCheck.loading = true
+  linkCheck.error = ''
+  try {
+    linkCheck.result = await checkArticleLinks(route.params.id)
+  } catch (e) {
+    linkCheck.result = null
+    linkCheck.error = e.message || 'Pengecekan tautan gagal dijalankan.'
+  } finally {
+    linkCheck.loading = false
+  }
 }
 
 // Load existing article for editing

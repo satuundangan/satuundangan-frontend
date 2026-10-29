@@ -6,10 +6,10 @@ import { saveArticleDraft } from '@/utils/articleDrafts.js'
 const mocks = vi.hoisted(() => ({
   article: { id: 1, title: 'Judul server', slug: 'judul-server', content: '<p>Isi server</p>', editVersion: 4, status: 'draft', updatedAt: '2026-10-29T01:00:00Z', sourceUrls: [] },
   fetch: vi.fn(), update: vi.fn(), create: vi.fn(), push: vi.fn(), fire: vi.fn(), leave: null, routeUpdate: null,
-  revisions: vi.fn(), revision: vi.fn(), restore: vi.fn(),
+  revisions: vi.fn(), revision: vi.fn(), restore: vi.fn(), check: vi.fn(),
 }))
 vi.mock('@/api/admin.js', () => ({ fetchAdminArticle: mocks.fetch, updateAdminArticle: mocks.update, createAdminArticle: mocks.create }))
-vi.mock('@/api/articleEditorial.js', () => ({ fetchArticleRevisions: mocks.revisions, fetchArticleRevision: mocks.revision, restoreArticleRevision: mocks.restore }))
+vi.mock('@/api/articleEditorial.js', () => ({ fetchArticleRevisions: mocks.revisions, fetchArticleRevision: mocks.revision, restoreArticleRevision: mocks.restore, checkArticleLinks: mocks.check }))
 vi.mock('@/components/admin/AdminShell.vue', () => ({ default: { template: '<main><slot /></main>' } }))
 vi.mock('@/stores/auth.js', () => ({ useAuthStore: () => ({ user: { id: 1 } }) }))
 vi.mock('sweetalert2', () => ({ default: { fire: mocks.fire } }))
@@ -65,5 +65,52 @@ describe('article editing safeguards', () => {
     await wrapper.findAll('button').find((button) => button.text() === 'Jadwalkan terbit').trigger('click')
     await flushPromises()
     expect(mocks.update).toHaveBeenCalledWith('1', expect.objectContaining({ status: 'scheduled', scheduledPublishAt: '2099-10-30T01:00:00.000Z', expectedVersion: 4 }))
+  })
+
+  it('previews the article in a script-less sandboxed frame and returns focus on close', async () => {
+    mocks.fetch.mockResolvedValue({ ...mocks.article, title: 'Judul <script>alert(1)</script>', content: '<p>Isi server</p>' })
+    wrapper = mount(AdminArticleEditor, { attachTo: document.body })
+    await flushPromises()
+    const opener = wrapper.findAll('button').find((b) => b.text() === 'Pratinjau')
+    await opener.trigger('click')
+    await flushPromises()
+    const dialog = wrapper.get('[role="dialog"]')
+    const frame = dialog.get('iframe')
+    expect(frame.attributes('sandbox')).toBe('')
+    expect(frame.attributes('srcdoc')).toContain('Isi server')
+    expect(frame.attributes('srcdoc')).not.toContain('<script>alert(1)</script>')
+    expect(frame.attributes('srcdoc')).toContain('&lt;script&gt;')
+    await dialog.findAll('button').find((b) => b.text() === 'Tutup').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('[role="dialog"]').exists()).toBe(false)
+  })
+
+  it('checks links on the saved version and lists only problems', async () => {
+    mocks.check.mockResolvedValue({
+      checked: 3, broken: 1, notChecked: 1, note: 'Pengecekan sekali jalan dari server.',
+      results: [
+        { url: 'https://ok.test/', kind: 'tautan', status: 'ok', httpStatus: 200, note: null },
+        { url: 'https://gone.test/', kind: 'gambar', status: 'rusak', httpStatus: 404, note: 'Tidak ditemukan' },
+        { url: 'https://shy.test/', kind: 'tautan', status: 'tidak_dicek', httpStatus: 403, note: 'Server menolak pengecekan otomatis' },
+      ],
+    })
+    wrapper = render()
+    await flushPromises()
+    await wrapper.findAll('button').find((b) => b.text() === 'Cek tautan & gambar').trigger('click')
+    await flushPromises()
+    expect(mocks.check).toHaveBeenCalledWith('1')
+    const box = wrapper.get('[data-testid="link-check"]')
+    expect(box.text()).toContain('3 tautan dicek: 1 rusak, 1 tidak dapat dicek')
+    expect(box.text()).toContain('https://gone.test/')
+    expect(box.text()).not.toContain('https://ok.test/')
+  })
+
+  it('shows a persistent error when the link check cannot run', async () => {
+    mocks.check.mockRejectedValue(new Error('Server sibuk'))
+    wrapper = render()
+    await flushPromises()
+    await wrapper.findAll('button').find((b) => b.text() === 'Cek tautan & gambar').trigger('click')
+    await flushPromises()
+    expect(wrapper.text()).toContain('Server sibuk')
   })
 })
