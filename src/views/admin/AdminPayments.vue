@@ -32,7 +32,8 @@
     </template>
 
     <!-- Financial KPI Summary Cards (ADM-013) -->
-    <div class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
+    <p class="mb-2 text-xs text-slate-500">Ringkasan semua waktu. Filter tanggal dan jenis di bawah berlaku untuk daftar transaksi serta ekspornya.</p>
+    <div v-if="stats" class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
         <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
           <span>Omzet Bersih</span>
@@ -101,10 +102,11 @@
         </div>
       </div>
 
-      <div
+      <button
+        type="button"
         @click="activeTab = 'reconciliation'"
         :class="[
-          'rounded-2xl border p-4 shadow-xs cursor-pointer transition-all',
+          'rounded-2xl border p-4 text-left shadow-xs cursor-pointer transition-all focus-visible:outline-2 focus-visible:outline-blue-600',
           (reconData?.count || 0) > 0
             ? 'border-rose-300 bg-rose-50/50 hover:bg-rose-50'
             : 'border-slate-200 bg-white hover:bg-slate-50'
@@ -115,12 +117,12 @@
           <i class="fa-solid fa-triangle-exclamation" :class="(reconData?.count || 0) > 0 ? 'text-rose-600' : 'text-slate-400'"></i>
         </div>
         <div class="mt-2 text-lg font-black tracking-tight" :class="(reconData?.count || 0) > 0 ? 'text-rose-700' : 'text-slate-700'">
-          {{ reconData?.count || 0 }}
+          {{ reconData ? reconData.count : '—' }}
         </div>
         <div class="mt-1 text-[11px] font-semibold" :class="(reconData?.count || 0) > 0 ? 'text-rose-600' : 'text-slate-500'">
-          {{ (reconData?.count || 0) > 0 ? 'Perlu tindakan segera' : 'Semua tersinkron' }}
+          {{ reconLoading ? 'Memuat antrean…' : reconError ? 'Belum tersedia' : (reconData?.count || 0) > 0 ? 'Perlu ditinjau' : 'Tidak ada hasil antrean' }}
         </div>
-      </div>
+      </button>
     </div>
 
     <!-- Navigation Tabs -->
@@ -137,7 +139,7 @@
         <i class="fa-solid fa-list-check"></i>
         <span>Semua Transaksi</span>
         <span class="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] text-slate-600 font-black">
-          {{ total }}
+          {{ loading ? '…' : listError ? '—' : total }}
         </span>
       </button>
 
@@ -162,7 +164,7 @@
     </div>
 
     <!-- TAB 1: Semua Transaksi (ADM-009) -->
-    <div v-show="activeTab === 'transactions'">
+    <div v-show="activeTab === 'transactions'" data-testid="transactions-tab">
       <!-- Filter Bar -->
       <div class="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
@@ -172,7 +174,8 @@
         <!-- Filter Status -->
         <select
           v-model="selectedStatus"
-          @change="handleFilterChange"
+          aria-label="Status pembayaran"
+          @change="handleStatusChange"
           class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
         >
           <option value="all">Semua Status Bayar</option>
@@ -185,6 +188,7 @@
         <!-- Filter Purpose / Tujuan -->
         <select
           v-model="selectedPurpose"
+          aria-label="Tujuan transaksi"
           @change="handleFilterChange"
           class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
         >
@@ -196,6 +200,7 @@
         <!-- Filter Paket -->
         <select
           v-model="selectedPackage"
+          aria-label="Paket undangan"
           @change="handleFilterChange"
           class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
         >
@@ -204,6 +209,18 @@
           <option value="premium">Premium</option>
           <option value="eksklusif">Eksklusif</option>
         </select>
+
+        <select v-model="selectedKind" aria-label="Jenis transaksi" @change="handleKindChange" class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700">
+          <option value="all">Semua jenis transaksi</option>
+          <option value="paid">Berbayar dari Midtrans</option>
+          <option value="free">Aktivasi gratis / promo</option>
+          <option value="pending">Checkout masih pending</option>
+        </select>
+        <form class="flex flex-wrap items-end gap-2" @submit.prevent="handleFilterChange">
+          <label class="grid gap-1 text-xs text-slate-600">Dari (WIB)<input v-model="startDate" aria-label="Tanggal awal WIB" type="date" :max="endDate || today" class="rounded-lg border border-slate-200 px-2 py-1.5" /></label>
+          <label class="grid gap-1 text-xs text-slate-600">Sampai (WIB)<input v-model="endDate" aria-label="Tanggal akhir WIB" type="date" :min="startDate" :max="today" class="rounded-lg border border-slate-200 px-2 py-1.5" /></label>
+          <button type="submit" class="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold">Terapkan tanggal</button>
+        </form>
 
         <!-- Reset Button -->
         <button
@@ -214,9 +231,11 @@
           <i class="fa-solid fa-xmark"></i> Reset Filter
         </button>
       </div>
+      <p class="mb-3 text-xs text-slate-500">Tanggal memakai {{ selectedKind === 'paid' || selectedKind === 'free' ? 'waktu pelunasan' : 'waktu transaksi dibuat' }} dalam WIB. Jenis berbayar memisahkan simulasi dan aktivasi nol rupiah.</p>
+      <div v-if="listError" role="alert" class="mb-4 rounded-lg border border-rose-200 bg-rose-50 p-3 text-sm text-rose-800">{{ listError }} <button type="button" class="font-semibold underline" @click="loadPayments">Coba lagi</button></div>
 
       <!-- Table Section -->
-      <div class="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
+      <div v-if="!listError" class="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
         <DataTable
           :value="payments"
           :loading="loading"
@@ -383,7 +402,7 @@
     </div>
 
     <!-- TAB 2: Antrean Rekonsiliasi (ADM-011) -->
-    <div v-show="activeTab === 'reconciliation'">
+    <div v-show="activeTab === 'reconciliation'" data-testid="reconciliation-tab">
       <div class="mb-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
         <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base mt-0.5 shrink-0"></i>
         <div>
@@ -394,16 +413,28 @@
         </div>
       </div>
 
+      <div class="mb-4 flex flex-wrap items-center gap-3 text-sm">
+        <label class="flex items-center gap-2">Jenis antrean
+          <select v-model="selectedReconType" aria-label="Jenis antrean rekonsiliasi" class="rounded-lg border border-slate-300 bg-white px-3 py-2">
+            <option value="all">Semua jenis</option><option value="SUCCESS_NOT_PUBLISHED">Lunas belum terbit</option>
+            <option value="PENDING_AGING">Pending lebih dari 24 jam</option><option value="COMMISSION_PENDING">Komisi belum tercatat</option><option value="PUBLISHED_UNPAID">Terbit tanpa bukti bayar</option>
+          </select>
+        </label>
+        <span v-if="reconData" class="text-xs text-slate-500">{{ filteredReconciliation.length }} dari {{ reconData.items?.length || 0 }} hasil antrean. Beberapa jenis dibatasi oleh API; ini bukan jumlah seluruh transaksi.</span>
+      </div>
+
       <div class="rounded-2xl border border-slate-200 bg-white shadow-xs overflow-hidden">
-        <div v-if="(reconData?.items || []).length === 0" class="p-12 text-center">
+        <p v-if="reconLoading" role="status" class="p-6 text-sm text-slate-500">Memuat antrean rekonsiliasi…</p>
+        <div v-else-if="reconError" role="alert" class="p-6 text-sm text-rose-700">{{ reconError }} <button type="button" class="font-semibold underline" @click="loadReconciliationQueue">Muat ulang antrean</button></div>
+        <div v-else-if="filteredReconciliation.length === 0" class="p-12 text-center">
           <i class="fa-solid fa-circle-check text-4xl text-emerald-500 mb-3"></i>
-          <h3 class="text-sm font-bold text-slate-800">Semua Transaksi Bersih & Tersinkron</h3>
-          <p class="text-xs text-slate-500 mt-1">Tidak ada anomali pembayaran atau penerbitan undangan yang memerlukan intervensi.</p>
+          <h3 class="text-sm font-bold text-slate-800">Tidak ada hasil antrean pada filter ini</h3>
+          <p class="text-xs text-slate-500 mt-1">Pemeriksaan ini hanya menunjukkan hasil dari sumber antrean yang tersedia.</p>
         </div>
 
         <div v-else class="divide-y divide-slate-100">
           <div
-            v-for="(item, idx) in reconData.items"
+            v-for="(item, idx) in filteredReconciliation"
             :key="idx"
             class="p-4 hover:bg-slate-50/80 transition-colors flex flex-col md:flex-row md:items-center justify-between gap-4"
           >
@@ -793,7 +824,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
@@ -815,7 +846,10 @@ const route = useRoute()
 const router = useRouter()
 const toast = useToast()
 
-const activeTab = ref('transactions')
+const queryValue = (value, fallback = '') => typeof value === 'string' ? value : fallback
+const kinds = ['paid', 'free', 'pending']
+const reconTypes = ['SUCCESS_NOT_PUBLISHED', 'PENDING_AGING', 'COMMISSION_PENDING', 'PUBLISHED_UNPAID']
+const activeTab = ref(route.query.tab === 'reconciliation' ? 'reconciliation' : 'transactions')
 const payments = ref([])
 const total = ref(0)
 const page = ref(Number(route.query.page) || 1)
@@ -824,11 +858,22 @@ const search = ref(route.query.q || '')
 const selectedStatus = ref(route.query.status || 'all')
 const selectedPurpose = ref(route.query.purpose || 'all')
 const selectedPackage = ref(route.query.package || 'all')
+const selectedKind = ref(kinds.includes(queryValue(route.query.kind)) ? queryValue(route.query.kind) : 'all')
+const startDate = ref(queryValue(route.query.startDate))
+const endDate = ref(queryValue(route.query.endDate))
+const selectedReconType = ref(reconTypes.includes(queryValue(route.query.type)) ? queryValue(route.query.type) : 'all')
+const today = new Date(Date.now() + 7 * 3600000).toISOString().slice(0, 10)
 
 const loading = ref(false)
 const loadingExport = ref(false)
 const stats = ref(null)
 const reconData = ref(null)
+const listError = ref('')
+const reconLoading = ref(true)
+const reconError = ref('')
+let paymentRequest = 0
+let applyingRoute = false
+const filteredReconciliation = computed(() => (reconData.value?.items || []).filter((item) => selectedReconType.value === 'all' || item.type === selectedReconType.value))
 
 // Detail Modal
 const showDetailModal = ref(false)
@@ -844,7 +889,7 @@ const hasActiveFilters = computed(() => {
     search.value.trim() !== '' ||
     selectedStatus.value !== 'all' ||
     selectedPurpose.value !== 'all' ||
-    selectedPackage.value !== 'all'
+    selectedPackage.value !== 'all' || selectedKind.value !== 'all' || Boolean(startDate.value || endDate.value)
   )
 })
 
@@ -899,28 +944,43 @@ function syncUrlParams() {
   if (selectedStatus.value !== 'all') query.status = selectedStatus.value
   if (selectedPurpose.value !== 'all') query.purpose = selectedPurpose.value
   if (selectedPackage.value !== 'all') query.package = selectedPackage.value
+  if (selectedKind.value !== 'all') query.kind = selectedKind.value
+  if (startDate.value) query.startDate = startDate.value
+  if (endDate.value) query.endDate = endDate.value
+  if (activeTab.value === 'reconciliation') query.tab = 'reconciliation'
+  if (selectedReconType.value !== 'all') query.type = selectedReconType.value
   router.replace({ query }).catch(() => {})
 }
 
-async function loadPayments() {
+function transactionFilters() {
+  return {
+    q: search.value.trim() || undefined,
+    status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
+    purpose: selectedPurpose.value !== 'all' ? selectedPurpose.value : undefined,
+    package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
+    kind: selectedKind.value !== 'all' ? selectedKind.value : undefined,
+    startDate: startDate.value || undefined,
+    endDate: endDate.value || undefined,
+  }
+}
+
+async function loadPayments(sync = true) {
+  const request = ++paymentRequest
   loading.value = true
-  syncUrlParams()
+  listError.value = ''
+  if (sync) syncUrlParams()
   try {
     const params = {
       page: page.value,
       limit,
-      q: search.value.trim() || undefined,
-      status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
-      purpose: selectedPurpose.value !== 'all' ? selectedPurpose.value : undefined,
-      package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
+      ...transactionFilters(),
     }
     const res = await fetchAdminPayments(params)
-    payments.value = res.data
-    total.value = res.total
+    if (request === paymentRequest) { payments.value = res.data; total.value = res.total }
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat data transaksi')
+    if (request === paymentRequest) { payments.value = []; listError.value = error.message || 'Gagal memuat data transaksi' }
   } finally {
-    loading.value = false
+    if (request === paymentRequest) loading.value = false
   }
 }
 
@@ -933,11 +993,14 @@ async function loadStats() {
 }
 
 async function loadReconciliationQueue() {
+  reconLoading.value = true
+  reconError.value = ''
   try {
     reconData.value = await fetchAdminPaymentReconciliationQueue()
   } catch (err) {
-    console.error('Failed to load reconciliation queue:', err)
-  }
+    reconData.value = null
+    reconError.value = err.message || 'Antrean rekonsiliasi belum tersedia.'
+  } finally { reconLoading.value = false }
 }
 
 async function loadAllData() {
@@ -959,11 +1022,24 @@ function handleFilterChange() {
   loadPayments()
 }
 
+function handleKindChange() {
+  if (selectedKind.value !== 'all') selectedStatus.value = selectedKind.value === 'pending' ? 'pending' : 'success'
+  handleFilterChange()
+}
+
+function handleStatusChange() {
+  if (selectedKind.value !== 'all' && selectedStatus.value !== (selectedKind.value === 'pending' ? 'pending' : 'success')) selectedKind.value = 'all'
+  handleFilterChange()
+}
+
 function resetFilters() {
   search.value = ''
   selectedStatus.value = 'all'
   selectedPurpose.value = 'all'
   selectedPackage.value = 'all'
+  selectedKind.value = 'all'
+  startDate.value = ''
+  endDate.value = ''
   page.value = 1
   loadPayments()
 }
@@ -1046,12 +1122,7 @@ async function triggerSyncGateway(paymentId, orderId) {
 async function handleExportCsv() {
   loadingExport.value = true
   try {
-    const params = {
-      q: search.value.trim() || undefined,
-      status: selectedStatus.value !== 'all' ? selectedStatus.value : undefined,
-      purpose: selectedPurpose.value !== 'all' ? selectedPurpose.value : undefined,
-      package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
-    }
+    const params = transactionFilters()
     const res = await exportAdminPayments(params)
     if (!res.csv) throw new Error('Data ekspor kosong')
 
@@ -1072,6 +1143,27 @@ async function handleExportCsv() {
     loadingExport.value = false
   }
 }
+
+function routeFingerprint() {
+  return JSON.stringify([page.value, transactionFilters(), activeTab.value, selectedReconType.value])
+}
+watch(() => route.query, (query) => {
+  const before = routeFingerprint()
+  applyingRoute = true
+  page.value = Math.max(1, Number(query.page) || 1)
+  search.value = queryValue(query.q)
+  selectedStatus.value = queryValue(query.status, 'all')
+  selectedPurpose.value = queryValue(query.purpose, 'all')
+  selectedPackage.value = queryValue(query.package, 'all')
+  selectedKind.value = kinds.includes(queryValue(query.kind)) ? queryValue(query.kind) : 'all'
+  startDate.value = queryValue(query.startDate)
+  endDate.value = queryValue(query.endDate)
+  activeTab.value = query.tab === 'reconciliation' ? 'reconciliation' : 'transactions'
+  selectedReconType.value = reconTypes.includes(queryValue(query.type)) ? queryValue(query.type) : 'all'
+  applyingRoute = false
+  if (routeFingerprint() !== before) loadPayments(false)
+})
+watch([activeTab, selectedReconType], () => { if (!applyingRoute) syncUrlParams() }, { flush: 'sync' })
 
 onMounted(() => {
   loadAllData()

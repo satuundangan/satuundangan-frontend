@@ -48,7 +48,8 @@ export const deleteAdminInvitation = (id) =>
 // Payments & Transactions (PKG-02: ADM-009 s/d ADM-015)
 export const fetchAdminPayments = (params) => apiFetch(withParams('/admin/payments', params))
 export const fetchAdminPaymentStats = () => apiFetch('/admin/payments/stats')
-export const fetchAdminPaymentReconciliationQueue = () => apiFetch('/admin/payments/reconciliation-queue')
+export const fetchAdminPaymentReconciliationQueue = () =>
+  apiFetch('/admin/payments/reconciliation-queue')
 export const fetchAdminPaymentDetail = (id) => apiFetch(`/admin/payments/${id}`)
 export const reconcileAdminPaymentPublish = (id, reason) =>
   apiFetch(`/admin/payments/${id}/reconcile-publish`, {
@@ -59,13 +60,15 @@ export const syncAdminPaymentGateway = (id) =>
   apiFetch(`/admin/payments/${id}/sync-gateway`, {
     method: 'POST',
   })
-export const exportAdminPayments = (params) => apiFetch(withParams('/admin/payments/export', params))
+export const exportAdminPayments = (params) =>
+  apiFetch(withParams('/admin/payments/export', params))
 
 // Guests
 export const fetchAdminGuests = (params) => apiFetch(withParams('/admin/guests', params))
 
 // Template Designs
-export const fetchAdminTemplates = (params) => apiFetch(withParams('/admin/template-designs', params))
+export const fetchAdminTemplates = (params) =>
+  apiFetch(withParams('/admin/template-designs', params))
 export const createAdminTemplate = (payload) =>
   apiFetch('/admin/template-designs', {
     method: 'POST',
@@ -141,6 +144,8 @@ export const fetchAdminArticleBotStatus = () => apiFetch('/admin/articles/bot-st
 
 export const fetchAdminHealth = () => apiFetch('/admin/health')
 export const fetchAdminStats = () => apiFetch('/admin/stats')
+export const fetchAdminDashboardOverview = (params) =>
+  apiFetch(withParams('/admin/dashboard/overview', params))
 
 // Activity & Error Logs
 export const fetchAdminLogs = (params) => apiFetch(withParams('/admin/logs', params))
@@ -149,4 +154,3 @@ export const clearAdminLogs = () =>
   apiFetch('/admin/logs', {
     method: 'DELETE',
   })
-
