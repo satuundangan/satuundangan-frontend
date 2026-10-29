@@ -1,7 +1,7 @@
 <template>
   <AdminShell
-    title="Bank & Pembayaran"
-    description="Kelola daftar bank dan e-wallet yang didukung"
+    title="Master Bank & E-wallet"
+    description="Kelola referensi bank dan e-wallet. Riwayat transaksi tersedia pada menu Pembayaran & Transaksi."
     show-search
     :search="search"
     search-placeholder="Cari nama bank"
