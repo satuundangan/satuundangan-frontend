@@ -104,7 +104,7 @@ test.describe('Admin Panel: Comprehensive Testing', () => {
     await expect(page.locator('text=Romantic Song')).toBeVisible()
     console.log('✅ Audio section verified')
 
-    // 4. Bank & Pembayaran
+    // 4. Master Bank & E-wallet
     await page.route('**/admin/banks**', (route) => {
       route.fulfill({
         status: 200,
@@ -116,8 +116,8 @@ test.describe('Admin Panel: Comprehensive Testing', () => {
         }),
       })
     })
-    await sidebar.locator('text=Bank & Pembayaran').click()
-    await expect(page.getByRole('heading', { name: 'Bank & Pembayaran' })).toBeVisible()
+    await sidebar.locator('text=Master Bank & E-wallet').click()
+    await expect(page.getByRole('heading', { name: 'Master Bank & E-wallet' })).toBeVisible()
     await expect(page.locator('text=BCA')).toBeVisible()
     console.log('✅ Bank section verified')
 
@@ -142,6 +142,7 @@ test.describe('Admin Panel: Comprehensive Testing', () => {
 
     // 6. Logout
     await page.click('button[title="Logout"]')
+    await page.getByRole('button', { name: 'Ya, Keluar' }).click()
     await page.waitForURL(/.*login/)
     await expect(page.locator('text=Admin Login')).toBeVisible()
     console.log('✅ Logout verified')

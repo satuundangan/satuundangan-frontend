@@ -423,42 +423,17 @@ router.beforeEach(async (to, _from, next) => {
   next()
 })
 
-router.afterEach((to, from) => {
+router.afterEach((to, from, failure) => {
+  if (failure) return
   const authStore = useAuthStore()
-
-  // Identify user if logged in
-  if (authStore.user) {
-    analytics.identify(authStore.user.id, {
-      $email: authStore.user.email,
-      $name: authStore.user.name,
-      role: authStore.user.isAdmin ? 'admin' : 'user',
-    })
-  }
-
-  // Track page view with title and duration tracking
-  const pageTitle = to.meta.title || to.name || 'Untitled'
-  analytics.startTimer('Time on Page')
-  analytics.trackPage(pageTitle, {
-    path: to.fullPath,
-    name: to.name,
-    from_path: from.fullPath,
+  const context = analytics.trackNavigation(to, from, {
+    userId: authStore.user?.id,
+    isAdmin: authStore.user?.isAdmin,
   })
-
-  // Telemetry internal activity log
-  trackPageView(to.fullPath, pageTitle, {
-    name: String(to.name || ''),
-    from_path: from.fullPath,
-    userEmail: authStore.user?.email || null,
-  })
-
-  // When leaving the page (on the next transition), the 'Time on Page' for the PREVIOUS page should be captured.
-  // Note: Mixpanel's time_event works by calling track() later with the same name.
-  if (from.name) {
-    const prevTitle = from.meta.title || from.name || 'Untitled'
-    analytics.stopTimer('Time on Page', {
-      page: prevTitle,
-      path: from.fullPath,
-    })
+  // Internal page telemetry receives the same safe route identity, not tokens or
+  // recipient names from fullPath. Sensitive admin/test navigation is excluded.
+  if (!authStore.user?.isAdmin && !['admin', 'test'].includes(context.site_area)) {
+    trackPageView(context.path, context.page_type, { site_area: context.site_area })
   }
 })
 
