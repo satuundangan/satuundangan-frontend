@@ -357,6 +357,28 @@
               />
             </div>
 
+            <div
+              v-if="editing && form.isAdmin && isSuperadmin"
+              class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-3"
+            >
+              <div>
+                <label for="adminRole" class="text-xs font-bold text-slate-900 block">Role Admin</label>
+                <p class="text-[11px] text-slate-500">
+                  Superadmin mengakses semua fitur; role lain dibatasi di server.
+                </p>
+              </div>
+              <select
+                id="adminRole"
+                v-model="form.adminRole"
+                class="rounded-lg border border-slate-300 px-2 py-1.5 text-xs font-semibold"
+              >
+                <option value="superadmin">Superadmin</option>
+                <option value="support">Support</option>
+                <option value="finance">Finance</option>
+                <option value="content">Content</option>
+              </select>
+            </div>
+
             <div v-if="editing" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
               <div>
                 <label for="isEmailVerified" class="text-xs font-bold text-slate-900 block cursor-pointer">Status Verifikasi Email</label>
@@ -433,10 +455,14 @@ import {
   deleteAdminUser,
   verifyAdminUserEmail,
 } from '@/api/admin.js'
+import { updateAdminRole } from '@/api/adminSecurity.js'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
+const authStore = useAuthStore()
+const isSuperadmin = computed(() => authStore.adminRole === 'superadmin')
 const users = ref([])
 const total = ref(0)
 const page = ref(1)
@@ -456,6 +482,7 @@ const form = reactive({
   hasWeddingPlannerAccess: false,
   instagramHandle: '',
   password: '',
+  adminRole: 'superadmin',
 })
 
 const adminUsersCount = computed(() => {
@@ -529,6 +556,7 @@ function openCreate() {
     hasWeddingPlannerAccess: false,
     instagramHandle: '',
     password: '',
+    adminRole: 'superadmin',
   })
   showForm.value = true
 }
@@ -543,6 +571,7 @@ function openEdit(user) {
     hasWeddingPlannerAccess: Boolean(user.hasWeddingPlannerAccess),
     instagramHandle: user.instagramHandle || '',
     password: '',
+    adminRole: user.adminRole || 'superadmin',
   })
   showForm.value = true
 }
@@ -559,12 +588,16 @@ const handleKeydown = (e) => {
 async function submitForm() {
   saving.value = true
   try {
-    const payload = { ...form }
+    const { adminRole, ...payload } = { ...form }
     if (editing.value && !payload.password) {
       delete payload.password
     }
     if (editing.value) {
       await updateAdminUser(editing.value.id, payload)
+      const currentRole = editing.value.adminRole || 'superadmin'
+      if (isSuperadmin.value && payload.isAdmin && adminRole !== currentRole) {
+        await updateAdminRole(editing.value.id, adminRole)
+      }
       toast.success('Pengguna berhasil diperbarui')
     } else {
       await createAdminUser(payload)

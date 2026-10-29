@@ -90,10 +90,9 @@
           <p class="mt-1 text-xs text-slate-500">{{ comparisonLabel(card.key, card.money) }}</p>
           <p class="mt-3 text-xs leading-relaxed text-slate-500">{{ card.description }}</p>
           <RouterLink
-            v-if="card.link"
             :to="metricLink(card)"
             class="mt-3 inline-block text-xs font-semibold text-indigo-700 underline focus-visible:outline focus-visible:outline-2"
-            >Lihat transaksi sumber</RouterLink
+            >{{ card.key === 'invitationsCreated' ? 'Lihat undangan sumber' : 'Lihat transaksi sumber' }}</RouterLink
           >
         </article>
       </section>
@@ -135,6 +134,13 @@
           >
             <p class="text-xs text-slate-500">{{ card.label }}</p>
             <p class="mt-1 text-xl font-bold">{{ number(overview.totals[card.key]) }}</p>
+            <RouterLink
+              v-if="card.to"
+              :to="card.to"
+              class="mt-1 inline-block text-xs font-semibold text-indigo-700 underline"
+              >Lihat daftar</RouterLink
+            >
+            <p v-else-if="card.note" class="mt-1 text-[11px] text-slate-500">{{ card.note }}</p>
           </div>
         </div>
         <p v-if="overview.sourceWarnings?.length" class="mt-2 text-xs text-amber-800">
@@ -162,6 +168,15 @@
               stroke-width="3"
               vector-effect="non-scaling-stroke"
             />
+            <a
+              v-for="point in trendDots"
+              :key="point.date"
+              :href="router.resolve(dayLink(point.date)).href"
+              :aria-label="`${point.date}: ${point.count} undangan dibuat. Buka daftar`"
+              @click.prevent="router.push(dayLink(point.date))"
+            >
+              <circle :cx="point.x" :cy="point.y" r="5" fill="#4f46e5" />
+            </a>
           </svg>
           <details class="mt-3">
             <summary class="cursor-pointer text-sm text-indigo-700">Lihat data harian</summary>
@@ -185,8 +200,16 @@
                     class="border-t border-slate-100"
                   >
                     <td class="p-2">{{ day.date }}</td>
-                    <td class="p-2">{{ number(day.count) }}</td>
-                    <td class="p-2">{{ number(day.paidOrders) }}</td>
+                    <td class="p-2">
+                      <RouterLink :to="dayLink(day.date)" class="text-indigo-700 underline">{{
+                        number(day.count)
+                      }}</RouterLink>
+                    </td>
+                    <td class="p-2">
+                      <RouterLink :to="dayPaymentsLink(day.date)" class="text-indigo-700 underline">{{
+                        number(day.paidOrders)
+                      }}</RouterLink>
+                    </td>
                     <td class="p-2">{{ currency(day.revenue) }}</td>
                   </tr>
                 </tbody>
@@ -205,7 +228,9 @@
               :key="item.category"
               class="flex items-center justify-between gap-3 border-b border-slate-100 pb-2 text-sm"
             >
-              <span>{{ item.category }}</span
+              <RouterLink :to="categoryLink(item.category)" class="text-indigo-700 underline">{{
+                item.category
+              }}</RouterLink
               ><strong>{{ number(item.count) }}</strong>
             </li>
           </ul>
@@ -217,7 +242,7 @@
     </template>
 
     <section class="mt-6 grid gap-5 lg:grid-cols-2">
-      <article class="rounded-2xl border border-slate-200 bg-white p-5">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5" data-testid="action-queue">
         <div class="flex flex-wrap items-center justify-between gap-2">
           <h2 class="font-semibold">Perlu tindakan</h2>
           <RouterLink
@@ -226,10 +251,7 @@
             >Buka antrean pembayaran</RouterLink
           >
         </div>
-        <p class="mt-1 text-xs text-slate-500">
-          Kondisi transaksi saat ini, di luar filter periode. Antrean bersumber dari pusat
-          pembayaran.
-        </p>
+        <p class="mt-1 text-xs text-slate-500">{{ queue?.note || 'Antrean dari pusat pembayaran.' }}</p>
         <p v-if="queueLoading" role="status" class="py-6 text-sm text-slate-500">Memuat antrean…</p>
         <div v-else-if="queueError" class="mt-4 text-sm text-amber-800">
           {{ queueError }}
@@ -237,47 +259,80 @@
         </div>
         <template v-else-if="queue">
           <p class="mt-3 text-sm">
-            {{ number(queue.count) }} hasil yang terdeteksi; beberapa jenis dibatasi oleh API
-            antrean.
+            {{ number(queue.count) }} item · transaksi {{ number(queue.countsBySource.transaksi) }},
+            undangan {{ number(queue.countsBySource.undangan) }}, payout
+            {{ number(queue.countsBySource.payout) }}
           </p>
           <ul class="mt-3 space-y-3">
             <li
-              v-for="(item, index) in queue.items.slice(0, 6)"
-              :key="item.type + ':' + (item.paymentId || item.invitationId || index)"
-              class="rounded-lg border border-amber-100 bg-amber-50 p-3 text-sm"
+              v-for="item in queue.items.slice(0, 8)"
+              :key="item.key"
+              class="rounded-lg border p-3 text-sm"
+              :class="item.priority === 1 ? 'border-rose-200 bg-rose-50' : 'border-amber-100 bg-amber-50'"
             >
-              <RouterLink
-                :to="{ path: '/admin/payments', query: { tab: 'reconciliation', type: item.type } }"
-                class="font-semibold text-slate-800 underline"
-                >{{ item.title }}</RouterLink
-              >
-              <p class="mt-1 text-xs text-slate-600">{{ item.description }}</p>
-              <p v-if="item.createdAt" class="mt-1 text-xs text-slate-500">
-                Sejak {{ dateTime(item.createdAt) }} WIB
+              <div class="flex items-center justify-between gap-2">
+                <RouterLink v-if="item.link" :to="item.link" class="font-semibold text-slate-800 underline">{{
+                  item.title
+                }}</RouterLink>
+                <span v-else class="font-semibold text-slate-800">{{ item.title }}</span>
+                <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold">{{ item.priorityLabel }}</span>
+              </div>
+              <p class="mt-1 text-xs text-slate-600">{{ item.reason }}</p>
+              <p class="mt-1 text-xs text-slate-500">
+                <template v-if="item.ageHours != null">Umur {{ ageLabel(item.ageHours) }}</template>
+                <template v-if="item.amount"> · {{ currency(item.amount) }}</template>
+                <template v-if="item.linkNote"> · {{ item.linkNote }}</template>
               </p>
             </li>
           </ul>
           <p v-if="!queue.items.length" class="py-6 text-sm text-slate-500">
             Tidak ada pengecualian pada hasil pemeriksaan ini.
           </p>
+          <p v-if="queue.items.length > 8" class="mt-2 text-xs text-slate-500">
+            Menampilkan 8 teratas dari {{ number(queue.items.length) }}.
+          </p>
+          <ul v-if="queue.unavailableSources?.length" class="mt-3 text-xs text-slate-500">
+            <li v-for="source in queue.unavailableSources" :key="source.source">
+              Belum tersedia ({{ source.source }}): {{ source.reason }}
+            </li>
+          </ul>
         </template>
       </article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-5">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5" data-testid="ga4-card">
         <h2 class="font-semibold">Visitor dan perjalanan pembelian</h2>
-        <p class="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
-          GA4 belum terhubung ke panel admin.
+        <p v-if="ga4Loading" role="status" class="mt-3 text-sm text-slate-500">Memuat GA4…</p>
+        <template v-else-if="ga4 && ga4.status === 'ready'">
+          <dl class="mt-3 grid grid-cols-3 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-slate-500">Users</dt>
+              <dd class="text-lg font-bold">{{ number(ga4.reports.summary.current?.activeUsers) }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-slate-500">Sesi</dt>
+              <dd class="text-lg font-bold">{{ number(ga4.reports.summary.current?.sessions) }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-slate-500">Engagement</dt>
+              <dd class="text-lg font-bold">
+                {{
+                  ga4.reports.summary.current?.engagementRate == null
+                    ? 'Belum tersedia'
+                    : Math.round(ga4.reports.summary.current.engagementRate * 1000) / 10 + '%'
+                }}
+              </dd>
+            </div>
+          </dl>
+          <p class="mt-2 text-xs text-slate-500">
+            {{ ga4.scope.name }} · diambil {{ dateTime(ga4.generatedAt) }} WIB
+          </p>
+        </template>
+        <p v-else class="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
+          {{ ga4Message }}
         </p>
-        <p class="mt-3 text-sm leading-relaxed text-slate-600">
-          Tracking GA4 sudah terpasang di website. Angka users, sessions, sumber traffic dan funnel
-          memerlukan akses laporan GA4. Traffic marketing akan dipisahkan dari tamu undangan, demo
-          dan admin.
-        </p>
-        <a
-          href="https://analytics.google.com/"
-          target="_blank"
-          rel="noopener noreferrer"
+        <RouterLink
+          to="/admin/analytics"
           class="mt-4 inline-block text-sm font-semibold text-indigo-700 underline"
-          >Buka Google Analytics<span class="sr-only"> di tab baru</span></a
+          >Funnel, purchase, atribusi, dan kualitas data</RouterLink
         >
       </article>
     </section>
@@ -310,34 +365,35 @@
           {{ recentLoading ? 'Memuat undangan…' : 'Belum ada undangan.' }}
         </p>
       </article>
-      <article class="rounded-2xl border border-slate-200 bg-white p-5">
-        <h2 class="font-semibold">Pemeriksaan layanan</h2>
-        <p class="mt-1 text-xs text-slate-500">
-          Database diperiksa langsung. Konfigurasi provider tidak membuktikan koneksi atau
-          pengiriman berhasil.
-        </p>
-        <dl v-if="diagnostics" class="mt-3 space-y-2 text-sm">
-          <div
-            v-for="key in ['database', 'storage', 'email', 'payment']"
-            :key="key"
-            class="flex justify-between gap-3"
+      <article class="rounded-2xl border border-slate-200 bg-white p-5" data-testid="system-card">
+        <h2 class="font-semibold">Status sistem</h2>
+        <template v-if="isSuperadmin">
+          <p class="mt-1 text-xs text-slate-500">
+            Pemeriksaan nyata per layanan. Kredensial saja tidak dihitung sehat.
+          </p>
+          <p v-if="systemError" class="mt-3 text-sm text-rose-700">
+            {{ systemError }}
+            <button type="button" class="underline" @click="loadSystem">Coba lagi</button>
+          </p>
+          <ul v-else-if="system" class="mt-3 space-y-2 text-sm">
+            <li v-for="item in system.services" :key="item.key" class="flex justify-between gap-3">
+              <span>{{ item.label }}</span>
+              <span :class="serviceClass(item.status)">{{ statusLabel(item.status) }}</span>
+            </li>
+          </ul>
+          <p v-else role="status" class="mt-3 text-sm text-slate-500">Memeriksa layanan…</p>
+          <p class="mt-3 text-sm" data-testid="maintenance-status">
+            Mode perawatan:
+            <strong :class="maintenance?.active ? 'text-rose-700' : 'text-emerald-700'">{{
+              maintenance == null ? 'belum diketahui' : maintenance.active ? 'AKTIF' : 'normal'
+            }}</strong>
+          </p>
+          <RouterLink to="/admin/system" class="mt-4 inline-block text-sm font-semibold text-indigo-700 underline"
+            >Buka kesehatan, perawatan, dan jejak audit</RouterLink
           >
-            <dt>{{ serviceNames[key] }}</dt>
-            <dd :class="serviceClass(key)">{{ serviceMessage(key) }}</dd>
-          </div>
-        </dl>
-        <p v-if="diagnosticError" class="mt-3 text-sm text-rose-700">{{ diagnosticError }}</p>
-        <button
-          type="button"
-          :disabled="checking"
-          class="mt-4 rounded-lg border border-slate-300 px-3 py-2 text-sm disabled:opacity-50"
-          @click="runDiagnostics"
-        >
-          {{ checking ? 'Memeriksa…' : 'Jalankan pemeriksaan' }}
-        </button>
-        <p class="mt-4 border-t border-slate-100 pt-3 text-xs text-slate-500">
-          Kontrol pemeliharaan publik belum tersambung. Pengaturan browser lokal tidak digunakan
-          untuk menyatakan website ditutup.
+        </template>
+        <p v-else class="mt-3 text-sm text-slate-600">
+          Kesehatan sistem dan mode perawatan hanya tersedia untuk superadmin.
         </p>
       </article>
     </section>
@@ -351,12 +407,16 @@ import AdminShell from '@/components/admin/AdminShell.vue'
 import {
   fetchAdminDashboardOverview,
   fetchAdminInvitations,
-  fetchAdminPaymentReconciliationQueue,
-  fetchAdminHealth,
+  fetchAdminActionQueue,
 } from '@/api/admin.js'
+import { fetchAnalyticsReport } from '@/api/adminAnalytics.js'
+import { fetchAdminHealthReport, fetchMaintenance } from '@/api/adminSecurity.js'
+import { useAuthStore } from '@/stores/auth'
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
+const isSuperadmin = computed(() => authStore.adminRole === 'superadmin')
 const overview = ref(null)
 const loading = ref(false)
 const error = ref('')
@@ -377,15 +437,12 @@ const queue = ref(null),
 const recentInvitations = ref([]),
   recentLoading = ref(true),
   recentError = ref('')
-const diagnostics = ref(null),
-  checking = ref(false),
-  diagnosticError = ref('')
-const serviceNames = {
-  database: 'Database',
-  storage: 'Penyimpanan',
-  email: 'Email',
-  payment: 'Pembayaran',
-}
+const system = ref(null),
+  systemError = ref(''),
+  maintenance = ref(null)
+const ga4 = ref(null),
+  ga4Loading = ref(true),
+  ga4Message = ref('Memuat GA4…')
 const businessCards = [
   {
     key: 'revenue',
@@ -443,12 +500,12 @@ const businessCards = [
   },
 ]
 const totalCards = [
-  { key: 'users', label: 'Pengguna' },
-  { key: 'invitations', label: 'Undangan' },
-  { key: 'guests', label: 'Tamu' },
-  { key: 'templates', label: 'Template' },
-  { key: 'activeResellers', label: 'Reseller berstatus aktif' },
-  { key: 'pendingWithdrawals', label: 'Penarikan pending' },
+  { key: 'users', label: 'Pengguna', to: '/admin/users' },
+  { key: 'invitations', label: 'Undangan', to: '/admin/invitations' },
+  { key: 'guests', label: 'Tamu', note: 'Belum ada halaman admin untuk tamu.' },
+  { key: 'templates', label: 'Template', to: '/admin/templates' },
+  { key: 'activeResellers', label: 'Reseller berstatus aktif', note: 'Halaman reseller belum aktif.' },
+  { key: 'pendingWithdrawals', label: 'Penarikan pending', note: 'Antrean payout belum aktif.' },
 ]
 const number = (value) =>
   value == null ? 'Belum tersedia' : new Intl.NumberFormat('id-ID').format(value)
@@ -504,12 +561,22 @@ function applyPeriod() {
   delete query.endDate
   for (const [key, value] of Object.entries(params())) query[key] = String(value)
   router.replace({ query }).catch(() => {})
+  loadGa4()
   return loadOverview()
 }
 function changePeriod() {
   if (selectedPeriod.value !== 'custom') applyPeriod()
 }
 function metricLink(card) {
+  if (card.key === 'invitationsCreated') {
+    return {
+      path: '/admin/invitations',
+      query: {
+        startDate: overview.value.period.startDate,
+        endDate: overview.value.period.endDate,
+      },
+    }
+  }
   return {
     path: '/admin/payments',
     query: {
@@ -522,6 +589,29 @@ function metricLink(card) {
     },
   }
 }
+const dayLink = (date) => ({ path: '/admin/invitations', query: { startDate: date, endDate: date } })
+const dayPaymentsLink = (date) => ({
+  path: '/admin/payments',
+  query: { status: 'success', purpose: 'invitation', kind: 'paid', startDate: date, endDate: date },
+})
+const categoryLink = (category) => ({
+  path: '/admin/invitations',
+  query: {
+    category,
+    startDate: overview.value.period.startDate,
+    endDate: overview.value.period.endDate,
+  },
+})
+const trendDots = computed(() => {
+  const days = overview.value?.trend || []
+  const max = Math.max(...days.map((d) => d.count), 1)
+  return days.map((day, index) => ({
+    date: day.date,
+    count: day.count,
+    x: (index / Math.max(days.length - 1, 1)) * 480 + 10,
+    y: 130 - (day.count / max) * 115,
+  }))
+})
 const trendPoints = computed(() => {
   const days = overview.value?.trend || []
   const max = Math.max(...days.map((d) => d.count), 1)
@@ -536,7 +626,7 @@ async function loadQueue() {
   queueLoading.value = true
   queueError.value = ''
   try {
-    const response = await fetchAdminPaymentReconciliationQueue()
+    const response = await fetchAdminActionQueue()
     queue.value = response?.data || response
   } catch (err) {
     queue.value = null
@@ -555,38 +645,68 @@ async function loadRecent() {
     recentLoading.value = false
   }
 }
-async function runDiagnostics() {
-  checking.value = true
-  diagnosticError.value = ''
+const STATUS_LABELS = {
+  available: 'Tersedia',
+  configured: 'Terkonfigurasi',
+  degraded: 'Terdegradasi',
+  error: 'Error',
+  unknown: 'Tidak diketahui',
+}
+const statusLabel = (status) => STATUS_LABELS[status] || status
+function serviceClass(status) {
+  return status === 'available'
+    ? 'text-emerald-700'
+    : status === 'error'
+      ? 'text-rose-700'
+      : status === 'degraded'
+        ? 'text-amber-800'
+        : 'text-slate-600'
+}
+function ageLabel(hours) {
+  return hours >= 48 ? Math.floor(hours / 24) + ' hari' : hours + ' jam'
+}
+async function loadSystem() {
+  if (!isSuperadmin.value) return
+  systemError.value = ''
   try {
-    const response = await fetchAdminHealth()
-    diagnostics.value = response?.data || response
+    system.value = await fetchAdminHealthReport()
   } catch (err) {
-    diagnostics.value = null
-    diagnosticError.value = err.message || 'Pemeriksaan gagal.'
-  } finally {
-    checking.value = false
+    system.value = null
+    systemError.value = err.message || 'Pemeriksaan gagal.'
+  }
+  try {
+    maintenance.value = await fetchMaintenance()
+  } catch {
+    maintenance.value = null
   }
 }
-function serviceClass(key) {
-  const status = diagnostics.value?.[key]?.status
-  return key === 'database' && status === 'healthy'
-    ? 'text-emerald-700'
-    : status === 'unhealthy'
-      ? 'text-rose-700'
-      : 'text-amber-800'
+async function loadGa4() {
+  ga4Loading.value = true
+  try {
+    const report = await fetchAnalyticsReport(params())
+    ga4.value = report
+    ga4Message.value =
+      report.status === 'not_connected'
+        ? 'GA4 belum tersambung ke panel admin. Angka tidak ditampilkan sampai kredensial server lengkap.'
+        : report.status === 'no_data'
+          ? report.emptyReason || 'Tidak ada data GA4 untuk periode ini.'
+          : report.message || 'Laporan GA4 belum dapat dimuat.'
+  } catch (err) {
+    ga4.value = null
+    ga4Message.value =
+      err.status === 403
+        ? 'Role Anda tidak memiliki akses ke laporan GA4.'
+        : err.message || 'Laporan GA4 belum dapat dimuat.'
+  } finally {
+    ga4Loading.value = false
+  }
 }
-function serviceMessage(key) {
-  const item = diagnostics.value?.[key]
-  if (!item) return 'Belum diperiksa'
-  if (key === 'database') return item.msg
-  return item.status === 'healthy' || item.status === 'configured'
-    ? 'Dikonfigurasi · koneksi belum diuji'
-    : item.msg
-}
-onMounted(() => {
+onMounted(async () => {
+  await authStore.loadAdminAccess()
   loadOverview()
   loadQueue()
   loadRecent()
+  loadSystem()
+  loadGa4()
 })
 </script>

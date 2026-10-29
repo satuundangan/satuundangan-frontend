@@ -52,6 +52,35 @@
         <option value="eksklusif">Eksklusif</option>
       </select>
 
+      <!-- Periode dibuat (WIB) and category: set by dashboard drilldowns, editable here -->
+      <label class="flex items-center gap-1 text-xs font-semibold text-slate-600">
+        Dibuat dari
+        <input
+          v-model="startDate"
+          type="date"
+          aria-label="Dibuat dari tanggal (WIB)"
+          class="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+          @change="handleFilterChange"
+        />
+      </label>
+      <label class="flex items-center gap-1 text-xs font-semibold text-slate-600">
+        sampai
+        <input
+          v-model="endDate"
+          type="date"
+          aria-label="Dibuat sampai tanggal (WIB)"
+          class="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+          @change="handleFilterChange"
+        />
+      </label>
+      <p
+        v-if="selectedCategory !== 'all'"
+        class="rounded-lg bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-800"
+        data-testid="category-filter"
+      >
+        Kategori: {{ selectedCategory }}
+      </p>
+
       <!-- Reset Filter Button -->
       <button
         v-if="hasActiveFilters"
@@ -484,6 +513,9 @@ const search = ref(route.query.q || '')
 const selectedPaymentStatus = ref(route.query.paymentStatus || 'all')
 const selectedPublished = ref(route.query.isPublished || 'all')
 const selectedPackage = ref(route.query.package || 'all')
+const startDate = ref(String(route.query.startDate || ''))
+const endDate = ref(String(route.query.endDate || ''))
+const selectedCategory = ref(String(route.query.category || 'all'))
 const loading = ref(false)
 
 // Unified Detail Modal State
@@ -496,7 +528,10 @@ const hasActiveFilters = computed(() => {
     search.value.trim() !== '' ||
     selectedPaymentStatus.value !== 'all' ||
     selectedPublished.value !== 'all' ||
-    selectedPackage.value !== 'all'
+    selectedPackage.value !== 'all' ||
+    startDate.value !== '' ||
+    endDate.value !== '' ||
+    selectedCategory.value !== 'all'
   )
 })
 
@@ -539,6 +574,9 @@ function syncUrlParams() {
   if (selectedPaymentStatus.value !== 'all') query.paymentStatus = selectedPaymentStatus.value
   if (selectedPublished.value !== 'all') query.isPublished = selectedPublished.value
   if (selectedPackage.value !== 'all') query.package = selectedPackage.value
+  if (startDate.value) query.startDate = startDate.value
+  if (endDate.value) query.endDate = endDate.value
+  if (selectedCategory.value !== 'all') query.category = selectedCategory.value
   router.replace({ query }).catch(() => {})
 }
 
@@ -553,6 +591,9 @@ async function loadInvitations() {
       paymentStatus: selectedPaymentStatus.value !== 'all' ? selectedPaymentStatus.value : undefined,
       isPublished: selectedPublished.value !== 'all' ? selectedPublished.value : undefined,
       package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
+      startDate: startDate.value || undefined,
+      endDate: endDate.value || undefined,
+      category: selectedCategory.value !== 'all' ? selectedCategory.value : undefined,
     }
     const res = await fetchAdminInvitations(params)
     invitations.value = res.data
@@ -584,6 +625,9 @@ function resetFilters() {
   selectedPaymentStatus.value = 'all'
   selectedPublished.value = 'all'
   selectedPackage.value = 'all'
+  startDate.value = ''
+  endDate.value = ''
+  selectedCategory.value = 'all'
   page.value = 1
   loadInvitations()
 }

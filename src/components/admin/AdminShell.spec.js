@@ -70,6 +70,21 @@ describe('AdminShell navigation', () => {
     expect(wrapper.get('header').text()).toContain('Ekspor CSV')
   })
 
+  it('hides what a restricted role cannot use but keeps pages every admin needs', async () => {
+    const { filterNavigationGroups } = await import('@/utils/adminAccess')
+    const { adminNavigationGroups } = await import('./AdminSidebar.vue')
+    const labels = (access) =>
+      filterNavigationGroups(adminNavigationGroups, access).flatMap((group) => group.items.map((item) => item.label))
+    const content = labels({ adminRole: 'content', allowedResources: ['dashboard', 'articles', 'audio', 'template-designs', 'categories', 'sections', 'analytics'] })
+    expect(content).toEqual(expect.arrayContaining(['Dashboard', 'Artikel & Blog', 'Keamanan Akun']))
+    expect(content).not.toContain('Pembayaran & Transaksi')
+    expect(content).not.toContain('Sistem & Audit')
+    expect(content).not.toContain('Social Studio (IG)')
+    expect(labels({ adminRole: 'superadmin', allowedResources: [] })).toHaveLength(17)
+    // access that could not be loaded hides nothing; the server still enforces
+    expect(labels(null)).toHaveLength(17)
+  })
+
   it('opens all existing navigation on mobile independently of desktop collapse', async () => {
     localStorage.setItem('admin_sidebar_collapsed', 'true')
     const { wrapper } = await renderShell()
@@ -89,10 +104,13 @@ describe('AdminShell navigation', () => {
       'WhatsApp Bot',
       'Social Studio (IG)',
       'Activity & Error Logs',
+      'Analytics & Funnel',
+      'Sistem & Audit',
+      'Keamanan Akun',
     ]) {
       expect(dialog.text()).toContain(label)
     }
-    expect(dialog.findAll('nav[aria-label="Menu admin"] a')).toHaveLength(14)
+    expect(dialog.findAll('nav[aria-label="Menu admin"] a')).toHaveLength(17)
     expect(localStorage.getItem('admin_sidebar_collapsed')).toBe('true')
   })
 

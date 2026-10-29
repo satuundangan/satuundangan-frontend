@@ -14,13 +14,15 @@ export async function apiFetch(path, options = {}) {
 
   const res = await fetch(`${BASE_URL}${path}`, {
     ...options,
-    headers,
+    headers: { ...headers, ...(options.headers || {}) },
   })
 
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: 'Something went wrong' }))
     const errorObject = new Error(err.message || 'Something went wrong')
     errorObject.status = res.status
+    if (err.code) errorObject.code = err.code
+    if (err.until !== undefined) errorObject.until = err.until
     throw errorObject
   }
 

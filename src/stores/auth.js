@@ -1,6 +1,7 @@
 // src/store/auth.js
 import { defineStore } from 'pinia'
 import { login, register, getProfile, recordConsent } from '@/api/auth'
+import { fetchAdminSecurity } from '@/api/adminSecurity'
 import axios from 'axios'
 import { analytics } from '@/api/analytics'
 
@@ -9,9 +10,12 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     token: null,
     redirectPath: null,
+    // Server-driven admin permissions; null until loaded
+    adminAccess: null,
   }),
   getters: {
     isApproved: (state) => state.user?.isApproved || false,
+    adminRole: (state) => state.adminAccess?.adminRole || null,
   },
   actions: {
     setRedirectPath(path) {
@@ -58,6 +62,17 @@ export const useAuthStore = defineStore('auth', {
 
       return res
     },
+    async loadAdminAccess(force = false) {
+      if (!this.user?.isAdmin) return null
+      if (this.adminAccess && !force) return this.adminAccess
+      try {
+        this.adminAccess = await fetchAdminSecurity()
+      } catch {
+        // Not cached: retried on the next navigation. Menus stay unfiltered meanwhile; the server enforces roles.
+        return null
+      }
+      return this.adminAccess
+    },
     async fetchProfile() {
       if (!this.token) return
       try {
@@ -76,6 +91,7 @@ export const useAuthStore = defineStore('auth', {
       analytics.reset()
       this.token = null
       this.user = null
+      this.adminAccess = null
       localStorage.removeItem('token')
       delete axios.defaults.headers.common['Authorization']
     },
