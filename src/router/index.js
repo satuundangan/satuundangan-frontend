@@ -226,6 +226,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin/payments',
+      name: 'admin-payments',
+      component: () => import('@/views/admin/AdminPayments.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Pembayaran & Transaksi' },
+    },
+    {
       path: '/admin/invitations/:id/edit',
       name: 'admin-invitation-edit',
       component: () => import('@/views/admin/AdminInvitationEdit.vue'),

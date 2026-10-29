@@ -138,6 +138,7 @@ const navItems = [
   { label: 'Dashboard', to: '/admin', icon: 'pi-home' },
   { label: 'Users', to: '/admin/users', icon: 'pi-users' },
   { label: 'Invitations', to: '/admin/invitations', icon: 'pi-envelope' },
+  { label: 'Pembayaran & Transaksi', to: '/admin/payments', icon: 'pi-receipt' },
   { label: 'Template Designs', to: '/admin/templates', icon: 'pi-palette' },
   { label: 'Master Kategori', to: '/admin/categories', icon: 'pi-tags' },
   { label: 'Master Fitur (Sections)', to: '/admin/sections', icon: 'pi-list' },

@@ -45,6 +45,22 @@ export const deleteAdminInvitation = (id) =>
     method: 'DELETE',
   })
 
+// Payments & Transactions (PKG-02: ADM-009 s/d ADM-015)
+export const fetchAdminPayments = (params) => apiFetch(withParams('/admin/payments', params))
+export const fetchAdminPaymentStats = () => apiFetch('/admin/payments/stats')
+export const fetchAdminPaymentReconciliationQueue = () => apiFetch('/admin/payments/reconciliation-queue')
+export const fetchAdminPaymentDetail = (id) => apiFetch(`/admin/payments/${id}`)
+export const reconcileAdminPaymentPublish = (id, reason) =>
+  apiFetch(`/admin/payments/${id}/reconcile-publish`, {
+    method: 'POST',
+    body: JSON.stringify({ reason }),
+  })
+export const syncAdminPaymentGateway = (id) =>
+  apiFetch(`/admin/payments/${id}/sync-gateway`, {
+    method: 'POST',
+  })
+export const exportAdminPayments = (params) => apiFetch(withParams('/admin/payments/export', params))
+
 // Guests
 export const fetchAdminGuests = (params) => apiFetch(withParams('/admin/guests', params))
 
