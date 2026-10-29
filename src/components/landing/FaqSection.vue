@@ -57,7 +57,7 @@ const faqs = [
   },
   {
     question: 'Berapa lama undangan akan aktif?',
-    answer: 'Undanganmu <strong>aktif selamanya</strong> tanpa batas waktu! Link undangan dan kenangan hari bahagiamu tetap bisa diakses kapan saja sebelum dan sesudah acara.'
+    answer: 'Undanganmu <strong>aktif selama 365 + 1 hari (1 tahun penuh)</strong> sejak dibuat! Link undangan dan seluruh momen kenangan bahagiamu tetap dapat diakses dengan lancar sebelum hingga sesudah acara.'
   },
   {
     question: 'Bagaimana cara menyebarkan undangannya?',
