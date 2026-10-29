@@ -154,7 +154,16 @@
       </div>
 
       <!-- 3. Logs DataTable -->
-      <div class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="logs.length"
+      :filtered="Boolean(search) || selectedLevel !== 'ALL'"
+      :updated-at="lastLoadedAt"
+      @retry="loadLogs"
+      @reset="resetLogFilters"
+    />
+      <div v-if="!loadError" class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <DataTable
           :value="logs"
           lazy
@@ -371,6 +380,7 @@
 import { ref, onMounted } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { fetchAdminLogs, fetchAdminLogStats, clearAdminLogs } from '@/api/admin.js'
@@ -417,8 +427,18 @@ async function loadStats() {
   }
 }
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+function resetLogFilters() {
+  search.value = ''
+  selectedLevel.value = 'ALL'
+  page.value = 1
+  loadLogs()
+}
+
 async function loadLogs() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminLogs({
       page: page.value,
@@ -428,8 +448,9 @@ async function loadLogs() {
     })
     logs.value = res.data || []
     total.value = res.total || 0
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat log aktivitas')
+    loadError.value = error.message || 'Gagal memuat log aktivitas'
   } finally {
     loading.value = false
   }

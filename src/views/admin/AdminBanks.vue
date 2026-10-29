@@ -51,7 +51,17 @@
       </div>
     </div>
 
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="banks.length"
+      :filtered="Boolean(search)"
+      :updated-at="lastLoadedAt"
+      @retry="loadBanks"
+      @reset="resetSearch"
+    />
     <DataTable
+      v-if="!loadError"
       v-else
       :headers="headers"
       :items="banks"
@@ -123,6 +133,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminBanks, createAdminBank, deleteAdminBank } from '@/api/master.js'
 import { uploadFileApi } from '@/api/file.js'
@@ -151,13 +162,21 @@ const form = reactive({
   logo: '',
 })
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+function resetSearch() {
+  handleSearch('')
+}
+
 async function loadBanks() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminBanks({ q: search.value })
     banks.value = Array.isArray(res) ? res : (res.data || [])
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat bank')
+    loadError.value = error.message || 'Gagal memuat bank'
   } finally {
     loading.value = false
   }

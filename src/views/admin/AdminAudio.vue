@@ -96,6 +96,16 @@
     </section>
 
     <!-- Main List (Grid) -->
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="filteredAudios.length"
+      :filtered="Boolean(search)"
+      :updated-at="lastLoadedAt"
+      @retry="loadAudio"
+      @reset="handleSearch('')"
+    />
+
     <div v-if="viewType === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       <!-- Loading Skeleton -->
       <template v-if="loading">
@@ -171,7 +181,7 @@
       </template>
 
       <!-- Empty State -->
-      <div v-if="!loading && !filteredAudios.length" class="col-span-full py-20 flex flex-col items-center justify-center text-center">
+      <div v-if="!loading && !loadError && !filteredAudios.length" class="col-span-full py-20 flex flex-col items-center justify-center text-center">
         <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-50 text-slate-200">
            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
         </div>
@@ -183,7 +193,7 @@
     </div>
 
     <!-- Main List (Table) -->
-    <div class="card" v-else>
+    <div class="card" v-else-if="!loadError">
       <DataTable 
         v-model:filters="filters" 
         :value="audios" 
@@ -372,6 +382,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -480,14 +491,19 @@ function getCategoryMeta(category) {
   }
 }
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+
 async function loadAudio() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminAudio()
     const data = Array.isArray(res) ? res : (res.data || [])
     audios.value = data
-  } catch {
-    toast.error('Gagal memuat musik')
+    lastLoadedAt.value = new Date()
+  } catch (error) {
+    loadError.value = error.message || 'Gagal memuat musik'
   } finally {
     loading.value = false
   }

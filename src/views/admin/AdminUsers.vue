@@ -119,8 +119,23 @@
         </div>
       </div>
 
+      <AdminTableStatus
+        :error="loadError"
+        :loading="loading"
+        :count="users.length"
+        :filtered="Boolean(search)"
+        :updated-at="lastLoadedAt"
+        :visibility="cols"
+        exportable
+        :exporting="exporting"
+        :export-note="exportNote"
+        @retry="loadUsers"
+        @reset="setQuickFilter('')"
+        @export="exportUsers"
+      />
+
       <!-- 2. Clean Datatable Card -->
-      <div class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div v-if="!loadError" class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <DataTable
           :value="users"
           lazy
@@ -145,7 +160,7 @@
           </template>
 
           <!-- User Name & Avatar & ID -->
-          <Column field="name" header="Pengguna" style="min-width: 14rem">
+          <Column v-if="cols.isVisible('name')" field="name" header="Pengguna" style="min-width: 14rem">
             <template #body="{ data }">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-2xs">
@@ -169,7 +184,7 @@
           </Column>
 
           <!-- Email & Verification Status -->
-          <Column header="Status Email" style="min-width: 12rem">
+          <Column v-if="cols.isVisible('email')" header="Status Email" style="min-width: 12rem">
             <template #body="{ data }">
               <div class="flex items-center gap-2">
                 <span
@@ -200,7 +215,7 @@
           </Column>
 
           <!-- Provider Login -->
-          <Column header="Metode Login" style="min-width: 9rem">
+          <Column v-if="cols.isVisible('login')" header="Metode Login" style="min-width: 9rem">
             <template #body="{ data }">
               <div class="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
                 <i v-if="data.provider === 'google'" class="fa-brands fa-google text-red-500 text-xs"></i>
@@ -211,7 +226,7 @@
           </Column>
 
           <!-- Role -->
-          <Column field="role" header="Role" style="min-width: 7rem">
+          <Column v-if="cols.isVisible('role')" field="role" header="Role" style="min-width: 7rem">
             <template #body="{ data }">
               <span
                 class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider border"
@@ -224,7 +239,7 @@
           </Column>
 
           <!-- Wedding Planner Access -->
-          <Column header="Planner" style="min-width: 8rem">
+          <Column v-if="cols.isVisible('planner')" header="Planner" style="min-width: 8rem">
             <template #body="{ data }">
               <span
                 v-if="data.hasWeddingPlannerAccess"
@@ -241,7 +256,7 @@
           </Column>
 
           <!-- Total Invitations -->
-          <Column header="Undangan" style="min-width: 8rem">
+          <Column v-if="cols.isVisible('invitations')" header="Undangan" style="min-width: 8rem">
             <template #body="{ data }">
               <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100 text-xs font-bold">
                 <i class="fa-solid fa-envelope-open-text text-[10px]"></i>
@@ -251,7 +266,7 @@
           </Column>
 
           <!-- Created At / Tanggal Terdaftar -->
-          <Column field="createdAt" header="Tanggal Terdaftar" style="min-width: 12rem">
+          <Column v-if="cols.isVisible('created')" field="createdAt" header="Tanggal Terdaftar" style="min-width: 12rem">
             <template #body="{ data }">
               <div class="flex flex-col">
                 <span class="text-xs font-semibold text-slate-800 font-mono">
@@ -446,6 +461,9 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
+import { useColumnVisibility } from '@/utils/columnVisibility.js'
+import { downloadCsv, fetchAllRows, toCsv } from '@/utils/csvExport.js'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import {
@@ -469,6 +487,19 @@ const page = ref(1)
 const limit = 15
 const search = ref('')
 const loading = ref(false)
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+const exporting = ref(false)
+const exportNote = ref('')
+const cols = useColumnVisibility('users', [
+  { key: 'name', label: 'Pengguna', required: true },
+  { key: 'email', label: 'Status email' },
+  { key: 'login', label: 'Metode login' },
+  { key: 'role', label: 'Role' },
+  { key: 'planner', label: 'Planner' },
+  { key: 'invitations', label: 'Undangan' },
+  { key: 'created', label: 'Tanggal terdaftar' },
+])
 const verifyingId = ref(null)
 const showForm = ref(false)
 const saving = ref(false)
@@ -495,12 +526,14 @@ const verifiedUsersCount = computed(() => {
 
 async function loadUsers() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminUsers({ page: page.value, limit, q: search.value })
     users.value = res.data || []
     total.value = res.total || 0
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat pengguna')
+    loadError.value = error.message || 'Gagal memuat pengguna'
   } finally {
     loading.value = false
   }
@@ -539,6 +572,35 @@ function handleSearch(value) {
   quickFilter.value = ''
   page.value = 1
   debouncedSearch()
+}
+
+async function exportUsers() {
+  exporting.value = true
+  exportNote.value = ''
+  try {
+    const { rows, total: all, truncated } = await fetchAllRows(fetchAdminUsers, { q: search.value })
+    downloadCsv(
+      `pengguna-${new Date().toISOString().slice(0, 10)}.csv`,
+      toCsv(
+        [
+          { label: 'ID', value: (u) => u.id },
+          { label: 'Nama', value: (u) => u.name },
+          { label: 'Email', value: (u) => u.email },
+          { label: 'Admin', value: (u) => (u.isAdmin ? 'ya' : 'tidak') },
+          { label: 'Email terverifikasi', value: (u) => (u.emailVerifiedAt ? 'ya' : 'tidak') },
+          { label: 'Terdaftar', value: (u) => u.createdAt },
+        ],
+        rows,
+      ),
+    )
+    exportNote.value = truncated
+      ? `Ekspor dibatasi ${rows.length} dari ${all} baris.`
+      : `${rows.length} baris diekspor (semua hasil filter, bukan hanya halaman ini).`
+  } catch (error) {
+    exportNote.value = error.message || 'Ekspor gagal dijalankan.'
+  } finally {
+    exporting.value = false
+  }
 }
 
 function onPage(event) {

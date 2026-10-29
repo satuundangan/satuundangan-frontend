@@ -91,8 +91,23 @@
       </button>
     </div>
 
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="invitations.length"
+      :filtered="hasActiveFilters"
+      :updated-at="lastLoadedAt"
+      :visibility="cols"
+      exportable
+      :exporting="exporting"
+      :export-note="exportNote"
+      @retry="loadInvitations"
+      @reset="resetFilters"
+      @export="exportInvitations"
+    />
+
     <!-- Data Table -->
-    <div class="card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+    <div v-if="!loadError" class="card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
       <DataTable
         :value="invitations"
         lazy
@@ -138,7 +153,7 @@
         </Column>
 
         <!-- Pemilik -->
-        <Column field="user" header="Pemilik" style="min-width: 12rem">
+        <Column v-if="cols.isVisible('owner')" field="user" header="Pemilik" style="min-width: 12rem">
           <template #body="{ data }">
             <div class="flex flex-col">
               <span class="font-semibold text-slate-800 text-xs">{{ data.user?.name || '-' }}</span>
@@ -148,7 +163,7 @@
         </Column>
 
         <!-- Paket & Publikasi (ADM-002) -->
-        <Column header="Paket & Status" style="min-width: 10rem">
+        <Column v-if="cols.isVisible('package')" header="Paket & Status" style="min-width: 10rem">
           <template #body="{ data }">
             <div class="flex flex-col gap-1 items-start">
               <!-- Badge Paket -->
@@ -180,7 +195,7 @@
         </Column>
 
         <!-- Status Pembayaran (ADM-001) -->
-        <Column header="Pembayaran" style="min-width: 12rem">
+        <Column v-if="cols.isVisible('payment')" header="Pembayaran" style="min-width: 12rem">
           <template #body="{ data }">
             <div class="flex flex-col gap-1 items-start">
               <span
@@ -214,7 +229,7 @@
         </Column>
 
         <!-- Transaksi Terakhir (ADM-003) -->
-        <Column header="Transaksi Terakhir" style="min-width: 11rem">
+        <Column v-if="cols.isVisible('last')" header="Transaksi Terakhir" style="min-width: 11rem">
           <template #body="{ data }">
             <div v-if="data.latestTransaction" class="flex flex-col text-xs">
               <span class="font-bold text-slate-900">
@@ -232,7 +247,7 @@
         </Column>
 
         <!-- Masa Berlaku (ADM-002) -->
-        <Column header="Masa Berlaku" style="min-width: 10rem">
+        <Column v-if="cols.isVisible('expiry')" header="Masa Berlaku" style="min-width: 10rem">
           <template #body="{ data }">
             <div class="flex flex-col text-xs">
               <span
@@ -495,6 +510,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
+import { useColumnVisibility } from '@/utils/columnVisibility.js'
+import { downloadCsv, fetchAllRows, toCsv } from '@/utils/csvExport.js'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { fetchAdminInvitations, fetchAdminInvitationDetail, deleteAdminInvitation } from '@/api/admin.js'
@@ -517,6 +535,18 @@ const startDate = ref(String(route.query.startDate || ''))
 const endDate = ref(String(route.query.endDate || ''))
 const selectedCategory = ref(String(route.query.category || 'all'))
 const loading = ref(false)
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+const exporting = ref(false)
+const exportNote = ref('')
+const cols = useColumnVisibility('invitations', [
+  { key: 'title', label: 'Undangan', required: true },
+  { key: 'owner', label: 'Pemilik' },
+  { key: 'package', label: 'Paket & status' },
+  { key: 'payment', label: 'Pembayaran' },
+  { key: 'last', label: 'Transaksi terakhir' },
+  { key: 'expiry', label: 'Masa berlaku' },
+])
 
 // Unified Detail Modal State
 const showDetailModal = ref(false)
@@ -582,6 +612,7 @@ function syncUrlParams() {
 
 async function loadInvitations() {
   loading.value = true
+  loadError.value = ''
   syncUrlParams()
   try {
     const params = {
@@ -598,8 +629,9 @@ async function loadInvitations() {
     const res = await fetchAdminInvitations(params)
     invitations.value = res.data
     total.value = res.total
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat data undangan')
+    loadError.value = error.message || 'Gagal memuat data undangan'
   } finally {
     loading.value = false
   }
@@ -630,6 +662,49 @@ function resetFilters() {
   selectedCategory.value = 'all'
   page.value = 1
   loadInvitations()
+}
+
+function currentFilters() {
+  return {
+    q: search.value.trim() || undefined,
+    paymentStatus: selectedPaymentStatus.value !== 'all' ? selectedPaymentStatus.value : undefined,
+    isPublished: selectedPublished.value !== 'all' ? selectedPublished.value : undefined,
+    package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
+    startDate: startDate.value || undefined,
+    endDate: endDate.value || undefined,
+    category: selectedCategory.value !== 'all' ? selectedCategory.value : undefined,
+  }
+}
+
+async function exportInvitations() {
+  exporting.value = true
+  exportNote.value = ''
+  try {
+    const { rows, total: all, truncated } = await fetchAllRows(fetchAdminInvitations, currentFilters())
+    downloadCsv(
+      `undangan-${new Date().toISOString().slice(0, 10)}.csv`,
+      toCsv(
+        [
+          { label: 'ID', value: (i) => i.id },
+          { label: 'Judul', value: (i) => i.title },
+          { label: 'Slug', value: (i) => i.slug },
+          { label: 'Pemilik', value: (i) => i.user?.email },
+          { label: 'Paket', value: (i) => i.package },
+          { label: 'Status bayar', value: (i) => i.paymentStatus?.label },
+          { label: 'Terbit', value: (i) => (i.isPublished ? 'ya' : 'tidak') },
+          { label: 'Dibuat', value: (i) => i.createdAt },
+        ],
+        rows,
+      ),
+    )
+    exportNote.value = truncated
+      ? `Ekspor dibatasi ${rows.length} dari ${all} baris.`
+      : `${rows.length} baris diekspor (semua hasil filter, bukan hanya halaman ini).`
+  } catch (error) {
+    exportNote.value = error.message || 'Ekspor gagal dijalankan.'
+  } finally {
+    exporting.value = false
+  }
 }
 
 function onPage(event) {

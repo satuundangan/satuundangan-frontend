@@ -2,7 +2,16 @@
   <AdminShell title="Template Desain" description="Kelola daftar template undangan"
     action-label="Tambah Template"
     @action="openCreate">
-    <div class="card">
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="templates.length"
+      :filtered="false"
+      :updated-at="lastLoadedAt"
+      @retry="loadData"
+      @reset="resetSearch"
+    />
+    <div v-if="!loadError" class="card">
       <DataTable
         v-model:filters="filters"
         :value="templates"
@@ -663,6 +672,7 @@
 import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -826,8 +836,12 @@ watch(() => form.slug, (newVal) => {
   }
 })
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+
 async function loadData() {
   loading.value = true
+  loadError.value = ''
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
       fetchAdminTemplates({
@@ -844,8 +858,9 @@ async function loadData() {
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
     audioList.value = audioRes.data || audioRes
-  } catch {
-    toast.error('Gagal memuat data')
+    lastLoadedAt.value = new Date()
+  } catch (error) {
+    loadError.value = error.message || 'Gagal memuat data'
   } finally {
     loading.value = false
   }
