@@ -163,7 +163,7 @@ test.describe('Admin Articles: Article Management Feature', () => {
     })
 
     // Verify SEO Settings panel
-    await expect(page.locator('text=SEO Settings')).toBeVisible()
+    await expect(page.locator('text=Kelengkapan SEO')).toBeVisible()
 
     // Verify SEO checklist items
     await expect(page.locator('text=Focus keyword diisi')).toBeVisible()
