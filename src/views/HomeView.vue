@@ -1068,6 +1068,7 @@ const pricingPlans = computed(() =>
       originalPrice: tierOriginalPrices[tier.id],
       discount: tierDiscounts[tier.id],
       features: [
+        { label: 'Masa aktif undangan 365+1 hari (1 tahun)', included: true },
         { label: 'Bebas pilih semua desain', included: true },
         { label: 'Akses Wedding Planner & Budgeting', included: true },
         { label: 'Peta lokasi, hitung mundur, RSVP & amplop', included: true },
