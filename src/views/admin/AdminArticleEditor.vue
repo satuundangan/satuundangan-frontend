@@ -1,7 +1,9 @@
 <template>
   <AdminShell
     :title="isEditing ? 'Edit Artikel' : 'Tulis Artikel Baru'"
-    :description="isEditing ? 'Perbarui konten dan pengaturan SEO' : 'Buat artikel baru dengan optimasi SEO'"
+    :description="
+      isEditing ? 'Perbarui konten dan pengaturan SEO' : 'Buat artikel baru dengan optimasi SEO'
+    "
   >
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Main Content Area -->
@@ -30,7 +32,10 @@
         <!-- Rich Text Editor -->
         <div class="rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden">
           <!-- Toolbar -->
-          <div v-if="editor" class="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50/50 px-4 py-2">
+          <div
+            v-if="editor"
+            class="flex flex-wrap items-center gap-1 border-b border-slate-200 bg-slate-50/50 px-4 py-2"
+          >
             <button
               v-for="btn in toolbarButtons"
               :key="btn.action"
@@ -84,12 +89,21 @@
 
           <!-- Editor Content -->
           <div class="prose prose-slate max-w-none">
-            <editor-content :editor="editor" class="min-h-[400px] px-6 py-4 focus-within:outline-none" />
+            <editor-content
+              :editor="editor"
+              class="min-h-[400px] px-6 py-4 focus-within:outline-none"
+            />
           </div>
 
           <!-- Character Count -->
-          <div v-if="editor" class="flex items-center justify-between border-t border-slate-100 px-6 py-2 text-xs text-slate-400">
-            <span>{{ editor.storage.characterCount.characters() }} karakter · {{ editor.storage.characterCount.words() }} kata</span>
+          <div
+            v-if="editor"
+            class="flex items-center justify-between border-t border-slate-100 px-6 py-2 text-xs text-slate-400"
+          >
+            <span
+              >{{ editor.storage.characterCount.characters() }} karakter ·
+              {{ editor.storage.characterCount.words() }} kata</span
+            >
             <span v-if="form.focusKeyword" :class="keywordDensityClass">
               Kepadatan keyword: {{ keywordDensity }}%
             </span>
@@ -106,7 +120,9 @@
             placeholder="Ringkasan singkat artikel untuk ditampilkan di halaman daftar artikel..."
             class="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
           ></textarea>
-          <p class="mt-1 text-xs text-slate-400 text-right">{{ (form.excerpt || '').length }}/300</p>
+          <p class="mt-1 text-xs text-slate-400 text-right">
+            {{ (form.excerpt || '').length }}/300
+          </p>
         </div>
       </div>
 
@@ -154,10 +170,7 @@
             <i class="pi pi-image text-pink-500"></i>
             Cover Image
           </h3>
-          <div
-            v-if="form.coverImage"
-            class="relative rounded-xl overflow-hidden mb-3"
-          >
+          <div v-if="form.coverImage" class="relative rounded-xl overflow-hidden mb-3">
             <img :src="form.coverImage" alt="Cover" class="w-full h-40 object-cover" />
             <button
               @click="form.coverImage = ''"
@@ -179,7 +192,7 @@
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
               <i class="pi pi-search text-emerald-500"></i>
-              SEO Settings
+              Kelengkapan SEO
             </h3>
             <span
               class="inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold"
@@ -188,6 +201,10 @@
               {{ seoScoreValue }}%
             </span>
           </div>
+
+          <p class="mb-4 text-xs text-slate-500">
+            Checklist kelengkapan konten dan metadata; skor ini bukan prediksi peringkat Google.
+          </p>
 
           <!-- SEO Score Bar -->
           <div class="mb-4">
@@ -258,7 +275,11 @@
                   satuundangan.id/blog/{{ form.slug || 'url-slug' }}
                 </p>
                 <p class="text-xs text-slate-500 line-clamp-2 mt-0.5">
-                  {{ form.metaDescription || form.excerpt || 'Deskripsi artikel akan muncul di sini...' }}
+                  {{
+                    form.metaDescription ||
+                    form.excerpt ||
+                    'Deskripsi artikel akan muncul di sini...'
+                  }}
                 </p>
               </div>
             </div>
@@ -313,13 +334,10 @@
 import { ref, computed, onBeforeUnmount, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import {
-  fetchAdminArticle,
-  createAdminArticle,
-  updateAdminArticle,
-} from '@/api/admin.js'
+import { fetchAdminArticle, createAdminArticle, updateAdminArticle } from '@/api/admin.js'
 import Swal from 'sweetalert2'
 import slugify from 'slugify'
+import { getArticleSeoChecklist, getArticleSeoScore } from '@/utils/articleSeo.js'
 
 // Tiptap
 import { useEditor, EditorContent } from '@tiptap/vue-3'
@@ -511,23 +529,8 @@ const setLink = async () => {
 }
 
 // SEO Scoring
-const seoChecklist = computed(() => [
-  { label: 'Focus keyword diisi', passed: !!form.value.focusKeyword },
-  { label: 'Meta title diisi (50-70 karakter)', passed: (form.value.metaTitle || '').length >= 30 && (form.value.metaTitle || '').length <= 70 },
-  { label: 'Meta description diisi (120-160 karakter)', passed: (form.value.metaDescription || '').length >= 80 && (form.value.metaDescription || '').length <= 160 },
-  { label: 'Excerpt / ringkasan diisi', passed: (form.value.excerpt || '').length > 0 },
-  { label: 'Cover image atau OG image diisi', passed: !!(form.value.coverImage || form.value.ogImage) },
-  { label: 'Keyword ada di meta title', passed: !!form.value.focusKeyword && (form.value.metaTitle || '').toLowerCase().includes(form.value.focusKeyword.toLowerCase()) },
-  { label: 'Keyword ada di meta description', passed: !!form.value.focusKeyword && (form.value.metaDescription || '').toLowerCase().includes(form.value.focusKeyword.toLowerCase()) },
-  { label: 'Slug mengandung keyword', passed: !!form.value.focusKeyword && (form.value.slug || '').toLowerCase().includes(slugify(form.value.focusKeyword, { lower: true, strict: true })) },
-  { label: 'Konten minimal 300 kata', passed: editor.value && editor.value.storage.characterCount.words() >= 300 },
-  { label: 'Keyword ada di konten', passed: !!form.value.focusKeyword && (form.value.content || '').toLowerCase().includes(form.value.focusKeyword.toLowerCase()) },
-])
-
-const seoScoreValue = computed(() => {
-  const passed = seoChecklist.value.filter((c) => c.passed).length
-  return Math.round((passed / seoChecklist.value.length) * 100)
-})
+const seoChecklist = computed(() => getArticleSeoChecklist(form.value))
+const seoScoreValue = computed(() => getArticleSeoScore(form.value))
 
 const seoScoreBadgeClass = computed(() => {
   if (seoScoreValue.value >= 80) return 'bg-emerald-50 text-emerald-700'
