@@ -110,7 +110,7 @@
           v-if="tab.count !== null"
           class="ml-1.5 inline-flex items-center rounded-full px-2 py-0.5 text-xs"
           :class="
-            statusFilter === tab.value ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'
+            statusFilter === tab.value ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-600'
           "
         >
           {{ tab.count }}
@@ -190,7 +190,7 @@
                 </div>
                 <div class="min-w-0">
                   <p class="font-semibold text-slate-900 truncate">{{ article.title }}</p>
-                  <p class="text-xs text-slate-400 truncate">/blog/{{ article.slug }}</p>
+                  <p class="text-xs text-slate-500 truncate">/blog/{{ article.slug }}</p>
                 </div>
               </div>
             </td>
@@ -232,14 +232,14 @@
               <div class="flex items-center justify-end gap-2">
                 <button
                   @click="$router.push({ name: 'admin-article-edit', params: { id: article.id } })"
-                  class="rounded-lg p-2 text-slate-400 hover:bg-blue-50 hover:text-blue-600 transition-colors"
+                  class="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                   title="Edit"
                 >
                   <i class="pi pi-pencil text-sm"></i>
                 </button>
                 <button
                   @click="confirmDelete(article)"
-                  class="rounded-lg p-2 text-slate-400 hover:bg-rose-50 hover:text-rose-600 transition-colors"
+                  class="rounded-lg p-2 text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-colors"
                   title="Hapus"
                 >
                   <i class="pi pi-trash text-sm"></i>

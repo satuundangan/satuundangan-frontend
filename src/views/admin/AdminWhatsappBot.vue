@@ -12,7 +12,7 @@
       <!-- Status Connection -->
       <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Status Koneksi</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Status Koneksi</span>
           <span
             :class="[
               'inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium',
@@ -52,8 +52,8 @@
       <!-- Master Bot Auto-Reply Switch -->
       <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Master Bot Auto-Reply</span>
-          <i :class="['pi pi-power-off', status.isBotEnabled ? 'text-emerald-500' : 'text-slate-400']"></i>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Master Bot Auto-Reply</span>
+          <i :class="['pi pi-power-off', status.isBotEnabled ? 'text-emerald-500' : 'text-slate-500']"></i>
         </div>
         <div class="mt-4 flex items-center justify-between">
           <div>
@@ -68,7 +68,7 @@
             type="button"
             :class="[
               'relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none',
-              status.isBotEnabled ? 'bg-emerald-600' : 'bg-slate-300',
+              status.isBotEnabled ? 'bg-emerald-700' : 'bg-slate-300',
             ]"
           >
             <span
@@ -84,7 +84,7 @@
       <!-- AI Auto-Reply Switch -->
       <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Gemini AI Engine</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Gemini AI Engine</span>
           <i class="pi pi-sparkles text-amber-500"></i>
         </div>
         <div class="mt-4 flex items-center justify-between">
@@ -117,7 +117,7 @@
       <!-- Messages Replied Counter -->
       <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Pesan Dibalas</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Pesan Dibalas</span>
           <i class="pi pi-comments text-blue-500"></i>
         </div>
         <div class="mt-3">
@@ -133,7 +133,7 @@
       <!-- AI Generated Responses -->
       <div class="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Jawaban AI</span>
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">Jawaban AI</span>
           <i class="pi pi-bolt text-purple-500"></i>
         </div>
         <div class="mt-3">
@@ -162,7 +162,7 @@
             v-if="status.status === 'CONNECTED'"
             class="text-center py-8 px-4 rounded-xl bg-emerald-50/50 border border-emerald-100"
           >
-            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-2xl shadow-inner">
+            <div class="w-16 h-16 mx-auto mb-3 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-2xl shadow-inner">
               <i class="pi pi-check"></i>
             </div>
             <h3 class="text-base font-bold text-emerald-900">WhatsApp Terhubung Aktif!</h3>
@@ -201,7 +201,7 @@
                 class="w-60 h-60 object-contain mx-auto"
               />
             </div>
-            <p class="text-[11px] text-slate-400 mt-3 flex items-center justify-center gap-1">
+            <p class="text-[11px] text-slate-500 mt-3 flex items-center justify-center gap-1">
               <i class="pi pi-spin pi-spinner text-xs"></i>
               QR diperbarui otomatis jika kedaluwarsa
             </p>
@@ -223,7 +223,7 @@
               <button
                 @click="handleConnect"
                 :disabled="actionLoading"
-                class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition shadow-sm disabled:opacity-50"
+                class="inline-flex items-center gap-2 px-5 py-2.5 text-xs font-bold rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 transition shadow-sm disabled:opacity-50"
               >
                 <i :class="['pi pi-link', actionLoading ? 'animate-spin' : '']"></i>
                 Mulai Sesi WhatsApp & Tampilkan QR
@@ -318,7 +318,7 @@
           <div class="flex items-center justify-between mb-4">
             <div>
               <h2 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                <i class="pi pi-send text-emerald-600"></i>
+                <i class="pi pi-send text-emerald-700"></i>
                 Kirim Pesan WhatsApp Manual (Test Dispatch)
               </h2>
               <p class="text-xs text-slate-500 mt-0.5">
@@ -349,7 +349,7 @@
                 <button
                   @click="handleSendManual"
                   :disabled="sendingManual || !manualPhone || !manualText"
-                  class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-600 text-white hover:bg-emerald-700 transition disabled:opacity-50"
+                  class="shrink-0 inline-flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-xl bg-emerald-700 text-white hover:bg-emerald-800 transition disabled:opacity-50"
                 >
                   <i :class="['pi pi-send', sendingManual ? 'animate-spin' : '']"></i>
                   Kirim

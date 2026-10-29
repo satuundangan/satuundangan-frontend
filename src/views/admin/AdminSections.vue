@@ -25,7 +25,7 @@
       </template>
       <template #cell(is_active)="{ item }">
         <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
-          :class="item.is_active ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+          :class="item.is_active ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'">
           {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
         </span>
       </template>
@@ -45,7 +45,7 @@
         <div class="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Section' : 'Tambah Section' }}</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
           </div>
 
           <form class="space-y-4" @submit.prevent="submitForm">
@@ -61,7 +61,7 @@
               <input v-model="form.key" type="text" placeholder="Contoh: loveStory"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm font-mono outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required />
-              <p class="mt-1 text-xs text-slate-400">Digunakan oleh frontend untuk logika coding. Jangan pakai spasi.
+              <p class="mt-1 text-xs text-slate-500">Digunakan oleh frontend untuk logika coding. Jangan pakai spasi.
               </p>
             </div>
 

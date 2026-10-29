@@ -14,40 +14,17 @@
         <button 
           @click="viewType = 'grid'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'"
         >
           Grid
         </button>
         <button 
           @click="viewType = 'table'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'"
         >
           Table
         </button>
-      </div>
-    </div>
-
-    <div v-if="viewType === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      <div v-for="bank in banks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md">
-        <button @click="confirmDelete(bank)" class="absolute top-2 right-2 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-rose-500 transition-all">
-          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-        
-        <div class="h-16 w-full flex items-center justify-center mb-3">
-          <img v-if="bank.logo" :src="bank.logo" :alt="bank.name" class="max-h-full max-w-full object-contain" />
-          <div v-else class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
-          </div>
-        </div>
-        
-        <h3 class="font-medium text-slate-900 text-center text-sm">{{ bank.name }}</h3>
-        <p class="text-xs text-slate-500 text-center mt-1">{{ bank.code }}</p>
-      </div>
-
-      <!-- Empty State -->
-      <div v-if="!loading && !banks.length" class="col-span-full py-12 text-center text-slate-400">
-        Belum ada data bank.
       </div>
     </div>
 
@@ -60,9 +37,32 @@
       @retry="loadBanks"
       @reset="resetSearch"
     />
+
+    <div v-if="viewType === 'grid' && !loadError" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div v-for="bank in banks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md">
+        <button @click="confirmDelete(bank)" class="absolute top-2 right-2 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-rose-500 transition-all">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+        
+        <div class="h-16 w-full flex items-center justify-center mb-3">
+          <img v-if="bank.logo" :src="bank.logo" :alt="bank.name" class="max-h-full max-w-full object-contain" />
+          <div v-else class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
+          </div>
+        </div>
+        
+        <h3 class="font-medium text-slate-900 text-center text-sm">{{ bank.name }}</h3>
+        <p class="text-xs text-slate-500 text-center mt-1">{{ bank.code }}</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-if="!loading && !banks.length" class="col-span-full py-12 text-center text-slate-500">
+        Belum ada data bank.
+      </div>
+    </div>
+
     <DataTable
-      v-if="!loadError"
-      v-else
+      v-else-if="viewType !== 'grid' && !loadError"
       :headers="headers"
       :items="banks"
       :loading="loading"
@@ -92,7 +92,7 @@
         <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">Tambah Bank</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
           </div>
 
           <form class="space-y-4" @submit.prevent="submitForm">

@@ -148,7 +148,7 @@
                   <pre v-if="row.before" class="mt-1 whitespace-pre-wrap break-all">Sebelum: {{ JSON.stringify(row.before) }}</pre>
                   <pre v-if="row.after" class="mt-1 whitespace-pre-wrap break-all">Sesudah: {{ JSON.stringify(row.after) }}</pre>
                 </details>
-                <span v-else class="text-slate-400">-</span>
+                <span v-else class="text-slate-500">-</span>
               </td>
               <td class="px-3 py-2">
                 <span :class="row.result === 'success' ? 'text-emerald-700' : 'text-rose-700'">{{ row.result === 'success' ? 'Berhasil' : 'Gagal' }}</span>

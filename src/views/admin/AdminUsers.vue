@@ -15,7 +15,7 @@
         <!-- Total Users -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-slate-400">Total Pengguna</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-slate-500">Total Pengguna</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ total }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Akun terdaftar di database</p>
           </div>
@@ -27,11 +27,11 @@
         <!-- Verified Users -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-600">Email Terverifikasi</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-700">Email Terverifikasi</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ verifiedUsersCount }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Memiliki email aktif</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg shrink-0">
             <i class="fa-solid fa-envelope-circle-check"></i>
           </div>
         </div>
@@ -51,11 +51,11 @@
         <!-- Regular Users -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-amber-600">User Pengantin</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-amber-700">User Pengantin</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ Math.max(0, total - adminUsersCount) }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Pembuat undangan</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shrink-0">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shrink-0">
             <i class="fa-solid fa-heart"></i>
           </div>
         </div>
@@ -152,7 +152,7 @@
             <div class="py-12 text-center space-y-2">
               <i class="fa-solid fa-user-slash text-3xl text-slate-300"></i>
               <p class="text-sm font-bold text-slate-700">Tidak ada pengguna ditemukan</p>
-              <p class="text-xs text-slate-400">Coba ubah kata kunci pencarian Anda.</p>
+              <p class="text-xs text-slate-500">Coba ubah kata kunci pencarian Anda.</p>
             </div>
           </template>
           <template #loading>
@@ -169,7 +169,7 @@
                 <div class="flex flex-col min-w-0">
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-slate-900 text-xs truncate max-w-[180px]">{{ data.name || '-' }}</span>
-                    <span class="text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">#{{ data.id }}</span>
+                    <span class="text-[10px] font-mono text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">#{{ data.id }}</span>
                     <span
                       v-if="isTestAccount(data)"
                       class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200"
@@ -203,7 +203,7 @@
                   type="button"
                   :disabled="verifyingId === data.id"
                   @click="handleQuickVerify(data)"
-                  class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                  class="px-2 py-0.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
                   title="Verifikasi manual akun ini sekarang"
                 >
                   <i v-if="verifyingId === data.id" class="fa-solid fa-spinner fa-spin text-[9px]"></i>
@@ -219,7 +219,7 @@
             <template #body="{ data }">
               <div class="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
                 <i v-if="data.provider === 'google'" class="fa-brands fa-google text-red-500 text-xs"></i>
-                <i v-else class="fa-solid fa-envelope text-slate-400 text-xs"></i>
+                <i v-else class="fa-solid fa-envelope text-slate-500 text-xs"></i>
                 <span class="capitalize">{{ data.provider || 'Email' }}</span>
               </div>
             </template>
@@ -246,10 +246,10 @@
                 class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200"
                 :title="data.instagramHandle ? 'IG: ' + data.instagramHandle : 'Akses Aktif'"
               >
-                <i class="fa-solid fa-crown text-[9px] text-amber-600"></i>
+                <i class="fa-solid fa-crown text-[9px] text-amber-700"></i>
                 <span>Aktif</span>
               </span>
-              <span v-else class="text-[11px] text-slate-400 font-medium">
+              <span v-else class="text-[11px] text-slate-500 font-medium">
                 Terkunci
               </span>
             </template>
@@ -272,7 +272,7 @@
                 <span class="text-xs font-semibold text-slate-800 font-mono">
                   {{ formatDate(data.createdAt) }}
                 </span>
-                <span class="text-[10px] text-slate-400 mt-0.5">
+                <span class="text-[10px] text-slate-500 mt-0.5">
                   {{ formatRelative(data.createdAt) }}
                 </span>
               </div>
@@ -289,7 +289,7 @@
                   @click="openEdit(data)"
                   title="Edit pengguna"
                 >
-                  <i class="fa-solid fa-pencil text-[10px] text-slate-400"></i> Edit
+                  <i class="fa-solid fa-pencil text-[10px] text-slate-500"></i> Edit
                 </button>
                 <button
                   type="button"
@@ -317,7 +317,7 @@
               </div>
               <div>
                 <h2 class="text-base font-black text-slate-900">{{ editing ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru' }}</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Kelola akun dan kredensial login</p>
+                <p class="text-xs text-slate-500 mt-0.5">Kelola akun dan kredensial login</p>
               </div>
             </div>
             <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer" @click="closeForm">
@@ -403,7 +403,7 @@
                 id="isEmailVerified"
                 v-model="form.isEmailVerified"
                 type="checkbox"
-                class="h-5 w-5 rounded-md border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                class="h-5 w-5 rounded-md border-slate-300 text-emerald-700 focus:ring-emerald-500 cursor-pointer"
               />
             </div>
 
@@ -411,7 +411,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label for="hasWeddingPlannerAccess" class="text-xs font-bold text-amber-900 block cursor-pointer flex items-center gap-1.5">
-                    <i class="fa-solid fa-crown text-amber-600 text-xs"></i>
+                    <i class="fa-solid fa-crown text-amber-700 text-xs"></i>
                     <span>Akses Wedding Planner (Gratis / VIP)</span>
                   </label>
                   <p class="text-[11px] text-amber-700/80">Buka akses Wedding Planner untuk akun ini (bisa untuk kompensasi)</p>
@@ -420,7 +420,7 @@
                   id="hasWeddingPlannerAccess"
                   v-model="form.hasWeddingPlannerAccess"
                   type="checkbox"
-                  class="h-5 w-5 rounded-md border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                  class="h-5 w-5 rounded-md border-amber-300 text-amber-700 focus:ring-amber-500 cursor-pointer"
                 />
               </div>
               <div v-if="form.hasWeddingPlannerAccess">

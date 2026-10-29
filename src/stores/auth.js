@@ -66,7 +66,10 @@ export const useAuthStore = defineStore('auth', {
       if (!this.user?.isAdmin) return null
       if (this.adminAccess && !force) return this.adminAccess
       try {
-        this.adminAccess = await fetchAdminSecurity()
+        const access = await fetchAdminSecurity()
+        // An unexpected response shape is treated like an unreachable endpoint, never as "no permissions".
+        if (!access?.adminRole) return null
+        this.adminAccess = access
       } catch {
         // Not cached: retried on the next navigation. Menus stay unfiltered meanwhile; the server enforces roles.
         return null

@@ -57,11 +57,11 @@
           <button
             @click="toggleActive(item)"
             class="px-2 py-0.5 rounded text-[10px] font-bold uppercase transition-colors"
-            :class="item.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-500 hover:bg-slate-200'"
+            :class="item.is_active ? 'bg-green-50 text-green-600 hover:bg-green-100' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
           >
             {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
           </button>
-          <span v-if="item.is_exit_intent_active" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-50 text-amber-600 border border-amber-200">
+          <span v-if="item.is_exit_intent_active" class="px-2 py-0.5 rounded text-[9px] font-bold uppercase bg-amber-50 text-amber-700 border border-amber-200">
             Exit Intent
           </span>
         </div>
@@ -81,7 +81,7 @@
         <div class="max-h-[90vh] w-full max-w-lg overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Promo Code' : 'Tambah Promo Code' }}</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
           </div>
 
           <form class="grid grid-cols-1 gap-4" @submit.prevent="submitForm">
@@ -105,7 +105,7 @@
               <div>
                 <label class="text-sm font-medium text-slate-600">
                   Nilai Diskon <span class="text-rose-500">*</span>
-                  <span class="text-slate-400 font-normal">({{ form.discount_type === 'percentage' ? '%' : 'Rp' }})</span>
+                  <span class="text-slate-500 font-normal">({{ form.discount_type === 'percentage' ? '%' : 'Rp' }})</span>
                 </label>
                 <input v-model.number="form.discount_value" type="number" required min="0"
                   :max="form.discount_type === 'percentage' ? 100 : undefined"

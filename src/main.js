@@ -33,7 +33,13 @@ app.use(PrimeVue, {
       darkModeSelector: '.dark',
       cssLayer: false
     }
-  }
+  },
+  // The scrollable area of every table must be reachable by keyboard.
+  pt: {
+    datatable: {
+      tableContainer: { tabindex: 0, role: 'region', 'aria-label': 'Tabel data, dapat digulir' },
+    },
+  },
 })
 
 app.use(Toast, {

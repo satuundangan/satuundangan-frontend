@@ -48,7 +48,7 @@
           <div class="flex flex-col sm:flex-row gap-3 sm:items-center w-full sm:w-auto">
             <div v-if="showSearch" class="relative flex-1 sm:flex-initial">
               <span
-                class="absolute inset-y-0 left-3 flex items-center text-slate-400"
+                class="absolute inset-y-0 left-3 flex items-center text-slate-500"
                 aria-hidden="true"
               >
                 <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

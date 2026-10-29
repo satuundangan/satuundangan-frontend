@@ -51,7 +51,7 @@
             class="w-full text-2xl font-bold text-slate-900 placeholder-slate-300 border-none outline-none bg-transparent"
             @input="onTitleChange"
           />
-          <div class="mt-2 flex items-center gap-2 text-xs text-slate-400">
+          <div class="mt-2 flex items-center gap-2 text-xs text-slate-500">
             <i class="pi pi-link text-xs"></i>
             <span>/blog/</span>
             <input
@@ -132,7 +132,7 @@
           <!-- Character Count -->
           <div
             v-if="editor"
-            class="flex items-center justify-between border-t border-slate-100 px-6 py-2 text-xs text-slate-400"
+            class="flex items-center justify-between border-t border-slate-100 px-6 py-2 text-xs text-slate-500"
           >
             <span
               >{{ editor.storage.characterCount.characters() }} karakter ·
@@ -154,7 +154,7 @@
             placeholder="Ringkasan singkat artikel untuk ditampilkan di halaman daftar artikel..."
             class="w-full rounded-lg border border-slate-200 px-4 py-3 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100 resize-none"
           ></textarea>
-          <p class="mt-1 text-xs text-slate-400 text-right">
+          <p class="mt-1 text-xs text-slate-500 text-right">
             {{ (form.excerpt || '').length }}/300
           </p>
         </div>
@@ -259,7 +259,7 @@
               <button
                 @click="saveArticle('published')"
                 :disabled="saving"
-                class="flex-1 rounded-lg bg-emerald-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-700 transition-colors disabled:opacity-50"
+                class="flex-1 rounded-lg bg-emerald-700 px-4 py-2.5 text-sm font-medium text-white hover:bg-emerald-800 transition-colors disabled:opacity-50"
               >
                 {{ saving ? 'Menyimpan...' : 'Publikasikan' }}
               </button>
@@ -333,7 +333,7 @@
                   check.passed ? 'pi-check-circle text-emerald-500' : 'pi-circle text-slate-300',
                 ]"
               ></i>
-              <span :class="check.passed ? 'text-slate-600' : 'text-slate-400'">
+              <span :class="check.passed ? 'text-slate-600' : 'text-slate-500'">
                 {{ check.label }}
               </span>
             </div>
@@ -370,7 +370,7 @@
               />
               <!-- Google Preview -->
               <div class="mt-2 rounded-lg border border-slate-100 bg-slate-50 p-3">
-                <p class="text-xs text-slate-400 mb-1">Preview Google</p>
+                <p class="text-xs text-slate-500 mb-1">Preview Google</p>
                 <p class="text-sm font-medium text-blue-700 truncate">
                   {{ form.metaTitle || form.title || 'Judul Artikel' }}
                 </p>
@@ -413,7 +413,7 @@
                 placeholder="URL gambar untuk social media sharing..."
                 class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400"
               />
-              <p class="mt-1 text-xs text-slate-400">Ukuran rekomendasi: 1200x630px</p>
+              <p class="mt-1 text-xs text-slate-500">Ukuran rekomendasi: 1200x630px</p>
             </div>
 
             <!-- Canonical URL -->
@@ -435,11 +435,11 @@
             <i class="pi pi-history text-slate-500"></i>
             Riwayat versi
           </h3>
-          <p class="mb-3 text-xs text-slate-400">
+          <p class="mb-3 text-xs text-slate-500">
             Menyimpan {{ retainedLimit }} versi terakhir; versi lebih lama otomatis terhapus.
           </p>
           <p v-if="revisionsError" class="text-xs text-rose-600">{{ revisionsError }}</p>
-          <p v-else-if="!revisions.length" class="text-xs text-slate-400">Belum ada versi tersimpan.</p>
+          <p v-else-if="!revisions.length" class="text-xs text-slate-500">Belum ada versi tersimpan.</p>
           <ul v-else class="space-y-2">
             <li
               v-for="revision in revisions"
@@ -448,7 +448,7 @@
             >
               <span class="min-w-0">
                 <span class="block truncate font-medium text-slate-700">{{ revision.title }}</span>
-                <span class="text-slate-400">
+                <span class="text-slate-500">
                   {{ formatDateTime(revision.savedAt) }}<template v-if="revision.reason"> · {{ revision.reason }}</template>
                 </span>
               </span>
@@ -596,7 +596,7 @@ const draftStatusText = computed(() => {
   return 'Semua perubahan sudah tersimpan.'
 })
 const draftStatusClass = computed(() =>
-  isDirty.value && !draftSavedAt.value ? 'text-amber-600' : 'text-slate-400',
+  isDirty.value && !draftSavedAt.value ? 'text-amber-700' : 'text-slate-500',
 )
 
 const persistLocalDraft = () => {
@@ -810,14 +810,14 @@ const seoScoreBarClass = computed(() => {
 
 const metaTitleLengthClass = computed(() => {
   const len = (form.value.metaTitle || '').length
-  if (len === 0) return 'text-slate-400'
+  if (len === 0) return 'text-slate-500'
   if (len >= 30 && len <= 70) return 'text-emerald-500'
   return 'text-amber-500'
 })
 
 const metaDescLengthClass = computed(() => {
   const len = (form.value.metaDescription || '').length
-  if (len === 0) return 'text-slate-400'
+  if (len === 0) return 'text-slate-500'
   if (len >= 80 && len <= 160) return 'text-emerald-500'
   return 'text-amber-500'
 })
@@ -837,7 +837,7 @@ const keywordDensityClass = computed(() => {
   const d = parseFloat(keywordDensity.value)
   if (d >= 1 && d <= 3) return 'text-emerald-500'
   if (d > 0) return 'text-amber-500'
-  return 'text-slate-400'
+  return 'text-slate-500'
 })
 
 // Save article

@@ -158,8 +158,8 @@
             v-if="overview.trend.length"
             class="mt-5 h-36 w-full"
             viewBox="0 0 500 140"
-            role="img"
-            aria-label="Tren jumlah undangan dibuat"
+            role="group"
+            aria-label="Tren jumlah undangan dibuat; setiap titik membuka daftar undangan hari itu"
           >
             <polyline
               :points="trendPoints"
@@ -278,7 +278,7 @@
                 <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold">{{ item.priorityLabel }}</span>
               </div>
               <p class="mt-1 text-xs text-slate-600">{{ item.reason }}</p>
-              <p class="mt-1 text-xs text-slate-500">
+              <p class="mt-1 text-xs text-slate-700">
                 <template v-if="item.ageHours != null">Umur {{ ageLabel(item.ageHours) }}</template>
                 <template v-if="item.amount"> · {{ currency(item.amount) }}</template>
                 <template v-if="item.linkNote"> · {{ item.linkNote }}</template>
