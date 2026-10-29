@@ -34,6 +34,7 @@ export const verifyAdminUserEmail = (id) =>
 // Invitations
 export const fetchAdminInvitations = (params) => apiFetch(withParams('/admin/invitations', params))
 export const fetchAdminInvitation = (id) => apiFetch(`/admin/invitations/${id}`)
+export const fetchAdminInvitationDetail = (id) => apiFetch(`/admin/invitations/${id}/detail`)
 export const updateAdminInvitation = (id, payload) =>
   apiFetch(`/admin/invitations/${id}`, {
     method: 'PATCH',
