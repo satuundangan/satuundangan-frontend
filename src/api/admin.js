@@ -140,7 +140,7 @@ export const autoGenerateAdminArticle = (payload = {}) =>
 export const fetchAdminArticleBotStatus = () => apiFetch('/admin/articles/bot-status')
 
 export const fetchAdminHealth = () => apiFetch('/admin/health')
-export const fetchAdminStats = () => apiFetch('/admin/stats')
+export const fetchAdminStats = (params) => apiFetch(withParams('/admin/stats', params))
 
 // Activity & Error Logs
 export const fetchAdminLogs = (params) => apiFetch(withParams('/admin/logs', params))
