@@ -39,8 +39,6 @@
                >
                  <option value="newest">✨ Terbaru</option>
                  <option value="name_asc">🔤 Nama A-Z</option>
-                 <option value="price_asc">🏷️ Harga: Terendah</option>
-                 <option value="price_desc">💎 Harga: Tertinggi</option>
                  <option value="oldest">🕰️ Terlama</option>
                </select>
                <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
@@ -172,10 +170,6 @@ const filteredTemplates = computed(() => {
     sorted.sort((a, b) => (Number(a.id) || 0) - (Number(b.id) || 0))
   } else if (selectedSort.value === 'name_asc') {
     sorted.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'id'))
-  } else if (selectedSort.value === 'price_asc') {
-    sorted.sort((a, b) => (Number(a.price) || 0) - (Number(b.price) || 0))
-  } else if (selectedSort.value === 'price_desc') {
-    sorted.sort((a, b) => (Number(b.price) || 0) - (Number(a.price) || 0))
   } else {
     // Default: 'newest' (highest id first)
     sorted.sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))
