@@ -125,6 +125,7 @@ export const adminNavigationGroups = [
       { label: 'Users', to: '/admin/users', icon: 'pi-users' },
       { label: 'Invitations', to: '/admin/invitations', icon: 'pi-envelope' },
       { label: 'Pembayaran & Transaksi', to: '/admin/payments', icon: 'pi-receipt' },
+      { label: 'Prospek & Bantuan', to: '/admin/leads-support', icon: 'pi-headphones' },
     ],
   },
   {
