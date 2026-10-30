@@ -424,6 +424,7 @@ import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestM
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -692,7 +693,7 @@ function asList(value) {
 
 function formatDate(value) {
   if (!value) return ''
-  const date = new Date(value)
+  const date = toEventDate(value)
   return Number.isNaN(date.getTime())
     ? ''
     : date.toLocaleDateString('id-ID', {
@@ -700,22 +701,23 @@ function formatDate(value) {
         day: 'numeric',
         month: 'long',
         year: 'numeric',
+        timeZone: EVENT_TIME_ZONE,
       })
 }
 
 function formatTime(value) {
   if (!value) return ''
-  const date = new Date(value)
+  const date = toEventDate(value)
   return Number.isNaN(date.getTime())
     ? ''
-    : `${date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} WIB`
+    : `${date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE })} WIB`
 }
 
 function formatWishDate(value) {
-  const date = new Date(value)
+  const date = toEventDate(value)
   return Number.isNaN(date.getTime())
     ? ''
-    : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })
+    : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 function getEmbedUrlVideo(value) {

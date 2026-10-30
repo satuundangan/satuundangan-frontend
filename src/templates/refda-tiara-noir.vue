@@ -395,6 +395,7 @@ import { useToast } from 'vue-toastification'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -652,10 +653,10 @@ function getMusicUrl(choice) {
 
 function formatDate(value) {
   if (!value) return 'Tanggal menyusul'
-  const date = new Date(value)
+  const date = toEventDate(value)
   return Number.isNaN(date.getTime())
     ? 'Tanggal menyusul'
-    : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+    : date.toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 // The displayed time is pinned (not derived from dateTime): the stored dateTime
@@ -680,11 +681,11 @@ function eventPlace(item) {
 
 function calendarWindow() {
   const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Asia/Jakarta',
+    timeZone: EVENT_TIME_ZONE,
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
-  }).formatToParts(new Date(eventDate.value))
+  }).formatToParts(toEventDate(eventDate.value))
   const get = (type) => parts.find((p) => p.type === type)?.value || ''
   const day = `${get('year')}${get('month')}${get('day')}`
   const clock = (value) => `${String(value).replace(':', '')}00`

@@ -679,6 +679,7 @@ import cornerImg from '@/assets/ornaments/dayak-corner-gold.png'
 import dividerImg from '@/assets/ornaments/dayak-divider-gold.png'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: {
@@ -824,22 +825,24 @@ function updateCountdown() {
 
 function formatDate(dateStr) {
   if (!dateStr) return ''
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   return date.toLocaleDateString('id-ID', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    timeZone: EVENT_TIME_ZONE,
   })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return ''
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   return (
     date.toLocaleTimeString('id-ID', {
       hour: '2-digit',
       minute: '2-digit',
+      timeZone: EVENT_TIME_ZONE,
     }) + ' WIB'
   )
 }

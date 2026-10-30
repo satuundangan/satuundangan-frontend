@@ -1031,6 +1031,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
+import { EVENT_TIME_ZONE, getEventDateParts, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: {
@@ -1106,35 +1107,39 @@ const groomPhoto = computed(() => {
 const weddingDateObj = computed(() => {
   const raw = props.data?.dateTime || props.data?.akadLocation?.dateTime || props.data?.resepsiLocation?.dateTime
   if (!raw) return new Date('2026-11-29T08:00:00+07:00')
-  const d = new Date(raw)
+  const d = toEventDate(raw)
   return isNaN(d.getTime()) ? new Date('2026-11-29T08:00:00+07:00') : d
 })
+// Calendar day of the wedding in WIB, whatever the guest's timezone.
+const weddingDateParts = computed(() => getEventDateParts(weddingDateObj.value))
 
 const weddingDateFull = computed(() => {
   return weddingDateObj.value.toLocaleDateString('id-ID', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: EVENT_TIME_ZONE
   })
 })
 
 const weddingShortDate = computed(() => {
-  const d = weddingDateObj.value
+  const { day, month, year } = weddingDateParts.value
   const pad = (n) => String(n).padStart(2, '0')
-  return `${pad(d.getDate())}.${pad(d.getMonth() + 1)}.${d.getFullYear()}`
+  return `${pad(day)}.${pad(month + 1)}.${year}`
 })
 
 const calendarMonthYear = computed(() => {
   return weddingDateObj.value.toLocaleDateString('id-ID', {
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: EVENT_TIME_ZONE
   })
 })
 
-const weddingDay = computed(() => weddingDateObj.value.getDate())
-const weddingMonth = computed(() => weddingDateObj.value.getMonth())
-const weddingYear = computed(() => weddingDateObj.value.getFullYear())
+const weddingDay = computed(() => weddingDateParts.value.day)
+const weddingMonth = computed(() => weddingDateParts.value.month)
+const weddingYear = computed(() => weddingDateParts.value.year)
 
 const calendarData = computed(() => {
   const totalDays = new Date(weddingYear.value, weddingMonth.value + 1, 0).getDate()

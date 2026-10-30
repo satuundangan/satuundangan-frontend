@@ -102,6 +102,7 @@
 
 <script setup>
 import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({ data: { type: Object, default: () => ({}) } })
 const sceneCount = 6
@@ -143,8 +144,8 @@ const groomFullName = computed(() => isGenericDemo.value ? 'Robby Hadani Faris' 
 const brideFullName = computed(() => isGenericDemo.value ? 'Tsabita Dyah Sayekti' : props.data?.brideFullName || coupleNames.value.bride)
 const dateInput = computed(() => isGenericDemo.value ? null : props.data?.resepsiLocation?.dateTime || props.data?.akadLocation?.dateTime || props.data?.weddingDate)
 const weddingDate = computed(() => {
-  const date = dateInput.value ? new Date(dateInput.value) : new Date('2026-09-26T08:00:00')
-  return Number.isNaN(date.getTime()) ? 'Saturday, September 26, 2026' : new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date)
+  const date = toEventDate(dateInput.value || '2026-09-26T08:00:00')
+  return Number.isNaN(date.getTime()) ? 'Saturday, September 26, 2026' : new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: EVENT_TIME_ZONE }).format(date)
 })
 const eventDateShort = computed(() => weddingDate.value.replace(/^\w+,\s*/, ''))
 const eventLocation = computed(() => isGenericDemo.value
@@ -182,13 +183,13 @@ const wishes = ref([
 
 function formatDate(value) {
   if (!value) return ''
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).format(date)
+  const date = toEventDate(value)
+  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: EVENT_TIME_ZONE }).format(date)
 }
 function formatTime(value) {
   if (!value) return ''
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Jakarta' }).format(date) + ' WIB'
+  const date = toEventDate(value)
+  return Number.isNaN(date.getTime()) ? '' : new Intl.DateTimeFormat('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE }).format(date) + ' WIB'
 }
 
 // Each scene has independent layer keyframes. The local scene progress is eased
