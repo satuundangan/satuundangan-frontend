@@ -111,6 +111,8 @@ export const deleteAdminCategory = (id) =>
 
 // Promo Codes
 export const fetchAdminPromoCodes = (params) => apiFetch(withParams('/promo/admin/list', params))
+export const fetchAdminPromoCodeDetail = (id) => apiFetch(`/promo/admin/${id}`)
+export const fetchAdminPromoSummary = () => apiFetch('/promo/admin/summary')
 export const createAdminPromoCode = (payload) =>
   apiFetch('/promo/admin', {
     method: 'POST',
