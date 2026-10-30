@@ -5,12 +5,15 @@
     <AdminTableStatus
       :error="loadError"
       :loading="loading"
-      :count="categories.length"
+      :count="total"
       :filtered="Boolean(search)"
       :updated-at="lastLoadedAt"
       @retry="loadData"
       @reset="resetSearch"
     />
+    <p class="mb-3 rounded-lg bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
+      Kategori adalah pengelompokan utama katalog dan terhubung ke template. Grup filter dan tag template adalah metadata berbeda. Mengubah nama kategori akan mengubah label relasi, bukan ID kategori; kategori yang masih dipakai harus dipindahkan dari template sebelum dihapus.
+    </p>
     <DataTable
       v-if="!loadError"
       :headers="headers"
@@ -30,6 +33,13 @@
             :style="{ backgroundColor: item.color || '#000000' }"></span>
           <span class="font-mono text-xs">{{ item.color }}</span>
         </div>
+      </template>
+      <template #cell(templateCount)="{ item }">
+        <span class="font-medium">{{ item.templateCount ?? 0 }} template</span>
+        <span class="block text-[10px] text-slate-500">{{ item.activeTemplateCount ?? 0 }} aktif</span>
+      </template>
+      <template #cell(invitationCount)="{ item }">
+        <span class="font-medium">{{ item.invitationCount ?? 0 }} undangan</span>
       </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
@@ -111,6 +121,8 @@ const editing = ref(null)
 const headers = [
   { label: 'Nama', key: 'name' },
   { label: 'Warna', key: 'color' },
+  { label: 'Pemakaian template', key: 'templateCount' },
+  { label: 'Undangan terkait', key: 'invitationCount' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -199,7 +211,7 @@ async function submitForm() {
 async function confirmDelete(category) {
   const result = await Swal.fire({
     title: 'Hapus kategori?',
-    text: `Kategori ${category.name} akan dihapus`,
+    text: `${category.templateCount ?? 0} template dan ${category.invitationCount ?? 0} undangan terkait. Kategori yang masih dipakai tidak bisa dihapus; pindahkan template dahulu.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#0f172a',

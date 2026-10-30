@@ -445,6 +445,10 @@
                   </div>
                 </div>
               </div>
+              <p class="mt-2 text-[10px] text-slate-500">Pemeriksaan dasar rasio warna terhadap teks hitam/putih; cocokkan kembali dengan konteks sebenarnya pada renderer. Ini screening, bukan audit visual.</p>
+              <div class="mt-1 grid grid-cols-1 gap-1 text-[10px] text-slate-600 sm:grid-cols-3">
+                <span v-for="item in paletteContrastSummary" :key="item.label">{{ item.label }}: hitam {{ item.black }}:1 · putih {{ item.white }}:1</span>
+              </div>
             </div>
 
             <!-- Section Options UI -->
@@ -457,7 +461,10 @@
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
 
-                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
+                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">
+                    {{ section.label }}
+                    <small class="block font-normal text-slate-500">dipakai {{ section.templateUseCount ?? 0 }} template · {{ section.enabledTemplateUseCount ?? 0 }} aktif</small>
+                  </span>
 
                   <div class="flex items-center gap-2 ml-auto">
                     <span class="text-[10px] uppercase text-slate-500 font-bold">Urutan:</span>
@@ -817,6 +824,31 @@ const customPalette = reactive({
   secondary: '#64748B',
   accent: '#38BDF8'
 })
+
+function colorLuminance(color) {
+  const match = /^#?([a-f\d]{3}|[a-f\d]{6})$/i.exec(String(color || '').trim())
+  if (!match) return null
+  let hex = match[1]
+  if (hex.length === 3) hex = hex.split('').map((char) => char + char).join('')
+  const channels = [0, 2, 4].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255)
+  const linear = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+}
+
+function contrastRatio(foreground, background) {
+  const foregroundLuminance = colorLuminance(foreground)
+  const backgroundLuminance = colorLuminance(background)
+  if (foregroundLuminance === null || backgroundLuminance === null) return '—'
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance)
+  const darker = Math.min(foregroundLuminance, backgroundLuminance)
+  return ((lighter + 0.05) / (darker + 0.05)).toFixed(2)
+}
+
+const paletteContrastSummary = computed(() => [
+  { label: 'Primary', black: contrastRatio('#000000', customPalette.primary), white: contrastRatio('#ffffff', customPalette.primary) },
+  { label: 'Secondary', black: contrastRatio('#000000', customPalette.secondary), white: contrastRatio('#ffffff', customPalette.secondary) },
+  { label: 'Accent', black: contrastRatio('#000000', customPalette.accent), white: contrastRatio('#ffffff', customPalette.accent) },
+])
 
 function emptySampleContent() {
   return {

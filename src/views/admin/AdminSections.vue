@@ -29,6 +29,10 @@
           {{ item.is_active ? 'Aktif' : 'Nonaktif' }}
         </span>
       </template>
+      <template #cell(templateUseCount)="{ item }">
+        <span class="text-sm">{{ item.templateUseCount ?? 0 }} template</span>
+        <span class="block text-[10px] text-slate-500">{{ item.enabledTemplateUseCount ?? 0 }} memakai section ini</span>
+      </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
           <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
@@ -108,6 +112,7 @@ const headers = [
   { label: 'Label (Nama Fitur)', key: 'label' },
   { label: 'Key (Kode Sistem)', key: 'key' },
   { label: 'Status', key: 'is_active' },
+  { label: 'Dampak penggunaan', key: 'templateUseCount' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -170,6 +175,19 @@ function closeForm() {
 
 async function submitForm() {
   if (saving.value) return
+  if (editing.value?.is_active && !form.is_active && editing.value.templateUseCount > 0) {
+    const impact = await Swal.fire({
+      title: 'Nonaktifkan section terpakai?',
+      text: `${editing.value.templateUseCount} template mereferensikan section ini; ${editing.value.enabledTemplateUseCount ?? 0} mengaktifkannya. Undangan yang sudah ada tidak otomatis diubah.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#0f172a',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Ya, nonaktifkan',
+      cancelButtonText: 'Batal',
+    })
+    if (!impact.isConfirmed) return
+  }
   saving.value = true
   try {
     if (editing.value) {
@@ -191,7 +209,7 @@ async function submitForm() {
 async function confirmDelete(item) {
   const result = await Swal.fire({
     title: 'Hapus section?',
-    text: `Section "${item.label}" akan dihapus.`,
+    text: `${item.templateUseCount ?? 0} template mereferensikan section ini (${item.enabledTemplateUseCount ?? 0} mengaktifkannya). Section terpakai tidak dapat dihapus.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#0f172a',
