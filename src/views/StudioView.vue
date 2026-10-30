@@ -1571,16 +1571,6 @@ const templateImageUrl = computed(() => (
   'https://via.placeholder.com/400x300?text=Template'
 ))
 
-const templatePrice = computed(() => {
-  const price = Number(selectedTemplate.value?.price || 0)
-  if (!price) return 'Gratis'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  }).format(price)
-})
-
 const sectionOptionsLabelMap = {
   quote: 'Quote Ayat / Mutiara',
   'love-story': 'Love Story (Cerita Cinta)',
