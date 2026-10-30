@@ -135,6 +135,10 @@ export const adminNavigationGroups = [
     label: 'Growth',
     items: [
       { label: 'Promo Code', to: '/admin/promo-codes', icon: 'pi-percentage' },
+      { label: 'Reseller', to: '/admin/affiliate/resellers', icon: 'pi-users' },
+      { label: 'Ledger Komisi', to: '/admin/affiliate/commissions', icon: 'pi-book' },
+      { label: 'Penarikan Reseller', to: '/admin/affiliate/withdrawals', icon: 'pi-wallet' },
+      { label: 'Aturan & Scheduler Afiliasi', to: '/admin/affiliate/operations', icon: 'pi-cog' },
       { label: 'WhatsApp Bot', to: '/admin/whatsapp-bot', icon: 'pi-whatsapp' },
       { label: 'Social Studio (IG)', to: '/admin/social-studio', icon: 'pi-camera' },
     ],

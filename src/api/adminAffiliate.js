@@ -16,6 +16,11 @@ export const getAdminWithdrawals = (params = {}) => {
   return apiFetch(`/admin/affiliate/withdrawals${qs ? '?' + qs : ''}`)
 }
 
+export const getAdminCommissions = (params = {}) => {
+  const qs = new URLSearchParams(params).toString()
+  return apiFetch(`/admin/affiliate/commissions${qs ? '?' + qs : ''}`)
+}
+
 export const approveWithdrawal = (id, data) =>
   apiFetch(`/admin/affiliate/withdrawals/${id}/approve`, {
     method: 'POST',
@@ -37,6 +42,10 @@ export const updateTierConfig = (tier, data) =>
   })
 
 export const getAdminSystemConfig = () => apiFetch('/admin/affiliate/system-config')
+
+export const getAdminAffiliateConfigHistory = () => apiFetch('/admin/affiliate/config-history')
+
+export const getAdminAffiliateJobRuns = () => apiFetch('/admin/affiliate/job-runs')
 
 export const updateAdminSystemConfig = (data) =>
   apiFetch('/admin/affiliate/system-config', {

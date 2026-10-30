@@ -92,7 +92,9 @@
           <RouterLink
             :to="metricLink(card)"
             class="mt-3 inline-block text-xs font-semibold text-indigo-700 underline focus-visible:outline focus-visible:outline-2"
-            >{{ card.key === 'invitationsCreated' ? 'Lihat undangan sumber' : 'Lihat transaksi sumber' }}</RouterLink
+            >{{
+              card.key === 'invitationsCreated' ? 'Lihat undangan sumber' : 'Lihat transaksi sumber'
+            }}</RouterLink
           >
         </article>
       </section>
@@ -206,9 +208,11 @@
                       }}</RouterLink>
                     </td>
                     <td class="p-2">
-                      <RouterLink :to="dayPaymentsLink(day.date)" class="text-indigo-700 underline">{{
-                        number(day.paidOrders)
-                      }}</RouterLink>
+                      <RouterLink
+                        :to="dayPaymentsLink(day.date)"
+                        class="text-indigo-700 underline"
+                        >{{ number(day.paidOrders) }}</RouterLink
+                      >
                     </td>
                     <td class="p-2">{{ currency(day.revenue) }}</td>
                   </tr>
@@ -251,7 +255,9 @@
             >Buka antrean pembayaran</RouterLink
           >
         </div>
-        <p class="mt-1 text-xs text-slate-500">{{ queue?.note || 'Antrean dari pusat pembayaran.' }}</p>
+        <p class="mt-1 text-xs text-slate-500">
+          {{ queue?.note || 'Antrean dari pusat pembayaran.' }}
+        </p>
         <p v-if="queueLoading" role="status" class="py-6 text-sm text-slate-500">Memuat antrean…</p>
         <div v-else-if="queueError" class="mt-4 text-sm text-amber-800">
           {{ queueError }}
@@ -268,14 +274,21 @@
               v-for="item in queue.items.slice(0, 8)"
               :key="item.key"
               class="rounded-lg border p-3 text-sm"
-              :class="item.priority === 1 ? 'border-rose-200 bg-rose-50' : 'border-amber-100 bg-amber-50'"
+              :class="
+                item.priority === 1 ? 'border-rose-200 bg-rose-50' : 'border-amber-100 bg-amber-50'
+              "
             >
               <div class="flex items-center justify-between gap-2">
-                <RouterLink v-if="item.link" :to="item.link" class="font-semibold text-slate-800 underline">{{
-                  item.title
-                }}</RouterLink>
+                <RouterLink
+                  v-if="item.link"
+                  :to="item.link"
+                  class="font-semibold text-slate-800 underline"
+                  >{{ item.title }}</RouterLink
+                >
                 <span v-else class="font-semibold text-slate-800">{{ item.title }}</span>
-                <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold">{{ item.priorityLabel }}</span>
+                <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold">{{
+                  item.priorityLabel
+                }}</span>
               </div>
               <p class="mt-1 text-xs text-slate-600">{{ item.reason }}</p>
               <p class="mt-1 text-xs text-slate-700">
@@ -305,7 +318,9 @@
           <dl class="mt-3 grid grid-cols-3 gap-3 text-sm">
             <div>
               <dt class="text-xs text-slate-500">Users</dt>
-              <dd class="text-lg font-bold">{{ number(ga4.reports.summary.current?.activeUsers) }}</dd>
+              <dd class="text-lg font-bold">
+                {{ number(ga4.reports.summary.current?.activeUsers) }}
+              </dd>
             </div>
             <div>
               <dt class="text-xs text-slate-500">Sesi</dt>
@@ -388,7 +403,9 @@
               maintenance == null ? 'belum diketahui' : maintenance.active ? 'AKTIF' : 'normal'
             }}</strong>
           </p>
-          <RouterLink to="/admin/system" class="mt-4 inline-block text-sm font-semibold text-indigo-700 underline"
+          <RouterLink
+            to="/admin/system"
+            class="mt-4 inline-block text-sm font-semibold text-indigo-700 underline"
             >Buka kesehatan, perawatan, dan jejak audit</RouterLink
           >
         </template>
@@ -504,8 +521,8 @@ const totalCards = [
   { key: 'invitations', label: 'Undangan', to: '/admin/invitations' },
   { key: 'guests', label: 'Tamu', note: 'Belum ada halaman admin untuk tamu.' },
   { key: 'templates', label: 'Template', to: '/admin/templates' },
-  { key: 'activeResellers', label: 'Reseller berstatus aktif', note: 'Halaman reseller belum aktif.' },
-  { key: 'pendingWithdrawals', label: 'Penarikan pending', note: 'Antrean payout belum aktif.' },
+  { key: 'activeResellers', label: 'Reseller berstatus aktif', to: '/admin/affiliate/resellers' },
+  { key: 'pendingWithdrawals', label: 'Penarikan pending', to: '/admin/affiliate/withdrawals' },
 ]
 const number = (value) =>
   value == null ? 'Belum tersedia' : new Intl.NumberFormat('id-ID').format(value)
@@ -589,7 +606,10 @@ function metricLink(card) {
     },
   }
 }
-const dayLink = (date) => ({ path: '/admin/invitations', query: { startDate: date, endDate: date } })
+const dayLink = (date) => ({
+  path: '/admin/invitations',
+  query: { startDate: date, endDate: date },
+})
 const dayPaymentsLink = (date) => ({
   path: '/admin/payments',
   query: { status: 'success', purpose: 'invitation', kind: 'paid', startDate: date, endDate: date },
