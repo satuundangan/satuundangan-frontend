@@ -330,6 +330,45 @@
       </div>
     </section>
 
+    <!-- Transition to Template Catalog CTA (ADM-093) -->
+    <section class="py-16 bg-gradient-to-br from-amber-50/70 via-stone-50 to-white border-t border-stone-200">
+      <div class="max-w-4xl mx-auto px-6 text-center space-y-6">
+        <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-amber-100/80 text-amber-900 text-xs font-bold border border-amber-200">
+          <i class="fa-solid fa-palette text-amber-700"></i>
+          <span>Undangan Pernikahan Digital</span>
+        </div>
+        <h2 class="text-3xl sm:text-4xl font-serif font-bold text-slate-900 leading-snug">
+          Sudah Punya Gambaran Rencana &amp; Budget?<br class="hidden sm:block" />
+          Saatnya Pilih Desain Undangan Digital Impianmu
+        </h2>
+        <p class="text-stone-600 text-sm sm:text-base max-w-xl mx-auto leading-relaxed">
+          Pilih dari puluhan desain eksklusif tema nasional, adat Nusantara, anime, hingga minimalis modern.
+          <strong class="text-slate-900 block mt-1">Coba desain &amp; edit gratis sepuasnya — bayar hanya saat kamu siap menyebarkan link ke tamu.</strong>
+        </p>
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3.5 pt-2">
+          <a
+            href="/#templates"
+            class="w-full sm:w-auto px-8 py-3.5 rounded-full bg-mocha hover:bg-[#8e5e39] text-white font-bold text-sm shadow-lg shadow-mocha/20 hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i>
+            <span>Lihat Katalog &amp; Coba Desain Gratis</span>
+          </a>
+          <router-link
+            to="/create"
+            class="w-full sm:w-auto px-7 py-3.5 rounded-full bg-white hover:bg-stone-50 border border-stone-300 text-stone-700 font-bold text-sm shadow-xs hover:scale-105 active:scale-95 transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-pen-to-square text-stone-400"></i>
+            <span>Mulai Buat Draf Sekarang</span>
+          </router-link>
+        </div>
+
+        <p class="text-[11px] text-stone-400">
+          💡 Tanpa komitmen pembayaran di muka • Bebas ganti tema • Dilengkapi RSVP &amp; Amplop Digital
+        </p>
+      </div>
+    </section>
+
     <!-- Footer -->
     <Footer />
   </div>

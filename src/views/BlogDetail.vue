@@ -215,7 +215,7 @@
                     Rencanakan Undangan Pernikahan Impianmu Tanpa Repot
                   </h3>
                   <p class="text-stone-600 text-sm max-w-lg leading-relaxed">
-                    Coba gratis ratusan template eksklusif SatuUndangan. Jadi dalam 5 menit, bebas revisi sepuasnya.
+                    Coba gratis seluruh desain template eksklusif SatuUndangan. Bebas edit sepuasnya, bayar hanya saat siap disebarkan ke tamu.
                   </p>
                 </div>
                 <a

@@ -52,12 +52,24 @@ const faqs = [
     answer: 'Cukup pilih template yang kamu suka, isi data pernikahan, upload foto, dan undangan siap dibagikan. Prosesnya cepat, mudah, dan bisa langsung kamu lihat preview-nya.'
   },
   {
+    question: 'Kapan saya harus membayar? Apakah bisa coba edit gratis?',
+    answer: 'Kamu bisa <strong>mencoba, mendesain, dan mengedit undangan secara gratis sepuasnya</strong> tanpa perlu memasukkan kartu kredit atau membayar di awal. Kamu hanya perlu membayar saat undangan sudah selesai dibuat dan siap disebarkan ke tamu tercinta.'
+  },
+  {
+    question: 'Apa perbedaan paket Basic, Premium, dan Eksklusif?',
+    answer: 'Semua paket mendapatkan masa aktif 365 + 1 hari (1 tahun), akses seluruh desain template, fitur RSVP, amplop digital, dan Wedding Planner gratis seumur hidup. Bedanya:<br/>• <strong>Basic</strong>: Pilihan hemat untuk acara simpel (galeri hingga 8 foto).<br/>• <strong>Premium (Paling Populer)</strong>: Galeri hingga 20 foto, upload musik MP3 sendiri, kirim WhatsApp otomatis, dan custom subdomain.<br/>• <strong>Eksklusif</strong>: Galeri maksimal 35 foto, tanpa watermark SatuUndangan, dan prioritas customer support.'
+  },
+  {
     question: 'Apakah bisa diedit setelah disebarkan?',
     answer: 'Tentu saja. Kamu bisa mengedit informasi undangan kapan saja melalui dashboard, bahkan setelah link disebarkan ke tamu undangan. Perubahan akan langsung terlihat secara real-time.'
   },
   {
     question: 'Berapa lama undangan akan aktif?',
     answer: 'Undanganmu <strong>aktif selama 365 + 1 hari (1 tahun penuh)</strong> sejak dibuat! Link undangan dan seluruh momen kenangan bahagiamu tetap dapat diakses dengan lancar sebelum hingga sesudah acara.'
+  },
+  {
+    question: 'Bagaimana jika ada kendala saat pembayaran atau aktivasi?',
+    answer: 'Seluruh pembayaran diproses otomatis dan instan melalui payment gateway berizin resmi Bank Indonesia (Midtrans). Jika terjadi kendala jaringan atau butuh bantuan, Customer Support kami siap membantu setiap hari <strong>pukul 08.00 – 21.00 WIB</strong> via WhatsApp resmi atau email dengan jaminan respon cepat (SLA < 15 menit).'
   },
   {
     question: 'Bagaimana cara menyebarkan undangannya?',
