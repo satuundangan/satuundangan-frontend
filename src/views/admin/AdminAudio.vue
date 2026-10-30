@@ -1,7 +1,7 @@
 <template>
   <AdminShell
     title="Audio & Musik"
-    description="Kelola katalog musik latar untuk invitation wedding"
+    description="Kelola musik latar. Pemakaian dihitung dari URL yang sama; sumber dan lisensi yang belum tercatat ditandai unknown."
     show-search
     :search="search"
     search-placeholder="Cari judul atau kategori musik"
@@ -145,6 +145,10 @@
               <p class="mt-1 line-clamp-1 text-xs text-slate-500 font-medium">
                 {{ getCategoryMeta(track.category).description }}
               </p>
+              <p class="mt-2 text-[11px] text-slate-600">
+                Dipakai: {{ track.templateUseCount ?? 0 }} template · {{ track.invitationUseCount ?? 0 }} undangan
+              </p>
+              <p class="text-[10px] text-slate-400">Sumber, lisensi, durasi: belum tercatat</p>
             </div>
             
             <div class="flex flex-col gap-2">
@@ -640,7 +644,7 @@ async function submitForm() {
 async function confirmDelete(track) {
   const result = await Swal.fire({
     title: 'Hapus musik?',
-    text: `Musik "${track.title}" akan dihapus permanen.`,
+    text: `Audio ini terdeteksi dipakai oleh ${track.templateUseCount ?? 0} template dan ${track.invitationUseCount ?? 0} undangan. Referensi harus diganti sebelum audio dapat dihapus.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#ef4444',
