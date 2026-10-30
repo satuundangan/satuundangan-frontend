@@ -30,10 +30,41 @@
           <span>Gratis Desain &amp; Preview • Bayar Hanya Saat Sebar</span>
         </div>
 
-        <!-- Draft status indicator -->
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:inline-block">
-          Draf Otomatis Tersimpan
-        </span>
+        <!-- Draft status indicator with timestamp & cross-device popover (ADM-094) -->
+        <div class="relative">
+          <button
+            type="button"
+            @click="showCrossDeviceInfo = !showCrossDeviceInfo"
+            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold transition-colors cursor-pointer"
+            title="Klik untuk info penyimpanan draf"
+          >
+            <i class="fa-solid fa-cloud-arrow-up text-mocha text-[11px]"></i>
+            <span class="hidden md:inline">{{ lastSavedFormatted ? `Draf Tersimpan (${lastSavedFormatted})` : 'Draf Otomatis Tersimpan' }}</span>
+            <span class="md:hidden">Draf Tersimpan</span>
+            <i class="fa-solid fa-circle-info text-[9px] text-slate-400"></i>
+          </button>
+
+          <!-- Cross Device Info Popover -->
+          <div
+            v-if="showCrossDeviceInfo"
+            class="absolute right-0 top-full mt-2 w-72 p-3 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 text-left text-xs space-y-2 animate-scale-up"
+          >
+            <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+              <span class="font-extrabold text-slate-800 text-[11px] flex items-center gap-1.5">
+                <i class="fa-solid fa-laptop text-mocha"></i> Info Penyimpanan Draf
+              </span>
+              <button @click="showCrossDeviceInfo = false" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-xs"></i>
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              Draf formulir Anda tersimpan otomatis di peramban ini. Untuk melanjutkan di perangkat lain, klik <b>Simpan</b> dan masuk ke akun Anda.
+            </p>
+            <div class="pt-1 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-shield-check"></i> Draf lokal aman meskipun halaman dimuat ulang.
+            </div>
+          </div>
+        </div>
         <button @click="saveAndPreview" :disabled="isUploading" class="bg-mocha text-white font-bold py-2.5 px-6 rounded-xl hover:bg-dark shadow-lg shadow-mocha/20 transition-all disabled:opacity-50 flex items-center gap-2 text-xs md:text-sm">
           <span v-if="isUploading" class="animate-spin w-3 h-3 border-2 border-white/30 border-t-white rounded-full"></span>
           <span>{{ route.params.id ? 'Simpan' : 'Simpan & Selesai' }}</span>
@@ -41,6 +72,31 @@
         </button>
       </div>
     </header>
+
+    <!-- Friendly Draft Recovery Banner (ADM-094) -->
+    <div
+      v-if="pendingDraftRecovery"
+      class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-amber-900 z-30 shrink-0"
+    >
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left text-amber-600"></i>
+        <span>Ditemukan draf pengisian belum tersimpan dari sesi sebelumnya ({{ draftRecoveryTime }}).</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          @click="applyDraftRecovery"
+          class="px-3 py-1 bg-amber-600 text-white rounded-lg font-bold text-[11px] hover:bg-amber-700 transition-colors cursor-pointer"
+        >
+          Pulihkan Draf
+        </button>
+        <button
+          @click="discardDraftRecovery"
+          class="px-2 py-1 text-amber-700 hover:text-amber-900 font-medium text-[11px] cursor-pointer"
+        >
+          Abaikan
+        </button>
+      </div>
+    </div>
 
     <!-- Main Workspace -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
@@ -1281,6 +1337,37 @@ const authMode = ref('login')
 const auth = useAuthStore()
 const isAuthenticated = computed(() => !!auth.token)
 
+// Draft status & recovery states (ADM-094)
+const showCrossDeviceInfo = ref(false)
+const lastSavedTime = ref(null)
+const pendingDraftRecovery = ref(null)
+const draftRecoveryTime = ref('')
+
+const lastSavedFormatted = computed(() => {
+  if (!lastSavedTime.value) return null
+  return lastSavedTime.value.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+})
+
+const applyDraftRecovery = () => {
+  if (!pendingDraftRecovery.value) return
+  deepMerge(formData.value, pendingDraftRecovery.value.formData)
+  if (pendingDraftRecovery.value.sections) {
+    Object.keys(pendingDraftRecovery.value.sections).forEach((k) => {
+      sections.value[k] = pendingDraftRecovery.value.sections[k]
+    })
+  }
+  toast.success('Draf berhasil dipulihkan!')
+  hasUnsavedChanges.value = true
+  lastSavedTime.value = new Date(pendingDraftRecovery.value.timestamp || Date.now())
+  pendingDraftRecovery.value = null
+}
+
+const discardDraftRecovery = () => {
+  clearDraft()
+  pendingDraftRecovery.value = null
+  toast.info('Draf lama dibersihkan.')
+}
+
 // Preview States
 const showMobilePreview = ref(false)
 const isPreviewLoading = ref(true)
@@ -1850,6 +1937,7 @@ const saveDraft = (data) => {
     if (!route.params.id) {
       localStorage.setItem('selectedSections', JSON.stringify(Object.keys(sections.value).filter(k => sections.value[k])))
     }
+    lastSavedTime.value = new Date()
   } catch (e) {}
 }
 
@@ -1992,15 +2080,11 @@ onMounted(async () => {
         if (draft && draft.timestamp) {
            const age = (Date.now() - draft.timestamp) / (1000 * 60 * 60)
            if (age < 24) {
-              if (confirm("Anda memiliki draf pengisian yang belum disimpan. Lanjutkan?")) {
-                 deepMerge(formData.value, draft.formData)
-                 if (draft.sections) {
-                   Object.keys(draft.sections).forEach(k => {
-                     sections.value[k] = draft.sections[k]
-                   })
-                 }
-                 toast.success("Draf berhasil dipulihkan!")
-              } else { clearDraft() }
+              pendingDraftRecovery.value = draft
+              draftRecoveryTime.value = new Date(draft.timestamp).toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })
            } else { clearDraft() }
         } else { clearDraft() }
      } catch (e) {

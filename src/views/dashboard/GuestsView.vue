@@ -1003,6 +1003,59 @@
       </div>
     </div>
 
+    <!-- Import Summary Modal (ADM-098) -->
+    <div
+      v-if="showImportSummaryModal"
+      class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-4 backdrop-blur-xs"
+    >
+      <div class="bg-white rounded-3xl w-full max-w-lg p-6 md:p-8 shadow-2xl animate-scale-up space-y-4">
+        <div class="flex items-center justify-between pb-2 border-b border-slate-100">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-sm">
+              <i class="fa-solid fa-file-excel"></i>
+            </span>
+            <h3 class="font-extrabold text-base text-slate-900">Hasil Impor Tamu Excel</h3>
+          </div>
+          <button @click="showImportSummaryModal = false" class="text-slate-400 hover:text-slate-700">
+            <i class="fa-solid fa-xmark text-sm"></i>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-2 gap-3 text-center">
+          <div class="bg-emerald-50 border border-emerald-100 rounded-2xl p-3">
+            <div class="text-xl font-black text-emerald-700">{{ importSummary.success }}</div>
+            <div class="text-[11px] font-bold text-emerald-800">Berhasil Diimpor</div>
+          </div>
+          <div class="bg-rose-50 border border-rose-100 rounded-2xl p-3">
+            <div class="text-xl font-black text-rose-700">{{ importSummary.failed.length }}</div>
+            <div class="text-[11px] font-bold text-rose-800">Baris Ditolak / Dilewati</div>
+          </div>
+        </div>
+
+        <div v-if="importSummary.failed.length > 0" class="space-y-2">
+          <h4 class="text-xs font-bold text-slate-700">Detail Alasan Penolakan:</h4>
+          <div class="max-h-52 overflow-y-auto rounded-xl border border-slate-100 bg-slate-50 p-2 divide-y divide-slate-100 text-xs custom-scrollbar">
+            <div v-for="(item, idx) in importSummary.failed" :key="idx" class="py-1.5 px-2 flex items-center justify-between gap-2">
+              <div class="min-w-0">
+                <span class="font-semibold text-slate-800">Baris {{ item.row }}:</span>
+                <span class="text-slate-600 ml-1 truncate">{{ item.name || '(Tanpa Nama)' }}</span>
+              </div>
+              <span class="text-[10px] font-bold text-rose-600 bg-rose-100/80 px-2 py-0.5 rounded-md shrink-0">
+                {{ item.reason }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          @click="showImportSummaryModal = false"
+          class="w-full py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors"
+        >
+          Tutup
+        </button>
+      </div>
+    </div>
+
     <!-- Single Share Modal -->
     <div
       v-if="showShareModal"
@@ -1176,6 +1229,8 @@ const loading = ref(false)
 const showAddModal = ref(false)
 const showBulkModal = ref(false)
 const showHelpModal = ref(false)
+const showImportSummaryModal = ref(false)
+const importSummary = ref({ success: 0, failed: [] })
 const bulkText = ref('')
 const isSubmitting = ref(false)
 const searchQuery = ref('')
@@ -1697,34 +1752,64 @@ async function handleExcelImport(event) {
         const p = cell(v)
         return /^8\d{7,}$/.test(p) ? `0${p}` : p
       }
+
+      const existingNames = new Set(
+        guests.value.map((g) => (g.name || '').trim().toLowerCase()).filter(Boolean)
+      )
+      const seenInFile = new Set()
+
       let success = 0
       const failed = []
-      for (const row of jsonData) {
+
+      for (let i = 0; i < jsonData.length; i++) {
+        const row = jsonData[i]
+        const rowNumber = i + 2 // Row 1 is header
         const name = cell(row.Nama ?? row.nama ?? row.Name ?? row.name)
         const phone = phoneCell(row.WhatsApp ?? row.whatsapp ?? row.NoHP ?? row.phone ?? row.telp)
         const group = cell(row.Kategori ?? row.group ?? row.category) || undefined
 
-        if (name) {
-          try {
-            await createGuest({
-              name,
-              phoneNumber: phone,
-              group,
-              invitationId: selectedInvitationId.value,
-            })
-            success++
-          } catch (err) {
-            console.error(err)
-            failed.push(name)
-          }
+        if (!name) {
+          failed.push({ row: rowNumber, name: '', reason: 'Nama kosong' })
+          continue
+        }
+
+        const normalizedName = name.toLowerCase()
+        if (existingNames.has(normalizedName)) {
+          failed.push({ row: rowNumber, name, reason: 'Nama sudah ada di daftar tamu' })
+          continue
+        }
+
+        if (seenInFile.has(normalizedName)) {
+          failed.push({ row: rowNumber, name, reason: 'Duplikat dalam file Excel' })
+          continue
+        }
+
+        try {
+          await createGuest({
+            name,
+            phoneNumber: phone,
+            group,
+            invitationId: selectedInvitationId.value,
+          })
+          success++
+          existingNames.add(normalizedName)
+          seenInFile.add(normalizedName)
+        } catch (err) {
+          console.error(err)
+          failed.push({
+            row: rowNumber,
+            name,
+            reason: err.response?.data?.message || 'Gagal menyimpan ke server',
+          })
         }
       }
-      if (success) toast.success(`${success} tamu berhasil diimport`)
-      if (failed.length) {
-        const sample = failed.slice(0, 3).join(', ')
-        toast.error(
-          `${failed.length} tamu gagal diimport (${sample}${failed.length > 3 ? ', …' : ''}). Cek nama/nomor lalu coba lagi.`,
-        )
+
+      importSummary.value = { success, failed }
+      if (failed.length > 0) {
+        showImportSummaryModal.value = true
+      }
+      if (success) {
+        toast.success(`${success} tamu berhasil diimpor`)
       }
       await fetchGuests(selectedInvitationId.value)
     } catch (err) {

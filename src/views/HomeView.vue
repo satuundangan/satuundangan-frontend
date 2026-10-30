@@ -997,6 +997,20 @@ function choosePlan(planId) {
 const showAuthModal = ref(false)
 const authMode = ref('login')
 
+watch(
+  () => route.query,
+  (query) => {
+    if (query?.login === 'true') {
+      authMode.value = 'login'
+      showAuthModal.value = true
+    } else if (query?.register === 'true') {
+      authMode.value = 'register'
+      showAuthModal.value = true
+    }
+  },
+  { immediate: true },
+)
+
 watch(showModal, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden'
