@@ -80,9 +80,9 @@ describe('AdminShell navigation', () => {
     expect(content).not.toContain('Pembayaran & Transaksi')
     expect(content).not.toContain('Sistem & Audit')
     expect(content).not.toContain('Social Studio (IG)')
-    expect(labels({ adminRole: 'superadmin', allowedResources: [] })).toHaveLength(21)
+    expect(labels({ adminRole: 'superadmin', allowedResources: [] })).toHaveLength(22)
     // access that could not be loaded hides nothing; the server still enforces
-    expect(labels(null)).toHaveLength(21)
+    expect(labels(null)).toHaveLength(22)
   })
 
   it('opens all existing navigation on mobile independently of desktop collapse', async () => {
@@ -110,7 +110,7 @@ describe('AdminShell navigation', () => {
     ]) {
       expect(dialog.text()).toContain(label)
     }
-    expect(dialog.findAll('nav[aria-label="Menu admin"] a')).toHaveLength(21)
+    expect(dialog.findAll('nav[aria-label="Menu admin"] a')).toHaveLength(22)
     expect(localStorage.getItem('admin_sidebar_collapsed')).toBe('true')
   })
 
