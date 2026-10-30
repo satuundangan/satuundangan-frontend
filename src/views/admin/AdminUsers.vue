@@ -15,7 +15,7 @@
         <!-- Total Users -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-slate-400">Total Pengguna</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-slate-500">Total Pengguna</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ total }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Akun terdaftar di database</p>
           </div>
@@ -27,11 +27,11 @@
         <!-- Verified Users -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-600">Email Terverifikasi</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-700">Email Terverifikasi</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ verifiedUsersCount }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Memiliki email aktif</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg shrink-0">
             <i class="fa-solid fa-envelope-circle-check"></i>
           </div>
         </div>
@@ -51,11 +51,11 @@
         <!-- Regular Users -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-amber-600">User Pengantin</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-amber-700">User Pengantin</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ Math.max(0, total - adminUsersCount) }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Pembuat undangan</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shrink-0">
+          <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 flex items-center justify-center text-lg shrink-0">
             <i class="fa-solid fa-heart"></i>
           </div>
         </div>
@@ -119,8 +119,23 @@
         </div>
       </div>
 
+      <AdminTableStatus
+        :error="loadError"
+        :loading="loading"
+        :count="users.length"
+        :filtered="Boolean(search)"
+        :updated-at="lastLoadedAt"
+        :visibility="cols"
+        exportable
+        :exporting="exporting"
+        :export-note="exportNote"
+        @retry="loadUsers"
+        @reset="setQuickFilter('')"
+        @export="exportUsers"
+      />
+
       <!-- 2. Clean Datatable Card -->
-      <div class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <div v-if="!loadError" class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <DataTable
           :value="users"
           lazy
@@ -137,7 +152,7 @@
             <div class="py-12 text-center space-y-2">
               <i class="fa-solid fa-user-slash text-3xl text-slate-300"></i>
               <p class="text-sm font-bold text-slate-700">Tidak ada pengguna ditemukan</p>
-              <p class="text-xs text-slate-400">Coba ubah kata kunci pencarian Anda.</p>
+              <p class="text-xs text-slate-500">Coba ubah kata kunci pencarian Anda.</p>
             </div>
           </template>
           <template #loading>
@@ -145,7 +160,7 @@
           </template>
 
           <!-- User Name & Avatar & ID -->
-          <Column field="name" header="Pengguna" style="min-width: 14rem">
+          <Column v-if="cols.isVisible('name')" field="name" header="Pengguna" style="min-width: 14rem">
             <template #body="{ data }">
               <div class="flex items-center gap-3">
                 <div class="w-9 h-9 rounded-xl bg-gradient-to-br from-slate-800 to-slate-950 text-white flex items-center justify-center font-black text-xs shrink-0 shadow-2xs">
@@ -154,7 +169,7 @@
                 <div class="flex flex-col min-w-0">
                   <div class="flex items-center gap-2">
                     <span class="font-bold text-slate-900 text-xs truncate max-w-[180px]">{{ data.name || '-' }}</span>
-                    <span class="text-[10px] font-mono text-slate-400 bg-slate-100 px-1.5 py-0.2 rounded">#{{ data.id }}</span>
+                    <span class="text-[10px] font-mono text-slate-600 bg-slate-100 px-1.5 py-0.2 rounded">#{{ data.id }}</span>
                     <span
                       v-if="isTestAccount(data)"
                       class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200"
@@ -169,7 +184,7 @@
           </Column>
 
           <!-- Email & Verification Status -->
-          <Column header="Status Email" style="min-width: 12rem">
+          <Column v-if="cols.isVisible('email')" header="Status Email" style="min-width: 12rem">
             <template #body="{ data }">
               <div class="flex items-center gap-2">
                 <span
@@ -188,7 +203,7 @@
                   type="button"
                   :disabled="verifyingId === data.id"
                   @click="handleQuickVerify(data)"
-                  class="px-2 py-0.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-[10px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
+                  class="px-2 py-0.5 rounded-lg bg-emerald-700 hover:bg-emerald-800 text-white text-[10px] font-bold transition-all shadow-2xs cursor-pointer flex items-center gap-1 disabled:opacity-50"
                   title="Verifikasi manual akun ini sekarang"
                 >
                   <i v-if="verifyingId === data.id" class="fa-solid fa-spinner fa-spin text-[9px]"></i>
@@ -200,18 +215,18 @@
           </Column>
 
           <!-- Provider Login -->
-          <Column header="Metode Login" style="min-width: 9rem">
+          <Column v-if="cols.isVisible('login')" header="Metode Login" style="min-width: 9rem">
             <template #body="{ data }">
               <div class="flex items-center gap-1.5 text-xs text-slate-700 font-medium">
                 <i v-if="data.provider === 'google'" class="fa-brands fa-google text-red-500 text-xs"></i>
-                <i v-else class="fa-solid fa-envelope text-slate-400 text-xs"></i>
+                <i v-else class="fa-solid fa-envelope text-slate-500 text-xs"></i>
                 <span class="capitalize">{{ data.provider || 'Email' }}</span>
               </div>
             </template>
           </Column>
 
           <!-- Role -->
-          <Column field="role" header="Role" style="min-width: 7rem">
+          <Column v-if="cols.isVisible('role')" field="role" header="Role" style="min-width: 7rem">
             <template #body="{ data }">
               <span
                 class="inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-black uppercase tracking-wider border"
@@ -224,24 +239,24 @@
           </Column>
 
           <!-- Wedding Planner Access -->
-          <Column header="Planner" style="min-width: 8rem">
+          <Column v-if="cols.isVisible('planner')" header="Planner" style="min-width: 8rem">
             <template #body="{ data }">
               <span
                 v-if="data.hasWeddingPlannerAccess"
                 class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200"
                 :title="data.instagramHandle ? 'IG: ' + data.instagramHandle : 'Akses Aktif'"
               >
-                <i class="fa-solid fa-crown text-[9px] text-amber-600"></i>
+                <i class="fa-solid fa-crown text-[9px] text-amber-700"></i>
                 <span>Aktif</span>
               </span>
-              <span v-else class="text-[11px] text-slate-400 font-medium">
+              <span v-else class="text-[11px] text-slate-500 font-medium">
                 Terkunci
               </span>
             </template>
           </Column>
 
           <!-- Total Invitations -->
-          <Column header="Undangan" style="min-width: 8rem">
+          <Column v-if="cols.isVisible('invitations')" header="Undangan" style="min-width: 8rem">
             <template #body="{ data }">
               <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-blue-50 text-blue-700 border border-blue-100 text-xs font-bold">
                 <i class="fa-solid fa-envelope-open-text text-[10px]"></i>
@@ -251,13 +266,13 @@
           </Column>
 
           <!-- Created At / Tanggal Terdaftar -->
-          <Column field="createdAt" header="Tanggal Terdaftar" style="min-width: 12rem">
+          <Column v-if="cols.isVisible('created')" field="createdAt" header="Tanggal Terdaftar" style="min-width: 12rem">
             <template #body="{ data }">
               <div class="flex flex-col">
                 <span class="text-xs font-semibold text-slate-800 font-mono">
                   {{ formatDate(data.createdAt) }}
                 </span>
-                <span class="text-[10px] text-slate-400 mt-0.5">
+                <span class="text-[10px] text-slate-500 mt-0.5">
                   {{ formatRelative(data.createdAt) }}
                 </span>
               </div>
@@ -274,7 +289,7 @@
                   @click="openEdit(data)"
                   title="Edit pengguna"
                 >
-                  <i class="fa-solid fa-pencil text-[10px] text-slate-400"></i> Edit
+                  <i class="fa-solid fa-pencil text-[10px] text-slate-500"></i> Edit
                 </button>
                 <button
                   type="button"
@@ -302,7 +317,7 @@
               </div>
               <div>
                 <h2 class="text-base font-black text-slate-900">{{ editing ? 'Edit Data Pengguna' : 'Tambah Pengguna Baru' }}</h2>
-                <p class="text-xs text-slate-400 mt-0.5">Kelola akun dan kredensial login</p>
+                <p class="text-xs text-slate-500 mt-0.5">Kelola akun dan kredensial login</p>
               </div>
             </div>
             <button class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer" @click="closeForm">
@@ -357,6 +372,28 @@
               />
             </div>
 
+            <div
+              v-if="editing && form.isAdmin && isSuperadmin"
+              class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between gap-3"
+            >
+              <div>
+                <label for="adminRole" class="text-xs font-bold text-slate-900 block">Role Admin</label>
+                <p class="text-[11px] text-slate-500">
+                  Superadmin mengakses semua fitur; role lain dibatasi di server.
+                </p>
+              </div>
+              <select
+                id="adminRole"
+                v-model="form.adminRole"
+                class="rounded-lg border border-slate-300 px-2 py-1.5 text-xs font-semibold"
+              >
+                <option value="superadmin">Superadmin</option>
+                <option value="support">Support</option>
+                <option value="finance">Finance</option>
+                <option value="content">Content</option>
+              </select>
+            </div>
+
             <div v-if="editing" class="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
               <div>
                 <label for="isEmailVerified" class="text-xs font-bold text-slate-900 block cursor-pointer">Status Verifikasi Email</label>
@@ -366,7 +403,7 @@
                 id="isEmailVerified"
                 v-model="form.isEmailVerified"
                 type="checkbox"
-                class="h-5 w-5 rounded-md border-slate-300 text-emerald-600 focus:ring-emerald-500 cursor-pointer"
+                class="h-5 w-5 rounded-md border-slate-300 text-emerald-700 focus:ring-emerald-500 cursor-pointer"
               />
             </div>
 
@@ -374,7 +411,7 @@
               <div class="flex items-center justify-between">
                 <div>
                   <label for="hasWeddingPlannerAccess" class="text-xs font-bold text-amber-900 block cursor-pointer flex items-center gap-1.5">
-                    <i class="fa-solid fa-crown text-amber-600 text-xs"></i>
+                    <i class="fa-solid fa-crown text-amber-700 text-xs"></i>
                     <span>Akses Wedding Planner (Gratis / VIP)</span>
                   </label>
                   <p class="text-[11px] text-amber-700/80">Buka akses Wedding Planner untuk akun ini (bisa untuk kompensasi)</p>
@@ -383,7 +420,7 @@
                   id="hasWeddingPlannerAccess"
                   v-model="form.hasWeddingPlannerAccess"
                   type="checkbox"
-                  class="h-5 w-5 rounded-md border-amber-300 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                  class="h-5 w-5 rounded-md border-amber-300 text-amber-700 focus:ring-amber-500 cursor-pointer"
                 />
               </div>
               <div v-if="form.hasWeddingPlannerAccess">
@@ -424,6 +461,9 @@
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
+import { useColumnVisibility } from '@/utils/columnVisibility.js'
+import { downloadCsv, fetchAllRows, toCsv } from '@/utils/csvExport.js'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import {
@@ -433,16 +473,33 @@ import {
   deleteAdminUser,
   verifyAdminUserEmail,
 } from '@/api/admin.js'
+import { updateAdminRole } from '@/api/adminSecurity.js'
+import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
+const authStore = useAuthStore()
+const isSuperadmin = computed(() => authStore.adminRole === 'superadmin')
 const users = ref([])
 const total = ref(0)
 const page = ref(1)
 const limit = 15
 const search = ref('')
 const loading = ref(false)
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+const exporting = ref(false)
+const exportNote = ref('')
+const cols = useColumnVisibility('users', [
+  { key: 'name', label: 'Pengguna', required: true },
+  { key: 'email', label: 'Status email' },
+  { key: 'login', label: 'Metode login' },
+  { key: 'role', label: 'Role' },
+  { key: 'planner', label: 'Planner' },
+  { key: 'invitations', label: 'Undangan' },
+  { key: 'created', label: 'Tanggal terdaftar' },
+])
 const verifyingId = ref(null)
 const showForm = ref(false)
 const saving = ref(false)
@@ -456,6 +513,7 @@ const form = reactive({
   hasWeddingPlannerAccess: false,
   instagramHandle: '',
   password: '',
+  adminRole: 'superadmin',
 })
 
 const adminUsersCount = computed(() => {
@@ -468,12 +526,14 @@ const verifiedUsersCount = computed(() => {
 
 async function loadUsers() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminUsers({ page: page.value, limit, q: search.value })
     users.value = res.data || []
     total.value = res.total || 0
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat pengguna')
+    loadError.value = error.message || 'Gagal memuat pengguna'
   } finally {
     loading.value = false
   }
@@ -514,6 +574,35 @@ function handleSearch(value) {
   debouncedSearch()
 }
 
+async function exportUsers() {
+  exporting.value = true
+  exportNote.value = ''
+  try {
+    const { rows, total: all, truncated } = await fetchAllRows(fetchAdminUsers, { q: search.value })
+    downloadCsv(
+      `pengguna-${new Date().toISOString().slice(0, 10)}.csv`,
+      toCsv(
+        [
+          { label: 'ID', value: (u) => u.id },
+          { label: 'Nama', value: (u) => u.name },
+          { label: 'Email', value: (u) => u.email },
+          { label: 'Admin', value: (u) => (u.isAdmin ? 'ya' : 'tidak') },
+          { label: 'Email terverifikasi', value: (u) => (u.emailVerifiedAt ? 'ya' : 'tidak') },
+          { label: 'Terdaftar', value: (u) => u.createdAt },
+        ],
+        rows,
+      ),
+    )
+    exportNote.value = truncated
+      ? `Ekspor dibatasi ${rows.length} dari ${all} baris.`
+      : `${rows.length} baris diekspor (semua hasil filter, bukan hanya halaman ini).`
+  } catch (error) {
+    exportNote.value = error.message || 'Ekspor gagal dijalankan.'
+  } finally {
+    exporting.value = false
+  }
+}
+
 function onPage(event) {
   page.value = event.page + 1
   loadUsers()
@@ -529,6 +618,7 @@ function openCreate() {
     hasWeddingPlannerAccess: false,
     instagramHandle: '',
     password: '',
+    adminRole: 'superadmin',
   })
   showForm.value = true
 }
@@ -543,6 +633,7 @@ function openEdit(user) {
     hasWeddingPlannerAccess: Boolean(user.hasWeddingPlannerAccess),
     instagramHandle: user.instagramHandle || '',
     password: '',
+    adminRole: user.adminRole || 'superadmin',
   })
   showForm.value = true
 }
@@ -559,12 +650,16 @@ const handleKeydown = (e) => {
 async function submitForm() {
   saving.value = true
   try {
-    const payload = { ...form }
+    const { adminRole, ...payload } = { ...form }
     if (editing.value && !payload.password) {
       delete payload.password
     }
     if (editing.value) {
       await updateAdminUser(editing.value.id, payload)
+      const currentRole = editing.value.adminRole || 'superadmin'
+      if (isSuperadmin.value && payload.isAdmin && adminRole !== currentRole) {
+        await updateAdminRole(editing.value.id, adminRole)
+      }
       toast.success('Pengguna berhasil diperbarui')
     } else {
       await createAdminUser(payload)

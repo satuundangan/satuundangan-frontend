@@ -12,7 +12,7 @@
       <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
         <div class="space-y-1">
           <div class="flex items-center gap-2">
-            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Pemilik:</span>
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pemilik:</span>
             <span class="text-sm font-semibold text-slate-900">{{ invitation.user?.name || '-' }}</span>
             <span class="text-xs text-slate-500">({{ invitation.user?.email || '-' }})</span>
           </div>
@@ -67,7 +67,7 @@
               class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
               placeholder="url-slug-undangan"
             />
-            <p v-if="form.slug !== initialSlug" class="mt-1 text-xs text-amber-600 flex items-center gap-1 font-medium">
+            <p v-if="form.slug !== initialSlug" class="mt-1 text-xs text-amber-700 flex items-center gap-1 font-medium">
               <i class="fa-solid fa-triangle-exclamation"></i>
               Mengubah slug akan merusak tautan undangan yang sudah dibagikan ke tamu.
             </p>

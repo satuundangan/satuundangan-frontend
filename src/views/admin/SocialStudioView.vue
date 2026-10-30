@@ -221,7 +221,7 @@
               <textarea v-model="currentSlide.versusLeftPoints" rows="2" placeholder="Poin kiri (pisahkan koma)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs"></textarea>
             </div>
             <div class="space-y-2">
-              <span class="text-[11px] font-bold text-emerald-600 block">Sisi Kanan (Solusi Satu Undangan):</span>
+              <span class="text-[11px] font-bold text-emerald-700 block">Sisi Kanan (Solusi Satu Undangan):</span>
               <input v-model="currentSlide.versusRightTitle" placeholder="Judul Kanan (cth: Satu Undangan)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs" />
               <textarea v-model="currentSlide.versusRightPoints" rows="2" placeholder="Poin kanan (pisahkan koma)" class="w-full px-2.5 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-xs"></textarea>
             </div>
@@ -574,7 +574,7 @@
               <img :src="currentSlide.customImage" class="w-10 h-10 rounded-xl object-cover border border-stone-200" />
               <div>
                 <span class="font-bold text-xs text-stone-800 block">Foto Kustom Aktif</span>
-                <span class="text-[10px] text-emerald-600 font-medium">Terpasang di Kanvas</span>
+                <span class="text-[10px] text-emerald-700 font-medium">Terpasang di Kanvas</span>
               </div>
             </div>
             <button @click="currentSlide.customImage = null" class="text-stone-400 hover:text-rose-500 p-1.5" title="Hapus foto">
@@ -894,12 +894,12 @@
 
                 <!-- Right: Satu Undangan Solusi -->
                 <div class="p-8 rounded-3xl border-2 border-emerald-400 bg-emerald-50/90 shadow-xl flex flex-col justify-between relative transform -translate-y-2">
-                  <span class="absolute -top-3.5 right-6 bg-emerald-600 text-white text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow">
+                  <span class="absolute -top-3.5 right-6 bg-emerald-700 text-white text-[11px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow">
                     Pilihan Cerdas
                   </span>
                   <div>
                     <div class="flex items-center gap-2 mb-4 text-emerald-800 font-black text-2xl uppercase tracking-wider">
-                      <i class="pi pi-check-circle text-2xl text-emerald-600"></i>
+                      <i class="pi pi-check-circle text-2xl text-emerald-700"></i>
                       <span>{{ currentSlide.versusRightTitle || 'Satu Undangan' }}</span>
                     </div>
                     <ul class="space-y-4 text-stone-800 text-[20px]">
@@ -908,7 +908,7 @@
                         :key="idx"
                         class="flex items-start gap-2.5 font-bold"
                       >
-                        <span class="text-emerald-600 font-extrabold shrink-0">✓</span>
+                        <span class="text-emerald-700 font-extrabold shrink-0">✓</span>
                         <span>{{ pt.trim() }}</span>
                       </li>
                     </ul>
@@ -1038,11 +1038,11 @@
                     <span class="text-xs font-bold text-mocha uppercase tracking-widest block">Paket Premium</span>
                     <span class="text-4xl font-black text-mocha mt-2 block">Rp 79.000</span>
                     <ul class="mt-6 space-y-3 text-[18px] text-stone-800 font-bold">
-                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Galeri 20 Foto</li>
-                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Upload Musik Sendiri</li>
-                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Subdomain Kustom</li>
-                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> QR Code Buku Tamu</li>
-                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-600"></i> Cerita Cinta (Timeline)</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-700"></i> Galeri 20 Foto</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-700"></i> Upload Musik Sendiri</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-700"></i> Subdomain Kustom</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-700"></i> QR Code Buku Tamu</li>
+                      <li class="flex items-center gap-2"><i class="pi pi-check text-emerald-700"></i> Cerita Cinta (Timeline)</li>
                     </ul>
                   </div>
                   <span class="mt-8 text-xs font-bold text-center block text-mocha bg-mocha/10 py-2 rounded-xl">Paling Banyak Dipilih</span>
@@ -1148,7 +1148,7 @@
                       {{ currentSlide.chatMsg2 || 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon! 😍' }}
                     </p>
                   </div>
-                  <div class="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold shrink-0">
+                  <div class="w-12 h-12 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0">
                     🤵
                   </div>
                 </div>
@@ -1264,7 +1264,7 @@
                     <span class="font-bold text-[22px]" :style="{ color: activePrimary }">{{ currentSlide.faqQ1 || 'Bisa sebar berapa banyak tamu?' }}</span>
                   </div>
                   <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
-                    <span class="text-emerald-600 font-bold">A:</span>
+                    <span class="text-emerald-700 font-bold">A:</span>
                     <span>{{ currentSlide.faqA1 || 'Unlimited! Tanpa kuota dan bebas kirim ke ribuan tamu tanpa biaya tambahan.' }}</span>
                   </div>
                 </div>
@@ -1279,7 +1279,7 @@
                     <span class="font-bold text-[22px]" :style="{ color: activePrimary }">{{ currentSlide.faqQ2 || 'Apakah ada watermark logo di undangan?' }}</span>
                   </div>
                   <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
-                    <span class="text-emerald-600 font-bold">A:</span>
+                    <span class="text-emerald-700 font-bold">A:</span>
                     <span>{{ currentSlide.faqA2 || '100% bebas watermark! Undangan tampil eksklusif dan profesional.' }}</span>
                   </div>
                 </div>
@@ -1294,7 +1294,7 @@
                     <span class="font-bold text-[22px]" :style="{ color: activePrimary }">{{ currentSlide.faqQ3 || 'Berapa lama masa aktif undangannya?' }}</span>
                   </div>
                   <div class="flex items-start gap-3 pl-8 text-[19px] opacity-85" :style="{ color: activeText }">
-                    <span class="text-emerald-600 font-bold">A:</span>
+                    <span class="text-emerald-700 font-bold">A:</span>
                     <span>{{ currentSlide.faqA3 || 'Aktif selamanya tanpa batas waktu, kenangan bahagiamu tersimpan aman.' }}</span>
                   </div>
                 </div>

@@ -8,3 +8,13 @@ export const restoreArticleRevision = (id, revisionId, payload) =>
     method: 'POST',
     body: JSON.stringify(payload),
   })
+
+export const fetchEditorialOverview = () => apiFetch('/admin/articles/editorial/overview')
+export const fetchArticlePerformance = (params = {}) => {
+  const query = new URLSearchParams(
+    Object.entries(params).filter(([, value]) => value !== undefined && value !== ''),
+  ).toString()
+  return apiFetch(`/admin/articles/editorial/performance${query ? `?${query}` : ''}`)
+}
+export const checkArticleLinks = (id) =>
+  apiFetch(`/admin/articles/${id}/check-links`, { method: 'POST' })

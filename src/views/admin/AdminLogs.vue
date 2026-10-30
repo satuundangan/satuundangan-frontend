@@ -13,7 +13,7 @@
         <!-- Total Hari Ini -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-slate-400">Total Log Hari Ini</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-slate-500">Total Log Hari Ini</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ stats.totalToday }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Semua event tercatat</p>
           </div>
@@ -25,11 +25,11 @@
         <!-- Kunjungan Halaman -->
         <div class="p-5 rounded-2xl bg-white border border-slate-200/80 shadow-xs flex items-center justify-between">
           <div>
-            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-600">Kunjungan Halaman</p>
+            <p class="text-[11px] font-black uppercase tracking-wider text-emerald-700">Kunjungan Halaman</p>
             <h3 class="text-2xl font-black text-slate-900 mt-1">{{ stats.pageViewsToday }}</h3>
             <p class="text-[11px] text-slate-500 mt-0.5">Page views navigasi</p>
           </div>
-          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-lg shrink-0">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-lg shrink-0">
             <i class="fa-solid fa-compass"></i>
           </div>
         </div>
@@ -96,7 +96,7 @@
             ]"
             :title="isExcluded ? 'Browser Anda DIKECUALIKAN dari log (Klik untuk mengaktifkan kembali tracking)' : 'Klik untuk mengecualikan browser ini agar aktivitas Anda dan tim tidak tercatat di log'"
           >
-            <i :class="['fa-solid', isExcluded ? 'fa-shield-halved text-purple-600' : 'fa-eye text-slate-400']"></i>
+            <i :class="['fa-solid', isExcluded ? 'fa-shield-halved text-purple-600' : 'fa-eye text-slate-500']"></i>
             <span>{{ isExcluded ? 'Browser Diabaikan (Dev Mode)' : 'Abaikan Browser Ini' }}</span>
           </button>
 
@@ -154,7 +154,16 @@
       </div>
 
       <!-- 3. Logs DataTable -->
-      <div class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
+      <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="logs.length"
+      :filtered="Boolean(search) || selectedLevel !== 'ALL'"
+      :updated-at="lastLoadedAt"
+      @retry="loadLogs"
+      @reset="resetLogFilters"
+    />
+      <div v-if="!loadError" class="card bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
         <DataTable
           :value="logs"
           lazy
@@ -171,7 +180,7 @@
             <div class="py-12 text-center space-y-2">
               <i class="fa-solid fa-inbox text-3xl text-slate-300"></i>
               <p class="text-sm font-bold text-slate-700">Tidak ada log aktivitas ditemukan</p>
-              <p class="text-xs text-slate-400">Belum ada event yang cocok dengan filter saat ini.</p>
+              <p class="text-xs text-slate-500">Belum ada event yang cocok dengan filter saat ini.</p>
             </div>
           </template>
           <template #loading>
@@ -185,7 +194,7 @@
                 <span class="text-xs font-bold text-slate-900 font-mono">
                   {{ formatDate(data.createdAt) }}
                 </span>
-                <span class="text-[10px] text-slate-400 mt-0.5">
+                <span class="text-[10px] text-slate-500 mt-0.5">
                   {{ formatRelative(data.createdAt) }}
                 </span>
               </div>
@@ -226,7 +235,7 @@
                 >
                   {{ data.path || '-' }}
                 </span>
-                <span v-if="data.method" class="text-[9px] font-mono uppercase text-slate-400 font-bold">
+                <span v-if="data.method" class="text-[9px] font-mono uppercase text-slate-500 font-bold">
                   {{ data.method }}
                 </span>
               </div>
@@ -238,10 +247,10 @@
             <template #body="{ data }">
               <div class="flex flex-col">
                 <span class="text-xs font-semibold text-slate-800 truncate" :title="data.userEmail || 'Anonim'">
-                  <i class="fa-solid fa-user text-[10px] text-slate-400 mr-1"></i>
+                  <i class="fa-solid fa-user text-[10px] text-slate-500 mr-1"></i>
                   {{ data.userEmail || 'Tamu Anonim' }}
                 </span>
-                <span class="text-[10px] text-slate-400 font-mono mt-0.5">
+                <span class="text-[10px] text-slate-500 font-mono mt-0.5">
                   IP: {{ data.ip || '-' }}
                 </span>
               </div>
@@ -311,23 +320,23 @@
             <!-- Metadata Grid -->
             <div class="grid grid-cols-2 gap-3 p-3.5 bg-slate-50 rounded-2xl border border-slate-100">
               <div>
-                <span class="text-[10px] font-black uppercase text-slate-400 block">Waktu Tercatat</span>
+                <span class="text-[10px] font-black uppercase text-slate-500 block">Waktu Tercatat</span>
                 <span class="font-bold text-slate-900 font-mono">{{ formatDate(selectedLog.createdAt) }}</span>
               </div>
               <div>
-                <span class="text-[10px] font-black uppercase text-slate-400 block">Path / Endpoint</span>
+                <span class="text-[10px] font-black uppercase text-slate-500 block">Path / Endpoint</span>
                 <span class="font-bold text-slate-900 font-mono">{{ selectedLog.path || '-' }}</span>
               </div>
               <div>
-                <span class="text-[10px] font-black uppercase text-slate-400 block">Email Pengguna</span>
+                <span class="text-[10px] font-black uppercase text-slate-500 block">Email Pengguna</span>
                 <span class="font-bold text-slate-900">{{ selectedLog.userEmail || 'Anonim' }}</span>
               </div>
               <div>
-                <span class="text-[10px] font-black uppercase text-slate-400 block">Alamat IP & Method</span>
+                <span class="text-[10px] font-black uppercase text-slate-500 block">Alamat IP & Method</span>
                 <span class="font-bold text-slate-900 font-mono">{{ selectedLog.ip || '-' }} ({{ selectedLog.method || '-' }})</span>
               </div>
               <div class="col-span-2">
-                <span class="text-[10px] font-black uppercase text-slate-400 block">User Agent (Browser / Device)</span>
+                <span class="text-[10px] font-black uppercase text-slate-500 block">User Agent (Browser / Device)</span>
                 <span class="font-mono text-[11px] text-slate-600 break-all">{{ selectedLog.userAgent || '-' }}</span>
               </div>
             </div>
@@ -371,6 +380,7 @@
 import { ref, onMounted } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { fetchAdminLogs, fetchAdminLogStats, clearAdminLogs } from '@/api/admin.js'
@@ -417,8 +427,18 @@ async function loadStats() {
   }
 }
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+function resetLogFilters() {
+  search.value = ''
+  selectedLevel.value = 'ALL'
+  page.value = 1
+  loadLogs()
+}
+
 async function loadLogs() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminLogs({
       page: page.value,
@@ -428,8 +448,9 @@ async function loadLogs() {
     })
     logs.value = res.data || []
     total.value = res.total || 0
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat log aktivitas')
+    loadError.value = error.message || 'Gagal memuat log aktivitas'
   } finally {
     loading.value = false
   }

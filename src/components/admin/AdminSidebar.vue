@@ -49,7 +49,7 @@
       aria-label="Menu admin"
       class="min-h-0 flex-1 space-y-5 overflow-y-auto px-3 py-4 text-sm custom-scrollbar"
     >
-      <div v-for="group in adminNavigationGroups" :key="group.label">
+      <div v-for="group in visibleGroups" :key="group.label">
         <h2
           :class="
             isCollapsed
@@ -128,6 +128,10 @@ export const adminNavigationGroups = [
     ],
   },
   {
+    label: 'Analitik',
+    items: [{ label: 'Analytics & Funnel', to: '/admin/analytics', icon: 'pi-chart-line' }],
+  },
+  {
     label: 'Growth',
     items: [
       { label: 'Promo Code', to: '/admin/promo-codes', icon: 'pi-percentage' },
@@ -150,6 +154,8 @@ export const adminNavigationGroups = [
     items: [
       { label: 'Master Bank & E-wallet', to: '/admin/banks', icon: 'pi-credit-card' },
       { label: 'Activity & Error Logs', to: '/admin/logs', icon: 'pi-history' },
+      { label: 'Sistem & Audit', to: '/admin/system', icon: 'pi-shield' },
+      { label: 'Keamanan Akun', to: '/admin/security', icon: 'pi-lock' },
     ],
   },
 ]
@@ -166,6 +172,7 @@ export function findAdminNavigationItem(path) {
 import { computed, nextTick, ref } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { filterNavigationGroups } from '@/utils/adminAccess'
 import Swal from 'sweetalert2'
 
 const props = defineProps({ mobile: { type: Boolean, default: false } })
@@ -173,6 +180,10 @@ const emit = defineEmits(['navigate'])
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const visibleGroups = computed(() =>
+  // Menu hides what the role cannot use; unknown access hides nothing (the server still enforces).
+  filterNavigationGroups(adminNavigationGroups, authStore.adminAccess),
+)
 const desktopCollapsed = ref(localStorage.getItem('admin_sidebar_collapsed') === 'true')
 const isCollapsed = computed(() => !props.mobile && desktopCollapsed.value)
 const activeItem = computed(() => findAdminNavigationItem(route.path))
