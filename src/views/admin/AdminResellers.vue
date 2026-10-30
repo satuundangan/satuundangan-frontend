@@ -106,20 +106,20 @@ onMounted(fetchResellers)
     >
       <template #cell(reseller)="{ item }">
         <div class="font-bold text-slate-800">{{ item.user?.name }}</div>
-        <div class="text-[10px] text-slate-400 font-mono tracking-tight">{{ item.affiliateCode }}</div>
+        <div class="text-[10px] text-slate-500 font-mono tracking-tight">{{ item.affiliateCode }}</div>
       </template>
 
       <template #cell(sales)="{ item }">
         <div class="text-right">
           <div class="font-medium text-slate-700">{{ item.totalSales }} Penjualan</div>
-          <div class="text-[10px] text-slate-400">{{ formatCurrency(item.totalSalesAmount) }}</div>
+          <div class="text-[10px] text-slate-500">{{ formatCurrency(item.totalSalesAmount) }}</div>
         </div>
       </template>
 
       <template #cell(balance)="{ item }">
         <div class="text-right">
           <div class="font-bold text-blue-600">{{ formatCurrency(item.commissionBalance) }}</div>
-          <div class="text-[10px] text-slate-400">Total: {{ formatCurrency(item.totalEarned) }}</div>
+          <div class="text-[10px] text-slate-500">Total: {{ formatCurrency(item.totalEarned) }}</div>
         </div>
       </template>
 
@@ -154,7 +154,7 @@ onMounted(fetchResellers)
           <button 
             v-if="item.status === 'active'"
             @click="handleUpdateStatus(item, 'suspended')"
-            class="text-[11px] font-black uppercase tracking-widest text-amber-600 hover:text-amber-700"
+            class="text-[11px] font-black uppercase tracking-widest text-amber-700 hover:text-amber-700"
           >
             Suspend
           </button>

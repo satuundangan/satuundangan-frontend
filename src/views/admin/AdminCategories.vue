@@ -2,7 +2,17 @@
   <AdminShell title="Kategori" description="Kelola daftar kategori template" show-search :search="search"
     search-placeholder="Cari nama kategori" action-label="Tambah Kategori" @update:search="handleSearch"
     @action="openCreate">
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="categories.length"
+      :filtered="Boolean(search)"
+      :updated-at="lastLoadedAt"
+      @retry="loadData"
+      @reset="resetSearch"
+    />
     <DataTable
+      v-if="!loadError"
       :headers="headers"
       :items="categories"
       :loading="loading"
@@ -36,7 +46,7 @@
         <div class="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-2xl bg-white p-6 shadow-xl">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Kategori' : 'Tambah Kategori' }}</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
           </div>
 
           <form class="grid grid-cols-1 gap-4" @submit.prevent="submitForm">
@@ -76,6 +86,7 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from '@/components/admin/DataTable.vue'
 import {
   fetchAdminCategories,
@@ -108,14 +119,22 @@ const form = reactive({
   color: '#000000',
 })
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+function resetSearch() {
+  handleSearch('')
+}
+
 async function loadData() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminCategories({ page: page.value, limit, q: search.value })
     categories.value = res.data || []
     total.value = res.total || 0
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat data')
+    loadError.value = error.message || 'Gagal memuat data'
   } finally {
     loading.value = false
   }

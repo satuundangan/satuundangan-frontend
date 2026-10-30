@@ -146,6 +146,7 @@ export const fetchAdminHealth = () => apiFetch('/admin/health')
 export const fetchAdminStats = () => apiFetch('/admin/stats')
 export const fetchAdminDashboardOverview = (params) =>
   apiFetch(withParams('/admin/dashboard/overview', params))
+export const fetchAdminActionQueue = () => apiFetch('/admin/dashboard/actions')
 
 // Activity & Error Logs
 export const fetchAdminLogs = (params) => apiFetch(withParams('/admin/logs', params))

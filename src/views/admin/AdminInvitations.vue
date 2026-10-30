@@ -10,12 +10,13 @@
     <!-- Filter Bar (ADM-004) -->
     <div class="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
       <div class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
-        <i class="fa-solid fa-filter text-slate-400"></i> Filter:
+        <i class="fa-solid fa-filter text-slate-500"></i> Filter:
       </div>
 
       <!-- Filter Pembayaran -->
       <select
         v-model="selectedPaymentStatus"
+        aria-label="Filter status pembayaran"
         @change="handleFilterChange"
         class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
       >
@@ -32,6 +33,7 @@
       <!-- Filter Publikasi -->
       <select
         v-model="selectedPublished"
+        aria-label="Filter status publikasi"
         @change="handleFilterChange"
         class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
       >
@@ -43,6 +45,7 @@
       <!-- Filter Paket -->
       <select
         v-model="selectedPackage"
+        aria-label="Filter paket"
         @change="handleFilterChange"
         class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
       >
@@ -51,6 +54,35 @@
         <option value="premium">Premium</option>
         <option value="eksklusif">Eksklusif</option>
       </select>
+
+      <!-- Periode dibuat (WIB) and category: set by dashboard drilldowns, editable here -->
+      <label class="flex items-center gap-1 text-xs font-semibold text-slate-600">
+        Dibuat dari
+        <input
+          v-model="startDate"
+          type="date"
+          aria-label="Dibuat dari tanggal (WIB)"
+          class="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+          @change="handleFilterChange"
+        />
+      </label>
+      <label class="flex items-center gap-1 text-xs font-semibold text-slate-600">
+        sampai
+        <input
+          v-model="endDate"
+          type="date"
+          aria-label="Dibuat sampai tanggal (WIB)"
+          class="rounded-lg border border-slate-200 px-2 py-1 text-xs"
+          @change="handleFilterChange"
+        />
+      </label>
+      <p
+        v-if="selectedCategory !== 'all'"
+        class="rounded-lg bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-800"
+        data-testid="category-filter"
+      >
+        Kategori: {{ selectedCategory }}
+      </p>
 
       <!-- Reset Filter Button -->
       <button
@@ -62,8 +94,23 @@
       </button>
     </div>
 
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="invitations.length"
+      :filtered="hasActiveFilters"
+      :updated-at="lastLoadedAt"
+      :visibility="cols"
+      exportable
+      :exporting="exporting"
+      :export-note="exportNote"
+      @retry="loadInvitations"
+      @reset="resetFilters"
+      @export="exportInvitations"
+    />
+
     <!-- Data Table -->
-    <div class="card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
+    <div v-if="!loadError" class="card bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-xs">
       <DataTable
         :value="invitations"
         lazy
@@ -76,10 +123,10 @@
         dataKey="id"
       >
         <template #empty>
-          <div class="py-12 text-center text-slate-400">
+          <div class="py-12 text-center text-slate-500">
             <i class="fa-solid fa-envelope-open-text text-3xl mb-2 text-slate-300"></i>
             <p class="text-sm font-semibold text-slate-700">Tidak ada undangan ditemukan</p>
-            <p class="text-xs text-slate-400">Coba ubah filter pencarian atau kata kunci di atas.</p>
+            <p class="text-xs text-slate-500">Coba ubah filter pencarian atau kata kunci di atas.</p>
           </div>
         </template>
         <template #loading> Memuat data undangan. Silakan tunggu... </template>
@@ -95,10 +142,10 @@
                 {{ data.coupleName }}
               </span>
               <div class="flex items-center gap-1.5 mt-1">
-                <span class="font-mono text-[11px] text-slate-400">/{{ data.slug }}</span>
+                <span class="font-mono text-[11px] text-slate-500">/{{ data.slug }}</span>
                 <button
                   @click="copyLink(data.slug)"
-                  class="text-slate-400 hover:text-slate-700 text-[10px] p-0.5"
+                  class="text-slate-500 hover:text-slate-700 text-[10px] p-0.5"
                   title="Salin Link Preview"
                 >
                   <i class="fa-regular fa-copy"></i>
@@ -109,7 +156,7 @@
         </Column>
 
         <!-- Pemilik -->
-        <Column field="user" header="Pemilik" style="min-width: 12rem">
+        <Column v-if="cols.isVisible('owner')" field="user" header="Pemilik" style="min-width: 12rem">
           <template #body="{ data }">
             <div class="flex flex-col">
               <span class="font-semibold text-slate-800 text-xs">{{ data.user?.name || '-' }}</span>
@@ -119,7 +166,7 @@
         </Column>
 
         <!-- Paket & Publikasi (ADM-002) -->
-        <Column header="Paket & Status" style="min-width: 10rem">
+        <Column v-if="cols.isVisible('package')" header="Paket & Status" style="min-width: 10rem">
           <template #body="{ data }">
             <div class="flex flex-col gap-1 items-start">
               <!-- Badge Paket -->
@@ -142,7 +189,7 @@
               </span>
               <span
                 v-else
-                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-500 border border-slate-200"
+                class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-100 text-slate-600 border border-slate-200"
               >
                 <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span> Draft
               </span>
@@ -151,7 +198,7 @@
         </Column>
 
         <!-- Status Pembayaran (ADM-001) -->
-        <Column header="Pembayaran" style="min-width: 12rem">
+        <Column v-if="cols.isVisible('payment')" header="Pembayaran" style="min-width: 12rem">
           <template #body="{ data }">
             <div class="flex flex-col gap-1 items-start">
               <span
@@ -168,11 +215,11 @@
                 <i
                   :class="[
                     'text-[10px]',
-                    data.paymentStatus.code === 'paid' ? 'fa-solid fa-circle-check text-emerald-600' :
+                    data.paymentStatus.code === 'paid' ? 'fa-solid fa-circle-check text-emerald-700' :
                     data.paymentStatus.code === 'free' ? 'fa-solid fa-gift text-blue-600' :
                     data.paymentStatus.code === 'reconcile' ? 'fa-solid fa-triangle-exclamation text-rose-600 animate-pulse' :
-                    data.paymentStatus.code === 'pending' ? 'fa-solid fa-hourglass-half text-amber-600' :
-                    'fa-solid fa-circle-minus text-slate-400'
+                    data.paymentStatus.code === 'pending' ? 'fa-solid fa-hourglass-half text-amber-700' :
+                    'fa-solid fa-circle-minus text-slate-500'
                   ]"
                 ></i>
                 {{ data.paymentStatus.label }}
@@ -185,7 +232,7 @@
         </Column>
 
         <!-- Transaksi Terakhir (ADM-003) -->
-        <Column header="Transaksi Terakhir" style="min-width: 11rem">
+        <Column v-if="cols.isVisible('last')" header="Transaksi Terakhir" style="min-width: 11rem">
           <template #body="{ data }">
             <div v-if="data.latestTransaction" class="flex flex-col text-xs">
               <span class="font-bold text-slate-900">
@@ -194,16 +241,16 @@
               <span class="font-mono text-[10px] text-slate-500 truncate max-w-[130px]" :title="data.latestTransaction.orderId">
                 {{ data.latestTransaction.orderId }}
               </span>
-              <span class="text-[10px] text-slate-400 mt-0.5">
+              <span class="text-[10px] text-slate-500 mt-0.5">
                 {{ data.latestTransaction.paymentType || data.latestTransaction.paymentMethod || 'Metode -' }}
               </span>
             </div>
-            <span v-else class="text-xs text-slate-400">-</span>
+            <span v-else class="text-xs text-slate-500">-</span>
           </template>
         </Column>
 
         <!-- Masa Berlaku (ADM-002) -->
-        <Column header="Masa Berlaku" style="min-width: 10rem">
+        <Column v-if="cols.isVisible('expiry')" header="Masa Berlaku" style="min-width: 10rem">
           <template #body="{ data }">
             <div class="flex flex-col text-xs">
               <span
@@ -215,10 +262,10 @@
               >
                 {{ data.expiry.label }}
               </span>
-              <span v-if="data.expiredAt" class="text-[10px] text-slate-400 mt-0.5">
+              <span v-if="data.expiredAt" class="text-[10px] text-slate-500 mt-0.5">
                 {{ formatDate(data.expiredAt) }}
               </span>
-              <span v-else class="text-xs text-slate-400">-</span>
+              <span v-else class="text-xs text-slate-500">-</span>
             </div>
           </template>
         </Column>
@@ -237,7 +284,7 @@
               </button>
               <RouterLink
                 :to="`/admin/invitations/${data.id}/edit`"
-                class="flex h-8 items-center gap-1.5 rounded-lg border border-amber-200 px-2.5 text-amber-600 hover:bg-amber-50 transition-colors"
+                class="flex h-8 items-center gap-1.5 rounded-lg border border-amber-200 px-2.5 text-amber-700 hover:bg-amber-50 transition-colors"
                 title="Edit Undangan"
               >
                 <i class="fa-solid fa-pencil text-[10px]"></i> Edit
@@ -280,12 +327,12 @@
               <h3 class="text-base font-extrabold text-slate-900">
                 {{ detailData?.title || 'Detail Undangan' }}
               </h3>
-              <p class="text-xs text-slate-400 font-mono">/{{ detailData?.slug }}</p>
+              <p class="text-xs text-slate-500 font-mono">/{{ detailData?.slug }}</p>
             </div>
           </div>
           <button
             @click="closeDetail"
-            class="flex h-8 w-8 items-center justify-center rounded-xl text-slate-400 hover:bg-slate-200/60 hover:text-slate-600 transition"
+            class="flex h-8 w-8 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-200/60 hover:text-slate-600 transition"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
@@ -293,7 +340,7 @@
 
         <!-- Modal Body -->
         <div class="flex-1 overflow-y-auto p-6 space-y-6">
-          <div v-if="loadingDetail" class="flex flex-col items-center justify-center py-16 text-slate-400">
+          <div v-if="loadingDetail" class="flex flex-col items-center justify-center py-16 text-slate-500">
             <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-slate-900"></i>
             <p class="text-xs font-bold">Memuat rincian terpadu...</p>
           </div>
@@ -302,25 +349,25 @@
             <!-- Status & Badges Strip -->
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 p-4 rounded-2xl bg-slate-50 border border-slate-100">
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Status Bayar</p>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Status Bayar</p>
                 <p class="text-xs font-extrabold text-slate-900 mt-0.5">
                   {{ detailData.paymentStatus?.label || '-' }}
                 </p>
               </div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Publikasi</p>
-                <p class="text-xs font-extrabold mt-0.5" :class="detailData.isPublished ? 'text-emerald-600' : 'text-slate-500'">
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Publikasi</p>
+                <p class="text-xs font-extrabold mt-0.5" :class="detailData.isPublished ? 'text-emerald-700' : 'text-slate-500'">
                   {{ detailData.isPublished ? 'Terbit (Online)' : 'Draft' }}
                 </p>
               </div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Paket Aktif</p>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Paket Aktif</p>
                 <p class="text-xs font-extrabold text-slate-900 uppercase mt-0.5">
                   {{ detailData.package || 'Basic' }}
                 </p>
               </div>
               <div>
-                <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Masa Berlaku</p>
+                <p class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">Masa Berlaku</p>
                 <p class="text-xs font-extrabold mt-0.5" :class="detailData.expiry?.isExpired ? 'text-rose-600' : 'text-slate-900'">
                   {{ detailData.expiry?.label || '-' }}
                 </p>
@@ -330,23 +377,23 @@
             <!-- Bagian 1: Pemilik & Konten -->
             <div class="space-y-3">
               <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-user text-slate-400"></i> Informasi Pemilik & Pasangan
+                <i class="fa-solid fa-user text-slate-500"></i> Informasi Pemilik & Pasangan
               </h4>
               <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs bg-white rounded-xl border border-slate-100 p-4">
                 <div>
-                  <span class="text-slate-400 block">Nama Pemilik:</span>
+                  <span class="text-slate-500 block">Nama Pemilik:</span>
                   <span class="font-bold text-slate-800">{{ detailData.user?.name || '-' }}</span>
                 </div>
                 <div>
-                  <span class="text-slate-400 block">Email Pemilik:</span>
+                  <span class="text-slate-500 block">Email Pemilik:</span>
                   <span class="font-bold text-slate-800 font-mono">{{ detailData.user?.email || '-' }}</span>
                 </div>
                 <div>
-                  <span class="text-slate-400 block">Nama Pasangan:</span>
+                  <span class="text-slate-500 block">Nama Pasangan:</span>
                   <span class="font-bold text-slate-800">{{ detailData.coupleName || '-' }}</span>
                 </div>
                 <div>
-                  <span class="text-slate-400 block">Template Desain:</span>
+                  <span class="text-slate-500 block">Template Desain:</span>
                   <span class="font-bold text-slate-800">{{ detailData.templateDesign?.name || 'Standar' }}</span>
                 </div>
               </div>
@@ -355,19 +402,19 @@
             <!-- Bagian 2: Ringkasan Tamu & RSVP -->
             <div class="space-y-3">
               <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-users text-slate-400"></i> Ringkasan Tamu & RSVP
+                <i class="fa-solid fa-users text-slate-500"></i> Ringkasan Tamu & RSVP
               </h4>
               <div class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center">
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Total Tamu</span>
+                  <span class="text-[10px] text-slate-500 uppercase font-bold block">Total Tamu</span>
                   <span class="text-base font-extrabold text-slate-900">{{ detailData.stats?.totalGuests || 0 }}</span>
                 </div>
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                  <span class="text-[10px] text-slate-400 uppercase font-bold block">Ucapan Masuk</span>
+                  <span class="text-[10px] text-slate-500 uppercase font-bold block">Ucapan Masuk</span>
                   <span class="text-base font-extrabold text-slate-900">{{ detailData.stats?.totalMessages || 0 }}</span>
                 </div>
                 <div class="p-3 bg-emerald-50 rounded-xl border border-emerald-100">
-                  <span class="text-[10px] text-emerald-600 uppercase font-bold block">Hadir</span>
+                  <span class="text-[10px] text-emerald-700 uppercase font-bold block">Hadir</span>
                   <span class="text-base font-extrabold text-emerald-700">{{ detailData.stats?.attendingCount || 0 }}</span>
                 </div>
                 <div class="p-3 bg-rose-50 rounded-xl border border-rose-100">
@@ -375,11 +422,11 @@
                   <span class="text-base font-extrabold text-rose-700">{{ detailData.stats?.notAttendingCount || 0 }}</span>
                 </div>
                 <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 col-span-2 sm:col-span-1">
-                  <span class="text-[10px] text-amber-600 uppercase font-bold block">Ragu-ragu</span>
+                  <span class="text-[10px] text-amber-700 uppercase font-bold block">Ragu-ragu</span>
                   <span class="text-base font-extrabold text-amber-700">{{ detailData.stats?.uncertainCount || 0 }}</span>
                 </div>
               </div>
-              <p class="text-[11px] text-slate-400 bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-2">
+              <p class="text-[11px] text-slate-500 bg-slate-50 p-2.5 rounded-xl border border-slate-100 flex items-center gap-2">
                 <i class="fa-solid fa-circle-info text-blue-500"></i>
                 <span>Status pengiriman tautan pada buku tamu merupakan penandaan internal pengguna dan tidak mewakili konfirmasi delivery API WhatsApp.</span>
               </p>
@@ -388,11 +435,11 @@
             <!-- Bagian 3: Riwayat Transaksi Lengkap -->
             <div class="space-y-3">
               <h4 class="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center gap-2">
-                <i class="fa-solid fa-receipt text-slate-400"></i> Riwayat Transaksi Pembayaran ({{ (detailData.allPayments || []).length }})
+                <i class="fa-solid fa-receipt text-slate-500"></i> Riwayat Transaksi Pembayaran ({{ (detailData.allPayments || []).length }})
               </h4>
               <div v-if="(detailData.allPayments || []).length > 0" class="overflow-x-auto rounded-xl border border-slate-100">
                 <table class="w-full text-left text-xs">
-                  <thead class="bg-slate-50 text-[10px] text-slate-400 uppercase font-extrabold border-b border-slate-100">
+                  <thead class="bg-slate-50 text-[10px] text-slate-500 uppercase font-extrabold border-b border-slate-100">
                     <tr>
                       <th class="p-2.5">Order ID</th>
                       <th class="p-2.5">Nominal</th>
@@ -423,7 +470,7 @@
                   </tbody>
                 </table>
               </div>
-              <div v-else class="text-xs text-slate-400 p-4 text-center border border-dashed border-slate-200 rounded-xl">
+              <div v-else class="text-xs text-slate-500 p-4 text-center border border-dashed border-slate-200 rounded-xl">
                 Belum ada transaksi pembayaran untuk undangan ini.
               </div>
             </div>
@@ -444,7 +491,7 @@
             <RouterLink
               v-if="detailData?.id"
               :to="`/admin/invitations/${detailData.id}/edit`"
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200 text-amber-600 bg-amber-50 hover:bg-amber-100 text-xs font-bold transition"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-amber-200 text-amber-700 bg-amber-50 hover:bg-amber-100 text-xs font-bold transition"
             >
               <i class="fa-solid fa-pencil text-[10px]"></i> Edit
             </RouterLink>
@@ -466,6 +513,9 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
+import { useColumnVisibility } from '@/utils/columnVisibility.js'
+import { downloadCsv, fetchAllRows, toCsv } from '@/utils/csvExport.js'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import { fetchAdminInvitations, fetchAdminInvitationDetail, deleteAdminInvitation } from '@/api/admin.js'
@@ -484,7 +534,22 @@ const search = ref(route.query.q || '')
 const selectedPaymentStatus = ref(route.query.paymentStatus || 'all')
 const selectedPublished = ref(route.query.isPublished || 'all')
 const selectedPackage = ref(route.query.package || 'all')
+const startDate = ref(String(route.query.startDate || ''))
+const endDate = ref(String(route.query.endDate || ''))
+const selectedCategory = ref(String(route.query.category || 'all'))
 const loading = ref(false)
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+const exporting = ref(false)
+const exportNote = ref('')
+const cols = useColumnVisibility('invitations', [
+  { key: 'title', label: 'Undangan', required: true },
+  { key: 'owner', label: 'Pemilik' },
+  { key: 'package', label: 'Paket & status' },
+  { key: 'payment', label: 'Pembayaran' },
+  { key: 'last', label: 'Transaksi terakhir' },
+  { key: 'expiry', label: 'Masa berlaku' },
+])
 
 // Unified Detail Modal State
 const showDetailModal = ref(false)
@@ -496,7 +561,10 @@ const hasActiveFilters = computed(() => {
     search.value.trim() !== '' ||
     selectedPaymentStatus.value !== 'all' ||
     selectedPublished.value !== 'all' ||
-    selectedPackage.value !== 'all'
+    selectedPackage.value !== 'all' ||
+    startDate.value !== '' ||
+    endDate.value !== '' ||
+    selectedCategory.value !== 'all'
   )
 })
 
@@ -539,11 +607,15 @@ function syncUrlParams() {
   if (selectedPaymentStatus.value !== 'all') query.paymentStatus = selectedPaymentStatus.value
   if (selectedPublished.value !== 'all') query.isPublished = selectedPublished.value
   if (selectedPackage.value !== 'all') query.package = selectedPackage.value
+  if (startDate.value) query.startDate = startDate.value
+  if (endDate.value) query.endDate = endDate.value
+  if (selectedCategory.value !== 'all') query.category = selectedCategory.value
   router.replace({ query }).catch(() => {})
 }
 
 async function loadInvitations() {
   loading.value = true
+  loadError.value = ''
   syncUrlParams()
   try {
     const params = {
@@ -553,12 +625,16 @@ async function loadInvitations() {
       paymentStatus: selectedPaymentStatus.value !== 'all' ? selectedPaymentStatus.value : undefined,
       isPublished: selectedPublished.value !== 'all' ? selectedPublished.value : undefined,
       package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
+      startDate: startDate.value || undefined,
+      endDate: endDate.value || undefined,
+      category: selectedCategory.value !== 'all' ? selectedCategory.value : undefined,
     }
     const res = await fetchAdminInvitations(params)
     invitations.value = res.data
     total.value = res.total
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat data undangan')
+    loadError.value = error.message || 'Gagal memuat data undangan'
   } finally {
     loading.value = false
   }
@@ -584,8 +660,54 @@ function resetFilters() {
   selectedPaymentStatus.value = 'all'
   selectedPublished.value = 'all'
   selectedPackage.value = 'all'
+  startDate.value = ''
+  endDate.value = ''
+  selectedCategory.value = 'all'
   page.value = 1
   loadInvitations()
+}
+
+function currentFilters() {
+  return {
+    q: search.value.trim() || undefined,
+    paymentStatus: selectedPaymentStatus.value !== 'all' ? selectedPaymentStatus.value : undefined,
+    isPublished: selectedPublished.value !== 'all' ? selectedPublished.value : undefined,
+    package: selectedPackage.value !== 'all' ? selectedPackage.value : undefined,
+    startDate: startDate.value || undefined,
+    endDate: endDate.value || undefined,
+    category: selectedCategory.value !== 'all' ? selectedCategory.value : undefined,
+  }
+}
+
+async function exportInvitations() {
+  exporting.value = true
+  exportNote.value = ''
+  try {
+    const { rows, total: all, truncated } = await fetchAllRows(fetchAdminInvitations, currentFilters())
+    downloadCsv(
+      `undangan-${new Date().toISOString().slice(0, 10)}.csv`,
+      toCsv(
+        [
+          { label: 'ID', value: (i) => i.id },
+          { label: 'Judul', value: (i) => i.title },
+          { label: 'Slug', value: (i) => i.slug },
+          { label: 'Pemilik', value: (i) => i.user?.email },
+          { label: 'Paket', value: (i) => i.package },
+          { label: 'Status bayar', value: (i) => i.paymentStatus?.label },
+          { label: 'Terbit', value: (i) => (i.isPublished ? 'ya' : 'tidak') },
+          { label: 'Dibuat', value: (i) => i.createdAt },
+        ],
+        rows,
+      ),
+    )
+    exportNote.value = truncated
+      ? `Ekspor dibatasi ${rows.length} dari ${all} baris.`
+      : `${rows.length} baris diekspor (semua hasil filter, bukan hanya halaman ini).`
+  } catch (error) {
+    exportNote.value = error.message || 'Ekspor gagal dijalankan.'
+  } finally {
+    exporting.value = false
+  }
 }
 
 function onPage(event) {
@@ -622,7 +744,7 @@ async function confirmDelete(invitation) {
     title: 'Hapus undangan?',
     html: `
       <p class="text-sm text-slate-600">Undangan <strong>${invitation.title}</strong> akan dihapus permanen.</p>
-      <p class="text-xs text-amber-600 mt-2">Catatan: Riwayat transaksi pembayaran di sistem tetap akan diarsipkan untuk pelaporan keuangan.</p>
+      <p class="text-xs text-amber-700 mt-2">Catatan: Riwayat transaksi pembayaran di sistem tetap akan diarsipkan untuk pelaporan keuangan.</p>
     `,
     icon: 'warning',
     showCancelButton: true,

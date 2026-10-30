@@ -2,7 +2,16 @@
   <AdminShell title="Template Desain" description="Kelola daftar template undangan"
     action-label="Tambah Template"
     @action="openCreate">
-    <div class="card">
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="templates.length"
+      :filtered="false"
+      :updated-at="lastLoadedAt"
+      @retry="loadData"
+      @reset="resetSearch"
+    />
+    <div v-if="!loadError" class="card">
       <DataTable
         v-model:filters="filters"
         :value="templates"
@@ -77,7 +86,7 @@
         <Column field="isActive" header="Status" sortable :showFilterMenu="false" style="min-width: 8rem">
           <template #body="{ data }">
             <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
-              :class="data.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+              :class="data.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'">
               {{ data.isActive ? 'Aktif' : 'Nonaktif' }}
             </span>
           </template>
@@ -118,7 +127,7 @@
           :class="isThemeBuilderActive ? 'max-w-6xl' : 'max-w-3xl'">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Template' : 'Tambah Template' }}</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
           </div>
 
           <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submitForm">
@@ -146,7 +155,7 @@
                   <option v-for="key in existingRendererKeys" :key="key" :value="key">{{ key }}</option>
                 </optgroup>
               </select>
-              <p class="mt-1 text-[10px] text-slate-400">
+              <p class="mt-1 text-[10px] text-slate-500">
                 Pilih <span class="font-semibold">Tema Kustom</span> untuk membuka Theme Builder — atur warna, font,
                 background &amp; ornamen langsung dari form ini. Pilihan lain memakai tampilan template yang sudah ada
                 apa adanya (tidak bisa diubah dari sini).
@@ -205,7 +214,7 @@
             <!-- SEO -->
             <div class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div class="mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
+                <i class="fa-solid fa-magnifying-glass text-xs text-slate-500"></i>
                 <label class="text-sm font-semibold text-slate-700">SEO Halaman Demo</label>
               </div>
               <p class="mb-3 text-xs text-slate-500">
@@ -214,18 +223,18 @@
               </p>
               <div class="space-y-3">
                 <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Title</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">SEO Title</label>
                   <input v-model="form.seoTitle" type="text" maxlength="70"
                     placeholder="Undangan Digital Kimi no Na wa — Tema Anime Senja | Satu Undangan"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoTitle || '').length }}/70 karakter (ideal ≤ 60)</p>
+                  <p class="mt-1 text-[10px] text-slate-500">{{ (form.seoTitle || '').length }}/70 karakter (ideal ≤ 60)</p>
                 </div>
                 <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Description</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">SEO Description</label>
                   <textarea v-model="form.seoDescription" rows="2" maxlength="320"
                     placeholder="Template undangan pernikahan digital bertema senja sinematik dengan komet jatuh dan langit berbintang. Coba demo gratis di Satu Undangan."
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoDescription || '').length }}/320 karakter (ideal ≤ 160)</p>
+                  <p class="mt-1 text-[10px] text-slate-500">{{ (form.seoDescription || '').length }}/320 karakter (ideal ≤ 160)</p>
                 </div>
               </div>
             </div>
@@ -238,7 +247,7 @@
                 <span v-for="(tag, index) in form.tags" :key="index"
                   class="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
                   {{ tag }}
-                  <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
+                  <button type="button" @click="removeTag(index)" class="text-slate-500 hover:text-rose-500">×</button>
                 </span>
                 <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.,.prevent="addTag" @blur="addTag"
                   type="text" placeholder="Ketik tag dan enter..."
@@ -273,11 +282,11 @@
                     placeholder="Cari musik..."
                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                   />
-                  <div v-if="form.defaultMusic && !audioSearch" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs text-slate-400 truncate max-w-[50%]">
+                  <div v-if="form.defaultMusic && !audioSearch" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs text-slate-500 truncate max-w-[50%]">
                     Terpilih: {{ getSelectedAudioTitle }}
                   </div>
                   <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" v-if="!form.defaultMusic && !audioSearch">
-                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
                   </div>
                 </div>
 
@@ -303,7 +312,7 @@
                   </div>
                 </div>
               </div>
-              <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-400 truncate">URL: {{ form.defaultMusic }}</p>
+              <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-500 truncate">URL: {{ form.defaultMusic }}</p>
             </div>
 
             <!-- Audio Trim with Mini Player -->
@@ -325,7 +334,7 @@
                     <input type="range" min="0" :max="audioDuration || 100" step="0.1" :value="audioCurrentTime"
                       @input="seekAudio"
                       class="w-full h-1.5 cursor-pointer appearance-none rounded-full bg-slate-200 accent-slate-900" />
-                    <div class="mt-1 flex justify-between font-mono text-[10px] text-slate-400">
+                    <div class="mt-1 flex justify-between font-mono text-[10px] text-slate-500">
                       <span>{{ formatTime(audioCurrentTime) }}</span>
                       <span>{{ formatTime(audioDuration) }}</span>
                     </div>
@@ -338,33 +347,33 @@
                     class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100">
                     <i class="fa-solid fa-circle-dot text-emerald-500"></i>
                     Set Mulai
-                    <span class="ml-auto font-mono text-slate-400">{{ formatTime(form.defaultAudioStart) }}</span>
+                    <span class="ml-auto font-mono text-slate-500">{{ formatTime(form.defaultAudioStart) }}</span>
                   </button>
                   <button type="button" @click="setTrimEnd"
                     class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100">
                     <i class="fa-solid fa-stop text-rose-400"></i>
                     Set Akhir
-                    <span class="ml-auto font-mono text-slate-400">{{ form.defaultAudioEnd > 0 ? formatTime(form.defaultAudioEnd) : 'Penuh' }}</span>
+                    <span class="ml-auto font-mono text-slate-500">{{ form.defaultAudioEnd > 0 ? formatTime(form.defaultAudioEnd) : 'Penuh' }}</span>
                   </button>
                 </div>
 
                 <!-- Manual inputs -->
                 <div class="mt-3 grid grid-cols-2 gap-2">
                   <div>
-                    <label class="text-[10px] text-slate-400">Mulai (detik)</label>
+                    <label class="text-[10px] text-slate-500">Mulai (detik)</label>
                     <input v-model.number="form.defaultAudioStart" type="number" min="0" step="1"
                       class="mt-0.5 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-slate-400"
                       placeholder="0" />
                   </div>
                   <div>
-                    <label class="text-[10px] text-slate-400">Akhir (detik, 0 = penuh)</label>
+                    <label class="text-[10px] text-slate-500">Akhir (detik, 0 = penuh)</label>
                     <input v-model.number="form.defaultAudioEnd" type="number" min="0" step="1"
                       class="mt-0.5 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-slate-400"
                       placeholder="0" />
                   </div>
                 </div>
 
-                <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-2 text-xs text-slate-400">
+                <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-2 text-xs text-slate-500">
                   Diputar dari detik {{ form.defaultAudioStart }}
                   <span v-if="form.defaultAudioEnd > 0"> hingga detik {{ form.defaultAudioEnd }}</span>
                   <span v-else> sampai habis</span>
@@ -376,21 +385,21 @@
               <label class="text-sm font-medium text-slate-600">Palette Warna</label>
               <div class="mt-2 grid grid-cols-3 gap-4 rounded-xl bg-slate-50 p-4 border border-slate-200">
                 <div class="space-y-2">
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Primary</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">Primary</label>
                   <div class="flex items-center gap-2">
                     <input type="color" v-model="customPalette.primary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
                     <input type="text" v-model="customPalette.primary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
                   </div>
                 </div>
                 <div class="space-y-2">
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Secondary</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">Secondary</label>
                   <div class="flex items-center gap-2">
                     <input type="color" v-model="customPalette.secondary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
                     <input type="text" v-model="customPalette.secondary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
                   </div>
                 </div>
                 <div class="space-y-2">
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Accent</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">Accent</label>
                   <div class="flex items-center gap-2">
                     <input type="color" v-model="customPalette.accent" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
                     <input type="text" v-model="customPalette.accent" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
@@ -412,7 +421,7 @@
                   <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
 
                   <div class="flex items-center gap-2 ml-auto">
-                    <span class="text-[10px] uppercase text-slate-400 font-bold">Urutan:</span>
+                    <span class="text-[10px] uppercase text-slate-500 font-bold">Urutan:</span>
                     <input type="number"
                       :value="getSectionOrder(section.id)"
                       @input="updateSectionOrder(section.id, $event.target.value)"
@@ -421,7 +430,7 @@
                   </div>
                 </div>
               </div>
-              <div v-else class="mt-2 text-sm text-slate-400 italic">
+              <div v-else class="mt-2 text-sm text-slate-500 italic">
                 Belum ada section yang tersedia. Tambahkan di menu Master Fitur.
               </div>
             </div>
@@ -508,7 +517,7 @@
                   </div>
 
                   <div class="rounded-lg border border-slate-200 p-3">
-                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Akad</p>
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-500">Lokasi Akad</p>
                     <input v-model="form.sampleContent.akadLocation.mapUrl" type="text" placeholder="Map URL"
                       class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
                     <input v-model="form.sampleContent.akadLocation.description" type="text" placeholder="Deskripsi lokasi"
@@ -517,7 +526,7 @@
                       class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
                   </div>
                   <div class="rounded-lg border border-slate-200 p-3">
-                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Resepsi</p>
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-500">Lokasi Resepsi</p>
                     <input v-model="form.sampleContent.resepsiLocation.mapUrl" type="text" placeholder="Map URL"
                       class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
                     <input v-model="form.sampleContent.resepsiLocation.description" type="text" placeholder="Deskripsi lokasi"
@@ -663,6 +672,7 @@
 import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -826,8 +836,12 @@ watch(() => form.slug, (newVal) => {
   }
 })
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+
 async function loadData() {
   loading.value = true
+  loadError.value = ''
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
       fetchAdminTemplates({
@@ -844,8 +858,9 @@ async function loadData() {
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
     audioList.value = audioRes.data || audioRes
-  } catch {
-    toast.error('Gagal memuat data')
+    lastLoadedAt.value = new Date()
+  } catch (error) {
+    loadError.value = error.message || 'Gagal memuat data'
   } finally {
     loading.value = false
   }

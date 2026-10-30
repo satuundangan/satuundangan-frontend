@@ -16,7 +16,7 @@
           class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 shadow-2xs hover:bg-slate-50 transition-colors disabled:opacity-50"
           title="Ekspor CSV Data Transaksi"
         >
-          <i :class="loadingExport ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-export'" class="text-emerald-600"></i>
+          <i :class="loadingExport ? 'fa-solid fa-spinner fa-spin' : 'fa-solid fa-file-export'" class="text-emerald-700"></i>
           <span>Ekspor CSV</span>
         </button>
         <button
@@ -35,7 +35,7 @@
     <p class="mb-2 text-xs text-slate-500">Ringkasan semua waktu. Filter tanggal dan jenis di bawah berlaku untuk daftar transaksi serta ekspornya.</p>
     <div v-if="stats" class="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
           <span>Omzet Bersih</span>
           <i class="fa-solid fa-wallet text-emerald-500"></i>
         </div>
@@ -48,7 +48,7 @@
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
           <span>Diskon Promo</span>
           <i class="fa-solid fa-tag text-purple-500"></i>
         </div>
@@ -61,9 +61,9 @@
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
           <span>Sukses</span>
-          <i class="fa-solid fa-circle-check text-emerald-600"></i>
+          <i class="fa-solid fa-circle-check text-emerald-700"></i>
         </div>
         <div class="mt-2 text-lg font-black text-emerald-700 tracking-tight">
           {{ stats?.statusCounts?.success || 0 }}
@@ -74,11 +74,11 @@
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
           <span>Menunggu</span>
           <i class="fa-solid fa-clock text-amber-500"></i>
         </div>
-        <div class="mt-2 text-lg font-black text-amber-600 tracking-tight">
+        <div class="mt-2 text-lg font-black text-amber-700 tracking-tight">
           {{ stats?.statusCounts?.pending || 0 }}
         </div>
         <div class="mt-1 text-[11px] text-slate-500">
@@ -90,7 +90,7 @@
       </div>
 
       <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
-        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
           <span>Gagal / Expired</span>
           <i class="fa-solid fa-ban text-rose-500"></i>
         </div>
@@ -112,9 +112,9 @@
             : 'border-slate-200 bg-white hover:bg-slate-50'
         ]"
       >
-        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-400">
+        <div class="flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-500">
           <span>Rekonsiliasi</span>
-          <i class="fa-solid fa-triangle-exclamation" :class="(reconData?.count || 0) > 0 ? 'text-rose-600' : 'text-slate-400'"></i>
+          <i class="fa-solid fa-triangle-exclamation" :class="(reconData?.count || 0) > 0 ? 'text-rose-600' : 'text-slate-500'"></i>
         </div>
         <div class="mt-2 text-lg font-black tracking-tight" :class="(reconData?.count || 0) > 0 ? 'text-rose-700' : 'text-slate-700'">
           {{ reconData ? reconData.count : '—' }}
@@ -168,7 +168,7 @@
       <!-- Filter Bar -->
       <div class="mb-4 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-xs">
         <div class="flex items-center gap-2 text-xs font-bold text-slate-500 uppercase tracking-wider">
-          <i class="fa-solid fa-filter text-slate-400"></i> Filter:
+          <i class="fa-solid fa-filter text-slate-500"></i> Filter:
         </div>
 
         <!-- Filter Status -->
@@ -252,7 +252,7 @@
             <div class="flex flex-col items-center justify-center p-12 text-center">
               <i class="fa-solid fa-receipt text-4xl text-slate-300 mb-3"></i>
               <p class="text-sm font-semibold text-slate-600">Tidak ada transaksi ditemukan</p>
-              <p class="text-xs text-slate-400 mt-1">Coba sesuaikan kata kunci pencarian atau filter yang aktif.</p>
+              <p class="text-xs text-slate-500 mt-1">Coba sesuaikan kata kunci pencarian atau filter yang aktif.</p>
             </div>
           </template>
 
@@ -270,13 +270,13 @@
                   </button>
                   <button
                     @click="copyText(data.orderId, 'Order ID disalin')"
-                    class="text-slate-400 hover:text-slate-700 p-0.5"
+                    class="text-slate-500 hover:text-slate-700 p-0.5"
                     title="Salin Order ID"
                   >
                     <i class="fa-regular fa-copy text-[11px]"></i>
                   </button>
                 </div>
-                <span v-if="data.transactionId" class="text-[10px] text-slate-400 font-mono truncate max-w-[180px]">
+                <span v-if="data.transactionId" class="text-[10px] text-slate-500 font-mono truncate max-w-[180px]">
                   ID: {{ data.transactionId }}
                 </span>
               </div>
@@ -336,7 +336,7 @@
                 <span class="font-semibold text-slate-800 uppercase tracking-wide">
                   {{ data.paymentType || data.paymentMethod || '-' }}
                 </span>
-                <span v-if="data.fraudStatus" class="text-[10px] text-slate-400 capitalize">
+                <span v-if="data.fraudStatus" class="text-[10px] text-slate-500 capitalize">
                   Fraud: {{ data.fraudStatus }}
                 </span>
               </div>
@@ -371,7 +371,7 @@
             <template #body="{ data }">
               <div class="flex flex-col text-xs">
                 <span class="text-slate-800">{{ formatDate(data.createdAt) }}</span>
-                <span class="text-[10px] text-slate-400 mt-0.5">{{ diffForHumans(data.createdAt) }}</span>
+                <span class="text-[10px] text-slate-500 mt-0.5">{{ diffForHumans(data.createdAt) }}</span>
               </div>
             </template>
           </Column>
@@ -404,7 +404,7 @@
     <!-- TAB 2: Antrean Rekonsiliasi (ADM-011) -->
     <div v-show="activeTab === 'reconciliation'" data-testid="reconciliation-tab">
       <div class="mb-4 rounded-2xl border border-amber-200 bg-amber-50/70 p-4 text-xs text-amber-900 flex items-start gap-3">
-        <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base mt-0.5 shrink-0"></i>
+        <i class="fa-solid fa-triangle-exclamation text-amber-700 text-base mt-0.5 shrink-0"></i>
         <div>
           <strong class="font-bold">Pusat Antrean Rekonsiliasi Gateway & Finansial</strong>
           <p class="mt-0.5 text-amber-800 leading-relaxed">
@@ -451,10 +451,10 @@
                   {{ item.type }}
                 </span>
                 <span class="text-xs font-bold text-slate-900">{{ item.title }}</span>
-                <span v-if="item.orderId" class="text-xs font-mono text-slate-400">({{ item.orderId }})</span>
+                <span v-if="item.orderId" class="text-xs font-mono text-slate-500">({{ item.orderId }})</span>
               </div>
               <p class="text-xs text-slate-600 leading-relaxed">{{ item.description }}</p>
-              <div class="flex items-center gap-3 text-[11px] text-slate-400">
+              <div class="flex items-center gap-3 text-[11px] text-slate-500">
                 <span>Pelanggan: <strong class="text-slate-700">{{ item.customer }}</strong></span>
                 <span>•</span>
                 <span v-if="item.amount > 0">Nominal: <strong class="text-slate-900">{{ formatRupiah(item.amount) }}</strong></span>
@@ -468,7 +468,7 @@
               <button
                 v-if="item.action === 'RECONCILE_PUBLISH'"
                 @click="triggerReconcilePublish(item.paymentId, item.orderId)"
-                class="flex items-center gap-1.5 rounded-xl bg-emerald-600 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-700 transition-colors"
+                class="flex items-center gap-1.5 rounded-xl bg-emerald-700 px-3.5 py-2 text-xs font-bold text-white shadow-xs hover:bg-emerald-800 transition-colors"
               >
                 <i class="fa-solid fa-cloud-arrow-up"></i>
                 <span>Publish Undangan</span>
@@ -517,7 +517,7 @@
         <div class="flex items-start justify-between border-b border-slate-100 pb-4">
           <div>
             <div class="flex items-center gap-2">
-              <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Rincian Order:</span>
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Rincian Order:</span>
               <span class="text-base font-black font-mono text-slate-900">{{ detailData?.orderId }}</span>
             </div>
             <p class="text-xs text-slate-500 mt-0.5">
@@ -526,14 +526,14 @@
           </div>
           <button
             @click="closeDetail"
-            class="h-8 w-8 rounded-full text-slate-400 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors"
+            class="h-8 w-8 rounded-full text-slate-500 hover:bg-slate-100 hover:text-slate-600 flex items-center justify-center transition-colors"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
         <div v-if="loadingDetail" class="py-16 text-center">
-          <i class="fa-solid fa-spinner fa-spin text-3xl text-slate-400"></i>
+          <i class="fa-solid fa-spinner fa-spin text-3xl text-slate-500"></i>
           <p class="text-xs text-slate-500 mt-2 font-medium">Memuat rincian transaksi...</p>
         </div>
 
@@ -561,7 +561,7 @@
             </div>
 
             <div class="text-right">
-              <span class="text-xs text-slate-400 uppercase font-bold tracking-wider">Total Dibayar</span>
+              <span class="text-xs text-slate-500 uppercase font-bold tracking-wider">Total Dibayar</span>
               <div class="text-2xl font-black text-slate-900 tracking-tight">
                 {{ formatRupiah(detailData.amount) }}
               </div>
@@ -572,7 +572,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <!-- Finansial & Gateway Snapshot -->
             <div class="rounded-2xl border border-slate-200 p-4 space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <i class="fa-solid fa-credit-card text-blue-500"></i> Gateway & Finansial
               </h4>
               <div class="space-y-2 text-xs divide-y divide-slate-100">
@@ -598,14 +598,14 @@
                 </div>
                 <div v-if="detailData.snapToken" class="flex flex-col py-1 gap-1">
                   <span class="text-slate-500">Snap Token:</span>
-                  <span class="font-mono text-[10px] text-slate-400 break-all bg-slate-50 p-1.5 rounded">{{ detailData.snapToken }}</span>
+                  <span class="font-mono text-[10px] text-slate-500 break-all bg-slate-50 p-1.5 rounded">{{ detailData.snapToken }}</span>
                 </div>
               </div>
             </div>
 
             <!-- Pelanggan & Undangan Snapshot -->
             <div class="rounded-2xl border border-slate-200 p-4 space-y-3">
-              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+              <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
                 <i class="fa-solid fa-user text-emerald-500"></i> Pelanggan & Sasaran
               </h4>
               <div class="space-y-2 text-xs divide-y divide-slate-100">
@@ -631,8 +631,8 @@
                     <span class="font-bold text-slate-900">{{ detailData.invitation.title }}</span>
                   </div>
                   <div class="flex items-center justify-between text-[11px]">
-                    <span class="text-slate-400">Status Terbit:</span>
-                    <span :class="detailData.invitation.isPublished ? 'text-emerald-600 font-bold' : 'text-amber-600 font-bold'">
+                    <span class="text-slate-500">Status Terbit:</span>
+                    <span :class="detailData.invitation.isPublished ? 'text-emerald-700 font-bold' : 'text-amber-700 font-bold'">
                       {{ detailData.invitation.isPublished ? 'Terbit (Published)' : 'Draft' }}
                     </span>
                   </div>
@@ -650,7 +650,7 @@
 
           <!-- Timeline Percobaan Pembayaran Terkait (Multiple Attempts) -->
           <div class="rounded-2xl border border-slate-200 p-4 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <i class="fa-solid fa-clock-rotate-left text-amber-500"></i> Riwayat Semua Percobaan Pembayaran (Attempts)
             </h4>
             <div class="space-y-2">
@@ -688,16 +688,16 @@
 
           <!-- Audit Activity Logs -->
           <div v-if="(detailData.recentActivities || []).length > 0" class="rounded-2xl border border-slate-200 p-4 space-y-3">
-            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+            <h4 class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1.5">
               <i class="fa-solid fa-shield-halved text-slate-500"></i> Jejak Audit Aktivitas Terkait
             </h4>
             <div class="space-y-1.5 text-xs divide-y divide-slate-100">
               <div v-for="act in detailData.recentActivities" :key="act.id" class="pt-1.5 flex justify-between">
                 <div>
                   <span class="font-bold text-slate-800">{{ act.action }}</span>
-                  <span class="text-slate-400 text-[11px] ml-2">({{ act.userEmail || 'System' }})</span>
+                  <span class="text-slate-500 text-[11px] ml-2">({{ act.userEmail || 'System' }})</span>
                 </div>
-                <span class="text-[11px] text-slate-400">{{ formatDate(act.createdAt) }}</span>
+                <span class="text-[11px] text-slate-500">{{ formatDate(act.createdAt) }}</span>
               </div>
             </div>
           </div>
@@ -708,7 +708,7 @@
           <button
             v-if="detailData?.status === 'success' && detailData?.invitation && !detailData?.invitation?.isPublished"
             @click="triggerReconcilePublish(detailData.id, detailData.orderId)"
-            class="rounded-xl bg-emerald-600 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-700 transition-colors"
+            class="rounded-xl bg-emerald-700 px-4 py-2 text-xs font-bold text-white hover:bg-emerald-800 transition-colors"
           >
             <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Publish & Rekonsiliasi
           </button>
@@ -740,7 +740,7 @@
           <!-- Receipt Header -->
           <div class="text-center border-b border-slate-200 pb-5">
             <h2 class="text-lg font-black tracking-tight text-slate-900">SatuUndangan</h2>
-            <p class="text-xs text-slate-400 uppercase tracking-widest mt-0.5">Bukti Transaksi Digital Resmi</p>
+            <p class="text-xs text-slate-500 uppercase tracking-widest mt-0.5">Bukti Transaksi Digital Resmi</p>
             <p class="text-[11px] text-slate-500 mt-2 font-mono">No: {{ receiptData?.orderId }}</p>
           </div>
 

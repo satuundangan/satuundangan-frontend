@@ -188,7 +188,7 @@ onMounted(fetchWithdrawals)
           <button @click="handleApprove(item)" class="text-[11px] font-black uppercase tracking-widest text-green-600 hover:text-green-700">Setujui</button>
           <button @click="handleReject(item)" class="text-[11px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-700">Tolak</button>
         </div>
-        <div v-else class="text-[10px] text-slate-400 max-w-[150px] truncate italic" :title="item.adminNote">
+        <div v-else class="text-[10px] text-slate-500 max-w-[150px] truncate italic" :title="item.adminNote">
           {{ item.adminNote || 'Tanpa catatan' }}
         </div>
       </template>

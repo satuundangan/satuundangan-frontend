@@ -2,6 +2,7 @@ import mixpanel from 'mixpanel-browser'
 
 const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || '6930e65c99814590474a355354a87d03'
 const SCHEMA_VERSION = '2'
+const GA_MEASUREMENT_ID = 'G-Q5RSPLGGJ5'
 const PUBLIC_PATHS = /^\/(?:$|blog(?:\/|$)|templates$|tema(?:\/|$)|tools\/love-calculator$|wedding-planner$|tentang-kami$|terms$|privacy$|syarat-ketentuan$|kebijakan-privasi$)/
 const SAFE_KEYS = new Set(['template_id', 'templateId', 'invitation_id', 'invitationId', 'package', 'step', 'step_index', 'section_count', 'selected_count', 'total_sections', 'currency', 'value', 'amount', 'payment_purpose', 'transaction_id', 'duration_seconds', 'role', 'method', 'source', 'success', 'error_code'])
 let initialized = false
@@ -140,6 +141,7 @@ export const analytics = {
     if (identity.userId) mixpanel.identify(String(identity.userId))
     const previous = analyticsRouteContext(from)
     const referrer = from?.name ? previous.page_location : externalReferrer()
+    if (!from?.name) rememberFirstTouch(to.fullPath || to.path, document.referrer)
     const campaign = campaignProperties(to.fullPath || to.path)
     window.gtag?.('set', { page_location: next.page_location, page_referrer: referrer, page_title: next.page_type, ...campaign })
     const payload = { ...next, page_referrer: referrer, page_title: next.page_type, ...campaign, event_schema_version: SCHEMA_VERSION, environment: import.meta.env.PROD ? 'production' : 'development' }
@@ -149,6 +151,16 @@ export const analytics = {
     return next
   },
   trackAction(actionName, properties = {}) { emit(actionName, gaEventName(actionName), properties) },
+  /** Context sent with checkout so the server can attribute a verified purchase; empty when tracking is off. */
+  async checkoutContext() {
+    if (!canTrack()) return {}
+    const [gaClientId] = await Promise.all([readGaClientId()])
+    const acquisition = readFirstTouch()
+    return {
+      ...(gaClientId ? { ga_client_id: gaClientId } : {}),
+      ...(acquisition ? { acquisition } : {}),
+    }
+  },
   startTimer(eventName) { if (canTrack()) timers.set(eventName, Date.now()) },
   stopTimer(eventName, properties = {}) {
     const started = timers.get(eventName)
@@ -157,6 +169,69 @@ export const analytics = {
   },
   alias(userId) { if (userId && canTrack()) { initialize(); mixpanel.alias(String(userId)) } },
   reset() { if (initialized) mixpanel.reset(); adminIdentity = false; timers.clear() },
+}
+
+const FIRST_TOUCH_KEY = 'su_first_touch'
+const NEVER_A_SOURCE = /(^|\.)(satuundangan\.id|midtrans\.com|accounts\.google\.com)$/i
+
+/** First-touch source for a visit: UTM when present, else an external referrer; otherwise unknown (null). */
+export function deriveFirstTouch({ search = '', referrer = '' } = {}) {
+  const params = new URLSearchParams(search)
+  const clean = (value) =>
+    value && value.length <= 100 && /^[a-zA-Z0-9 _.\-:/+()%]+$/.test(value) ? value : undefined
+  const touch = {
+    source: clean(params.get('utm_source')),
+    medium: clean(params.get('utm_medium')),
+    campaign: clean(params.get('utm_campaign')),
+  }
+  if (!touch.source && referrer) {
+    try {
+      const host = new URL(referrer).hostname
+      if (host && !NEVER_A_SOURCE.test(host)) {
+        touch.source = host
+        touch.medium = touch.medium || 'referral'
+      }
+    } catch {
+      // a malformed referrer is treated as no referrer
+    }
+  }
+  const entries = Object.entries(touch).filter(([, value]) => value)
+  return entries.length ? Object.fromEntries(entries) : null
+}
+
+function rememberFirstTouch(fullPath, referrer) {
+  try {
+    if (localStorage.getItem(FIRST_TOUCH_KEY)) return
+    const touch = deriveFirstTouch({ search: new URL(String(fullPath || '/'), window.location.origin).search, referrer })
+    if (touch) localStorage.setItem(FIRST_TOUCH_KEY, JSON.stringify(touch))
+  } catch {
+    // storage unavailable: attribution stays unknown rather than guessed
+  }
+}
+
+function readFirstTouch() {
+  try {
+    const value = JSON.parse(localStorage.getItem(FIRST_TOUCH_KEY) || 'null')
+    return value && typeof value === 'object' ? value : null
+  } catch {
+    return null
+  }
+}
+
+function readGaClientId() {
+  return new Promise((resolve) => {
+    if (typeof window.gtag !== 'function') return resolve(null)
+    const timer = setTimeout(() => resolve(null), 800)
+    try {
+      window.gtag('get', GA_MEASUREMENT_ID, 'client_id', (id) => {
+        clearTimeout(timer)
+        resolve(typeof id === 'string' && /^\d{5,12}\.\d{5,12}$/.test(id) ? id : null)
+      })
+    } catch {
+      clearTimeout(timer)
+      resolve(null)
+    }
+  })
 }
 
 function externalReferrer() {

@@ -46,7 +46,7 @@ test.beforeEach(async ({ page }) => {
   page.on('pageerror', (error) => console.log('Admin browser error:', error.message))
   page.on('console', (message) => { if (message.type() === 'error') console.log('Admin console error:', message.text()) })
   await page.route('**/*', (route) =>
-    new URL(route.request().url()).hostname === '127.0.0.1' ? route.continue() : route.abort(),
+    ['127.0.0.1', 'localhost'].includes(new URL(route.request().url()).hostname) ? route.continue() : route.abort(),
   )
   await page.route('**/api/**', (route) => {
     const pathname = new URL(route.request().url()).pathname
@@ -64,8 +64,15 @@ test.beforeEach(async ({ page }) => {
         isApproved: true,
       }
     if (path === '/admin/dashboard/overview') body = overview
-    if (path === '/admin/payments/reconciliation-queue')
-      body = { count: 0, items: [], countsByType: {} }
+    if (path === '/auth/admin/security')
+      body = { adminRole: 'superadmin', allowedResources: [], totpEnabled: false, recoveryCodesRemaining: 0, lastLogin: null, sessions: [] }
+    if (path === '/admin/dashboard/actions')
+      body = { count: 0, items: [], countsBySource: { transaksi: 0, undangan: 0, payout: 0 }, unavailableSources: [{ source: 'bantuan', reason: 'Fitur bantuan pelanggan belum ada.' }], note: 'Antrean dari pusat pembayaran.' }
+    if (path === '/admin/analytics')
+      body = { status: 'not_connected', missingConfiguration: ['GA4_PROPERTY_ID'] }
+    if (path === '/admin/health')
+      body = { checkedAt: '2026-10-29T03:00:00Z', worst: 'available', services: [{ key: 'database', label: 'Database', status: 'available' }] }
+    if (path === '/admin/maintenance') body = { enabled: false, active: false, message: 'm', reason: '', until: null, scope: 's' }
     if (path === '/admin/payments/stats')
       body = {
         grossRevenue: 79000,
@@ -114,7 +121,7 @@ test('dashboard drilldown retains paid kind and the period on payments', async (
   await page.goto('/admin')
   await expect(page.getByRole('heading', { name: 'Dashboard', exact: true })).toBeVisible()
   await expect(page.getByTestId('business-metrics')).toContainText('Penerimaan undangan')
-  await expect(page.getByText('GA4 belum terhubung ke panel admin.', { exact: true })).toBeVisible()
+  await expect(page.getByTestId('ga4-card')).toContainText('GA4 belum tersambung ke panel admin')
   await page.getByRole('link', { name: 'Lihat transaksi sumber' }).first().click()
   await expect(page).toHaveURL(/kind=paid/)
   await expect(page).toHaveURL(/startDate=2026-10-23/)

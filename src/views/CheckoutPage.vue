@@ -405,6 +405,7 @@ import { createPayment, getPackages } from '@/api/payment'
 import { validatePromoCode } from '@/api/promo'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
+import { analytics } from '@/api/analytics'
 
 const router = useRouter()
 const route = useRoute()
@@ -630,6 +631,7 @@ const handleCheckout = async () => {
   try {
     const payload = { invitation_id: invitation.value.id, package: selectedPackage.value }
     if (appliedPromo.value) payload.promo_code = appliedPromo.value.code
+    Object.assign(payload, await analytics.checkoutContext())
     const data = await createPayment(payload)
 
     if (data.is_free) {
@@ -673,6 +675,10 @@ const handleCheckout = async () => {
     }
   } catch (err) {
     console.error('Checkout gagal:', err)
+    if (err.code === 'MAINTENANCE') {
+      toast.warning(err.message || 'Pembelian dinonaktifkan sementara karena perawatan.')
+      return
+    }
     alert('Terjadi kesalahan pembayaran: ' + (err.response?.data?.message || err.message))
   } finally {
     loading.value = false

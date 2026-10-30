@@ -16,6 +16,7 @@ import GuestsView from '@/views/dashboard/GuestsView.vue'
 import GuestbookView from '@/views/dashboard/GuestbookView.vue'
 import SettingsView from '@/views/dashboard/SettingsView.vue'
 import AdminLogin from '@/views/admin/AdminLogin.vue'
+import { canOpenAdminPath } from '@/utils/adminAccess'
 import AdminDashboard from '@/views/admin/AdminDashboard.vue'
 import AdminUsers from '@/views/admin/AdminUsers.vue'
 import AdminInvitations from '@/views/admin/AdminInvitations.vue'
@@ -193,8 +194,7 @@ const router = createRouter({
     {
       path: '/admin/totp/setup',
       name: 'admin-totp-setup',
-      component: () => import('@/views/admin/AdminTotpSetup.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true, title: 'Setup Authenticator' },
+      redirect: '/admin/security',
     },
     {
       path: '/blog',
@@ -317,6 +317,24 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Social Media Studio' },
     },
     {
+      path: '/admin/analytics',
+      name: 'admin-analytics',
+      component: () => import('@/views/admin/AdminAnalytics.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Analytics & Funnel' },
+    },
+    {
+      path: '/admin/system',
+      name: 'admin-system',
+      component: () => import('@/views/admin/AdminSystem.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Sistem & Audit' },
+    },
+    {
+      path: '/admin/security',
+      name: 'admin-security',
+      component: () => import('@/views/admin/AdminSecurity.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Keamanan Akun' },
+    },
+    {
       path: '/admin/logs',
       name: 'admin-logs',
       component: () => import('@/views/admin/AdminLogs.vue'),
@@ -395,6 +413,15 @@ router.beforeEach(async (to, _from, next) => {
   if (requiresAdmin && !authStore.user?.isAdmin) {
     next({ name: 'admin-login' })
     return
+  }
+
+  if (requiresAdmin) {
+    // The server enforces roles; this only keeps an admin off pages they cannot use.
+    const access = await authStore.loadAdminAccess()
+    if (!canOpenAdminPath(access, to.path)) {
+      next({ name: 'admin-dashboard' })
+      return
+    }
   }
 
   // Block admin routes if TOTP not yet set up (temporarily disabled)

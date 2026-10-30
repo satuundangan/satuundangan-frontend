@@ -15,14 +15,14 @@
         <button 
           @click="viewType = 'grid'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
         >
           Cards
         </button>
         <button 
           @click="viewType = 'table'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
         >
           Table
         </button>
@@ -40,6 +40,7 @@
         <input
           type="file"
           multiple
+          aria-label="Pilih beberapa file musik MP3 untuk diunggah"
           accept="audio/mpeg, audio/mp3"
           class="absolute inset-0 z-10 cursor-pointer opacity-0"
           @change="handleBulkFileChange"
@@ -57,7 +58,7 @@
           <div class="flex items-center justify-between border-b border-slate-100 pb-4">
              <div>
                 <h3 class="text-lg font-black text-slate-900">{{ bulkQueue.length }} File Siap Diupload</h3>
-                <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Pilih Kategori untuk Batch Ini</p>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Pilih Kategori untuk Batch Ini</p>
              </div>
              <div class="flex items-center gap-3">
                 <select v-model="bulkCategory" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100">
@@ -70,7 +71,7 @@
                 >
                   {{ isBulking ? 'Uploading...' : 'Mulai Upload Semua' }}
                 </button>
-                <button @click.stop="bulkQueue = []" class="text-slate-400 hover:text-rose-500 transition-colors">
+                <button @click.stop="bulkQueue = []" class="text-slate-500 hover:text-rose-500 transition-colors">
                    <i class="fa-solid fa-times"></i>
                 </button>
              </div>
@@ -79,7 +80,7 @@
           <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
              <div v-for="(item, idx) in bulkQueue" :key="idx" class="mb-2 flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm border border-slate-50">
                 <div class="flex items-center gap-3 min-w-0">
-                   <div class="h-8 w-8 flex items-center justify-center rounded-lg" :class="item.status === 'done' ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-400'">
+                   <div class="h-8 w-8 flex items-center justify-center rounded-lg" :class="item.status === 'done' ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-500'">
                       <i v-if="item.status === 'done'" class="fa-solid fa-check text-xs"></i>
                       <i v-else-if="item.status === 'uploading'" class="fa-solid fa-spinner animate-spin text-xs"></i>
                       <i v-else class="fa-solid fa-file-audio text-xs"></i>
@@ -96,6 +97,16 @@
     </section>
 
     <!-- Main List (Grid) -->
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="filteredAudios.length"
+      :filtered="Boolean(search)"
+      :updated-at="lastLoadedAt"
+      @retry="loadAudio"
+      @reset="handleSearch('')"
+    />
+
     <div v-if="viewType === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       <!-- Loading Skeleton -->
       <template v-if="loading">
@@ -131,7 +142,7 @@
               <h3 class="truncate text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors" :title="track.title">
                 {{ track.title }}
               </h3>
-              <p class="mt-1 line-clamp-1 text-xs text-slate-400 font-medium">
+              <p class="mt-1 line-clamp-1 text-xs text-slate-500 font-medium">
                 {{ getCategoryMeta(track.category).description }}
               </p>
             </div>
@@ -139,7 +150,7 @@
             <div class="flex flex-col gap-2">
               <button
                 type="button"
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-all hover:bg-rose-50 hover:text-rose-500"
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-rose-50 hover:text-rose-500"
                 title="Hapus"
                 @click="confirmDelete(track)"
               >
@@ -171,7 +182,7 @@
       </template>
 
       <!-- Empty State -->
-      <div v-if="!loading && !filteredAudios.length" class="col-span-full py-20 flex flex-col items-center justify-center text-center">
+      <div v-if="!loading && !loadError && !filteredAudios.length" class="col-span-full py-20 flex flex-col items-center justify-center text-center">
         <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-50 text-slate-200">
            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
         </div>
@@ -183,7 +194,7 @@
     </div>
 
     <!-- Main List (Table) -->
-    <div class="card" v-else>
+    <div class="card" v-else-if="!loadError">
       <DataTable 
         v-model:filters="filters" 
         :value="audios" 
@@ -212,7 +223,7 @@
           <template #body="{ data }">
             <div class="flex flex-col">
               <span class="font-bold text-slate-900">{{ data.title }}</span>
-              <span class="text-[10px] font-mono text-slate-400 truncate max-w-xs">{{ data.url }}</span>
+              <span class="text-[10px] font-mono text-slate-500 truncate max-w-xs">{{ data.url }}</span>
             </div>
           </template>
           <template #filter="{ filterModel, filterCallback }">
@@ -276,7 +287,7 @@
 
           <form class="p-8 space-y-6" @submit.prevent="submitForm">
             <div>
-              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Judul Musik</label>
+              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Judul Musik</label>
               <input
                 v-model="form.title"
                 type="text"
@@ -288,7 +299,7 @@
 
             <div class="grid grid-cols-2 gap-4">
                <div>
-                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Kategori</label>
+                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Kategori</label>
                   <select
                     v-model="form.category"
                     class="w-full appearance-none rounded-2xl border-2 border-slate-50 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-indigo-100 focus:bg-white"
@@ -299,8 +310,8 @@
                   </select>
                </div>
                <div>
-                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Format</label>
-                  <div class="w-full rounded-2xl bg-slate-50 px-5 py-4 text-sm font-bold text-slate-400">
+                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Format</label>
+                  <div class="w-full rounded-2xl bg-slate-50 px-5 py-4 text-sm font-bold text-slate-500">
                      MP3 Audio
                   </div>
                </div>
@@ -308,13 +319,14 @@
 
             <!-- Upload Zone -->
             <div>
-              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">File Audio</label>
+              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">File Audio</label>
               <div 
                 class="group relative flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-slate-200 bg-slate-50/50 p-8 transition-all hover:border-indigo-300 hover:bg-indigo-50/30"
                 :class="{ 'border-indigo-400 bg-indigo-50': uploadingFile }"
               >
                 <input
                   type="file"
+                  aria-label="Pilih file musik MP3"
                   accept="audio/mpeg, audio/mp3"
                   class="absolute inset-0 z-10 cursor-pointer opacity-0"
                   @change="handleFileChange"
@@ -325,15 +337,15 @@
                       <svg class="h-8 w-8 animate-spin text-indigo-600" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                    </div>
                    <p class="text-sm font-black text-indigo-600 uppercase tracking-widest">Uploading...</p>
-                   <p class="mt-1 text-xs text-slate-400">Sedang mengirim file ke R2 Storage</p>
+                   <p class="mt-1 text-xs text-slate-500">Sedang mengirim file ke R2 Storage</p>
                 </div>
                 
                 <div v-else-if="form.url" class="text-center">
                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-200">
                       <i class="fa-solid fa-check text-2xl"></i>
                    </div>
-                   <p class="text-sm font-black text-emerald-600 uppercase tracking-widest">File Ready</p>
-                   <p class="mt-1 text-[10px] text-slate-400 truncate max-w-[200px]">{{ form.fileName }}</p>
+                   <p class="text-sm font-black text-emerald-700 uppercase tracking-widest">File Ready</p>
+                   <p class="mt-1 text-[10px] text-slate-500 truncate max-w-[200px]">{{ form.fileName }}</p>
                 </div>
 
                 <div v-else class="text-center">
@@ -341,7 +353,7 @@
                       <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
                    </div>
                    <p class="text-sm font-black text-slate-900 uppercase tracking-widest">Pilih File MP3</p>
-                   <p class="mt-1 text-xs text-slate-400">Klik atau drag audio ke sini</p>
+                   <p class="mt-1 text-xs text-slate-500">Klik atau drag audio ke sini</p>
                 </div>
               </div>
             </div>
@@ -372,6 +384,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -395,7 +408,7 @@ const CATEGORY_OPTIONS = [
     value: 'acoustic',
     label: 'Acoustic Morning',
     description: 'Hangat dan ringan untuk intimate wedding atau garden party.',
-    badgeClass: 'border-amber-100 bg-amber-50 text-amber-600',
+    badgeClass: 'border-amber-100 bg-amber-50 text-amber-700',
   },
   {
     value: 'elegant',
@@ -407,7 +420,7 @@ const CATEGORY_OPTIONS = [
     value: 'sacred',
     label: 'Sacred Ceremony',
     description: 'Tenang dan khidmat untuk akad, blessing, atau pemberkatan.',
-    badgeClass: 'border-emerald-100 bg-emerald-50 text-emerald-600',
+    badgeClass: 'border-emerald-100 bg-emerald-50 text-emerald-700',
   },
   {
     value: 'warm',
@@ -480,14 +493,19 @@ function getCategoryMeta(category) {
   }
 }
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+
 async function loadAudio() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminAudio()
     const data = Array.isArray(res) ? res : (res.data || [])
     audios.value = data
-  } catch {
-    toast.error('Gagal memuat musik')
+    lastLoadedAt.value = new Date()
+  } catch (error) {
+    loadError.value = error.message || 'Gagal memuat musik'
   } finally {
     loading.value = false
   }
