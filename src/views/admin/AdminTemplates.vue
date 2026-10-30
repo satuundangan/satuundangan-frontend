@@ -5,21 +5,52 @@
     <AdminTableStatus
       :error="loadError"
       :loading="loading"
-      :count="templates.length"
-      :filtered="false"
+      :count="total"
+      :filtered="Boolean(searchTerm || categoryFilter || (activeFilter !== '' && activeFilter !== null))"
       :updated-at="lastLoadedAt"
       @retry="loadData"
       @reset="resetSearch"
     />
+    <div class="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+      <div class="mb-3 flex flex-wrap items-end gap-3">
+        <label class="min-w-56 flex-1 text-xs font-semibold text-slate-600">
+          Cari nama atau slug
+          <InputText v-model="searchTerm" class="mt-1 w-full" placeholder="Cari template" @keyup.enter="loadData({ page: 1 })" />
+        </label>
+        <label class="text-xs font-semibold text-slate-600">
+          Kategori
+          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua kategori" showClear @change="loadData({ page: 1 })" />
+        </label>
+        <label class="text-xs font-semibold text-slate-600">
+          Status
+          <Select v-model="activeFilter" class="mt-1 block min-w-32" :options="statusOptions" optionValue="value" optionLabel="label" placeholder="Semua" showClear @change="loadData({ page: 1 })" />
+        </label>
+        <label class="text-xs font-semibold text-slate-600">
+          Periode metrik
+          <Select v-model="metricsDays" class="mt-1 block min-w-32" :options="periodOptions" optionValue="value" optionLabel="label" @change="loadMetrics" />
+        </label>
+        <button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white" @click="loadData({ page: 1 })">Terapkan</button>
+      </div>
+      <p class="text-xs leading-relaxed text-slate-600">
+        Harga template adalah metadata lama dan tidak menentukan tagihan. Tagihan checkout mengikuti aturan paket undangan (Basic, Premium, Eksklusif) yang disediakan oleh endpoint harga paket.
+        Penjualan memakai pembayaran sukses yang tersettlement; atribusi mengikuti template saat ini pada undangan, karena snapshot template saat transaksi belum tersedia.
+      </p>
+      <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
+    </div>
     <div v-if="!loadError" class="card">
       <DataTable
-        v-model:filters="filters"
         :value="templates"
+        lazy
         paginator
-        :rows="10"
+        :first="(currentPage - 1) * pageSize"
+        :rows="pageSize"
+        :totalRecords="total"
         dataKey="id"
-        filterDisplay="row"
         :loading="loading"
+        :sortField="sortBy"
+        :sortOrder="sortOrder === 'ASC' ? 1 : -1"
+        @page="handlePage"
+        @sort="handleSort"
         class="p-datatable-sm"
       >
         <template #empty> Tidak ada template ditemukan. </template>
@@ -40,21 +71,15 @@
           <template #body="{ data }">
             <span class="font-medium text-slate-900">{{ data.name }}</span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari nama" />
-          </template>
         </Column>
 
         <Column field="slug" header="Slug" sortable style="min-width: 10rem">
           <template #body="{ data }">
             <span class="text-slate-500 text-xs">{{ data.slug }}</span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari slug" />
-          </template>
         </Column>
 
-        <Column field="category" header="Kategori" sortable :showFilterMenu="false" style="min-width: 10rem">
+        <Column field="category" header="Kategori" sortable style="min-width: 10rem">
           <template #body="{ data }">
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
@@ -63,19 +88,9 @@
               {{ data.category }}
             </span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <Select v-model="filterModel.value" @change="filterCallback()" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua" :showClear="true" class="w-full">
-              <template #option="slotProps">
-                <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: slotProps.option.color }"></span>
-                  <span>{{ slotProps.option.name }}</span>
-                </div>
-              </template>
-            </Select>
-          </template>
         </Column>
 
-        <Column field="price" header="Harga" sortable style="min-width: 8rem">
+        <Column field="price" header="Harga lama · info" sortable style="min-width: 9rem">
           <template #body="{ data }">
             <span class="text-slate-700 font-medium">
               {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.price || 0) }}
@@ -83,15 +98,35 @@
           </template>
         </Column>
 
-        <Column field="isActive" header="Status" sortable :showFilterMenu="false" style="min-width: 8rem">
+        <Column field="isActive" header="Status" style="min-width: 8rem">
           <template #body="{ data }">
             <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
               :class="data.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'">
               {{ data.isActive ? 'Aktif' : 'Nonaktif' }}
             </span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <Select v-model="filterModel.value" @change="filterCallback()" :options="statusOptions" optionValue="value" optionLabel="label" placeholder="Semua" :showClear="true" class="w-full" />
+        </Column>
+
+        <Column header="Dipakai">
+          <template #body="{ data }">{{ templateMetric(data.id)?.invitationCount ?? '—' }}</template>
+        </Column>
+        <Column header="Terbit saat ini">
+          <template #body="{ data }">{{ templateMetric(data.id)?.publishedCount ?? '—' }}</template>
+        </Column>
+        <Column header="Transaksi paid">
+          <template #body="{ data }">{{ templateMetric(data.id)?.paidCount ?? '—' }}</template>
+        </Column>
+        <Column header="Gratis">
+          <template #body="{ data }">{{ templateMetric(data.id)?.freeCount ?? '—' }}</template>
+        </Column>
+        <Column header="Omzet tercatat">
+          <template #body="{ data }">{{ formatRupiah(templateMetric(data.id)?.grossAmount) }}</template>
+        </Column>
+        <Column header="Kelengkapan metadata" style="min-width: 10rem">
+          <template #body="{ data }">
+            <span class="text-xs" :class="templateCompleteness(data).ok ? 'text-emerald-700' : 'text-amber-700'">
+              {{ templateCompleteness(data).label }}
+            </span>
           </template>
         </Column>
 
@@ -119,6 +154,9 @@
           </template>
         </Column>
       </DataTable>
+      <p class="px-3 pb-3 text-xs text-slate-500">
+        Periode {{ metricPeriodLabel }} · paid = transaksi sukses, bernilai positif, dan tersettlement. “Terbit saat ini” adalah status sekarang pada undangan dalam periode, bukan transaksi.
+      </p>
     </div>
 
     <Transition name="fade">
@@ -179,10 +217,11 @@
               </select>
             </div>
             <div>
-              <label class="text-sm font-medium text-slate-600">Harga (Rp)</label>
+              <label class="text-sm font-medium text-slate-600">Harga lama · metadata saja (Rp)</label>
               <input v-model="form.price" type="number" min="0"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required />
+              <p class="mt-1 text-xs text-slate-500">Nilai ini tidak mengubah tagihan. Checkout memakai harga paket undangan.</p>
             </div>
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Preview URL (Opsional)</label>
@@ -406,6 +445,10 @@
                   </div>
                 </div>
               </div>
+              <p class="mt-2 text-[10px] text-slate-500">Pemeriksaan dasar rasio warna terhadap teks hitam/putih; cocokkan kembali dengan konteks sebenarnya pada renderer. Ini screening, bukan audit visual.</p>
+              <div class="mt-1 grid grid-cols-1 gap-1 text-[10px] text-slate-600 sm:grid-cols-3">
+                <span v-for="item in paletteContrastSummary" :key="item.label">{{ item.label }}: hitam {{ item.black }}:1 · putih {{ item.white }}:1</span>
+              </div>
             </div>
 
             <!-- Section Options UI -->
@@ -418,7 +461,10 @@
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
 
-                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
+                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">
+                    {{ section.label }}
+                    <small class="block font-normal text-slate-500">dipakai {{ section.templateUseCount ?? 0 }} template · {{ section.enabledTemplateUseCount ?? 0 }} aktif</small>
+                  </span>
 
                   <div class="flex items-center gap-2 ml-auto">
                     <span class="text-[10px] uppercase text-slate-500 font-bold">Urutan:</span>
@@ -677,11 +723,10 @@ import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import Tag from 'primevue/tag'
-import { FilterMatchMode } from '@primevue/core/api'
 import slugify from 'slugify'
 import {
   fetchAdminTemplates,
+  fetchAdminTemplateMetrics,
   createAdminTemplate,
   updateAdminTemplate,
   deleteAdminTemplate,
@@ -742,12 +787,20 @@ onClickOutside(audioDropdownRef, () => {
 const total = ref(0)
 const sortBy = ref('id')
 const sortOrder = ref('DESC')
-const filters = ref({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  slug: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  category: { value: null, matchMode: FilterMatchMode.EQUALS },
-  isActive: { value: null, matchMode: FilterMatchMode.EQUALS }
-})
+const currentPage = ref(1)
+const pageSize = ref(20)
+const searchTerm = ref('')
+const categoryFilter = ref(null)
+const activeFilter = ref('')
+const metricsDays = ref(30)
+const periodOptions = [
+  { label: '7 hari', value: 7 },
+  { label: '30 hari', value: 30 },
+  { label: '90 hari', value: 90 },
+]
+const templateMetrics = ref(new Map())
+const metricPeriodLabel = ref('')
+const metricsError = ref('')
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
@@ -771,6 +824,31 @@ const customPalette = reactive({
   secondary: '#64748B',
   accent: '#38BDF8'
 })
+
+function colorLuminance(color) {
+  const match = /^#?([a-f\d]{3}|[a-f\d]{6})$/i.exec(String(color || '').trim())
+  if (!match) return null
+  let hex = match[1]
+  if (hex.length === 3) hex = hex.split('').map((char) => char + char).join('')
+  const channels = [0, 2, 4].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255)
+  const linear = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+}
+
+function contrastRatio(foreground, background) {
+  const foregroundLuminance = colorLuminance(foreground)
+  const backgroundLuminance = colorLuminance(background)
+  if (foregroundLuminance === null || backgroundLuminance === null) return '—'
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance)
+  const darker = Math.min(foregroundLuminance, backgroundLuminance)
+  return ((lighter + 0.05) / (darker + 0.05)).toFixed(2)
+}
+
+const paletteContrastSummary = computed(() => [
+  { label: 'Primary', black: contrastRatio('#000000', customPalette.primary), white: contrastRatio('#ffffff', customPalette.primary) },
+  { label: 'Secondary', black: contrastRatio('#000000', customPalette.secondary), white: contrastRatio('#ffffff', customPalette.secondary) },
+  { label: 'Accent', black: contrastRatio('#000000', customPalette.accent), white: contrastRatio('#ffffff', customPalette.accent) },
+])
 
 function emptySampleContent() {
   return {
@@ -839,13 +917,25 @@ watch(() => form.slug, (newVal) => {
 const loadError = ref('')
 const lastLoadedAt = ref(null)
 
-async function loadData() {
+async function loadData(options = {}) {
+  if (options.page) currentPage.value = options.page
+  if (options.rows) pageSize.value = options.rows
   loading.value = true
   loadError.value = ''
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
       fetchAdminTemplates({
-        limit: 1000 // Fetch all for client-side handling
+        page: currentPage.value,
+        limit: pageSize.value,
+        q: searchTerm.value.trim(),
+        sortBy: sortBy.value,
+        sortOrder: sortOrder.value,
+        filters: JSON.stringify({
+          ...(categoryFilter.value ? { category: categoryFilter.value } : {}),
+          ...(activeFilter.value !== '' && activeFilter.value !== null
+            ? { isActive: String(activeFilter.value) }
+            : {}),
+        }),
       }),
       fetchAdminCategories({ limit: 100 }),
       fetchAdminSections({ limit: 100 }),
@@ -853,7 +943,7 @@ async function loadData() {
     ])
 
     templates.value = tmplRes.data || tmplRes
-    total.value = tmplRes.total || (tmplRes.data ? tmplRes.data.length : tmplRes.length)
+    total.value = Number(tmplRes.total ?? tmplRes.data?.length ?? tmplRes.length ?? 0)
 
     categories.value = catRes.data || catRes
     availableSections.value = sectRes.data || sectRes
@@ -864,6 +954,53 @@ async function loadData() {
   } finally {
     loading.value = false
   }
+}
+
+async function loadMetrics() {
+  metricsError.value = ''
+  try {
+    const result = await fetchAdminTemplateMetrics({ days: metricsDays.value })
+    templateMetrics.value = new Map((result.data || []).map((item) => [Number(item.templateId), item]))
+    metricPeriodLabel.value = `${result.period.startDate} s/d ${result.period.endDate} (${result.period.timezone})`
+  } catch (error) {
+    templateMetrics.value = new Map()
+    metricsError.value = error.message || 'Metrik belum dapat dimuat'
+  }
+}
+
+function handlePage(event) {
+  loadData({ page: event.page + 1, rows: event.rows })
+}
+
+function handleSort(event) {
+  sortBy.value = event.sortField || 'id'
+  sortOrder.value = event.sortOrder === 1 ? 'ASC' : 'DESC'
+  loadData({ page: 1 })
+}
+
+function resetSearch() {
+  searchTerm.value = ''
+  categoryFilter.value = null
+  activeFilter.value = ''
+  loadData({ page: 1 })
+}
+
+function templateMetric(id) {
+  return templateMetrics.value.get(Number(id))
+}
+
+function formatRupiah(amount) {
+  if (amount === null || amount === undefined) return '—'
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount)
+}
+
+function templateCompleteness(template) {
+  const hasPreview = Boolean(template.previewUrl)
+  const hasThumbnail = Boolean(template.thumbnailUrl || resolveTemplateThumbnail(template))
+  const renderer = template.componentKey || template.slug
+  const hasRenderer = renderer === DYNAMIC_THEME_KEY || existingRendererKeys.value.includes(renderer)
+  const missing = [!hasPreview && 'demo', !hasThumbnail && 'thumbnail', !hasRenderer && 'renderer'].filter(Boolean)
+  return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Metadata lengkap' }
 }
 
 function getCategoryColor(categoryName) {
@@ -1255,7 +1392,8 @@ async function submitForm() {
       toast.success('Template dibuat')
     }
     showForm.value = false
-    loadData()
+    loadData({ page: 1 })
+    loadMetrics()
   } catch {
     toast.error('Gagal menyimpan template')
   } finally {
@@ -1278,7 +1416,8 @@ async function confirmDelete(template) {
   try {
     await deleteAdminTemplate(template.id)
     toast.success('Template dihapus')
-    loadData()
+    loadData({ page: 1 })
+    loadMetrics()
   } catch {
     toast.error('Gagal menghapus template')
   }
@@ -1290,6 +1429,7 @@ const handleKeydown = (e) => {
 
 onMounted(() => {
   loadData()
+  loadMetrics()
   window.addEventListener('keydown', handleKeydown)
 })
 

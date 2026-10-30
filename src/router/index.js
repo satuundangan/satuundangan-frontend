@@ -167,7 +167,12 @@ const router = createRouter({
       component: DashboardView,
       meta: { requiresAuth: true, requiresApproval: true },
     },
-    { path: '/invitations', name: 'Invitations', component: InvitationsView, meta: { requiresAuth: true, requiresApproval: true } },
+    {
+      path: '/invitations',
+      name: 'Invitations',
+      component: InvitationsView,
+      meta: { requiresAuth: true, requiresApproval: true },
+    },
     {
       path: '/planner',
       name: 'WeddingPlanner',
@@ -187,9 +192,24 @@ const router = createRouter({
       component: () => import('@/views/tools/LoveCalculatorView.vue'),
       meta: { title: 'Kalkulator Kecocokan Cinta & Weton Jodoh Jawa Modern' },
     },
-    { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
-    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
-    { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },
+    {
+      path: '/templates',
+      name: 'Templates',
+      component: TemplatesView,
+      meta: { title: 'Katalog Template' },
+    },
+    {
+      path: '/guestbook',
+      name: 'Guestbook',
+      component: GuestbookView,
+      meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true },
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: SettingsView,
+      meta: { requiresAuth: true, requiresApproval: true },
+    },
     { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
     {
       path: '/admin/totp/setup',
@@ -276,14 +296,26 @@ const router = createRouter({
     {
       path: '/admin/affiliate/resellers',
       name: 'admin-resellers',
-      redirect: '/admin',
+      component: () => import('@/views/admin/AdminResellers.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Manajemen Reseller' },
     },
     {
       path: '/admin/affiliate/withdrawals',
       name: 'admin-withdrawals',
-      redirect: '/admin',
+      component: () => import('@/views/admin/AdminWithdrawals.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Antrean Penarikan' },
+    },
+    {
+      path: '/admin/affiliate/commissions',
+      name: 'admin-affiliate-commissions',
+      component: () => import('@/views/admin/AdminAffiliateCommissions.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Ledger Komisi Reseller' },
+    },
+    {
+      path: '/admin/affiliate/operations',
+      name: 'admin-affiliate-operations',
+      component: () => import('@/views/admin/AdminAffiliateOperations.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Aturan & Scheduler Afiliasi' },
     },
     {
       path: '/admin/articles',
@@ -467,7 +499,7 @@ router.afterEach((to, from, failure) => {
 // Handle stale asset/chunk errors after new deployments
 router.onError((error) => {
   trackError(error, { source: 'router.onError' })
-  const isChunkError = 
+  const isChunkError =
     error.message?.includes('Failed to fetch dynamically imported module') ||
     error.message?.includes('Importing a module script failed') ||
     error.message?.includes('Expected a JavaScript') ||

@@ -12,23 +12,29 @@ function withParams(path, params = {}) {
 
 // Users
 export const fetchAdminUsers = (params) => apiFetch(withParams('/admin/users', params))
+export const fetchAdminUserStats = () => apiFetch('/admin/users/stats')
+export const fetchAdminCustomerDetail = (id) =>
+  apiFetch(`/admin/users/${encodeURIComponent(id)}/customer`)
 export const createAdminUser = (payload) =>
   apiFetch('/admin/users', {
     method: 'POST',
     body: JSON.stringify(payload),
   })
-export const updateAdminUser = (id, payload) =>
+export const updateAdminUser = (id, payload, reason) =>
   apiFetch(`/admin/users/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(payload),
+    headers: reason ? { 'x-admin-reason': reason } : undefined,
   })
-export const deleteAdminUser = (id) =>
+export const deleteAdminUser = (id, reason) =>
   apiFetch(`/admin/users/${id}`, {
     method: 'DELETE',
+    headers: reason ? { 'x-admin-reason': reason } : undefined,
   })
-export const verifyAdminUserEmail = (id) =>
+export const verifyAdminUserEmail = (id, reason) =>
   apiFetch(`/admin/users/${id}/verify-email`, {
     method: 'POST',
+    headers: reason ? { 'x-admin-reason': reason } : undefined,
   })
 
 // Invitations
@@ -69,6 +75,8 @@ export const fetchAdminGuests = (params) => apiFetch(withParams('/admin/guests',
 // Template Designs
 export const fetchAdminTemplates = (params) =>
   apiFetch(withParams('/admin/template-designs', params))
+export const fetchAdminTemplateMetrics = (params) =>
+  apiFetch(withParams('/admin/template-designs/metrics', params))
 export const createAdminTemplate = (payload) =>
   apiFetch('/admin/template-designs', {
     method: 'POST',
