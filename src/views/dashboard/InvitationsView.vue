@@ -37,7 +37,14 @@
                   class="px-3 py-1.5 rounded-lg transition-all"
                   :class="activeFilter === 'published' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
                 >
-                  Published
+                  Aktif
+                </button>
+                <button 
+                  @click="activeFilter = 'pending'" 
+                  class="px-3 py-1.5 rounded-lg transition-all"
+                  :class="activeFilter === 'pending' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+                >
+                  Menunggu Bayar
                 </button>
                 <button 
                   @click="activeFilter = 'draft'" 
@@ -159,8 +166,11 @@ const filteredInvitations = computed(() => {
   if (activeFilter.value === 'published') {
     return invitations.value.filter(inv => inv.isPublished)
   }
+  if (activeFilter.value === 'pending') {
+    return invitations.value.filter(inv => !inv.isPublished && (inv.paymentStatus === 'pending' || inv.latestPaymentStatus === 'pending' || inv.latestOrderId))
+  }
   if (activeFilter.value === 'draft') {
-    return invitations.value.filter(inv => !inv.isPublished)
+    return invitations.value.filter(inv => !inv.isPublished && inv.paymentStatus !== 'pending' && inv.latestPaymentStatus !== 'pending')
   }
   return invitations.value
 })
