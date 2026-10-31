@@ -56,4 +56,24 @@ describe('createGuestMessage', () => {
       guestSlug: 'private-token',
     })
   })
+
+  it('preserves the current DTO fields and an explicitly linked guest token', async () => {
+    await createGuestMessage({
+      invitationId: 10,
+      guestName: 'Tamu Terhubung',
+      message: 'Saya hadir bersama keluarga.',
+      rsvpStatus: 'hadir',
+      totalGuests: 3,
+      guestSlug: 'private-token',
+    })
+
+    expect(JSON.parse(apiFetch.mock.calls[0][1].body)).toEqual({
+      invitationId: 10,
+      guestName: 'Tamu Terhubung',
+      message: 'Saya hadir bersama keluarga.',
+      rsvpStatus: 'hadir',
+      totalGuests: 3,
+      guestSlug: 'private-token',
+    })
+  })
 })
