@@ -150,6 +150,7 @@ import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import InvitationsTable from "@/components/dashboard/InvitationsTable.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations, deleteInvitation } from "@/api/invitation"
+import { getInvitationPreviewUrl } from "@/utils/invitationUrls"
 import { useToast } from "vue-toastification"
 import { useRouter } from "vue-router"
 import Swal from "sweetalert2"
@@ -196,8 +197,8 @@ function handleEdit(id) {
   router.push(`/invitation/${id}/edit`)
 }
 
-function handlePreview(slug) {
-  window.open(`/${slug}?preview=true`, "_blank")
+function handlePreview(invitation) {
+  window.open(getInvitationPreviewUrl(invitation), "_blank")
 }
 
 async function handleDelete(id) {

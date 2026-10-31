@@ -22,8 +22,8 @@
             </td>
             <td class="px-6 py-4">
               <div class="flex items-center gap-1.5 text-blue-600 font-bold">
-                <span>{{ invitationBaseUrl }}/inv/{{ invite.slug }}</span>
-                <button @click="copyLink(invite.slug)" class="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Salin Link">
+                <span>{{ getInvitationPublicUrl(invite) }}</span>
+                <button @click="copyLink(invite)" class="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Salin Link">
                   <i class="fa-solid fa-copy text-xs"></i>
                 </button>
               </div>
@@ -76,7 +76,7 @@
                 <i class="fa-solid fa-receipt"></i>
               </router-link>
 
-              <button @click="$emit('preview', invite.slug)" class="w-8 h-8 flex items-center justify-center text-blue-600 hover:bg-blue-50 rounded-xl transition-colors" title="Preview Live">
+              <button @click="$emit('preview', invite)" class="w-8 h-8 flex items-center justify-center text-blue-600 hover:bg-blue-50 rounded-xl transition-colors" title="Preview Live">
                 <i class="fa-solid fa-eye"></i>
               </button>
               <button @click="$emit('edit', invite.id)" class="w-8 h-8 flex items-center justify-center text-amber-600 hover:bg-amber-50 rounded-xl transition-colors" title="Edit Studio">
@@ -110,7 +110,7 @@
         <div class="grid grid-cols-2 gap-3 py-2.5 border-y border-slate-100 text-xs">
           <div>
             <div class="text-[9px] text-slate-400 uppercase font-black mb-0.5">Slug</div>
-            <div class="text-blue-600 font-bold truncate">/{{ invite.slug }}</div>
+            <div class="text-blue-600 font-bold truncate">{{ getInvitationPublicUrl(invite) }}</div>
           </div>
           <div>
             <div class="text-[9px] text-slate-400 uppercase font-black mb-0.5">
@@ -152,7 +152,7 @@
               <i class="fa-solid fa-receipt text-xs"></i>
             </router-link>
 
-            <button @click="$emit('preview', invite.slug)" class="w-9 h-9 flex items-center justify-center text-blue-600 bg-blue-50 rounded-xl transition-all" title="Preview">
+            <button @click="$emit('preview', invite)" class="w-9 h-9 flex items-center justify-center text-blue-600 bg-blue-50 rounded-xl transition-all" title="Preview">
               <i class="fa-solid fa-eye text-xs"></i>
             </button>
             <button @click="$emit('edit', invite.id)" class="w-9 h-9 flex items-center justify-center text-amber-600 bg-amber-50 rounded-xl transition-all" title="Edit">
@@ -170,9 +170,9 @@
 
 <script setup>
 import { useToast } from 'vue-toastification'
+import { getInvitationPublicUrl } from '@/utils/invitationUrls'
 
 const toast = useToast()
-const invitationBaseUrl = window.location.origin
 
 defineProps({
   invitations: { type: Array, required: true },
@@ -180,8 +180,8 @@ defineProps({
 
 defineEmits(['edit', 'delete', 'preview'])
 
-function copyLink(slug) {
-  const fullUrl = `${window.location.origin}/inv/${slug}`
+function copyLink(invitation) {
+  const fullUrl = getInvitationPublicUrl(invitation)
   navigator.clipboard.writeText(fullUrl)
   toast.success('Link undangan berhasil disalin!')
 }
