@@ -53,6 +53,29 @@
             </p>
           </div>
         </div>
+        <div class="mt-4 rounded-xl border border-slate-200 p-3">
+          <p class="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            Screening kombinasi pada latar tema default
+          </p>
+          <div
+            class="space-y-2 rounded-lg border border-slate-200 p-3"
+            :style="{ backgroundColor: sampleBackground }"
+          >
+            <div v-for="color in paletteColors(palette)" :key="`sample-${color.label}`">
+              <p class="text-sm font-semibold" :style="sampleTextStyle(color.value)">
+                Contoh teks {{ color.label.toLowerCase() }}
+              </p>
+              <p class="text-[10px] text-slate-600">
+                {{ color.label }} {{ color.value || '—' }} di atas latar {{ sampleBackground }} ·
+                rasio {{ contrastRatio(color.value, sampleBackground) }}
+              </p>
+            </div>
+          </div>
+          <p class="mt-2 text-[10px] leading-relaxed text-slate-500">
+            Latar contoh berasal dari warna background tema default. Rasio ini hanya screening awal;
+            hasil di renderer dan di atas foto undangan dapat berbeda.
+          </p>
+        </div>
         <button
           type="button"
           class="mt-4 w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
@@ -102,6 +125,7 @@ import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import { fetchAdminPaletteColors, updateAdminPaletteColor } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
+import { THEME_DEFAULTS, hexToRgb, relativeLuminance } from '@/utils/themeConfig.js'
 
 const toast = useToast()
 const palettes = ref([])
@@ -113,6 +137,24 @@ const loading = ref(false)
 const loadError = ref('')
 const lastLoadedAt = ref(null)
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
+const sampleBackground = THEME_DEFAULTS.colors.background
+
+function contrastRatio(foregroundHex, backgroundHex) {
+  const foreground = hexToRgb(foregroundHex)
+  const background = hexToRgb(backgroundHex)
+  if (!foreground || !background) return 'tidak tersedia (warna tidak valid)'
+
+  const foregroundLuminance = relativeLuminance(foreground)
+  const backgroundLuminance = relativeLuminance(background)
+  const ratio =
+    (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+    (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+  return `${ratio.toFixed(2)}:1`
+}
+
+function sampleTextStyle(colorHex) {
+  return hexToRgb(colorHex) ? { color: colorHex } : { color: '#64748b' }
+}
 
 function paletteColors(palette) {
   return [
