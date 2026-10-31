@@ -67,6 +67,29 @@ export const updateAdminAudioMetadata = (id, payload) =>
     method: 'PATCH',
     body: JSON.stringify(payload),
   })
+export const replaceAdminAudioFile = async (id, file, payload = {}) => {
+  const token = localStorage.getItem('token')
+  const formData = new FormData()
+  formData.append('file', file)
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, value)
+    }
+  })
+
+  const res = await fetch(`${BASE_URL}/admin/audio/${encodeURIComponent(id)}/replace`, {
+    method: 'PATCH',
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: formData,
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: 'Gagal mengganti file audio' }))
+    throw new Error(error.message || 'Gagal mengganti file audio')
+  }
+  return res.json()
+}
 
 // Bank/Payment Methods
 export const fetchAdminPaletteColors = (params) =>
