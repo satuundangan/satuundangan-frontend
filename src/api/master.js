@@ -58,6 +58,9 @@ export const deleteAdminAudio = (id) =>
   })
 
 // Bank/Payment Methods
+export const fetchAdminPaletteColors = (params) =>
+  apiFetch(withParams('/admin/palette-colors', params))
+
 export const fetchAdminBanks = (params) => apiFetch(withParams('/admin/banks', params))
 export const createAdminBank = (payload) =>
   apiFetch('/admin/banks', {

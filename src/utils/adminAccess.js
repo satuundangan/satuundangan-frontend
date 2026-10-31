@@ -2,7 +2,7 @@
 // The server enforces every rule; this file never grants anything.
 const ALWAYS_OPEN = new Set(['security', 'totp'])
 const SUPERADMIN_ONLY = new Set(['social-studio', 'system', 'logs'])
-const PATH_TO_RESOURCE = { templates: 'template-designs', system: 'health' }
+const PATH_TO_RESOURCE = { templates: 'template-designs', palettes: 'palette-colors', system: 'health' }
 
 export function adminResourceFromPath(path = '') {
   if (path === '/admin' || path === '/admin/') return 'dashboard'
