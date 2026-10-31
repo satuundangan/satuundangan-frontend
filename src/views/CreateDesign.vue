@@ -332,6 +332,7 @@ function goToForm() {
   localStorage.setItem('selectedSections', JSON.stringify(selectedSections.value))
   
   analytics.trackAction('Template Personalization - Continue', {
+    template_id: selectedTemplate.value.id ?? selectedTemplate.value.templateDesignId,
     template_name: selectedTemplate.value.name,
     selected_sections: selectedSections.value,
     sections_count: selectedSections.value.length

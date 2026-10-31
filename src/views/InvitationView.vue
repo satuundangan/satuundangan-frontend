@@ -10,6 +10,7 @@ import { demoData } from '@/api/demoData'
 import { getDemoPreset } from '@/api/templateDemoPresets'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
+import { analytics } from '@/api/analytics'
 import { featuresFor } from '@/config/packageFeatures'
 import { onMounted, ref, computed, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -323,6 +324,7 @@ onMounted(async () => {
       // Fetch extra template design details (music, seo, custom sample content) asynchronously in background
       getTemplateDesignBySlug(templateSlug).then((tmpl) => {
         if (!tmpl || isLiveSyncActive.value) return
+        analytics.trackAction('Template - Previewed', { template_id: tmpl.id })
         const sampleContent = typeof tmpl.sampleContent === 'object' && tmpl.sampleContent ? tmpl.sampleContent : {}
         applyDemoSeo(tmpl)
 
