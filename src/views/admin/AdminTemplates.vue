@@ -33,7 +33,7 @@
       </div>
       <p class="text-xs leading-relaxed text-slate-600">
         Harga template adalah metadata lama dan tidak menentukan tagihan. Tagihan checkout mengikuti aturan paket undangan (Basic, Premium, Eksklusif) yang disediakan oleh endpoint harga paket.
-        Penjualan memakai pembayaran sukses yang tersettlement; atribusi mengikuti template saat ini pada undangan, karena snapshot template saat transaksi belum tersedia.
+        Pembayaran baru diatribusikan ke template yang dipilih saat checkout. Pembayaran lama tanpa snapshot memakai template undangan saat ini; funnel, cohort, dan perangkat belum dilacak di metrik ini.
       </p>
       <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
     </div>
