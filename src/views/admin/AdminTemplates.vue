@@ -33,7 +33,12 @@
       </div>
       <p class="text-xs leading-relaxed text-slate-600">
         Harga template adalah metadata lama dan tidak menentukan tagihan. Tagihan checkout mengikuti aturan paket undangan (Basic, Premium, Eksklusif) yang disediakan oleh endpoint harga paket.
-        Pembayaran baru diatribusikan ke template yang dipilih saat checkout. Pembayaran lama tanpa snapshot memakai template undangan saat ini; funnel, cohort, dan perangkat belum dilacak di metrik ini.
+        Pembayaran baru diatribusikan ke template yang dipilih saat checkout. Pembayaran lama tanpa snapshot tidak ditebak dari template undangan saat ini; funnel, cohort, dan perangkat belum dilacak di metrik ini.
+      </p>
+      <p v-if="unattributedMetrics" class="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-900" data-testid="unattributed-template-payments">
+        Pembayaran undangan legacy tanpa snapshot template: {{ number(unattributedMetrics.paidCount) }} transaksi paid,
+        {{ number(unattributedMetrics.freeCount) }} aktivasi gratis, omzet paid {{ formatRupiah(unattributedMetrics.grossAmount) }}.
+        Nilai ini tidak dibagikan ke template tertentu.
       </p>
       <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
     </div>
@@ -897,6 +902,7 @@ const periodOptions = [
   { label: '90 hari', value: 90 },
 ]
 const templateMetrics = ref(new Map())
+const unattributedMetrics = ref(null)
 const metricPeriodLabel = ref('')
 const metricsError = ref('')
 const loading = ref(false)
@@ -1112,9 +1118,11 @@ async function loadMetrics() {
   try {
     const result = await fetchAdminTemplateMetrics({ days: metricsDays.value })
     templateMetrics.value = new Map((result.data || []).map((item) => [Number(item.templateId), item]))
+    unattributedMetrics.value = result.unattributed || { paidCount: 0, freeCount: 0, grossAmount: 0 }
     metricPeriodLabel.value = `${result.period.startDate} s/d ${result.period.endDate} (${result.period.timezone})`
   } catch (error) {
     templateMetrics.value = new Map()
+    unattributedMetrics.value = null
     metricsError.value = error.message || 'Metrik belum dapat dimuat'
   }
 }
@@ -1150,6 +1158,10 @@ function handleCategoryFilter() {
 
 function templateMetric(id) {
   return templateMetrics.value.get(Number(id))
+}
+
+function number(value) {
+  return new Intl.NumberFormat('id-ID').format(value ?? 0)
 }
 
 function formatRupiah(amount) {
