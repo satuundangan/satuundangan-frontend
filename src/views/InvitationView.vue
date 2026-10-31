@@ -63,6 +63,29 @@ const ALL_SECTION_KEYS = [
 
 let templateResolveSeq = 0
 
+function focusDemoSectionFromHash() {
+  if (!isDemoMode.value || !window.location.hash) return
+
+  let targetId
+  try {
+    targetId = decodeURIComponent(window.location.hash.slice(1))
+  } catch {
+    return
+  }
+
+  let attempts = 0
+  const focusWhenReady = () => {
+    const target = document.getElementById(targetId)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    if (attempts++ < 300) window.requestAnimationFrame(focusWhenReady)
+  }
+
+  window.requestAnimationFrame(focusWhenReady)
+}
+
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
   // Check if inside iframe or forced via query param
@@ -155,6 +178,7 @@ onMounted(async () => {
       loader: templateLoaders[key],
       errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
     }))
+    focusDemoSectionFromHash()
   }, { immediate: true })
 
   // Tell the parent window (CreateForm) that we are ready to receive data

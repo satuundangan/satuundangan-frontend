@@ -41,9 +41,12 @@
           rel="noopener noreferrer"
           class="text-xs font-semibold text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900"
         >
-          Lihat {{ item.samplePreviewTemplate.name }}
+          Demo {{ item.samplePreviewTemplate.name }}
         </a>
-        <span v-else class="text-xs text-slate-500">Belum ada contoh preview</span>
+        <span v-else class="text-xs text-slate-500">Preview per section belum tersedia</span>
+        <span v-if="samplePreviewHref(item)" class="mt-1 block text-[10px] text-slate-500">
+          Data contoh, tanpa mengubah undangan pelanggan
+        </span>
       </template>
       <template #cell(rendererCoverage)="{ item }">
         <div v-if="item.rendererCoverage?.length" class="space-y-2">
@@ -124,6 +127,7 @@ import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminSections, createAdminSection, updateAdminSection, deleteAdminSection } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
+import { sampleSectionPreviewHref } from './sectionPreview'
 import { templateComponentKeys, DYNAMIC_THEME_KEY } from '@/utils/templateRegistry'
 
 const toast = useToast()
@@ -157,14 +161,7 @@ function resetSearch() {
 }
 
 function samplePreviewHref(item) {
-  const previewUrl = item.samplePreviewTemplate?.previewUrl
-  if (!previewUrl) return null
-  try {
-    const url = new URL(previewUrl, window.location.origin)
-    return ['http:', 'https:'].includes(url.protocol) ? url.toString() : null
-  } catch {
-    return null
-  }
+  return sampleSectionPreviewHref(item)
 }
 
 function rendererIsRegistered(renderer) {
