@@ -625,7 +625,16 @@
                         {{ inv.title || `Undangan #${inv.id}` }}
                       </p>
                       <p class="mt-1 text-[10px] text-slate-500">
-                        {{ formatDate(inv.createdAt) }} · waktu lama belum tervalidasi
+                        Dibuat {{ formatDate(inv.createdAt) }} · waktu lama belum tervalidasi
+                      </p>
+                      <p
+                        v-if="inv.publishedAt || inv.isPublished"
+                        class="mt-1 text-[10px] text-slate-500"
+                      >
+                        Pertama terbit:
+                        {{
+                          inv.publishedAt ? formatDate(inv.publishedAt) : 'waktu belum diketahui'
+                        }}
                       </p>
                     </div>
                     <span
