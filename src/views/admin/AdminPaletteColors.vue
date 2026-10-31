@@ -53,6 +53,13 @@
             </p>
           </div>
         </div>
+        <button
+          type="button"
+          class="mt-4 w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50"
+          @click="togglePaletteActive(palette)"
+        >
+          {{ palette.is_active ? 'Arsipkan palet' : 'Aktifkan palet' }}
+        </button>
       </article>
     </div>
 
@@ -92,8 +99,11 @@ import { computed, onMounted, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
-import { fetchAdminPaletteColors } from '@/api/master.js'
+import { fetchAdminPaletteColors, updateAdminPaletteColor } from '@/api/master.js'
+import { useToast } from 'vue-toastification'
+import Swal from 'sweetalert2'
 
+const toast = useToast()
 const palettes = ref([])
 const search = ref('')
 const page = ref(1)
@@ -132,6 +142,30 @@ async function loadPalettes() {
 function changePage(nextPage) {
   page.value = nextPage
   loadPalettes()
+}
+
+async function togglePaletteActive(palette) {
+  const nextIsActive = !palette.is_active
+  const result = await Swal.fire({
+    title: nextIsActive ? 'Aktifkan palet?' : 'Arsipkan palet?',
+    text: nextIsActive
+      ? 'Palet akan tersedia kembali untuk konfigurasi template.'
+      : `${palette.templateUseCount ?? 0} template menautkan palet ini. Arsip tidak menghapus template atau snapshot warna yang ada.`,
+    icon: nextIsActive ? 'question' : 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: nextIsActive ? 'Aktifkan' : 'Arsipkan',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await updateAdminPaletteColor(palette.id, { is_active: nextIsActive })
+    toast.success(nextIsActive ? 'Palet diaktifkan' : 'Palet diarsipkan')
+    await loadPalettes()
+  } catch (error) {
+    toast.error(error.message || 'Gagal mengubah status palet')
+  }
 }
 
 function handleSearch(value) {

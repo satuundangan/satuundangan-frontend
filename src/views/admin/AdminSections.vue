@@ -37,6 +37,8 @@
         <div class="flex justify-end gap-2 text-xs font-medium">
           <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
             @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+            @click="toggleSectionActive(item)">{{ item.is_active ? 'Arsipkan' : 'Aktifkan' }}</button>
           <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
             @click="confirmDelete(item)">Hapus</button>
         </div>
@@ -224,6 +226,30 @@ async function confirmDelete(item) {
     loadSections()
   } catch (error) {
     toast.error(error.message || 'Gagal menghapus')
+  }
+}
+
+async function toggleSectionActive(item) {
+  const nextIsActive = !item.is_active
+  const result = await Swal.fire({
+    title: nextIsActive ? 'Aktifkan section?' : 'Arsipkan section?',
+    text: nextIsActive
+      ? 'Section akan tersedia untuk konfigurasi template baru.'
+      : `${item.templateUseCount ?? 0} template mereferensikan section ini; ${item.enabledTemplateUseCount ?? 0} mengaktifkannya. Snapshot template yang tersimpan tidak diubah.`,
+    icon: nextIsActive ? 'question' : 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: nextIsActive ? 'Aktifkan' : 'Arsipkan',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await updateAdminSection(item.id, { is_active: nextIsActive })
+    toast.success(nextIsActive ? 'Section diaktifkan' : 'Section diarsipkan')
+    await loadSections()
+  } catch (error) {
+    toast.error(error.message || 'Gagal mengubah status section')
   }
 }
 
