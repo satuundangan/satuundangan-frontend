@@ -54,10 +54,26 @@
             <p class="font-mono text-[11px] font-semibold" :class="rendererIsRegistered(coverage.renderer) ? 'text-emerald-700' : 'text-rose-700'">
               {{ coverage.renderer }} · {{ rendererIsRegistered(coverage.renderer) ? 'terdaftar' : 'tidak ditemukan' }}
             </p>
-            <p class="text-[10px] text-slate-500">{{ coverage.templateCount }} template · {{ coverage.publishedTemplateCount }} terbit · dukungan paket belum dipetakan</p>
+            <p class="text-[10px] text-slate-500">{{ coverage.templateCount }} template · {{ coverage.publishedTemplateCount }} terbit</p>
           </div>
         </div>
         <span v-else class="text-xs text-slate-500">Belum ada section aktif pada template</span>
+        <div v-if="packageLoadError" class="mt-2 text-[10px] text-amber-700">
+          <span>Aturan tier tidak termuat: {{ packageLoadError }}</span>
+          <button class="ml-1 underline" @click="loadPackageTiers">Coba lagi</button>
+        </div>
+        <p v-else-if="packagesLoading" class="mt-2 text-[10px] text-slate-500">Memuat aturan tier…</p>
+        <div v-else-if="packages.length" class="mt-2 space-y-1">
+          <p class="text-[10px] font-semibold text-slate-600">Paket saat ini</p>
+          <div
+            v-for="pkg in packages"
+            :key="pkg.id"
+            class="grid grid-cols-[4.5rem_1fr] gap-1 text-[10px]"
+          >
+            <span class="font-medium text-slate-600">{{ pkg.label }}</span>
+            <span class="text-slate-500">{{ packageSupportText(item, pkg) }}</span>
+          </div>
+        </div>
       </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
@@ -125,6 +141,7 @@ import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminSections, createAdminSection, updateAdminSection, deleteAdminSection } from '@/api/master.js'
+import { getPackages } from '@/api/payment'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 import { sampleSectionPreviewHref } from './sectionPreview'
@@ -137,6 +154,9 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
+const packages = ref([])
+const packageLoadError = ref('')
+const packagesLoading = ref(false)
 
 const headers = [
   { label: 'Label (Nama Fitur)', key: 'label' },
@@ -168,6 +188,18 @@ function rendererIsRegistered(renderer) {
   return renderer === DYNAMIC_THEME_KEY || templateComponentKeys.includes(renderer)
 }
 
+function packageSupportText(section, pkg) {
+  if (section.key?.trim().toLowerCase() === 'gallery') {
+    if (pkg.features?.gallery !== true) return 'Galeri tidak tersedia'
+    const limit = Number(pkg.features.galleryLimit)
+    return Number.isFinite(limit) && limit >= 0
+      ? `Galeri · maks. ${limit} foto`
+      : 'Galeri · batas tidak diketahui'
+  }
+
+  return 'Tidak dikunci tier; mengikuti renderer dan konfigurasi template'
+}
+
 async function loadSections() {
   loading.value = true
   loadError.value = ''
@@ -183,6 +215,21 @@ async function loadSections() {
     loadError.value = error.message || 'Gagal memuat data'
   } finally {
     loading.value = false
+  }
+}
+
+async function loadPackageTiers() {
+  packagesLoading.value = true
+  packageLoadError.value = ''
+  try {
+    const res = await getPackages()
+    if (!Array.isArray(res)) throw new Error('Format aturan tier tidak dikenali')
+    packages.value = res
+  } catch (error) {
+    packages.value = []
+    packageLoadError.value = error.message || 'Gagal memuat aturan tier'
+  } finally {
+    packagesLoading.value = false
   }
 }
 
@@ -293,6 +340,7 @@ async function toggleSectionActive(item) {
 
 onMounted(() => {
   loadSections()
+  loadPackageTiers()
 })
 </script>
 
