@@ -89,13 +89,21 @@
           <FunnelTable title="Semua undangan pada periode" :funnel="data.funnel.backend.all" />
         </div>
         <h3 class="mb-2 mt-6 text-sm font-bold">Hulu dari GA4 (event, tidak dijumlahkan dengan tahap backend)</h3>
+        <p class="mb-2 text-xs text-slate-500">{{ data.funnel.period.startDate }} – {{ data.funnel.period.endDate }} · Angka GA4 adalah agregat event dan pengguna, bukan urutan konversi per orang.</p>
         <p v-if="data.funnel.upstreamGa4.status === 'not_connected'" class="rounded-lg bg-slate-50 p-3 text-sm">GA4 belum tersambung; tahap hulu tidak tersedia.</p>
         <p v-else-if="data.funnel.upstreamGa4.status === 'error'" class="text-sm text-rose-700">{{ data.funnel.upstreamGa4.message }}</p>
-        <table v-else class="min-w-full text-left text-sm">
+        <p v-else-if="data.funnel.upstreamGa4.status === 'no_data'" class="rounded-lg bg-slate-50 p-3 text-sm" data-testid="ga4-funnel-empty">{{ data.funnel.upstreamGa4.emptyReason }}</p>
+        <template v-else>
+        <table class="min-w-full text-left text-sm">
           <caption class="sr-only">Event GA4 per tahap</caption>
           <thead class="text-xs text-slate-500"><tr><th scope="col" class="py-1">Tahap</th><th scope="col">Event</th><th scope="col">Users</th></tr></thead>
-          <tbody><tr v-for="step in data.funnel.upstreamGa4.steps" :key="step.event" class="border-t border-slate-100"><td class="py-1">{{ step.label }}</td><td>{{ number(step.events) }}</td><td>{{ number(step.users) }}</td></tr></tbody>
+          <tbody><tr v-for="step in data.funnel.upstreamGa4.steps" :key="step.event" class="border-t border-slate-100"><td class="py-1">{{ step.label }}</td><td>{{ gaNumber(step.events) }}</td><td>{{ gaNumber(step.users) }}</td></tr></tbody>
         </table>
+        <div class="mt-4 grid gap-4 xl:grid-cols-2">
+          <FunnelBreakdown title="Event menurut template" :groups="data.funnel.upstreamGa4.byTemplate" kind="template" />
+          <FunnelBreakdown title="Event menurut perangkat" :groups="data.funnel.upstreamGa4.byDevice" kind="device" />
+        </div>
+        </template>
         <ul class="mt-4 space-y-1 text-xs text-slate-500">
           <li v-for="(text, key) in data.funnel.definitions" :key="key"><strong>{{ key }}:</strong> {{ text }}</li>
         </ul>
@@ -346,7 +354,34 @@ const FunnelTable = defineComponent({
   },
 })
 
+const FunnelBreakdown = defineComponent({
+  props: { title: String, groups: { type: Array, default: () => [] }, kind: String },
+  setup(props) {
+    return () =>
+      h('div', { class: 'rounded-xl border border-slate-200 bg-white p-3', 'data-testid': `ga4-${props.kind}-breakdown` }, [
+        h('h4', { class: 'mb-2 text-sm font-semibold' }, props.title),
+        props.groups.length
+          ? h('div', { class: 'overflow-x-auto' }, [
+              h('table', { class: 'w-full text-left text-xs' }, [
+                h('caption', { class: 'sr-only' }, props.title),
+                h('thead', { class: 'text-slate-500' }, h('tr', ['Kelompok', 'Tahap', 'Event', 'Users'].map((label) => h('th', { scope: 'col', class: 'py-1 pr-2' }, label)))),
+                h('tbody', props.groups.flatMap((group) => group.steps.map((step) =>
+                  h('tr', { class: 'border-t border-slate-100', key: `${group.value}-${step.event}` }, [
+                    h('td', { class: 'py-1 pr-2' }, group.value === '(not set)' && props.kind === 'template' ? 'Template tidak tersedia' : group.value),
+                    h('td', { class: 'py-1 pr-2' }, step.label),
+                    h('td', { class: 'py-1 pr-2' }, step.events == null ? '—' : new Intl.NumberFormat('id-ID').format(step.events)),
+                    h('td', { class: 'py-1' }, step.users == null ? '—' : new Intl.NumberFormat('id-ID').format(step.users)),
+                  ]),
+                ))),
+              ]),
+            ])
+          : h('p', { class: 'text-xs text-slate-500' }, 'Belum ada baris breakdown untuk periode ini.'),
+      ])
+  },
+})
+
 const number = (value) => (value == null ? 'Belum tersedia' : new Intl.NumberFormat('id-ID').format(value))
+const gaNumber = (value) => (value == null ? '—' : number(value))
 const currency = (value) =>
   new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value || 0)
 const dateTime = (value) =>

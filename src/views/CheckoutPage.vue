@@ -641,6 +641,12 @@ const handleCheckout = async () => {
     }
 
     if (data.token) {
+      analytics.trackAction('Checkout - Started', {
+        invitation_id: invitation.value.id,
+        template_id: invitation.value.templateDesignId,
+        package: selectedPackage.value,
+        payment_purpose: 'invitation',
+      })
       try {
         await loadSnapScript()
         window.snap.pay(data.token, {
