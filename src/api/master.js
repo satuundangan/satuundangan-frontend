@@ -45,6 +45,12 @@ export const uploadAdminAudio = async (file, payload = {}) => {
         title: payload.title,
         category: payload.category,
         url: upload.fileUrl,
+        source: payload.source,
+        credit: payload.credit,
+        licenseStatus: payload.licenseStatus || 'unknown',
+        format: file.type || null,
+        fileSizeBytes: file.size,
+        durationSeconds: payload.durationSeconds ?? null,
       })
     }
     throw new Error(err.message || 'Upload audio failed')
@@ -56,8 +62,44 @@ export const deleteAdminAudio = (id) =>
   apiFetch(`/admin/audio/${id}`, {
     method: 'DELETE',
   })
+export const updateAdminAudioMetadata = (id, payload) =>
+  apiFetch(`/admin/audio/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+export const replaceAdminAudioFile = async (id, file, payload = {}) => {
+  const token = localStorage.getItem('token')
+  const formData = new FormData()
+  formData.append('file', file)
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, value)
+    }
+  })
+
+  const res = await fetch(`${BASE_URL}/admin/audio/${encodeURIComponent(id)}/replace`, {
+    method: 'PATCH',
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+    body: formData,
+  })
+  if (!res.ok) {
+    const error = await res.json().catch(() => ({ message: 'Gagal mengganti file audio' }))
+    throw new Error(error.message || 'Gagal mengganti file audio')
+  }
+  return res.json()
+}
 
 // Bank/Payment Methods
+export const fetchAdminPaletteColors = (params) =>
+  apiFetch(withParams('/admin/palette-colors', params))
+export const updateAdminPaletteColor = (id, payload) =>
+  apiFetch(`/admin/palette-colors/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
+
 export const fetchAdminBanks = (params) => apiFetch(withParams('/admin/banks', params))
 export const createAdminBank = (payload) =>
   apiFetch('/admin/banks', {

@@ -148,6 +148,7 @@ export const adminNavigationGroups = [
     label: 'Konten',
     items: [
       { label: 'Template Designs', to: '/admin/templates', icon: 'pi-palette' },
+      { label: 'Master Palet', to: '/admin/palettes', icon: 'pi-palette' },
       { label: 'Master Kategori', to: '/admin/categories', icon: 'pi-tags' },
       { label: 'Master Fitur (Sections)', to: '/admin/sections', icon: 'pi-list' },
       { label: 'Audio & Musik', to: '/admin/audio', icon: 'pi-volume-up' },
