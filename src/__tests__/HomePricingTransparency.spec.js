@@ -30,6 +30,7 @@ describe('PKG-14: Transparansi Harga, Katalog & Kepercayaan Publik', () => {
       expect(eksklusif.galleryLimit).toBe(35)
       expect(eksklusif.customMusic).toBe(true)
       expect(eksklusif.subdomain).toBe(true)
+      expect(eksklusif.whatsapp).toBe(true)
     })
   })
 
@@ -41,6 +42,9 @@ describe('PKG-14: Transparansi Harga, Katalog & Kepercayaan Publik', () => {
       expect(text).toContain('Kapan saya harus membayar? Apakah bisa coba edit gratis?')
       expect(text).toContain('Apa perbedaan paket Basic, Premium, dan Eksklusif?')
       expect(text).toContain('Bagaimana jika ada kendala saat pembayaran atau aktivasi?')
+      expect(text).toContain('fitur berbagi undangan lewat WhatsApp per tamu')
+      expect(text).toContain('menekan Kirim sendiri')
+      expect(text).not.toContain('WhatsApp otomatis')
     })
 
     it('contains operational SLAs, Bank Indonesia licensing, and CS contact info in FAQ', () => {
