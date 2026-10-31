@@ -36,7 +36,9 @@
               {{ palette.is_active ? 'Aktif' : 'Nonaktif' }}
             </p>
           </div>
-          <span class="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800">
+          <span
+            class="shrink-0 rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-800"
+          >
             {{ palette.templateUseCount ?? 0 }} template
           </span>
         </div>
@@ -54,26 +56,39 @@
           </div>
         </div>
         <div class="mt-4 rounded-xl border border-slate-200 p-3">
-          <p class="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-500">
-            Screening kombinasi pada latar tema default
+          <p class="text-[10px] font-semibold uppercase tracking-wide text-slate-500">
+            Screening teks di atas tiap warna swatch
           </p>
-          <div
-            class="space-y-2 rounded-lg border border-slate-200 p-3"
-            :style="{ backgroundColor: sampleBackground }"
-          >
+          <div class="mt-3 space-y-3">
             <div v-for="color in paletteColors(palette)" :key="`sample-${color.label}`">
-              <p class="text-sm font-semibold" :style="sampleTextStyle(color.value)">
-                Contoh teks {{ color.label.toLowerCase() }}
+              <p class="mb-1 text-[10px] font-medium text-slate-600">
+                {{ color.label }} · {{ color.value || 'warna tidak valid' }}
               </p>
-              <p class="text-[10px] text-slate-600">
-                {{ color.label }} {{ color.value || '—' }} di atas latar {{ sampleBackground }} ·
-                rasio {{ contrastRatio(color.value, sampleBackground) }}
-              </p>
+              <div class="grid grid-cols-2 gap-2">
+                <div
+                  v-for="ink in sampleInks"
+                  :key="`${color.label}-${ink.label}`"
+                  class="rounded-lg border border-slate-200 px-2 py-2"
+                  :style="sampleSwatchStyle(color.value)"
+                >
+                  <p class="text-xs font-semibold" :style="{ color: ink.value }">
+                    Contoh teks {{ ink.label.toLowerCase() }}
+                  </p>
+                  <p class="mt-1 text-[10px]" :style="{ color: ink.value }">
+                    {{ contrastRatio(ink.value, color.value) }}
+                    <span v-if="passesNormalText(ink.value, color.value)">· ≥ 4,5:1</span>
+                    <span v-else-if="contrastRatio(ink.value, color.value) !== 'tidak tersedia'">
+                      · &lt; 4,5:1
+                    </span>
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
-          <p class="mt-2 text-[10px] leading-relaxed text-slate-500">
-            Latar contoh berasal dari warna background tema default. Rasio ini hanya screening awal;
-            hasil di renderer dan di atas foto undangan dapat berbeda.
+          <p class="mt-3 text-[10px] leading-relaxed text-slate-500">
+            Master palet hanya menyimpan warna swatch; renderer tiap template dapat memakai warna
+            berbeda. Rasio ini membandingkan teks langsung di atas swatch, hanya screening awal, dan
+            bukan jaminan kontras pada undangan atau di atas foto.
           </p>
         </div>
         <button
@@ -94,7 +109,9 @@
     </div>
 
     <div v-if="totalPages > 1 && !loadError" class="mt-5 flex items-center justify-between gap-3">
-      <p class="text-xs text-slate-500">{{ total }} palet · halaman {{ page }} dari {{ totalPages }}</p>
+      <p class="text-xs text-slate-500">
+        {{ total }} palet · halaman {{ page }} dari {{ totalPages }}
+      </p>
       <div class="flex gap-2">
         <button
           type="button"
@@ -125,7 +142,7 @@ import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import { fetchAdminPaletteColors, updateAdminPaletteColor } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
-import { THEME_DEFAULTS, hexToRgb, relativeLuminance } from '@/utils/themeConfig.js'
+import { hexToRgb, relativeLuminance } from '@/utils/themeConfig.js'
 
 const toast = useToast()
 const palettes = ref([])
@@ -137,12 +154,15 @@ const loading = ref(false)
 const loadError = ref('')
 const lastLoadedAt = ref(null)
 const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit)))
-const sampleBackground = THEME_DEFAULTS.colors.background
+const sampleInks = [
+  { label: 'Hitam', value: '#000000' },
+  { label: 'Putih', value: '#ffffff' },
+]
 
 function contrastRatio(foregroundHex, backgroundHex) {
   const foreground = hexToRgb(foregroundHex)
   const background = hexToRgb(backgroundHex)
-  if (!foreground || !background) return 'tidak tersedia (warna tidak valid)'
+  if (!foreground || !background) return 'tidak tersedia'
 
   const foregroundLuminance = relativeLuminance(foreground)
   const backgroundLuminance = relativeLuminance(background)
@@ -152,8 +172,21 @@ function contrastRatio(foregroundHex, backgroundHex) {
   return `${ratio.toFixed(2)}:1`
 }
 
-function sampleTextStyle(colorHex) {
-  return hexToRgb(colorHex) ? { color: colorHex } : { color: '#64748b' }
+function passesNormalText(foregroundHex, backgroundHex) {
+  const foreground = hexToRgb(foregroundHex)
+  const background = hexToRgb(backgroundHex)
+  if (!foreground || !background) return false
+
+  const foregroundLuminance = relativeLuminance(foreground)
+  const backgroundLuminance = relativeLuminance(background)
+  const ratio =
+    (Math.max(foregroundLuminance, backgroundLuminance) + 0.05) /
+    (Math.min(foregroundLuminance, backgroundLuminance) + 0.05)
+  return ratio >= 4.5
+}
+
+function sampleSwatchStyle(colorHex) {
+  return { backgroundColor: hexToRgb(colorHex) ? colorHex : '#e2e8f0' }
 }
 
 function paletteColors(palette) {
