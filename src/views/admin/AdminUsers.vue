@@ -606,6 +606,25 @@
               {{ customerDetail.lifecycle.evidence }} Transaksi tanpa ID akun ditampilkan terpisah;
               email pembayar saja belum membuktikan kepemilikan akun.
             </p>
+            <div
+              class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 p-3"
+            >
+              <p class="text-xs leading-relaxed text-blue-950">
+                Cari tiket bantuan yang sudah tercatat untuk pelanggan ini. Pesan tidak dikirim dari
+                profil.
+              </p>
+              <button
+                v-if="customerDetail.customer.email"
+                type="button"
+                class="shrink-0 rounded-lg bg-blue-900 px-3 py-2 text-xs font-bold text-white hover:bg-blue-800"
+                @click="openCustomerSupportQueue"
+              >
+                Buka antrean bantuan
+              </button>
+              <span v-else class="text-xs font-semibold text-slate-500"
+                >Email pelanggan belum tersedia</span
+              >
+            </div>
             <div class="grid gap-5 lg:grid-cols-2">
               <section>
                 <h3 class="mb-2 text-sm font-black text-slate-900">Undangan</h3>
@@ -976,6 +995,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import { useColumnVisibility } from '@/utils/columnVisibility.js'
@@ -999,6 +1019,7 @@ import Swal from 'sweetalert2'
 
 const toast = useToast()
 const authStore = useAuthStore()
+const router = useRouter()
 const isSuperadmin = computed(() => authStore.adminRole === 'superadmin')
 const users = ref([])
 const total = ref(0)
@@ -1035,6 +1056,7 @@ const customerDetailOpen = ref(false)
 const customerDetailLoading = ref(false)
 const customerDetailError = ref('')
 const customerDetail = ref(null)
+const CUSTOMER_SUPPORT_SEARCH_KEY = 'admin_support_customer_search'
 const recordingEventCompletionId = ref(null)
 
 const form = reactive({
@@ -1288,6 +1310,19 @@ async function openCustomerDetail(user) {
   } finally {
     customerDetailLoading.value = false
   }
+}
+
+function openCustomerSupportQueue() {
+  const email = String(customerDetail.value?.customer?.email || '').trim()
+  if (!email) return
+  try {
+    sessionStorage.setItem(CUSTOMER_SUPPORT_SEARCH_KEY, email)
+  } catch {
+    toast.error('Konteks pelanggan tidak dapat disiapkan di browser ini.')
+    return
+  }
+  customerDetailOpen.value = false
+  router.push({ path: '/admin/leads-support', query: { tab: 'tickets' } })
 }
 
 async function confirmWeddingCompletion(invitation) {
