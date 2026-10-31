@@ -45,7 +45,13 @@
         <span class="block text-[10px] text-slate-500">{{ item.activeTemplateCount ?? 0 }} aktif</span>
       </template>
       <template #cell(invitationCount)="{ item }">
-        <span class="font-medium">{{ item.invitationCount ?? 0 }} undangan</span>
+        <RouterLink
+          :to="{ name: 'admin-invitations', query: { category: item.name } }"
+          class="font-medium text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+          :aria-label="`Lihat ${item.invitationCount ?? 0} undangan kategori ${item.name}`"
+        >
+          {{ item.invitationCount ?? 0 }} undangan
+        </RouterLink>
       </template>
       <template #cell(isActive)="{ item }">
         <span class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase" :class="item.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-700'">
