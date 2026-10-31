@@ -26,7 +26,7 @@
 
       <div class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
         <div class="flex items-center justify-between">
-          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Klaim Lunas</span>
+          <span class="text-xs font-medium text-slate-500 uppercase tracking-wider">Redemption Lunas</span>
           <span class="inline-flex h-7 w-7 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
             <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
@@ -34,7 +34,8 @@
           </span>
         </div>
         <div class="mt-2 text-2xl font-bold text-slate-900">{{ summary.total_redemptions }}</div>
-        <div class="mt-1 text-xs text-slate-500">{{ summary.total_pending_reservations }} reservasi checkout pending</div>
+        <div class="mt-1 text-xs text-slate-500">Counter kuota: {{ summary.total_reserved_slots_count }}</div>
+        <div class="text-xs text-amber-600">Checkout pending: {{ summary.total_pending_reservations }}</div>
       </div>
 
       <div class="rounded-xl border border-slate-200/80 bg-white p-4 shadow-sm">
@@ -157,12 +158,15 @@
           <div class="flex items-center gap-1.5">
             <span class="font-bold text-emerald-600">{{ item.redemptions_count ?? 0 }} lunas</span>
             <span class="text-xs text-slate-400">/</span>
-            <span class="text-xs text-slate-600">{{ item.max_uses ? `${item.max_uses} kuota` : '∞' }}</span>
+            <span class="text-xs text-slate-600">{{ item.max_uses !== null && item.max_uses !== undefined ? `${item.max_uses} kuota` : '∞' }}</span>
           </div>
-          <span v-if="item.pending_reservations_count" class="text-[10px] text-amber-600">
-            {{ item.pending_reservations_count }} checkout pending
+          <span class="text-[10px] text-slate-500">
+            Counter kuota: {{ item.reserved_slots_count ?? item.used_count ?? 0 }}
           </span>
-          <span v-else class="text-[10px] text-slate-400">
+          <span class="text-[10px] text-amber-600">
+            {{ item.pending_reservations_count ?? 0 }} checkout pending
+          </span>
+          <span class="text-[10px] text-slate-400">
             {{ getRemainingSlotsText(item) }}
           </span>
         </div>
@@ -268,11 +272,17 @@
           </div>
 
           <!-- Detail Metrics -->
-          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
+          <div class="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-3 mb-6">
             <div class="rounded-lg bg-slate-50 p-3 border border-slate-100">
-              <div class="text-[11px] font-medium text-slate-500 uppercase">Klaim Lunas</div>
+              <div class="text-[11px] font-medium text-slate-500 uppercase">Redemption Lunas</div>
               <div class="mt-1 text-lg font-bold text-emerald-600">{{ selectedPromo?.redemptions_count ?? 0 }}</div>
-              <div class="text-[10px] text-slate-400">{{ selectedPromo?.max_uses ? `dari ${selectedPromo?.max_uses} kuota` : 'Kuota unlimited' }}</div>
+              <div class="text-[10px] text-slate-400">{{ selectedPromo?.max_uses !== null && selectedPromo?.max_uses !== undefined ? `dari ${selectedPromo?.max_uses} kuota` : 'Kuota unlimited' }}</div>
+            </div>
+            <div class="rounded-lg bg-slate-50 p-3 border border-slate-100">
+              <div class="text-[11px] font-medium text-slate-500 uppercase">Counter Kuota</div>
+              <div class="mt-1 text-lg font-bold text-slate-900">{{ selectedPromo?.reserved_slots_count ?? selectedPromo?.used_count ?? 0 }}</div>
+              <div class="text-[10px] text-slate-400">slot dipesan</div>
+              <div class="text-[10px] text-slate-400">{{ getRemainingSlotsText(selectedPromo || {}) }}</div>
             </div>
             <div class="rounded-lg bg-slate-50 p-3 border border-slate-100">
               <div class="text-[11px] font-medium text-slate-500 uppercase">Checkout Pending</div>
@@ -523,6 +533,7 @@ const summary = reactive({
   total_promos: 0,
   total_active_promos: 0,
   total_redemptions: 0,
+  total_reserved_slots_count: 0,
   total_pending_reservations: 0,
   total_discount_amount: 0,
   total_gross_revenue: 0,
@@ -610,6 +621,10 @@ async function loadData() {
       summary.total_promos = res.total || promoCodes.value.length
       summary.total_active_promos = promoCodes.value.filter((p) => p.is_active && (p.computed_status === 'active' || !p.computed_status)).length
       summary.total_redemptions = promoCodes.value.reduce((acc, p) => acc + (p.redemptions_count || 0), 0)
+      summary.total_reserved_slots_count = promoCodes.value.reduce(
+        (acc, p) => acc + (p.reserved_slots_count ?? p.used_count ?? 0),
+        0,
+      )
       summary.total_pending_reservations = promoCodes.value.reduce((acc, p) => acc + (p.pending_reservations_count || 0), 0)
       summary.total_discount_amount = promoCodes.value.reduce((acc, p) => acc + (p.total_discount_amount || 0), 0)
       summary.total_gross_revenue = promoCodes.value.reduce((acc, p) => acc + (p.total_gross_revenue || 0), 0)
@@ -809,9 +824,9 @@ function getValidityCountdown(from, until) {
 }
 
 function getRemainingSlotsText(item) {
-  if (!item.max_uses) return 'Sisa slot: Unlimited'
-  const redemptions = item.redemptions_count || 0
-  const remaining = Math.max(0, item.max_uses - redemptions)
+  if (item.max_uses === null || item.max_uses === undefined) return 'Sisa slot: Unlimited'
+  const reservedSlots = item.reserved_slots_count ?? item.used_count ?? 0
+  const remaining = item.remaining_slots ?? Math.max(0, item.max_uses - reservedSlots)
   return `Sisa slot: ${remaining}`
 }
 
