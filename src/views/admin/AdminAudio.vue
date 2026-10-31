@@ -356,6 +356,23 @@
                </div>
             </div>
 
+            <div v-if="editingAudio" class="space-y-3 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4">
+              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-600">Ganti file MP3 (opsional)</label>
+              <input
+                type="file"
+                accept="audio/mpeg, audio/mp3"
+                aria-label="Pilih file MP3 pengganti"
+                class="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:font-semibold"
+                @change="handleReplacementFileChange"
+              />
+              <p v-if="replacementAudioFile" class="text-xs text-slate-700">
+                {{ replacementAudioFile.name }} · {{ formatBytes(replacementAudioFile.size) }} · durasi {{ formatDuration(replacementDurationSeconds) }}
+              </p>
+              <p v-if="replacementAudioFile" class="text-xs text-indigo-900">
+                {{ editingAudio.templateUseCount ?? 0 }} template dan {{ editingAudio.invitationUseCount ?? 0 }} undangan yang memakai URL persis akan diarahkan ke file baru. File lama tetap disimpan untuk kemungkinan referensi historis yang tidak terpetakan.
+              </p>
+            </div>
+
             <div class="space-y-4 rounded-2xl bg-slate-50 p-4">
               <div>
                 <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Sumber</label>
@@ -389,8 +406,11 @@
               </div>
             </div>
 
-            <p v-if="editingAudio" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
+            <p v-if="editingAudio && !replacementAudioFile" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
               File tetap sama. Format, ukuran, dan durasi tidak diubah dari formulir ini.
+            </p>
+            <p v-else-if="replacementAudioFile" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
+              File baru: {{ replacementAudioFile.type || 'Format tidak terbaca' }} · {{ formatBytes(replacementAudioFile.size) }} · durasi {{ formatDuration(replacementDurationSeconds) }}
             </p>
             <p v-else-if="selectedAudioFile" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
               {{ selectedAudioFile.type || 'Format tidak terbaca' }} · {{ formatBytes(selectedAudioFile.size) }} · durasi {{ formatDuration(form.durationSeconds) }}
@@ -450,7 +470,7 @@
                 :disabled="saving || uploadingFile || (!editingAudio && !selectedAudioFile)"
                 class="flex-[2] rounded-2xl bg-indigo-600 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ saving ? 'Menyimpan…' : editingAudio ? 'Simpan Metadata' : 'Simpan Musik' }}
+                {{ saving ? 'Menyimpan…' : editingAudio ? replacementAudioFile ? 'Ganti File & Simpan Metadata' : 'Simpan Metadata' : 'Simpan Musik' }}
               </button>
             </div>
           </form>
@@ -472,7 +492,7 @@ import InputIcon from 'primevue/inputicon'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import { FilterMatchMode } from '@primevue/core/api'
-import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio, updateAdminAudioMetadata } from '@/api/master.js'
+import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio, updateAdminAudioMetadata, replaceAdminAudioFile } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
@@ -525,6 +545,8 @@ const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
 const selectedAudioFile = ref(null)
 const editingAudio = ref(null)
+const replacementAudioFile = ref(null)
+const replacementDurationSeconds = ref(null)
 const viewType = ref('grid') // 'grid' or 'table'
 
 const filters = ref({
@@ -598,6 +620,8 @@ function handleSearch(value) {
 function resetForm() {
   selectedAudioFile.value = null
   editingAudio.value = null
+  replacementAudioFile.value = null
+  replacementDurationSeconds.value = null
   Object.assign(form, { title: '', category: 'romantic', url: '', fileName: '', source: '', credit: '', licenseStatus: 'unknown', durationSeconds: null })
 }
 function openCreate() { resetForm(); showForm.value = true }
@@ -696,6 +720,8 @@ async function processBulkUpload() {
 async function handleFileChange(event) {
   const file = event.target.files?.[0]
   if (!file) return
+  selectedAudioFile.value = null
+  form.durationSeconds = null
   if (!file.type.includes('mpeg') && !file.type.includes('mp3')) {
      toast.error("Format file harus MP3")
      event.target.value = ""
@@ -711,6 +737,25 @@ async function handleFileChange(event) {
   form.fileName = file.name
   form.url = file.name
   form.durationSeconds = await readAudioDuration(file)
+}
+
+async function handleReplacementFileChange(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  replacementAudioFile.value = null
+  replacementDurationSeconds.value = null
+  if (!file.type.includes('mpeg') && !file.type.includes('mp3')) {
+    toast.error('Format file harus MP3')
+    event.target.value = ''
+    return
+  }
+  if (file.size > 25 * 1024 * 1024) {
+    toast.error('Ukuran file terlalu besar (Maks 25MB)')
+    event.target.value = ''
+    return
+  }
+  replacementAudioFile.value = file
+  replacementDurationSeconds.value = await readAudioDuration(file)
 }
 
 function readAudioDuration(file) {
@@ -757,7 +802,15 @@ async function submitForm() {
       credit: form.credit,
       licenseStatus: form.licenseStatus,
     }
-    if (editingAudio.value) {
+    if (editingAudio.value && replacementAudioFile.value) {
+      const result = await replaceAdminAudioFile(editingAudio.value.id, replacementAudioFile.value, {
+        ...metadata,
+        durationSeconds: replacementDurationSeconds.value,
+      })
+      toast.success(
+        `File diganti. ${result.templateReferencesUpdated} template dan ${result.invitationReferencesUpdated} undangan diperbarui.`,
+      )
+    } else if (editingAudio.value) {
       await updateAdminAudioMetadata(editingAudio.value.id, metadata)
       toast.success('Metadata musik diperbarui')
     } else {
