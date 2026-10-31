@@ -112,13 +112,13 @@ test.describe('Core flows (mocked)', () => {
 
     await expect(page.getByText('Manajemen Tamu')).toBeVisible()
     await expect(page.getByText('Tamu Lama').first()).toBeVisible()
-    await page.getByRole('button', { name: /Tambah Tamu/i }).click()
+    await page.getByRole('button', { name: /Tambah$/ }).click()
     await page.getByPlaceholder('Misal: Budi Santoso').fill('Tamu Baru')
-    await page.getByPlaceholder('08123456789').fill('08123456789')
+    await page.getByPlaceholder('085121266550').fill('08123456789')
     await page.getByRole('button', { name: 'Simpan Tamu' }).click()
 
     await expect(page.getByText('Tamu Baru').first()).toBeVisible({ timeout: 10000 })
-    await page.getByTitle('Kirim WA').first().click()
+    await page.getByTitle('Kirim Pesan WhatsApp').first().click()
     await expect(page.locator('textarea').last()).toHaveValue(/Halo Tamu Lama/, { timeout: 10000 })
   })
 
