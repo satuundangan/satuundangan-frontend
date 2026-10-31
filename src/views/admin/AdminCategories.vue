@@ -12,7 +12,7 @@
       @reset="resetSearch"
     />
     <p class="mb-3 rounded-lg bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
-      Kategori adalah pengelompokan utama katalog dan terhubung ke template. Grup filter dan tag template adalah metadata berbeda. Mengubah nama kategori akan mengubah label relasi, bukan ID kategori; kategori yang masih dipakai harus dipindahkan dari template sebelum dihapus.
+      Kategori adalah pengelompokan utama katalog dan terhubung ke template. Grup filter dan tag template adalah metadata berbeda. Link filter memakai ID kategori agar tetap bekerja setelah rename; nama lama tetap dikenali sebagai alias. Kategori yang masih dipakai harus dipindahkan dari template sebelum dihapus.
     </p>
     <DataTable
       v-if="!loadError"
@@ -36,7 +36,7 @@
       </template>
       <template #cell(templateCount)="{ item }">
         <RouterLink
-          :to="{ name: 'admin-templates', query: { category: item.name } }"
+          :to="{ name: 'admin-templates', query: { categoryId: item.id } }"
           class="font-medium text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           :aria-label="`Lihat ${item.templateCount ?? 0} template kategori ${item.name}`"
         >
@@ -46,7 +46,7 @@
       </template>
       <template #cell(invitationCount)="{ item }">
         <RouterLink
-          :to="{ name: 'admin-invitations', query: { category: item.name } }"
+          :to="{ name: 'admin-invitations', query: { categoryId: item.id, categoryLabel: item.name } }"
           class="font-medium text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           :aria-label="`Lihat ${item.invitationCount ?? 0} undangan kategori ${item.name}`"
         >
