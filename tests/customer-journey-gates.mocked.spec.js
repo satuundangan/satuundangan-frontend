@@ -213,3 +213,68 @@ test('preview edits the invitation identified by its slug', async ({ page }) => 
   await page.getByRole('button', { name: 'Edit Data' }).click()
   await expect(page).toHaveURL(/\/invitation\/42\/edit$/)
 })
+
+test('mobile personal RSVP keeps the guest identity for dashboard sync', async ({ page }) => {
+  let submittedPayload = null
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.route('**/api/invitation/slug/romeo-juliet/guest/private-token', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        invitation: {
+          id: 42,
+          title: 'Romeo & Juliet',
+          slug: 'romeo-juliet',
+          template_slug: 'dark-elegant',
+          is_published: true,
+          content: {
+            groomName: 'Romeo',
+            brideName: 'Juliet',
+            selectedSections: ['hero', 'rsvp'],
+          },
+        },
+        guest: { id: 7, name: 'Nadia', accessToken: 'private-token' },
+      }),
+    }),
+  )
+  await page.route('**/api/guest-messages**', async (route) => {
+    if (route.request().method() === 'POST') {
+      submittedPayload = route.request().postDataJSON()
+      await route.fulfill({
+        status: 201,
+        contentType: 'application/json',
+        body: JSON.stringify({ success: true, data: { id: 99 } }),
+      })
+      return
+    }
+    await route.fulfill({ status: 200, contentType: 'application/json', body: '[]' })
+  })
+
+  await page.goto(`${baseUrl}/inv/romeo-juliet/private-token`)
+  await expect(page.getByText('Buka Undangan').first()).toBeVisible({ timeout: 15000 })
+  await page.getByText('Buka Undangan').first().click({ force: true })
+  await page.locator('#rsvp').scrollIntoViewIfNeeded()
+  await expect(page.locator('#rsvp input[type="text"]').first()).toHaveValue('Nadia')
+  await page.locator('#rsvp input[type="radio"][value="hadir"]').evaluate((radio) => {
+    radio.checked = true
+    radio.dispatchEvent(new Event('change', { bubbles: true }))
+  })
+  await page.locator('#rsvp select').selectOption('2')
+  await page.locator('#rsvp textarea').fill('Sampai jumpa di hari bahagia!')
+
+  const postRequest = page.waitForRequest(
+    (request) => request.method() === 'POST' && request.url().includes('/guest-messages'),
+  )
+  await page.locator('#rsvp form').evaluate((form) => form.requestSubmit())
+  await postRequest
+
+  expect(submittedPayload).toMatchObject({
+    invitationId: 42,
+    guestName: 'Nadia',
+    rsvpStatus: 'hadir',
+    totalGuests: 2,
+    guestSlug: 'private-token',
+  })
+  await expect(page.getByText(/Terima kasih Nadia/)).toBeVisible()
+})
