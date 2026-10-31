@@ -79,7 +79,7 @@
                 <!-- X Icon -->
                 <svg
                   v-else
-                  class="w-5 h-5 shrink-0 text-red-400 mt-0.5"
+                  class="w-5 h-5 shrink-0 text-stone-400 mt-0.5"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -87,14 +87,24 @@
                 >
                   <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
-                <span
-                  :class="
-                    feat.included
-                      ? 'text-dark/80'
-                      : 'text-red-400 line-through decoration-red-300/60'
-                  "
-                  >{{ feat.label }}</span
-                >
+                <div class="flex-1">
+                  <span
+                    :class="
+                      feat.included
+                        ? 'text-dark/80 font-medium'
+                        : 'text-stone-400 line-through decoration-stone-300'
+                    "
+                  >
+                    <span class="sr-only">{{ feat.included ? 'Termasuk: ' : 'Tidak termasuk: ' }}</span>
+                    {{ feat.label }}
+                  </span>
+                  <span
+                    v-if="!feat.included && feat.unavailableNote"
+                    class="ml-2 text-[10px] font-semibold text-amber-800 bg-amber-50 border border-amber-200/60 px-1.5 py-0.5 rounded not-italic no-underline inline-block align-middle"
+                  >
+                    {{ feat.unavailableNote }}
+                  </span>
+                </div>
               </li>
             </ul>
 
@@ -109,6 +119,10 @@
             >
               Mulai Buat Undangan
             </button>
+            <p class="text-[11px] text-center text-stone-500 mt-2.5 flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i>
+              <span>Coba edit &amp; desain gratis • Bayar saat mau sebar</span>
+            </p>
           </div>
         </div>
 
@@ -242,8 +256,49 @@
         </div>
 
         <!-- Loading State -->
-        <div v-if="loading" class="flex justify-center py-12">
+        <div v-if="loading" class="flex flex-col items-center justify-center py-16 gap-3">
           <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-mocha"></div>
+          <p class="text-xs text-stone-500 font-medium">Memuat katalog template terbaik...</p>
+        </div>
+
+        <!-- Error State with Retry Button (ADM-089) -->
+        <div
+          v-else-if="fetchError"
+          class="text-center py-16 px-6 bg-rose-50/60 rounded-3xl border border-rose-200/80 max-w-xl mx-auto shadow-xs"
+        >
+          <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4 text-xl">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+          <h3 class="text-lg font-bold text-dark mb-1">Gagal Memuat Katalog Desain</h3>
+          <p class="text-sm text-stone-600 mb-6">
+            Terjadi gangguan koneksi saat mengambil katalog tema. Silakan periksa jaringan internet Anda atau coba muat ulang.
+          </p>
+          <button
+            @click="loadTemplates"
+            class="px-6 py-2.5 rounded-full bg-mocha hover:bg-mocha/90 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-rotate-right"></i>
+            <span>Coba Muat Ulang</span>
+          </button>
+        </div>
+
+        <!-- Empty State -->
+        <div
+          v-else-if="filteredTemplates.length === 0"
+          class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200"
+        >
+          <div class="text-4xl mb-4">🎨</div>
+          <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
+          <p class="text-muted text-sm max-w-md mx-auto mb-4">
+            Tidak ditemukan template untuk filter aktif atau kata kunci "{{ searchQuery }}". Coba ubah filter gaya atau reset pencarian.
+          </p>
+          <button
+            v-if="selectedCategory !== 'all' || selectedTier !== 'all' || searchQuery"
+            @click="selectedCategory = 'all'; selectedTier = 'all'; searchQuery = ''"
+            class="px-4 py-2 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-bold transition cursor-pointer"
+          >
+            Reset Semua Filter
+          </button>
         </div>
 
         <div v-else class="grid md:grid-cols-3 gap-10">
@@ -333,8 +388,8 @@
                 >
                   {{ item.name }}
                 </h4>
-                <div class="text-mocha font-bold">
-                  Desain gratis
+                <div class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
+                  <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Desain gratis
                 </div>
               </div>
 
@@ -379,26 +434,23 @@
           </div>
         </div>
 
-        <!-- Empty State -->
-        <div
-          v-if="!loading && filteredTemplates.length === 0"
-          class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200"
-        >
-          <div class="text-4xl mb-4">🎨</div>
-          <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
-          <p class="text-muted text-sm">
-            Coba ubah filter gaya atau paket, atau kembali beberapa saat lagi.
-          </p>
-        </div>
-
         <div class="text-center mt-12">
           <button
             @click="showModal = true"
-            class="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-mocha border-2 border-mocha hover:bg-mocha hover:text-white transition-all duration-300"
+            class="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-mocha border-2 border-mocha hover:bg-mocha hover:text-white transition-all duration-300 cursor-pointer"
           >
             <span>Lihat Semua Template</span>
             <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
           </button>
+        </div>
+
+        <!-- Trust Reassurance Banner (ADM-087) -->
+        <div class="mt-10 py-3.5 px-6 rounded-2xl bg-amber-50/70 border border-amber-200/60 max-w-2xl mx-auto flex flex-wrap items-center justify-center gap-y-2 gap-x-5 text-xs text-amber-950 font-medium text-center">
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Bebas coba &amp; edit desain gratis</span>
+          <span class="text-amber-300 hidden sm:inline">•</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-eye text-amber-600"></i> Preview langsung di HP &amp; laptop</span>
+          <span class="text-amber-300 hidden sm:inline">•</span>
+          <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-heart text-amber-600"></i> Bayar hanya saat mau sebar</span>
         </div>
       </div>
     </section>
@@ -560,15 +612,7 @@
     <Footer />
 
     <!-- Nova AI Floating Button (hidden — experimental, re-enable post-launch cleanup) -->
-    <!-- <FloatingNovaButton @require-auth="showAuthModal = true" /> -->
-
-    <!-- Auth Modal (triggered by Nova when user not logged in) -->
-    <AuthModal
-      :show="showAuthModal"
-      :authMode="authMode"
-      @update:authMode="authMode = $event"
-      @close="showAuthModal = false"
-    />
+    <!-- If re-enabled, open the login modal through the navbar (?login=true), not a second AuthModal. -->
 
     <!-- Modal Pilih Template -->
     <div
@@ -972,7 +1016,6 @@ import { featuresFor } from '@/config/packageFeatures'
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getPackages } from '@/api/payment'
 import { fetchArticles } from '@/api/article'
-import AuthModal from '@/components/modal/AuthModal.vue'
 import {
   buildStyleFilters,
   buildPackageFilters,
@@ -994,9 +1037,6 @@ function choosePlan(planId) {
   selectedPlan.value = planId
   showModal.value = true
 }
-const showAuthModal = ref(false)
-const authMode = ref('login')
-
 watch(showModal, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden'
@@ -1013,6 +1053,21 @@ const templateRefs = reactive({})
 const templates = ref([])
 const articles = ref([])
 const loading = ref(true)
+const fetchError = ref(false)
+
+function parseRupiah(val) {
+  if (typeof val === 'number') return val
+  if (!val) return 0
+  const digits = String(val).replace(/[^0-9]/g, '')
+  return Number(digits) || 0
+}
+
+function calculateDiscount(original, current) {
+  const orig = parseRupiah(original)
+  const curr = parseRupiah(current)
+  if (!orig || !curr || curr >= orig) return null
+  return Math.round(((orig - curr) / orig) * 100) + '%'
+}
 
 // Presentation metadata. Price filled from GET /payment/packages (single source of truth).
 // id matches InvitationPackage enum on backend.
@@ -1048,9 +1103,9 @@ const tierPrices = ref({
 })
 
 const tierOriginalPrices = {
-  basic: 'Rp 129.000',
-  premium: 'Rp 199.000',
-  eksklusif: 'Rp 299.000',
+  basic: 129000,
+  premium: 199000,
+  eksklusif: 299000,
 }
 
 const tierDiscounts = {
@@ -1062,11 +1117,16 @@ const tierDiscounts = {
 const pricingPlans = computed(() =>
   PRICING_TIERS.map((tier) => {
     const f = featuresFor(tier.id)
+    const currentPriceStr = tierPrices.value[tier.id]
+    const origPriceNum = tierOriginalPrices[tier.id]
+    const origPriceFormatted = formatRupiah(origPriceNum)
+    const dynamicDiscount = calculateDiscount(origPriceNum, currentPriceStr) || tierDiscounts[tier.id]
+
     return {
       ...tier,
-      price: tierPrices.value[tier.id],
-      originalPrice: tierOriginalPrices[tier.id],
-      discount: tierDiscounts[tier.id],
+      price: currentPriceStr,
+      originalPrice: origPriceFormatted,
+      discount: dynamicDiscount,
       features: [
         { label: 'Masa aktif undangan 365+1 hari (1 tahun)', included: true },
         { label: 'Bebas pilih semua desain', included: true },
@@ -1077,10 +1137,18 @@ const pricingPlans = computed(() =>
           label: f.gallery ? `Galeri foto (maks ${f.galleryLimit})` : 'Galeri foto',
           included: f.gallery,
         },
-        { label: 'Upload musik sendiri (MP3)', included: f.customMusic },
+        {
+          label: 'Upload musik sendiri (MP3)',
+          included: f.customMusic,
+          unavailableNote: 'Tersedia di Premium & Eksklusif',
+        },
         { label: 'Kirim undangan via WhatsApp', included: f.whatsapp },
         { label: 'Tanpa watermark', included: !f.watermark },
-        { label: 'Subdomain custom', included: f.subdomain },
+        {
+          label: 'Subdomain custom',
+          included: f.subdomain,
+          unavailableNote: 'Tersedia di Premium & Eksklusif',
+        },
       ],
     }
   }),
@@ -1117,8 +1185,9 @@ const testimonials = [
   },
 ]
 
-// Load Data
-onMounted(async () => {
+async function loadTemplates() {
+  loading.value = true
+  fetchError.value = false
   try {
     const tplData = await getTemplateDesigns()
 
@@ -1128,15 +1197,19 @@ onMounted(async () => {
       templates.value = [...list].sort((a, b) => (Number(b.id) || 0) - (Number(a.id) || 0))
     }
 
-    // Restore ?gaya=/?paket= from the URL, sanitized against the chips that
-    // actually exist (a stale or below-threshold value falls back to "Semua").
     selectedCategory.value = resolveFilterId(route.query.gaya, buildStyleFilters(templates.value))
     selectedTier.value = resolveFilterId(route.query.paket, buildPackageFilters(templates.value))
   } catch (e) {
-    console.error('Gagal ambil data:', e)
+    console.error('Gagal ambil data template:', e)
+    fetchError.value = true
   } finally {
     loading.value = false
   }
+}
+
+// Load Data
+onMounted(async () => {
+  await loadTemplates()
 
   // Sync prices from backend so cards never drift from real package prices.
   try {

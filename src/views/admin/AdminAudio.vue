@@ -1,7 +1,7 @@
 <template>
   <AdminShell
     title="Audio & Musik"
-    description="Kelola musik latar. Pemakaian dicocokkan dari URL; sumber dan status izin diisi berdasarkan catatan admin."
+description="Kelola musik latar. Pemakaian dicocokkan dari URL; duplikasi file baru diperiksa dari SHA-256. Sumber dan izin mengikuti catatan admin."
     show-search
     :search="search"
     search-placeholder="Cari judul atau kategori musik"
@@ -151,6 +151,12 @@
               <p v-if="track.sameUrlTrackCount > 1" class="text-[10px] font-semibold text-amber-700">
                 URL identik dipakai {{ track.sameUrlTrackCount }} entri audio
               </p>
+              <p v-if="track.sameContentTrackCount > 1" class="text-[10px] font-semibold text-amber-700">
+                Isi file identik (SHA-256) ditemukan pada {{ track.sameContentTrackCount }} entri
+              </p>
+              <p v-else-if="track.contentHashStatus !== 'checked'" class="text-[10px] text-slate-500">
+                Duplikasi isi file belum diperiksa untuk entri lama
+              </p>
               <p class="text-[10px] text-slate-500">Player: {{ playbackStatusLabel(track) }}</p>
               <p class="mt-2 text-[10px] text-slate-500">
                 Sumber: {{ track.source || 'belum tercatat' }} · Kredit: {{ track.credit || 'belum tercatat' }}
@@ -275,6 +281,8 @@
               <span>Kredit: {{ data.credit || 'belum tercatat' }}</span>
               <span class="text-slate-500">Izin: {{ licenseStatusLabel(data.licenseStatus) }}</span>
               <span v-if="data.sameUrlTrackCount > 1" class="font-semibold text-amber-700">URL identik: {{ data.sameUrlTrackCount }} entri</span>
+              <span v-if="data.sameContentTrackCount > 1" class="font-semibold text-amber-700">Isi file identik (SHA-256): {{ data.sameContentTrackCount }} entri</span>
+              <span v-else-if="data.contentHashStatus !== 'checked'" class="text-slate-500">Hash isi belum tersedia untuk entri lama</span>
               <span class="text-slate-500">Player: {{ playbackStatusLabel(data) }}</span>
             </div>
           </template>

@@ -70,6 +70,9 @@
         <button
           v-for="tab in statusTabs"
           :key="tab.value"
+          type="button"
+          role="tab"
+          :aria-selected="statusFilter === tab.value"
           @click="setStatusFilter(tab.value)"
           class="rounded-lg px-3 py-1.5 text-xs font-medium transition-colors flex items-center gap-1.5"
           :class="statusFilter === tab.value

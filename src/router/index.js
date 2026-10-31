@@ -253,6 +253,12 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Pembayaran & Transaksi' },
     },
     {
+      path: '/admin/leads-support',
+      name: 'AdminLeadsSupport',
+      component: () => import('@/views/admin/AdminLeadsSupport.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Prospek & Bantuan' },
+    },
+    {
       path: '/admin/invitations/:id/edit',
       name: 'admin-invitation-edit',
       component: () => import('@/views/admin/AdminInvitationEdit.vue'),

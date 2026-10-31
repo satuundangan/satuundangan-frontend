@@ -51,6 +51,13 @@ test.describe('Checkout – Ownership Guard', () => {
         body: JSON.stringify(mockUser),
       }),
     )
+    await context.route('**/api/payment/packages', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'premium', label: 'Premium', price: 49000 }]),
+      }),
+    )
     await context.route('**/api/invitation/slug/jatmiko-jamila', (route) =>
       route.fulfill({
         status: 200,

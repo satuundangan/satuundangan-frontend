@@ -12,7 +12,7 @@
       @reset="resetSearch"
     />
     <p class="mb-3 rounded-lg bg-slate-50 px-4 py-3 text-xs leading-relaxed text-slate-600">
-      Kategori adalah pengelompokan utama katalog dan terhubung ke template. Grup filter dan tag template adalah metadata berbeda. Mengubah nama kategori akan mengubah label relasi, bukan ID kategori; kategori yang masih dipakai harus dipindahkan dari template sebelum dihapus.
+      Kategori adalah pengelompokan utama katalog dan terhubung ke template. Grup filter dan tag template adalah metadata berbeda. Link filter memakai ID kategori agar tetap bekerja setelah rename; nama lama tetap dikenali sebagai alias. Kategori yang masih dipakai harus dipindahkan dari template sebelum dihapus.
     </p>
     <DataTable
       v-if="!loadError"
@@ -36,7 +36,7 @@
       </template>
       <template #cell(templateCount)="{ item }">
         <RouterLink
-          :to="{ name: 'admin-templates', query: { category: item.name } }"
+          :to="{ name: 'admin-templates', query: { categoryId: item.id } }"
           class="font-medium text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
           :aria-label="`Lihat ${item.templateCount ?? 0} template kategori ${item.name}`"
         >
@@ -45,7 +45,13 @@
         <span class="block text-[10px] text-slate-500">{{ item.activeTemplateCount ?? 0 }} aktif</span>
       </template>
       <template #cell(invitationCount)="{ item }">
-        <span class="font-medium">{{ item.invitationCount ?? 0 }} undangan</span>
+        <RouterLink
+          :to="{ name: 'admin-invitations', query: { categoryId: item.id, categoryLabel: item.name } }"
+          class="font-medium text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+          :aria-label="`Lihat ${item.invitationCount ?? 0} undangan kategori ${item.name}`"
+        >
+          {{ item.invitationCount ?? 0 }} undangan
+        </RouterLink>
       </template>
       <template #cell(isActive)="{ item }">
         <span class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase" :class="item.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-700'">

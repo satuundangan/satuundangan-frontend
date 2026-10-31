@@ -37,7 +37,14 @@
                   class="px-3 py-1.5 rounded-lg transition-all"
                   :class="activeFilter === 'published' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
                 >
-                  Published
+                  Aktif
+                </button>
+                <button 
+                  @click="activeFilter = 'pending'" 
+                  class="px-3 py-1.5 rounded-lg transition-all"
+                  :class="activeFilter === 'pending' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+                >
+                  Menunggu Bayar
                 </button>
                 <button 
                   @click="activeFilter = 'draft'" 
@@ -143,6 +150,7 @@ import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import InvitationsTable from "@/components/dashboard/InvitationsTable.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations, deleteInvitation } from "@/api/invitation"
+import { getInvitationPreviewUrl } from "@/utils/invitationUrls"
 import { useToast } from "vue-toastification"
 import { useRouter } from "vue-router"
 import Swal from "sweetalert2"
@@ -159,8 +167,11 @@ const filteredInvitations = computed(() => {
   if (activeFilter.value === 'published') {
     return invitations.value.filter(inv => inv.isPublished)
   }
+  if (activeFilter.value === 'pending') {
+    return invitations.value.filter(inv => !inv.isPublished && (inv.paymentStatus === 'pending' || inv.latestPaymentStatus === 'pending' || inv.latestOrderId))
+  }
   if (activeFilter.value === 'draft') {
-    return invitations.value.filter(inv => !inv.isPublished)
+    return invitations.value.filter(inv => !inv.isPublished && inv.paymentStatus !== 'pending' && inv.latestPaymentStatus !== 'pending')
   }
   return invitations.value
 })
@@ -186,8 +197,8 @@ function handleEdit(id) {
   router.push(`/invitation/${id}/edit`)
 }
 
-function handlePreview(slug) {
-  window.open(`/${slug}?preview=true`, "_blank")
+function handlePreview(invitation) {
+  window.open(getInvitationPreviewUrl(invitation), "_blank")
 }
 
 async function handleDelete(id) {

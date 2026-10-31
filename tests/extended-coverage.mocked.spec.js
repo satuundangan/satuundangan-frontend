@@ -140,7 +140,7 @@ test.describe('Access and account flows (mocked)', () => {
     await page.getByRole('button', { name: 'Setuju & Lanjut ke Dashboard' }).click()
 
     await expect(page).toHaveURL(/\/dashboard/, { timeout: 10000 })
-    await expect(page.getByText('Mulai Perjalananmu')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Halo, / })).toBeVisible()
     expect(consentRecorded).toBe(true)
   })
 
@@ -150,7 +150,7 @@ test.describe('Access and account flows (mocked)', () => {
 
     await page.goto(`${BASE_URL}/settings`)
 
-    await expect(page.getByText('Pengaturan Akun')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Pengaturan Akun' })).toBeVisible()
     const nameInput = page.getByPlaceholder('Nama lengkap kamu')
     await expect(nameInput).toHaveValue('Customer Tester')
     await nameInput.fill('')
@@ -184,6 +184,14 @@ test.describe('Admin master-data flows (mocked)', () => {
       const request = route.request()
       const method = request.method()
       calls.push({ method, url: request.url(), body: request.postDataJSON?.() })
+
+      if (method === 'GET' && request.url().includes('/customer')) {
+        return route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ summary: { invitationCount: 0, paymentCount: 0 } }),
+        })
+      }
 
       if (method === 'GET') {
         return route.fulfill({
@@ -235,14 +243,19 @@ test.describe('Admin master-data flows (mocked)', () => {
 
     await page.getByRole('row', { name: /Existing User/ }).getByRole('button', { name: 'Edit' }).click()
     const editModal = page.locator('.fixed.inset-0')
-    await expect(editModal.getByRole('heading', { name: 'Edit Pengguna' })).toBeVisible()
+    await expect(editModal.getByRole('heading', { name: 'Edit Data Pengguna' })).toBeVisible()
     await editModal.locator('input[type="text"]').fill('Existing Updated')
     await editModal.getByRole('button', { name: 'Simpan' }).click()
+    // Editing requires an audit reason.
+    await page.locator('.swal2-textarea').fill('Koreksi data uji')
+    await page.getByRole('button', { name: 'Simpan perubahan' }).click()
     await expect(page.getByText('Existing Updated')).toBeVisible({ timeout: 10000 })
 
-    await page.getByRole('row', { name: /Existing Updated/ }).getByRole('button', { name: 'Hapus' }).click()
-    await page.getByRole('button', { name: 'Ya, hapus' }).click()
-    await expect(page.getByText('Existing Updated')).not.toBeVisible({ timeout: 10000 })
+    await page.getByRole('row', { name: /Existing Updated/ }).locator('button[title="Hapus pengguna"]').click()
+    // Deleting also requires an audit reason.
+    await page.locator('.swal2-textarea').fill('Hapus akun uji')
+    await page.getByRole('button', { name: 'Ya, Hapus' }).click()
+    await expect(page.getByRole('row', { name: /Existing Updated/ })).toHaveCount(0, { timeout: 10000 })
 
     expect(calls.some((call) => call.method === 'POST' && call.body?.email === 'new@test.com')).toBe(true)
     expect(calls.some((call) => call.method === 'PATCH' && call.body?.name === 'Existing Updated')).toBe(true)

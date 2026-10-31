@@ -19,7 +19,7 @@
         </label>
         <label class="text-xs font-semibold text-slate-600">
           Kategori
-          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua kategori" showClear @change="handleCategoryFilter" />
+          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="id" optionLabel="name" placeholder="Semua kategori" showClear @change="handleCategoryFilter" />
         </label>
         <label class="text-xs font-semibold text-slate-600">
           Status
@@ -33,7 +33,7 @@
       </div>
       <p class="text-xs leading-relaxed text-slate-600">
         Harga template adalah metadata lama dan tidak menentukan tagihan. Tagihan checkout mengikuti aturan paket undangan (Basic, Premium, Eksklusif) yang disediakan oleh endpoint harga paket.
-        Penjualan memakai pembayaran sukses yang tersettlement; atribusi mengikuti template saat ini pada undangan, karena snapshot template saat transaksi belum tersedia.
+        Pembayaran baru diatribusikan ke template yang dipilih saat checkout. Pembayaran lama tanpa snapshot memakai template undangan saat ini; funnel, cohort, dan perangkat belum dilacak di metrik ini.
       </p>
       <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
     </div>
@@ -824,7 +824,13 @@ const sortOrder = ref('DESC')
 const currentPage = ref(1)
 const pageSize = ref(20)
 const searchTerm = ref('')
-const categoryFilter = ref(typeof route.query.category === 'string' ? route.query.category : null)
+const categoryFilter = ref(
+  typeof route.query.categoryId === 'string'
+    ? route.query.categoryId
+    : typeof route.query.category === 'string'
+      ? route.query.category
+      : null,
+)
 const activeFilter = ref('')
 const metricsDays = ref(30)
 const periodOptions = [
@@ -850,9 +856,14 @@ const statusOptions = ref([
 ])
 
 watch(
-  () => route.query.category,
-  (value) => {
-    const nextCategory = typeof value === 'string' ? value : null
+  () => [route.query.categoryId, route.query.category],
+  ([categoryId, categoryName]) => {
+    const nextCategory =
+      typeof categoryId === 'string'
+        ? categoryId
+        : typeof categoryName === 'string'
+          ? categoryName
+          : null
     if (nextCategory === categoryFilter.value) return
     categoryFilter.value = nextCategory
     loadData({ page: 1 })
@@ -995,6 +1006,23 @@ async function loadData(options = {}) {
     total.value = Number(tmplRes.total ?? tmplRes.data?.length ?? tmplRes.length ?? 0)
 
     categories.value = catRes.data || catRes
+    if (!route.query.categoryId && typeof route.query.category === 'string') {
+      const legacyCategory = categories.value.find(
+        (category) =>
+          category.name === route.query.category ||
+          category.aliases?.includes(route.query.category),
+      )
+      if (legacyCategory) {
+        categoryFilter.value = legacyCategory.id
+        router.replace({
+          query: {
+            ...route.query,
+            category: undefined,
+            categoryId: legacyCategory.id,
+          },
+        })
+      }
+    }
     availableSections.value = sectRes.data || sectRes
     audioList.value = audioRes.data || audioRes
     lastLoadedAt.value = new Date()
@@ -1031,13 +1059,17 @@ function resetSearch() {
   searchTerm.value = ''
   categoryFilter.value = null
   activeFilter.value = ''
-  router.replace({ query: { ...route.query, category: undefined } })
+  router.replace({ query: { ...route.query, category: undefined, categoryId: undefined } })
   loadData({ page: 1 })
 }
 
 function handleCategoryFilter() {
   router.replace({
-    query: { ...route.query, category: categoryFilter.value || undefined },
+    query: {
+      ...route.query,
+      category: undefined,
+      categoryId: categoryFilter.value || undefined,
+    },
   })
   loadData({ page: 1 })
 }

@@ -69,7 +69,7 @@ async function setupAffiliateMocks(page) {
     route.fulfill({
       status: 200,
       contentType: 'application/json',
-      body: JSON.stringify({ id: 1, name: 'John Doe', email: 'john@test.com', isAdmin: true, emailVerifiedAt: '2026-06-06T00:00:00.000Z' }),
+      body: JSON.stringify({ id: 1, name: 'John Doe', email: 'john@test.com', isAdmin: true, isApproved: true, emailVerifiedAt: '2026-06-06T00:00:00.000Z' }),
     });
   });
 
@@ -136,7 +136,9 @@ test.describe('Affiliate System Flow', () => {
     });
   });
 
-  test('should navigate to affiliate dashboard and show correct stats', async ({ page }) => {
+  // Reseller customer pages are hidden on purpose: /affiliate/dashboard redirects to /dashboard
+  // and checkout has no affiliate field (commit d767a17). Re-enable with the feature.
+  test.skip('should navigate to affiliate dashboard and show correct stats', async ({ page }) => {
     await page.goto(`${BASE_URL}/affiliate/dashboard`, { waitUntil: 'networkidle' });
     
     // Check balance stats using more robust text matching
@@ -156,7 +158,7 @@ test.describe('Affiliate System Flow', () => {
     console.log('✅ Affiliate Dashboard verifikasi berhasil');
   });
 
-  test('should handle withdrawal request submission', async ({ page }) => {
+  test.skip('should handle withdrawal request submission', async ({ page }) => {
     await page.goto(`${BASE_URL}/affiliate/dashboard`, { waitUntil: 'networkidle' });
 
     // In our mock, there is already a pending withdrawal
@@ -169,7 +171,7 @@ test.describe('Affiliate System Flow', () => {
     console.log('✅ Withdrawal status verifikasi berhasil');
   });
 
-  test('should pre-fill affiliate code from URL in checkout', async ({ page }) => {
+  test.skip('should pre-fill affiliate code from URL in checkout', async ({ page }) => {
     // Mock invitation lookup for checkout
     await page.route('**/api/invitation/my/slug/test-inv', (route) => {
         console.log('[MOCK]: Intercepted invitation lookup');
@@ -202,8 +204,8 @@ test.describe('Admin Affiliate Management', () => {
   test('should show reseller list in admin panel', async ({ page }) => {
     await page.goto(`${BASE_URL}/admin/affiliate/resellers`);
     await expect(page.getByText('Manajemen Reseller')).toBeVisible({ timeout: 10000 });
-    await expect(page.getByText('John Doe')).toBeVisible();
-    await expect(page.getByText('RESELLER123')).toBeVisible();
+    await expect(page.getByText('John Doe').first()).toBeVisible();
+    await expect(page.getByText('RESELLER123').first()).toBeVisible();
     console.log('✅ Admin Reseller list verifikasi berhasil');
   });
 
@@ -212,7 +214,7 @@ test.describe('Admin Affiliate Management', () => {
     await expect(page.getByText('Antrean Penarikan Dana')).toBeVisible({ timeout: 10000 });
     await expect(page.getByText('John Doe').first()).toBeVisible();
     await expect(page.getByText('Rp 50.000')).toBeVisible();
-    await expect(page.getByText('Setujui')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Catat Selesai/ })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Tolak', exact: true })).toBeVisible();
     console.log('✅ Admin Withdrawal queue verifikasi berhasil');
   });

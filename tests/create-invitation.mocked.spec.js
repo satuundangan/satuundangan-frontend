@@ -172,7 +172,7 @@ test.describe('Create Invitation Flow (Mocked)', () => {
     const createRequest = page.waitForRequest(
       (r) => r.url().includes('/api/invitation') && r.method() === 'POST',
     )
-    await page.getByRole('button', { name: /Simpan & Preview/i }).click()
+    await page.getByRole('button', { name: /Simpan & Selesai/i }).click()
     await createRequest
 
     // Expect to be redirected to preview page
