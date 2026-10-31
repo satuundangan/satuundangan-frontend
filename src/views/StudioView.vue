@@ -2791,7 +2791,7 @@ async function saveAndPreview() {
       clearDraft()
       hasUnsavedChanges.value = false
       toast.success("Berhasil menyimpan data undangan!")
-      router.push({ path: '/preview', query: { slug: result.slug } })
+      router.push({ path: '/preview', query: { slug: result.slug, id: result.id } })
    } catch (error) { 
      console.error(error)
      const errorMsg = error.response?.data?.message || error.message || 'Gagal menyimpan data!'
