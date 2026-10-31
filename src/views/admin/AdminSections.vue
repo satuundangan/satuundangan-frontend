@@ -33,6 +33,18 @@
         <span class="text-sm">{{ item.templateUseCount ?? 0 }} template</span>
         <span class="block text-[10px] text-slate-500">{{ item.enabledTemplateUseCount ?? 0 }} memakai section ini</span>
       </template>
+      <template #cell(samplePreview)="{ item }">
+        <a
+          v-if="samplePreviewHref(item)"
+          :href="samplePreviewHref(item)"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs font-semibold text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900"
+        >
+          Lihat {{ item.samplePreviewTemplate.name }}
+        </a>
+        <span v-else class="text-xs text-slate-500">Belum ada contoh preview</span>
+      </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
           <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
@@ -115,6 +127,7 @@ const headers = [
   { label: 'Key (Kode Sistem)', key: 'key' },
   { label: 'Status', key: 'is_active' },
   { label: 'Dampak penggunaan', key: 'templateUseCount' },
+  { label: 'Contoh output', key: 'samplePreview' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -128,6 +141,17 @@ const loadError = ref('')
 const lastLoadedAt = ref(null)
 function resetSearch() {
   handleSearch('')
+}
+
+function samplePreviewHref(item) {
+  const previewUrl = item.samplePreviewTemplate?.previewUrl
+  if (!previewUrl) return null
+  try {
+    const url = new URL(previewUrl, window.location.origin)
+    return ['http:', 'https:'].includes(url.protocol) ? url.toString() : null
+  } catch {
+    return null
+  }
 }
 
 async function loadSections() {
