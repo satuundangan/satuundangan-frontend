@@ -77,6 +77,12 @@ export const fetchAdminTemplates = (params) =>
   apiFetch(withParams('/admin/template-designs', params))
 export const fetchAdminTemplateMetrics = (params) =>
   apiFetch(withParams('/admin/template-designs/metrics', params))
+export const fetchAdminTemplateRevisions = (id) =>
+  apiFetch(`/admin/template-designs/${id}/revisions`)
+export const rollbackAdminTemplateRevision = (id, revisionId) =>
+  apiFetch(`/admin/template-designs/${id}/revisions/${revisionId}/rollback`, {
+    method: 'POST',
+  })
 export const createAdminTemplate = (payload) =>
   apiFetch('/admin/template-designs', {
     method: 'POST',

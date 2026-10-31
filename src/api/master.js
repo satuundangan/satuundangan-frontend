@@ -94,6 +94,11 @@ export const replaceAdminAudioFile = async (id, file, payload = {}) => {
 // Bank/Payment Methods
 export const fetchAdminPaletteColors = (params) =>
   apiFetch(withParams('/admin/palette-colors', params))
+export const updateAdminPaletteColor = (id, payload) =>
+  apiFetch(`/admin/palette-colors/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  })
 
 export const fetchAdminBanks = (params) => apiFetch(withParams('/admin/banks', params))
 export const createAdminBank = (payload) =>
