@@ -45,6 +45,12 @@ export const uploadAdminAudio = async (file, payload = {}) => {
         title: payload.title,
         category: payload.category,
         url: upload.fileUrl,
+        source: payload.source,
+        credit: payload.credit,
+        licenseStatus: payload.licenseStatus || 'unknown',
+        format: file.type || null,
+        fileSizeBytes: file.size,
+        durationSeconds: payload.durationSeconds ?? null,
       })
     }
     throw new Error(err.message || 'Upload audio failed')
@@ -55,6 +61,11 @@ export const uploadAdminAudio = async (file, payload = {}) => {
 export const deleteAdminAudio = (id) =>
   apiFetch(`/admin/audio/${id}`, {
     method: 'DELETE',
+  })
+export const updateAdminAudioMetadata = (id, payload) =>
+  apiFetch(`/admin/audio/${id}`, {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
   })
 
 // Bank/Payment Methods
