@@ -800,7 +800,7 @@ function playbackStatusLabel(track) {
   return ({
     unverified: 'belum diperiksa di browser',
     checking: 'sedang memuat',
-    playable: 'metadata berhasil dimuat',
+    playable: 'siap diputar di browser',
     failed: 'gagal dimuat di browser',
     timeout: 'waktu habis saat memuat',
   })[playbackAuditStates.value[track.id] || audioPlaybackStates.value[track.id] || 'unverified']
