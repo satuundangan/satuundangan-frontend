@@ -19,7 +19,7 @@
         </label>
         <label class="text-xs font-semibold text-slate-600">
           Kategori
-          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua kategori" showClear @change="loadData({ page: 1 })" />
+          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua kategori" showClear @change="handleCategoryFilter" />
         </label>
         <label class="text-xs font-semibold text-slate-600">
           Status
@@ -58,11 +58,15 @@
 
         <Column header="Preview" class="w-16">
           <template #body="{ data }">
-            <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
-              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data)" />
+            <div class="flex w-20 flex-col items-center gap-1">
+              <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data) && !brokenThumbnailIds.has(data.id)" @error="markThumbnailBroken(data.id)" />
               <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
                 <i class="fa-solid fa-image text-xs"></i>
               </div>
+              </div>
+              <span v-if="!resolveTemplateThumbnail(data)" class="text-center text-[9px] font-medium text-amber-700">URL belum ada</span>
+              <span v-else-if="brokenThumbnailIds.has(data.id)" class="text-center text-[9px] font-medium text-rose-700">Gagal dimuat</span>
             </div>
           </template>
         </Column>
@@ -165,10 +169,32 @@
           :class="isThemeBuilderActive ? 'max-w-6xl' : 'max-w-3xl'">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Template' : 'Tambah Template' }}</h2>
-            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
+            <div class="flex items-center gap-3">
+              <button v-if="editing" type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50" @click="loadRevisionHistory">Riwayat versi</button>
+              <button type="button" class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
+            </div>
           </div>
 
           <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submitForm">
+            <div v-if="editing && showRevisionHistory" class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-semibold text-slate-900">Revisi tersimpan</h3>
+                  <p class="mt-1 text-xs text-slate-600">{{ currentInvitationCount ?? '—' }} undangan saat ini memakai template ini. Pemulihan mengubah konfigurasi template aktif; snapshot undangan tetap utuh.</p>
+                </div>
+                <span v-if="loadingRevisions" class="text-xs text-slate-500">Memuat…</span>
+              </div>
+              <p v-if="!loadingRevisions && !revisionHistory.length" class="text-xs text-slate-500">Belum ada revisi sebelumnya. Revisi pertama disimpan saat perubahan berikutnya berhasil.</p>
+              <div v-else class="space-y-2">
+                <div v-for="revision in revisionHistory" :key="revision.id" class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-800">Versi {{ revision.version }} · {{ formatRevisionDate(revision.createdAt) }}</p>
+                    <p class="text-[11px] text-slate-500">Sebelum perubahan · {{ revision.actorEmail || 'Aktor tidak tercatat' }}</p>
+                  </div>
+                  <button type="button" class="rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-50" @click="confirmRollback(revision)">Pulihkan versi ini</button>
+                </div>
+              </div>
+            </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Nama</label>
               <input v-model="form.name" type="text"
@@ -211,8 +237,8 @@
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required>
                 <option value="" disabled>Pilih Kategori</option>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.name">
-                  {{ cat.name }}
+                <option v-for="cat in categories" :key="cat.id" :value="cat.name" :disabled="cat.isActive === false && cat.name !== form.category">
+                  {{ cat.name }}{{ cat.isActive === false ? ' (diarsipkan)' : '' }}
                 </option>
               </select>
             </div>
@@ -458,11 +484,13 @@
                 <div v-for="section in availableSections" :key="section.id"
                   class="flex items-center gap-4 rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
                   <input type="checkbox" :checked="isSectionEnabled(section.id)"
+                    :disabled="section.is_active === false && !isSectionEnabled(section.id)"
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
 
                   <span class="text-sm text-slate-700 font-medium min-w-[140px]">
                     {{ section.label }}
+                    <small v-if="section.is_active === false" class="block font-semibold text-amber-700">diarsipkan · tidak tersedia untuk pilihan baru</small>
                     <small class="block font-normal text-slate-500">dipakai {{ section.templateUseCount ?? 0 }} template · {{ section.enabledTemplateUseCount ?? 0 }} aktif</small>
                   </span>
 
@@ -717,6 +745,7 @@
 <script setup>
 import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { useRoute, useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
@@ -729,6 +758,8 @@ import {
   fetchAdminTemplateMetrics,
   createAdminTemplate,
   updateAdminTemplate,
+  fetchAdminTemplateRevisions,
+  rollbackAdminTemplateRevision,
   deleteAdminTemplate,
   fetchAdminCategories,
 } from '@/api/admin.js'
@@ -745,6 +776,8 @@ import {
 } from '@/components/admin/themeBuilderOptions.js'
 
 const toast = useToast()
+const route = useRoute()
+const router = useRouter()
 const thumbnailInput = ref(null)
 const cropper = ref({ show: false, image: '', aspectRatio: 3 / 4, setUrl: null })
 const audioRef = ref(null)
@@ -752,6 +785,7 @@ const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
 const audioIsPlaying = ref(false)
 const templates = ref([])
+const brokenThumbnailIds = ref(new Set())
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const audioList = ref([])
@@ -790,7 +824,7 @@ const sortOrder = ref('DESC')
 const currentPage = ref(1)
 const pageSize = ref(20)
 const searchTerm = ref('')
-const categoryFilter = ref(null)
+const categoryFilter = ref(typeof route.query.category === 'string' ? route.query.category : null)
 const activeFilter = ref('')
 const metricsDays = ref(30)
 const periodOptions = [
@@ -805,11 +839,25 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
+const showRevisionHistory = ref(false)
+const loadingRevisions = ref(false)
+const revisionHistory = ref([])
+const currentInvitationCount = ref(null)
 
 const statusOptions = ref([
   { label: 'Aktif', value: true },
   { label: 'Nonaktif', value: false }
 ])
+
+watch(
+  () => route.query.category,
+  (value) => {
+    const nextCategory = typeof value === 'string' ? value : null
+    if (nextCategory === categoryFilter.value) return
+    categoryFilter.value = nextCategory
+    loadData({ page: 1 })
+  },
+)
 
 const tagInput = ref('')
 const FILTER_GROUP_OPTIONS = [
@@ -943,6 +991,7 @@ async function loadData(options = {}) {
     ])
 
     templates.value = tmplRes.data || tmplRes
+    brokenThumbnailIds.value = new Set()
     total.value = Number(tmplRes.total ?? tmplRes.data?.length ?? tmplRes.length ?? 0)
 
     categories.value = catRes.data || catRes
@@ -982,6 +1031,14 @@ function resetSearch() {
   searchTerm.value = ''
   categoryFilter.value = null
   activeFilter.value = ''
+  router.replace({ query: { ...route.query, category: undefined } })
+  loadData({ page: 1 })
+}
+
+function handleCategoryFilter() {
+  router.replace({
+    query: { ...route.query, category: categoryFilter.value || undefined },
+  })
   loadData({ page: 1 })
 }
 
@@ -996,11 +1053,22 @@ function formatRupiah(amount) {
 
 function templateCompleteness(template) {
   const hasPreview = Boolean(template.previewUrl)
-  const hasThumbnail = Boolean(template.thumbnailUrl || resolveTemplateThumbnail(template))
+  const thumbnailUrl = resolveTemplateThumbnail(template)
+  const thumbnailFailed = brokenThumbnailIds.value.has(template.id)
+  const hasThumbnail = Boolean(thumbnailUrl) && !thumbnailFailed
   const renderer = template.componentKey || template.slug
   const hasRenderer = renderer === DYNAMIC_THEME_KEY || existingRendererKeys.value.includes(renderer)
-  const missing = [!hasPreview && 'demo', !hasThumbnail && 'thumbnail', !hasRenderer && 'renderer'].filter(Boolean)
+  const missing = [
+    !hasPreview && 'demo',
+    !thumbnailUrl && 'thumbnail URL',
+    thumbnailFailed && 'thumbnail gagal dimuat',
+    !hasRenderer && 'renderer',
+  ].filter(Boolean)
   return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Metadata lengkap' }
+}
+
+function markThumbnailBroken(templateId) {
+  brokenThumbnailIds.value = new Set([...brokenThumbnailIds.value, templateId])
 }
 
 function getCategoryColor(categoryName) {
@@ -1147,6 +1215,8 @@ function removeTag(index) {
 
 function openCreate() {
   editing.value = null
+  showRevisionHistory.value = false
+  revisionHistory.value = []
   tagInput.value = ''
   audioSearch.value = ''
   showAudioDropdown.value = false
@@ -1181,6 +1251,9 @@ function openCreate() {
 
 function openEdit(template) {
   editing.value = template
+  showRevisionHistory.value = false
+  revisionHistory.value = []
+  currentInvitationCount.value = null
   tagInput.value = ''
   audioSearch.value = ''
   showAudioDropdown.value = false
@@ -1383,6 +1456,37 @@ async function submitForm() {
   if (saving.value) return
   try {
     const payload = buildPayload()
+    if (editing.value) {
+      const impact = await fetchAdminTemplateRevisions(editing.value.id)
+      const labels = {
+        name: 'Nama', slug: 'Slug', componentKey: 'Renderer', category: 'Kategori',
+        price: 'Metadata harga', previewUrl: 'URL preview', thumbnailUrl: 'Thumbnail',
+        description: 'Deskripsi', seoTitle: 'SEO title', seoDescription: 'SEO description',
+        isActive: 'Status aktif', defaultMusic: 'Musik default', defaultAudioStart: 'Awal musik',
+        defaultAudioEnd: 'Akhir musik', sections: 'Sections', tags: 'Tag',
+        filterGroup: 'Filter group', sampleContent: 'Contoh konten', designConfig: 'Konfigurasi desain',
+        paletteId: 'Palet', paletteColors: 'Warna palet',
+      }
+      const changedFields = Object.keys(payload).filter((key) =>
+        key !== 'paletteId' &&
+        JSON.stringify(normalizePreviewValue(key, payload[key])) !==
+          JSON.stringify(normalizePreviewValue(key, editing.value[key])),
+      )
+      const changedLabel = changedFields.length
+        ? changedFields.map((key) => labels[key] || key).join(', ')
+        : 'Tidak ada perubahan terdeteksi dari data form.'
+      const confirmation = await Swal.fire({
+        title: 'Pratinjau dampak perubahan',
+        text: `Perubahan terdeteksi: ${changedLabel}. Saat ini ${impact.currentInvitationCount} undangan memakai template ini. Revisi konfigurasi saat ini akan disimpan sebelum diterapkan; undangan yang sudah tersimpan tetap mereferensikan template ini.`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#0f172a',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Simpan perubahan',
+        cancelButtonText: 'Kembali mengedit',
+      })
+      if (!confirmation.isConfirmed) return
+    }
     saving.value = true
     if (editing.value) {
       await updateAdminTemplate(editing.value.id, payload)
@@ -1399,6 +1503,62 @@ async function submitForm() {
   } finally {
     saving.value = false
   }
+}
+
+async function loadRevisionHistory() {
+  if (!editing.value) return
+  showRevisionHistory.value = true
+  loadingRevisions.value = true
+  try {
+    const result = await fetchAdminTemplateRevisions(editing.value.id)
+    revisionHistory.value = result.revisions || []
+    currentInvitationCount.value = result.currentInvitationCount ?? 0
+  } catch (error) {
+    toast.error(error.message || 'Gagal memuat riwayat versi')
+  } finally {
+    loadingRevisions.value = false
+  }
+}
+
+async function confirmRollback(revision) {
+  const result = await Swal.fire({
+    title: `Pulihkan versi ${revision.version}?`,
+    text: `Konfigurasi template akan dikembalikan ke ${formatRevisionDate(revision.createdAt)}. ${currentInvitationCount.value ?? 0} undangan yang mengacu pada template ini dapat menampilkan perubahan renderer/configuration. Snapshot data undangan tidak diedit. Versi saat ini akan disimpan sebagai revisi baru.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#b45309',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Pulihkan versi',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await rollbackAdminTemplateRevision(editing.value.id, revision.id)
+    toast.success(`Template dipulihkan ke versi ${revision.version}`)
+    closeForm()
+    loadData({ page: currentPage.value })
+    loadMetrics()
+  } catch (error) {
+    toast.error(error.message || 'Gagal memulihkan versi template')
+  }
+}
+
+function formatRevisionDate(value) {
+  return value ? new Date(value).toLocaleString('id-ID') : 'Waktu tidak tersedia'
+}
+
+function normalizePreviewValue(key, value) {
+  if (key === 'sections') {
+    return (value || []).map((section) => [
+      section.sectionId ?? section.id,
+      Number(section.order),
+      Boolean(section.is_enabled),
+    ])
+  }
+  if (['price', 'defaultAudioStart', 'defaultAudioEnd'].includes(key)) {
+    return value === null || value === undefined ? null : Number(value)
+  }
+  return value ?? null
 }
 
 async function confirmDelete(template) {
