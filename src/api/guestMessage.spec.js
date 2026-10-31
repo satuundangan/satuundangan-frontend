@@ -5,7 +5,7 @@ vi.mock('./client', () => ({ apiFetch }))
 
 import { createGuestMessage } from './guestMessage'
 
-describe('createGuestMessage legacy payload normalization', () => {
+describe('createGuestMessage', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     window.history.replaceState({}, '', '/')
@@ -33,14 +33,13 @@ describe('createGuestMessage legacy payload normalization', () => {
     })
   })
 
-  it('preserves canonical fields and extracts the personal guest token from the route', async () => {
+  it('keeps the legacy two-argument call and links its personal token', async () => {
     window.history.replaceState({}, '', '/inv/romeo-juliet/private-token')
 
-    await createGuestMessage({
-      invitationId: 10,
-      guestName: 'Tamu Contoh',
+    await createGuestMessage(10, {
+      name: 'Tamu Contoh',
       message: 'Saya hadir.',
-      rsvpStatus: 'hadir',
+      attendance: 'hadir',
       totalGuests: '2',
     })
 
