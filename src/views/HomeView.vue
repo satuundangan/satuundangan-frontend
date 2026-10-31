@@ -612,15 +612,7 @@
     <Footer />
 
     <!-- Nova AI Floating Button (hidden — experimental, re-enable post-launch cleanup) -->
-    <!-- <FloatingNovaButton @require-auth="showAuthModal = true" /> -->
-
-    <!-- Auth Modal (triggered by Nova when user not logged in) -->
-    <AuthModal
-      :show="showAuthModal"
-      :authMode="authMode"
-      @update:authMode="authMode = $event"
-      @close="showAuthModal = false"
-    />
+    <!-- If re-enabled, open the login modal through the navbar (?login=true), not a second AuthModal. -->
 
     <!-- Modal Pilih Template -->
     <div
@@ -1024,7 +1016,6 @@ import { featuresFor } from '@/config/packageFeatures'
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getPackages } from '@/api/payment'
 import { fetchArticles } from '@/api/article'
-import AuthModal from '@/components/modal/AuthModal.vue'
 import {
   buildStyleFilters,
   buildPackageFilters,
@@ -1046,23 +1037,6 @@ function choosePlan(planId) {
   selectedPlan.value = planId
   showModal.value = true
 }
-const showAuthModal = ref(false)
-const authMode = ref('login')
-
-watch(
-  () => route.query,
-  (query) => {
-    if (query?.login === 'true') {
-      authMode.value = 'login'
-      showAuthModal.value = true
-    } else if (query?.register === 'true') {
-      authMode.value = 'register'
-      showAuthModal.value = true
-    }
-  },
-  { immediate: true },
-)
-
 watch(showModal, (val) => {
   if (val) {
     document.body.style.overflow = 'hidden'

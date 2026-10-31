@@ -26,18 +26,17 @@ test.describe('Email verification flow (mocked)', () => {
 
     await page.goto(`${BASE_URL}/?register=true`)
     
-    // ?register=true opens the navbar modal and the home-page modal, so act on the top-most (last) one.
-    await page.getByPlaceholder('John Doe').last().fill('Test User')
-    await page.getByPlaceholder('nama@email.com').last().fill('test@mail.com')
-    await page.locator('input[type="password"]').last().fill('password123')
-
+    await page.getByPlaceholder('John Doe').fill('Test User')
+    await page.getByPlaceholder('nama@email.com').fill('test@mail.com')
+    await page.locator('input[type="password"]').fill('password123')
+    
     // Check Terms agreement if exists (based on code analysis it exists in AuthModal)
-    const termsCheckbox = page.locator('input[type="checkbox"]').last()
+    const termsCheckbox = page.locator('input[type="checkbox"]')
     if (await termsCheckbox.isVisible()) {
       await termsCheckbox.check()
     }
 
-    await page.getByRole('button', { name: 'Daftar Gratis' }).last().click()
+    await page.getByRole('button', { name: 'Daftar Gratis' }).click()
 
     // Verify development link is visible
     await expect(page.getByText('Development verification link:')).toBeVisible()
