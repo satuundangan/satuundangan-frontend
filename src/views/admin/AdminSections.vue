@@ -45,6 +45,17 @@
         </a>
         <span v-else class="text-xs text-slate-500">Belum ada contoh preview</span>
       </template>
+      <template #cell(rendererCoverage)="{ item }">
+        <div v-if="item.rendererCoverage?.length" class="space-y-2">
+          <div v-for="coverage in item.rendererCoverage" :key="coverage.renderer">
+            <p class="font-mono text-[11px] font-semibold" :class="rendererIsRegistered(coverage.renderer) ? 'text-emerald-700' : 'text-rose-700'">
+              {{ coverage.renderer }} · {{ rendererIsRegistered(coverage.renderer) ? 'terdaftar' : 'tidak ditemukan' }}
+            </p>
+            <p class="text-[10px] text-slate-500">{{ coverage.templateCount }} template · {{ coverage.publishedTemplateCount }} terbit · dukungan paket belum dipetakan</p>
+          </div>
+        </div>
+        <span v-else class="text-xs text-slate-500">Belum ada section aktif pada template</span>
+      </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
           <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
@@ -113,6 +124,7 @@ import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminSections, createAdminSection, updateAdminSection, deleteAdminSection } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
+import { templateComponentKeys, DYNAMIC_THEME_KEY } from '@/utils/templateRegistry'
 
 const toast = useToast()
 const sections = ref([])
@@ -128,6 +140,7 @@ const headers = [
   { label: 'Status', key: 'is_active' },
   { label: 'Dampak penggunaan', key: 'templateUseCount' },
   { label: 'Contoh output', key: 'samplePreview' },
+  { label: 'Renderer dan paket', key: 'rendererCoverage' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -152,6 +165,10 @@ function samplePreviewHref(item) {
   } catch {
     return null
   }
+}
+
+function rendererIsRegistered(renderer) {
+  return renderer === DYNAMIC_THEME_KEY || templateComponentKeys.includes(renderer)
 }
 
 async function loadSections() {
