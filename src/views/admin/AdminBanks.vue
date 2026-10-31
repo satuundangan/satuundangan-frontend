@@ -69,11 +69,12 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
           </div>
         </div>
+        <p v-if="logoIssueLabel(bank)" class="-mt-2 mb-2 text-[10px] font-semibold text-amber-700">{{ logoIssueLabel(bank) }}</p>
         
         <h3 class="font-medium text-slate-900 text-center text-sm">{{ bank.name }}</h3>
         <span class="mt-1 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="bank.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'">{{ bank.isActive === false ? 'Diarsipkan' : 'Aktif' }}</span>
         <p class="text-xs text-slate-500 text-center mt-1">{{ bank.code }}</p>
-        <p v-if="bank.code && hasDuplicateCode(bank)" class="mt-1 text-[10px] font-semibold text-amber-700">Kode duplikat</p>
+        <p v-if="bank.code && hasDuplicateCode(bank)" class="mt-1 text-[10px] font-semibold text-amber-700">Kode duplikat di {{ bank.duplicateCodeCount }} master</p>
         <p class="mt-2 text-center text-[10px] text-slate-500">{{ bank.bankAccountUseCount ?? 0 }} undangan bank · {{ bank.walletUseCount ?? 0 }} e-wallet</p>
         <button type="button" class="mt-3 rounded-lg border border-slate-200 px-3 py-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50" @click="toggleBankActive(bank)">{{ bank.isActive === false ? 'Aktifkan lagi' : 'Arsipkan' }}</button>
       </div>
@@ -96,7 +97,7 @@
       <template #cell(logo)="{ item }">
         <div class="h-10 w-16 flex items-center justify-center bg-white rounded border border-slate-100 overflow-hidden p-1">
           <img v-if="item.logo && !brokenLogos.has(item.id)" :src="item.logo" :alt="item.name" class="max-h-full max-w-full object-contain" @error="markLogoBroken(item.id)" />
-          <span v-else class="text-[10px] text-slate-300 font-bold uppercase">No Logo</span>
+          <span v-else class="text-[10px] text-amber-700 font-bold uppercase">{{ item.logo ? 'Gagal dimuat' : 'Logo kosong' }}</span>
         </div>
       </template>
       <template #cell(name)="{ item }">
@@ -104,7 +105,7 @@
         <span class="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="item.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'">{{ item.isActive === false ? 'Diarsipkan' : 'Aktif' }}</span>
       </template>
       <template #cell(code)="{ item }">
-        <span class="font-mono text-xs" :class="hasDuplicateCode(item) ? 'text-amber-700' : 'text-slate-500'">{{ item.code || '-' }}{{ hasDuplicateCode(item) ? ' · duplikat' : '' }}</span>
+        <span class="font-mono text-xs" :class="hasDuplicateCode(item) ? 'text-amber-700' : 'text-slate-500'">{{ item.code || '-' }}{{ hasDuplicateCode(item) ? ` · duplikat (${item.duplicateCodeCount})` : '' }}</span>
       </template>
       <template #cell(usage)="{ item }">
         <span class="text-xs">{{ item.bankAccountUseCount ?? 0 }} bank · {{ item.walletUseCount ?? 0 }} e-wallet</span>
@@ -136,6 +137,7 @@
             <div>
               <label class="text-sm font-medium text-slate-600">Kode (Opsional)</label>
               <input v-model="form.code" type="text" placeholder="Contoh: 014" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+              <p class="mt-1 text-xs text-slate-500">Preview tersimpan: <span class="font-mono">{{ form.code.trim() || '—' }}</span>. Spasi di awal/akhir akan dipangkas; format bank atau e-wallet lainnya tidak dibatasi.</p>
             </div>
 
             <div>
@@ -238,9 +240,13 @@ async function loadBanks() {
 }
 
 function hasDuplicateCode(bank) {
-  if (!bank.code) return false
-  const normalized = bank.code.trim().toLowerCase()
-  return banks.value.filter((candidate) => candidate.code?.trim().toLowerCase() === normalized).length > 1
+  return Number(bank.duplicateCodeCount || 0) > 1
+}
+
+function logoIssueLabel(bank) {
+  if (!bank.logo?.trim()) return 'Logo belum diisi'
+  if (brokenLogos.value.has(bank.id)) return 'URL logo gagal dimuat di browser'
+  return ''
 }
 
 function markLogoBroken(id) {
