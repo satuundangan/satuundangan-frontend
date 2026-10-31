@@ -15,5 +15,6 @@
 
 ## Deployment
 
-- Not pushed yet. Change is intended for `development` only.
+- Frontend commit `be4ac15` was pushed to `development`.
+- Cloudflare Pages development workflow #41226350375 completed successfully.
 - Production was not touched.
