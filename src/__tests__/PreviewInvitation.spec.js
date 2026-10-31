@@ -47,4 +47,25 @@ describe('PreviewInvitation.vue (SAT-10)', () => {
 
     expect(api.push).toHaveBeenCalledWith('/invitation/invitation-123/edit')
   })
+
+  it('uses the loaded ID when editing an existing invitation preview', async () => {
+    routeState.query = { slug: 'undangan-lama' }
+    api.getMyInvitationBySlug.mockResolvedValueOnce({
+      id: 456,
+      slug: 'undangan-lama',
+      isPublished: false,
+    })
+
+    const wrapper = mount(PreviewInvitation, {
+      global: { stubs: { AuthModal: true } },
+    })
+
+    await flushPromises()
+    const editButton = wrapper.findAll('button').find((button) => button.text().includes('Edit Data'))
+    expect(editButton).toBeDefined()
+
+    await editButton.trigger('click')
+
+    expect(api.push).toHaveBeenCalledWith('/invitation/456/edit')
+  })
 })
