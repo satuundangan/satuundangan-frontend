@@ -21,6 +21,7 @@ import AdminDashboard from '@/views/admin/AdminDashboard.vue'
 import AdminUsers from '@/views/admin/AdminUsers.vue'
 import AdminInvitations from '@/views/admin/AdminInvitations.vue'
 import AdminTemplates from '@/views/admin/AdminTemplates.vue'
+import AdminPaletteColors from '@/views/admin/AdminPaletteColors.vue'
 import AdminAudio from '@/views/admin/AdminAudio.vue'
 import AdminBanks from '@/views/admin/AdminBanks.vue'
 import AdminSections from '@/views/admin/AdminSections.vue'
@@ -262,6 +263,12 @@ const router = createRouter({
       name: 'admin-templates',
       component: AdminTemplates,
       meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/palettes',
+      name: 'admin-palettes',
+      component: AdminPaletteColors,
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Master Palet' },
     },
     {
       path: '/admin/audio',
