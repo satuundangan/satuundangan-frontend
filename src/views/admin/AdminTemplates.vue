@@ -37,6 +37,23 @@
       </p>
       <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
     </div>
+    <section class="mb-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">Preview dan pemeriksaan aset halaman ini</h2>
+        <p class="mt-1 text-xs text-slate-500">Cek thumbnail dan musik latar untuk maksimal {{ templates.length }} template pada halaman ini. Hasil hanya berlaku di sesi browser ini.</p>
+        <p v-if="assetAuditStarted" class="mt-2 text-xs font-medium text-slate-700" aria-live="polite">
+          {{ assetAuditProgress }} dari {{ templates.length }} template selesai · {{ assetAuditCounts.available }} aset tersedia · {{ assetAuditCounts.failed }} gagal · {{ assetAuditCounts.timeout }} waktu habis
+        </p>
+      </div>
+      <button
+        type="button"
+        class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-700 disabled:cursor-wait disabled:opacity-60"
+        :disabled="loading || isAssetAuditRunning || !templates.length"
+        @click="checkTemplateAssets"
+      >
+        {{ isAssetAuditRunning ? 'Memeriksa aset…' : assetAuditStarted ? 'Ulangi cek aset' : 'Periksa aset halaman ini' }}
+      </button>
+    </section>
     <div v-if="!loadError" class="card">
       <DataTable
         :value="templates"
@@ -126,7 +143,7 @@
         <Column header="Omzet tercatat">
           <template #body="{ data }">{{ formatRupiah(templateMetric(data.id)?.grossAmount) }}</template>
         </Column>
-        <Column header="Kelengkapan metadata" style="min-width: 10rem">
+        <Column header="Metadata & renderer" style="min-width: 10rem">
           <template #body="{ data }">
             <span class="text-xs" :class="templateCompleteness(data).ok ? 'text-emerald-700' : 'text-amber-700'">
               {{ templateCompleteness(data).label }}
@@ -134,14 +151,23 @@
           </template>
         </Column>
 
+        <Column header="Status aset" style="min-width: 12rem">
+          <template #body="{ data }">
+            <div class="flex flex-col gap-1 text-[10px] text-slate-600">
+              <span>Thumbnail: {{ templateAssetLabel(data.id, 'thumbnail') }}</span>
+              <span>Musik: {{ templateAssetLabel(data.id, 'audio') }}</span>
+            </div>
+          </template>
+        </Column>
+
         <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
           <template #body="{ data }">
             <div class="flex justify-end gap-1.5">
-              <a :href="`/demo/${data.slug}`" target="_blank"
+              <button type="button" @click="openTemplatePreview(data)"
                 class="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-600 hover:bg-blue-50 transition-colors"
-                title="Lihat Demo">
+                title="Preview mobile dan desktop" :aria-label="`Preview ${data.name} di mobile dan desktop`">
                 <i class="pi pi-eye text-xs"></i>
-              </a>
+              </button>
               <button
                 class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors"
                 @click="openEdit(data)"
@@ -161,6 +187,31 @@
       <p class="px-3 pb-3 text-xs text-slate-500">
         Periode {{ metricPeriodLabel }} · paid = transaksi sukses, bernilai positif, dan tersettlement. “Terbit saat ini” adalah status sekarang pada undangan dalam periode, bukan transaksi.
       </p>
+    </div>
+
+    <div v-if="previewTemplate" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6" @click.self="previewTemplate = null">
+      <section class="flex h-full max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" aria-label="Preview template">
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900">Preview {{ previewTemplate.name }}</h2>
+            <p class="text-[11px] text-slate-500">Mode tampilan pada lebar viewport terpilih; bukan pengukuran performa.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-semibold" :class="previewDevice === 'mobile' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600'" @click="previewDevice = 'mobile'">Mobile · 390 px</button>
+            <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-semibold" :class="previewDevice === 'desktop' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600'" @click="previewDevice = 'desktop'">Desktop</button>
+            <button type="button" class="rounded-lg px-3 py-1.5 text-lg text-slate-500 hover:bg-slate-100" aria-label="Tutup preview" @click="previewTemplate = null">×</button>
+          </div>
+        </header>
+        <div class="flex min-h-0 flex-1 justify-center overflow-auto bg-slate-100 p-3 sm:p-5">
+          <iframe
+            :key="`${previewTemplate.slug}-${previewDevice}`"
+            :src="`/demo/${encodeURIComponent(previewTemplate.slug)}`"
+            :title="`Preview ${previewTemplate.name} ${previewDevice}`"
+            class="h-full min-h-[600px] max-w-full rounded-xl border border-slate-300 bg-white shadow-sm transition-[width]"
+            :style="{ width: previewDevice === 'mobile' ? '390px' : '100%' }"
+          />
+        </div>
+      </section>
     </div>
 
     <Transition name="fade">
@@ -786,6 +837,13 @@ const audioDuration = ref(0)
 const audioIsPlaying = ref(false)
 const templates = ref([])
 const brokenThumbnailIds = ref(new Set())
+const templateAssetStates = ref({})
+const assetAuditStarted = ref(false)
+const isAssetAuditRunning = ref(false)
+const assetAuditGeneration = ref(0)
+const assetAuditCleanupHandlers = new Set()
+const previewTemplate = ref(null)
+const previewDevice = ref('mobile')
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const audioList = ref([])
@@ -849,6 +907,19 @@ const showRevisionHistory = ref(false)
 const loadingRevisions = ref(false)
 const revisionHistory = ref([])
 const currentInvitationCount = ref(null)
+const assetAuditProgress = computed(() =>
+  Object.values(templateAssetStates.value).filter(
+    (state) => state.thumbnail !== 'checking' && state.audio !== 'checking',
+  ).length,
+)
+const assetAuditCounts = computed(() => {
+  const states = Object.values(templateAssetStates.value).flatMap((state) => [state.thumbnail, state.audio])
+  return {
+    available: states.filter((state) => state === 'available').length,
+    failed: states.filter((state) => state === 'failed').length,
+    timeout: states.filter((state) => state === 'timeout').length,
+  }
+})
 
 const statusOptions = ref([
   { label: 'Aktif', value: true },
@@ -977,6 +1048,9 @@ const loadError = ref('')
 const lastLoadedAt = ref(null)
 
 async function loadData(options = {}) {
+  cancelAssetAudit()
+  templateAssetStates.value = {}
+  assetAuditStarted.value = false
   if (options.page) currentPage.value = options.page
   if (options.rows) pageSize.value = options.rows
   loading.value = true
@@ -1086,17 +1160,139 @@ function formatRupiah(amount) {
 function templateCompleteness(template) {
   const hasPreview = Boolean(template.previewUrl)
   const thumbnailUrl = resolveTemplateThumbnail(template)
-  const thumbnailFailed = brokenThumbnailIds.value.has(template.id)
-  const hasThumbnail = Boolean(thumbnailUrl) && !thumbnailFailed
   const renderer = template.componentKey || template.slug
   const hasRenderer = renderer === DYNAMIC_THEME_KEY || existingRendererKeys.value.includes(renderer)
   const missing = [
     !hasPreview && 'demo',
     !thumbnailUrl && 'thumbnail URL',
-    thumbnailFailed && 'thumbnail gagal dimuat',
     !hasRenderer && 'renderer',
   ].filter(Boolean)
-  return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Metadata lengkap' }
+  return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Konfigurasi lengkap' }
+}
+
+function openTemplatePreview(template) {
+  previewDevice.value = 'mobile'
+  previewTemplate.value = template
+}
+
+function templateAssetLabel(templateId, assetType) {
+  const status = templateAssetStates.value[templateId]?.[assetType]
+  if (!assetAuditStarted.value || !status) return 'belum dicek'
+  return ({
+    checking: 'sedang diperiksa',
+    available: 'tersedia',
+    failed: 'gagal dimuat',
+    timeout: 'waktu habis',
+    'not-configured': 'tidak diatur',
+    external: 'cek lewat preview',
+  })[status] || 'belum dicek'
+}
+
+function resolveTemplateAudioUrl(choice) {
+  if (!choice || choice.startsWith('yt:')) return null
+  if (choice.startsWith('http') || choice.startsWith('/')) return choice
+  return `/audio/${choice}`
+}
+
+function checkTemplateAssets() {
+  if (loading.value || isAssetAuditRunning.value || !templates.value.length) return
+  cancelAssetAudit()
+  const generation = assetAuditGeneration.value
+  const pageTemplates = [...templates.value]
+  templateAssetStates.value = Object.fromEntries(pageTemplates.map((template) => [template.id, {
+    thumbnail: resolveTemplateThumbnail(template) ? 'checking' : 'not-configured',
+    audio: !template.defaultMusic ? 'not-configured' : template.defaultMusic.startsWith('yt:') ? 'external' : 'checking',
+  }]))
+  assetAuditStarted.value = true
+  isAssetAuditRunning.value = true
+
+  let nextIndex = 0
+  const checkNextTemplate = async () => {
+    while (nextIndex < pageTemplates.length && generation === assetAuditGeneration.value) {
+      const template = pageTemplates[nextIndex++]
+      const [thumbnail, audio] = await Promise.all([
+        checkImageAsset(resolveTemplateThumbnail(template)),
+        template.defaultMusic?.startsWith('yt:')
+          ? Promise.resolve('external')
+          : checkAudioAsset(resolveTemplateAudioUrl(template.defaultMusic)),
+      ])
+      if (generation !== assetAuditGeneration.value) return
+      templateAssetStates.value = { ...templateAssetStates.value, [template.id]: { thumbnail, audio } }
+    }
+  }
+
+  Promise.all(Array.from({ length: Math.min(4, pageTemplates.length) }, () => checkNextTemplate())).finally(() => {
+    if (generation === assetAuditGeneration.value) isAssetAuditRunning.value = false
+  })
+}
+
+function checkImageAsset(url) {
+  if (!url) return Promise.resolve('not-configured')
+  return new Promise((resolve) => {
+    const image = new Image()
+    let settled = false
+    const cleanup = () => finish(null)
+    const timeoutId = window.setTimeout(() => finish('timeout'), 10000)
+    const finish = (result) => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timeoutId)
+      image.onload = null
+      image.onerror = null
+      image.src = ''
+      assetAuditCleanupHandlers.delete(cleanup)
+      resolve(result)
+    }
+    assetAuditCleanupHandlers.add(cleanup)
+    image.onload = () => finish('available')
+    image.onerror = () => finish('failed')
+    image.src = url
+    if (image.complete && image.naturalWidth > 0) finish('available')
+  })
+}
+
+function checkAudioAsset(url) {
+  if (!url) return Promise.resolve('not-configured')
+  return new Promise((resolve) => {
+    const audio = new Audio()
+    let settled = false
+    let timeoutId
+    const cleanup = () => finish(null)
+    const removeListeners = () => {
+      audio.removeEventListener('canplay', handleCanPlay)
+      audio.removeEventListener('error', handleError)
+      if (timeoutId) window.clearTimeout(timeoutId)
+      assetAuditCleanupHandlers.delete(cleanup)
+    }
+    const finish = (result) => {
+      if (settled) return
+      settled = true
+      removeListeners()
+      audio.pause()
+      audio.removeAttribute('src')
+      audio.load()
+      resolve(result)
+    }
+    const handleCanPlay = () => finish('available')
+    const handleError = () => finish('failed')
+    assetAuditCleanupHandlers.add(cleanup)
+    audio.preload = 'auto'
+    audio.addEventListener('canplay', handleCanPlay)
+    audio.addEventListener('error', handleError)
+    timeoutId = window.setTimeout(() => finish('timeout'), 10000)
+    try {
+      audio.src = url
+      audio.load()
+    } catch {
+      finish('failed')
+    }
+  })
+}
+
+function cancelAssetAudit() {
+  assetAuditGeneration.value += 1
+  for (const cleanup of [...assetAuditCleanupHandlers]) cleanup()
+  isAssetAuditRunning.value = false
 }
 
 function markThumbnailBroken(templateId) {
@@ -1616,7 +1812,9 @@ async function confirmDelete(template) {
 }
 
 const handleKeydown = (e) => {
-  if (e.key === 'Escape' && showForm.value) closeForm()
+  if (e.key !== 'Escape') return
+  if (previewTemplate.value) previewTemplate.value = null
+  else if (showForm.value) closeForm()
 }
 
 onMounted(() => {
@@ -1626,6 +1824,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  cancelAssetAudit()
   window.removeEventListener('keydown', handleKeydown)
 })
 </script>
