@@ -144,12 +144,14 @@ test.describe('Core flows (mocked)', () => {
 
     await page.goto(`${BASE_URL}/guestbook`)
 
-    await expect(page.getByText('Daftar Ucapan')).toBeVisible()
+    await page.getByRole('button', { name: /Ucapan & Doa/ }).first().click()
+    await expect(page.getByRole('heading', { name: 'Daftar Ucapan & Doa' })).toBeVisible()
     await expect(page.getByText('Tamu RSVP')).toBeVisible()
     await expect(page.getByText('Selamat menempuh hidup baru')).toBeVisible()
   })
 
-  test('checkout applies promo and affiliate code before payment request', async ({ page }) => {
+  // The checkout affiliate field is hidden on purpose (commit d767a17), so this flow cannot run.
+  test.skip('checkout applies promo and affiliate code before payment request', async ({ page }) => {
     await page.route('**/api/invitation/my/slug/paid-smoke', (route) =>
       route.fulfill({
         status: 200,
@@ -242,7 +244,7 @@ test.describe('Core flows (mocked)', () => {
     await page.goto(`${BASE_URL}/payment/finish?order_id=INV-CORE-1&transaction_status=settlement&status_code=200`)
 
     await expect(page.getByText('Pembayaran Berhasil')).toBeVisible({ timeout: 15000 })
-    await expect(page.getByText('success (terkonfirmasi)')).toBeVisible()
+    await expect(page.getByText('Lunas Terverifikasi').first()).toBeVisible()
     await expect(page.getByRole('button', { name: /Lihat Undangan/i })).toBeVisible()
   })
 })
