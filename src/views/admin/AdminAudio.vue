@@ -148,6 +148,10 @@
               <p class="mt-2 text-[11px] text-slate-600">
                 Dipakai: {{ track.templateUseCount ?? 0 }} template · {{ track.invitationUseCount ?? 0 }} undangan
               </p>
+              <p v-if="track.sameUrlTrackCount > 1" class="text-[10px] font-semibold text-amber-700">
+                URL identik dipakai {{ track.sameUrlTrackCount }} entri audio
+              </p>
+              <p class="text-[10px] text-slate-500">Player: {{ playbackStatusLabel(track) }}</p>
               <p class="mt-2 text-[10px] text-slate-500">
                 Sumber: {{ track.source || 'belum tercatat' }} · Kredit: {{ track.credit || 'belum tercatat' }}
               </p>
@@ -184,7 +188,9 @@
                 <audio 
                   controls 
                   class="h-8 w-full opacity-80"
-                  @play="handlePlay($event)"
+                  @play="handlePlay($event, track)"
+                  @canplay="markAudioPlayable(track)"
+                  @error="markAudioFailed(track)"
                 >
                   <source :src="track.url" type="audio/mpeg">
                 </audio>
@@ -268,6 +274,8 @@
               <span>Sumber: {{ data.source || 'belum tercatat' }}</span>
               <span>Kredit: {{ data.credit || 'belum tercatat' }}</span>
               <span class="text-slate-500">Izin: {{ licenseStatusLabel(data.licenseStatus) }}</span>
+              <span v-if="data.sameUrlTrackCount > 1" class="font-semibold text-amber-700">URL identik: {{ data.sameUrlTrackCount }} entri</span>
+              <span class="text-slate-500">Player: {{ playbackStatusLabel(data) }}</span>
             </div>
           </template>
         </Column>
@@ -285,7 +293,9 @@
             <audio 
               controls 
               class="h-8 w-full opacity-80 scale-90 origin-left"
-              @play="handlePlay($event)"
+              @play="handlePlay($event, data)"
+              @canplay="markAudioPlayable(data)"
+              @error="markAudioFailed(data)"
             >
               <source :src="data.url" type="audio/mpeg">
             </audio>
@@ -543,6 +553,7 @@ const showForm = ref(false)
 const saving = ref(false)
 const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
+const audioPlaybackStates = ref({})
 const selectedAudioFile = ref(null)
 const editingAudio = ref(null)
 const replacementAudioFile = ref(null)
@@ -605,6 +616,7 @@ async function loadAudio() {
     const res = await fetchAdminAudio()
     const data = Array.isArray(res) ? res : (res.data || [])
     audios.value = data
+    audioPlaybackStates.value = {}
     lastLoadedAt.value = new Date()
   } catch (error) {
     loadError.value = error.message || 'Gagal memuat musik'
@@ -640,11 +652,31 @@ function openEdit(track) {
 }
 function closeForm() { showForm.value = false; resetForm() }
 
-function handlePlay(event) {
+function handlePlay(event, track) {
   if (currentPlayingAudio.value && currentPlayingAudio.value !== event.target) {
     currentPlayingAudio.value.pause()
   }
   currentPlayingAudio.value = event.target
+  if (audioPlaybackStates.value[track.id] !== 'playable') {
+    audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'checking' }
+  }
+}
+
+function markAudioPlayable(track) {
+  audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'playable' }
+}
+
+function markAudioFailed(track) {
+  audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'failed' }
+}
+
+function playbackStatusLabel(track) {
+  return ({
+    unverified: 'belum diperiksa di browser',
+    checking: 'sedang memuat',
+    playable: 'metadata berhasil dimuat',
+    failed: 'gagal dimuat di browser',
+  })[audioPlaybackStates.value[track.id] || 'unverified']
 }
 
 function copyLink(url) {
