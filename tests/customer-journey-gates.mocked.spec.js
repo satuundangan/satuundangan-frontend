@@ -146,8 +146,8 @@ test('Midtrans success waits for backend confirmation before showing share actio
   )
 
   await page.goto(`${baseUrl}/payment/finish?order_id=order-1&transaction_status=settlement`)
-  await expect(page.getByRole('heading', { name: 'Pembayaran Diproses' })).toBeVisible()
-  await expect(page.getByRole('button', { name: 'Tambah Tamu & Bagikan' })).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Menunggu Pembayaran' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Kelola Tamu & Bagikan' })).toHaveCount(0)
 })
 
 test('confirmed payment leads to guest management for the paid invitation', async ({ page }) => {
@@ -187,7 +187,7 @@ test('confirmed payment leads to guest management for the paid invitation', asyn
   )
 
   await page.goto(`${baseUrl}/payment/finish?order_id=order-2`)
-  await page.getByRole('button', { name: 'Tambah Tamu & Bagikan' }).click()
+  await page.getByRole('button', { name: 'Kelola Tamu & Bagikan' }).click()
   await expect(page).toHaveURL(/\/guests\?slug=test-undangan$/)
   await expect(page.getByRole('combobox').first()).toHaveValue('42')
 })
