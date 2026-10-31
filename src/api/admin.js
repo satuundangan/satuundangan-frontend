@@ -15,6 +15,15 @@ export const fetchAdminUsers = (params) => apiFetch(withParams('/admin/users', p
 export const fetchAdminUserStats = () => apiFetch('/admin/users/stats')
 export const fetchAdminCustomerDetail = (id) =>
   apiFetch(`/admin/users/${encodeURIComponent(id)}/customer`)
+export const confirmAdminWeddingCompletion = (userId, invitationId, reason) =>
+  apiFetch(
+    `/admin/users/${encodeURIComponent(userId)}/invitations/${encodeURIComponent(invitationId)}/event-completion`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+      headers: { 'x-admin-reason': reason },
+    },
+  )
 export const createAdminUser = (payload) =>
   apiFetch('/admin/users', {
     method: 'POST',

@@ -1,7 +1,7 @@
 <template>
   <AdminShell
     title="Audio & Musik"
-    description="Kelola musik latar. Duplikasi file baru diperiksa dari SHA-256; entri lama tanpa hash belum dapat dibandingkan."
+description="Kelola musik latar. Pemakaian dicocokkan dari URL; duplikasi file baru diperiksa dari SHA-256. Sumber dan izin mengikuti catatan admin."
     show-search
     :search="search"
     search-placeholder="Cari judul atau kategori musik"
