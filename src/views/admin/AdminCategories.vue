@@ -35,16 +35,29 @@
         </div>
       </template>
       <template #cell(templateCount)="{ item }">
-        <span class="font-medium">{{ item.templateCount ?? 0 }} template</span>
+        <RouterLink
+          :to="{ name: 'admin-templates', query: { category: item.name } }"
+          class="font-medium text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900 focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-700"
+          :aria-label="`Lihat ${item.templateCount ?? 0} template kategori ${item.name}`"
+        >
+          {{ item.templateCount ?? 0 }} template
+        </RouterLink>
         <span class="block text-[10px] text-slate-500">{{ item.activeTemplateCount ?? 0 }} aktif</span>
       </template>
       <template #cell(invitationCount)="{ item }">
         <span class="font-medium">{{ item.invitationCount ?? 0 }} undangan</span>
       </template>
+      <template #cell(isActive)="{ item }">
+        <span class="rounded-full px-2.5 py-1 text-[10px] font-bold uppercase" :class="item.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-100 text-emerald-700'">
+          {{ item.isActive === false ? 'Diarsipkan' : 'Aktif' }}
+        </span>
+      </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
           <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
             @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+            @click="toggleCategoryActive(item)">{{ item.isActive === false ? 'Aktifkan' : 'Arsipkan' }}</button>
           <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
             @click="confirmDelete(item)">Hapus</button>
         </div>
@@ -123,6 +136,7 @@ const headers = [
   { label: 'Warna', key: 'color' },
   { label: 'Pemakaian template', key: 'templateCount' },
   { label: 'Undangan terkait', key: 'invitationCount' },
+  { label: 'Status', key: 'isActive' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -226,6 +240,30 @@ async function confirmDelete(category) {
     loadData()
   } catch (error) {
     toast.error(error.message || 'Gagal menghapus kategori')
+  }
+}
+
+async function toggleCategoryActive(category) {
+  const nextIsActive = category.isActive === false
+  const result = await Swal.fire({
+    title: nextIsActive ? 'Aktifkan kategori?' : 'Arsipkan kategori?',
+    text: nextIsActive
+      ? 'Kategori akan tersedia kembali di katalog publik. Template dan undangan yang ada tidak berubah.'
+      : `${category.templateCount ?? 0} template dan ${category.invitationCount ?? 0} undangan terkait. Kategori disembunyikan dari daftar publik; referensi yang sudah ada tetap tersimpan.`,
+    icon: nextIsActive ? 'question' : 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: nextIsActive ? 'Aktifkan' : 'Arsipkan',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await updateAdminCategory(category.id, { isActive: nextIsActive })
+    toast.success(nextIsActive ? 'Kategori diaktifkan' : 'Kategori diarsipkan')
+    loadData()
+  } catch (error) {
+    toast.error(error.message || 'Gagal mengubah status kategori')
   }
 }
 
