@@ -28,11 +28,24 @@
       </div>
     </div>
 
+    <div class="mb-4 flex flex-wrap gap-2" role="group" aria-label="Filter status master">
+      <button
+        v-for="filter in statusFilters"
+        :key="filter.value"
+        type="button"
+        class="rounded-full px-3 py-1.5 text-xs font-semibold transition-colors"
+        :class="statusFilter === filter.value ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+        @click="statusFilter = filter.value"
+      >
+        {{ filter.label }} <span class="opacity-70">{{ countForStatus(filter.value) }}</span>
+      </button>
+    </div>
+
     <AdminTableStatus
       :error="loadError"
       :loading="loading"
-      :count="banks.length"
-      :filtered="Boolean(search)"
+      :count="visibleBanks.length"
+      :filtered="Boolean(search) || statusFilter !== 'all'"
       :updated-at="lastLoadedAt"
       @retry="loadBanks"
       @reset="resetSearch"
@@ -42,7 +55,7 @@
     </p>
 
     <div v-if="viewType === 'grid' && !loadError" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      <div v-for="bank in banks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md">
+      <div v-for="bank in visibleBanks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md" :class="bank.isActive === false ? 'opacity-70' : ''">
         <button @click="openEdit(bank)" class="absolute top-2 left-2 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-blue-600 transition-all" title="Edit master">
           <i class="pi pi-pencil"></i>
         </button>
@@ -58,21 +71,26 @@
         </div>
         
         <h3 class="font-medium text-slate-900 text-center text-sm">{{ bank.name }}</h3>
+        <span class="mt-1 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="bank.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'">{{ bank.isActive === false ? 'Diarsipkan' : 'Aktif' }}</span>
         <p class="text-xs text-slate-500 text-center mt-1">{{ bank.code }}</p>
         <p v-if="bank.code && hasDuplicateCode(bank)" class="mt-1 text-[10px] font-semibold text-amber-700">Kode duplikat</p>
         <p class="mt-2 text-center text-[10px] text-slate-500">{{ bank.bankAccountUseCount ?? 0 }} undangan bank · {{ bank.walletUseCount ?? 0 }} e-wallet</p>
+        <button type="button" class="mt-3 rounded-lg border border-slate-200 px-3 py-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50" @click="toggleBankActive(bank)">{{ bank.isActive === false ? 'Aktifkan lagi' : 'Arsipkan' }}</button>
       </div>
 
       <!-- Empty State -->
       <div v-if="!loading && !banks.length" class="col-span-full py-12 text-center text-slate-500">
         Belum ada data bank.
       </div>
+      <div v-else-if="!loading && !visibleBanks.length" class="col-span-full py-12 text-center text-slate-500">
+        Tidak ada master untuk filter ini.
+      </div>
     </div>
 
     <DataTable
       v-else-if="viewType !== 'grid' && !loadError"
       :headers="headers"
-      :items="banks"
+      :items="visibleBanks"
       :loading="loading"
     >
       <template #cell(logo)="{ item }">
@@ -83,6 +101,7 @@
       </template>
       <template #cell(name)="{ item }">
         <span class="font-bold text-slate-900">{{ item.name }}</span>
+        <span class="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="item.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'">{{ item.isActive === false ? 'Diarsipkan' : 'Aktif' }}</span>
       </template>
       <template #cell(code)="{ item }">
         <span class="font-mono text-xs" :class="hasDuplicateCode(item) ? 'text-amber-700' : 'text-slate-500'">{{ item.code || '-' }}{{ hasDuplicateCode(item) ? ' · duplikat' : '' }}</span>
@@ -93,6 +112,7 @@
       <template #cell(actions)="{ item }">
         <div class="flex justify-end">
           <button @click="openEdit(item)" class="mr-3 text-[11px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700">Edit</button>
+          <button @click="toggleBankActive(item)" class="mr-3 text-[11px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900">{{ item.isActive === false ? 'Aktifkan' : 'Arsipkan' }}</button>
           <button @click="confirmDelete(item)" class="text-[11px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-700">Hapus</button>
         </div>
       </template>
@@ -142,7 +162,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
@@ -162,6 +182,25 @@ const saving = ref(false)
 const editing = ref(null)
 const uploadingFile = ref(false)
 const viewType = ref('grid') // 'grid' or 'table'
+const statusFilter = ref('active')
+const statusFilters = [
+  { value: 'active', label: 'Aktif' },
+  { value: 'archived', label: 'Diarsipkan' },
+  { value: 'all', label: 'Semua' },
+]
+const visibleBanks = computed(() => banks.value.filter((bank) => {
+  if (statusFilter.value === 'active') return bank.isActive !== false
+  if (statusFilter.value === 'archived') return bank.isActive === false
+  return true
+}))
+
+function countForStatus(status) {
+  return banks.value.filter((bank) => {
+    if (status === 'active') return bank.isActive !== false
+    if (status === 'archived') return bank.isActive === false
+    return true
+  }).length
+}
 
 const headers = [
   { label: 'Logo', key: 'logo', class: 'w-20' },
@@ -302,6 +341,32 @@ async function confirmDelete(bank) {
     loadBanks()
   } catch (error) {
     toast.error(error.message || 'Gagal menghapus')
+  }
+}
+
+async function toggleBankActive(bank) {
+  const nextIsActive = bank.isActive === false
+  const usageText = `${bank.bankAccountUseCount ?? 0} undangan memakai nama ini sebagai bank dan ${bank.walletUseCount ?? 0} sebagai e-wallet.`
+  const result = await Swal.fire({
+    title: nextIsActive ? 'Aktifkan master lagi?' : 'Arsipkan master?',
+    text: nextIsActive
+      ? 'Master akan kembali berstatus aktif. Snapshot undangan yang tersimpan tidak berubah.'
+      : `${usageText} Master hanya ditandai arsip; snapshot undangan tetap tersimpan dan tidak diubah.`,
+    icon: nextIsActive ? 'question' : 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: nextIsActive ? 'Aktifkan' : 'Arsipkan',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+
+  try {
+    await updateAdminBank(bank.id, { isActive: nextIsActive })
+    toast.success(nextIsActive ? 'Master diaktifkan kembali' : 'Master diarsipkan')
+    await loadBanks()
+  } catch (error) {
+    toast.error(error.message || 'Gagal mengubah status master')
   }
 }
 
