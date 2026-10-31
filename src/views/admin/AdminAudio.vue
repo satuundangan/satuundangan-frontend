@@ -115,12 +115,14 @@ description="Kelola musik latar. Pemakaian dicocokkan dari URL; duplikasi file b
       <div>
         <h2 class="text-sm font-bold text-slate-900">Kesehatan player</h2>
         <p class="mt-1 text-xs text-slate-500">
-          Periksa semua audio yang termuat, termasuk yang tidak terlihat karena pencarian. Pemeriksaan
-          tidak memutar suara.
+          Periksa semua audio yang termuat, termasuk yang tidak terlihat karena pencarian. Browser
+          admin memuat audio tanpa memutar suara; hasil dan waktu observasi disimpan untuk referensi,
+          bukan jaminan ketersediaan server di semua lingkungan.
         </p>
         <p v-if="playbackAuditStarted" class="mt-2 text-xs font-medium text-slate-700" aria-live="polite">
           {{ playbackAuditProgress }} dari {{ audios.length }} selesai · {{ playbackAuditCounts.playable }}
-          siap diputar · {{ playbackAuditCounts.failed }} gagal · {{ playbackAuditCounts.timeout }} waktu habis
+          dapat diputar · {{ playbackAuditCounts.failed }} gagal · {{ playbackAuditCounts.timeout }} waktu habis
+          · {{ playbackAuditCounts.persistFailed }} hasil tidak tersimpan
         </p>
       </div>
       <button
@@ -183,7 +185,7 @@ description="Kelola musik latar. Pemakaian dicocokkan dari URL; duplikasi file b
               <p v-else-if="track.contentHashStatus !== 'checked'" class="text-[10px] text-slate-500">
                 Duplikasi isi file belum diperiksa untuk entri lama
               </p>
-              <p class="text-[10px] text-slate-500">Player: {{ playbackStatusLabel(track) }}</p>
+              <p class="text-[10px] text-slate-500">Player: {{ playbackCheckDetails(track) }}</p>
               <p class="mt-2 text-[10px] text-slate-500">
                 Sumber: {{ track.source || 'belum tercatat' }} · Kredit: {{ track.credit || 'belum tercatat' }}
               </p>
@@ -309,7 +311,7 @@ description="Kelola musik latar. Pemakaian dicocokkan dari URL; duplikasi file b
               <span v-if="data.sameUrlTrackCount > 1" class="font-semibold text-amber-700">URL identik: {{ data.sameUrlTrackCount }} entri</span>
               <span v-if="data.sameContentTrackCount > 1" class="font-semibold text-amber-700">Isi file identik (SHA-256): {{ data.sameContentTrackCount }} entri</span>
               <span v-else-if="data.contentHashStatus !== 'checked'" class="text-slate-500">Hash isi belum tersedia untuk entri lama</span>
-              <span class="text-slate-500">Player: {{ playbackStatusLabel(data) }}</span>
+              <span class="text-slate-500">Player: {{ playbackCheckDetails(data) }}</span>
             </div>
           </template>
         </Column>
@@ -589,6 +591,7 @@ const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
 const audioPlaybackStates = ref({})
 const playbackAuditStates = ref({})
+const playbackAuditPersistFailures = ref({})
 const playbackAuditStarted = ref(false)
 const isPlaybackAuditRunning = ref(false)
 const selectedAudioFile = ref(null)
@@ -623,12 +626,15 @@ const bulkQueue = ref([])
 const playbackAuditGeneration = ref(0)
 const playbackAuditCleanupHandlers = new Set()
 const playbackAuditProgress = computed(() =>
-  Object.values(playbackAuditStates.value).filter((state) => state !== 'checking').length,
+  Object.values(playbackAuditStates.value).filter(
+    (state) => state !== 'checking' && state !== 'saving',
+  ).length,
 )
 const playbackAuditCounts = computed(() => ({
   playable: Object.values(playbackAuditStates.value).filter((state) => state === 'playable').length,
   failed: Object.values(playbackAuditStates.value).filter((state) => state === 'failed').length,
   timeout: Object.values(playbackAuditStates.value).filter((state) => state === 'timeout').length,
+  persistFailed: Object.values(playbackAuditPersistFailures.value).filter(Boolean).length,
 }))
 
 const form = reactive({ title: '', category: 'romantic', url: '', fileName: '', source: '', credit: '', licenseStatus: 'unknown', durationSeconds: null })
@@ -660,6 +666,7 @@ const lastLoadedAt = ref(null)
 async function loadAudio() {
   cancelPlaybackAudit()
   playbackAuditStates.value = {}
+  playbackAuditPersistFailures.value = {}
   playbackAuditStarted.value = false
   loading.value = true
   loadError.value = ''
@@ -737,7 +744,26 @@ function checkAllAudioPlayback() {
       const track = tracks[nextTrackIndex++]
       const result = await checkAudioPlayback(track.url)
       if (generation !== playbackAuditGeneration.value) return
-      playbackAuditStates.value = { ...playbackAuditStates.value, [track.id]: result }
+      playbackAuditStates.value = { ...playbackAuditStates.value, [track.id]: 'saving' }
+      try {
+        const savedTrack = await updateAdminAudioMetadata(track.id, { playbackCheckResult: result })
+        if (generation !== playbackAuditGeneration.value) return
+        Object.assign(track, savedTrack)
+        playbackAuditPersistFailures.value = {
+          ...playbackAuditPersistFailures.value,
+          [track.id]: false,
+        }
+      } catch {
+        if (generation !== playbackAuditGeneration.value) return
+        playbackAuditPersistFailures.value = {
+          ...playbackAuditPersistFailures.value,
+          [track.id]: true,
+        }
+      } finally {
+        if (generation === playbackAuditGeneration.value) {
+          playbackAuditStates.value = { ...playbackAuditStates.value, [track.id]: result }
+        }
+      }
     }
   }
 
@@ -800,10 +826,30 @@ function playbackStatusLabel(track) {
   return ({
     unverified: 'belum diperiksa di browser',
     checking: 'sedang memuat',
-    playable: 'siap diputar di browser',
-    failed: 'gagal dimuat di browser',
-    timeout: 'waktu habis saat memuat',
-  })[playbackAuditStates.value[track.id] || audioPlaybackStates.value[track.id] || 'unverified']
+    saving: 'menyimpan hasil browser',
+    playable: 'dapat diputar pada browser ini',
+    failed: 'gagal dimuat pada browser ini',
+    timeout: 'waktu habis pada browser ini',
+  })[
+    playbackAuditStates.value[track.id] ||
+      audioPlaybackStates.value[track.id] ||
+      track.playbackCheckResult ||
+      'unverified'
+  ]
+}
+
+function playbackCheckDetails(track) {
+  const savedAt = track.playbackCheckAt
+    ? new Date(track.playbackCheckAt).toLocaleString('id-ID', {
+        dateStyle: 'short',
+        timeStyle: 'short',
+      })
+    : null
+  const savedLabel = savedAt ? ` · cek tersimpan ${savedAt}` : ''
+  const failureLabel = playbackAuditPersistFailures.value[track.id]
+    ? ' · hasil terbaru belum tersimpan'
+    : ''
+  return `${playbackStatusLabel(track)}${savedLabel}${failureLabel}`
 }
 
 function copyLink(url) {
