@@ -21,7 +21,7 @@
                 {{ p.label }}
               </option>
             </select>
-            <p v-if="selectedPresetDescription" class="text-[11px] text-slate-400">
+            <p v-if="selectedPresetDescription" class="text-[11px] text-slate-500">
               {{ selectedPresetDescription }}
             </p>
             <button
@@ -132,7 +132,7 @@
           <div v-if="config.hero.variant === 'art-directed'" class="space-y-3 rounded-lg border border-dashed border-slate-200 bg-slate-50/60 p-3" data-testid="hero-2d-layers">
             <div>
               <p class="text-xs font-semibold text-slate-600">Scene 2D berlapis</p>
-              <p class="mt-1 text-[10px] text-slate-400">
+              <p class="mt-1 text-[10px] text-slate-500">
                 Upload/ganti tiap layer tanpa mengubah kode. Layer memakai kanvas transparan agar bisa disusun menjadi satu scene.
               </p>
             </div>
@@ -188,7 +188,7 @@
               {{ o.label }}
             </option>
           </select>
-          <p class="text-[10px] text-slate-400">
+          <p class="text-[10px] text-slate-500">
             Berlaku hanya jika foto mempelai belum diisi. Pilihan "ornamen" butuh URL Pola (Pattern)
             di bagian Dekorasi — jika kosong, otomatis kembali ke sembunyikan.
           </p>
@@ -246,7 +246,7 @@
                 class="space-y-2"
               >
                 <div class="flex items-center gap-2">
-                  <label class="w-10 text-[10px] uppercase text-slate-400">Dari</label>
+                  <label class="w-10 text-[10px] uppercase text-slate-500">Dari</label>
                   <input
                     type="color"
                     v-model="config.sections[key].background.from"
@@ -261,7 +261,7 @@
                   />
                 </div>
                 <div class="flex items-center gap-2">
-                  <label class="w-10 text-[10px] uppercase text-slate-400">Ke</label>
+                  <label class="w-10 text-[10px] uppercase text-slate-500">Ke</label>
                   <input
                     type="color"
                     v-model="config.sections[key].background.to"
@@ -377,7 +377,7 @@
                 {{ motion.label }}
               </option>
             </select>
-            <p class="mt-1 text-[10px] text-slate-400">
+            <p class="mt-1 text-[10px] text-slate-500">
               Menggerakkan ornamen global dan menambahkan aksen dekoratif ringan pada preview.
             </p>
           </div>
@@ -429,7 +429,7 @@
       <!-- Transisi -->
       <div class="rounded-lg border border-slate-200 p-4">
         <h3 class="mb-1 text-sm font-semibold text-slate-700">Transisi Undangan</h3>
-        <p class="mb-3 text-[10px] leading-relaxed text-slate-400">
+        <p class="mb-3 text-[10px] leading-relaxed text-slate-500">
           Atur cara cover terbuka, perpindahan antar section, dan animasi konten saat masuk viewport.
         </p>
         <div data-testid="transitions-group" class="space-y-3">
@@ -501,7 +501,7 @@
       </div>
 
       <!-- Version -->
-      <p class="text-xs text-slate-400">Versi skema: {{ config.version }} (tetap)</p>
+      <p class="text-xs text-slate-500">Versi skema: {{ config.version }} (tetap)</p>
     </div>
 
     <div>
@@ -518,7 +518,7 @@
           :src="previewSrc"
           class="h-[70vh] w-full rounded-lg border border-slate-200 bg-white"
         />
-        <p class="mt-1 text-[10px] text-slate-400">Preview memakai data contoh.</p>
+        <p class="mt-1 text-[10px] text-slate-500">Preview memakai data contoh.</p>
       </div>
     </div>
   </div>

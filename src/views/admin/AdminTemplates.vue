@@ -2,15 +2,55 @@
   <AdminShell title="Template Desain" description="Kelola daftar template undangan"
     action-label="Tambah Template"
     @action="openCreate">
-    <div class="card">
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="total"
+      :filtered="Boolean(searchTerm || categoryFilter || (activeFilter !== '' && activeFilter !== null))"
+      :updated-at="lastLoadedAt"
+      @retry="loadData"
+      @reset="resetSearch"
+    />
+    <div class="mb-4 rounded-xl border border-slate-200 bg-white p-4">
+      <div class="mb-3 flex flex-wrap items-end gap-3">
+        <label class="min-w-56 flex-1 text-xs font-semibold text-slate-600">
+          Cari nama atau slug
+          <InputText v-model="searchTerm" class="mt-1 w-full" placeholder="Cari template" @keyup.enter="loadData({ page: 1 })" />
+        </label>
+        <label class="text-xs font-semibold text-slate-600">
+          Kategori
+          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="id" optionLabel="name" placeholder="Semua kategori" showClear @change="handleCategoryFilter" />
+        </label>
+        <label class="text-xs font-semibold text-slate-600">
+          Status
+          <Select v-model="activeFilter" class="mt-1 block min-w-32" :options="statusOptions" optionValue="value" optionLabel="label" placeholder="Semua" showClear @change="loadData({ page: 1 })" />
+        </label>
+        <label class="text-xs font-semibold text-slate-600">
+          Periode metrik
+          <Select v-model="metricsDays" class="mt-1 block min-w-32" :options="periodOptions" optionValue="value" optionLabel="label" @change="loadMetrics" />
+        </label>
+        <button class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white" @click="loadData({ page: 1 })">Terapkan</button>
+      </div>
+      <p class="text-xs leading-relaxed text-slate-600">
+        Harga template adalah metadata lama dan tidak menentukan tagihan. Tagihan checkout mengikuti aturan paket undangan (Basic, Premium, Eksklusif) yang disediakan oleh endpoint harga paket.
+        Pembayaran baru diatribusikan ke template yang dipilih saat checkout. Pembayaran lama tanpa snapshot memakai template undangan saat ini; funnel, cohort, dan perangkat belum dilacak di metrik ini.
+      </p>
+      <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
+    </div>
+    <div v-if="!loadError" class="card">
       <DataTable
-        v-model:filters="filters"
         :value="templates"
+        lazy
         paginator
-        :rows="10"
+        :first="(currentPage - 1) * pageSize"
+        :rows="pageSize"
+        :totalRecords="total"
         dataKey="id"
-        filterDisplay="row"
         :loading="loading"
+        :sortField="sortBy"
+        :sortOrder="sortOrder === 'ASC' ? 1 : -1"
+        @page="handlePage"
+        @sort="handleSort"
         class="p-datatable-sm"
       >
         <template #empty> Tidak ada template ditemukan. </template>
@@ -18,11 +58,15 @@
 
         <Column header="Preview" class="w-16">
           <template #body="{ data }">
-            <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
-              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data)" />
+            <div class="flex w-20 flex-col items-center gap-1">
+              <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data) && !brokenThumbnailIds.has(data.id)" @error="markThumbnailBroken(data.id)" />
               <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
                 <i class="fa-solid fa-image text-xs"></i>
               </div>
+              </div>
+              <span v-if="!resolveTemplateThumbnail(data)" class="text-center text-[9px] font-medium text-amber-700">URL belum ada</span>
+              <span v-else-if="brokenThumbnailIds.has(data.id)" class="text-center text-[9px] font-medium text-rose-700">Gagal dimuat</span>
             </div>
           </template>
         </Column>
@@ -31,21 +75,15 @@
           <template #body="{ data }">
             <span class="font-medium text-slate-900">{{ data.name }}</span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari nama" />
-          </template>
         </Column>
 
         <Column field="slug" header="Slug" sortable style="min-width: 10rem">
           <template #body="{ data }">
             <span class="text-slate-500 text-xs">{{ data.slug }}</span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <InputText v-model="filterModel.value" type="text" @input="filterCallback()" placeholder="Cari slug" />
-          </template>
         </Column>
 
-        <Column field="category" header="Kategori" sortable :showFilterMenu="false" style="min-width: 10rem">
+        <Column field="category" header="Kategori" sortable style="min-width: 10rem">
           <template #body="{ data }">
             <span
               class="inline-flex items-center gap-1.5 rounded-full px-2 py-1 text-[10px] font-bold uppercase bg-slate-100 text-slate-700">
@@ -54,19 +92,9 @@
               {{ data.category }}
             </span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <Select v-model="filterModel.value" @change="filterCallback()" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua" :showClear="true" class="w-full">
-              <template #option="slotProps">
-                <div class="flex items-center gap-2">
-                  <span class="h-2 w-2 rounded-full" :style="{ backgroundColor: slotProps.option.color }"></span>
-                  <span>{{ slotProps.option.name }}</span>
-                </div>
-              </template>
-            </Select>
-          </template>
         </Column>
 
-        <Column field="price" header="Harga" sortable style="min-width: 8rem">
+        <Column field="price" header="Harga lama · info" sortable style="min-width: 9rem">
           <template #body="{ data }">
             <span class="text-slate-700 font-medium">
               {{ new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(data.price || 0) }}
@@ -74,15 +102,35 @@
           </template>
         </Column>
 
-        <Column field="isActive" header="Status" sortable :showFilterMenu="false" style="min-width: 8rem">
+        <Column field="isActive" header="Status" style="min-width: 8rem">
           <template #body="{ data }">
             <span class="inline-flex items-center rounded-full px-2.5 py-1 text-[10px] font-bold uppercase"
-              :class="data.isActive ? 'bg-emerald-100 text-emerald-600' : 'bg-slate-200 text-slate-600'">
+              :class="data.isActive ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-200 text-slate-600'">
               {{ data.isActive ? 'Aktif' : 'Nonaktif' }}
             </span>
           </template>
-          <template #filter="{ filterModel, filterCallback }">
-            <Select v-model="filterModel.value" @change="filterCallback()" :options="statusOptions" optionValue="value" optionLabel="label" placeholder="Semua" :showClear="true" class="w-full" />
+        </Column>
+
+        <Column header="Dipakai">
+          <template #body="{ data }">{{ templateMetric(data.id)?.invitationCount ?? '—' }}</template>
+        </Column>
+        <Column header="Terbit saat ini">
+          <template #body="{ data }">{{ templateMetric(data.id)?.publishedCount ?? '—' }}</template>
+        </Column>
+        <Column header="Transaksi paid">
+          <template #body="{ data }">{{ templateMetric(data.id)?.paidCount ?? '—' }}</template>
+        </Column>
+        <Column header="Gratis">
+          <template #body="{ data }">{{ templateMetric(data.id)?.freeCount ?? '—' }}</template>
+        </Column>
+        <Column header="Omzet tercatat">
+          <template #body="{ data }">{{ formatRupiah(templateMetric(data.id)?.grossAmount) }}</template>
+        </Column>
+        <Column header="Kelengkapan metadata" style="min-width: 10rem">
+          <template #body="{ data }">
+            <span class="text-xs" :class="templateCompleteness(data).ok ? 'text-emerald-700' : 'text-amber-700'">
+              {{ templateCompleteness(data).label }}
+            </span>
           </template>
         </Column>
 
@@ -110,6 +158,9 @@
           </template>
         </Column>
       </DataTable>
+      <p class="px-3 pb-3 text-xs text-slate-500">
+        Periode {{ metricPeriodLabel }} · paid = transaksi sukses, bernilai positif, dan tersettlement. “Terbit saat ini” adalah status sekarang pada undangan dalam periode, bukan transaksi.
+      </p>
     </div>
 
     <Transition name="fade">
@@ -118,10 +169,32 @@
           :class="isThemeBuilderActive ? 'max-w-6xl' : 'max-w-3xl'">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Template' : 'Tambah Template' }}</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <div class="flex items-center gap-3">
+              <button v-if="editing" type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50" @click="loadRevisionHistory">Riwayat versi</button>
+              <button type="button" class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
+            </div>
           </div>
 
           <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submitForm">
+            <div v-if="editing && showRevisionHistory" class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-semibold text-slate-900">Revisi tersimpan</h3>
+                  <p class="mt-1 text-xs text-slate-600">{{ currentInvitationCount ?? '—' }} undangan saat ini memakai template ini. Pemulihan mengubah konfigurasi template aktif; snapshot undangan tetap utuh.</p>
+                </div>
+                <span v-if="loadingRevisions" class="text-xs text-slate-500">Memuat…</span>
+              </div>
+              <p v-if="!loadingRevisions && !revisionHistory.length" class="text-xs text-slate-500">Belum ada revisi sebelumnya. Revisi pertama disimpan saat perubahan berikutnya berhasil.</p>
+              <div v-else class="space-y-2">
+                <div v-for="revision in revisionHistory" :key="revision.id" class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-800">Versi {{ revision.version }} · {{ formatRevisionDate(revision.createdAt) }}</p>
+                    <p class="text-[11px] text-slate-500">Sebelum perubahan · {{ revision.actorEmail || 'Aktor tidak tercatat' }}</p>
+                  </div>
+                  <button type="button" class="rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-50" @click="confirmRollback(revision)">Pulihkan versi ini</button>
+                </div>
+              </div>
+            </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Nama</label>
               <input v-model="form.name" type="text"
@@ -146,7 +219,7 @@
                   <option v-for="key in existingRendererKeys" :key="key" :value="key">{{ key }}</option>
                 </optgroup>
               </select>
-              <p class="mt-1 text-[10px] text-slate-400">
+              <p class="mt-1 text-[10px] text-slate-500">
                 Pilih <span class="font-semibold">Tema Kustom</span> untuk membuka Theme Builder — atur warna, font,
                 background &amp; ornamen langsung dari form ini. Pilihan lain memakai tampilan template yang sudah ada
                 apa adanya (tidak bisa diubah dari sini).
@@ -164,16 +237,17 @@
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required>
                 <option value="" disabled>Pilih Kategori</option>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.name">
-                  {{ cat.name }}
+                <option v-for="cat in categories" :key="cat.id" :value="cat.name" :disabled="cat.isActive === false && cat.name !== form.category">
+                  {{ cat.name }}{{ cat.isActive === false ? ' (diarsipkan)' : '' }}
                 </option>
               </select>
             </div>
             <div>
-              <label class="text-sm font-medium text-slate-600">Harga (Rp)</label>
+              <label class="text-sm font-medium text-slate-600">Harga lama · metadata saja (Rp)</label>
               <input v-model="form.price" type="number" min="0"
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required />
+              <p class="mt-1 text-xs text-slate-500">Nilai ini tidak mengubah tagihan. Checkout memakai harga paket undangan.</p>
             </div>
             <div class="md:col-span-2">
               <label class="text-sm font-medium text-slate-600">Preview URL (Opsional)</label>
@@ -205,7 +279,7 @@
             <!-- SEO -->
             <div class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
               <div class="mb-1 flex items-center gap-2">
-                <i class="fa-solid fa-magnifying-glass text-xs text-slate-400"></i>
+                <i class="fa-solid fa-magnifying-glass text-xs text-slate-500"></i>
                 <label class="text-sm font-semibold text-slate-700">SEO Halaman Demo</label>
               </div>
               <p class="mb-3 text-xs text-slate-500">
@@ -214,18 +288,18 @@
               </p>
               <div class="space-y-3">
                 <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Title</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">SEO Title</label>
                   <input v-model="form.seoTitle" type="text" maxlength="70"
                     placeholder="Undangan Digital Kimi no Na wa — Tema Anime Senja | Satu Undangan"
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoTitle || '').length }}/70 karakter (ideal ≤ 60)</p>
+                  <p class="mt-1 text-[10px] text-slate-500">{{ (form.seoTitle || '').length }}/70 karakter (ideal ≤ 60)</p>
                 </div>
                 <div>
-                  <label class="text-[10px] uppercase font-bold text-slate-400">SEO Description</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">SEO Description</label>
                   <textarea v-model="form.seoDescription" rows="2" maxlength="320"
                     placeholder="Template undangan pernikahan digital bertema senja sinematik dengan komet jatuh dan langit berbintang. Coba demo gratis di Satu Undangan."
                     class="mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
-                  <p class="mt-1 text-[10px] text-slate-400">{{ (form.seoDescription || '').length }}/320 karakter (ideal ≤ 160)</p>
+                  <p class="mt-1 text-[10px] text-slate-500">{{ (form.seoDescription || '').length }}/320 karakter (ideal ≤ 160)</p>
                 </div>
               </div>
             </div>
@@ -238,7 +312,7 @@
                 <span v-for="(tag, index) in form.tags" :key="index"
                   class="flex items-center gap-1 rounded bg-slate-100 px-2 py-1 text-xs font-medium text-slate-700">
                   {{ tag }}
-                  <button type="button" @click="removeTag(index)" class="text-slate-400 hover:text-rose-500">×</button>
+                  <button type="button" @click="removeTag(index)" class="text-slate-500 hover:text-rose-500">×</button>
                 </span>
                 <input v-model="tagInput" @keydown.enter.prevent="addTag" @keydown.,.prevent="addTag" @blur="addTag"
                   type="text" placeholder="Ketik tag dan enter..."
@@ -273,11 +347,11 @@
                     placeholder="Cari musik..."
                     class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                   />
-                  <div v-if="form.defaultMusic && !audioSearch" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs text-slate-400 truncate max-w-[50%]">
+                  <div v-if="form.defaultMusic && !audioSearch" class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-xs text-slate-500 truncate max-w-[50%]">
                     Terpilih: {{ getSelectedAudioTitle }}
                   </div>
                   <div class="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1" v-if="!form.defaultMusic && !audioSearch">
-                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
+                    <i class="fa-solid fa-chevron-down text-[10px] text-slate-500"></i>
                   </div>
                 </div>
 
@@ -303,7 +377,7 @@
                   </div>
                 </div>
               </div>
-              <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-400 truncate">URL: {{ form.defaultMusic }}</p>
+              <p v-if="form.defaultMusic" class="mt-1 text-xs text-slate-500 truncate">URL: {{ form.defaultMusic }}</p>
             </div>
 
             <!-- Audio Trim with Mini Player -->
@@ -325,7 +399,7 @@
                     <input type="range" min="0" :max="audioDuration || 100" step="0.1" :value="audioCurrentTime"
                       @input="seekAudio"
                       class="w-full h-1.5 cursor-pointer appearance-none rounded-full bg-slate-200 accent-slate-900" />
-                    <div class="mt-1 flex justify-between font-mono text-[10px] text-slate-400">
+                    <div class="mt-1 flex justify-between font-mono text-[10px] text-slate-500">
                       <span>{{ formatTime(audioCurrentTime) }}</span>
                       <span>{{ formatTime(audioDuration) }}</span>
                     </div>
@@ -338,33 +412,33 @@
                     class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100">
                     <i class="fa-solid fa-circle-dot text-emerald-500"></i>
                     Set Mulai
-                    <span class="ml-auto font-mono text-slate-400">{{ formatTime(form.defaultAudioStart) }}</span>
+                    <span class="ml-auto font-mono text-slate-500">{{ formatTime(form.defaultAudioStart) }}</span>
                   </button>
                   <button type="button" @click="setTrimEnd"
                     class="flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-100">
                     <i class="fa-solid fa-stop text-rose-400"></i>
                     Set Akhir
-                    <span class="ml-auto font-mono text-slate-400">{{ form.defaultAudioEnd > 0 ? formatTime(form.defaultAudioEnd) : 'Penuh' }}</span>
+                    <span class="ml-auto font-mono text-slate-500">{{ form.defaultAudioEnd > 0 ? formatTime(form.defaultAudioEnd) : 'Penuh' }}</span>
                   </button>
                 </div>
 
                 <!-- Manual inputs -->
                 <div class="mt-3 grid grid-cols-2 gap-2">
                   <div>
-                    <label class="text-[10px] text-slate-400">Mulai (detik)</label>
+                    <label class="text-[10px] text-slate-500">Mulai (detik)</label>
                     <input v-model.number="form.defaultAudioStart" type="number" min="0" step="1"
                       class="mt-0.5 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-slate-400"
                       placeholder="0" />
                   </div>
                   <div>
-                    <label class="text-[10px] text-slate-400">Akhir (detik, 0 = penuh)</label>
+                    <label class="text-[10px] text-slate-500">Akhir (detik, 0 = penuh)</label>
                     <input v-model.number="form.defaultAudioEnd" type="number" min="0" step="1"
                       class="mt-0.5 w-full rounded-lg border border-slate-200 bg-white px-2 py-1.5 text-xs outline-none focus:border-slate-400"
                       placeholder="0" />
                   </div>
                 </div>
 
-                <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-2 text-xs text-slate-400">
+                <p v-if="form.defaultAudioStart > 0 || form.defaultAudioEnd > 0" class="mt-2 text-xs text-slate-500">
                   Diputar dari detik {{ form.defaultAudioStart }}
                   <span v-if="form.defaultAudioEnd > 0"> hingga detik {{ form.defaultAudioEnd }}</span>
                   <span v-else> sampai habis</span>
@@ -376,26 +450,30 @@
               <label class="text-sm font-medium text-slate-600">Palette Warna</label>
               <div class="mt-2 grid grid-cols-3 gap-4 rounded-xl bg-slate-50 p-4 border border-slate-200">
                 <div class="space-y-2">
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Primary</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">Primary</label>
                   <div class="flex items-center gap-2">
                     <input type="color" v-model="customPalette.primary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
                     <input type="text" v-model="customPalette.primary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
                   </div>
                 </div>
                 <div class="space-y-2">
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Secondary</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">Secondary</label>
                   <div class="flex items-center gap-2">
                     <input type="color" v-model="customPalette.secondary" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
                     <input type="text" v-model="customPalette.secondary" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
                   </div>
                 </div>
                 <div class="space-y-2">
-                  <label class="text-[10px] uppercase font-bold text-slate-400">Accent</label>
+                  <label class="text-[10px] uppercase font-bold text-slate-500">Accent</label>
                   <div class="flex items-center gap-2">
                     <input type="color" v-model="customPalette.accent" class="h-8 w-8 cursor-pointer overflow-hidden rounded border-0 bg-transparent" />
                     <input type="text" v-model="customPalette.accent" class="w-full text-[10px] font-mono border-b border-slate-200 bg-transparent uppercase" />
                   </div>
                 </div>
+              </div>
+              <p class="mt-2 text-[10px] text-slate-500">Pemeriksaan dasar rasio warna terhadap teks hitam/putih; cocokkan kembali dengan konteks sebenarnya pada renderer. Ini screening, bukan audit visual.</p>
+              <div class="mt-1 grid grid-cols-1 gap-1 text-[10px] text-slate-600 sm:grid-cols-3">
+                <span v-for="item in paletteContrastSummary" :key="item.label">{{ item.label }}: hitam {{ item.black }}:1 · putih {{ item.white }}:1</span>
               </div>
             </div>
 
@@ -406,13 +484,18 @@
                 <div v-for="section in availableSections" :key="section.id"
                   class="flex items-center gap-4 rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
                   <input type="checkbox" :checked="isSectionEnabled(section.id)"
+                    :disabled="section.is_active === false && !isSectionEnabled(section.id)"
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
 
-                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">{{ section.label }}</span>
+                  <span class="text-sm text-slate-700 font-medium min-w-[140px]">
+                    {{ section.label }}
+                    <small v-if="section.is_active === false" class="block font-semibold text-amber-700">diarsipkan · tidak tersedia untuk pilihan baru</small>
+                    <small class="block font-normal text-slate-500">dipakai {{ section.templateUseCount ?? 0 }} template · {{ section.enabledTemplateUseCount ?? 0 }} aktif</small>
+                  </span>
 
                   <div class="flex items-center gap-2 ml-auto">
-                    <span class="text-[10px] uppercase text-slate-400 font-bold">Urutan:</span>
+                    <span class="text-[10px] uppercase text-slate-500 font-bold">Urutan:</span>
                     <input type="number"
                       :value="getSectionOrder(section.id)"
                       @input="updateSectionOrder(section.id, $event.target.value)"
@@ -421,7 +504,7 @@
                   </div>
                 </div>
               </div>
-              <div v-else class="mt-2 text-sm text-slate-400 italic">
+              <div v-else class="mt-2 text-sm text-slate-500 italic">
                 Belum ada section yang tersedia. Tambahkan di menu Master Fitur.
               </div>
             </div>
@@ -508,7 +591,7 @@
                   </div>
 
                   <div class="rounded-lg border border-slate-200 p-3">
-                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Akad</p>
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-500">Lokasi Akad</p>
                     <input v-model="form.sampleContent.akadLocation.mapUrl" type="text" placeholder="Map URL"
                       class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
                     <input v-model="form.sampleContent.akadLocation.description" type="text" placeholder="Deskripsi lokasi"
@@ -517,7 +600,7 @@
                       class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
                   </div>
                   <div class="rounded-lg border border-slate-200 p-3">
-                    <p class="mb-2 text-xs font-bold uppercase text-slate-400">Lokasi Resepsi</p>
+                    <p class="mb-2 text-xs font-bold uppercase text-slate-500">Lokasi Resepsi</p>
                     <input v-model="form.sampleContent.resepsiLocation.mapUrl" type="text" placeholder="Map URL"
                       class="mb-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400" />
                     <input v-model="form.sampleContent.resepsiLocation.description" type="text" placeholder="Deskripsi lokasi"
@@ -662,18 +745,21 @@
 <script setup>
 import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { useRoute, useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
 import Select from 'primevue/select'
-import Tag from 'primevue/tag'
-import { FilterMatchMode } from '@primevue/core/api'
 import slugify from 'slugify'
 import {
   fetchAdminTemplates,
+  fetchAdminTemplateMetrics,
   createAdminTemplate,
   updateAdminTemplate,
+  fetchAdminTemplateRevisions,
+  rollbackAdminTemplateRevision,
   deleteAdminTemplate,
   fetchAdminCategories,
 } from '@/api/admin.js'
@@ -690,6 +776,8 @@ import {
 } from '@/components/admin/themeBuilderOptions.js'
 
 const toast = useToast()
+const route = useRoute()
+const router = useRouter()
 const thumbnailInput = ref(null)
 const cropper = ref({ show: false, image: '', aspectRatio: 3 / 4, setUrl: null })
 const audioRef = ref(null)
@@ -697,6 +785,7 @@ const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
 const audioIsPlaying = ref(false)
 const templates = ref([])
+const brokenThumbnailIds = ref(new Set())
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const audioList = ref([])
@@ -732,21 +821,54 @@ onClickOutside(audioDropdownRef, () => {
 const total = ref(0)
 const sortBy = ref('id')
 const sortOrder = ref('DESC')
-const filters = ref({
-  name: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  slug: { value: null, matchMode: FilterMatchMode.CONTAINS },
-  category: { value: null, matchMode: FilterMatchMode.EQUALS },
-  isActive: { value: null, matchMode: FilterMatchMode.EQUALS }
-})
+const currentPage = ref(1)
+const pageSize = ref(20)
+const searchTerm = ref('')
+const categoryFilter = ref(
+  typeof route.query.categoryId === 'string'
+    ? route.query.categoryId
+    : typeof route.query.category === 'string'
+      ? route.query.category
+      : null,
+)
+const activeFilter = ref('')
+const metricsDays = ref(30)
+const periodOptions = [
+  { label: '7 hari', value: 7 },
+  { label: '30 hari', value: 30 },
+  { label: '90 hari', value: 90 },
+]
+const templateMetrics = ref(new Map())
+const metricPeriodLabel = ref('')
+const metricsError = ref('')
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
+const showRevisionHistory = ref(false)
+const loadingRevisions = ref(false)
+const revisionHistory = ref([])
+const currentInvitationCount = ref(null)
 
 const statusOptions = ref([
   { label: 'Aktif', value: true },
   { label: 'Nonaktif', value: false }
 ])
+
+watch(
+  () => [route.query.categoryId, route.query.category],
+  ([categoryId, categoryName]) => {
+    const nextCategory =
+      typeof categoryId === 'string'
+        ? categoryId
+        : typeof categoryName === 'string'
+          ? categoryName
+          : null
+    if (nextCategory === categoryFilter.value) return
+    categoryFilter.value = nextCategory
+    loadData({ page: 1 })
+  },
+)
 
 const tagInput = ref('')
 const FILTER_GROUP_OPTIONS = [
@@ -761,6 +883,31 @@ const customPalette = reactive({
   secondary: '#64748B',
   accent: '#38BDF8'
 })
+
+function colorLuminance(color) {
+  const match = /^#?([a-f\d]{3}|[a-f\d]{6})$/i.exec(String(color || '').trim())
+  if (!match) return null
+  let hex = match[1]
+  if (hex.length === 3) hex = hex.split('').map((char) => char + char).join('')
+  const channels = [0, 2, 4].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255)
+  const linear = channels.map((value) => value <= 0.04045 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4)
+  return linear[0] * 0.2126 + linear[1] * 0.7152 + linear[2] * 0.0722
+}
+
+function contrastRatio(foreground, background) {
+  const foregroundLuminance = colorLuminance(foreground)
+  const backgroundLuminance = colorLuminance(background)
+  if (foregroundLuminance === null || backgroundLuminance === null) return '—'
+  const lighter = Math.max(foregroundLuminance, backgroundLuminance)
+  const darker = Math.min(foregroundLuminance, backgroundLuminance)
+  return ((lighter + 0.05) / (darker + 0.05)).toFixed(2)
+}
+
+const paletteContrastSummary = computed(() => [
+  { label: 'Primary', black: contrastRatio('#000000', customPalette.primary), white: contrastRatio('#ffffff', customPalette.primary) },
+  { label: 'Secondary', black: contrastRatio('#000000', customPalette.secondary), white: contrastRatio('#ffffff', customPalette.secondary) },
+  { label: 'Accent', black: contrastRatio('#000000', customPalette.accent), white: contrastRatio('#ffffff', customPalette.accent) },
+])
 
 function emptySampleContent() {
   return {
@@ -826,12 +973,28 @@ watch(() => form.slug, (newVal) => {
   }
 })
 
-async function loadData() {
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+
+async function loadData(options = {}) {
+  if (options.page) currentPage.value = options.page
+  if (options.rows) pageSize.value = options.rows
   loading.value = true
+  loadError.value = ''
   try {
     const [tmplRes, catRes, sectRes, audioRes] = await Promise.all([
       fetchAdminTemplates({
-        limit: 1000 // Fetch all for client-side handling
+        page: currentPage.value,
+        limit: pageSize.value,
+        q: searchTerm.value.trim(),
+        sortBy: sortBy.value,
+        sortOrder: sortOrder.value,
+        filters: JSON.stringify({
+          ...(categoryFilter.value ? { category: categoryFilter.value } : {}),
+          ...(activeFilter.value !== '' && activeFilter.value !== null
+            ? { isActive: String(activeFilter.value) }
+            : {}),
+        }),
       }),
       fetchAdminCategories({ limit: 100 }),
       fetchAdminSections({ limit: 100 }),
@@ -839,16 +1002,105 @@ async function loadData() {
     ])
 
     templates.value = tmplRes.data || tmplRes
-    total.value = tmplRes.total || (tmplRes.data ? tmplRes.data.length : tmplRes.length)
+    brokenThumbnailIds.value = new Set()
+    total.value = Number(tmplRes.total ?? tmplRes.data?.length ?? tmplRes.length ?? 0)
 
     categories.value = catRes.data || catRes
+    if (!route.query.categoryId && typeof route.query.category === 'string') {
+      const legacyCategory = categories.value.find(
+        (category) =>
+          category.name === route.query.category ||
+          category.aliases?.includes(route.query.category),
+      )
+      if (legacyCategory) {
+        categoryFilter.value = legacyCategory.id
+        router.replace({
+          query: {
+            ...route.query,
+            category: undefined,
+            categoryId: legacyCategory.id,
+          },
+        })
+      }
+    }
     availableSections.value = sectRes.data || sectRes
     audioList.value = audioRes.data || audioRes
-  } catch {
-    toast.error('Gagal memuat data')
+    lastLoadedAt.value = new Date()
+  } catch (error) {
+    loadError.value = error.message || 'Gagal memuat data'
   } finally {
     loading.value = false
   }
+}
+
+async function loadMetrics() {
+  metricsError.value = ''
+  try {
+    const result = await fetchAdminTemplateMetrics({ days: metricsDays.value })
+    templateMetrics.value = new Map((result.data || []).map((item) => [Number(item.templateId), item]))
+    metricPeriodLabel.value = `${result.period.startDate} s/d ${result.period.endDate} (${result.period.timezone})`
+  } catch (error) {
+    templateMetrics.value = new Map()
+    metricsError.value = error.message || 'Metrik belum dapat dimuat'
+  }
+}
+
+function handlePage(event) {
+  loadData({ page: event.page + 1, rows: event.rows })
+}
+
+function handleSort(event) {
+  sortBy.value = event.sortField || 'id'
+  sortOrder.value = event.sortOrder === 1 ? 'ASC' : 'DESC'
+  loadData({ page: 1 })
+}
+
+function resetSearch() {
+  searchTerm.value = ''
+  categoryFilter.value = null
+  activeFilter.value = ''
+  router.replace({ query: { ...route.query, category: undefined, categoryId: undefined } })
+  loadData({ page: 1 })
+}
+
+function handleCategoryFilter() {
+  router.replace({
+    query: {
+      ...route.query,
+      category: undefined,
+      categoryId: categoryFilter.value || undefined,
+    },
+  })
+  loadData({ page: 1 })
+}
+
+function templateMetric(id) {
+  return templateMetrics.value.get(Number(id))
+}
+
+function formatRupiah(amount) {
+  if (amount === null || amount === undefined) return '—'
+  return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(amount)
+}
+
+function templateCompleteness(template) {
+  const hasPreview = Boolean(template.previewUrl)
+  const thumbnailUrl = resolveTemplateThumbnail(template)
+  const thumbnailFailed = brokenThumbnailIds.value.has(template.id)
+  const hasThumbnail = Boolean(thumbnailUrl) && !thumbnailFailed
+  const renderer = template.componentKey || template.slug
+  const hasRenderer = renderer === DYNAMIC_THEME_KEY || existingRendererKeys.value.includes(renderer)
+  const missing = [
+    !hasPreview && 'demo',
+    !thumbnailUrl && 'thumbnail URL',
+    thumbnailFailed && 'thumbnail gagal dimuat',
+    !hasRenderer && 'renderer',
+  ].filter(Boolean)
+  return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Metadata lengkap' }
+}
+
+function markThumbnailBroken(templateId) {
+  brokenThumbnailIds.value = new Set([...brokenThumbnailIds.value, templateId])
 }
 
 function getCategoryColor(categoryName) {
@@ -995,6 +1247,8 @@ function removeTag(index) {
 
 function openCreate() {
   editing.value = null
+  showRevisionHistory.value = false
+  revisionHistory.value = []
   tagInput.value = ''
   audioSearch.value = ''
   showAudioDropdown.value = false
@@ -1029,6 +1283,9 @@ function openCreate() {
 
 function openEdit(template) {
   editing.value = template
+  showRevisionHistory.value = false
+  revisionHistory.value = []
+  currentInvitationCount.value = null
   tagInput.value = ''
   audioSearch.value = ''
   showAudioDropdown.value = false
@@ -1231,6 +1488,37 @@ async function submitForm() {
   if (saving.value) return
   try {
     const payload = buildPayload()
+    if (editing.value) {
+      const impact = await fetchAdminTemplateRevisions(editing.value.id)
+      const labels = {
+        name: 'Nama', slug: 'Slug', componentKey: 'Renderer', category: 'Kategori',
+        price: 'Metadata harga', previewUrl: 'URL preview', thumbnailUrl: 'Thumbnail',
+        description: 'Deskripsi', seoTitle: 'SEO title', seoDescription: 'SEO description',
+        isActive: 'Status aktif', defaultMusic: 'Musik default', defaultAudioStart: 'Awal musik',
+        defaultAudioEnd: 'Akhir musik', sections: 'Sections', tags: 'Tag',
+        filterGroup: 'Filter group', sampleContent: 'Contoh konten', designConfig: 'Konfigurasi desain',
+        paletteId: 'Palet', paletteColors: 'Warna palet',
+      }
+      const changedFields = Object.keys(payload).filter((key) =>
+        key !== 'paletteId' &&
+        JSON.stringify(normalizePreviewValue(key, payload[key])) !==
+          JSON.stringify(normalizePreviewValue(key, editing.value[key])),
+      )
+      const changedLabel = changedFields.length
+        ? changedFields.map((key) => labels[key] || key).join(', ')
+        : 'Tidak ada perubahan terdeteksi dari data form.'
+      const confirmation = await Swal.fire({
+        title: 'Pratinjau dampak perubahan',
+        text: `Perubahan terdeteksi: ${changedLabel}. Saat ini ${impact.currentInvitationCount} undangan memakai template ini. Revisi konfigurasi saat ini akan disimpan sebelum diterapkan; undangan yang sudah tersimpan tetap mereferensikan template ini.`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#0f172a',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Simpan perubahan',
+        cancelButtonText: 'Kembali mengedit',
+      })
+      if (!confirmation.isConfirmed) return
+    }
     saving.value = true
     if (editing.value) {
       await updateAdminTemplate(editing.value.id, payload)
@@ -1240,12 +1528,69 @@ async function submitForm() {
       toast.success('Template dibuat')
     }
     showForm.value = false
-    loadData()
+    loadData({ page: 1 })
+    loadMetrics()
   } catch {
     toast.error('Gagal menyimpan template')
   } finally {
     saving.value = false
   }
+}
+
+async function loadRevisionHistory() {
+  if (!editing.value) return
+  showRevisionHistory.value = true
+  loadingRevisions.value = true
+  try {
+    const result = await fetchAdminTemplateRevisions(editing.value.id)
+    revisionHistory.value = result.revisions || []
+    currentInvitationCount.value = result.currentInvitationCount ?? 0
+  } catch (error) {
+    toast.error(error.message || 'Gagal memuat riwayat versi')
+  } finally {
+    loadingRevisions.value = false
+  }
+}
+
+async function confirmRollback(revision) {
+  const result = await Swal.fire({
+    title: `Pulihkan versi ${revision.version}?`,
+    text: `Konfigurasi template akan dikembalikan ke ${formatRevisionDate(revision.createdAt)}. ${currentInvitationCount.value ?? 0} undangan yang mengacu pada template ini dapat menampilkan perubahan renderer/configuration. Snapshot data undangan tidak diedit. Versi saat ini akan disimpan sebagai revisi baru.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#b45309',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Pulihkan versi',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await rollbackAdminTemplateRevision(editing.value.id, revision.id)
+    toast.success(`Template dipulihkan ke versi ${revision.version}`)
+    closeForm()
+    loadData({ page: currentPage.value })
+    loadMetrics()
+  } catch (error) {
+    toast.error(error.message || 'Gagal memulihkan versi template')
+  }
+}
+
+function formatRevisionDate(value) {
+  return value ? new Date(value).toLocaleString('id-ID') : 'Waktu tidak tersedia'
+}
+
+function normalizePreviewValue(key, value) {
+  if (key === 'sections') {
+    return (value || []).map((section) => [
+      section.sectionId ?? section.id,
+      Number(section.order),
+      Boolean(section.is_enabled),
+    ])
+  }
+  if (['price', 'defaultAudioStart', 'defaultAudioEnd'].includes(key)) {
+    return value === null || value === undefined ? null : Number(value)
+  }
+  return value ?? null
 }
 
 async function confirmDelete(template) {
@@ -1263,7 +1608,8 @@ async function confirmDelete(template) {
   try {
     await deleteAdminTemplate(template.id)
     toast.success('Template dihapus')
-    loadData()
+    loadData({ page: 1 })
+    loadMetrics()
   } catch {
     toast.error('Gagal menghapus template')
   }
@@ -1275,6 +1621,7 @@ const handleKeydown = (e) => {
 
 onMounted(() => {
   loadData()
+  loadMetrics()
   window.addEventListener('keydown', handleKeydown)
 })
 

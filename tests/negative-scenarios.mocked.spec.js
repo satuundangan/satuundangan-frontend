@@ -40,18 +40,44 @@ test.describe('Negative Scenarios & Error Handling (Mocked)', () => {
     await page.goto(`${BASE_URL}/invalid-slug`)
     
     // Check for error UI - assuming a 404 page or error toast
-    // Based on previous knowledge, it might show "Undangan tidak ditemukan"
-    await expect(page.getByText(/tidak ditemukan|404/i).first()).toBeVisible({ timeout: 10000 })
+    // The public invitation page shows the "Undangan Tidak Tersedia" state.
+    await expect(page.getByRole('heading', { name: /tidak tersedia|tidak ditemukan|404/i })).toBeVisible({
+      timeout: 10000,
+    })
   })
 
   test('handling Midtrans payment gateway error gracefully', async ({ page }) => {
-    const approvedUser = { id: 101, name: 'User', email: 'u@t.com', isApproved: true }
+    const approvedUser = {
+      id: 101,
+      name: 'User',
+      email: 'u@t.com',
+      isApproved: true,
+      emailVerifiedAt: '2026-06-06T00:00:00.000Z',
+    }
     
-    await page.route('**/api/user/me', (route) => route.fulfill({ status: 200, body: JSON.stringify(approvedUser) }))
+    await page.route('**/api/user/me', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(approvedUser),
+      }),
+    )
     await page.route('**/api/invitation/my/slug/error-test', (route) => 
-      route.fulfill({ status: 200, body: JSON.stringify({ id: 1, slug: 'error-test', price: 10000 }) })
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({ id: 1, slug: 'error-test', price: 10000 }),
+      })
     )
     
+    await page.route('**/api/payment/packages', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'premium', label: 'Premium', price: 10000 }]),
+      }),
+    )
+
     // Mock payment failure
     await page.route('**/api/payment/create', (route) => 
       route.fulfill({ 
@@ -61,12 +87,22 @@ test.describe('Negative Scenarios & Error Handling (Mocked)', () => {
     )
 
     await page.addInitScript(() => localStorage.setItem('token', 'valid-token'))
+    const profileLoaded = page.waitForResponse('**/api/user/me')
     await page.goto(`${BASE_URL}/checkout?slug=error-test`)
-    
+    await profileLoaded
+    await expect(page.getByText('Ringkasan Pesanan')).toBeVisible()
+
+    // Checkout reports gateway failures with a native alert.
+    const dialogMessage = new Promise((resolve) => {
+      page.once('dialog', async (dialog) => {
+        resolve(dialog.message())
+        await dialog.accept()
+      })
+    })
     await page.getByRole('button', { name: /Bayar Sekarang/i }).click()
-    
+
     // Should show error message from backend
-    await expect(page.getByText(/Validation failed|Gagal/i)).toBeVisible()
+    expect(await dialogMessage).toMatch(/Validation failed|Gagal/i)
   })
 
   test('affiliate cannot withdraw with zero balance', async ({ page }) => {

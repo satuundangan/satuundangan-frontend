@@ -45,7 +45,7 @@
                <div class="space-y-2 relative z-10">
                   <h3 class="text-xl md:text-2xl font-serif font-bold text-dark">{{ selectedTemplate.name }}</h3>
                   <div class="flex items-center justify-between">
-                     <p class="text-sm font-bold text-mocha">{{ templatePrice }}</p>
+                     <p class="text-sm font-bold text-mocha">Tema gratis · paket dibayar saat checkout</p>
                      <div class="flex gap-1.5">
                         <span v-for="color in paletteColors" :key="color"
                           class="w-4 h-4 rounded-full border border-white shadow-sm ring-1 ring-gray-100" :style="{ backgroundColor: color }"></span>
@@ -203,16 +203,6 @@ const paletteColors = computed(() => (
   selectedTemplate.value.palette?.colors ||
   []
 ))
-
-const templatePrice = computed(() => {
-  const price = Number(selectedTemplate.value.price || 0)
-  if (!price) return 'Gratis'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  }).format(price)
-})
 
 const sectionOptionsLabelMap = {
   quote: 'Quote Ayat / Mutiara',

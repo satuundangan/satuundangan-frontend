@@ -195,7 +195,8 @@
 
               <div class="pt-4 mt-auto border-t border-stone-100 flex items-center justify-between text-xs">
                 <div class="flex items-center gap-1.5 font-bold text-stone-900">
-                  <span class="text-emerald-700 font-extrabold">{{ tpl.price > 0 ? formatPrice(tpl.price) : 'Gratis / Siap Pakai' }}</span>
+                  <span class="text-emerald-700 font-extrabold">Tema gratis</span>
+                  <span class="ml-1 text-[10px] font-medium text-stone-500">Paket dipilih saat checkout</span>
                 </div>
                 <button
                   @click="goToCreate(tpl)"

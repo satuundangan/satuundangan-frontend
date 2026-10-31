@@ -59,7 +59,7 @@
             placeholder="000000"
             class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-center tracking-widest outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
           />
-          <p class="mt-2 text-xs text-slate-400">Buka Google Authenticator / Authy dan masukkan kode 6 digit.</p>
+          <p class="mt-2 text-xs text-slate-500">Buka Google Authenticator / Authy dan masukkan kode 6 digit.</p>
         </div>
 
         <button
@@ -73,7 +73,7 @@
         <button
           type="button"
           @click="step = 'credentials'"
-          class="w-full text-center text-sm text-slate-400 hover:text-slate-600"
+          class="w-full text-center text-sm text-slate-500 hover:text-slate-600"
         >
           Kembali
         </button>

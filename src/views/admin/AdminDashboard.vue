@@ -1,509 +1,732 @@
 <template>
-  <AdminShell title="Dashboard" description="Pusat Kendali Operasional Platform"> 
-    
-    <!-- Dashboard Stats Grid -->
-    <section class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <div
-        v-for="stat in stats"
-        :key="stat.label"
-        class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm flex items-center justify-between hover:shadow-md transition-all duration-300"
-      >
-        <div class="space-y-1">
-          <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">{{ stat.label }}</p>
-          <p class="text-3xl font-extrabold text-slate-900 tracking-tight">{{ stat.value }}</p>
-        </div>
-        <div :class="[stat.color, 'h-12 w-12 rounded-2xl flex items-center justify-center text-xl shadow-inner']">
-          <i :class="['fa-solid', stat.icon]"></i>
-        </div>
-      </div>
-    </section>
-
-    <!-- Cockpit Interactive Controls & Trends -->
-    <section class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Quick Actions & System Control -->
-      <div class="lg:col-span-1 space-y-6">
-        <!-- Quick Actions Panel -->
-        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm">
-          <h3 class="text-sm font-bold text-slate-800 mb-4 flex items-center gap-2">
-            <i class="fa-solid fa-wand-magic-sparkles text-indigo-500"></i>
-            Aksi Cepat Admin
-          </h3>
-          <div class="grid grid-cols-2 gap-3">
-            <RouterLink to="/admin/users" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-blue-200 hover:bg-blue-50/20 transition-all text-center group">
-              <i class="fa-solid fa-user-plus text-lg text-blue-500 group-hover:scale-110 transition-transform mb-1.5"></i>
-              <span class="text-[10px] font-bold text-slate-700">Tambah User</span>
-            </RouterLink>
-            <RouterLink to="/admin/templates" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-pink-200 hover:bg-pink-50/20 transition-all text-center group">
-              <i class="fa-solid fa-palette text-lg text-pink-500 group-hover:scale-110 transition-transform mb-1.5"></i>
-              <span class="text-[10px] font-bold text-slate-700">Buat Tema</span>
-            </RouterLink>
-            <RouterLink to="/admin/promo-codes" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-orange-200 hover:bg-orange-50/20 transition-all text-center group">
-              <i class="fa-solid fa-ticket text-lg text-orange-500 group-hover:scale-110 transition-transform mb-1.5"></i>
-              <span class="text-[10px] font-bold text-slate-700">Kode Promo</span>
-            </RouterLink>
-            <RouterLink to="/admin/audio" class="flex flex-col items-center justify-center p-3 rounded-xl border border-slate-100 hover:border-emerald-200 hover:bg-emerald-50/20 transition-all text-center group">
-              <i class="fa-solid fa-music text-lg text-emerald-500 group-hover:scale-110 transition-transform mb-1.5"></i>
-              <span class="text-[10px] font-bold text-slate-700">Kelola Audio</span>
-            </RouterLink>
-          </div>
-        </div>
-
-        <!-- System Settings & Maintenance Mode -->
-        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm space-y-4">
-          <h3 class="text-sm font-bold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-gears text-slate-400"></i>
-            Kontrol Pemeliharaan
-          </h3>
-          <div class="flex items-center justify-between p-3.5 bg-slate-50 rounded-xl border border-slate-100">
-            <div>
-              <span class="text-xs font-bold text-slate-700 block">Mode Perbaikan (Maintenance)</span>
-              <span class="text-[10px] text-slate-400 block">Buka/tutup akses publik aplikasi</span>
-            </div>
-            <button 
-              @click="toggleMaintenance"
-              :class="isMaintenanceMode ? 'bg-rose-500 text-white' : 'bg-slate-200 text-slate-600'"
-              class="w-12 h-6 rounded-full p-0.5 transition-colors relative flex items-center shadow-inner"
-            >
-              <span 
-                :class="isMaintenanceMode ? 'translate-x-6' : 'translate-x-0'"
-                class="w-5 h-5 rounded-full bg-white shadow-sm transition-transform duration-200"
-              ></span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Live Diagnostics Tools -->
-      <div class="lg:col-span-1">
-        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm h-full flex flex-col justify-between">
-          <div>
-            <h3 class="text-sm font-bold text-slate-800 mb-2 flex items-center gap-2">
-              <i class="fa-solid fa-shield-heart text-emerald-500"></i>
-              Diagnostik Sistem
-            </h3>
-            <p class="text-[10px] text-slate-400 leading-normal mb-4">Verifikasi konektivitas database, latensi server, dan antrean pengiriman email secara real-time.</p>
-            
-            <div class="space-y-3">
-              <!-- Database Connectivity -->
-              <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
-                <span class="font-medium text-slate-500">Database Core</span>
-                <span v-if="!diagnosticResults?.database" class="text-slate-400">-</span>
-                <span v-else class="font-bold text-emerald-600 flex items-center gap-1">
-                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-ping"></span>
-                  {{ diagnosticResults?.database?.msg || '-' }}
-                </span>
-              </div>
-              
-              <!-- Storage Space -->
-              <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
-                <span class="font-medium text-slate-500">File Storage</span>
-                <span v-if="!diagnosticResults?.storage" class="text-slate-400">-</span>
-                <span v-else class="font-bold text-emerald-600">
-                  {{ diagnosticResults?.storage?.msg || '-' }}
-                </span>
-              </div>
-
-              <!-- SMTP Server -->
-              <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
-                <span class="font-medium text-slate-500">SMTP Mail Server</span>
-                <span v-if="!diagnosticResults?.email" class="text-slate-400">-</span>
-                <span v-else class="font-bold text-emerald-600">
-                  {{ diagnosticResults?.email?.msg || '-' }}
-                </span>
-              </div>
-
-              <!-- Midtrans API Gateway -->
-              <div class="flex items-center justify-between p-2.5 rounded-xl border border-slate-50 bg-slate-50/20 text-xs">
-                <span class="font-medium text-slate-500">API Payment Gateway</span>
-                <span v-if="!diagnosticResults?.payment" class="text-slate-400">-</span>
-                <span v-else class="font-bold text-emerald-600">
-                  {{ diagnosticResults?.payment?.msg || '-' }}
-                </span>
-              </div>
-            </div>
-            
-            <p v-if="diagnosticResults?.rendered" class="text-[9px] text-slate-400 text-right mt-3">Diagnostik terakhir: {{ diagnosticResults.rendered }}</p>
-          </div>
-          
-          <button 
-            @click="runDiagnostics" 
-            :disabled="isRunningDiagnostics"
-            class="w-full bg-slate-900 text-white font-bold py-2.5 rounded-xl hover:bg-slate-800 transition-all text-xs flex justify-center items-center gap-2 mt-6"
+  <AdminShell title="Dashboard" description="Ringkasan bisnis dan pekerjaan admin">
+    <section class="rounded-2xl border border-slate-200 bg-white p-5">
+      <form class="flex flex-wrap items-end gap-3" @submit.prevent="applyPeriod">
+        <label class="grid gap-1 text-sm font-medium text-slate-700">
+          Periode laporan
+          <select
+            v-model="selectedPeriod"
+            name="period"
+            class="rounded-lg border border-slate-300 px-3 py-2"
+            @change="changePeriod"
           >
-            <i class="fa-solid fa-rotate animate-spin text-[10px]" v-if="isRunningDiagnostics"></i>
-            <span>{{ isRunningDiagnostics ? 'Memeriksa Sistem...' : 'Jalankan Diagnostik' }}</span>
+            <option value="7">7 hari terakhir</option>
+            <option value="30">30 hari terakhir</option>
+            <option value="90">90 hari terakhir</option>
+            <option value="custom">Pilih tanggal</option>
+          </select>
+        </label>
+        <template v-if="selectedPeriod === 'custom'">
+          <label class="grid gap-1 text-sm"
+            >Dari<input
+              v-model="startDate"
+              type="date"
+              required
+              :max="endDate || today"
+              class="rounded-lg border border-slate-300 px-3 py-2"
+          /></label>
+          <label class="grid gap-1 text-sm"
+            >Sampai<input
+              v-model="endDate"
+              type="date"
+              required
+              :min="startDate"
+              :max="today"
+              class="rounded-lg border border-slate-300 px-3 py-2"
+          /></label>
+          <button
+            type="submit"
+            class="rounded-lg bg-slate-900 px-4 py-2 text-sm font-semibold text-white"
+          >
+            Terapkan
           </button>
-        </div>
-      </div>
-
-      <!-- Trend Analysis (Registration Growth SVG Chart) -->
-      <div class="lg:col-span-1">
-        <div class="rounded-2xl border border-slate-100 bg-white p-6 shadow-sm h-full flex flex-col justify-between">
-          <div>
-            <h3 class="text-sm font-bold text-slate-800 mb-1 flex items-center gap-2">
-              <i class="fa-solid fa-chart-line text-blue-500"></i>
-              Tren Pendaftaran (7 Hari Terakhir)
-            </h3>
-            <p class="text-[10px] text-slate-400">Statistik pendaftaran undangan baru di platform.</p>
-            
-            <!-- SVG Line Chart -->
-            <div class="h-44 relative mt-4">
-              <svg class="w-full h-full" viewBox="0 0 500 200" preserveAspectRatio="none">
-                <!-- Gradients -->
-                <defs>
-                  <linearGradient id="chartGradient" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stop-color="#3b82f6" stop-opacity="0.25"/>
-                    <stop offset="100%" stop-color="#3b82f6" stop-opacity="0.00"/>
-                  </linearGradient>
-                </defs>
-                
-                <!-- Grid Lines -->
-                <line x1="0" y1="40" x2="500" y2="40" stroke="#f8fafc" stroke-width="1" />
-                <line x1="0" y1="90" x2="500" y2="90" stroke="#f8fafc" stroke-width="1" />
-                <line x1="0" y1="140" x2="500" y2="140" stroke="#f8fafc" stroke-width="1" />
-                <line x1="0" y1="180" x2="500" y2="180" stroke="#f1f5f9" stroke-width="1.5" />
-                
-                <!-- Area Path -->
-                <path
-                  :d="svgChartData.areaPath"
-                  fill="url(#chartGradient)"
-                />
-                
-                <!-- Line Path -->
-                <path
-                  :d="svgChartData.linePath"
-                  fill="none"
-                  stroke="#3b82f6"
-                  stroke-width="3"
-                  stroke-linecap="round"
-                />
-                
-                <!-- Chart Dots -->
-                <circle 
-                  v-for="pt in svgChartData.coords" 
-                  :key="pt.label"
-                  :cx="pt.x" 
-                  :cy="pt.y" 
-                  r="4" 
-                  fill="#3b82f6" 
-                  stroke="#ffffff" 
-                  stroke-width="2" 
-                >
-                  <title>{{ pt.label }}: {{ pt.count }} Undangan</title>
-                </circle>
-              </svg>
-              
-              <!-- Floating Data Labels -->
-              <div 
-                v-for="pt in svgChartData.coords" 
-                :key="pt.label"
-                class="absolute bottom-1 text-[8px] font-bold uppercase -translate-x-1/2"
-                :style="{ left: `${(pt.x / 500) * 100}%` }"
-                :class="pt.label === 'Hari Ini' ? 'text-blue-600 font-extrabold' : 'text-slate-400'"
-              >
-                {{ pt.label }}
-              </div>
-            </div>
-          </div>
-          
-          <div class="pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-            <span>Rata-rata Harian:</span>
-            <span class="font-bold text-slate-800">{{ trendAverage }} Undangan</span>
-          </div>
-        </div>
-      </div>
+        </template>
+        <button
+          type="button"
+          :disabled="loading"
+          class="rounded-lg border border-slate-300 px-4 py-2 text-sm disabled:opacity-50"
+          @click="loadOverview"
+        >
+          Perbarui laporan
+        </button>
+      </form>
+      <p v-if="overview" class="mt-3 text-xs text-slate-500">
+        {{ overview.period.startDate }} — {{ overview.period.endDate }} · WIB. Dibandingkan
+        {{ overview.period.previousStartDate }} — {{ overview.period.previousEndDate }} dengan waktu
+        pengamatan setara.
+        <strong v-if="overview.period.includesToday">Hari ini masih berjalan.</strong>
+      </p>
     </section>
 
-    <!-- Detailed Listings (Recent Invitations & Categories distribution) -->
-    <section class="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-6">
-      
-      <!-- Recent Invitations List -->
-      <div class="lg:col-span-2 rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden flex flex-col justify-between">
-        <div class="flex items-center justify-between border-b border-slate-100 px-6 py-4">
-          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-clock-rotate-left text-slate-400"></i>
-            Undangan Terbaru
-          </h2>
-          <RouterLink to="/admin/invitations" class="text-xs font-bold text-blue-600 hover:text-blue-800 uppercase tracking-wider">Lihat semua</RouterLink>
-        </div>
-        <div class="p-6 flex-1">
-          <DataTable
-            :value="recentInvitations"
-            class="p-datatable-sm"
-            dataKey="id"
+    <div
+      v-if="error"
+      role="alert"
+      class="mt-5 rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm text-rose-800"
+    >
+      {{ error }}
+      <button type="button" class="ml-2 font-bold underline" @click="loadOverview">
+        Coba lagi
+      </button>
+    </div>
+    <p v-if="loading" role="status" class="py-8 text-sm text-slate-500">Memuat laporan bisnis…</p>
+
+    <template v-if="overview && !loading">
+      <section
+        data-testid="business-metrics"
+        class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4"
+        aria-label="Metrik periode terpilih"
+      >
+        <article
+          v-for="card in businessCards"
+          :key="card.key"
+          class="rounded-2xl border border-slate-200 bg-white p-5"
+        >
+          <h2 class="text-sm font-medium text-slate-600">{{ card.label }}</h2>
+          <p class="mt-2 text-2xl font-bold text-slate-950">
+            {{
+              card.money ? currency(overview.metrics[card.key]) : number(overview.metrics[card.key])
+            }}
+          </p>
+          <p class="mt-1 text-xs text-slate-500">{{ comparisonLabel(card.key, card.money) }}</p>
+          <p class="mt-3 text-xs leading-relaxed text-slate-500">{{ card.description }}</p>
+          <RouterLink
+            :to="metricLink(card)"
+            class="mt-3 inline-block text-xs font-semibold text-indigo-700 underline focus-visible:outline focus-visible:outline-2"
+            >{{
+              card.key === 'invitationsCreated' ? 'Lihat undangan sumber' : 'Lihat transaksi sumber'
+            }}</RouterLink
           >
-            <template #empty> Tidak ada undangan terbaru. </template>
-            
-            <Column field="title" header="Judul Undangan" style="min-width: 15rem">
-              <template #body="{ data }">
-                <span class="font-bold text-slate-900">{{ data.title }}</span>
-              </template>
-            </Column>
-
-            <Column field="slug" header="Link / Slug" style="min-width: 12rem">
-              <template #body="{ data }">
-                <span class="font-mono text-xs text-slate-500">/preview?slug={{ data.slug }}</span>
-              </template>
-            </Column>
-
-            <Column field="user" header="Pemilik" style="min-width: 12rem">
-              <template #body="{ data }">
-                <div class="flex flex-col">
-                  <span class="text-xs font-bold text-slate-700">{{ data.user?.name || '-' }}</span>
-                  <span class="text-[10px] text-slate-400">{{ data.user?.email || '' }}</span>
-                </div>
-              </template>
-            </Column>
-
-            <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
-              <template #body="{ data }">
-                <div class="flex justify-end gap-1.5">
-                  <a :href="`/preview?slug=${data.slug}`" target="_blank"
-                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-600 hover:bg-blue-50 transition-colors"
-                    title="Lihat Undangan">
-                    <i class="fa-solid fa-eye text-xs"></i>
-                  </a>
-                  <RouterLink :to="`/admin/invitations/${data.id}/edit`"
-                    class="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-100 text-amber-600 hover:bg-amber-50 transition-colors"
-                    title="Edit Undangan">
-                    <i class="fa-solid fa-pencil text-xs"></i>
-                  </RouterLink>
-                </div>
-              </template>
-            </Column>
-          </DataTable>
-        </div>
+        </article>
+      </section>
+      <div
+        v-if="overview.metrics.unverifiedSuccesses"
+        class="mt-4 rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-900"
+      >
+        {{ number(overview.metrics.unverifiedSuccesses) }} transaksi sukses memerlukan pemeriksaan
+        sumber/waktu/nominal dan belum masuk penerimaan di atas.
       </div>
+      <details class="mt-4 rounded-xl border border-slate-200 bg-white p-4 text-sm">
+        <summary class="cursor-pointer font-semibold text-slate-700">
+          Definisi angka dan batas data
+        </summary>
+        <p class="mt-3 text-slate-600">{{ overview.definitions.revenue }}</p>
+        <p class="mt-2 text-slate-600">{{ overview.definitions.history }}</p>
+        <p class="mt-2 text-slate-600">
+          Lingkungan gateway saat ini:
+          {{
+            overview.sources.currentGatewayEnvironment === 'production'
+              ? 'produksi'
+              : 'sandbox atau belum terkonfirmasi'
+          }}. Angka ini belum menyatakan laba maupun dana yang sudah masuk rekening.
+        </p>
+        <p class="mt-2 text-xs text-slate-500">
+          Sumber: catatan pembayaran dan undangan backend. Laporan dibuat
+          {{ dateTime(overview.period.asOf) }} WIB. Baseline nol ditampilkan sebagai perubahan
+          absolut tanpa persentase.
+        </p>
+      </details>
 
-      <!-- Categories Distribution Breakdown -->
-      <div class="lg:col-span-1 rounded-2xl border border-slate-100 bg-white shadow-sm overflow-hidden flex flex-col justify-between">
-        <div class="border-b border-slate-100 px-6 py-4">
-          <h2 class="text-base font-bold text-slate-800 flex items-center gap-2">
-            <i class="fa-solid fa-chart-pie text-slate-400"></i>
-            Kategori Undangan Populer
-          </h2>
-        </div>
-        <div class="p-6 flex-1 space-y-4">
-          <div v-for="cat in categoryDistribution" :key="cat.name" class="space-y-1.5">
-            <div class="flex justify-between items-center text-xs">
-              <span class="font-bold text-slate-700 capitalize">{{ cat.name }}</span>
-              <span class="text-slate-500 font-semibold">{{ cat.count }} ({{ cat.percentage }}%)</span>
-            </div>
-            <!-- Progress Bar -->
-            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden flex">
-              <div 
-                :class="cat.color"
-                class="h-full rounded-full transition-all duration-1000"
-                :style="{ width: `${cat.percentage}%` }"
-              ></div>
-            </div>
-          </div>
-          
-          <div v-if="categoryDistribution.length === 0" class="text-center py-10 text-slate-400 text-xs">
-            Tidak ada distribusi kategori.
+      <section class="mt-6" aria-label="Total saat ini">
+        <h2 class="mb-3 text-sm font-semibold text-slate-700">Total saat ini · semua waktu</h2>
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-6">
+          <div
+            v-for="card in totalCards"
+            :key="card.key"
+            class="rounded-xl border border-slate-200 bg-white p-4"
+          >
+            <p class="text-xs text-slate-500">{{ card.label }}</p>
+            <p class="mt-1 text-xl font-bold">{{ number(overview.totals[card.key]) }}</p>
+            <RouterLink
+              v-if="card.to"
+              :to="card.to"
+              class="mt-1 inline-block text-xs font-semibold text-indigo-700 underline"
+              >Lihat daftar</RouterLink
+            >
+            <p v-else-if="card.note" class="mt-1 text-[11px] text-slate-500">{{ card.note }}</p>
           </div>
         </div>
-      </div>
+        <p v-if="overview.sourceWarnings?.length" class="mt-2 text-xs text-amber-800">
+          Sebagian total belum tersedia. Nilai kosong belum dapat dinyatakan sebagai nol.
+        </p>
+      </section>
+
+      <section class="mt-6 grid gap-5 lg:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-white p-5">
+          <h2 class="font-semibold">Undangan dibuat</h2>
+          <p class="mt-1 text-xs text-slate-500">
+            Jumlah undangan baru pada periode terpilih. Ini bukan jumlah visitor atau akun baru.
+          </p>
+          <svg
+            v-if="overview.trend.length"
+            class="mt-5 h-36 w-full"
+            viewBox="0 0 500 140"
+            role="group"
+            aria-label="Tren jumlah undangan dibuat; setiap titik membuka daftar undangan hari itu"
+          >
+            <polyline
+              :points="trendPoints"
+              fill="none"
+              stroke="#4f46e5"
+              stroke-width="3"
+              vector-effect="non-scaling-stroke"
+            />
+            <a
+              v-for="point in trendDots"
+              :key="point.date"
+              :href="router.resolve(dayLink(point.date)).href"
+              :aria-label="`${point.date}: ${point.count} undangan dibuat. Buka daftar`"
+              @click.prevent="router.push(dayLink(point.date))"
+            >
+              <circle :cx="point.x" :cy="point.y" r="5" fill="#4f46e5" />
+            </a>
+          </svg>
+          <details class="mt-3">
+            <summary class="cursor-pointer text-sm text-indigo-700">Lihat data harian</summary>
+            <div class="mt-3 overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <caption class="sr-only">
+                  Data harian dalam WIB
+                </caption>
+                <thead>
+                  <tr>
+                    <th class="p-2">Tanggal WIB</th>
+                    <th class="p-2">Undangan</th>
+                    <th class="p-2">Order berbayar</th>
+                    <th class="p-2">Penerimaan</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="day in overview.trend"
+                    :key="day.date"
+                    class="border-t border-slate-100"
+                  >
+                    <td class="p-2">{{ day.date }}</td>
+                    <td class="p-2">
+                      <RouterLink :to="dayLink(day.date)" class="text-indigo-700 underline">{{
+                        number(day.count)
+                      }}</RouterLink>
+                    </td>
+                    <td class="p-2">
+                      <RouterLink
+                        :to="dayPaymentsLink(day.date)"
+                        class="text-indigo-700 underline"
+                        >{{ number(day.paidOrders) }}</RouterLink
+                      >
+                    </td>
+                    <td class="p-2">{{ currency(day.revenue) }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </article>
+        <article class="rounded-2xl border border-slate-200 bg-white p-5">
+          <h2 class="font-semibold">Kategori undangan baru</h2>
+          <p class="mt-1 text-xs text-slate-500">
+            Pemakaian kategori dari undangan yang dibuat pada periode yang sama.
+          </p>
+          <ul v-if="overview.categories.length" class="mt-5 space-y-3">
+            <li
+              v-for="item in overview.categories"
+              :key="item.category"
+              class="flex items-center justify-between gap-3 border-b border-slate-100 pb-2 text-sm"
+            >
+              <RouterLink :to="categoryLink(item.category)" class="text-indigo-700 underline">{{
+                item.category
+              }}</RouterLink
+              ><strong>{{ number(item.count) }}</strong>
+            </li>
+          </ul>
+          <p v-else class="py-8 text-sm text-slate-500">
+            Belum ada undangan yang dibuat pada periode ini.
+          </p>
+        </article>
+      </section>
+    </template>
+
+    <section class="mt-6 grid gap-5 lg:grid-cols-2">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5" data-testid="action-queue">
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <h2 class="font-semibold">Perlu tindakan</h2>
+          <RouterLink
+            to="/admin/payments?tab=reconciliation"
+            class="text-xs font-semibold text-indigo-700 underline"
+            >Buka antrean pembayaran</RouterLink
+          >
+        </div>
+        <p class="mt-1 text-xs text-slate-500">
+          {{ queue?.note || 'Antrean dari pusat pembayaran.' }}
+        </p>
+        <p v-if="queueLoading" role="status" class="py-6 text-sm text-slate-500">Memuat antrean…</p>
+        <div v-else-if="queueError" class="mt-4 text-sm text-amber-800">
+          {{ queueError }}
+          <button type="button" class="underline" @click="loadQueue">Muat ulang antrean</button>
+        </div>
+        <template v-else-if="queue">
+          <p class="mt-3 text-sm">
+            {{ number(queue.count) }} item · transaksi {{ number(queue.countsBySource.transaksi) }},
+            undangan {{ number(queue.countsBySource.undangan) }}, payout
+            {{ number(queue.countsBySource.payout) }}
+          </p>
+          <ul class="mt-3 space-y-3">
+            <li
+              v-for="item in queue.items.slice(0, 8)"
+              :key="item.key"
+              class="rounded-lg border p-3 text-sm"
+              :class="
+                item.priority === 1 ? 'border-rose-200 bg-rose-50' : 'border-amber-100 bg-amber-50'
+              "
+            >
+              <div class="flex items-center justify-between gap-2">
+                <RouterLink
+                  v-if="item.link"
+                  :to="item.link"
+                  class="font-semibold text-slate-800 underline"
+                  >{{ item.title }}</RouterLink
+                >
+                <span v-else class="font-semibold text-slate-800">{{ item.title }}</span>
+                <span class="rounded-full bg-white px-2 py-0.5 text-[11px] font-bold">{{
+                  item.priorityLabel
+                }}</span>
+              </div>
+              <p class="mt-1 text-xs text-slate-600">{{ item.reason }}</p>
+              <p class="mt-1 text-xs text-slate-700">
+                <template v-if="item.ageHours != null">Umur {{ ageLabel(item.ageHours) }}</template>
+                <template v-if="item.amount"> · {{ currency(item.amount) }}</template>
+                <template v-if="item.linkNote"> · {{ item.linkNote }}</template>
+              </p>
+            </li>
+          </ul>
+          <p v-if="!queue.items.length" class="py-6 text-sm text-slate-500">
+            Tidak ada pengecualian pada hasil pemeriksaan ini.
+          </p>
+          <p v-if="queue.items.length > 8" class="mt-2 text-xs text-slate-500">
+            Menampilkan 8 teratas dari {{ number(queue.items.length) }}.
+          </p>
+          <ul v-if="queue.unavailableSources?.length" class="mt-3 text-xs text-slate-500">
+            <li v-for="source in queue.unavailableSources" :key="source.source">
+              Belum tersedia ({{ source.source }}): {{ source.reason }}
+            </li>
+          </ul>
+        </template>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-5" data-testid="ga4-card">
+        <h2 class="font-semibold">Visitor dan perjalanan pembelian</h2>
+        <p v-if="ga4Loading" role="status" class="mt-3 text-sm text-slate-500">Memuat GA4…</p>
+        <template v-else-if="ga4 && ga4.status === 'ready'">
+          <dl class="mt-3 grid grid-cols-3 gap-3 text-sm">
+            <div>
+              <dt class="text-xs text-slate-500">Users</dt>
+              <dd class="text-lg font-bold">
+                {{ number(ga4.reports.summary.current?.activeUsers) }}
+              </dd>
+            </div>
+            <div>
+              <dt class="text-xs text-slate-500">Sesi</dt>
+              <dd class="text-lg font-bold">{{ number(ga4.reports.summary.current?.sessions) }}</dd>
+            </div>
+            <div>
+              <dt class="text-xs text-slate-500">Engagement</dt>
+              <dd class="text-lg font-bold">
+                {{
+                  ga4.reports.summary.current?.engagementRate == null
+                    ? 'Belum tersedia'
+                    : Math.round(ga4.reports.summary.current.engagementRate * 1000) / 10 + '%'
+                }}
+              </dd>
+            </div>
+          </dl>
+          <p class="mt-2 text-xs text-slate-500">
+            {{ ga4.scope.name }} · diambil {{ dateTime(ga4.generatedAt) }} WIB
+          </p>
+        </template>
+        <p v-else class="mt-3 rounded-lg bg-slate-50 p-3 text-sm text-slate-700">
+          {{ ga4Message }}
+        </p>
+        <RouterLink
+          to="/admin/analytics"
+          class="mt-4 inline-block text-sm font-semibold text-indigo-700 underline"
+          >Funnel, purchase, atribusi, dan kualitas data</RouterLink
+        >
+      </article>
     </section>
 
+    <section class="mt-6 grid gap-5 lg:grid-cols-2">
+      <article class="rounded-2xl border border-slate-200 bg-white p-5">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="font-semibold">Undangan terbaru · semua waktu</h2>
+          <RouterLink
+            to="/admin/invitations"
+            class="text-xs font-semibold text-indigo-700 underline"
+            >Lihat semua</RouterLink
+          >
+        </div>
+        <p v-if="recentError" class="mt-3 text-sm text-amber-800">{{ recentError }}</p>
+        <ul v-else class="mt-3 divide-y divide-slate-100">
+          <li v-for="item in recentInvitations" :key="item.id" class="py-3">
+            <RouterLink
+              :to="'/admin/invitations/' + item.id + '/edit'"
+              class="text-sm font-semibold text-indigo-700 underline"
+              >{{ item.title || item.slug }}</RouterLink
+            >
+            <p class="mt-1 text-xs text-slate-500">
+              {{ item.paymentStatus?.label || 'Pembayaran belum diketahui' }} ·
+              {{ item.isPublished ? 'Terbit' : 'Draft' }}
+            </p>
+          </li>
+        </ul>
+        <p v-if="!recentError && !recentInvitations.length" class="mt-4 text-sm text-slate-500">
+          {{ recentLoading ? 'Memuat undangan…' : 'Belum ada undangan.' }}
+        </p>
+      </article>
+      <article class="rounded-2xl border border-slate-200 bg-white p-5" data-testid="system-card">
+        <h2 class="font-semibold">Status sistem</h2>
+        <template v-if="isSuperadmin">
+          <p class="mt-1 text-xs text-slate-500">
+            Pemeriksaan nyata per layanan. Kredensial saja tidak dihitung sehat.
+          </p>
+          <p v-if="systemError" class="mt-3 text-sm text-rose-700">
+            {{ systemError }}
+            <button type="button" class="underline" @click="loadSystem">Coba lagi</button>
+          </p>
+          <ul v-else-if="system" class="mt-3 space-y-2 text-sm">
+            <li v-for="item in system.services" :key="item.key" class="flex justify-between gap-3">
+              <span>{{ item.label }}</span>
+              <span :class="serviceClass(item.status)">{{ statusLabel(item.status) }}</span>
+            </li>
+          </ul>
+          <p v-else role="status" class="mt-3 text-sm text-slate-500">Memeriksa layanan…</p>
+          <p class="mt-3 text-sm" data-testid="maintenance-status">
+            Mode perawatan:
+            <strong :class="maintenance?.active ? 'text-rose-700' : 'text-emerald-700'">{{
+              maintenance == null ? 'belum diketahui' : maintenance.active ? 'AKTIF' : 'normal'
+            }}</strong>
+          </p>
+          <RouterLink
+            to="/admin/system"
+            class="mt-4 inline-block text-sm font-semibold text-indigo-700 underline"
+            >Buka kesehatan, perawatan, dan jejak audit</RouterLink
+          >
+        </template>
+        <p v-else class="mt-3 text-sm text-slate-600">
+          Kesehatan sistem dan mode perawatan hanya tersedia untuk superadmin.
+        </p>
+      </article>
+    </section>
   </AdminShell>
 </template>
 
 <script setup>
-import { onMounted, ref, computed } from 'vue'
-import { RouterLink } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import DataTable from 'primevue/datatable'
-import Column from 'primevue/column'
 import {
-  fetchAdminUsers,
+  fetchAdminDashboardOverview,
   fetchAdminInvitations,
-  fetchAdminGuests,
-  fetchAdminTemplates,
-  fetchAdminHealth,
-  fetchAdminStats,
+  fetchAdminActionQueue,
 } from '@/api/admin.js'
-import { getAdminResellers, getAdminWithdrawals } from '@/api/adminAffiliate.js'
-import { useToast } from 'vue-toastification'
-import Swal from 'sweetalert2'
+import { fetchAnalyticsReport } from '@/api/adminAnalytics.js'
+import { fetchAdminHealthReport, fetchMaintenance } from '@/api/adminSecurity.js'
+import { useAuthStore } from '@/stores/auth'
 
-const toast = useToast()
-const stats = ref([
-  { label: 'Total Pengguna', value: 0, icon: 'fa-users', color: 'bg-blue-50 text-blue-600' },
-  { label: 'Total Undangan', value: 0, icon: 'fa-envelope', color: 'bg-indigo-50 text-indigo-600' },
-  { label: 'Total Tamu', value: 0, icon: 'fa-address-book', color: 'bg-emerald-50 text-emerald-600' },
-  { label: 'Template Desain', value: 0, icon: 'fa-palette', color: 'bg-pink-50 text-pink-600' },
-  { label: 'Reseller Aktif', value: 0, icon: 'fa-handshake', color: 'bg-orange-50 text-orange-600' },
-  { label: 'Penarikan Pending', value: 0, icon: 'fa-clock', color: 'bg-rose-50 text-rose-600' },
-])
-const recentInvitations = ref([])
-
-// Real Backend Stats
-const trendData = ref([])
-const categoryData = ref([])
-const trendAverage = ref(0)
-
-// Diagnostics simulation states
-const isRunningDiagnostics = ref(false)
-const diagnosticResults = ref(null)
-
-const runDiagnostics = async () => {
-  isRunningDiagnostics.value = true
-  diagnosticResults.value = null
+const route = useRoute()
+const router = useRouter()
+const authStore = useAuthStore()
+const isSuperadmin = computed(() => authStore.adminRole === 'superadmin')
+const overview = ref(null)
+const loading = ref(false)
+const error = ref('')
+const selectedPeriod = ref(
+  route.query.startDate && route.query.endDate
+    ? 'custom'
+    : ['7', '30', '90'].includes(String(route.query.days))
+      ? String(route.query.days)
+      : '7',
+)
+const startDate = ref(String(route.query.startDate || ''))
+const endDate = ref(String(route.query.endDate || ''))
+const today = new Date(Date.now() + 7 * 3600000).toISOString().slice(0, 10)
+let requestSequence = 0
+const queue = ref(null),
+  queueLoading = ref(true),
+  queueError = ref('')
+const recentInvitations = ref([]),
+  recentLoading = ref(true),
+  recentError = ref('')
+const system = ref(null),
+  systemError = ref(''),
+  maintenance = ref(null)
+const ga4 = ref(null),
+  ga4Loading = ref(true),
+  ga4Message = ref('Memuat GA4…')
+const businessCards = [
+  {
+    key: 'revenue',
+    label: 'Penerimaan undangan',
+    money: true,
+    link: true,
+    description: 'Pembayaran undangan setelah diskon. Biaya, refund dan komisi belum dikurangi.',
+  },
+  {
+    key: 'paidOrders',
+    label: 'Order undangan berbayar',
+    link: true,
+    description: 'Transaksi sukses berbayar, termasuk upgrade. Aktivasi gratis dipisahkan.',
+  },
+  {
+    key: 'paidInvitations',
+    label: 'Undangan menerima pembayaran',
+    description:
+      'Undangan unik pada transaksi periode ini. Beberapa order bisa terkait satu undangan.',
+  },
+  {
+    key: 'buyers',
+    label: 'Pembeli unik',
+    description: 'Identitas akun; email digunakan bila ID akun tidak tersedia.',
+  },
+  {
+    key: 'invitationsCreated',
+    label: 'Undangan dibuat',
+    description: 'Undangan baru pada periode terpilih.',
+  },
+  {
+    key: 'freeActivations',
+    label: 'Aktivasi gratis',
+    link: true,
+    description: 'Aktivasi sukses nol rupiah dengan sumber gratis/promo yang dikenali.',
+  },
+  {
+    key: 'averageOrderValue',
+    label: 'Rata-rata order berbayar',
+    money: true,
+    description: 'Penerimaan undangan dibagi jumlah order undangan berbayar.',
+  },
+  {
+    key: 'pendingOrders',
+    label: 'Checkout masih pending',
+    link: true,
+    description: 'Order yang dibuat pada periode dan masih menunggu saat laporan dibuka.',
+  },
+  {
+    key: 'aiRevenue',
+    label: 'Penerimaan kredit AI',
+    money: true,
+    link: true,
+    description: 'Top-up AI dipisahkan dari penjualan undangan.',
+  },
+]
+const totalCards = [
+  { key: 'users', label: 'Pengguna', to: '/admin/users' },
+  { key: 'invitations', label: 'Undangan', to: '/admin/invitations' },
+  { key: 'guests', label: 'Tamu', note: 'Belum ada halaman admin untuk tamu.' },
+  { key: 'templates', label: 'Template', to: '/admin/templates' },
+  { key: 'activeResellers', label: 'Reseller berstatus aktif', to: '/admin/affiliate/resellers' },
+  { key: 'pendingWithdrawals', label: 'Penarikan pending', to: '/admin/affiliate/withdrawals' },
+]
+const number = (value) =>
+  value == null ? 'Belum tersedia' : new Intl.NumberFormat('id-ID').format(value)
+const currency = (value) =>
+  value == null
+    ? 'Belum tersedia'
+    : new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        maximumFractionDigits: 0,
+      }).format(value)
+function dateTime(value) {
+  const date = new Date(value)
+  return Number.isNaN(date.getTime())
+    ? 'Belum tersedia'
+    : new Intl.DateTimeFormat('id-ID', {
+        timeZone: 'Asia/Jakarta',
+        dateStyle: 'medium',
+        timeStyle: 'short',
+      }).format(date)
+}
+function comparisonLabel(key, money) {
+  const item = overview.value?.comparison?.[key]
+  if (!item) return 'Pembanding belum tersedia'
+  const change = (item.delta > 0 ? '+' : '') + (money ? currency(item.delta) : number(item.delta))
+  return item.percent == null
+    ? change + ' · baseline nol'
+    : change + ' (' + (item.percent > 0 ? '+' : '') + item.percent + '%)'
+}
+function params() {
+  return selectedPeriod.value === 'custom'
+    ? { startDate: startDate.value, endDate: endDate.value }
+    : { days: Number(selectedPeriod.value) }
+}
+async function loadOverview() {
+  const request = ++requestSequence
+  loading.value = true
+  error.value = ''
+  overview.value = null
   try {
-    const res = await fetchAdminHealth()
-    diagnosticResults.value = res?.data || res || null
-    toast.success('Diagnostik sistem selesai!')
-  } catch (error) {
-    console.warn('Diagnostics error:', error)
+    const response = await fetchAdminDashboardOverview(params())
+    if (request === requestSequence) overview.value = response?.data || response
+  } catch (err) {
+    if (request === requestSequence) error.value = err.message || 'Laporan belum dapat dimuat.'
   } finally {
-    isRunningDiagnostics.value = false
+    if (request === requestSequence) loading.value = false
   }
 }
-
-// Maintenance Mode switch configuration
-const isMaintenanceMode = ref(localStorage.getItem('admin_maintenance_mode') === 'true')
-
-const toggleMaintenance = async () => {
-  const targetState = !isMaintenanceMode.value
-  const result = await Swal.fire({
-    title: targetState ? 'Aktifkan Mode Perbaikan?' : 'Matikan Mode Perbaikan?',
-    text: targetState 
-      ? 'Aplikasi akan menampilkan halaman pemeliharaan untuk pengguna biasa.' 
-      : 'Pengguna biasa akan dapat mengakses kembali aplikasi secara normal.',
-    icon: 'warning',
-    showCancelButton: true,
-    confirmButtonColor: '#0f172a',
-    cancelButtonColor: '#cbd5e1',
-    confirmButtonText: targetState ? 'Ya, Aktifkan' : 'Ya, Nonaktifkan',
-    cancelButtonText: 'Batal'
-  })
-  
-  if (result.isConfirmed) {
-    isMaintenanceMode.value = targetState
-    localStorage.setItem('admin_maintenance_mode', targetState)
-    toast.success(targetState ? 'Mode perbaikan diaktifkan' : 'Mode perbaikan dinonaktifkan')
-  }
+function applyPeriod() {
+  const query = { ...route.query }
+  delete query.days
+  delete query.startDate
+  delete query.endDate
+  for (const [key, value] of Object.entries(params())) query[key] = String(value)
+  router.replace({ query }).catch(() => {})
+  loadGa4()
+  return loadOverview()
 }
-
-// Category Distribution Calculator based on DB Data
-const categoryColors = {
-  modern: 'bg-blue-500',
-  classic: 'bg-purple-500',
-  rustic: 'bg-amber-500',
-  floral: 'bg-pink-500',
-  elegant: 'bg-slate-700',
+function changePeriod() {
+  if (selectedPeriod.value !== 'custom') applyPeriod()
 }
-
-const categoryDistribution = computed(() => {
-  const items = Array.isArray(categoryData.value) && categoryData.value.length 
-    ? categoryData.value 
-    : []
-  
-  const total = items.reduce((sum, item) => sum + (item.count || 0), 0) || 1
-  return items.map(item => {
-    const key = (item.category || 'Lainnya').toLowerCase()
+function metricLink(card) {
+  if (card.key === 'invitationsCreated') {
     return {
-      name: item.category || 'Lainnya',
-      count: item.count || 0,
-      percentage: Math.round(((item.count || 0) / total) * 100),
-      color: categoryColors[key] || 'bg-slate-400'
+      path: '/admin/invitations',
+      query: {
+        startDate: overview.value.period.startDate,
+        endDate: overview.value.period.endDate,
+      },
     }
-  }).sort((a, b) => b.count - a.count)
-})
-
-// Dynamic SVG Chart Coordinates Calculator
-const svgChartData = computed(() => {
-  const points = trendData.value.length ? trendData.value : [
-    { dayLabel: 'H-6', count: 0 },
-    { dayLabel: 'H-5', count: 0 },
-    { dayLabel: 'H-4', count: 0 },
-    { dayLabel: 'H-3', count: 0 },
-    { dayLabel: 'H-2', count: 0 },
-    { dayLabel: 'Kemarin', count: 0 },
-    { dayLabel: 'Hari Ini', count: 0 },
-  ]
-  
-  const maxVal = Math.max(...points.map(p => p.count || 0), 1)
-  const width = 500
-  const height = 140
-  const yOffset = 180
-  const step = width / (points.length - 1 || 1)
-  
-  const coords = points.map((p, idx) => {
-    const x = Math.round(idx * step)
-    const y = Math.round(yOffset - ((p.count || 0) / maxVal) * height)
-    return { x, y, count: p.count, label: p.dayLabel, date: p.date }
-  })
-  
-  const linePath = coords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c.x} ${c.y}`).join(' ')
-  const areaPath = `${linePath} L ${width} 180 L 0 180 Z`
-  
-  return {
-    coords,
-    linePath,
-    areaPath,
   }
-})
-
-async function loadDashboard() {
-  try {
-    const [users, invitations, guests, templates] = await Promise.all([
-      fetchAdminUsers({ page: 1, limit: 1 }),
-      fetchAdminInvitations({ page: 1, limit: 5 }),
-      fetchAdminGuests({ page: 1, limit: 1 }),
-      fetchAdminTemplates({ page: 1, limit: 1 }),
-    ])
-
-    let resellersCount = 0
-    let withdrawalsCount = 0
-
-    try {
-      const resellersRes = await getAdminResellers({ page: 1, limit: 1 })
-      resellersCount = resellersRes.total || 0
-    } catch (e) {
-      console.warn("Failed to fetch resellers count:", e)
-    }
-
-    try {
-      const withdrawalsRes = await getAdminWithdrawals({ page: 1, limit: 1, status: 'pending' })
-      withdrawalsCount = withdrawalsRes.total || 0
-    } catch (e) {
-      console.warn("Failed to fetch withdrawals count:", e)
-    }
-
-    try {
-      const statsRes = await fetchAdminStats()
-      const data = statsRes?.data || statsRes || {}
-      trendData.value = data.trend || []
-      categoryData.value = data.categories || []
-      
-      if (trendData.value.length) {
-        const totalTrend = trendData.value.reduce((acc, curr) => acc + (curr.count || 0), 0)
-        trendAverage.value = Math.round(totalTrend / trendData.value.length)
-      }
-    } catch (e) {
-      console.warn("Failed to fetch admin stats:", e)
-    }
-
-    stats.value = [
-      { label: 'Total Pengguna', value: users.total || 0, icon: 'fa-users', color: 'bg-blue-50 text-blue-600' },
-      { label: 'Total Undangan', value: invitations.total || 0, icon: 'fa-envelope', color: 'bg-indigo-50 text-indigo-600' },
-      { label: 'Total Tamu', value: guests.total || 0, icon: 'fa-address-book', color: 'bg-emerald-50 text-emerald-600' },
-      { label: 'Template Desain', value: templates.total || 0, icon: 'fa-palette', color: 'bg-pink-50 text-pink-600' },
-      { label: 'Reseller Aktif', value: resellersCount, icon: 'fa-handshake', color: 'bg-orange-50 text-orange-600' },
-      { label: 'Penarikan Pending', value: withdrawalsCount, icon: 'fa-clock', color: 'bg-rose-50 text-rose-600' },
-    ]
-
-    recentInvitations.value = invitations.data || []
-  } catch (error) {
-    toast.error(error.message || 'Gagal memuat data dashboard')
+  return {
+    path: '/admin/payments',
+    query: {
+      status: card.key === 'pendingOrders' ? 'pending' : 'success',
+      purpose: card.key === 'aiRevenue' ? 'ai_credits' : 'invitation',
+      kind:
+        card.key === 'freeActivations' ? 'free' : card.key === 'pendingOrders' ? 'pending' : 'paid',
+      startDate: overview.value.period.startDate,
+      endDate: overview.value.period.endDate,
+    },
   }
 }
-
-onMounted(() => {
-  loadDashboard()
-  runDiagnostics()
+const dayLink = (date) => ({
+  path: '/admin/invitations',
+  query: { startDate: date, endDate: date },
+})
+const dayPaymentsLink = (date) => ({
+  path: '/admin/payments',
+  query: { status: 'success', purpose: 'invitation', kind: 'paid', startDate: date, endDate: date },
+})
+const categoryLink = (category) => ({
+  path: '/admin/invitations',
+  query: {
+    category,
+    startDate: overview.value.period.startDate,
+    endDate: overview.value.period.endDate,
+  },
+})
+const trendDots = computed(() => {
+  const days = overview.value?.trend || []
+  const max = Math.max(...days.map((d) => d.count), 1)
+  return days.map((day, index) => ({
+    date: day.date,
+    count: day.count,
+    x: (index / Math.max(days.length - 1, 1)) * 480 + 10,
+    y: 130 - (day.count / max) * 115,
+  }))
+})
+const trendPoints = computed(() => {
+  const days = overview.value?.trend || []
+  const max = Math.max(...days.map((d) => d.count), 1)
+  return days
+    .map(
+      (day, index) =>
+        (index / Math.max(days.length - 1, 1)) * 480 + 10 + ',' + (130 - (day.count / max) * 115),
+    )
+    .join(' ')
+})
+async function loadQueue() {
+  queueLoading.value = true
+  queueError.value = ''
+  try {
+    const response = await fetchAdminActionQueue()
+    queue.value = response?.data || response
+  } catch (err) {
+    queue.value = null
+    queueError.value = err.message || 'Antrean belum tersedia.'
+  } finally {
+    queueLoading.value = false
+  }
+}
+async function loadRecent() {
+  try {
+    const response = await fetchAdminInvitations({ page: 1, limit: 5 })
+    recentInvitations.value = response.data || []
+  } catch (err) {
+    recentError.value = err.message || 'Undangan terbaru belum tersedia.'
+  } finally {
+    recentLoading.value = false
+  }
+}
+const STATUS_LABELS = {
+  available: 'Tersedia',
+  configured: 'Terkonfigurasi',
+  degraded: 'Terdegradasi',
+  error: 'Error',
+  unknown: 'Tidak diketahui',
+}
+const statusLabel = (status) => STATUS_LABELS[status] || status
+function serviceClass(status) {
+  return status === 'available'
+    ? 'text-emerald-700'
+    : status === 'error'
+      ? 'text-rose-700'
+      : status === 'degraded'
+        ? 'text-amber-800'
+        : 'text-slate-600'
+}
+function ageLabel(hours) {
+  return hours >= 48 ? Math.floor(hours / 24) + ' hari' : hours + ' jam'
+}
+async function loadSystem() {
+  if (!isSuperadmin.value) return
+  systemError.value = ''
+  try {
+    system.value = await fetchAdminHealthReport()
+  } catch (err) {
+    system.value = null
+    systemError.value = err.message || 'Pemeriksaan gagal.'
+  }
+  try {
+    maintenance.value = await fetchMaintenance()
+  } catch {
+    maintenance.value = null
+  }
+}
+async function loadGa4() {
+  ga4Loading.value = true
+  try {
+    const report = await fetchAnalyticsReport(params())
+    ga4.value = report
+    ga4Message.value =
+      report.status === 'not_connected'
+        ? 'GA4 belum tersambung ke panel admin. Angka tidak ditampilkan sampai kredensial server lengkap.'
+        : report.status === 'no_data'
+          ? report.emptyReason || 'Tidak ada data GA4 untuk periode ini.'
+          : report.message || 'Laporan GA4 belum dapat dimuat.'
+  } catch (err) {
+    ga4.value = null
+    ga4Message.value =
+      err.status === 403
+        ? 'Role Anda tidak memiliki akses ke laporan GA4.'
+        : err.message || 'Laporan GA4 belum dapat dimuat.'
+  } finally {
+    ga4Loading.value = false
+  }
+}
+onMounted(async () => {
+  await authStore.loadAdminAccess()
+  loadOverview()
+  loadQueue()
+  loadRecent()
+  loadSystem()
+  loadGa4()
 })
 </script>

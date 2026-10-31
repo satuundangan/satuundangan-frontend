@@ -16,10 +16,12 @@ import GuestsView from '@/views/dashboard/GuestsView.vue'
 import GuestbookView from '@/views/dashboard/GuestbookView.vue'
 import SettingsView from '@/views/dashboard/SettingsView.vue'
 import AdminLogin from '@/views/admin/AdminLogin.vue'
+import { canOpenAdminPath } from '@/utils/adminAccess'
 import AdminDashboard from '@/views/admin/AdminDashboard.vue'
 import AdminUsers from '@/views/admin/AdminUsers.vue'
 import AdminInvitations from '@/views/admin/AdminInvitations.vue'
 import AdminTemplates from '@/views/admin/AdminTemplates.vue'
+import AdminPaletteColors from '@/views/admin/AdminPaletteColors.vue'
 import AdminAudio from '@/views/admin/AdminAudio.vue'
 import AdminBanks from '@/views/admin/AdminBanks.vue'
 import AdminSections from '@/views/admin/AdminSections.vue'
@@ -166,7 +168,12 @@ const router = createRouter({
       component: DashboardView,
       meta: { requiresAuth: true, requiresApproval: true },
     },
-    { path: '/invitations', name: 'Invitations', component: InvitationsView, meta: { requiresAuth: true, requiresApproval: true } },
+    {
+      path: '/invitations',
+      name: 'Invitations',
+      component: InvitationsView,
+      meta: { requiresAuth: true, requiresApproval: true },
+    },
     {
       path: '/planner',
       name: 'WeddingPlanner',
@@ -186,15 +193,29 @@ const router = createRouter({
       component: () => import('@/views/tools/LoveCalculatorView.vue'),
       meta: { title: 'Kalkulator Kecocokan Cinta & Weton Jodoh Jawa Modern' },
     },
-    { path: '/templates', name: 'Templates', component: TemplatesView, meta: { title: 'Katalog Template' } },
-    { path: '/guestbook', name: 'Guestbook', component: GuestbookView, meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true } },
-    { path: '/settings', name: 'Settings', component: SettingsView, meta: { requiresAuth: true, requiresApproval: true } },
+    {
+      path: '/templates',
+      name: 'Templates',
+      component: TemplatesView,
+      meta: { title: 'Katalog Template' },
+    },
+    {
+      path: '/guestbook',
+      name: 'Guestbook',
+      component: GuestbookView,
+      meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true },
+    },
+    {
+      path: '/settings',
+      name: 'Settings',
+      component: SettingsView,
+      meta: { requiresAuth: true, requiresApproval: true },
+    },
     { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
     {
       path: '/admin/totp/setup',
       name: 'admin-totp-setup',
-      component: () => import('@/views/admin/AdminTotpSetup.vue'),
-      meta: { requiresAuth: true, requiresAdmin: true, title: 'Setup Authenticator' },
+      redirect: '/admin/security',
     },
     {
       path: '/blog',
@@ -226,6 +247,18 @@ const router = createRouter({
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
+      path: '/admin/payments',
+      name: 'admin-payments',
+      component: () => import('@/views/admin/AdminPayments.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Pembayaran & Transaksi' },
+    },
+    {
+      path: '/admin/leads-support',
+      name: 'AdminLeadsSupport',
+      component: () => import('@/views/admin/AdminLeadsSupport.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Prospek & Bantuan' },
+    },
+    {
       path: '/admin/invitations/:id/edit',
       name: 'admin-invitation-edit',
       component: () => import('@/views/admin/AdminInvitationEdit.vue'),
@@ -236,6 +269,12 @@ const router = createRouter({
       name: 'admin-templates',
       component: AdminTemplates,
       meta: { requiresAuth: true, requiresAdmin: true },
+    },
+    {
+      path: '/admin/palettes',
+      name: 'admin-palettes',
+      component: AdminPaletteColors,
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Master Palet' },
     },
     {
       path: '/admin/audio',
@@ -270,14 +309,26 @@ const router = createRouter({
     {
       path: '/admin/affiliate/resellers',
       name: 'admin-resellers',
-      redirect: '/admin',
+      component: () => import('@/views/admin/AdminResellers.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Manajemen Reseller' },
     },
     {
       path: '/admin/affiliate/withdrawals',
       name: 'admin-withdrawals',
-      redirect: '/admin',
+      component: () => import('@/views/admin/AdminWithdrawals.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Antrean Penarikan' },
+    },
+    {
+      path: '/admin/affiliate/commissions',
+      name: 'admin-affiliate-commissions',
+      component: () => import('@/views/admin/AdminAffiliateCommissions.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Ledger Komisi Reseller' },
+    },
+    {
+      path: '/admin/affiliate/operations',
+      name: 'admin-affiliate-operations',
+      component: () => import('@/views/admin/AdminAffiliateOperations.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Aturan & Scheduler Afiliasi' },
     },
     {
       path: '/admin/articles',
@@ -309,6 +360,24 @@ const router = createRouter({
       name: 'admin-social-studio',
       component: () => import('@/views/admin/SocialStudioView.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Social Media Studio' },
+    },
+    {
+      path: '/admin/analytics',
+      name: 'admin-analytics',
+      component: () => import('@/views/admin/AdminAnalytics.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Analytics & Funnel' },
+    },
+    {
+      path: '/admin/system',
+      name: 'admin-system',
+      component: () => import('@/views/admin/AdminSystem.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Sistem & Audit' },
+    },
+    {
+      path: '/admin/security',
+      name: 'admin-security',
+      component: () => import('@/views/admin/AdminSecurity.vue'),
+      meta: { requiresAuth: true, requiresAdmin: true, title: 'Keamanan Akun' },
     },
     {
       path: '/admin/logs',
@@ -391,6 +460,15 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
 
+  if (requiresAdmin) {
+    // The server enforces roles; this only keeps an admin off pages they cannot use.
+    const access = await authStore.loadAdminAccess()
+    if (!canOpenAdminPath(access, to.path)) {
+      next({ name: 'admin-dashboard' })
+      return
+    }
+  }
+
   // Block admin routes if TOTP not yet set up (temporarily disabled)
   // if (import.meta.env.VITE_ADMIN_TOTP_ENABLED === 'true' && requiresAdmin && authStore.user?.isAdmin && authStore.user?.totpEnabled === false && to.name !== 'admin-totp-setup') {
   //   next({ name: 'admin-totp-setup' })
@@ -417,49 +495,24 @@ router.beforeEach(async (to, _from, next) => {
   next()
 })
 
-router.afterEach((to, from) => {
+router.afterEach((to, from, failure) => {
+  if (failure) return
   const authStore = useAuthStore()
-
-  // Identify user if logged in
-  if (authStore.user) {
-    analytics.identify(authStore.user.id, {
-      $email: authStore.user.email,
-      $name: authStore.user.name,
-      role: authStore.user.isAdmin ? 'admin' : 'user',
-    })
-  }
-
-  // Track page view with title and duration tracking
-  const pageTitle = to.meta.title || to.name || 'Untitled'
-  analytics.startTimer('Time on Page')
-  analytics.trackPage(pageTitle, {
-    path: to.fullPath,
-    name: to.name,
-    from_path: from.fullPath,
+  const context = analytics.trackNavigation(to, from, {
+    userId: authStore.user?.id,
+    isAdmin: authStore.user?.isAdmin,
   })
-
-  // Telemetry internal activity log
-  trackPageView(to.fullPath, pageTitle, {
-    name: String(to.name || ''),
-    from_path: from.fullPath,
-    userEmail: authStore.user?.email || null,
-  })
-
-  // When leaving the page (on the next transition), the 'Time on Page' for the PREVIOUS page should be captured.
-  // Note: Mixpanel's time_event works by calling track() later with the same name.
-  if (from.name) {
-    const prevTitle = from.meta.title || from.name || 'Untitled'
-    analytics.stopTimer('Time on Page', {
-      page: prevTitle,
-      path: from.fullPath,
-    })
+  // Internal page telemetry receives the same safe route identity, not tokens or
+  // recipient names from fullPath. Sensitive admin/test navigation is excluded.
+  if (!authStore.user?.isAdmin && !['admin', 'test'].includes(context.site_area)) {
+    trackPageView(context.path, context.page_type, { site_area: context.site_area })
   }
 })
 
 // Handle stale asset/chunk errors after new deployments
 router.onError((error) => {
   trackError(error, { source: 'router.onError' })
-  const isChunkError = 
+  const isChunkError =
     error.message?.includes('Failed to fetch dynamically imported module') ||
     error.message?.includes('Importing a module script failed') ||
     error.message?.includes('Expected a JavaScript') ||

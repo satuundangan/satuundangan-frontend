@@ -8,6 +8,44 @@
     </div>
 
     <form v-if="!loading && invitation" class="space-y-6" @submit.prevent="handleSubmit">
+      <!-- Context & Status Banner -->
+      <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-xs flex flex-wrap items-center justify-between gap-4">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Pemilik:</span>
+            <span class="text-sm font-semibold text-slate-900">{{ invitation.user?.name || '-' }}</span>
+            <span class="text-xs text-slate-500">({{ invitation.user?.email || '-' }})</span>
+          </div>
+          <div class="flex items-center gap-2 text-xs text-slate-500">
+            <span>Paket: <strong class="text-slate-800 uppercase">{{ invitation.package || 'Basic' }}</strong></span>
+            <span>•</span>
+            <span>Dibuat: {{ diffForHumans(invitation.createdAt) }}</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span
+            v-if="invitation.paymentStatus"
+            :class="[
+              'inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold border',
+              invitation.paymentStatus.variant === 'success' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' :
+              invitation.paymentStatus.variant === 'info' ? 'bg-blue-50 text-blue-700 border-blue-200' :
+              invitation.paymentStatus.variant === 'warning' ? 'bg-amber-50 text-amber-700 border-amber-200' :
+              invitation.paymentStatus.variant === 'danger' ? 'bg-rose-50 text-rose-700 border-rose-200' :
+              'bg-slate-100 text-slate-700 border-slate-200'
+            ]"
+          >
+            {{ invitation.paymentStatus.label }}
+          </span>
+          <a
+            :href="`/preview?slug=${invitation.slug}`"
+            target="_blank"
+            class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 transition-colors"
+          >
+            <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i> Live Preview
+          </a>
+        </div>
+      </div>
+
       <!-- Informasi Umum -->
       <div class="rounded-2xl border border-slate-200 bg-white p-6">
         <h2 class="mb-4 text-sm font-semibold text-slate-700">Informasi Umum</h2>
@@ -29,17 +67,19 @@
               class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
               placeholder="url-slug-undangan"
             />
+            <p v-if="form.slug !== initialSlug" class="mt-1 text-xs text-amber-700 flex items-center gap-1 font-medium">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              Mengubah slug akan merusak tautan undangan yang sudah dibagikan ke tamu.
+            </p>
           </div>
           <div>
-            <label class="mb-1 block text-sm font-medium text-slate-700">Status</label>
-            <select
-              v-model="form.status"
+            <label class="mb-1 block text-sm font-medium text-slate-700">Alasan Perubahan (Audit Log)</label>
+            <input
+              v-model="form.reason"
+              type="text"
               class="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm focus:border-slate-400 focus:outline-none"
-            >
-              <option value="draft">Draft</option>
-              <option value="active">Active</option>
-              <option value="expired">Expired</option>
-            </select>
+              placeholder="Cth: Koreksi nama pasangan atau permintaan customer"
+            />
           </div>
           <div class="flex items-center gap-3 pt-6">
             <input
@@ -48,7 +88,7 @@
               type="checkbox"
               class="h-4 w-4 rounded border-slate-300 accent-slate-900"
             />
-            <label for="isPublished" class="text-sm font-medium text-slate-700">Dipublikasikan</label>
+            <label for="isPublished" class="text-sm font-medium text-slate-700">Dipublikasikan (Online)</label>
           </div>
         </div>
       </div>
@@ -143,8 +183,9 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter, RouterLink } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import Swal from 'sweetalert2'
 import AdminShell from '@/components/admin/AdminShell.vue'
-import { fetchAdminInvitation, updateAdminInvitation } from '@/api/admin.js'
+import { fetchAdminInvitationDetail, updateAdminInvitation } from '@/api/admin.js'
 
 const route = useRoute()
 const router = useRouter()
@@ -152,12 +193,13 @@ const toast = useToast()
 const loading = ref(false)
 const saving = ref(false)
 const invitation = ref(null)
+const initialSlug = ref('')
 
 const form = ref({
   title: '',
   slug: '',
+  reason: '',
   isPublished: false,
-  status: 'draft',
   akadDateTime: '',
   akadName: '',
   akadAddress: '',
@@ -166,15 +208,28 @@ const form = ref({
   resepsiAddress: '',
 })
 
+function diffForHumans(dateString) {
+  if (!dateString) return '-'
+  const date = new Date(dateString)
+  const now = new Date()
+  const diffInSeconds = Math.floor((now - date) / 1000)
+  if (diffInSeconds < 60) return `${diffInSeconds} detik yang lalu`
+  if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`
+  if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`
+  if (diffInSeconds < 2592000) return `${Math.floor(diffInSeconds / 86400)} hari yang lalu`
+  if (diffInSeconds < 31536000) return `${Math.floor(diffInSeconds / 2592000)} bulan yang lalu`
+  return `${Math.floor(diffInSeconds / 31536000)} tahun yang lalu`
+}
+
 async function loadInvitation() {
   loading.value = true
   try {
-    const data = await fetchAdminInvitation(route.params.id)
+    const data = await fetchAdminInvitationDetail(route.params.id)
     invitation.value = data
     form.value.title = data.title || ''
     form.value.slug = data.slug || ''
+    initialSlug.value = data.slug || ''
     form.value.isPublished = data.isPublished ?? false
-    form.value.status = data.status || 'draft'
     form.value.akadDateTime = data.akadLocation?.dateTime
       ? data.akadLocation.dateTime.slice(0, 16)
       : ''
@@ -193,13 +248,27 @@ async function loadInvitation() {
 }
 
 async function handleSubmit() {
+  if (form.value.slug !== initialSlug.value) {
+    const res = await Swal.fire({
+      title: 'Ubah Slug Undangan?',
+      text: `Perubahan dari "${initialSlug.value}" menjadi "${form.value.slug}" akan menyebabkan link undangan lama yang sudah dikirim ke tamu tidak bisa dibuka lagi. Yakin ingin melanjutkan?`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#d97706',
+      cancelButtonColor: '#64748b',
+      confirmButtonText: 'Ya, Ubah Slug',
+      cancelButtonText: 'Batal',
+    })
+    if (!res.isConfirmed) return
+  }
+
   saving.value = true
   try {
     const payload = {
       title: form.value.title,
       slug: form.value.slug,
       isPublished: form.value.isPublished,
-      status: form.value.status,
+      reason: form.value.reason || undefined,
       akadLocation: {
         dateTime: form.value.akadDateTime,
         name: form.value.akadName,

@@ -69,7 +69,7 @@
                                     <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                                  </div>
                                  <div data-field="brideParents">
-                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                    <label class="form-label">Nama Orang Tua <span class="text-gray-400 font-normal">(opsional)</span></label>
                                     <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
                                     <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
                                  </div>
@@ -105,7 +105,7 @@
                                     <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                                  </div>
                                  <div data-field="groomParents">
-                                    <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                                    <label class="form-label">Nama Orang Tua <span class="text-gray-400 font-normal">(opsional)</span></label>
                                     <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
                                     <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
                                  </div>
@@ -531,12 +531,22 @@ const route = useRoute()
 const router = useRouter()
 
 // Format ISO UTC string from API to local datetime-local input (YYYY-MM-DDTHH:mm)
+// Event times are entered and shown as WIB (templates print "WIB"), so anchor them to +07:00
+// instead of the editor's browser timezone.
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000
 const formatISOToLocalInput = (isoString) => {
    if (!isoString) return ''
    const d = new Date(isoString)
    if (isNaN(d.getTime())) return ''
-   const pad = (n) => n.toString().padStart(2, '0')
-   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+   return new Date(d.getTime() + WIB_OFFSET_MS).toISOString().slice(0, 16)
+}
+const wibInputToISO = (localInput) => {
+   if (!localInput) return ''
+   const value = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(localInput)
+      ? `${localInput.length === 16 ? `${localInput}:00` : localInput}+07:00`
+      : localInput
+   const d = new Date(value)
+   return isNaN(d.getTime()) ? '' : d.toISOString()
 }
 
 const isUploading = ref(false)
@@ -638,11 +648,11 @@ const syncDataToPreview = (data) => {
             },
             isSingleEvent: data.isSingleEvent,
             akadLocation: data.isSingleEvent 
-               ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-               : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+               ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+               : { dateTime: wibInputToISO(data.akadDateTime), mapUrl: data.akadMap, description: data.akadDesc },
             resepsiLocation: data.isSingleEvent
-               ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-               : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+               ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+               : { dateTime: wibInputToISO(data.resepsiDateTime), mapUrl: data.resepsiMap, description: data.resepsiDesc },
             ...resolveQuoteForSave(data),
             loveStory: (data.loveStories || []).map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
             galleryImages: (data.gallery || []).map(img => img.preview),
@@ -920,10 +930,8 @@ function validateStep(step) {
    let isValid = true
    if (step === 1) {
       if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
-      if (!data.brideParents?.trim()) { validationErrors.value.brideParents = 'Nama orang tua wanita wajib diisi'; isValid = false }
       if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
       if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
-      if (!data.groomParents?.trim()) { validationErrors.value.groomParents = 'Nama orang tua pria wajib diisi'; isValid = false }
       if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
       if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
    } else if (step === 2) {
@@ -1076,8 +1084,8 @@ async function saveAndPreview() {
          title: formData.value.title, slug: formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
          parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
-         akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
-         resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
+         akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? wibInputToISO(formData.value.dateTime) : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? wibInputToISO(formData.value.akadDateTime) : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
+         resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? wibInputToISO(formData.value.dateTime) : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? wibInputToISO(formData.value.resepsiDateTime) : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: getSelectedTemplateDesignId(), loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
          musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'), isCustomMusic: formData.value.music === 'custom' || Boolean(formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart, audioEnd: formData.value.audioEnd, encryptedGuestName: formData.value.encryptedGuest === 'ya', galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),

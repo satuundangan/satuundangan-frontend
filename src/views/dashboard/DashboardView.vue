@@ -184,10 +184,10 @@
                             {{ inv.title || 'Undangan Tanpa Judul' }}
                           </h4>
                           <span 
-                            :class="inv.isPublished ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : 'bg-slate-100 text-slate-500 border-slate-200'" 
+                            :class="inv.isPublished ? 'bg-emerald-50 text-emerald-600 border-emerald-200' : (inv.paymentStatus === 'pending' || inv.latestPaymentStatus === 'pending') ? 'bg-amber-50 text-amber-700 border-amber-200' : 'bg-slate-100 text-slate-500 border-slate-200'" 
                             class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider border"
                           >
-                             {{ inv.isPublished ? 'Published' : 'Draft' }}
+                             {{ inv.isPublished ? 'Aktif' : (inv.paymentStatus === 'pending' || inv.latestPaymentStatus === 'pending') ? 'Menunggu Bayar' : 'Draft' }}
                           </span>
                           <span 
                             v-if="inv.package" 
@@ -198,14 +198,14 @@
                        </div>
                        <p class="text-xs text-slate-400 truncate mt-0.5 flex items-center gap-1.5">
                           <i class="fa-solid fa-link text-[10px] text-slate-300"></i>
-                          <span>{{ invitationBaseUrl }}/inv/{{ inv.slug }}</span>
+                          <span>{{ getInvitationPublicUrl(inv) }}</span>
                        </p>
                     </div>
                  </div>
 
                  <div class="flex items-center gap-1.5 shrink-0 self-end sm:self-auto flex-wrap">
                     <button 
-                      @click="copyLink(inv.slug)"
+                      @click="copyLink(inv)"
                       class="px-2.5 py-1.5 text-slate-500 hover:text-blue-600 hover:bg-white rounded-xl transition-all border border-slate-200/60 text-xs flex items-center gap-1.5"
                       title="Salin Link Undangan"
                     >
@@ -231,7 +231,7 @@
                     </router-link>
 
                     <a 
-                      :href="`/inv/${inv.slug}`" 
+                      :href="getInvitationPublicUrl(inv)"
                       target="_blank" 
                       class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white rounded-xl transition-all shadow-2xs"
                       title="Buka Website Undangan"
@@ -258,13 +258,13 @@ import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import StatCard from "@/components/dashboard/StatCard.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations, getDashboardStats } from "@/api/invitation"
+import { getInvitationPublicUrl } from "@/utils/invitationUrls"
 import { useAuthStore } from "@/stores/auth"
 import { useToast } from "vue-toastification"
 
 const toast = useToast()
 const auth = useAuthStore()
 const invitations = ref([])
-const invitationBaseUrl = window.location.origin
 const statsData = ref({
   total_invitations: 0,
   total_guests: 0,
@@ -311,8 +311,8 @@ function getInvitationThumbnail(inv) {
   )
 }
 
-function copyLink(slug) {
-  const fullUrl = `${window.location.origin}/inv/${slug}`
+function copyLink(invitation) {
+  const fullUrl = getInvitationPublicUrl(invitation)
   navigator.clipboard.writeText(fullUrl)
   toast.success('Link undangan berhasil disalin!')
 }

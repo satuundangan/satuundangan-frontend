@@ -1,7 +1,7 @@
 <template>
   <AdminShell
-    title="Bank & Pembayaran"
-    description="Kelola daftar bank dan e-wallet yang didukung"
+    title="Master Bank & E-wallet"
+    description="Kelola referensi bank dan e-wallet. Riwayat transaksi tersedia pada menu Pembayaran & Transaksi."
     show-search
     :search="search"
     search-placeholder="Cari nama bank"
@@ -14,63 +14,106 @@
         <button 
           @click="viewType = 'grid'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'"
         >
           Grid
         </button>
         <button 
           @click="viewType = 'table'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500'"
+          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600'"
         >
           Table
         </button>
       </div>
     </div>
 
-    <div v-if="viewType === 'grid'" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-      <div v-for="bank in banks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md">
+    <div class="mb-4 flex flex-wrap gap-2" role="group" aria-label="Filter status master">
+      <button
+        v-for="filter in statusFilters"
+        :key="filter.value"
+        type="button"
+        class="rounded-full px-3 py-1.5 text-xs font-semibold transition-colors"
+        :class="statusFilter === filter.value ? 'bg-slate-900 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'"
+        @click="statusFilter = filter.value"
+      >
+        {{ filter.label }} <span class="opacity-70">{{ countForStatus(filter.value) }}</span>
+      </button>
+    </div>
+
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="visibleBanks.length"
+      :filtered="Boolean(search) || statusFilter !== 'all'"
+      :updated-at="lastLoadedAt"
+      @retry="loadBanks"
+      @reset="resetSearch"
+    />
+    <p class="mb-4 rounded-lg bg-slate-50 px-4 py-3 text-xs text-slate-600">
+      Ini master nama, kode, dan logo yang ditampilkan pada undangan—bukan saldo atau settlement. Jumlah referensi mencocokkan nama persis pada snapshot undangan. <a href="/admin/payments" class="font-semibold text-blue-700 underline">Buka Pembayaran &amp; Transaksi</a> untuk status transaksi.
+    </p>
+
+    <div v-if="viewType === 'grid' && !loadError" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div v-for="bank in visibleBanks" :key="bank.id" class="group relative flex flex-col items-center justify-center rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:shadow-md" :class="bank.isActive === false ? 'opacity-70' : ''">
+        <button @click="openEdit(bank)" class="absolute top-2 left-2 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-blue-600 transition-all" title="Edit master">
+          <i class="pi pi-pencil"></i>
+        </button>
         <button @click="confirmDelete(bank)" class="absolute top-2 right-2 text-slate-300 opacity-0 group-hover:opacity-100 hover:text-rose-500 transition-all">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
         
         <div class="h-16 w-full flex items-center justify-center mb-3">
-          <img v-if="bank.logo" :src="bank.logo" :alt="bank.name" class="max-h-full max-w-full object-contain" />
-          <div v-else class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-400">
+          <img v-if="bank.logo && !brokenLogos.has(bank.id)" :src="bank.logo" :alt="bank.name" class="max-h-full max-w-full object-contain" @error="markLogoBroken(bank.id)" />
+          <div v-else class="h-12 w-12 rounded-full bg-slate-100 flex items-center justify-center text-slate-500">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>
           </div>
         </div>
+        <p v-if="logoIssueLabel(bank)" class="-mt-2 mb-2 text-[10px] font-semibold text-amber-700">{{ logoIssueLabel(bank) }}</p>
         
         <h3 class="font-medium text-slate-900 text-center text-sm">{{ bank.name }}</h3>
+        <span class="mt-1 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="bank.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'">{{ bank.isActive === false ? 'Diarsipkan' : 'Aktif' }}</span>
         <p class="text-xs text-slate-500 text-center mt-1">{{ bank.code }}</p>
+        <p v-if="bank.code && hasDuplicateCode(bank)" class="mt-1 text-[10px] font-semibold text-amber-700">Kode duplikat di {{ bank.duplicateCodeCount }} master</p>
+        <p class="mt-2 text-center text-[10px] text-slate-500">{{ bank.bankAccountUseCount ?? 0 }} undangan bank · {{ bank.walletUseCount ?? 0 }} e-wallet</p>
+        <button type="button" class="mt-3 rounded-lg border border-slate-200 px-3 py-1.5 text-[10px] font-semibold text-slate-700 hover:bg-slate-50" @click="toggleBankActive(bank)">{{ bank.isActive === false ? 'Aktifkan lagi' : 'Arsipkan' }}</button>
       </div>
 
       <!-- Empty State -->
-      <div v-if="!loading && !banks.length" class="col-span-full py-12 text-center text-slate-400">
+      <div v-if="!loading && !banks.length" class="col-span-full py-12 text-center text-slate-500">
         Belum ada data bank.
+      </div>
+      <div v-else-if="!loading && !visibleBanks.length" class="col-span-full py-12 text-center text-slate-500">
+        Tidak ada master untuk filter ini.
       </div>
     </div>
 
     <DataTable
-      v-else
+      v-else-if="viewType !== 'grid' && !loadError"
       :headers="headers"
-      :items="banks"
+      :items="visibleBanks"
       :loading="loading"
     >
       <template #cell(logo)="{ item }">
         <div class="h-10 w-16 flex items-center justify-center bg-white rounded border border-slate-100 overflow-hidden p-1">
-          <img v-if="item.logo" :src="item.logo" :alt="item.name" class="max-h-full max-w-full object-contain" />
-          <span v-else class="text-[10px] text-slate-300 font-bold uppercase">No Logo</span>
+          <img v-if="item.logo && !brokenLogos.has(item.id)" :src="item.logo" :alt="item.name" class="max-h-full max-w-full object-contain" @error="markLogoBroken(item.id)" />
+          <span v-else class="text-[10px] text-amber-700 font-bold uppercase">{{ item.logo ? 'Gagal dimuat' : 'Logo kosong' }}</span>
         </div>
       </template>
       <template #cell(name)="{ item }">
         <span class="font-bold text-slate-900">{{ item.name }}</span>
+        <span class="ml-2 rounded-full px-2 py-0.5 text-[10px] font-semibold" :class="item.isActive === false ? 'bg-slate-100 text-slate-600' : 'bg-emerald-50 text-emerald-700'">{{ item.isActive === false ? 'Diarsipkan' : 'Aktif' }}</span>
       </template>
       <template #cell(code)="{ item }">
-        <span class="font-mono text-xs text-slate-500">{{ item.code || '-' }}</span>
+        <span class="font-mono text-xs" :class="hasDuplicateCode(item) ? 'text-amber-700' : 'text-slate-500'">{{ item.code || '-' }}{{ hasDuplicateCode(item) ? ` · duplikat (${item.duplicateCodeCount})` : '' }}</span>
+      </template>
+      <template #cell(usage)="{ item }">
+        <span class="text-xs">{{ item.bankAccountUseCount ?? 0 }} bank · {{ item.walletUseCount ?? 0 }} e-wallet</span>
       </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end">
+          <button @click="openEdit(item)" class="mr-3 text-[11px] font-black uppercase tracking-widest text-blue-600 hover:text-blue-700">Edit</button>
+          <button @click="toggleBankActive(item)" class="mr-3 text-[11px] font-black uppercase tracking-widest text-slate-600 hover:text-slate-900">{{ item.isActive === false ? 'Aktifkan' : 'Arsipkan' }}</button>
           <button @click="confirmDelete(item)" class="text-[11px] font-black uppercase tracking-widest text-rose-600 hover:text-rose-700">Hapus</button>
         </div>
       </template>
@@ -81,8 +124,8 @@
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
         <div class="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl">
           <div class="mb-4 flex items-center justify-between">
-            <h2 class="text-lg font-semibold text-slate-900">Tambah Bank</h2>
-            <button class="text-slate-400 hover:text-slate-600" @click="closeForm">×</button>
+            <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Master' : 'Tambah Master Bank / E-wallet' }}</h2>
+            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
           </div>
 
           <form class="space-y-4" @submit.prevent="submitForm">
@@ -94,6 +137,7 @@
             <div>
               <label class="text-sm font-medium text-slate-600">Kode (Opsional)</label>
               <input v-model="form.code" type="text" placeholder="Contoh: 014" class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100" />
+              <p class="mt-1 text-xs text-slate-500">Preview tersimpan: <span class="font-mono">{{ form.code.trim() || '—' }}</span>. Spasi di awal/akhir akan dipangkas; format bank atau e-wallet lainnya tidak dibatasi.</p>
             </div>
 
             <div>
@@ -120,28 +164,51 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from '@/components/admin/DataTable.vue'
-import { fetchAdminBanks, createAdminBank, deleteAdminBank } from '@/api/master.js'
+import { fetchAdminBanks, createAdminBank, updateAdminBank, deleteAdminBank } from '@/api/master.js'
 import { uploadFileApi } from '@/api/file.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
 const toast = useToast()
 const banks = ref([])
+const brokenLogos = ref(new Set())
 const search = ref('')
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
+const editing = ref(null)
 const uploadingFile = ref(false)
 const viewType = ref('grid') // 'grid' or 'table'
+const statusFilter = ref('active')
+const statusFilters = [
+  { value: 'active', label: 'Aktif' },
+  { value: 'archived', label: 'Diarsipkan' },
+  { value: 'all', label: 'Semua' },
+]
+const visibleBanks = computed(() => banks.value.filter((bank) => {
+  if (statusFilter.value === 'active') return bank.isActive !== false
+  if (statusFilter.value === 'archived') return bank.isActive === false
+  return true
+}))
+
+function countForStatus(status) {
+  return banks.value.filter((bank) => {
+    if (status === 'active') return bank.isActive !== false
+    if (status === 'archived') return bank.isActive === false
+    return true
+  }).length
+}
 
 const headers = [
   { label: 'Logo', key: 'logo', class: 'w-20' },
   { label: 'Nama Bank / E-Wallet', key: 'name' },
   { label: 'Kode', key: 'code' },
+  { label: 'Referensi tersimpan', key: 'usage' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -151,16 +218,39 @@ const form = reactive({
   logo: '',
 })
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+function resetSearch() {
+  handleSearch('')
+}
+
 async function loadBanks() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminBanks({ q: search.value })
     banks.value = Array.isArray(res) ? res : (res.data || [])
+    brokenLogos.value = new Set()
+    lastLoadedAt.value = new Date()
   } catch (error) {
-    toast.error(error.message || 'Gagal memuat bank')
+    loadError.value = error.message || 'Gagal memuat bank'
   } finally {
     loading.value = false
   }
+}
+
+function hasDuplicateCode(bank) {
+  return Number(bank.duplicateCodeCount || 0) > 1
+}
+
+function logoIssueLabel(bank) {
+  if (!bank.logo?.trim()) return 'Logo belum diisi'
+  if (brokenLogos.value.has(bank.id)) return 'URL logo gagal dimuat di browser'
+  return ''
+}
+
+function markLogoBroken(id) {
+  brokenLogos.value = new Set([...brokenLogos.value, id])
 }
 
 const debouncedSearch = useDebounceFn(() => loadBanks(), 300)
@@ -171,7 +261,14 @@ function handleSearch(value) {
 }
 
 function openCreate() {
+  editing.value = null
   Object.assign(form, { name: '', code: '', logo: '' })
+  showForm.value = true
+}
+
+function openEdit(bank) {
+  editing.value = bank
+  Object.assign(form, { name: bank.name || '', code: bank.code || '', logo: bank.logo || '' })
   showForm.value = true
 }
 
@@ -197,10 +294,32 @@ async function handleFileChange(event) {
 
 async function submitForm() {
   if (saving.value) return
+  if (
+    editing.value &&
+    (editing.value.bankAccountUseCount > 0 || editing.value.walletUseCount > 0) &&
+    (form.name !== editing.value.name || form.code !== editing.value.code || form.logo !== editing.value.logo)
+  ) {
+    const impact = await Swal.fire({
+      title: 'Perbarui master yang sudah dipakai?',
+      text: 'Perubahan berlaku untuk pilihan baru. Undangan yang sudah tersimpan tetap memakai snapshot bank/e-wallet sebelumnya.',
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#0f172a',
+      cancelButtonColor: '#94a3b8',
+      confirmButtonText: 'Perbarui master',
+      cancelButtonText: 'Batal',
+    })
+    if (!impact.isConfirmed) return
+  }
   saving.value = true
   try {
-    await createAdminBank({ ...form })
-    toast.success('Bank ditambahkan')
+    if (editing.value) {
+      await updateAdminBank(editing.value.id, { ...form })
+      toast.success('Master diperbarui')
+    } else {
+      await createAdminBank({ ...form })
+      toast.success('Master ditambahkan')
+    }
     showForm.value = false
     loadBanks()
   } catch (error) {
@@ -213,7 +332,7 @@ async function submitForm() {
 async function confirmDelete(bank) {
   const result = await Swal.fire({
     title: 'Hapus bank?',
-    text: `Bank "${bank.name}" akan dihapus.`,
+    text: `${bank.bankAccountUseCount ?? 0} undangan memakai nama ini sebagai bank dan ${bank.walletUseCount ?? 0} sebagai e-wallet. Master yang masih terdeteksi tidak dapat dihapus.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#0f172a',
@@ -228,6 +347,32 @@ async function confirmDelete(bank) {
     loadBanks()
   } catch (error) {
     toast.error(error.message || 'Gagal menghapus')
+  }
+}
+
+async function toggleBankActive(bank) {
+  const nextIsActive = bank.isActive === false
+  const usageText = `${bank.bankAccountUseCount ?? 0} undangan memakai nama ini sebagai bank dan ${bank.walletUseCount ?? 0} sebagai e-wallet.`
+  const result = await Swal.fire({
+    title: nextIsActive ? 'Aktifkan master lagi?' : 'Arsipkan master?',
+    text: nextIsActive
+      ? 'Master akan kembali berstatus aktif. Snapshot undangan yang tersimpan tidak berubah.'
+      : `${usageText} Master hanya ditandai arsip; snapshot undangan tetap tersimpan dan tidak diubah.`,
+    icon: nextIsActive ? 'question' : 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: nextIsActive ? 'Aktifkan' : 'Arsipkan',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+
+  try {
+    await updateAdminBank(bank.id, { isActive: nextIsActive })
+    toast.success(nextIsActive ? 'Master diaktifkan kembali' : 'Master diarsipkan')
+    await loadBanks()
+  } catch (error) {
+    toast.error(error.message || 'Gagal mengubah status master')
   }
 }
 

@@ -1,7 +1,7 @@
 <template>
   <AdminShell
     title="Audio & Musik"
-    description="Kelola katalog musik latar untuk invitation wedding"
+    description="Kelola musik latar. Duplikasi file baru diperiksa dari SHA-256; entri lama tanpa hash belum dapat dibandingkan."
     show-search
     :search="search"
     search-placeholder="Cari judul atau kategori musik"
@@ -15,14 +15,14 @@
         <button 
           @click="viewType = 'grid'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+          :class="viewType === 'grid' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
         >
           Cards
         </button>
         <button 
           @click="viewType = 'table'"
           class="px-4 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all"
-          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'"
+          :class="viewType === 'table' ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-600 hover:text-slate-900'"
         >
           Table
         </button>
@@ -40,6 +40,7 @@
         <input
           type="file"
           multiple
+          aria-label="Pilih beberapa file musik MP3 untuk diunggah"
           accept="audio/mpeg, audio/mp3"
           class="absolute inset-0 z-10 cursor-pointer opacity-0"
           @change="handleBulkFileChange"
@@ -57,7 +58,7 @@
           <div class="flex items-center justify-between border-b border-slate-100 pb-4">
              <div>
                 <h3 class="text-lg font-black text-slate-900">{{ bulkQueue.length }} File Siap Diupload</h3>
-                <p class="text-xs text-slate-400 uppercase tracking-widest font-bold">Pilih Kategori untuk Batch Ini</p>
+                <p class="text-xs text-slate-500 uppercase tracking-widest font-bold">Pilih Kategori untuk Batch Ini</p>
              </div>
              <div class="flex items-center gap-3">
                 <select v-model="bulkCategory" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-indigo-100">
@@ -70,7 +71,7 @@
                 >
                   {{ isBulking ? 'Uploading...' : 'Mulai Upload Semua' }}
                 </button>
-                <button @click.stop="bulkQueue = []" class="text-slate-400 hover:text-rose-500 transition-colors">
+                <button @click.stop="bulkQueue = []" class="text-slate-500 hover:text-rose-500 transition-colors">
                    <i class="fa-solid fa-times"></i>
                 </button>
              </div>
@@ -79,7 +80,7 @@
           <div class="max-h-60 overflow-y-auto pr-2 custom-scrollbar">
              <div v-for="(item, idx) in bulkQueue" :key="idx" class="mb-2 flex items-center justify-between rounded-2xl bg-white p-3 shadow-sm border border-slate-50">
                 <div class="flex items-center gap-3 min-w-0">
-                   <div class="h-8 w-8 flex items-center justify-center rounded-lg" :class="item.status === 'done' ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-400'">
+                   <div class="h-8 w-8 flex items-center justify-center rounded-lg" :class="item.status === 'done' ? 'bg-emerald-50 text-emerald-500' : 'bg-slate-50 text-slate-500'">
                       <i v-if="item.status === 'done'" class="fa-solid fa-check text-xs"></i>
                       <i v-else-if="item.status === 'uploading'" class="fa-solid fa-spinner animate-spin text-xs"></i>
                       <i v-else class="fa-solid fa-file-audio text-xs"></i>
@@ -96,6 +97,16 @@
     </section>
 
     <!-- Main List (Grid) -->
+    <AdminTableStatus
+      :error="loadError"
+      :loading="loading"
+      :count="filteredAudios.length"
+      :filtered="Boolean(search)"
+      :updated-at="lastLoadedAt"
+      @retry="loadAudio"
+      @reset="handleSearch('')"
+    />
+
     <div v-if="viewType === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       <!-- Loading Skeleton -->
       <template v-if="loading">
@@ -131,15 +142,43 @@
               <h3 class="truncate text-lg font-bold text-slate-900 group-hover:text-indigo-600 transition-colors" :title="track.title">
                 {{ track.title }}
               </h3>
-              <p class="mt-1 line-clamp-1 text-xs text-slate-400 font-medium">
+              <p class="mt-1 line-clamp-1 text-xs text-slate-500 font-medium">
                 {{ getCategoryMeta(track.category).description }}
+              </p>
+              <p class="mt-2 text-[11px] text-slate-600">
+                Dipakai: {{ track.templateUseCount ?? 0 }} template · {{ track.invitationUseCount ?? 0 }} undangan
+              </p>
+              <p v-if="track.sameUrlTrackCount > 1" class="text-[10px] font-semibold text-amber-700">
+                URL identik dipakai {{ track.sameUrlTrackCount }} entri audio
+              </p>
+              <p v-if="track.sameContentTrackCount > 1" class="text-[10px] font-semibold text-amber-700">
+                Isi file identik (SHA-256) ditemukan pada {{ track.sameContentTrackCount }} entri
+              </p>
+              <p v-else-if="track.contentHashStatus !== 'checked'" class="text-[10px] text-slate-500">
+                Duplikasi isi file belum diperiksa untuk entri lama
+              </p>
+              <p class="text-[10px] text-slate-500">Player: {{ playbackStatusLabel(track) }}</p>
+              <p class="mt-2 text-[10px] text-slate-500">
+                Sumber: {{ track.source || 'belum tercatat' }} · Kredit: {{ track.credit || 'belum tercatat' }}
+              </p>
+              <p class="text-[10px] text-slate-500">
+                {{ track.format || 'format belum tercatat' }} · {{ formatBytes(track.fileSizeBytes) }} · durasi {{ formatDuration(track.durationSeconds) }} · izin {{ licenseStatusLabel(track.licenseStatus) }}
               </p>
             </div>
             
             <div class="flex flex-col gap-2">
               <button
                 type="button"
-                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-400 transition-all hover:bg-rose-50 hover:text-rose-500"
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-indigo-50 hover:text-indigo-600"
+                title="Edit sumber dan status izin"
+                :aria-label="`Edit metadata ${track.title}`"
+                @click="openEdit(track)"
+              >
+                <i class="pi pi-pencil text-xs"></i>
+              </button>
+              <button
+                type="button"
+                class="flex h-8 w-8 items-center justify-center rounded-full bg-slate-50 text-slate-500 transition-all hover:bg-rose-50 hover:text-rose-500"
                 title="Hapus"
                 @click="confirmDelete(track)"
               >
@@ -155,7 +194,9 @@
                 <audio 
                   controls 
                   class="h-8 w-full opacity-80"
-                  @play="handlePlay($event)"
+                  @play="handlePlay($event, track)"
+                  @canplay="markAudioPlayable(track)"
+                  @error="markAudioFailed(track)"
                 >
                   <source :src="track.url" type="audio/mpeg">
                 </audio>
@@ -171,7 +212,7 @@
       </template>
 
       <!-- Empty State -->
-      <div v-if="!loading && !filteredAudios.length" class="col-span-full py-20 flex flex-col items-center justify-center text-center">
+      <div v-if="!loading && !loadError && !filteredAudios.length" class="col-span-full py-20 flex flex-col items-center justify-center text-center">
         <div class="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-slate-50 text-slate-200">
            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>
         </div>
@@ -183,7 +224,7 @@
     </div>
 
     <!-- Main List (Table) -->
-    <div class="card" v-else>
+    <div class="card" v-else-if="!loadError">
       <DataTable 
         v-model:filters="filters" 
         :value="audios" 
@@ -212,7 +253,7 @@
           <template #body="{ data }">
             <div class="flex flex-col">
               <span class="font-bold text-slate-900">{{ data.title }}</span>
-              <span class="text-[10px] font-mono text-slate-400 truncate max-w-xs">{{ data.url }}</span>
+              <span class="text-[10px] font-mono text-slate-500 truncate max-w-xs">{{ data.url }}</span>
             </div>
           </template>
           <template #filter="{ filterModel, filterCallback }">
@@ -233,12 +274,36 @@
           </template>
         </Column>
 
+        <Column header="Metadata" style="min-width: 14rem">
+          <template #body="{ data }">
+            <div class="flex flex-col gap-1 text-xs">
+              <span>Sumber: {{ data.source || 'belum tercatat' }}</span>
+              <span>Kredit: {{ data.credit || 'belum tercatat' }}</span>
+              <span class="text-slate-500">Izin: {{ licenseStatusLabel(data.licenseStatus) }}</span>
+              <span v-if="data.sameUrlTrackCount > 1" class="font-semibold text-amber-700">URL identik: {{ data.sameUrlTrackCount }} entri</span>
+              <span v-if="data.sameContentTrackCount > 1" class="font-semibold text-amber-700">Isi file identik (SHA-256): {{ data.sameContentTrackCount }} entri</span>
+              <span v-else-if="data.contentHashStatus !== 'checked'" class="text-slate-500">Hash isi belum tersedia untuk entri lama</span>
+              <span class="text-slate-500">Player: {{ playbackStatusLabel(data) }}</span>
+            </div>
+          </template>
+        </Column>
+        <Column header="File" style="min-width: 11rem">
+          <template #body="{ data }">
+            <div class="flex flex-col gap-1 text-xs text-slate-600">
+              <span>{{ data.format || 'format belum tercatat' }}</span>
+              <span>{{ formatBytes(data.fileSizeBytes) }}</span>
+              <span>Durasi {{ formatDuration(data.durationSeconds) }}</span>
+            </div>
+          </template>
+        </Column>
         <Column header="Player" class="w-48">
           <template #body="{ data }">
             <audio 
               controls 
               class="h-8 w-full opacity-80 scale-90 origin-left"
-              @play="handlePlay($event)"
+              @play="handlePlay($event, data)"
+              @canplay="markAudioPlayable(data)"
+              @error="markAudioFailed(data)"
             >
               <source :src="data.url" type="audio/mpeg">
             </audio>
@@ -249,6 +314,7 @@
           <template #body="{ data }">
             <div class="flex justify-end gap-3">
               <button @click="copyLink(data.url)" class="text-[10px] font-bold uppercase tracking-widest text-indigo-500 hover:text-indigo-700 cursor-pointer">Link</button>
+              <button @click="openEdit(data)" class="text-[10px] font-bold uppercase tracking-widest text-indigo-600 hover:text-indigo-700 cursor-pointer">Metadata</button>
               <button @click="confirmDelete(data)" class="text-[10px] font-bold uppercase tracking-widest text-rose-600 hover:text-rose-700 cursor-pointer">Hapus</button>
             </div>
           </template>
@@ -266,31 +332,33 @@
         <div class="relative w-full max-w-lg overflow-hidden rounded-[2.5rem] bg-white shadow-2xl transition-all">
           <div class="bg-indigo-600 p-8 text-white">
             <div class="flex items-center justify-between mb-2">
-              <h2 class="text-2xl font-black">Tambah Musik</h2>
+              <h2 class="text-2xl font-black">{{ editingAudio ? 'Metadata Musik' : 'Tambah Musik' }}</h2>
               <button class="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 text-white transition-all hover:bg-white/20 active:scale-95" @click="closeForm">
                  <i class="fa-solid fa-times"></i>
               </button>
             </div>
-            <p class="text-indigo-100 text-sm opacity-80">Gunakan kategori yang paling pas dengan nuansa wedding.</p>
+            <p class="text-indigo-100 text-sm opacity-80">Sumber dan status izin mengikuti informasi yang dicatat admin; nilai yang tidak diketahui tetap ditandai unknown.</p>
           </div>
 
           <form class="p-8 space-y-6" @submit.prevent="submitForm">
             <div>
-              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Judul Musik</label>
+              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Judul Musik</label>
               <input
                 v-model="form.title"
                 type="text"
                 placeholder="Contoh: A Thousand Years - Piano"
                 class="w-full rounded-2xl border-2 border-slate-50 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-indigo-100 focus:bg-white focus:ring-4 focus:ring-indigo-50"
+                :disabled="Boolean(editingAudio)"
                 required
               />
             </div>
 
             <div class="grid grid-cols-2 gap-4">
                <div>
-                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Kategori</label>
+                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Kategori</label>
                   <select
                     v-model="form.category"
+                    :disabled="Boolean(editingAudio)"
                     class="w-full appearance-none rounded-2xl border-2 border-slate-50 bg-slate-50 px-5 py-4 text-sm font-bold text-slate-900 outline-none transition-all focus:border-indigo-100 focus:bg-white"
                   >
                     <option v-for="option in categoryOptions" :key="option.value" :value="option.value">
@@ -299,22 +367,83 @@
                   </select>
                </div>
                <div>
-                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">Format</label>
-                  <div class="w-full rounded-2xl bg-slate-50 px-5 py-4 text-sm font-bold text-slate-400">
+                  <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Format</label>
+                  <div class="w-full rounded-2xl bg-slate-50 px-5 py-4 text-sm font-bold text-slate-500">
                      MP3 Audio
                   </div>
                </div>
             </div>
 
+            <div v-if="editingAudio" class="space-y-3 rounded-2xl border border-indigo-100 bg-indigo-50/50 p-4">
+              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-600">Ganti file MP3 (opsional)</label>
+              <input
+                type="file"
+                accept="audio/mpeg, audio/mp3"
+                aria-label="Pilih file MP3 pengganti"
+                class="block w-full text-xs text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-white file:px-3 file:py-2 file:font-semibold"
+                @change="handleReplacementFileChange"
+              />
+              <p v-if="replacementAudioFile" class="text-xs text-slate-700">
+                {{ replacementAudioFile.name }} · {{ formatBytes(replacementAudioFile.size) }} · durasi {{ formatDuration(replacementDurationSeconds) }}
+              </p>
+              <p v-if="replacementAudioFile" class="text-xs text-indigo-900">
+                {{ editingAudio.templateUseCount ?? 0 }} template dan {{ editingAudio.invitationUseCount ?? 0 }} undangan yang memakai URL persis akan diarahkan ke file baru. File lama tetap disimpan untuk kemungkinan referensi historis yang tidak terpetakan.
+              </p>
+            </div>
+
+            <div class="space-y-4 rounded-2xl bg-slate-50 p-4">
+              <div>
+                <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Sumber</label>
+                <input
+                  v-model="form.source"
+                  type="text"
+                  maxlength="255"
+                  placeholder="URL, pemilik, atau catatan sumber"
+                  class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-300"
+                />
+              </div>
+              <div>
+                <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Kredit</label>
+                <textarea
+                  v-model="form.credit"
+                  rows="2"
+                  maxlength="2000"
+                  placeholder="Nama pencipta/pemegang hak atau detail kredit yang diketahui"
+                  class="w-full resize-y rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-300"
+                ></textarea>
+              </div>
+              <div>
+                <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">Status izin</label>
+                <select v-model="form.licenseStatus" class="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-indigo-300">
+                  <option value="unknown">Belum diketahui</option>
+                  <option value="pending">Perlu ditinjau</option>
+                  <option value="recorded">Izin tercatat oleh admin</option>
+                  <option value="restricted">Tidak boleh digunakan</option>
+                </select>
+                <p class="mt-2 text-[11px] text-slate-500">Status ini adalah catatan admin, bukan pemeriksaan otomatis atas hak cipta.</p>
+              </div>
+            </div>
+
+            <p v-if="editingAudio && !replacementAudioFile" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
+              File tetap sama. Format, ukuran, dan durasi tidak diubah dari formulir ini.
+            </p>
+            <p v-else-if="replacementAudioFile" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
+              File baru: {{ replacementAudioFile.type || 'Format tidak terbaca' }} · {{ formatBytes(replacementAudioFile.size) }} · durasi {{ formatDuration(replacementDurationSeconds) }}
+            </p>
+            <p v-else-if="selectedAudioFile" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-600">
+              {{ selectedAudioFile.type || 'Format tidak terbaca' }} · {{ formatBytes(selectedAudioFile.size) }} · durasi {{ formatDuration(form.durationSeconds) }}
+            </p>
+
             <!-- Upload Zone -->
-            <div>
-              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-400 mb-2">File Audio</label>
+            <div v-if="!editingAudio">
+              <label class="block text-[11px] font-black uppercase tracking-widest text-slate-500 mb-2">File Audio</label>
               <div 
                 class="group relative flex flex-col items-center justify-center rounded-[2rem] border-2 border-dashed border-slate-200 bg-slate-50/50 p-8 transition-all hover:border-indigo-300 hover:bg-indigo-50/30"
                 :class="{ 'border-indigo-400 bg-indigo-50': uploadingFile }"
               >
                 <input
                   type="file"
+                  aria-label="Pilih file musik MP3"
                   accept="audio/mpeg, audio/mp3"
                   class="absolute inset-0 z-10 cursor-pointer opacity-0"
                   @change="handleFileChange"
@@ -325,15 +454,15 @@
                       <svg class="h-8 w-8 animate-spin text-indigo-600" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" fill="none"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
                    </div>
                    <p class="text-sm font-black text-indigo-600 uppercase tracking-widest">Uploading...</p>
-                   <p class="mt-1 text-xs text-slate-400">Sedang mengirim file ke R2 Storage</p>
+                   <p class="mt-1 text-xs text-slate-500">Sedang mengirim file ke R2 Storage</p>
                 </div>
                 
                 <div v-else-if="form.url" class="text-center">
                    <div class="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-emerald-500 text-white shadow-lg shadow-emerald-200">
                       <i class="fa-solid fa-check text-2xl"></i>
                    </div>
-                   <p class="text-sm font-black text-emerald-600 uppercase tracking-widest">File Ready</p>
-                   <p class="mt-1 text-[10px] text-slate-400 truncate max-w-[200px]">{{ form.fileName }}</p>
+                   <p class="text-sm font-black text-emerald-700 uppercase tracking-widest">File Ready</p>
+                   <p class="mt-1 text-[10px] text-slate-500 truncate max-w-[200px]">{{ form.fileName }}</p>
                 </div>
 
                 <div v-else class="text-center">
@@ -341,7 +470,7 @@
                       <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
                    </div>
                    <p class="text-sm font-black text-slate-900 uppercase tracking-widest">Pilih File MP3</p>
-                   <p class="mt-1 text-xs text-slate-400">Klik atau drag audio ke sini</p>
+                   <p class="mt-1 text-xs text-slate-500">Klik atau drag audio ke sini</p>
                 </div>
               </div>
             </div>
@@ -356,10 +485,10 @@
               </button>
               <button
                 type="submit"
-                :disabled="saving || uploadingFile || !selectedAudioFile"
+                :disabled="saving || uploadingFile || (!editingAudio && !selectedAudioFile)"
                 class="flex-[2] rounded-2xl bg-indigo-600 py-4 text-sm font-bold text-white shadow-xl shadow-indigo-100 transition-all hover:bg-indigo-700 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {{ saving ? 'Menyimpan…' : 'Simpan Musik' }}
+                {{ saving ? 'Menyimpan…' : editingAudio ? replacementAudioFile ? 'Ganti File & Simpan Metadata' : 'Simpan Metadata' : 'Simpan Musik' }}
               </button>
             </div>
           </form>
@@ -372,6 +501,7 @@
 <script setup>
 import { computed, onMounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
+import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import InputText from 'primevue/inputtext'
@@ -380,7 +510,7 @@ import InputIcon from 'primevue/inputicon'
 import Select from 'primevue/select'
 import Tag from 'primevue/tag'
 import { FilterMatchMode } from '@primevue/core/api'
-import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio } from '@/api/master.js'
+import { fetchAdminAudio, deleteAdminAudio, uploadAdminAudio, updateAdminAudioMetadata, replaceAdminAudioFile } from '@/api/master.js'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
 
@@ -395,7 +525,7 @@ const CATEGORY_OPTIONS = [
     value: 'acoustic',
     label: 'Acoustic Morning',
     description: 'Hangat dan ringan untuk intimate wedding atau garden party.',
-    badgeClass: 'border-amber-100 bg-amber-50 text-amber-600',
+    badgeClass: 'border-amber-100 bg-amber-50 text-amber-700',
   },
   {
     value: 'elegant',
@@ -407,7 +537,7 @@ const CATEGORY_OPTIONS = [
     value: 'sacred',
     label: 'Sacred Ceremony',
     description: 'Tenang dan khidmat untuk akad, blessing, atau pemberkatan.',
-    badgeClass: 'border-emerald-100 bg-emerald-50 text-emerald-600',
+    badgeClass: 'border-emerald-100 bg-emerald-50 text-emerald-700',
   },
   {
     value: 'warm',
@@ -431,7 +561,11 @@ const showForm = ref(false)
 const saving = ref(false)
 const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
+const audioPlaybackStates = ref({})
 const selectedAudioFile = ref(null)
+const editingAudio = ref(null)
+const replacementAudioFile = ref(null)
+const replacementDurationSeconds = ref(null)
 const viewType = ref('grid') // 'grid' or 'table'
 
 const filters = ref({
@@ -457,7 +591,7 @@ const isBulking = ref(false)
 const bulkCategory = ref('romantic')
 const bulkQueue = ref([])
 
-const form = reactive({ title: '', category: 'romantic', url: '', fileName: '' })
+const form = reactive({ title: '', category: 'romantic', url: '', fileName: '', source: '', credit: '', licenseStatus: 'unknown', durationSeconds: null })
 const categoryOptions = CATEGORY_OPTIONS
 
 const filteredAudios = computed(() => {
@@ -480,14 +614,20 @@ function getCategoryMeta(category) {
   }
 }
 
+const loadError = ref('')
+const lastLoadedAt = ref(null)
+
 async function loadAudio() {
   loading.value = true
+  loadError.value = ''
   try {
     const res = await fetchAdminAudio()
     const data = Array.isArray(res) ? res : (res.data || [])
     audios.value = data
-  } catch {
-    toast.error('Gagal memuat musik')
+    audioPlaybackStates.value = {}
+    lastLoadedAt.value = new Date()
+  } catch (error) {
+    loadError.value = error.message || 'Gagal memuat musik'
   } finally {
     loading.value = false
   }
@@ -499,16 +639,52 @@ function handleSearch(value) {
 }
 function resetForm() {
   selectedAudioFile.value = null
-  Object.assign(form, { title: '', category: 'romantic', url: '', fileName: '' })
+  editingAudio.value = null
+  replacementAudioFile.value = null
+  replacementDurationSeconds.value = null
+  Object.assign(form, { title: '', category: 'romantic', url: '', fileName: '', source: '', credit: '', licenseStatus: 'unknown', durationSeconds: null })
 }
 function openCreate() { resetForm(); showForm.value = true }
+function openEdit(track) {
+  resetForm()
+  editingAudio.value = track
+  Object.assign(form, {
+    title: track.title,
+    category: track.category,
+    source: track.source || '',
+    credit: track.credit || '',
+    licenseStatus: track.licenseStatus || 'unknown',
+    durationSeconds: track.durationSeconds ?? null,
+  })
+  showForm.value = true
+}
 function closeForm() { showForm.value = false; resetForm() }
 
-function handlePlay(event) {
+function handlePlay(event, track) {
   if (currentPlayingAudio.value && currentPlayingAudio.value !== event.target) {
     currentPlayingAudio.value.pause()
   }
   currentPlayingAudio.value = event.target
+  if (audioPlaybackStates.value[track.id] !== 'playable') {
+    audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'checking' }
+  }
+}
+
+function markAudioPlayable(track) {
+  audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'playable' }
+}
+
+function markAudioFailed(track) {
+  audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'failed' }
+}
+
+function playbackStatusLabel(track) {
+  return ({
+    unverified: 'belum diperiksa di browser',
+    checking: 'sedang memuat',
+    playable: 'metadata berhasil dimuat',
+    failed: 'gagal dimuat di browser',
+  })[audioPlaybackStates.value[track.id] || 'unverified']
 }
 
 function copyLink(url) {
@@ -552,8 +728,9 @@ async function processBulkUpload() {
     try {
       const title = item.file.name.replace(/\.[^/.]+$/, "").replace(/[_-]/g, " ")
       await uploadAdminAudio(item.file, {
-        title: title,
+        title,
         category: bulkCategory.value,
+        durationSeconds: await readAudioDuration(item.file),
       })
 
       item.status = 'done'
@@ -580,9 +757,11 @@ async function processBulkUpload() {
   }, 3000)
 }
 
-function handleFileChange(event) {
+async function handleFileChange(event) {
   const file = event.target.files?.[0]
   if (!file) return
+  selectedAudioFile.value = null
+  form.durationSeconds = null
   if (!file.type.includes('mpeg') && !file.type.includes('mp3')) {
      toast.error("Format file harus MP3")
      event.target.value = ""
@@ -597,18 +776,92 @@ function handleFileChange(event) {
   selectedAudioFile.value = file
   form.fileName = file.name
   form.url = file.name
+  form.durationSeconds = await readAudioDuration(file)
+}
+
+async function handleReplacementFileChange(event) {
+  const file = event.target.files?.[0]
+  if (!file) return
+  replacementAudioFile.value = null
+  replacementDurationSeconds.value = null
+  if (!file.type.includes('mpeg') && !file.type.includes('mp3')) {
+    toast.error('Format file harus MP3')
+    event.target.value = ''
+    return
+  }
+  if (file.size > 25 * 1024 * 1024) {
+    toast.error('Ukuran file terlalu besar (Maks 25MB)')
+    event.target.value = ''
+    return
+  }
+  replacementAudioFile.value = file
+  replacementDurationSeconds.value = await readAudioDuration(file)
+}
+
+function readAudioDuration(file) {
+  return new Promise((resolve) => {
+    const objectUrl = URL.createObjectURL(file)
+    const audio = new Audio()
+    const timeout = setTimeout(() => finish(null), 5000)
+    const finish = (duration) => {
+      clearTimeout(timeout)
+      audio.onloadedmetadata = null
+      audio.onerror = null
+      URL.revokeObjectURL(objectUrl)
+      resolve(Number.isFinite(duration) && duration >= 0 ? Math.round(duration) : null)
+    }
+    audio.preload = 'metadata'
+    audio.onloadedmetadata = () => finish(audio.duration)
+    audio.onerror = () => finish(null)
+    audio.src = objectUrl
+  })
+}
+
+function formatBytes(value) {
+  const bytes = Number(value)
+  return Number.isFinite(bytes) && bytes >= 0 ? `${(bytes / 1024 / 1024).toFixed(1)} MB` : 'ukuran belum tercatat'
+}
+
+function formatDuration(value) {
+  const seconds = Number(value)
+  if (!Number.isInteger(seconds) || seconds < 0) return 'belum tercatat'
+  return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, '0')}`
+}
+
+function licenseStatusLabel(status) {
+  return ({ unknown: 'belum diketahui', pending: 'perlu ditinjau', recorded: 'izin tercatat oleh admin', restricted: 'tidak boleh digunakan' })[status] || 'belum diketahui'
 }
 
 async function submitForm() {
-  if (saving.value || !selectedAudioFile.value) return
+  if (saving.value || (!editingAudio.value && !selectedAudioFile.value)) return
   saving.value = true
   uploadingFile.value = true
   try {
-    await uploadAdminAudio(selectedAudioFile.value, {
-      title: form.title,
-      category: form.category,
-    })
-    toast.success('Musik ditambahkan ke katalog')
+    const metadata = {
+      source: form.source,
+      credit: form.credit,
+      licenseStatus: form.licenseStatus,
+    }
+    if (editingAudio.value && replacementAudioFile.value) {
+      const result = await replaceAdminAudioFile(editingAudio.value.id, replacementAudioFile.value, {
+        ...metadata,
+        durationSeconds: replacementDurationSeconds.value,
+      })
+      toast.success(
+        `File diganti. ${result.templateReferencesUpdated} template dan ${result.invitationReferencesUpdated} undangan diperbarui.`,
+      )
+    } else if (editingAudio.value) {
+      await updateAdminAudioMetadata(editingAudio.value.id, metadata)
+      toast.success('Metadata musik diperbarui')
+    } else {
+      await uploadAdminAudio(selectedAudioFile.value, {
+        title: form.title,
+        category: form.category,
+        ...metadata,
+        durationSeconds: form.durationSeconds,
+      })
+      toast.success('Musik ditambahkan ke katalog')
+    }
     closeForm()
     await loadAudio()
   } catch (error) {
@@ -622,7 +875,7 @@ async function submitForm() {
 async function confirmDelete(track) {
   const result = await Swal.fire({
     title: 'Hapus musik?',
-    text: `Musik "${track.title}" akan dihapus permanen.`,
+    text: `Audio ini terdeteksi dipakai oleh ${track.templateUseCount ?? 0} template dan ${track.invitationUseCount ?? 0} undangan. Referensi harus diganti sebelum audio dapat dihapus.`,
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#ef4444',
@@ -635,8 +888,8 @@ async function confirmDelete(track) {
     await deleteAdminAudio(track.id)
     toast.success('Musik dihapus')
     await loadAudio()
-  } catch {
-    toast.error('Gagal menghapus')
+  } catch (error) {
+    toast.error(error.message || 'Gagal menghapus')
   }
 }
 

@@ -30,10 +30,41 @@
           <span>Gratis Desain &amp; Preview • Bayar Hanya Saat Sebar</span>
         </div>
 
-        <!-- Draft status indicator -->
-        <span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest hidden md:inline-block">
-          Draf Otomatis Tersimpan
-        </span>
+        <!-- Draft status indicator with timestamp & cross-device popover (ADM-094) -->
+        <div class="relative">
+          <button
+            type="button"
+            @click="showCrossDeviceInfo = !showCrossDeviceInfo"
+            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold transition-colors cursor-pointer"
+            title="Klik untuk info penyimpanan draf"
+          >
+            <i class="fa-solid fa-cloud-arrow-up text-mocha text-[11px]"></i>
+            <span class="hidden md:inline">{{ lastSavedFormatted ? `Draf Tersimpan (${lastSavedFormatted})` : 'Draf Otomatis Tersimpan' }}</span>
+            <span class="md:hidden">Draf Tersimpan</span>
+            <i class="fa-solid fa-circle-info text-[9px] text-slate-400"></i>
+          </button>
+
+          <!-- Cross Device Info Popover -->
+          <div
+            v-if="showCrossDeviceInfo"
+            class="absolute right-0 top-full mt-2 w-72 p-3 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 text-left text-xs space-y-2 animate-scale-up"
+          >
+            <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+              <span class="font-extrabold text-slate-800 text-[11px] flex items-center gap-1.5">
+                <i class="fa-solid fa-laptop text-mocha"></i> Info Penyimpanan Draf
+              </span>
+              <button @click="showCrossDeviceInfo = false" class="text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-xs"></i>
+              </button>
+            </div>
+            <p class="text-[11px] text-slate-500 leading-relaxed">
+              Draf formulir Anda tersimpan otomatis di peramban ini. Untuk melanjutkan di perangkat lain, klik <b>Simpan</b> dan masuk ke akun Anda.
+            </p>
+            <div class="pt-1 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-shield-check"></i> Draf lokal aman meskipun halaman dimuat ulang.
+            </div>
+          </div>
+        </div>
         <button @click="saveAndPreview" :disabled="isUploading" class="bg-mocha text-white font-bold py-2.5 px-6 rounded-xl hover:bg-dark shadow-lg shadow-mocha/20 transition-all disabled:opacity-50 flex items-center gap-2 text-xs md:text-sm">
           <span v-if="isUploading" class="animate-spin w-3 h-3 border-2 border-white/30 border-t-white rounded-full"></span>
           <span>{{ route.params.id ? 'Simpan' : 'Simpan & Selesai' }}</span>
@@ -41,6 +72,31 @@
         </button>
       </div>
     </header>
+
+    <!-- Friendly Draft Recovery Banner (ADM-094) -->
+    <div
+      v-if="pendingDraftRecovery"
+      class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-amber-900 z-30 shrink-0"
+    >
+      <div class="flex items-center gap-2">
+        <i class="fa-solid fa-clock-rotate-left text-amber-600"></i>
+        <span>Ditemukan draf pengisian belum tersimpan dari sesi sebelumnya ({{ draftRecoveryTime }}).</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button
+          @click="applyDraftRecovery"
+          class="px-3 py-1 bg-amber-600 text-white rounded-lg font-bold text-[11px] hover:bg-amber-700 transition-colors cursor-pointer"
+        >
+          Pulihkan Draf
+        </button>
+        <button
+          @click="discardDraftRecovery"
+          class="px-2 py-1 text-amber-700 hover:text-amber-900 font-medium text-[11px] cursor-pointer"
+        >
+          Abaikan
+        </button>
+      </div>
+    </div>
 
     <!-- Main Workspace -->
     <div class="flex-1 flex flex-col lg:flex-row overflow-hidden">
@@ -157,7 +213,7 @@
                         <p v-if="validationErrors.brideName" class="form-error">{{ validationErrors.brideName }}</p>
                       </div>
                       <div data-field="brideParents">
-                        <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                        <label class="form-label">Nama Orang Tua <span class="text-gray-400 font-normal">(opsional)</span></label>
                         <input v-model="formData.brideParents" @input="validateField('brideParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.brideParents }" />
                         <p v-if="validationErrors.brideParents" class="form-error">{{ validationErrors.brideParents }}</p>
                       </div>
@@ -202,7 +258,7 @@
                         <p v-if="validationErrors.groomName" class="form-error">{{ validationErrors.groomName }}</p>
                       </div>
                       <div data-field="groomParents">
-                        <label class="form-label">Nama Orang Tua <span class="text-red-500">*</span></label>
+                        <label class="form-label">Nama Orang Tua <span class="text-gray-400 font-normal">(opsional)</span></label>
                         <input v-model="formData.groomParents" @input="validateField('groomParents')" type="text" placeholder="Bpk. ... & Ibu ..." class="form-input" :class="{ 'border-red-500': validationErrors.groomParents }" />
                         <p v-if="validationErrors.groomParents" class="form-error">{{ validationErrors.groomParents }}</p>
                       </div>
@@ -1281,6 +1337,37 @@ const authMode = ref('login')
 const auth = useAuthStore()
 const isAuthenticated = computed(() => !!auth.token)
 
+// Draft status & recovery states (ADM-094)
+const showCrossDeviceInfo = ref(false)
+const lastSavedTime = ref(null)
+const pendingDraftRecovery = ref(null)
+const draftRecoveryTime = ref('')
+
+const lastSavedFormatted = computed(() => {
+  if (!lastSavedTime.value) return null
+  return lastSavedTime.value.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+})
+
+const applyDraftRecovery = () => {
+  if (!pendingDraftRecovery.value) return
+  deepMerge(formData.value, pendingDraftRecovery.value.formData)
+  if (pendingDraftRecovery.value.sections) {
+    Object.keys(pendingDraftRecovery.value.sections).forEach((k) => {
+      sections.value[k] = pendingDraftRecovery.value.sections[k]
+    })
+  }
+  toast.success('Draf berhasil dipulihkan!')
+  hasUnsavedChanges.value = true
+  lastSavedTime.value = new Date(pendingDraftRecovery.value.timestamp || Date.now())
+  pendingDraftRecovery.value = null
+}
+
+const discardDraftRecovery = () => {
+  clearDraft()
+  pendingDraftRecovery.value = null
+  toast.info('Draf lama dibersihkan.')
+}
+
 // Preview States
 const showMobilePreview = ref(false)
 const isPreviewLoading = ref(true)
@@ -1571,16 +1658,6 @@ const templateImageUrl = computed(() => (
   'https://via.placeholder.com/400x300?text=Template'
 ))
 
-const templatePrice = computed(() => {
-  const price = Number(selectedTemplate.value?.price || 0)
-  if (!price) return 'Gratis'
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0
-  }).format(price)
-})
-
 const sectionOptionsLabelMap = {
   quote: 'Quote Ayat / Mutiara',
   'love-story': 'Love Story (Cerita Cinta)',
@@ -1707,6 +1784,24 @@ watch(activeTab, () => {
   })
 })
 
+// Event times are entered and shown as WIB (templates print "WIB"), so anchor them to +07:00
+// instead of the editor's browser timezone.
+const WIB_OFFSET_MS = 7 * 60 * 60 * 1000
+const formatISOToLocalInput = (isoString) => {
+   if (!isoString) return ''
+   const d = new Date(isoString)
+   if (isNaN(d.getTime())) return ''
+   return new Date(d.getTime() + WIB_OFFSET_MS).toISOString().slice(0, 16)
+}
+const wibInputToISO = (localInput) => {
+   if (!localInput) return ''
+   const value = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(localInput)
+      ? `${localInput.length === 16 ? `${localInput}:00` : localInput}+07:00`
+      : localInput
+   const d = new Date(value)
+   return isNaN(d.getTime()) ? '' : d.toISOString()
+}
+
 // Debounced Live Preview Sync Logic
 const syncDataToPreview = (data) => {
   try {
@@ -1724,13 +1819,14 @@ const syncDataToPreview = (data) => {
           brideParents: data.brideParents || 'Bpk. ... & Ibu ...',
           groomParents: data.groomParents || 'Bpk. ... & Ibu ...'
         },
+        religion: data.religion,
         isSingleEvent: data.isSingleEvent,
         akadLocation: data.isSingleEvent 
-           ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-           : { dateTime: data.akadDateTime, mapUrl: data.akadMap, description: data.akadDesc },
+           ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+           : { dateTime: wibInputToISO(data.akadDateTime), mapUrl: data.akadMap, description: data.akadDesc },
         resepsiLocation: data.isSingleEvent
-           ? { dateTime: data.dateTime, mapUrl: data.map, description: data.mapDesc }
-           : { dateTime: data.resepsiDateTime, mapUrl: data.resepsiMap, description: data.resepsiDesc },
+           ? { dateTime: wibInputToISO(data.dateTime), mapUrl: data.map, description: data.mapDesc }
+           : { dateTime: wibInputToISO(data.resepsiDateTime), mapUrl: data.resepsiMap, description: data.resepsiDesc },
         ...resolveQuoteForSave(data),
         loveStory: (data.loveStories || []).map(s => ({ title: s.title, date: s.date, description: s.description, image: s.photo })),
         galleryImages: (data.gallery || []).map(img => img.preview),
@@ -1831,6 +1927,7 @@ const saveDraft = (data) => {
     if (!route.params.id) {
       localStorage.setItem('selectedSections', JSON.stringify(Object.keys(sections.value).filter(k => sections.value[k])))
     }
+    lastSavedTime.value = new Date()
   } catch (e) {}
 }
 
@@ -1973,15 +2070,11 @@ onMounted(async () => {
         if (draft && draft.timestamp) {
            const age = (Date.now() - draft.timestamp) / (1000 * 60 * 60)
            if (age < 24) {
-              if (confirm("Anda memiliki draf pengisian yang belum disimpan. Lanjutkan?")) {
-                 deepMerge(formData.value, draft.formData)
-                 if (draft.sections) {
-                   Object.keys(draft.sections).forEach(k => {
-                     sections.value[k] = draft.sections[k]
-                   })
-                 }
-                 toast.success("Draf berhasil dipulihkan!")
-              } else { clearDraft() }
+              pendingDraftRecovery.value = draft
+              draftRecoveryTime.value = new Date(draft.timestamp).toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+              })
            } else { clearDraft() }
         } else { clearDraft() }
      } catch (e) {
@@ -2083,14 +2176,6 @@ async function handleEditMode(id) {
 }
 
 // Convert ISO UTC dates to input format (local time YYYY-MM-DDTHH:mm)
-const formatISOToLocalInput = (isoString) => {
-   if (!isoString) return ''
-   const d = new Date(isoString)
-   if (isNaN(d.getTime())) return ''
-   const pad = (n) => n.toString().padStart(2, '0')
-   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
-}
-
 function mapPayloadToFormData(payload) {
    // Resolve template info
    const template = payload.templateDesign || payload.content?.templateDesign || {}
@@ -2261,9 +2346,7 @@ function validateField(field) {
    let message = ''
    const data = formData.value
    if (field === 'brideName' && !data.brideName?.trim()) message = 'Nama mempelai wanita wajib diisi'
-   if (field === 'brideParents' && !data.brideParents?.trim()) message = 'Nama orang tua wanita wajib diisi'
    if (field === 'groomName' && !data.groomName?.trim()) message = 'Nama mempelai pria wajib diisi'
-   if (field === 'groomParents' && !data.groomParents?.trim()) message = 'Nama orang tua pria wajib diisi'
    if (field === 'title' && !data.title?.trim()) message = 'Judul / Slug undangan wajib diisi'
    validationErrors.value[field] = message
    return !message
@@ -2276,10 +2359,8 @@ function validateForm() {
 
    // Basic fields validation
    if (!data.brideName?.trim()) { validationErrors.value.brideName = 'Nama mempelai wanita wajib diisi'; isValid = false }
-   if (!data.brideParents?.trim()) { validationErrors.value.brideParents = 'Nama orang tua wanita wajib diisi'; isValid = false }
    if (!data.bridePhoto && !data.bridePhotoFile) { validationErrors.value.bridePhoto = 'Foto mempelai wanita wajib diisi'; isValid = false }
    if (!data.groomName?.trim()) { validationErrors.value.groomName = 'Nama mempelai pria wajib diisi'; isValid = false }
-   if (!data.groomParents?.trim()) { validationErrors.value.groomParents = 'Nama orang tua pria wajib diisi'; isValid = false }
    if (!data.groomPhoto && !data.groomPhotoFile) { validationErrors.value.groomPhoto = 'Foto mempelai pria wajib diisi'; isValid = false }
    if (!data.title?.trim()) { validationErrors.value.title = 'Judul undangan wajib diisi'; isValid = false }
 
@@ -2661,8 +2742,8 @@ async function saveAndPreview() {
          title: formData.value.title, slug: formData.value.slug || formData.value.title.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
          brideName: formData.value.brideName, bridePhotoUrl: formData.value.bridePhoto, groomName: formData.value.groomName, groomPhotoUrl: formData.value.groomPhoto, photoCoupleUrl: formData.value.photoCouple, isSingleEvent: formData.value.isSingleEvent, mergeEvents: formData.value.isSingleEvent === true,
          parents: { brideParents: formData.value.brideParents || '', groomParents: formData.value.groomParents || '' },
-         akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? new Date(formData.value.akadDateTime).toISOString() : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
-         resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? new Date(formData.value.dateTime).toISOString() : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? new Date(formData.value.resepsiDateTime).toISOString() : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
+         akadLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? wibInputToISO(formData.value.dateTime) : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.akadDateTime ? wibInputToISO(formData.value.akadDateTime) : '', mapUrl: formData.value.akadMap || '', description: formData.value.akadDesc || '' },
+         resepsiLocation: formData.value.isSingleEvent ? { dateTime: formData.value.dateTime ? wibInputToISO(formData.value.dateTime) : '', mapUrl: formData.value.map || '', description: formData.value.mapDesc || '' } : { dateTime: formData.value.resepsiDateTime ? wibInputToISO(formData.value.resepsiDateTime) : '', mapUrl: formData.value.resepsiMap || '', description: formData.value.resepsiDesc || '' },
          templateDesignId: getSelectedTemplateDesignId(), loveStory: formData.value.loveStories.map(s => ({ title: s.title, date: s.date, content: s.description || '', description: s.description || '', image: s.photo })),
          musicChoice: formData.value.music === 'custom' ? formData.value.musicPreview : (formData.value.music || 'default'), isCustomMusic: formData.value.music === 'custom' || Boolean(formData.value.music && !formData.value.music.startsWith('/audio/')),
          audioStart: formData.value.audioStart, audioEnd: formData.value.audioEnd, encryptedGuestName: formData.value.encryptedGuest === 'ya', galleryImages: formData.value.gallery.map(img => img.preview).filter(url => url && url.startsWith('http')),
@@ -2710,7 +2791,7 @@ async function saveAndPreview() {
       clearDraft()
       hasUnsavedChanges.value = false
       toast.success("Berhasil menyimpan data undangan!")
-      router.push({ path: '/preview', query: { slug: result.slug } })
+      router.push({ path: '/preview', query: { slug: result.slug, id: result.id } })
    } catch (error) { 
      console.error(error)
      const errorMsg = error.response?.data?.message || error.message || 'Gagal menyimpan data!'
