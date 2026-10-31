@@ -107,6 +107,32 @@
       @reset="handleSearch('')"
     />
 
+    <section
+      v-if="audios.length"
+      class="mb-6 flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between"
+      aria-label="Pemeriksaan kesehatan audio"
+    >
+      <div>
+        <h2 class="text-sm font-bold text-slate-900">Kesehatan player</h2>
+        <p class="mt-1 text-xs text-slate-500">
+          Periksa semua audio yang termuat, termasuk yang tidak terlihat karena pencarian. Pemeriksaan
+          tidak memutar suara.
+        </p>
+        <p v-if="playbackAuditStarted" class="mt-2 text-xs font-medium text-slate-700" aria-live="polite">
+          {{ playbackAuditProgress }} dari {{ audios.length }} selesai · {{ playbackAuditCounts.playable }}
+          siap diputar · {{ playbackAuditCounts.failed }} gagal · {{ playbackAuditCounts.timeout }} waktu habis
+        </p>
+      </div>
+      <button
+        type="button"
+        class="shrink-0 rounded-xl bg-indigo-600 px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-indigo-700 disabled:cursor-wait disabled:opacity-60"
+        :disabled="loading || isPlaybackAuditRunning || !audios.length"
+        @click="checkAllAudioPlayback"
+      >
+        {{ isPlaybackAuditRunning ? 'Memeriksa audio…' : playbackAuditStarted ? 'Ulangi cek audio' : 'Periksa semua audio' }}
+      </button>
+    </section>
+
     <div v-if="viewType === 'grid'" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
       <!-- Loading Skeleton -->
       <template v-if="loading">
@@ -499,7 +525,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
@@ -562,6 +588,9 @@ const saving = ref(false)
 const uploadingFile = ref(false)
 const currentPlayingAudio = ref(null)
 const audioPlaybackStates = ref({})
+const playbackAuditStates = ref({})
+const playbackAuditStarted = ref(false)
+const isPlaybackAuditRunning = ref(false)
 const selectedAudioFile = ref(null)
 const editingAudio = ref(null)
 const replacementAudioFile = ref(null)
@@ -591,6 +620,17 @@ const isBulking = ref(false)
 const bulkCategory = ref('romantic')
 const bulkQueue = ref([])
 
+const playbackAuditGeneration = ref(0)
+const playbackAuditCleanupHandlers = new Set()
+const playbackAuditProgress = computed(() =>
+  Object.values(playbackAuditStates.value).filter((state) => state !== 'checking').length,
+)
+const playbackAuditCounts = computed(() => ({
+  playable: Object.values(playbackAuditStates.value).filter((state) => state === 'playable').length,
+  failed: Object.values(playbackAuditStates.value).filter((state) => state === 'failed').length,
+  timeout: Object.values(playbackAuditStates.value).filter((state) => state === 'timeout').length,
+}))
+
 const form = reactive({ title: '', category: 'romantic', url: '', fileName: '', source: '', credit: '', licenseStatus: 'unknown', durationSeconds: null })
 const categoryOptions = CATEGORY_OPTIONS
 
@@ -618,6 +658,9 @@ const loadError = ref('')
 const lastLoadedAt = ref(null)
 
 async function loadAudio() {
+  cancelPlaybackAudit()
+  playbackAuditStates.value = {}
+  playbackAuditStarted.value = false
   loading.value = true
   loadError.value = ''
   try {
@@ -678,13 +721,89 @@ function markAudioFailed(track) {
   audioPlaybackStates.value = { ...audioPlaybackStates.value, [track.id]: 'failed' }
 }
 
+function checkAllAudioPlayback() {
+  if (loading.value || isPlaybackAuditRunning.value || !audios.value.length) return
+
+  cancelPlaybackAudit()
+  const generation = playbackAuditGeneration.value
+  const tracks = [...audios.value]
+  playbackAuditStates.value = Object.fromEntries(tracks.map((track) => [track.id, 'checking']))
+  playbackAuditStarted.value = true
+  isPlaybackAuditRunning.value = true
+
+  let nextTrackIndex = 0
+  const checkNextTrack = async () => {
+    while (nextTrackIndex < tracks.length && generation === playbackAuditGeneration.value) {
+      const track = tracks[nextTrackIndex++]
+      const result = await checkAudioPlayback(track.url)
+      if (generation !== playbackAuditGeneration.value) return
+      playbackAuditStates.value = { ...playbackAuditStates.value, [track.id]: result }
+    }
+  }
+
+  Promise.all(Array.from({ length: Math.min(4, tracks.length) }, () => checkNextTrack())).finally(() => {
+    if (generation === playbackAuditGeneration.value) isPlaybackAuditRunning.value = false
+  })
+}
+
+function checkAudioPlayback(url) {
+  return new Promise((resolve) => {
+    const audio = new Audio()
+    let settled = false
+    let timeoutId
+
+    const cleanup = () => finish(null)
+    const removeListeners = () => {
+      audio.removeEventListener('canplay', handleCanPlay)
+      audio.removeEventListener('error', handleError)
+      if (timeoutId) window.clearTimeout(timeoutId)
+      playbackAuditCleanupHandlers.delete(cleanup)
+    }
+    const finish = (result) => {
+      if (settled) return
+      settled = true
+      removeListeners()
+      audio.pause()
+      audio.removeAttribute('src')
+      audio.load()
+      resolve(result)
+    }
+    const handleCanPlay = () => finish('playable')
+    const handleError = () => finish('failed')
+
+    playbackAuditCleanupHandlers.add(cleanup)
+    audio.preload = 'auto'
+    audio.addEventListener('canplay', handleCanPlay)
+    audio.addEventListener('error', handleError)
+    timeoutId = window.setTimeout(() => finish('timeout'), 10000)
+
+    if (!url) {
+      finish('failed')
+      return
+    }
+    try {
+      audio.src = url
+      audio.load()
+    } catch {
+      finish('failed')
+    }
+  })
+}
+
+function cancelPlaybackAudit() {
+  playbackAuditGeneration.value += 1
+  for (const cleanup of [...playbackAuditCleanupHandlers]) cleanup()
+  isPlaybackAuditRunning.value = false
+}
+
 function playbackStatusLabel(track) {
   return ({
     unverified: 'belum diperiksa di browser',
     checking: 'sedang memuat',
     playable: 'metadata berhasil dimuat',
     failed: 'gagal dimuat di browser',
-  })[audioPlaybackStates.value[track.id] || 'unverified']
+    timeout: 'waktu habis saat memuat',
+  })[playbackAuditStates.value[track.id] || audioPlaybackStates.value[track.id] || 'unverified']
 }
 
 function copyLink(url) {
@@ -894,6 +1013,7 @@ async function confirmDelete(track) {
 }
 
 onMounted(() => { loadAudio() })
+onUnmounted(() => { cancelPlaybackAudit() })
 </script>
 
 <style scoped>
