@@ -223,6 +223,9 @@
               <li v-for="(item, index) in rundownItems" :key="`${item.time}-${index}`">
                 <time>{{ item.time }}</time>
                 <span>{{ item.title }}</span>
+                <ul v-if="item.details?.length" class="rundown-details">
+                  <li v-for="detail in item.details" :key="detail">{{ detail }}</li>
+                </ul>
               </li>
             </ol>
           </div>
@@ -415,13 +418,44 @@ const DEFAULT_QUOTE = [
 ].join('\n')
 const DEFAULT_QUOTE_SOURCE = '- The Carpenters -'
 const DEFAULT_RUNDOWN = [
-  { time: '08.30', title: 'Tamu memasuki ballroom & pembagian snack box — pembukaan MC, sambutan keluarga mempelai pria' },
-  { time: '09.00', title: 'Akad nikah — tilawah & prosesi ijab kabul' },
-  { time: '09.40', title: 'Prosesi sungkeman' },
-  { time: '10.00', title: 'Acara adat Jawa' },
-  { time: '10.30', title: 'Resepsi — makan, speech, sesi mingle & foto bersama keluarga dan teman' },
-  { time: '11.30', title: 'Games & lempar bunga — masing-masing dapat 50K' },
-  { time: '12.00', title: 'Penutupan MC & karaoke keluarga' },
+  {
+    time: '08.30–09.00',
+    title: 'Kedatangan Tamu & Pembukaan Acara',
+    details: [
+      'Para tamu memasuki ruangan dan menempati tempat yang telah disediakan',
+      'Pembukaan oleh MC',
+      'Sambutan keluarga mempelai pria untuk menyampaikan maksud dan tujuan serta permohonan meminang calon mempelai wanita',
+    ],
+  },
+  {
+    time: '09.00–10.00',
+    title: 'Prosesi Akad Nikah',
+    details: [
+      'Pembacaan tilawah Al-Qur’an',
+      'Pelaksanaan akad nikah',
+      'Bimbingan pernikahan',
+      'Doa dan penandatanganan dokumen pernikahan',
+    ],
+  },
+  {
+    time: '10.00–10.45',
+    title: 'Prosesi Adat & Sungkeman',
+    details: [
+      'Pelaksanaan prosesi adat',
+      'Sungkeman kepada kedua orang tua',
+      'Foto bersama keluarga inti',
+    ],
+  },
+  {
+    time: '10.45–12.00',
+    title: 'Resepsi & Ramah Tamah',
+    details: [
+      'Pembukaan sesi resepsi oleh MC',
+      'Foto bersama pengantin dan tamu undangan',
+      'Para tamu menikmati hidangan prasmanan',
+      'Ramah tamah dan penutupan acara',
+    ],
+  },
 ]
 
 const toast = useToast()
@@ -1187,11 +1221,14 @@ onUnmounted(() => {
 .panel-card { width: 100%; padding: 1.75rem 1.25rem; border: 1px solid rgba(244, 242, 237, .15); border-radius: 2rem; background: #141414; text-align: left; }
 
 .rundown-list { position: relative; display: grid; margin: 0; padding: 0; list-style: none; }
-.rundown-list::before { content: ''; position: absolute; top: .6rem; bottom: .6rem; left: 4.35rem; width: 1px; background: var(--line); }
-.rundown-list li { position: relative; display: grid; grid-template-columns: 3.6rem 1fr; gap: 1.5rem; align-items: baseline; padding: .7rem 0; }
-.rundown-list li::before { content: ''; position: absolute; top: 1.15rem; left: calc(4.35rem - 3px); width: 7px; height: 7px; border-radius: 50%; background: var(--paper); }
-.rundown-list time { color: var(--muted); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-align: right; }
-.rundown-list span { color: var(--text); font-family: var(--title-font); font-size: 1.1rem; line-height: 1.4; }
+.rundown-list::before { content: ''; position: absolute; top: .6rem; bottom: .6rem; left: 3px; width: 1px; background: var(--line); }
+.rundown-list > li { position: relative; display: block; padding: .8rem 0 .8rem 1.6rem; }
+.rundown-list > li::before { content: ''; position: absolute; top: 1.2rem; left: 0; width: 7px; height: 7px; border-radius: 50%; background: var(--paper); }
+.rundown-list time { display: block; color: var(--muted); font-size: .72rem; font-weight: 600; letter-spacing: .14em; text-align: left; }
+.rundown-list > li > span { display: block; margin-top: .25rem; color: var(--text); font-family: var(--title-font); font-size: 1.2rem; line-height: 1.35; }
+.rundown-details { margin: .5rem 0 0; padding: 0; list-style: none; }
+.rundown-details li { position: relative; padding: .15rem 0 .15rem 1rem; color: #c4c2bc; font-family: var(--title-font); font-size: .98rem; line-height: 1.5; }
+.rundown-details li::before { content: '•'; position: absolute; left: 0; color: var(--muted); }
 
 .video-copy { max-width: 30ch; margin: 0 auto 1.5rem; color: var(--muted); font-family: var(--title-font); font-size: 1.15rem; line-height: 1.5; }
 .video-frame { width: 100%; max-width: 330px; margin: 0 auto; aspect-ratio: 9 / 16; overflow: hidden; border: 1px solid rgba(244, 242, 237, .2); border-radius: 1.5rem; background: #151515; }
@@ -1282,10 +1319,6 @@ onUnmounted(() => {
 @media (max-width: 640px) {
   .guest-line { margin-top: 2.2rem; }
   .rsvp-section .section-title { max-width: 340px; font-size: clamp(1.75rem, 8.4vw, 2.2rem); }
-  .rundown-list li { grid-template-columns: 3.4rem 1fr; gap: 1.25rem; }
-  .rundown-list::before { left: 4.025rem; }
-  .rundown-list li::before { left: calc(4.025rem - 3px); }
-  .rundown-list span { font-size: 1.05rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
