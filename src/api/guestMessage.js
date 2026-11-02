@@ -24,7 +24,12 @@ export const createGuestMessage = (data, legacyPayload) => {
   })
 }
 
+// Invitation pages: published wishes only, no login needed.
 export const getGuestMessagesByInvitationId = (invitationId) =>
+  apiFetch(`/guest-messages/public/${invitationId}`)
+
+// Dashboard: owner/admin view with full records (needs login).
+export const getOwnerGuestMessagesByInvitationId = (invitationId) =>
   apiFetch(`/guest-messages/invitation/${invitationId}`)
 
 export const deleteGuestMessage = (id) =>

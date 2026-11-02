@@ -333,8 +333,8 @@
 
             <label for="rsvp-message" class="rsvp-message-label">Ucapan dan doa <span>(opsional)</span></label>
             <textarea id="rsvp-message" v-model.trim="rsvp.message" rows="4"></textarea>
-            <button class="submit-button" type="submit" :disabled="isSubmitting">
-              {{ isSubmitting ? 'Mengirim…' : 'Kirim konfirmasi' }}
+            <button class="submit-button" type="submit" :disabled="isSubmitting || justSent">
+              {{ isSubmitting ? 'Mengirim…' : justSent ? 'Terkirim ✓' : 'Kirim konfirmasi' }}
             </button>
           </form>
 
@@ -345,7 +345,7 @@
             <div class="wishes-list" aria-live="polite">
               <article v-for="(msg, index) in guestMessages" :key="msg.id || `${msg.guestName}-${index}`" class="wish-card">
                 <div class="wish-head">
-                  <strong class="wish-name">{{ msg.guestName }}</strong>
+                  <strong class="wish-name">{{ decodeEntities(msg.guestName) }}</strong>
                   <span class="wish-time">{{ timeAgo(msg.createdAt) }}</span>
                 </div>
                 <div class="wish-meta">
@@ -354,7 +354,7 @@
                   </span>
                   <span v-if="msg.rsvpStatus === 'hadir' && msg.totalGuests > 0" class="wish-guests">{{ msg.totalGuests }} orang</span>
                 </div>
-                <p v-if="msg.message && msg.message !== '-'" class="wish-text">{{ msg.message }}</p>
+                <p v-if="msg.message && msg.message !== '-'" class="wish-text">{{ decodeEntities(msg.message) }}</p>
               </article>
             </div>
           </div>
@@ -398,6 +398,7 @@ import { useToast } from 'vue-toastification'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
+import { decodeEntities } from '@/utils/decodeEntities'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -466,6 +467,7 @@ let videoObserver = null
 const data = computed(() => props.data || {})
 const showCover = ref(true)
 const isSubmitting = ref(false)
+const justSent = ref(false)
 const prefersReducedMotion = ref(false)
 const scroller = ref(null)
 const navInner = ref(null)
@@ -996,7 +998,7 @@ function eventMapUrl(item) {
 }
 
 async function submitRSVP() {
-  if (!rsvp.value.name) return
+  if (!rsvp.value.name || justSent.value) return
   if (!data.value.id || data.value.id === 'live-preview' || data.value.id === 0) {
     toast.info('Konfirmasi akan aktif setelah undangan disimpan.')
     return
@@ -1023,6 +1025,9 @@ async function submitRSVP() {
       message: '',
     }
     await loadWishes()
+    // Lock the button until the guest edits the form, so a repeat tap cannot double-post.
+    await nextTick()
+    justSent.value = true
   } catch {
     toast.error('Konfirmasi belum terkirim. Silakan coba kembali.')
   } finally {
@@ -1039,6 +1044,7 @@ watch(
 )
 
 watch(() => data.value.id, loadWishes, { immediate: true })
+watch(rsvp, () => { justSent.value = false }, { deep: true })
 
 onMounted(() => {
   reducedMotionQuery = window.matchMedia?.('(prefers-reduced-motion: reduce)') || null

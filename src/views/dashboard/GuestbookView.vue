@@ -1147,7 +1147,7 @@ import Sidebar from "@/components/dashboard/SidebarDashboard.vue"
 import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations } from "@/api/invitation"
-import { getGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage"
+import { getOwnerGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage"
 import {
   getGuestsByInvitationId,
   checkInGuest,
@@ -1530,7 +1530,7 @@ async function fetchGuests(invId) {
 async function fetchMessages(invId) {
   loadingMessages.value = true
   try {
-    const res = await getGuestMessagesByInvitationId(invId)
+    const res = await getOwnerGuestMessagesByInvitationId(invId)
     const entries = Array.isArray(res) ? res : res.data || []
     messages.value = entries.filter(
       (entry) => typeof entry.message === 'string' && entry.message.trim().length > 0,
