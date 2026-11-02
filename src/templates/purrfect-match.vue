@@ -1409,6 +1409,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 // Props Declaration
 const props = defineProps({
@@ -1985,24 +1986,26 @@ const galleryItems = computed(() => {
 // ====================================================================
 function formatEventDate(dateStr) {
   if (!dateStr) return 'Sabtu, 28 Maret 2026'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return dateStr
   return date.toLocaleDateString('id-ID', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
-    year: 'numeric'
+    year: 'numeric',
+    timeZone: EVENT_TIME_ZONE
   })
 }
 
 function formatEventTime(dateStr) {
   if (!dateStr) return '09:00 WIB'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return '09:00 WIB'
   return (
     date.toLocaleTimeString('id-ID', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: EVENT_TIME_ZONE
     }) + ' WIB'
   )
 }

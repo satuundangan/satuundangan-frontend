@@ -602,6 +602,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const toast = useToast()
 
@@ -773,11 +774,12 @@ function getEmbedUrlVideo(url) {
 function formatDate(dateStr) {
   if (!dateStr) return 'Sabtu, 24 Oktober 2026'
   try {
-    return new Date(dateStr).toLocaleDateString('id-ID', {
+    return toEventDate(dateStr).toLocaleDateString('id-ID', {
       weekday: 'long',
       day: 'numeric',
       month: 'long',
-      year: 'numeric'
+      year: 'numeric',
+      timeZone: EVENT_TIME_ZONE
     })
   } catch {
     return dateStr
@@ -787,9 +789,10 @@ function formatDate(dateStr) {
 function formatTime(dateStr) {
   if (!dateStr) return '09:00 WIB'
   try {
-    return new Date(dateStr).toLocaleTimeString('id-ID', {
+    return toEventDate(dateStr).toLocaleTimeString('id-ID', {
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone: EVENT_TIME_ZONE
     }) + ' WIB'
   } catch {
     return '09:00 WIB'

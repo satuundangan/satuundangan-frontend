@@ -976,6 +976,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: {
@@ -1282,31 +1283,31 @@ function initScrollSpy() {
 const formattedHeroDate = computed(() => {
   const dateStr = data.value.resepsiLocation?.dateTime || data.value.akadLocation?.dateTime || data.value.dateTime
   if (!dateStr) return 'AUTUMN MMXXVI'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return 'AUTUMN MMXXVI'
-  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()
+  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: EVENT_TIME_ZONE }).toUpperCase()
 })
 
 const formattedEventDate = computed(() => {
   const dateStr = data.value.resepsiLocation?.dateTime || data.value.akadLocation?.dateTime || data.value.dateTime
   if (!dateStr) return 'SATURDAY, OCTOBER 24, 2026'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return 'SATURDAY, OCTOBER 24, 2026'
-  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric' }).toUpperCase()
+  return date.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric', year: 'numeric', timeZone: EVENT_TIME_ZONE }).toUpperCase()
 })
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return '-'
-  return date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  return date.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return '-'
-  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true })
+  return date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: EVENT_TIME_ZONE })
 }
 
 function getMusicUrl(choice) {

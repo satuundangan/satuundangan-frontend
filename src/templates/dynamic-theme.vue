@@ -1056,6 +1056,7 @@ import {
   resolveHeroInk,
 } from '@/utils/themeConfig'
 import { applyThemeFonts, removeThemeFonts } from '@/utils/themeFonts'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: {
@@ -1328,21 +1329,22 @@ function getMusicUrl(choice) {
 // --- Date/time formatting ---
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (Number.isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('id-ID', {
     weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric',
+    timeZone: EVENT_TIME_ZONE,
   })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (Number.isNaN(date.getTime())) return '-'
-  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE })
 }
 
 // --- Countdown ---

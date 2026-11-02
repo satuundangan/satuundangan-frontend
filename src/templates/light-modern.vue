@@ -435,6 +435,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: {
@@ -615,26 +616,23 @@ const ceremonyLabel = computed(() => {
   return 'Akad Nikah'
 })
 
-// Events are labelled WIB, so render them in Jakarta time for every guest, wherever they are.
-const EVENT_TIME_ZONE = 'Asia/Jakarta'
-
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return '-'
   return date.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '-'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return '-'
   return date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatStoryDate(dateStr) {
   if (!dateStr) return 'Our Memory'
-  const date = new Date(dateStr)
+  const date = toEventDate(dateStr)
   if (isNaN(date.getTime())) return 'Our Memory'
   return date.toLocaleDateString('id-ID', { month: 'long', year: 'numeric', timeZone: EVENT_TIME_ZONE })
 }

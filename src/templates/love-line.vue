@@ -996,6 +996,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, getEventDateParts, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({
   data: {
@@ -1379,19 +1380,18 @@ function getMusicUrl(choice) {
 
 function formatNumericDate(dateStr) {
   if (!dateStr) return '28.02.2028'
-  const d = new Date(dateStr)
-  if (isNaN(d.getTime())) return '28.02.2028'
-  const day = String(d.getDate()).padStart(2, '0')
-  const month = String(d.getMonth() + 1).padStart(2, '0')
-  const year = d.getFullYear()
-  return `${day}.${month}.${year}`
+  const parts = getEventDateParts(dateStr)
+  if (!parts) return '28.02.2028'
+  const day = String(parts.day).padStart(2, '0')
+  const month = String(parts.month + 1).padStart(2, '0')
+  return `${day}.${month}.${parts.year}`
 }
 
 function formatTime(dateStr) {
   if (!dateStr) return '15:00'
-  const d = new Date(dateStr)
+  const d = toEventDate(dateStr)
   if (isNaN(d.getTime())) return '15:00'
-  return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+  return d.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', timeZone: EVENT_TIME_ZONE })
 }
 
 function formatInstagramUrl(handle) {

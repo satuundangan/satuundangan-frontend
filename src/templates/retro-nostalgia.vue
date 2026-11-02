@@ -344,6 +344,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
+import { EVENT_TIME_ZONE, toEventDate } from '@/utils/eventTime'
 
 const props = defineProps({ data: { type: Object, default: () => ({}) } })
 const toast = useToast()
@@ -462,11 +463,11 @@ function getMusicUrl(choice) {
 
 function formatDate(dateStr) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()
+  return toEventDate(dateStr).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric', timeZone: EVENT_TIME_ZONE }).toUpperCase()
 }
 function formatTime(dateStr) {
   if (!dateStr) return '-'
-  return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
+  return toEventDate(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: EVENT_TIME_ZONE })
 }
 function formatInstagramUrl(handle) { return `https://instagram.com/${handle.replace('@', '')}` }
 function copyToClipboard(text) { navigator.clipboard.writeText(text); toast.success('Account Copied!') }
