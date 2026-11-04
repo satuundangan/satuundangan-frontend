@@ -89,7 +89,7 @@
           <FunnelTable title="Semua undangan pada periode" :funnel="data.funnel.backend.all" />
         </div>
         <h3 class="mb-2 mt-6 text-sm font-bold">Hulu dari GA4 (event, tidak dijumlahkan dengan tahap backend)</h3>
-        <p class="mb-2 text-xs text-slate-500">{{ data.funnel.period.startDate }} – {{ data.funnel.period.endDate }} · Angka GA4 adalah agregat event dan pengguna, bukan urutan konversi per orang.</p>
+        <p v-if="data.funnel.period" class="mb-2 text-xs text-slate-500">{{ data.funnel.period.startDate }} – {{ data.funnel.period.endDate }} · Angka GA4 adalah agregat event dan pengguna, bukan urutan konversi per orang.</p>
         <p v-if="data.funnel.upstreamGa4.status === 'not_connected'" class="rounded-lg bg-slate-50 p-3 text-sm">GA4 belum tersambung; tahap hulu tidak tersedia.</p>
         <p v-else-if="data.funnel.upstreamGa4.status === 'error'" class="text-sm text-rose-700">{{ data.funnel.upstreamGa4.message }}</p>
         <p v-else-if="data.funnel.upstreamGa4.status === 'no_data'" class="rounded-lg bg-slate-50 p-3 text-sm" data-testid="ga4-funnel-empty">{{ data.funnel.upstreamGa4.emptyReason }}</p>
