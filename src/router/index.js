@@ -412,6 +412,11 @@ const router = createRouter({
       component: Invitation,
     },
     {
+      path: '/login',
+      name: 'login-redirect',
+      redirect: (to) => ({ path: '/', query: { login: 'true', redirect: to.query.redirect } }),
+    },
+    {
       path: '/:slug',
       name: 'invitation',
       component: Invitation,

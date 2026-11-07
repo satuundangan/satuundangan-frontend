@@ -43,4 +43,40 @@ describe('WatermarkBadge Component', () => {
     const href = wrapper.find('a').attributes('href')
     expect(href).toContain('ref=partner123')
   })
+
+  it('hides watermark when showBranding injection is false', () => {
+    const wrapper = mount(WatermarkBadge, {
+      global: {
+        provide: {
+          showBranding: false
+        }
+      }
+    })
+    expect(wrapper.find('.watermark-footer-wrapper').exists()).toBe(false)
+  })
+
+  it('renders watermark when showBranding injection is true', () => {
+    const wrapper = mount(WatermarkBadge, {
+      global: {
+        provide: {
+          showBranding: true
+        }
+      }
+    })
+    expect(wrapper.find('.watermark-footer-wrapper').exists()).toBe(true)
+  })
+
+  it('renders watermark when forceShow is true even if showBranding is false', () => {
+    const wrapper = mount(WatermarkBadge, {
+      props: {
+        forceShow: true
+      },
+      global: {
+        provide: {
+          showBranding: false
+        }
+      }
+    })
+    expect(wrapper.find('.watermark-footer-wrapper').exists()).toBe(true)
+  })
 })
