@@ -2,8 +2,9 @@ import { test, expect } from '@playwright/test'
 
 const baseUrl = process.env.E2E_BASE_URL || 'http://localhost:5173'
 
-test('checkout remembers the draft package through email verification', async ({ page }) => {
-  let verified = false
+test('checkout unblocks payment for unverified users and displays soft verification notice', async ({ page }) => {
+  let paymentInitiated = false
+  let resendCalled = false
 
   await page.addInitScript(() => localStorage.setItem('token', 'mock-token'))
   await page.route('**/api/user/me', (route) =>
@@ -15,7 +16,7 @@ test('checkout remembers the draft package through email verification', async ({
         name: 'Test Customer',
         email: 'customer@example.test',
         isApproved: true,
-        emailVerifiedAt: verified ? '2026-10-26T00:00:00.000Z' : null,
+        emailVerifiedAt: null,
       }),
     }),
   )
@@ -43,22 +44,47 @@ test('checkout remembers the draft package through email verification', async ({
       }),
     }),
   )
+  await page.route('**/api/auth/resend-verification', (route) => {
+    resendCalled = true
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ success: true, message: 'Link verifikasi email berhasil dikirim!' }),
+    })
+  })
+  await page.route('**/payment/create', (route) => {
+    paymentInitiated = true
+    return route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({
+        token: 'mock-snap-token',
+        order_id: 'order-1',
+      }),
+    })
+  })
 
   await page.goto(`${baseUrl}/checkout?slug=test-undangan`)
   await expect(page.getByText('Basic Invitation')).toBeVisible()
-  await page.getByRole('button', { name: 'Bayar Sekarang' }).click()
 
-  await expect(page).toHaveURL(/\/settings$/)
-  await expect(page.getByText('Lanjutkan pembayaran undangan')).toBeVisible()
-  expect(await page.evaluate(() => localStorage.getItem('pendingCheckoutPath'))).toBe(
-    '/checkout?slug=test-undangan&package=basic',
+  // Soft notice banner is visible with user's email
+  await expect(
+    page.getByText(/Email kamu belum diverifikasi. Bukti pembayaran akan dikirim ke customer@example.test/),
+  ).toBeVisible()
+
+  // Resend verification button calls resend endpoint without redirecting
+  await page.getByRole('button', { name: 'Kirim Ulang Verifikasi' }).click()
+  expect(resendCalled).toBe(true)
+
+  // Unblock checkout: Clicking "Bayar Sekarang" does not redirect to /settings, but proceeds to payment
+  const paymentRequest = page.waitForRequest(
+    (request) => request.method() === 'POST' && request.url().includes('/payment/create'),
   )
-
-  verified = true
-  await page.getByRole('button', { name: 'Saya Sudah Verifikasi' }).click()
-  await page.getByRole('button', { name: 'Lanjutkan Pembayaran' }).click()
-  await expect(page).toHaveURL(/\/checkout\?slug=test-undangan&package=basic$/)
-  await expect(page.getByText('Basic Invitation')).toBeVisible()
+  await page.getByRole('button', { name: 'Bayar Sekarang' }).click()
+  await paymentRequest
+  await expect(page).not.toHaveURL(/\/settings$/)
+  expect(paymentInitiated).toBe(true)
+  expect(await page.evaluate(() => localStorage.getItem('pendingCheckoutPath'))).toBeNull()
 })
 
 test('Google login callback resumes the selected invitation checkout', async ({ page }) => {
@@ -206,6 +232,13 @@ test('preview edits the invitation identified by its slug', async ({ page }) => 
       status: 200,
       contentType: 'application/json',
       body: JSON.stringify({ id: 42, slug: 'test-undangan', isPublished: false, content: {} }),
+    }),
+  )
+  await page.route('**/api/invitation/42', (route) =>
+    route.fulfill({
+      status: 200,
+      contentType: 'application/json',
+      body: JSON.stringify({ id: 42, title: 'Test Customer', slug: 'test-undangan', isPublished: false, content: {} }),
     }),
   )
 

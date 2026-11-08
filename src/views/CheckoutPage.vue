@@ -68,7 +68,39 @@
         </div>
       </div>
 
-      <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+      <div v-else>
+        <!-- Soft Notice: Unverified Email Banner (SAT-43) -->
+        <div
+          v-if="!isEmailVerified && authStore.user?.email"
+          class="mb-8 p-4 bg-amber-50/90 border border-amber-200/90 rounded-2xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-amber-900 shadow-sm animate-fade-in"
+        >
+          <div class="flex items-start sm:items-center gap-3">
+            <div
+              class="w-9 h-9 rounded-xl bg-amber-100 flex items-center justify-center shrink-0 text-amber-600 mt-0.5 sm:mt-0"
+            >
+              <i class="fa-solid fa-envelope-open-text text-base"></i>
+            </div>
+            <div class="text-xs sm:text-sm">
+              <p class="font-medium">
+                Email kamu belum diverifikasi. Bukti pembayaran akan dikirim ke
+                <strong class="font-semibold text-amber-950">{{ authStore.user.email }}</strong
+                >.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            @click="handleResendVerification"
+            :disabled="resendingVerification"
+            class="shrink-0 px-4 py-2 bg-amber-600 text-white rounded-xl text-xs font-bold hover:bg-amber-700 active:scale-95 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer shadow-sm flex items-center gap-2"
+          >
+            <i v-if="resendingVerification" class="fa-solid fa-spinner animate-spin"></i>
+            <i v-else class="fa-solid fa-paper-plane"></i>
+            <span>{{ resendingVerification ? 'Mengirim...' : 'Kirim Ulang Verifikasi' }}</span>
+          </button>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         <!-- Left Column: Invitation Preview -->
         <div class="lg:col-span-7 space-y-8">
           <div class="card overflow-hidden !p-0 border-none group">
@@ -393,6 +425,7 @@
           </div>
         </div>
       </div>
+      </div>
     </div>
   </div>
 </template>
@@ -403,6 +436,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { getMyInvitationBySlug, updateInvitation } from '@/api/invitation'
 import { createPayment, getPackages } from '@/api/payment'
 import { validatePromoCode } from '@/api/promo'
+import { resendVerification } from '@/api/auth'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import { analytics } from '@/api/analytics'
@@ -419,6 +453,21 @@ const isDevelopment = computed(() => import.meta.env.DEV)
 const isEmailVerified = computed(
   () => authStore.user?.provider === 'google' || Boolean(authStore.user?.emailVerifiedAt),
 )
+
+const resendingVerification = ref(false)
+
+async function handleResendVerification() {
+  if (resendingVerification.value) return
+  resendingVerification.value = true
+  try {
+    const res = await resendVerification()
+    toast.success(res?.message || 'Link verifikasi email berhasil dikirim!')
+  } catch (err) {
+    toast.error(err?.response?.data?.message || err?.message || 'Gagal mengirim link verifikasi.')
+  } finally {
+    resendingVerification.value = false
+  }
+}
 
 const loadSnapScript = () => {
   return new Promise((resolve, reject) => {
@@ -584,11 +633,6 @@ onMounted(async () => {
 
 const simulatePaymentSuccess = async () => {
   if (!invitation.value || !currentPackage.value) return
-  if (!isEmailVerified.value) {
-    toast.warning('Verifikasi email dulu sebelum publish undangan.')
-    goToEmailVerification()
-    return
-  }
 
   loading.value = true
   try {
@@ -618,12 +662,6 @@ const handleCheckout = async () => {
 
   if (!authStore.user?.email) {
     alert('Mohon login terlebih dahulu')
-    return
-  }
-
-  if (!isEmailVerified.value) {
-    toast.warning('Verifikasi email dulu sebelum melanjutkan pembayaran.')
-    goToEmailVerification()
     return
   }
 
@@ -722,6 +760,18 @@ function buildPaymentResultPath(path, result = {}, fallbackOrderId = '') {
   const query = params.toString()
   return query ? `${path}?${query}` : path
 }
+
+defineExpose({
+  invitation,
+  packages,
+  currentPackage,
+  selectedPackage,
+  isEmailVerified,
+  handleCheckout,
+  simulatePaymentSuccess,
+  handleResendVerification,
+  resendingVerification,
+})
 </script>
 
 <style scoped>
