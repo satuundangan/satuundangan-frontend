@@ -222,10 +222,12 @@
               :key="cat.id"
               @click="selectedCategory = cat.id"
               :class="[
-                'shrink-0 snap-start whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 border',
+                'shrink-0 snap-start whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-semibold transition-all duration-300 border cursor-pointer',
                 selectedCategory === cat.id
                   ? 'bg-mocha text-white border-mocha shadow-lg shadow-mocha/20 scale-105'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-mocha hover:text-mocha shadow-sm',
+                  : cat.count === 0
+                    ? 'bg-stone-50/80 text-stone-400 border-dashed border-stone-200 hover:border-stone-300 shadow-none'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-mocha hover:text-mocha shadow-sm',
               ]"
             >
               {{ cat.label }}
@@ -244,10 +246,12 @@
               :key="pkg.id"
               @click="selectedTier = pkg.id"
               :class="[
-                'shrink-0 snap-start whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 border',
+                'shrink-0 snap-start whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 border cursor-pointer',
                 selectedTier === pkg.id
                   ? 'bg-gray-900 text-white border-gray-900 shadow-md'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900 shadow-sm',
+                  : pkg.count === 0
+                    ? 'bg-stone-50/80 text-stone-400 border-dashed border-stone-200 hover:border-stone-300 shadow-none'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900 shadow-sm',
               ]"
             >
               {{ pkg.label }}
@@ -282,25 +286,46 @@
           </button>
         </div>
 
-        <!-- Empty State -->
+        <!-- Empty State (SAT-45) -->
         <div
           v-else-if="filteredTemplates.length === 0"
-          class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200"
+          class="text-center py-16 px-6 bg-gradient-to-b from-stone-50/80 to-stone-100/40 rounded-3xl border-2 border-dashed border-stone-200 max-w-2xl mx-auto my-6"
         >
-          <div class="text-4xl mb-4 text-mocha/40 flex justify-center">
-            <i class="pi pi-palette text-4xl" aria-hidden="true"></i>
+          <div class="w-14 h-14 mx-auto mb-4 rounded-2xl bg-mocha/10 text-mocha flex items-center justify-center text-2xl shadow-inner">
+            <i class="pi pi-sparkles" aria-hidden="true"></i>
           </div>
-          <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
-          <p class="text-muted text-sm max-w-md mx-auto mb-4">
-            Tidak ditemukan template untuk filter aktif atau kata kunci "{{ searchQuery }}". Coba ubah filter gaya atau reset pencarian.
+          <h3 class="text-lg sm:text-xl font-bold text-stone-800 mb-2">
+            {{ emptyStateTitle }}
+          </h3>
+          <p class="text-stone-500 text-xs sm:text-sm max-w-lg mx-auto mb-6 leading-relaxed">
+            {{ emptyStateMessage }}
           </p>
-          <button
-            v-if="selectedCategory !== 'all' || selectedTier !== 'all' || searchQuery"
-            @click="selectedCategory = 'all'; selectedTier = 'all'; searchQuery = ''"
-            class="px-4 py-2 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-700 text-xs font-bold transition cursor-pointer"
-          >
-            Reset Semua Filter
-          </button>
+          <div class="flex flex-wrap items-center justify-center gap-2.5">
+            <button
+              v-if="selectedTier !== 'all' && selectedCategory !== 'all'"
+              @click="selectedTier = 'all'"
+              class="px-4 py-2 rounded-full bg-white hover:bg-stone-50 text-stone-700 text-xs font-bold border border-stone-200 shadow-sm hover:shadow transition-all inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="pi pi-th-large text-mocha text-[11px]" aria-hidden="true"></i>
+              <span>Lihat Semua Paket untuk {{ activeCategoryName }}</span>
+            </button>
+            <button
+              v-if="searchQuery"
+              @click="searchQuery = ''"
+              class="px-4 py-2 rounded-full bg-white hover:bg-stone-50 text-stone-700 text-xs font-bold border border-stone-200 shadow-sm hover:shadow transition-all inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="pi pi-times text-rose-500 text-[11px]" aria-hidden="true"></i>
+              <span>Hapus Kata Kunci</span>
+            </button>
+            <button
+              v-if="selectedCategory !== 'all' || selectedTier !== 'all' || searchQuery"
+              @click="resetAllFilters"
+              class="px-5 py-2 rounded-full bg-mocha hover:bg-mocha/90 text-white text-xs font-bold shadow-md hover:shadow-lg transition-all inline-flex items-center gap-1.5 cursor-pointer"
+            >
+              <i class="pi pi-refresh text-[11px]" aria-hidden="true"></i>
+              <span>Reset Semua Filter</span>
+            </button>
+          </div>
         </div>
 
         <div v-else class="grid md:grid-cols-3 gap-10">
@@ -640,17 +665,19 @@
               </h5>
               <ul class="space-y-1">
                 <li
-                  v-for="cat in styleCategories"
+                  v-for="cat in modalStyleCategories"
                   :key="cat.id"
                   @click="selectedCategory = cat.id"
                   :class="[
                     'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
                     selectedCategory === cat.id
-                      ? 'bg-white text-mocha shadow-sm border border-gray-200'
-                      : 'text-gray-600 hover:bg-gray-200/50',
+                      ? 'bg-white text-mocha shadow-sm border border-gray-200 font-semibold'
+                      : cat.count === 0
+                        ? 'text-gray-400 hover:bg-gray-100/50'
+                        : 'text-gray-600 hover:bg-gray-200/50',
                   ]"
                 >
-                  {{ cat.label }}
+                  <span :class="cat.count === 0 && selectedCategory !== cat.id ? 'opacity-60' : ''">{{ cat.label }}</span>
                   <span
                     v-if="selectedCategory === cat.id"
                     class="w-1.5 h-1.5 rounded-full bg-mocha"
@@ -663,17 +690,19 @@
               <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Paket</h5>
               <ul class="space-y-1">
                 <li
-                  v-for="pkg in packageCategories"
+                  v-for="pkg in modalPackageCategories"
                   :key="pkg.id"
                   @click="selectedTier = pkg.id"
                   :class="[
                     'cursor-pointer px-4 py-2.5 rounded-lg text-sm font-medium transition-all flex justify-between items-center group',
                     selectedTier === pkg.id
-                      ? 'bg-white text-mocha shadow-sm border border-gray-200'
-                      : 'text-gray-600 hover:bg-gray-200/50',
+                      ? 'bg-white text-mocha shadow-sm border border-gray-200 font-semibold'
+                      : pkg.count === 0
+                        ? 'text-gray-400 hover:bg-gray-100/50'
+                        : 'text-gray-600 hover:bg-gray-200/50',
                   ]"
                 >
-                  {{ pkg.label }}
+                  <span :class="pkg.count === 0 && selectedTier !== pkg.id ? 'opacity-60' : ''">{{ pkg.label }}</span>
                   <span
                     v-if="selectedTier === pkg.id"
                     class="w-1.5 h-1.5 rounded-full bg-mocha"
@@ -737,14 +766,16 @@
             class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar"
           >
             <button
-              v-for="cat in styleCategories"
+              v-for="cat in modalStyleCategories"
               :key="cat.id"
               @click="selectedCategory = cat.id"
               :class="[
                 'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
                 selectedCategory === cat.id
                   ? 'bg-mocha text-white border-mocha'
-                  : 'bg-white text-gray-600 border-gray-200',
+                  : cat.count === 0
+                    ? 'bg-stone-50 text-stone-400 border-dashed border-stone-200'
+                    : 'bg-white text-gray-600 border-gray-200',
               ]"
             >
               {{ cat.label }}
@@ -756,14 +787,16 @@
             class="shrink-0 md:hidden flex w-full max-w-full overflow-x-auto p-3 gap-2 border-b border-gray-100 no-scrollbar"
           >
             <button
-              v-for="pkg in packageCategories"
+              v-for="pkg in modalPackageCategories"
               :key="pkg.id"
               @click="selectedTier = pkg.id"
               :class="[
                 'whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-medium border transition-colors',
                 selectedTier === pkg.id
                   ? 'bg-gray-900 text-white border-gray-900'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900',
+                  : pkg.count === 0
+                    ? 'bg-stone-50 text-stone-400 border-dashed border-stone-200'
+                    : 'bg-white text-gray-600 border-gray-200 hover:border-gray-900 hover:text-gray-900',
               ]"
             >
               {{ pkg.label }}
@@ -915,29 +948,37 @@
             </div>
             <div
               v-else
-              class="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-gray-400 space-y-4 py-12"
+              class="h-full min-h-[300px] flex flex-col items-center justify-center text-center text-gray-400 space-y-4 py-12 px-4"
             >
               <div
-                class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-2xl text-stone-400"
+                class="w-16 h-16 bg-mocha/10 rounded-2xl flex items-center justify-center text-2xl text-mocha shadow-inner"
               >
-                <i class="pi pi-search" aria-hidden="true"></i>
+                <i class="pi pi-sparkles" aria-hidden="true"></i>
               </div>
               <div class="space-y-1">
-                <p class="font-bold text-dark text-base">Tidak ada template yang cocok</p>
-                <p class="text-xs text-muted max-w-xs mx-auto">
-                  Kata kunci "{{ modalSearchQuery }}" tidak ditemukan pada filter aktif. Coba kata kunci lain atau reset filter.
+                <p class="font-bold text-dark text-base">{{ modalEmptyStateTitle }}</p>
+                <p class="text-xs text-muted max-w-sm mx-auto leading-relaxed">
+                  {{ modalEmptyStateMessage }}
                 </p>
               </div>
-              <div class="flex items-center gap-2 pt-2">
+              <div class="flex flex-wrap items-center justify-center gap-2 pt-2">
                 <button
+                  v-if="selectedTier !== 'all' && selectedCategory !== 'all'"
+                  @click="selectedTier = 'all'"
+                  class="px-4 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition cursor-pointer"
+                >
+                  Lihat Semua Paket
+                </button>
+                <button
+                  v-if="modalSearchQuery"
                   @click="modalSearchQuery = ''"
-                  class="px-4 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition"
+                  class="px-4 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-700 font-bold text-xs transition cursor-pointer"
                 >
                   Hapus Kata Kunci
                 </button>
                 <button
-                  @click="selectedCategory = 'all'; selectedTier = 'all'; modalSearchQuery = ''"
-                  class="px-4 py-2 rounded-full bg-mocha hover:bg-[#8e5e39] text-white font-bold text-xs transition"
+                  @click="resetAllFilters"
+                  class="px-4 py-2 rounded-full bg-mocha hover:bg-[#8e5e39] text-white font-bold text-xs transition shadow cursor-pointer"
                 >
                   Reset Semua Filter
                 </button>
@@ -1026,6 +1067,7 @@ import {
   filterTemplates,
   resolveFilterId,
   ALL_ID,
+  MIN_GROUP_SIZE,
 } from '@/utils/templateFilters'
 import { resolveTemplateThumbnail } from '@/utils/templateRegistry'
 
@@ -1268,8 +1310,101 @@ const modalFilteredTemplates = computed(() =>
   filterTemplates(templates.value, selectedCategory.value, selectedTier.value, modalSearchQuery.value),
 )
 
-const styleCategories = computed(() => buildStyleFilters(templates.value))
-const packageCategories = computed(() => buildPackageFilters(templates.value))
+const styleCategories = computed(() =>
+  buildStyleFilters(templates.value, MIN_GROUP_SIZE, {
+    activePackage: selectedTier.value,
+    searchQuery: searchQuery.value,
+  }),
+)
+const packageCategories = computed(() =>
+  buildPackageFilters(templates.value, {
+    activeStyle: selectedCategory.value,
+    searchQuery: searchQuery.value,
+  }),
+)
+
+const modalStyleCategories = computed(() =>
+  buildStyleFilters(templates.value, MIN_GROUP_SIZE, {
+    activePackage: selectedTier.value,
+    searchQuery: modalSearchQuery.value,
+  }),
+)
+const modalPackageCategories = computed(() =>
+  buildPackageFilters(templates.value, {
+    activeStyle: selectedCategory.value,
+    searchQuery: modalSearchQuery.value,
+  }),
+)
+
+const activeCategoryName = computed(() => {
+  if (selectedCategory.value === ALL_ID) return 'Semua Gaya'
+  const match = styleCategories.value.find((c) => c.id === selectedCategory.value)
+  return match?.name || selectedCategory.value
+})
+
+const activeTierName = computed(() => {
+  if (selectedTier.value === ALL_ID) return 'Semua Paket'
+  const match = packageCategories.value.find((p) => p.id === selectedTier.value)
+  return match?.name || selectedTier.value
+})
+
+const emptyStateTitle = computed(() => {
+  if (searchQuery.value) return 'Desain Tidak Ditemukan'
+  if (selectedCategory.value !== ALL_ID && selectedTier.value !== ALL_ID) {
+    return `Template ${activeCategoryName.value} (${activeTierName.value}) Segera Hadir`
+  }
+  if (selectedCategory.value !== ALL_ID) {
+    return `Template untuk Kategori "${activeCategoryName.value}" Segera Hadir`
+  }
+  if (selectedTier.value !== ALL_ID) {
+    return `Template untuk Paket "${activeTierName.value}" Segera Hadir`
+  }
+  return 'Belum Ada Template yang Cocok'
+})
+
+const emptyStateMessage = computed(() => {
+  if (searchQuery.value) {
+    return `Tidak ditemukan template untuk kata kunci "${searchQuery.value}". Coba gunakan kata kunci lain seperti "adat", "minimalis", "anime", atau "mewah".`
+  }
+  if (selectedCategory.value !== ALL_ID && selectedTier.value !== ALL_ID) {
+    return `Saat ini belum ada template bergaya "${activeCategoryName.value}" pada paket "${activeTierName.value}". Anda dapat melihat desain kategori ini di paket lain atau mereset filter.`
+  }
+  if (selectedCategory.value !== ALL_ID) {
+    return `Koleksi desain baru untuk gaya "${activeCategoryName.value}" sedang dirancang oleh tim desainer SatuUndangan. Silakan lihat pilihan gaya lainnya.`
+  }
+  if (selectedTier.value !== ALL_ID) {
+    return `Pilihan template untuk paket "${activeTierName.value}" sedang diperbarui. Silakan cek pilihan paket lainnya.`
+  }
+  return 'Coba sesuaikan filter gaya atau paket di atas untuk menemukan desain undangan pernikahan impian Anda.'
+})
+
+const modalEmptyStateTitle = computed(() => {
+  if (modalSearchQuery.value) return 'Desain Tidak Ditemukan'
+  if (selectedCategory.value !== ALL_ID && selectedTier.value !== ALL_ID) {
+    return `Template ${activeCategoryName.value} (${activeTierName.value}) Segera Hadir`
+  }
+  if (selectedCategory.value !== ALL_ID) {
+    return `Template "${activeCategoryName.value}" Segera Hadir`
+  }
+  return 'Belum Ada Template yang Cocok'
+})
+
+const modalEmptyStateMessage = computed(() => {
+  if (modalSearchQuery.value) {
+    return `Kata kunci "${modalSearchQuery.value}" tidak ditemukan pada filter aktif. Coba kata kunci lain atau reset filter.`
+  }
+  if (selectedCategory.value !== ALL_ID && selectedTier.value !== ALL_ID) {
+    return `Belum ada template bergaya "${activeCategoryName.value}" untuk paket "${activeTierName.value}". Anda dapat beralih ke paket lain atau melihat semua desain.`
+  }
+  return 'Pilih kategori atau paket lain untuk melihat koleksi template yang tersedia.'
+})
+
+function resetAllFilters() {
+  selectedCategory.value = ALL_ID
+  selectedTier.value = ALL_ID
+  searchQuery.value = ''
+  modalSearchQuery.value = ''
+}
 
 // Sync selection to ?gaya=/?paket= via replace (no history entry per click),
 // preserving any other existing query params.

@@ -119,6 +119,37 @@ describe('templateFilters', () => {
       expect('Elegan & Mewah'.localeCompare('Romantis & Dreamy', 'id')).toBeLessThan(0)
       expect('Anime & Pop Culture'.localeCompare('Bold & Unik', 'id')).toBeLessThan(0)
     })
+
+    it('synchronizes counts accurately when activePackage option is passed (SAT-45)', () => {
+      // When user filters by Basic:
+      // FIXTURE has Dark Elegant (Basic, Elegan & Mewah)
+      const basicResult = buildStyleFilters(FIXTURE, MIN_GROUP_SIZE, { activePackage: 'Basic' })
+      const byId = Object.fromEntries(basicResult.map((c) => [c.id, c.count]))
+      expect(byId[ALL_ID]).toBe(2) // Total 2 Basic templates
+      expect(byId['Elegan & Mewah']).toBe(1)
+      expect(byId['Romantis & Dreamy']).toBe(0)
+      expect(byId['Anime & Pop Culture']).toBe(0)
+      expect(byId['Bold & Unik']).toBe(0)
+
+      // When user filters by Exclusive:
+      const exclResult = buildStyleFilters(FIXTURE, MIN_GROUP_SIZE, { activePackage: 'Exclusive' })
+      const exclById = Object.fromEntries(exclResult.map((c) => [c.id, c.count]))
+      expect(exclById[ALL_ID]).toBe(6)
+      expect(exclById['Bold & Unik']).toBe(3) // Cyberpunk Neon, Modern Noir, Retro Nostalgia
+      expect(exclById['Romantis & Dreamy']).toBe(2) // Azure Shores, Celestial Sparkle
+      expect(exclById['Elegan & Mewah']).toBe(1) // The Editorial Story
+      expect(exclById['Anime & Pop Culture']).toBe(0)
+    })
+
+    it('synchronizes counts with active searchQuery (SAT-45)', () => {
+      const searchResult = buildStyleFilters(FIXTURE, MIN_GROUP_SIZE, { searchQuery: 'naruto' })
+      const byId = Object.fromEntries(searchResult.map((c) => [c.id, c.count]))
+      expect(byId[ALL_ID]).toBe(1)
+      expect(byId['Anime & Pop Culture']).toBe(1)
+      expect(byId['Elegan & Mewah']).toBe(0)
+      expect(byId['Romantis & Dreamy']).toBe(0)
+      expect(byId['Bold & Unik']).toBe(0)
+    })
   })
 
   describe('buildPackageFilters', () => {
@@ -150,6 +181,34 @@ describe('templateFilters', () => {
       const fixture = [{ name: 'Solo', slug: 'solo', category: 'Basic', filterGroup: null }]
       const result = buildPackageFilters(fixture)
       expect(result.map((c) => c.id)).toEqual([ALL_ID, 'Basic'])
+    })
+
+    it('synchronizes package counts when activeStyle is passed (SAT-45)', () => {
+      // In FIXTURE:
+      // Romantis & Dreamy has 4 templates: 2 Premium (Botanical Watercolor, Sakura Blossom), 2 Exclusive (Azure Shores, Celestial Sparkle), 0 Basic
+      const romantisResult = buildPackageFilters(FIXTURE, { activeStyle: 'Romantis & Dreamy' })
+      const byId = Object.fromEntries(romantisResult.map((c) => [c.id, c.count]))
+      expect(byId[ALL_ID]).toBe(4)
+      expect(byId.Basic).toBe(0)
+      expect(byId.Premium).toBe(2)
+      expect(byId.Exclusive).toBe(2)
+
+      // Anime & Pop Culture has 3 templates: 3 Premium (Kimi no Na wa, Naruto, One Piece), 0 Basic, 0 Exclusive
+      const animeResult = buildPackageFilters(FIXTURE, { activeStyle: 'Anime & Pop Culture' })
+      const animeById = Object.fromEntries(animeResult.map((c) => [c.id, c.count]))
+      expect(animeById[ALL_ID]).toBe(3)
+      expect(animeById.Basic).toBe(0)
+      expect(animeById.Premium).toBe(3)
+      expect(animeById.Exclusive).toBe(0)
+    })
+
+    it('synchronizes package counts with active searchQuery (SAT-45)', () => {
+      const searchResult = buildPackageFilters(FIXTURE, { searchQuery: 'naruto' })
+      const byId = Object.fromEntries(searchResult.map((c) => [c.id, c.count]))
+      expect(byId[ALL_ID]).toBe(1)
+      expect(byId.Premium).toBe(1)
+      expect(byId.Basic).toBe(0)
+      expect(byId.Exclusive).toBe(0)
     })
   })
 
