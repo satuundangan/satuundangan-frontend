@@ -81,6 +81,20 @@ provide(
   computed(() => !invitationData.value?.is_published || Boolean(invitationData.value?.show_branding))
 )
 
+const isAnyPreview = computed(() => {
+  return Boolean(
+    isPreviewMode.value ||
+    isDemoMode.value ||
+    isInsideFrame.value ||
+    route.query?.preview === 'true' ||
+    route.query?.mode === 'live' ||
+    route.query?.frame === 'true' ||
+    route.name === 'demo' ||
+    (isOwnerPreview.value && !invitationData.value?.is_published)
+  )
+})
+provide('isInvitationPreview', isAnyPreview)
+
 const isLiveSyncActive = ref(false)
 
 const ALL_SECTION_KEYS = [

@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed bottom-24 right-4 md:right-8 z-50 animate-fade-in">
+  <div class="fixed bottom-24 right-4 md:right-8 z-50 animate-fade-in pointer-events-auto select-none">
     
     <!-- YouTube mode: mini visible player with mute toggle -->
     <div v-if="isYoutube" class="relative group">
@@ -7,7 +7,7 @@
          :style="{ borderColor: accentColor + '4D' }">
           <iframe
             ref="ytIframe"
-            :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=1&mute=1&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1${audioStart > 0 ? '&start=' + Math.floor(audioStart) : ''}${audioEnd > 0 ? '&end=' + Math.floor(audioEnd) : ''}`"
+            :src="`https://www.youtube.com/embed/${youtubeId}?autoplay=${effectiveAutoPlay ? 1 : 0}&mute=${isMuted ? 1 : 0}&loop=1&playlist=${youtubeId}&controls=0&modestbranding=1&enablejsapi=1${audioStart > 0 ? '&start=' + Math.floor(audioStart) : ''}${audioEnd > 0 ? '&end=' + Math.floor(audioEnd) : ''}`"
             class="w-full h-full pointer-events-none"
             frameborder="0"
             allow="autoplay; encrypted-media"
@@ -15,7 +15,9 @@
        </div>
        <button
          @click="toggleYoutubeMute"
-         class="absolute inset-0 flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-500"
+         :title="isMuted ? 'Putar Musik' : 'Bisukan Musik'"
+         :aria-label="isMuted ? 'Putar Musik' : 'Bisukan Musik'"
+         class="absolute inset-0 flex items-center justify-center rounded-full backdrop-blur-md transition-all duration-500 cursor-pointer"
          :style="{ backgroundColor: primaryColor + '99' }"
        >
          <i :class="isMuted ? 'fa-solid fa-volume-xmark text-white/50' : 'fa-solid fa-compact-disc animate-spin-slow'" 
@@ -24,11 +26,13 @@
        </button>
     </div>
 
-    <!-- Regular audio mode (The Premium Redesign) -->
+    <!-- Regular audio mode (SAT-49: Floating Audio Control with Zero Lag Preload & Default 45% Volume) -->
     <button
       v-else
       @click="toggleAudio"
-      class="relative group w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-110 active:scale-95 border backdrop-blur-xl"
+      :title="isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'"
+      :aria-label="isPlaying ? 'Jeda Musik Latar' : 'Putar Musik Latar'"
+      class="relative group w-10 h-10 md:w-14 md:h-14 rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(0,0,0,0.5)] transition-all duration-500 hover:scale-110 active:scale-95 border backdrop-blur-xl cursor-pointer"
       :style="{ 
         backgroundColor: primaryColor + '99', 
         borderColor: accentColor + '4D' 
@@ -42,10 +46,10 @@
       <!-- Icon Container -->
       <div class="relative z-10 flex items-center justify-center transition-transform duration-500" :class="{ 'rotate-[360deg]': isPlaying }">
          <i v-if="isPlaying" class="fa-solid fa-compact-disc text-lg md:text-2xl animate-spin-slow" :style="{ color: accentColor }" />
-         <i v-else class="fa-solid fa-play text-sm md:text-lg ml-1 opacity-40" :style="{ color: accentColor }" />
+         <i v-else class="fa-solid fa-play text-sm md:text-lg ml-0.5 opacity-60 group-hover:opacity-100 transition-opacity" :style="{ color: accentColor }" />
       </div>
 
-      <!-- Pulsing Glow Effect -->
+      <!-- Pulsing Glow Effect when playing -->
       <div v-if="isPlaying" class="absolute inset-0 rounded-full animate-ping-slow pointer-events-none" :style="{ backgroundColor: accentColor + '33' }"></div>
     </button>
 
@@ -53,7 +57,8 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
+import { useRoute } from 'vue-router'
 
 const props = defineProps({
   src: {
@@ -63,6 +68,18 @@ const props = defineProps({
   autoPlay: {
     type: Boolean,
     default: true
+  },
+  isPreview: {
+    type: Boolean,
+    default: undefined
+  },
+  volume: {
+    type: Number,
+    default: 0.45 // SAT-49: Comfortable volume level (40-50%)
+  },
+  preload: {
+    type: String,
+    default: 'metadata' // SAT-49: Lazy loading metadata to save bandwidth
   },
   audioStart: {
     type: Number,
@@ -80,6 +97,46 @@ const props = defineProps({
     type: String,
     default: '#d4af37'
   }
+})
+
+let route = null
+try {
+  route = useRoute()
+} catch {
+  route = null
+}
+
+const injectedIsPreview = inject('isInvitationPreview', null)
+
+// Determine if we are running in preview context (SAT-49)
+const isPreviewMode = computed(() => {
+  if (props.isPreview !== undefined) return Boolean(props.isPreview)
+  if (injectedIsPreview?.value) return true
+
+  if (route) {
+    if (route.query?.preview === 'true' || route.query?.mode === 'live' || route.query?.frame === 'true') return true
+    if (route.name === 'demo' || route.path?.startsWith('/demo') || route.path?.startsWith('/live-preview')) return true
+  }
+
+  if (typeof window !== 'undefined') {
+    try {
+      if (window.self !== window.top) return true
+      const search = window.location?.search || ''
+      if (search.includes('preview=true') || search.includes('mode=live') || search.includes('frame=true')) return true
+      const path = window.location?.pathname || ''
+      if (path.startsWith('/demo') || path.startsWith('/live-preview')) return true
+    } catch {
+      return true
+    }
+  }
+
+  return false
+})
+
+// SAT-49: Autoplay is strictly disabled in preview mode to prevent blasting audio and lag
+const effectiveAutoPlay = computed(() => {
+  if (isPreviewMode.value) return false
+  return Boolean(props.autoPlay)
 })
 
 // --- YouTube mode ---
@@ -102,30 +159,44 @@ function toggleYoutubeMute() {
 const isPlaying = ref(false)
 const audio = ref(null)
 
+const getSanitizedVolume = () => {
+  const vol = typeof props.volume === 'number' && !isNaN(props.volume) ? props.volume : 0.45
+  return Math.max(0, Math.min(1, vol))
+}
+
 const initAudio = () => {
   if (audio.value) {
     audio.value.pause()
     audio.value = null
   }
-  audio.value = new Audio(props.src)
-  audio.value.loop = true
+
+  // SAT-49: Use 'none' in preview mode and 'metadata' in live mode to prevent browser freezing
+  const audioEl = new Audio()
+  audioEl.preload = isPreviewMode.value ? 'none' : (props.preload || 'metadata')
+  audioEl.src = props.src
+  audioEl.loop = true
+  audioEl.volume = getSanitizedVolume()
   
-  audio.value.onloadedmetadata = () => {
+  audioEl.onloadedmetadata = () => {
     if (props.audioStart > 0) {
-      audio.value.currentTime = props.audioStart
+      audioEl.currentTime = props.audioStart
     }
   }
 
-  audio.value.ontimeupdate = () => {
-    if (props.audioEnd > 0 && audio.value.currentTime >= props.audioEnd) {
-      audio.value.currentTime = props.audioStart
+  audioEl.ontimeupdate = () => {
+    if (props.audioEnd > 0 && audioEl.currentTime >= props.audioEnd) {
+      audioEl.currentTime = props.audioStart
     }
   }
+
+  audio.value = audioEl
 }
 
 const removeGestureListeners = () => {
-  window.removeEventListener('click', tryPlayFromGesture)
-  window.removeEventListener('touchstart', tryPlayFromGesture)
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('click', tryPlayFromGesture)
+    window.removeEventListener('touchstart', tryPlayFromGesture)
+  }
 }
 
 const startPlayback = async () => {
@@ -136,6 +207,9 @@ const startPlayback = async () => {
 
   if (!audio.value) initAudio()
   try {
+    if (audio.value) {
+      audio.value.volume = getSanitizedVolume()
+    }
     await audio.value.play()
     isPlaying.value = true
     removeGestureListeners()
@@ -150,18 +224,28 @@ const tryPlayFromGesture = () => {
   startPlayback()
 }
 
-defineExpose({ play: startPlayback })
+defineExpose({
+  play: startPlayback,
+  pause: () => {
+    if (audio.value) {
+      audio.value.pause()
+      isPlaying.value = false
+    }
+  },
+  toggle: () => toggleAudio(),
+  isPlaying,
+  isPreviewMode,
+})
 
 onMounted(() => {
   if (isYoutube.value) return
 
   initAudio()
 
-  if (props.autoPlay) {
-    // Attempt immediate playback (carries the BUKA-button user activation);
-    // fall back to first gesture if the browser blocks it.
+  // Only auto-start playback if effectiveAutoPlay is true (disabled for previews)
+  if (effectiveAutoPlay.value) {
     startPlayback().then((started) => {
-      if (!started) {
+      if (!started && typeof window !== 'undefined') {
         window.addEventListener('click', tryPlayFromGesture)
         window.addEventListener('touchstart', tryPlayFromGesture)
       }
@@ -178,7 +262,7 @@ onUnmounted(() => {
 })
 
 const toggleAudio = () => {
-  if (!audio.value) return
+  if (!audio.value) initAudio()
   if (isPlaying.value) {
     audio.value.pause()
     isPlaying.value = false
@@ -189,8 +273,17 @@ const toggleAudio = () => {
 
 watch(() => props.src, () => {
   if (isYoutube.value) return
+  const wasPlaying = isPlaying.value
   initAudio()
-  if (isPlaying.value) audio.value.play()
+  if (wasPlaying) {
+    audio.value.play().catch(() => {})
+  }
+})
+
+watch(() => props.volume, (newVol) => {
+  if (audio.value && typeof newVol === 'number' && !isNaN(newVol)) {
+    audio.value.volume = Math.max(0, Math.min(1, newVol))
+  }
 })
 </script>
 
