@@ -114,7 +114,7 @@
         <div class="absolute bottom-1/4 -right-12 bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] animate-float-delayed hidden lg:block z-30 border border-white/60 hover:scale-105 transition-transform duration-300 w-64 group">
           <div class="flex items-center gap-4">
             <div class="relative">
-              <img src="https://i.pravatar.cc/100?img=32" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=96&h=96&q=70" alt="Avatar" width="48" height="48" loading="lazy" decoding="async" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
               <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-mocha rounded-full border-2 border-white flex items-center justify-center text-white text-[8px]">
                 <i class="pi pi-heart-fill text-[8px]" aria-hidden="true"></i>
               </div>

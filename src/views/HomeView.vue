@@ -1224,7 +1224,7 @@ const testimonials = [
     name: 'Rani & Aldi Pratama',
     role: 'Pengantin (Bandung)',
     text: 'Sangat puas dengan hasilnya! Template adat Sundanya bener-bener mewah dan anggun. Tamu-tamu undangan banyak yang memuji lagunya enak dan desainnya berkelas.',
-    avatar: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=200&q=80',
+    avatar: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=96&h=96&q=70',
     rating: 5,
   },
   {
@@ -1232,7 +1232,7 @@ const testimonials = [
     name: 'Dimas & Annisa Putri',
     role: 'Pengantin (Jakarta)',
     text: 'Fitur pesan WhatsApp siap kirim dan QR Code buku tamunya ngebantu banget! Pas hari H resepsi meja depan lancar tanpa antrean panjang. Recommended!',
-    avatar: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=200&q=80',
+    avatar: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?auto=format&fit=crop&w=96&h=96&q=70',
     rating: 5,
   },
   {
@@ -1240,7 +1240,7 @@ const testimonials = [
     name: 'Vina & Robby Setiawan',
     role: 'Pengantin (Surabaya)',
     text: 'Worth every penny! Fitur lengkap, foto galeri prewed tampil jernih, dan servernya super cepat saat dibuka ratusan tamu sekaligus. Support CS-nya juga ramah banget.',
-    avatar: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=200&q=80',
+    avatar: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=96&h=96&q=70',
     rating: 5,
   },
 ]
