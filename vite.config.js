@@ -16,6 +16,9 @@ export default defineConfig(({ mode }) => {
   const devToolsDisabled = env.VITE_DISABLE_DEVTOOLS === 'true'
 
   return {
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
     plugins: [vue(), ...(devToolsDisabled ? [] : [vueDevTools()]), tailwindcss()],
     test: {
       globals: true,
