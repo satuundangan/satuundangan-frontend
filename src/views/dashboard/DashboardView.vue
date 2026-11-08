@@ -33,31 +33,35 @@
           <i class="fa-solid fa-envelope-open-text absolute -right-6 -bottom-8 text-white/10 text-[180px] rotate-12 pointer-events-none hidden sm:block"></i>
         </div>
 
-        <!-- Ringkasan Statistik -->
+        <!-- Ringkasan Statistik (SAT-50: Tautan Cepat ke Detail Modul) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           <StatCard 
             label="Total Undangan" 
             :value="stats.total" 
             iconClass="fa-solid fa-envelope-open-text" 
             color="bg-blue-50 text-blue-600" 
+            to="/invitations"
           />
           <StatCard 
             label="Tamu Terundang" 
             :value="stats.guests" 
             iconClass="fa-solid fa-users" 
             color="bg-purple-50 text-purple-600" 
+            to="/guests"
           />
           <StatCard 
             label="Konfirmasi Hadir" 
             :value="stats.attending" 
             iconClass="fa-solid fa-circle-check" 
             color="bg-emerald-50 text-emerald-600" 
+            to="/guests?filter=hadir"
           />
           <StatCard 
             label="Ucapan Masuk" 
             :value="stats.responses" 
             iconClass="fa-solid fa-comments" 
             color="bg-amber-50 text-amber-600" 
+            to="/guestbook"
           />
         </div>
 

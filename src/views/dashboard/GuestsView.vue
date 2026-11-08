@@ -312,6 +312,18 @@
                   {{ sentGuestsCount }}
                 </span>
               </button>
+              <button
+                type="button"
+                @click="statusFilter = 'hadir'"
+                class="px-3 py-1.5 rounded-lg transition-all flex items-center gap-1.5 cursor-pointer shrink-0 whitespace-nowrap"
+                :class="statusFilter === 'hadir' ? 'bg-white text-emerald-800 shadow-xs' : 'text-slate-500 hover:text-slate-800'"
+              >
+                <i class="fa-solid fa-circle-check text-[10px] text-emerald-500"></i>
+                <span>Konfirmasi Hadir</span>
+                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="statusFilter === 'hadir' ? 'bg-emerald-100 text-emerald-800 font-extrabold' : 'bg-slate-300/60 text-slate-600'">
+                  {{ rsvpAttendingCount }}
+                </span>
+              </button>
             </div>
 
             <!-- Category filter dropdown if multiple groups exist -->
@@ -1237,9 +1249,17 @@ const searchQuery = ref('')
 const isSidebarOpen = ref(window.innerWidth >= 768)
 const excelInput = ref(null)
 
-// Filtering state
-const statusFilter = ref('all') // 'all' | 'unsent' | 'sent'
+// Filtering state (SAT-50: support rsvp hadir filter from dashboard statcard)
+const statusFilter = ref(route.query?.filter === 'hadir' ? 'hadir' : 'all') // 'all' | 'unsent' | 'sent' | 'hadir'
 const groupFilter = ref('')
+
+watch(() => route.query?.filter, (newFilter) => {
+  if (newFilter === 'hadir') {
+    statusFilter.value = 'hadir'
+  } else if (!newFilter && statusFilter.value === 'hadir') {
+    statusFilter.value = 'all'
+  }
+})
 
 // Single Share Modal state
 const showShareModal = ref(false)
@@ -1313,6 +1333,8 @@ const filteredGuests = computed(() => {
     list = list.filter((g) => g.statusSend !== 'sent')
   } else if (statusFilter.value === 'sent') {
     list = list.filter((g) => g.statusSend === 'sent')
+  } else if (statusFilter.value === 'hadir') {
+    list = list.filter((g) => g.rsvpStatus === 'hadir')
   }
 
   // Category Filter
