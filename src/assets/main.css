@@ -66,7 +66,7 @@
 }
 
 .text-muted {
-  @apply text-[#777];
+  @apply text-[#57534e];
 }
 
 @keyframes spin-slow {

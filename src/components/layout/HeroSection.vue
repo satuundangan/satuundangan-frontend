@@ -22,7 +22,7 @@
           <span class="font-bold text-dark/90 block mt-2">Termasuk Wedding Planner & Kalkulator Budget Gratis!</span>
         </p>
 
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-sm font-bold text-dark/60 pt-2">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-sm font-bold text-stone-700 pt-2">
           <div class="flex items-center gap-2 group">
             <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
               <i class="pi pi-check-square text-amber-600 text-xs" aria-hidden="true"></i>
@@ -56,7 +56,7 @@
         </div>
 
         <!-- Risk Reversal Micro-Copy -->
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-5 text-xs text-dark/70 pt-2 font-medium">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-5 text-xs text-stone-700 pt-2 font-medium">
           <span class="inline-flex items-center gap-1.5">
             <i class="pi pi-check-circle text-emerald-600" aria-hidden="true"></i> Coba Gratis Tanpa Syarat
           </span>
