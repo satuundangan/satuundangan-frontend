@@ -1,5 +1,5 @@
 import HomeView from '@/views/HomeView.vue'
-import Invitation from '@/views/InvitationView.vue'
+const Invitation = () => import('@/views/InvitationView.vue')
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { getCustomSubdomain } from '@/api/invitation'
