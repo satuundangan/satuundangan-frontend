@@ -35,7 +35,7 @@
             
             <!-- Content -->
             <div class="text-center bg-white/60 backdrop-blur-sm p-4 rounded-xl shadow-sm border border-gray-50 group-hover:shadow-md transition-all duration-300 w-full h-full">
-              <h4 class="font-bold text-dark text-lg mb-2">{{ step.title }}</h4>
+              <h3 class="font-bold text-dark text-lg mb-2">{{ step.title }}</h3>
               <p class="text-sm text-muted leading-relaxed">{{ step.description }}</p>
             </div>
             

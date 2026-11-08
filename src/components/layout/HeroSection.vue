@@ -8,7 +8,7 @@
       
       <!-- Text Content -->
       <div class="space-y-6 text-center md:text-left z-10 animate-fade-in-up">
-        <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-mocha/10 text-mocha text-sm font-semibold mb-2 ring-1 ring-mocha/20">
+        <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-mocha/10 text-[#7d512a] text-sm font-semibold mb-2 ring-1 ring-mocha/20">
           <i class="pi pi-sparkles text-xs" aria-hidden="true"></i>
           <span>#1 Platform Undangan Digital Premium</span>
         </div>
@@ -70,10 +70,10 @@
 
         <div class="flex items-center justify-center md:justify-start gap-4 pt-6 text-sm text-muted border-t border-gray-200 mt-6 max-w-md mx-auto md:mx-0">
           <div class="flex -space-x-3">
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
-            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=150&q=80" alt="Pengantin SatuUndangan" loading="lazy" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?auto=format&fit=crop&w=80&h=80&q=70" alt="Pengantin SatuUndangan" width="40" height="40" loading="lazy" decoding="async" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&h=80&q=70" alt="Pengantin SatuUndangan" width="40" height="40" loading="lazy" decoding="async" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=80&h=80&q=70" alt="Pengantin SatuUndangan" width="40" height="40" loading="lazy" decoding="async" />
+            <img class="w-10 h-10 rounded-full border-2 border-white ring-1 ring-gray-100 object-cover shadow-sm" src="https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=80&h=80&q=70" alt="Pengantin SatuUndangan" width="40" height="40" loading="lazy" decoding="async" />
             <div class="w-10 h-10 rounded-full border-2 border-white bg-mocha text-white flex items-center justify-center text-xs font-bold ring-1 ring-gray-100 shadow-sm">+5k</div>
           </div>
           <div class="text-left">
@@ -101,8 +101,8 @@
             </div>
             <div class="flex-1">
               <div class="flex justify-between items-center mb-0.5">
-                 <p class="text-[10px] font-bold text-emerald-600 uppercase tracking-wider">Status RSVP</p>
-                 <span class="text-[9px] text-gray-400">Baru saja</span>
+                 <p class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Status RSVP</p>
+                 <span class="text-[9px] text-stone-600">Baru saja</span>
               </div>
               <p class="text-sm font-bold text-dark leading-tight mb-0.5">Undangan Terkirim</p>
               <p class="text-xs text-gray-500 truncate">Ke: Keluarga Bp. Budi</p>
@@ -121,8 +121,8 @@
             </div>
             <div class="flex-1">
               <div class="flex justify-between items-center mb-0.5">
-                 <p class="text-[10px] font-bold text-mocha uppercase tracking-wider">Pesan Baru</p>
-                 <span class="text-[9px] text-gray-400">2m lalu</span>
+                 <p class="text-[10px] font-bold text-[#7d512a] uppercase tracking-wider">Pesan Baru</p>
+                 <span class="text-[9px] text-stone-600">2m lalu</span>
               </div>
               <p class="text-sm font-bold text-dark leading-tight mb-0.5 flex items-center">
                 <span>"Happy Wedding!"</span>
@@ -153,7 +153,10 @@
                src="@/assets/hero_invitation_preview.webp"
                alt="Digital Wedding Invitation Preview"
                loading="eager"
+               fetchpriority="high"
                decoding="async"
+               width="300"
+               height="600"
                class="w-full h-full object-cover object-top scale-100 group-hover:scale-105 transition-transform duration-700 ease-out rounded-[2.5rem]"
              />
           </div>

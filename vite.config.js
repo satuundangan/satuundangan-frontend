@@ -16,12 +16,35 @@ export default defineConfig(({ mode }) => {
   const devToolsDisabled = env.VITE_DISABLE_DEVTOOLS === 'true'
 
   return {
-    plugins: [vue(), ...(devToolsDisabled ? [] : [vueDevTools()]), tailwindcss()],
+    plugins: [
+      vue(),
+      ...(devToolsDisabled ? [] : [vueDevTools()]),
+      tailwindcss(),
+      {
+        name: 'primeicons-font-display-swap',
+        transform(code, id) {
+          if (id.includes('primeicons.css')) {
+            return {
+              code: code.replace(/font-display:\s*block;?/g, 'font-display: swap;'),
+              map: null,
+            }
+          }
+        },
+      },
+    ],
     build: {
       rollupOptions: {
         output: {
           manualChunks(id) {
             if (id.includes('node_modules')) {
+              if (
+                id.includes('/vue/') ||
+                id.includes('/@vue/') ||
+                id.includes('/pinia/') ||
+                id.includes('/vue-router/')
+              ) {
+                return 'vendor-vue'
+              }
               if (id.includes('@primevue') || id.includes('@primeuix')) return 'vendor-primevue'
               if (id.includes('@tiptap') || id.includes('prosemirror')) return 'vendor-editor'
               if (id.includes('lucide-vue-next')) return 'vendor-lucide'
