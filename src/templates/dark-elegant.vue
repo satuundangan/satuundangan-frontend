@@ -34,7 +34,7 @@
         <div class="relative z-10 space-y-6 animate-fade-in-up w-full">
           <div
             class="w-16 h-16 md:w-20 md:h-20 mx-auto border border-[#d6b18a] rounded-full flex items-center justify-center text-2xl md:text-3xl mb-4">
-            🌿
+            <i class="pi pi-heart text-[#d6b18a]" aria-hidden="true"></i>
           </div>
 
           <h1 class="text-xs md:text-sm tracking-[0.3em] uppercase text-[#d6b18a]">The Wedding Of</h1>
@@ -239,8 +239,8 @@
               class="bg-black/60 backdrop-blur-md border border-[#d6b18a]/20 p-6 md:p-8 rounded-3xl relative overflow-hidden group hover:border-[#d6b18a]/50 transition-all"
               v-observe>
               <div
-                class="absolute -right-10 -top-10 text-8xl md:text-9xl text-[#d6b18a]/5 group-hover:rotate-12 transition-transform">
-                💍</div>
+                class="absolute -right-10 -top-10 text-8xl md:text-9xl text-[#d6b18a]/5 group-hover:rotate-12 transition-transform select-none pointer-events-none">
+                <i class="pi pi-heart" aria-hidden="true"></i></div>
               <h3 class="text-xl md:text-2xl font-serif text-white mb-2">Akad Nikah</h3>
               <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 my-6 text-[#d6b18a]">
                 <div class="text-center">
@@ -265,8 +265,8 @@
               class="bg-black/60 backdrop-blur-md border border-[#d6b18a]/20 p-6 md:p-8 rounded-3xl relative overflow-hidden group hover:border-[#d6b18a]/50 transition-all"
               v-observe>
               <div
-                class="absolute -left-10 -top-10 text-8xl md:text-9xl text-[#d6b18a]/5 group-hover:-rotate-12 transition-transform">
-                🥂</div>
+                class="absolute -left-10 -top-10 text-8xl md:text-9xl text-[#d6b18a]/5 group-hover:-rotate-12 transition-transform select-none pointer-events-none">
+                <i class="pi pi-sparkles" aria-hidden="true"></i></div>
               <h3 class="text-xl md:text-2xl font-serif text-white mb-2">Resepsi</h3>
               <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 my-6 text-[#d6b18a]">
                 <div class="text-center">

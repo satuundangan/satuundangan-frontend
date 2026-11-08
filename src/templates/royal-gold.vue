@@ -328,7 +328,7 @@
         <div class="flex flex-wrap justify-center gap-10 max-w-5xl mx-auto">
           <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
             class="bg-[#080e20] border border-[#d4af37]/30 p-10 rounded-2xl w-full sm:w-[350px] shadow-2xl relative overflow-hidden" v-observe>
-            <div class="absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl">🏦</div>
+            <i class="pi pi-building absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl pointer-events-none select-none" aria-hidden="true"></i>
             <div class="mb-8 text-[#d4af37] font-bold text-2xl tracking-widest uppercase font-cinzel">
               {{ bank.bankName }}
             </div>

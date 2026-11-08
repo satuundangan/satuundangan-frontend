@@ -17,7 +17,7 @@ const PACKAGES = [
 
 const INITIAL_MESSAGE = {
   role: 'assistant',
-  content: 'Halo! Saya Nova 💍 AI assistant dari satuundangan.id. Saya akan pandu kamu buat undangan pernikahan digital hanya dengan chat! Mulai dari nama mempelai — siapa nama mempelai pria dan wanitanya?',
+  content: 'Halo! Saya Nova, asisten AI dari satuundangan.id. Saya akan pandu kamu buat undangan pernikahan digital hanya dengan chat! Mulai dari nama mempelai — siapa nama mempelai pria dan wanitanya?',
 }
 
 const view = ref('intro') // 'intro' | 'chat' | 'locked' | 'loading' | 'done'
@@ -87,7 +87,7 @@ const sendMessage = async () => {
     if (res.isComplete) isComplete.value = true
   } catch (err) {
     const msg = err.message?.includes('Kredit Nova habis')
-      ? 'Kredit Nova kamu habis. Silakan beli paket kredit dulu ya! 🙏'
+      ? 'Kredit Nova kamu habis. Silakan beli paket kredit dulu ya!'
       : 'Nova sedang sibuk sebentar. Coba lagi ya!'
     messages.value.push({ role: 'assistant', content: msg })
     if (err.message?.includes('Kredit')) {
@@ -176,7 +176,9 @@ const handleKeydown = (e) => {
 
     <!-- Intro screen -->
     <div v-else-if="view === 'intro'" class="flex-1 flex flex-col items-center justify-center gap-4 p-6 text-center">
-      <div class="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-3xl">💍</div>
+      <div class="w-16 h-16 rounded-full bg-rose-50 flex items-center justify-center text-rose-500 text-2xl shadow-sm">
+        <i class="pi pi-sparkles" aria-hidden="true"></i>
+      </div>
       <div>
         <h3 class="font-bold text-gray-800 text-base">Buat Undangan Lewat Chat</h3>
         <p class="text-gray-500 text-sm mt-1">Ceritakan detail pernikahan kamu, Nova yang akan rangkai jadi undangan digital.</p>
@@ -192,19 +194,24 @@ const handleKeydown = (e) => {
         Lihat cara kerjanya
       </a>
       <div class="w-full bg-rose-50 rounded-xl p-3 text-xs text-gray-500">
-        🎁 <span class="font-medium text-gray-700">Free trial 1x</span> — {{ credits > 0 ? `Kamu masih punya ${credits} kredit gratis!` : 'Kredit kamu sudah digunakan.' }}
+        <span class="inline-flex items-center gap-1.5"><i class="pi pi-gift text-rose-500" aria-hidden="true"></i><span class="font-medium text-gray-700">Free trial 1x</span></span> — {{ credits > 0 ? `Kamu masih punya ${credits} kredit gratis!` : 'Kredit kamu sudah digunakan.' }}
       </div>
       <button
         @click="startChat"
-        class="w-full bg-rose-500 hover:bg-rose-600 text-white font-medium py-2.5 rounded-full transition-all active:scale-95 text-sm"
+        class="w-full bg-rose-500 hover:bg-rose-600 text-white font-medium py-2.5 rounded-full transition-all active:scale-95 text-sm flex items-center justify-center"
       >
-        {{ credits > 0 ? '✨ Mulai Chat dengan Nova' : 'Beli Kredit untuk Lanjut' }}
+        <span class="inline-flex items-center justify-center gap-1.5">
+          <i v-if="credits > 0" class="pi pi-sparkles text-amber-300 text-xs" aria-hidden="true"></i>
+          <span>{{ credits > 0 ? 'Mulai Chat dengan Nova' : 'Beli Kredit untuk Lanjut' }}</span>
+        </span>
       </button>
     </div>
 
     <!-- Locked / buy credits -->
     <div v-else-if="view === 'locked'" class="flex-1 flex flex-col items-center justify-center gap-4 p-5 text-center">
-      <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-2xl">🔒</div>
+      <div class="w-14 h-14 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 text-xl">
+        <i class="pi pi-lock" aria-hidden="true"></i>
+      </div>
       <div>
         <h3 class="font-bold text-gray-800 text-sm">Kredit Nova habis</h3>
         <p class="text-gray-500 text-xs mt-1">Pilih paket kredit untuk melanjutkan</p>
@@ -255,9 +262,10 @@ const handleKeydown = (e) => {
         <div v-if="isComplete" class="flex justify-center pt-1">
           <button
             @click="goToCreateForm"
-            class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium px-5 py-2 rounded-full transition-all active:scale-95 shadow-md"
+            class="bg-rose-500 hover:bg-rose-600 text-white text-sm font-medium px-5 py-2 rounded-full transition-all active:scale-95 shadow-md flex items-center justify-center gap-1.5"
           >
-            🎉 Buat Undangan Sekarang
+            <i class="pi pi-check-circle" aria-hidden="true"></i>
+            <span>Buat Undangan Sekarang</span>
           </button>
         </div>
       </div>

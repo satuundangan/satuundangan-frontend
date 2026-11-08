@@ -285,7 +285,7 @@
                     class="px-6 py-3 rounded-full bg-[#c89f68] hover:bg-[#d8b07a] text-stone-900 font-semibold text-sm transition-all duration-200 cursor-pointer shadow-md disabled:opacity-50 whitespace-nowrap"
                   >
                     <span v-if="leadSubmitting">Mengirim...</span>
-                    <span v-else>Dapatkan Gratis ✨</span>
+                    <span v-else>Dapatkan Gratis</span>
                   </button>
                 </form>
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mt-3 text-xs">

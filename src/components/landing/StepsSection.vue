@@ -46,7 +46,7 @@
       <!-- Call to action button -->
       <div class="text-center mt-20">
          <button @click="$emit('create-invitation')" class="btn-primary px-10 py-4 text-lg rounded-full shadow-xl shadow-mocha/20 hover:scale-105 transition-transform flex items-center gap-3 mx-auto">
-            Mulai Buat Sekarang <i class="fa-solid fa-arrow-right"></i>
+            Mulai Buat Sekarang <i class="pi pi-arrow-right" aria-hidden="true"></i>
          </button>
       </div>
     </div>
@@ -55,10 +55,10 @@
 
 <script setup>
 const steps = [
-  { title: "Pilih Template", description: "Pilih tema eksklusif yang sesuai seleramu.", icon: 'fa-solid fa-palette' },
-  { title: "Isi Data", description: "Lengkapi data mempelai, acara, dan galeri foto.", icon: 'fa-solid fa-file-signature' },
-  { title: "Live Preview", description: "Lihat hasil undanganmu secara real-time.", icon: 'fa-solid fa-mobile-screen' },
-  { title: "Aktifkan & Bagikan", description: "Pilih paket, selesaikan pembayaran, lalu bagikan undangan yang sudah aktif.", icon: 'fa-solid fa-paper-plane' },
+  { title: "Pilih Template", description: "Pilih tema eksklusif yang sesuai seleramu.", icon: 'pi pi-palette' },
+  { title: "Isi Data", description: "Lengkapi data mempelai, acara, dan galeri foto.", icon: 'pi pi-pencil' },
+  { title: "Live Preview", description: "Lihat hasil undanganmu secara real-time.", icon: 'pi pi-mobile' },
+  { title: "Aktifkan & Bagikan", description: "Pilih paket, selesaikan pembayaran, lalu bagikan undangan yang sudah aktif.", icon: 'pi pi-send' },
 ]
 
 defineEmits(['create-invitation'])

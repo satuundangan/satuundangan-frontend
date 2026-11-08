@@ -789,7 +789,7 @@
                 <span class="px-3 py-1 rounded-full bg-[#FFF3EA] text-[#E76F51] text-[10px] font-bold uppercase tracking-widest border border-[#F4A261]/30">
                   🐾 Sakral &amp; Khidmat
                 </span>
-                <span class="text-2xl">💍</span>
+                <i class="pi pi-heart text-2xl text-[#E76F51]" aria-hidden="true"></i>
               </div>
               <h3 class="text-2xl sm:text-3xl font-serif font-bold text-[#2B2D42]">
                 {{ data.akadLocation?.title || 'Akad Nikah' }}
@@ -1920,7 +1920,7 @@ const effectiveStories = computed(() => {
       description: 'Bersama-sama mengadopsi kucing jalanan pertama kami, Mochi. Dari merawat anabul bersama, rasa cinta kami tumbuh semakin dalam.'
     },
     {
-      title: 'Ikrar Menuju Pelaminan 💍',
+      title: 'Ikrar Menuju Pelaminan',
       date: 'Februari 2026',
       description: 'Di bawah senja pantai dengan kalung kucing bertuliskan "Will You Marry Me?", janji suci untuk hidup bersama selamanya terucap.'
     }
@@ -1975,8 +1975,8 @@ const galleryItems = computed(() => {
   return [
     { src: '/assets/images/sample-gallery-1.jpg', thumbnail: '/assets/images/sample-gallery-1.jpg', caption: 'Kebersamaan Manis 🐾' },
     { src: '/assets/images/sample-gallery-2.jpg', thumbnail: '/assets/images/sample-gallery-2.jpg', caption: 'Tawa & Dengkuran Hangat 🐱' },
-    { src: '/assets/images/sample-gallery-3.jpg', thumbnail: '/assets/images/sample-gallery-3.jpg', caption: 'Menuju Hari Bahagia 💍' },
-    { src: '/assets/images/sample-gallery-4.jpg', thumbnail: '/assets/images/sample-gallery-4.jpg', caption: 'Jejak Kasih Selamanya ✨' }
+    { src: '/assets/images/sample-gallery-3.jpg', thumbnail: '/assets/images/sample-gallery-3.jpg', caption: 'Menuju Hari Bahagia' },
+    { src: '/assets/images/sample-gallery-4.jpg', thumbnail: '/assets/images/sample-gallery-4.jpg', caption: 'Jejak Kasih Selamanya' }
   ]
 })
 

@@ -8,8 +8,9 @@
       
       <!-- Text Content -->
       <div class="space-y-6 text-center md:text-left z-10 animate-fade-in-up">
-        <div class="inline-block px-4 py-1.5 rounded-full bg-mocha/10 text-mocha text-sm font-semibold mb-2 ring-1 ring-mocha/20">
-          ✨ #1 Platform Undangan Digital Premium
+        <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-mocha/10 text-mocha text-sm font-semibold mb-2 ring-1 ring-mocha/20">
+          <i class="pi pi-sparkles text-xs" aria-hidden="true"></i>
+          <span>#1 Platform Undangan Digital Premium</span>
         </div>
         <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-dark leading-[1.1] font-serif tracking-tight">
           Bagikan Kabar <br/>
@@ -24,19 +25,19 @@
         <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-sm font-bold text-dark/60 pt-2">
           <div class="flex items-center gap-2 group">
             <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-              <i class="fa-solid fa-clipboard-check text-amber-600 text-xs"></i>
+              <i class="pi pi-check-square text-amber-600 text-xs" aria-hidden="true"></i>
             </div>
             <span class="text-amber-800">Free Wedding Planner</span>
           </div>
           <div class="flex items-center gap-2 group">
             <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
-              <i class="fa-solid fa-infinity text-mocha text-xs"></i>
+              <i class="pi pi-sync text-mocha text-xs" aria-hidden="true"></i>
             </div>
             <span>Unlimited Revisi</span>
           </div>
           <div class="flex items-center gap-2 group">
             <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
-              <i class="fa-solid fa-bolt text-mocha text-xs"></i>
+              <i class="pi pi-bolt text-mocha text-xs" aria-hidden="true"></i>
             </div>
             <span>Proses Instan</span>
           </div>
@@ -44,12 +45,12 @@
         
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6">
           <button @click="$emit('create-invitation')" class="btn-primary text-base md:text-lg px-8 py-4 shadow-xl shadow-mocha/25 hover:shadow-mocha/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 rounded-full flex items-center justify-center gap-3 group font-bold">
-            <i class="fa-solid fa-wand-magic-sparkles text-sm text-accent-gold group-hover:rotate-12 transition-transform"></i>
+            <i class="pi pi-sparkles text-sm text-accent-gold group-hover:rotate-12 transition-transform" aria-hidden="true"></i>
             <span>Buat Undangan Sekarang</span>
-            <i class="fa-solid fa-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1"></i>
+            <i class="pi pi-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true"></i>
           </button>
           <a href="#templates" class="btn-outline text-base md:text-lg px-8 py-4 hover:-translate-y-1 rounded-full border-gray-300 hover:border-mocha text-dark hover:bg-white transition-all duration-300 font-semibold flex items-center justify-center gap-2">
-            <i class="fa-solid fa-palette text-mocha/60 text-sm"></i>
+            <i class="pi pi-palette text-mocha/60 text-sm" aria-hidden="true"></i>
             <span>Lihat Katalog Desain</span>
           </a>
         </div>
@@ -57,13 +58,13 @@
         <!-- Risk Reversal Micro-Copy -->
         <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-5 text-xs text-dark/70 pt-2 font-medium">
           <span class="inline-flex items-center gap-1.5">
-            <i class="fa-solid fa-circle-check text-emerald-600"></i> Coba Gratis Tanpa Syarat
+            <i class="pi pi-check-circle text-emerald-600" aria-hidden="true"></i> Coba Gratis Tanpa Syarat
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <i class="fa-solid fa-bolt text-amber-500"></i> Jadi dalam 5 Menit
+            <i class="pi pi-bolt text-amber-500" aria-hidden="true"></i> Jadi dalam 5 Menit
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <i class="fa-solid fa-shield-halved text-mocha"></i> Bayar Saat Siap Sebar
+            <i class="pi pi-shield text-mocha" aria-hidden="true"></i> Bayar Saat Siap Sebar
           </span>
         </div>
 
@@ -77,11 +78,11 @@
           </div>
           <div class="text-left">
             <div class="flex items-center gap-1 text-amber-400 text-xs">
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
-              <i class="fa-solid fa-star"></i>
+              <i class="pi pi-star-fill text-[10px]" aria-hidden="true"></i>
+              <i class="pi pi-star-fill text-[10px]" aria-hidden="true"></i>
+              <i class="pi pi-star-fill text-[10px]" aria-hidden="true"></i>
+              <i class="pi pi-star-fill text-[10px]" aria-hidden="true"></i>
+              <i class="pi pi-star-fill text-[10px]" aria-hidden="true"></i>
               <span class="text-dark font-extrabold text-xs ml-1">4.9 / 5.0</span>
             </div>
             <p class="text-xs text-gray-500 font-medium">Dipercaya oleh 5.000+ calon pengantin</p>
@@ -96,7 +97,7 @@
         <div class="absolute top-1/4 -left-12 bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] animate-float-slow hidden lg:block z-20 border border-white/60 hover:scale-105 transition-transform duration-300 w-64 group">
           <div class="flex items-center gap-4">
             <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white text-lg shadow-inner group-hover:rotate-12 transition-transform duration-300">
-              <i class="fa-solid fa-check-double"></i>
+              <i class="pi pi-check text-base font-bold" aria-hidden="true"></i>
             </div>
             <div class="flex-1">
               <div class="flex justify-between items-center mb-0.5">
@@ -115,7 +116,7 @@
             <div class="relative">
               <img src="https://i.pravatar.cc/100?img=32" alt="Avatar" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
               <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-mocha rounded-full border-2 border-white flex items-center justify-center text-white text-[8px]">
-                <i class="fa-solid fa-heart"></i>
+                <i class="pi pi-heart-fill text-[8px]" aria-hidden="true"></i>
               </div>
             </div>
             <div class="flex-1">
@@ -123,7 +124,10 @@
                  <p class="text-[10px] font-bold text-mocha uppercase tracking-wider">Pesan Baru</p>
                  <span class="text-[9px] text-gray-400">2m lalu</span>
               </div>
-              <p class="text-sm font-bold text-dark leading-tight mb-0.5">"Happy Wedding! 🥰"</p>
+              <p class="text-sm font-bold text-dark leading-tight mb-0.5 flex items-center">
+                <span>"Happy Wedding!"</span>
+                <i class="pi pi-heart-fill text-rose-500 text-xs ml-1" aria-hidden="true"></i>
+              </p>
               <p class="text-xs text-gray-500 truncate">Dari: Nabila (Sahabat)</p>
             </div>
           </div>

@@ -12,7 +12,7 @@
         <div class="bg-gray-50 rounded-[2rem] p-8 border border-gray-100 opacity-80">
           <div class="flex items-center gap-4 mb-8">
             <div class="w-12 h-12 rounded-2xl bg-gray-200 flex items-center justify-center text-gray-500 text-xl">
-              <i class="fa-solid fa-print"></i>
+              <i class="pi pi-print" aria-hidden="true"></i>
             </div>
             <h3 class="text-2xl font-bold text-dark">Undangan Cetak</h3>
           </div>
@@ -20,7 +20,7 @@
           <ul class="space-y-6">
             <li v-for="(item, i) in negativePoints" :key="i" class="flex gap-4">
               <div class="shrink-0 w-6 h-6 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-xs mt-1">
-                <i class="fa-solid fa-xmark"></i>
+                <i class="pi pi-times" aria-hidden="true"></i>
               </div>
               <div>
                 <p class="font-bold text-dark/80">{{ item.title }}</p>
@@ -33,13 +33,13 @@
         <!-- SatuUndangan -->
         <div class="bg-mocha/5 rounded-[2rem] p-8 border-2 border-mocha/30 relative shadow-2xl shadow-mocha/10 flex flex-col justify-between">
           <div class="absolute -top-4 right-8 bg-mocha text-white text-[11px] font-black px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg flex items-center gap-1.5">
-            <i class="fa-solid fa-crown text-accent-gold text-xs"></i> Paling Hemat & Praktis
+            <i class="pi pi-crown text-amber-300 text-xs" aria-hidden="true"></i> Paling Hemat & Praktis
           </div>
           
           <div>
             <div class="flex items-center gap-4 mb-8">
               <div class="w-12 h-12 rounded-2xl bg-mocha flex items-center justify-center text-white text-xl shadow-lg shadow-mocha/30">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+                <i class="pi pi-sparkles" aria-hidden="true"></i>
               </div>
               <div>
                 <h3 class="text-2xl font-bold text-dark">SatuUndangan</h3>
@@ -50,7 +50,7 @@
             <ul class="space-y-6">
               <li v-for="(item, i) in positivePoints" :key="i" class="flex gap-4">
                 <div class="shrink-0 w-6 h-6 rounded-full bg-mocha text-white flex items-center justify-center text-[10px] mt-1 shadow-md shadow-mocha/20">
-                  <i class="fa-solid fa-check"></i>
+                  <i class="pi pi-check" aria-hidden="true"></i>
                 </div>
                 <div>
                   <p class="font-bold text-dark">{{ item.title }}</p>

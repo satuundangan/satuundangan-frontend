@@ -58,9 +58,10 @@ const close = () => { isOpen.value = false }
     >
       <div
         v-if="!isOpen"
-        class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-full shadow pointer-events-none absolute right-16 bottom-3 whitespace-nowrap"
+        class="bg-gray-800 text-white text-xs px-3 py-1.5 rounded-full shadow pointer-events-none absolute right-16 bottom-3 whitespace-nowrap flex items-center gap-1.5"
       >
-        Buat undangan pakai AI ✨
+        <i class="pi pi-sparkles text-amber-300 text-[10px]" aria-hidden="true"></i>
+        <span>Buat undangan pakai AI</span>
       </div>
     </Transition>
   </div>

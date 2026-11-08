@@ -28,7 +28,7 @@
         <div class="relative z-10 space-y-6 animate-fade-in-up w-full">
           <div
             class="w-16 h-16 md:w-20 md:h-20 mx-auto border border-blue-600 rounded-full flex items-center justify-center text-2xl md:text-3xl mb-4 text-blue-600">
-            🕊️
+            <i class="pi pi-heart" aria-hidden="true"></i>
           </div>
 
           <h1 class="text-xs md:text-sm tracking-[0.3em] uppercase text-blue-800">The Wedding Of</h1>
@@ -217,8 +217,8 @@
               class="bg-white border border-gray-200 p-6 md:p-8 rounded-3xl relative overflow-hidden group hover:border-blue-200 transition-all shadow-sm"
               v-observe>
               <div
-                class="absolute -right-10 -top-10 text-8xl md:text-9xl text-blue-50 group-hover:rotate-12 transition-transform">
-                💍</div>
+                class="absolute -right-10 -top-10 text-8xl md:text-9xl text-blue-50 group-hover:rotate-12 transition-transform select-none pointer-events-none">
+                <i class="pi pi-heart" aria-hidden="true"></i></div>
               <h3 class="text-xl md:text-2xl font-serif text-gray-800 mb-2">{{ ceremonyLabel }}</h3>
               <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 my-6 text-blue-600">
                 <div class="text-center">
@@ -243,8 +243,8 @@
               class="bg-white border border-gray-200 p-6 md:p-8 rounded-3xl relative overflow-hidden group hover:border-blue-200 transition-all shadow-sm"
               v-observe>
               <div
-                class="absolute -left-10 -top-10 text-8xl md:text-9xl text-blue-50 group-hover:-rotate-12 transition-transform">
-                🥂</div>
+                class="absolute -left-10 -top-10 text-8xl md:text-9xl text-blue-50 group-hover:-rotate-12 transition-transform select-none pointer-events-none">
+                <i class="pi pi-sparkles" aria-hidden="true"></i></div>
               <h3 class="text-xl md:text-2xl font-serif text-gray-800 mb-2">Resepsi</h3>
               <div class="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 my-6 text-blue-600">
                 <div class="text-center">

@@ -13,7 +13,7 @@
             @click="$emit('close')"
             class="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-black/10 hover:bg-black/20 text-white md:text-gray-500 flex items-center justify-center transition-colors"
           >
-            <i class="fa-solid fa-xmark"></i>
+            <i class="pi pi-times" aria-hidden="true"></i>
           </button>
 
           <!-- Left Side: Image/Brand (Hidden on Mobile) -->
@@ -120,7 +120,7 @@
                       class="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-mocha transition-colors"
                       @click="togglePassword"
                     >
-                      <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                      <i :class="showPassword ? 'pi pi-eye-slash' : 'pi pi-eye'" aria-hidden="true"></i>
                     </button>
                   </div>
                 </div>
@@ -376,7 +376,7 @@ const handleLogin = async () => {
       password: password.value,
       turnstileToken: turnstileToken.value,
     })
-    toast.success('Selamat datang kembali! 🎉')
+    toast.success('Selamat datang kembali!')
     emit('close')
 
     // Logic for redirection:

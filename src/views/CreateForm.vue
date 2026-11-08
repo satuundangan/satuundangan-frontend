@@ -59,7 +59,9 @@
                            <!-- Wanita -->
                            <div class="space-y-6">
                               <h3 class="font-serif font-bold text-lg text-mocha flex items-center gap-2">
-                                 <span class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sm border border-mocha/10">👰‍♀️</span> 
+                                 <span class="w-8 h-8 rounded-full bg-rose-50 shadow-sm flex items-center justify-center text-sm border border-rose-100 text-rose-500">
+                                    <i class="pi pi-heart text-xs" aria-hidden="true"></i>
+                                 </span> 
                                  Mempelai Wanita
                               </h3>
                               <div class="space-y-5">
@@ -80,7 +82,7 @@
                                        <label for="bridePhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
                                           <img v-if="formData.bridePhoto" :src="formData.bridePhoto" class="w-full h-full object-cover" />
                                           <div v-else class="flex flex-col items-center text-gray-400">
-                                             <i class="fa-solid fa-camera text-2xl mb-2"></i>
+                                             <i class="pi pi-camera text-2xl mb-2" aria-hidden="true"></i>
                                              <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
                                           </div>
                                           <div v-if="formData.bridePhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -95,7 +97,9 @@
                            <!-- Pria -->
                            <div class="space-y-6">
                               <h3 class="font-serif font-bold text-lg text-mocha flex items-center gap-2">
-                                 <span class="w-8 h-8 rounded-full bg-white shadow-sm flex items-center justify-center text-sm border border-mocha/10">🤵‍♂️</span> 
+                                 <span class="w-8 h-8 rounded-full bg-blue-50 shadow-sm flex items-center justify-center text-sm border border-blue-100 text-blue-500">
+                                    <i class="pi pi-user text-xs" aria-hidden="true"></i>
+                                 </span> 
                                  Mempelai Pria
                               </h3>
                               <div class="space-y-5">
@@ -116,7 +120,7 @@
                                        <label for="groomPhoto" class="flex flex-col items-center justify-center w-full aspect-[3/4] border-2 border-dashed border-gray-200 rounded-3xl cursor-pointer hover:border-mocha hover:bg-mocha/5 transition-all overflow-hidden relative bg-gray-50">
                                           <img v-if="formData.groomPhoto" :src="formData.groomPhoto" class="w-full h-full object-cover" />
                                           <div v-else class="flex flex-col items-center text-gray-400">
-                                             <i class="fa-solid fa-camera text-2xl mb-2"></i>
+                                             <i class="pi pi-camera text-2xl mb-2" aria-hidden="true"></i>
                                              <span class="text-[10px] font-bold uppercase tracking-widest">Pilih Foto</span>
                                           </div>
                                           <div v-if="formData.groomPhoto" class="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -752,7 +756,7 @@ onMounted(async () => {
             if (draft.akadLocation) formData.value.mapDesc = draft.akadLocation
          }
          localStorage.removeItem('nova_draft')
-         toast.success('Data dari Nova berhasil dimuat! Lengkapi foto dan detail lainnya ya 💍')
+         toast.success('Data dari Nova berhasil dimuat! Silakan lengkapi foto dan detail lainnya.')
       } catch {
          // ignore
       }

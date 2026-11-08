@@ -36,8 +36,8 @@
                   <img :src="templateImageUrl" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   <div class="absolute left-4 top-4">
-                     <span class="rounded-xl bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase text-mocha shadow-xl border border-mocha/5">
-                        ✨ Gratis
+                     <span class="rounded-xl bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase text-mocha shadow-xl border border-mocha/5 inline-flex items-center gap-1">
+                        <i class="pi pi-sparkles text-[10px]" aria-hidden="true"></i> Gratis
                      </span>
                   </div>
                </div>
