@@ -18,7 +18,7 @@
           
           <!-- Badge if present -->
           <div v-if="feature.badge" class="absolute top-4 right-4 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 z-20">
-            <i class="fa-solid fa-bolt text-xs text-amber-500"></i> {{ feature.badge }}
+            <i class="pi pi-bolt text-xs text-amber-500" aria-hidden="true"></i> {{ feature.badge }}
           </div>
 
           <!-- Hover Gradient Background -->
@@ -26,8 +26,8 @@
 
           <div class="relative z-10">
              <div
-               class="w-16 h-16 rounded-2xl bg-ivory text-mocha flex items-center justify-center text-3xl mb-8 group-hover:bg-mocha group-hover:text-white group-hover:scale-110 transition-all duration-500 shadow-sm">
-               <i :class="feature.icon"></i>
+               class="w-16 h-16 rounded-2xl bg-ivory text-mocha flex items-center justify-center text-2xl mb-8 group-hover:bg-mocha group-hover:text-white group-hover:scale-110 transition-all duration-500 shadow-sm">
+               <i :class="feature.icon" aria-hidden="true"></i>
              </div>
              <h3 class="text-xl font-bold text-dark mb-3 group-hover:text-mocha transition-colors">{{ feature.title }}</h3>
              <p class="text-sm text-muted leading-relaxed">{{ feature.description }}</p>
@@ -41,66 +41,66 @@
 <script setup>
 const features = [
   {
-    icon: 'fa-solid fa-clipboard-check',
+    icon: 'pi pi-check-square',
     badge: 'Gratis Selamanya',
     title: 'Wedding Planner Terpadu',
     description: 'Kalkulator budget & realisasi biaya, checklist persiapan H-180 s/d Hari H, buku vendor langsung chat WhatsApp, dan generator rundown acara siap cetak.'
   },
   {
-    icon: 'fa-brands fa-whatsapp',
+    icon: 'pi pi-whatsapp',
     badge: 'Favorit',
     title: 'Bagikan via WhatsApp',
     description: 'Impor nama tamu dari Excel/HP, buat tautan personal, lalu buka pesan siap kirim di WhatsApp untuk tiap tamu.'
   },
   {
-    icon: 'fa-solid fa-qrcode',
+    icon: 'pi pi-qrcode',
     badge: 'Anti Antre',
     title: 'Buku Tamu Digital & QR',
     description: 'Check-in kilat cukup scan QR code tamu dari smartphone. Meja resepsi bebas antrean panjang dan kehadiran terpantau real-time.'
   },
   {
-    icon: 'fa-solid fa-music',
+    icon: 'pi pi-volume-up',
     title: 'Musik Latar',
     description: 'Pilih lagu favoritmu untuk menemani tamu saat membuka undangan. Bisa autoplay!'
   },
   {
-    icon: 'fa-solid fa-map-location-dot',
+    icon: 'pi pi-map-marker',
     title: 'Peta Lokasi',
     description: 'Sematkan link Google Maps venue agar tamu tinggal klik untuk buka arah jalan.'
   },
   {
-    icon: 'fa-solid fa-envelope-open-text',
+    icon: 'pi pi-envelope',
     title: 'RSVP & Ucapan',
     description: 'Terima konfirmasi kehadiran dan doa restu dari tamu secara real-time.'
   },
   {
-    icon: 'fa-solid fa-gift',
+    icon: 'pi pi-gift',
     title: 'Amplop Digital',
     description: 'Tampilkan QRIS, e-wallet, dan rekening bank agar tamu mudah kirim kado cashless.'
   },
   {
-    icon: 'fa-solid fa-images',
+    icon: 'pi pi-images',
     title: 'Galeri Foto',
     description: 'Pamerkan foto pre-wedding terbaikmu dalam tampilan galeri yang estetik.'
   },
   {
-    icon: 'fa-solid fa-hourglass-half',
+    icon: 'pi pi-clock',
     title: 'Hitung Mundur',
     description: 'Countdown timer menuju hari H untuk membangun antusiasme para tamu.'
   },
   {
-    icon: 'fa-solid fa-heart',
+    icon: 'pi pi-heart-fill',
     title: 'Love Story',
     description: 'Ceritakan perjalanan cintamu dari awal bertemu hingga pelaminan.'
   },
   {
-    icon: 'fa-solid fa-clapperboard',
+    icon: 'pi pi-video',
     badge: 'Sinematik',
     title: 'Video Prewedding',
     description: 'Sematkan video prewedding dari YouTube (bisa disetel Unlisted agar privat), langsung putar di undangan.'
   },
   {
-    icon: 'fa-solid fa-infinity',
+    icon: 'pi pi-sync',
     title: 'Revisi Sepuasnya',
     description: 'Bebas edit isi undanganmu kapan saja tanpa batasan revisi, proses instan dan cepat.'
   }

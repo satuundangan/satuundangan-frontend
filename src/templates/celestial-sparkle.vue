@@ -201,7 +201,7 @@
           <div class="grid md:grid-cols-2 gap-12">
             <!-- Akad -->
             <div class="relative group p-12 rounded-[3rem] bg-white/[0.03] border border-white/5 hover:border-[#f3ca40]/30 transition-all overflow-hidden" v-observe>
-              <div class="absolute -right-10 -top-10 text-8xl text-white/[0.02] group-hover:text-[#f3ca40]/10 transition-colors pointer-events-none">✨</div>
+              <i class="pi pi-sparkles absolute -right-10 -top-10 text-8xl text-white/[0.02] group-hover:text-[#f3ca40]/10 transition-colors pointer-events-none select-none" aria-hidden="true"></i>
               <h3 class="text-3xl font-cormorant font-bold text-white mb-8 tracking-widest">Akad Nikah</h3>
               <div class="space-y-6 text-sm">
                 <div class="flex items-center justify-center gap-4">
@@ -222,7 +222,7 @@
 
             <!-- Resepsi -->
             <div v-if="!data.mergeEvents" class="relative group p-12 rounded-[3rem] bg-white/[0.03] border border-white/5 hover:border-[#f3ca40]/30 transition-all overflow-hidden" v-observe>
-              <div class="absolute -left-10 -top-10 text-8xl text-white/[0.02] group-hover:text-[#f3ca40]/10 transition-colors pointer-events-none">🌟</div>
+              <i class="pi pi-star absolute -left-10 -top-10 text-8xl text-white/[0.02] group-hover:text-[#f3ca40]/10 transition-colors pointer-events-none select-none" aria-hidden="true"></i>
               <h3 class="text-3xl font-cormorant font-bold text-white mb-8 tracking-widest">Resepsi</h3>
               <div class="space-y-6 text-sm">
                 <div class="flex items-center justify-center gap-4">

@@ -1,7 +1,9 @@
 <template>
   <section class="space-y-6 pt-8 border-t border-gray-100">
     <div class="flex items-center gap-4 pb-4 border-b border-gray-100">
-      <div class="w-10 h-10 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-xl">📜</div>
+      <div class="w-10 h-10 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-base">
+        <i class="pi pi-book" aria-hidden="true"></i>
+      </div>
       <h2 class="text-xl font-bold text-dark">Quote / Ayat</h2>
     </div>
 

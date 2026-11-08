@@ -281,7 +281,7 @@
                 loading="lazy"
               />
               <div class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-white/95 backdrop-blur-xs rounded-full border border-[#e87a90]/40 font-hand text-xs text-[#e87a90] font-bold shadow-xs">
-                👰 The Bride
+                The Bride
               </div>
             </div>
 
@@ -324,7 +324,7 @@
                 loading="lazy"
               />
               <div class="absolute bottom-2.5 right-2.5 px-3 py-1 bg-white/95 backdrop-blur-xs rounded-full border border-[#5b7a58]/40 font-hand text-xs text-[#5b7a58] font-bold shadow-xs">
-                🤵 The Groom
+                The Groom
               </div>
             </div>
 
@@ -503,7 +503,7 @@
             <div>
               <div class="flex items-center justify-between border-b border-dashed border-[#5b7a58]/30 pb-4 mb-4">
                 <div class="flex items-center gap-3">
-                  <span class="text-3xl">💍</span>
+                  <i class="pi pi-heart text-3xl text-[#5b7a58]" aria-hidden="true"></i>
                   <div>
                     <span class="font-gaegu text-3xl font-bold text-[#5b7a58] block leading-none">Akad Nikah</span>
                     <span class="font-hand text-xs text-stone-500">Khusus Keluarga & Kerabat Dekat</span>

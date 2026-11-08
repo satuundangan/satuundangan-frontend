@@ -15,17 +15,17 @@
         <!-- Outer Glow Ring -->
         <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#f5ede4] via-white to-[#faebd7] border-2 border-[#a47148]/25 shadow-inner flex items-center justify-center">
           <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#a47148] to-[#86532d] text-white flex items-center justify-center shadow-lg shadow-[#a47148]/30">
-            <i class="fa-solid fa-lock text-xl sm:text-2xl"></i>
+            <i class="pi pi-lock text-xl sm:text-2xl" aria-hidden="true"></i>
           </div>
         </div>
         <!-- Sparkle Accent -->
-        <span class="absolute -top-1 -right-1 text-amber-500 text-sm">✨</span>
+        <i class="pi pi-sparkles absolute -top-1 -right-1 text-amber-500 text-sm" aria-hidden="true"></i>
       </div>
 
       <!-- Pill Badge -->
       <div>
         <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a47148]/10 border border-[#a47148]/20 text-[#a47148] text-[11px] font-extrabold uppercase tracking-widest">
-          🔒 Undangan Bersifat Privat
+          <i class="pi pi-lock text-[10px]" aria-hidden="true"></i> Undangan Bersifat Privat
         </span>
       </div>
 
@@ -43,7 +43,7 @@
       <!-- Helpful Advice Box -->
       <div class="bg-[#FAF8F5] rounded-2xl p-4 sm:p-5 border border-[#a47148]/15 text-left space-y-2">
         <div class="flex items-center gap-2 text-slate-800 font-bold text-xs sm:text-sm">
-          <i class="fa-brands fa-whatsapp text-emerald-600 text-base"></i>
+          <i class="pi pi-whatsapp text-emerald-600 text-base" aria-hidden="true"></i>
           <span>Apakah Anda Tamu Terdaftar?</span>
         </div>
         <p class="text-[11px] sm:text-xs text-slate-500 leading-relaxed">
@@ -57,7 +57,7 @@
           href="/"
           class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 hover:from-black hover:to-slate-900 text-white font-bold text-xs sm:text-sm shadow-xl shadow-slate-900/15 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
         >
-          <i class="fa-solid fa-house text-xs"></i>
+          <i class="pi pi-home text-xs" aria-hidden="true"></i>
           <span>Kembali ke Beranda SatuUndangan.id</span>
         </a>
       </div>
@@ -72,7 +72,7 @@
           class="text-xs font-black text-[#a47148] hover:text-[#86532d] transition-colors flex items-center gap-1.5"
         >
           <span>Buat Undangan Digital Anda Sekarang</span>
-          <i class="fa-solid fa-arrow-right text-[10px]"></i>
+          <i class="pi pi-arrow-right text-[10px]" aria-hidden="true"></i>
         </a>
       </div>
     </div>

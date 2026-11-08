@@ -120,7 +120,7 @@
               Mulai Buat Undangan
             </button>
             <p class="text-[11px] text-center text-stone-500 mt-2.5 flex items-center justify-center gap-1.5">
-              <i class="fa-solid fa-circle-check text-emerald-500 text-[10px]"></i>
+              <i class="pi pi-check-circle text-emerald-500 text-[11px]" aria-hidden="true"></i>
               <span>Coba edit &amp; desain gratis • Bayar saat mau sebar</span>
             </p>
           </div>
@@ -135,7 +135,7 @@
           <!-- Badges Grid -->
           <div class="flex flex-wrap items-center justify-center gap-2.5 sm:gap-4 max-w-4xl mx-auto">
             <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-black tracking-tight text-red-600 flex items-center gap-1.5">
-              <i class="fa-solid fa-qrcode text-red-500"></i> QRIS
+              <i class="pi pi-qrcode text-red-500" aria-hidden="true"></i> QRIS
             </span>
             <span class="px-3.5 py-1.5 bg-white rounded-xl border border-gray-200 shadow-sm text-xs font-extrabold tracking-wide text-blue-800">
               BCA
@@ -163,15 +163,15 @@
           <!-- Guarantee Highlights -->
           <div class="flex flex-wrap items-center justify-center gap-6 mt-8 text-xs text-gray-500 font-medium">
             <div class="flex items-center gap-2">
-              <i class="fa-solid fa-lock text-emerald-600"></i>
+              <i class="pi pi-lock text-emerald-600" aria-hidden="true"></i>
               <span>Enkripsi SSL 256-bit Aman</span>
             </div>
             <div class="flex items-center gap-2">
-              <i class="fa-solid fa-bolt text-amber-500"></i>
+              <i class="pi pi-bolt text-amber-500" aria-hidden="true"></i>
               <span>Aktivasi Otomatis Real-time</span>
             </div>
             <div class="flex items-center gap-2">
-              <i class="fa-solid fa-headset text-mocha"></i>
+              <i class="pi pi-headphones text-mocha" aria-hidden="true"></i>
               <span>Bantuan CS WhatsApp Siap Bantu</span>
             </div>
           </div>
@@ -190,7 +190,7 @@
         <!-- Search Bar -->
         <div class="max-w-md mx-auto mb-6">
           <div class="relative flex items-center">
-            <i class="fa-solid fa-magnifying-glass absolute left-4 text-stone-400 text-sm pointer-events-none"></i>
+            <i class="pi pi-search absolute left-4 text-stone-400 text-sm pointer-events-none" aria-hidden="true"></i>
             <input
               v-model="searchQuery"
               type="text"
@@ -203,7 +203,7 @@
               class="absolute right-3.5 w-6 h-6 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-600 flex items-center justify-center text-xs transition"
               title="Hapus pencarian"
             >
-              <i class="fa-solid fa-xmark"></i>
+              <i class="pi pi-times" aria-hidden="true"></i>
             </button>
           </div>
         </div>
@@ -215,7 +215,7 @@
             class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
             <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
-              <i class="fa-solid fa-palette text-mocha"></i> Gaya:
+              <i class="pi pi-palette text-mocha" aria-hidden="true"></i> Gaya:
             </span>
             <button
               v-for="cat in styleCategories"
@@ -237,7 +237,7 @@
             class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
             <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
-              <i class="fa-solid fa-tags text-gray-700"></i> Paket:
+              <i class="pi pi-tags text-gray-700" aria-hidden="true"></i> Paket:
             </span>
             <button
               v-for="pkg in packageCategories"
@@ -267,7 +267,7 @@
           class="text-center py-16 px-6 bg-rose-50/60 rounded-3xl border border-rose-200/80 max-w-xl mx-auto shadow-xs"
         >
           <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 flex items-center justify-center mx-auto mb-4 text-xl">
-            <i class="fa-solid fa-triangle-exclamation"></i>
+            <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
           </div>
           <h3 class="text-lg font-bold text-dark mb-1">Gagal Memuat Katalog Desain</h3>
           <p class="text-sm text-stone-600 mb-6">
@@ -277,7 +277,7 @@
             @click="loadTemplates"
             class="px-6 py-2.5 rounded-full bg-mocha hover:bg-mocha/90 text-white font-bold text-xs shadow-md transition-all inline-flex items-center gap-2 cursor-pointer"
           >
-            <i class="fa-solid fa-rotate-right"></i>
+            <i class="pi pi-refresh" aria-hidden="true"></i>
             <span>Coba Muat Ulang</span>
           </button>
         </div>
@@ -287,7 +287,9 @@
           v-else-if="filteredTemplates.length === 0"
           class="text-center py-20 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200"
         >
-          <div class="text-4xl mb-4">🎨</div>
+          <div class="text-4xl mb-4 text-mocha/40 flex justify-center">
+            <i class="pi pi-palette text-4xl" aria-hidden="true"></i>
+          </div>
           <h3 class="text-lg font-bold text-dark mb-1">Belum ada template</h3>
           <p class="text-muted text-sm max-w-md mx-auto mb-4">
             Tidak ditemukan template untuk filter aktif atau kata kunci "{{ searchQuery }}". Coba ubah filter gaya atau reset pencarian.
@@ -354,7 +356,7 @@
 
                   <!-- Mobile Ready Tag -->
                   <div class="absolute bottom-2 right-2 bg-black/60 backdrop-blur-md text-white text-[9px] font-bold px-2 py-0.5 rounded-md border border-white/20 flex items-center gap-1 shadow-sm">
-                    <i class="fa-solid fa-mobile-screen text-[8px] text-accent-gold"></i> Mobile Ready
+                    <i class="pi pi-mobile text-[9px] text-accent-gold" aria-hidden="true"></i> Mobile Ready
                   </div>
 
                   <!-- Hover Overlay -->
@@ -365,7 +367,7 @@
                       @click.stop="openTemplate(item.id)"
                       class="bg-mocha hover:bg-[#8e5e39] text-white px-4 py-2 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5 hover:scale-105"
                     >
-                      <i class="fa-solid fa-wand-magic-sparkles text-accent-gold text-xs"></i> Pilih Tema
+                      <i class="pi pi-sparkles text-accent-gold text-xs" aria-hidden="true"></i> Pilih Tema
                     </button>
                     <a
                       :href="'/demo/' + item.slug"
@@ -373,7 +375,7 @@
                       @click.stop
                       class="bg-white/95 hover:bg-white text-dark px-4 py-2 rounded-full font-bold text-xs shadow-lg transform translate-y-3 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5 hover:scale-105 delay-75"
                     >
-                      <i class="fa-solid fa-eye text-mocha text-xs"></i> Demo
+                      <i class="pi pi-eye text-mocha text-xs" aria-hidden="true"></i> Demo
                     </a>
                   </div>
                 </div>
@@ -389,7 +391,7 @@
                   {{ item.name }}
                 </h4>
                 <div class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
-                  <i class="fa-solid fa-wand-magic-sparkles text-[10px]"></i> Desain gratis
+                  <i class="pi pi-sparkles text-[10px]" aria-hidden="true"></i> Desain gratis
                 </div>
               </div>
 
@@ -398,11 +400,11 @@
               <!-- Features Summary -->
               <div class="flex items-center gap-4 mb-6">
                 <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                  <i class="fa-solid fa-layer-group text-mocha/40"></i>
+                  <i class="pi pi-clone text-mocha/40" aria-hidden="true"></i>
                   <span>{{ item.sections?.length || 0 }} Fitur</span>
                 </div>
                 <div class="flex items-center gap-1.5 text-xs text-gray-500">
-                  <i class="fa-solid fa-palette text-mocha/40"></i>
+                  <i class="pi pi-palette text-mocha/40" aria-hidden="true"></i>
                   <div class="flex gap-1">
                     <span
                       v-for="color in (item.paletteColors || []).slice(0, 3)"
@@ -440,17 +442,17 @@
             class="group relative inline-flex items-center gap-2 px-8 py-4 rounded-full font-bold text-mocha border-2 border-mocha hover:bg-mocha hover:text-white transition-all duration-300 cursor-pointer"
           >
             <span>Lihat Semua Template</span>
-            <i class="fa-solid fa-arrow-right transition-transform group-hover:translate-x-1"></i>
+            <i class="pi pi-arrow-right transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
           </button>
         </div>
 
         <!-- Trust Reassurance Banner (ADM-087) -->
         <div class="mt-10 py-3.5 px-6 rounded-2xl bg-amber-50/70 border border-amber-200/60 max-w-2xl mx-auto flex flex-wrap items-center justify-center gap-y-2 gap-x-5 text-xs text-amber-950 font-medium text-center">
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles text-amber-600"></i> Bebas coba &amp; edit desain gratis</span>
+          <span class="flex items-center gap-1.5"><i class="pi pi-sparkles text-amber-600" aria-hidden="true"></i> Bebas coba &amp; edit desain gratis</span>
           <span class="text-amber-300 hidden sm:inline">•</span>
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-eye text-amber-600"></i> Preview langsung di HP &amp; laptop</span>
+          <span class="flex items-center gap-1.5"><i class="pi pi-eye text-amber-600" aria-hidden="true"></i> Preview langsung di HP &amp; laptop</span>
           <span class="text-amber-300 hidden sm:inline">•</span>
-          <span class="flex items-center gap-1.5"><i class="fa-solid fa-shield-heart text-amber-600"></i> Bayar hanya saat mau sebar</span>
+          <span class="flex items-center gap-1.5"><i class="pi pi-shield text-amber-600" aria-hidden="true"></i> Bayar hanya saat mau sebar</span>
         </div>
       </div>
     </section>
@@ -493,7 +495,7 @@
           >
             <!-- 5 Star rating -->
             <div class="flex items-center gap-1 text-amber-400 text-xs mb-3">
-              <i v-for="star in 5" :key="star" class="fa-solid fa-star"></i>
+              <i v-for="star in 5" :key="star" class="pi pi-star-fill text-[11px]" aria-hidden="true"></i>
             </div>
             <p class="text-dark/80 italic mb-6 relative z-10 text-sm leading-relaxed flex-1">
               "{{ item.text }}"
@@ -535,7 +537,7 @@
             class="group inline-flex items-center gap-2 text-mocha font-bold text-sm hover:text-dark transition-colors shrink-0"
           >
             <span>Lihat Semua Artikel</span>
-            <i class="fa-solid fa-arrow-right text-xs transition-transform group-hover:translate-x-1"></i>
+            <i class="pi pi-arrow-right text-xs transition-transform group-hover:translate-x-1" aria-hidden="true"></i>
           </router-link>
         </div>
 
@@ -566,10 +568,10 @@
               </p>
               <div class="flex items-center justify-between text-xs text-mocha font-bold pt-4 border-t border-gray-100 mt-auto">
                 <span class="inline-flex items-center gap-1.5 text-gray-500 font-normal">
-                  <i class="fa-regular fa-clock text-[11px]"></i> 3 min baca
+                  <i class="pi pi-clock text-[11px]" aria-hidden="true"></i> 3 min baca
                 </span>
                 <span class="inline-flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                  Baca Artikel <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                  Baca Artikel <i class="pi pi-chevron-right text-[10px]" aria-hidden="true"></i>
                 </span>
               </div>
             </div>
@@ -587,7 +589,7 @@
         <div
           class="inline-flex items-center gap-2 bg-amber-100/80 text-amber-700 text-xs font-bold px-4 py-1.5 rounded-full mb-6 border border-amber-200/60"
         >
-          <i class="fa-solid fa-palette"></i> Custom Design
+          <i class="pi pi-palette" aria-hidden="true"></i> Custom Design
         </div>
         <h2 class="text-2xl sm:text-3xl font-bold text-dark mb-3 font-serif leading-snug">
           Ga ketemu tema undangan<br class="hidden sm:block" />
@@ -602,7 +604,7 @@
           target="_blank"
           class="inline-flex items-center gap-3 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-full font-bold text-sm shadow-lg shadow-green-500/25 hover:shadow-green-500/40 transition-all duration-300 hover:-translate-y-0.5"
         >
-          <i class="fa-brands fa-whatsapp text-xl"></i>
+          <i class="pi pi-whatsapp text-xl" aria-hidden="true"></i>
           Chat Kami Sekarang
         </a>
       </div>
@@ -627,7 +629,7 @@
         <aside class="hidden md:flex md:w-64 bg-gray-50 border-r border-gray-200 flex-col">
           <div class="p-6 border-b border-gray-200">
             <h4 class="font-bold text-mocha text-lg flex items-center gap-2">
-              <span>🔍</span> Filter
+              <i class="pi pi-search text-mocha" aria-hidden="true"></i> Filter
             </h4>
           </div>
 
@@ -697,14 +699,14 @@
                 @click="showModal = false"
                 class="sm:hidden w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition"
               >
-                <i class="fa-solid fa-xmark"></i>
+                <i class="pi pi-times" aria-hidden="true"></i>
               </button>
             </div>
 
             <!-- Modal Search Input -->
             <div class="flex items-center gap-2 flex-1 sm:max-w-xs sm:ml-auto">
               <div class="relative w-full">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+                <i class="pi pi-search absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none" aria-hidden="true"></i>
                 <input
                   v-model="modalSearchQuery"
                   type="text"
@@ -717,7 +719,7 @@
                   class="absolute right-2.5 top-1/2 -translate-y-1/2 w-5 h-5 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-600 flex items-center justify-center text-[10px] transition"
                   title="Hapus pencarian"
                 >
-                  <i class="fa-solid fa-xmark"></i>
+                  <i class="pi pi-times" aria-hidden="true"></i>
                 </button>
               </div>
 
@@ -725,7 +727,7 @@
                 @click="showModal = false"
                 class="hidden sm:flex w-8 h-8 rounded-full bg-gray-100 items-center justify-center text-gray-500 hover:bg-red-50 hover:text-red-500 transition shrink-0"
               >
-                <i class="fa-solid fa-xmark"></i>
+                <i class="pi pi-times" aria-hidden="true"></i>
               </button>
             </div>
           </div>
@@ -771,7 +773,9 @@
           <!-- Template Grid -->
           <div class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-6 bg-gray-50/50 custom-scrollbar">
             <div v-if="loading" class="flex items-center justify-center h-full">
-              <div class="animate-spin text-mocha text-3xl">⏳</div>
+              <div class="flex items-center justify-center">
+                <i class="pi pi-spin pi-spinner text-mocha text-3xl" aria-hidden="true"></i>
+              </div>
             </div>
             <div
               v-else-if="modalFilteredTemplates.length > 0"
@@ -839,7 +843,7 @@
                           class="bg-white hover:bg-mocha hover:text-white text-slate-900 px-2.5 py-1 rounded-md text-[10px] font-bold shadow-md flex items-center gap-1 transition-all hover:scale-105 border border-slate-200 pointer-events-auto"
                           title="Buka Demo Undangan"
                         >
-                          <i class="fa-solid fa-eye text-mocha group-hover:text-white"></i>
+                          <i class="pi pi-eye text-mocha group-hover:text-white" aria-hidden="true"></i>
                           <span>Demo</span>
                         </a>
                       </div>
@@ -879,11 +883,11 @@
                   <!-- Additional Info: Sections & Tags -->
                   <div class="flex items-center gap-3 mb-4">
                     <div class="flex items-center gap-1 text-[10px] text-gray-500">
-                      <i class="fa-solid fa-layer-group text-mocha/50"></i>
+                      <i class="pi pi-clone text-mocha/50" aria-hidden="true"></i>
                       <span>{{ item.sections?.length || 0 }} Fitur</span>
                     </div>
                     <div class="flex items-center gap-1 text-[10px] text-gray-500">
-                      <i class="fa-solid fa-tag text-mocha/50"></i>
+                      <i class="pi pi-tag text-mocha/50" aria-hidden="true"></i>
                       <span class="capitalize">{{ item.category || 'Basic' }}</span>
                     </div>
                   </div>
@@ -903,7 +907,7 @@
                       v-if="selectedTemplate === item.id"
                       class="text-xs font-bold text-mocha flex items-center gap-1"
                     >
-                      <i class="fa-solid fa-circle-check"></i> Terpilih
+                      <i class="pi pi-check-circle" aria-hidden="true"></i> Terpilih
                     </span>
                   </div>
                 </div>
@@ -916,7 +920,7 @@
               <div
                 class="w-16 h-16 bg-stone-100 rounded-full flex items-center justify-center text-2xl text-stone-400"
               >
-                <i class="fa-solid fa-magnifying-glass"></i>
+                <i class="pi pi-search" aria-hidden="true"></i>
               </div>
               <div class="space-y-1">
                 <p class="font-bold text-dark text-base">Tidak ada template yang cocok</p>
@@ -992,7 +996,7 @@
           @click="showModal = true"
           class="bg-mocha hover:bg-[#8e5e39] text-white px-5 py-2.5 rounded-full font-bold text-xs shadow-md shadow-mocha/25 active:scale-95 transition-all flex items-center gap-1.5"
         >
-          <i class="fa-solid fa-wand-magic-sparkles text-[10px] text-accent-gold"></i>
+          <i class="pi pi-sparkles text-[10px] text-accent-gold" aria-hidden="true"></i>
           <span>Pilih Desain</span>
         </button>
       </div>
