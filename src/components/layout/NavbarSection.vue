@@ -7,13 +7,18 @@
 
       <!-- Logo -->
       <router-link to="/" class="flex items-center gap-3 group focus:outline-none">
-        <img
-          src="@/assets/logo_satuundangan.png"
-          alt="SatuUndangan Logo"
-          class="h-10 w-10 object-contain rounded-xl shadow-sm border border-mocha/10 bg-white p-0.5 transition-transform duration-300 group-hover:scale-105"
-          width="40"
-          height="40"
-        />
+        <picture>
+          <source srcset="@/assets/logo_satuundangan.webp" type="image/webp" />
+          <img
+            src="@/assets/logo_satuundangan.png"
+            alt="SatuUndangan Logo"
+            class="h-10 w-10 object-contain rounded-xl shadow-sm border border-mocha/10 bg-white p-0.5 transition-transform duration-300 group-hover:scale-105"
+            width="40"
+            height="40"
+            loading="eager"
+            decoding="async"
+          />
+        </picture>
         <div class="flex flex-col">
           <span :class="['font-serif font-bold text-xl leading-none tracking-tight transition-colors', isScrolled ? 'text-dark' : 'text-mocha']">
             SatuUndangan<span class="text-accent-gold">.id</span>
@@ -194,7 +199,18 @@
        <aside class="absolute top-0 right-0 w-[85%] max-w-sm h-full bg-white shadow-2xl p-6 flex flex-col z-10" @click.stop>
           <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-100">
              <div class="flex items-center gap-2.5">
-               <img src="@/assets/logo_satuundangan.png" alt="SatuUndangan" class="h-9 w-9 object-contain rounded-xl border border-mocha/10 bg-white p-0.5" />
+               <picture>
+                 <source srcset="@/assets/logo_satuundangan.webp" type="image/webp" />
+                 <img
+                   src="@/assets/logo_satuundangan.png"
+                   alt="SatuUndangan"
+                   class="h-9 w-9 object-contain rounded-xl border border-mocha/10 bg-white p-0.5"
+                   width="36"
+                   height="36"
+                   loading="lazy"
+                   decoding="async"
+                 />
+               </picture>
                <span class="font-serif font-bold text-lg text-mocha">SatuUndangan<span class="text-accent-gold">.id</span></span>
              </div>
              <button @click="sidebarOpen = false" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-red-500 transition" aria-label="Tutup Menu">

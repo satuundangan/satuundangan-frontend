@@ -830,10 +830,10 @@ function initScrollSpy() {
 }
 
 function getMusicUrl(choice) {
-  if (!choice) return null
+  if (!choice) return '/audio/wedding-romantic-aisle.mp3'
   if (choice.startsWith('yt:')) return choice
   if (choice.includes('/') || choice.includes('http')) return choice
-  return '/audio/wedding-sacred-ceremony.mp3'
+  return `/audio/${choice}`
 }
 
 function formatDate(dateStr) {
@@ -994,7 +994,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,400&display=swap');
 
 .font-script {

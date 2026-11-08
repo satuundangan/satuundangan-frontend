@@ -1632,7 +1632,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Marcellus&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
 
 .font-amiri {

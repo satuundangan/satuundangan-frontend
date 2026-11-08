@@ -859,10 +859,10 @@ function initScrollSpy() {
 }
 
 function getMusicUrl(choice) {
-  if (!choice) return null
+  if (!choice) return '/audio/wedding-romantic-aisle.mp3'
   if (choice.startsWith('yt:')) return choice
   if (choice.includes('/') || choice.includes('http')) return choice
-  return '/audio/wedding-romantic-aisle.mp3'
+  return `/audio/${choice}`
 }
 
 function formatDate(dateStr) {

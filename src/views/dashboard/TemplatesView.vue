@@ -61,6 +61,11 @@
               <div class="relative aspect-[4/5] sm:aspect-square overflow-hidden bg-slate-100">
                  <img 
                    :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)" 
+                   :alt="item.name" 
+                   width="300" 
+                   height="300" 
+                   loading="lazy" 
+                   decoding="async" 
                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
                    @error="(e) => { 
                      e.target.onerror = null;

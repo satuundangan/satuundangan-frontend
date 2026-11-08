@@ -2,8 +2,9 @@
   <div class="bg-ivory min-h-screen font-sans text-dark scroll-smooth">
     <Navbar @create-invitation="showModal = true" />
 
-    <!-- Hero Section -->
-    <HeroSection @create-invitation="showModal = true" />
+    <main id="main-content" role="main">
+      <!-- Hero Section -->
+      <HeroSection @create-invitation="showModal = true" />
 
     <!-- Pricing Section -->
     <section id="pricing" class="section bg-ivory scroll-mt-20 py-20 border-t border-stone-200/60">
@@ -48,7 +49,7 @@
 
             <div class="mb-8">
               <div v-if="plan.originalPrice" class="flex items-center gap-2 mb-1.5">
-                <span class="text-sm text-gray-400 line-through">{{ plan.originalPrice }}</span>
+                <span class="text-sm text-stone-500 line-through">{{ plan.originalPrice }}</span>
                 <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-50 text-rose-600 tracking-wide">
                   HEMAT {{ plan.discount }}
                 </span>
@@ -128,7 +129,7 @@
 
         <!-- Payment Partners & Trustmarks -->
         <div class="mt-16 text-center border-t border-gray-200/80 pt-10">
-          <p class="text-xs uppercase tracking-widest font-extrabold text-gray-400 mb-6">
+          <p class="text-xs uppercase tracking-widest font-extrabold text-stone-600 mb-6">
             Metode Pembayaran Aman & Instan via Midtrans (Bank Indonesia Licensed)
           </p>
 
@@ -214,7 +215,7 @@
           <div
             class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-600 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
               <i class="pi pi-palette text-mocha" aria-hidden="true"></i> Gaya:
             </span>
             <button
@@ -238,7 +239,7 @@
           <div
             class="flex items-center gap-2 overflow-x-auto snap-x snap-mandatory no-scrollbar px-1 md:justify-center md:overflow-visible"
           >
-            <span class="text-xs font-bold uppercase tracking-wider text-gray-400 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
+            <span class="text-xs font-bold uppercase tracking-wider text-stone-600 shrink-0 mr-1 hidden sm:inline-flex items-center gap-1.5">
               <i class="pi pi-tags text-gray-700" aria-hidden="true"></i> Paket:
             </span>
             <button
@@ -369,7 +370,10 @@
                     :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)"
                     :alt="item.name"
                     class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                    width="340"
+                    height="240"
                     loading="lazy"
+                    decoding="async"
                     @error="
                       (e) => {
                         e.target.onerror = null
@@ -410,11 +414,11 @@
             <!-- Card Content -->
             <div class="p-6 flex flex-col flex-1">
               <div class="flex justify-between items-start mb-2">
-                <h4
+                <h3
                   class="font-bold text-dark text-lg group-hover:text-mocha transition-colors truncate"
                 >
                   {{ item.name }}
-                </h4>
+                </h3>
                 <div class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
                   <i class="pi pi-sparkles text-[10px]" aria-hidden="true"></i> Desain gratis
                 </div>
@@ -530,10 +534,13 @@
                 :src="item.avatar"
                 :alt="item.name"
                 class="w-12 h-12 rounded-full object-cover ring-2 ring-mocha/20 p-0.5 shadow-sm"
+                width="48"
+                height="48"
                 loading="lazy"
+                decoding="async"
               />
               <div>
-                <h4 class="text-sm font-bold text-dark">{{ item.name }}</h4>
+                <h3 class="text-sm font-bold text-dark">{{ item.name }}</h3>
                 <p class="text-xs text-muted">{{ item.role }}</p>
               </div>
             </div>
@@ -578,7 +585,10 @@
                 :src="post.coverImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80'"
                 :alt="post.title"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                width="360"
+                height="225"
                 loading="lazy"
+                decoding="async"
               />
               <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-mocha shadow-sm">
                 Panduan
@@ -623,7 +633,7 @@
         <p class="text-muted text-base mb-2">
           Chat kami untuk request desain custom sesuai keinginanmu.
         </p>
-        <p class="text-xs text-gray-400 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
+        <p class="text-xs text-stone-600 mb-8">*Harga custom berbeda dari tema yang tersedia</p>
         <a
           href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20request%20desain%20undangan%20custom%20%F0%9F%92%8C"
           target="_blank"
@@ -634,6 +644,7 @@
         </a>
       </div>
     </section>
+    </main>
 
     <!-- Footer -->
     <Footer />
@@ -848,7 +859,10 @@
                         :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)"
                         :alt="item.name"
                         class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        width="280"
+                        height="200"
                         loading="lazy"
+                        decoding="async"
                         @error="
                           (e) => {
                             e.target.onerror = null
@@ -1491,8 +1505,6 @@ function goToCreate() {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&display=swap');
-
 .font-serif {
   font-family: 'Playfair Display', serif;
 }
