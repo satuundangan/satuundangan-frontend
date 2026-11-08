@@ -1101,10 +1101,10 @@ function initScrollSpy() {
 }
 
 function getMusicUrl(choice) {
-  if (!choice) return null
+  if (!choice) return '/audio/classical-canon-in-d.mp3'
   if (choice.startsWith('yt:')) return choice
   if (choice.includes('/') || choice.includes('http')) return choice
-  return '/audio/wedding-sacred-ceremony.mp3'
+  return `/audio/${choice}`
 }
 function formatDate(dateStr) {
   if (!dateStr) return '-'

@@ -791,6 +791,12 @@ const navItems = computed(() => {
   return list
 })
 
+watch(navItems, () => {
+  if (!showWelcome.value) {
+    setTimeout(initScrollSpy, 150)
+  }
+})
+
 // Countdown Timer
 const countdown = ref({ Dinten: '00', Jam: '00', Menit: '00', Detik: '00' })
 let timerInterval = null
@@ -865,6 +871,7 @@ function openInvitation() {
   setTimeout(() => {
     const el = document.getElementById('main-content')
     if (el) el.classList.remove('opacity-0')
+    initScrollSpy()
   }, 100)
 }
 
@@ -872,6 +879,55 @@ function scrollToSection(id) {
   activeSection.value = id
   const el = document.getElementById(id)
   if (el) el.scrollIntoView({ behavior: 'smooth' })
+}
+
+let scrollSpyObserver = null
+
+const handleScroll = () => {
+  if (showWelcome.value) return
+  const scrollPosition = window.scrollY + window.innerHeight * 0.35
+  const isBottom = window.innerHeight + window.scrollY >= (document.documentElement.scrollHeight - 60)
+  const items = navItems.value
+  if (!items || items.length === 0) return
+
+  if (isBottom) {
+    activeSection.value = items[items.length - 1].id
+    return
+  }
+
+  for (let i = items.length - 1; i >= 0; i--) {
+    const el = document.getElementById(items[i].id)
+    if (el) {
+      if (scrollPosition >= el.offsetTop) {
+        activeSection.value = items[i].id
+        break
+      }
+    }
+  }
+}
+
+function initScrollSpy() {
+  if (scrollSpyObserver) scrollSpyObserver.disconnect()
+
+  if (typeof IntersectionObserver !== 'undefined') {
+    scrollSpyObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            activeSection.value = entry.target.id
+          }
+        })
+      },
+      { threshold: 0.25 }
+    )
+
+    navItems.value.forEach((item) => {
+      const el = document.getElementById(item.id)
+      if (el) scrollSpyObserver.observe(el)
+    })
+  }
+
+  handleScroll()
 }
 
 async function submitRsvp() {
@@ -924,10 +980,16 @@ const vObserve = {
 onMounted(() => {
   updateCountdown()
   timerInterval = setInterval(updateCountdown, 1000)
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  if (!showWelcome.value) {
+    setTimeout(initScrollSpy, 250)
+  }
 })
 
 onUnmounted(() => {
   if (timerInterval) clearInterval(timerInterval)
+  window.removeEventListener('scroll', handleScroll)
+  if (scrollSpyObserver) scrollSpyObserver.disconnect()
 })
 </script>
 

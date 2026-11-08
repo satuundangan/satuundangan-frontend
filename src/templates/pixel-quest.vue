@@ -747,10 +747,10 @@ function initScrollSpy() {
 }
 
 function getMusicUrl(choice) {
-  if (!choice) return null
+  if (!choice) return '/audio/gaming-8bit-chiptune.mp3'
   if (choice.startsWith('yt:')) return choice
   if (choice.includes('/') || choice.includes('http')) return choice
-  return '/audio/wedding-chiptune-retro.mp3'
+  return `/audio/${choice}`
 }
 
 function formatDate(dateStr) {
