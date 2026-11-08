@@ -37,7 +37,7 @@
                   <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
                   <div class="absolute left-4 top-4">
                      <span class="rounded-xl bg-white/95 px-3 py-1.5 text-[10px] font-bold uppercase text-mocha shadow-xl border border-mocha/5 inline-flex items-center gap-1">
-                        <i class="pi pi-sparkles text-[10px]" aria-hidden="true"></i> Gratis
+                        <i class="pi pi-pencil text-[10px]" aria-hidden="true"></i> Coba Desain Gratis
                      </span>
                   </div>
                </div>
@@ -45,7 +45,7 @@
                <div class="space-y-2 relative z-10">
                   <h3 class="text-xl md:text-2xl font-serif font-bold text-dark">{{ selectedTemplate.name }}</h3>
                   <div class="flex items-center justify-between">
-                     <p class="text-sm font-bold text-mocha">Tema gratis · paket dibayar saat checkout</p>
+                     <p class="text-sm font-bold text-mocha">Bebas coba &amp; desain gratis · Bayar saat siap sebar</p>
                      <div class="flex gap-1.5">
                         <span v-for="color in paletteColors" :key="color"
                           class="w-4 h-4 rounded-full border border-white shadow-sm ring-1 ring-gray-100" :style="{ backgroundColor: color }"></span>

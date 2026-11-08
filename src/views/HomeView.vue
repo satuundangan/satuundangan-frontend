@@ -420,7 +420,7 @@
                   {{ item.name }}
                 </h3>
                 <div class="text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200/80 px-2.5 py-1 rounded-full flex items-center gap-1 shrink-0">
-                  <i class="pi pi-sparkles text-[10px]" aria-hidden="true"></i> Desain gratis
+                  <i class="pi pi-sparkles text-[10px]" aria-hidden="true"></i> Coba Desain Gratis
                 </div>
               </div>
 
@@ -877,7 +877,7 @@
                         <div
                           class="bg-slate-900 text-amber-300 font-extrabold px-2 py-0.5 rounded-md text-[10px] shadow-md border border-slate-700/80 flex items-center gap-1"
                         >
-                          Desain gratis
+                          Coba Desain Gratis
                         </div>
                       </div>
 

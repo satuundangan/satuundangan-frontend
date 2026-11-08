@@ -146,7 +146,7 @@
                   <h4 class="font-serif font-bold text-dark text-lg">{{ selectedTemplate.name }}</h4>
                   <div class="flex items-center gap-2 flex-wrap">
                     <span class="rounded-lg bg-white px-2 py-1 text-[9px] font-bold uppercase text-mocha shadow-sm border border-mocha/5 inline-flex items-center gap-1">
-                      <i class="pi pi-sparkles text-[9px]" aria-hidden="true"></i> Semua Desain Gratis
+                      <i class="pi pi-sparkles text-[9px]" aria-hidden="true"></i> Bebas Coba Desain
                     </span>
                   </div>
                   <button @click="goBackToTemplates" class="text-xs font-bold text-mocha hover:underline flex items-center gap-1.5 pt-1">

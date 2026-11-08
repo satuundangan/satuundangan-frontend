@@ -1,4 +1,39 @@
+# robots.txt for SatuUndangan (https://satuundangan.id)
 User-agent: *
 Allow: /
 
-Sitemap: https://www.satuundangan.id/sitemap.xml
+# OpenAI / ChatGPT Search Crawlers
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: GPTBot
+Allow: /
+
+# Perplexity AI Search Crawler
+User-agent: PerplexityBot
+Allow: /
+
+# Anthropic / Claude AI Crawler
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+# Google AI & Extended Crawler
+User-agent: Google-Extended
+Allow: /
+
+# ByteDance / TikTok AI Crawler
+User-agent: Bytespider
+Allow: /
+
+# Apple Intelligence Crawler
+User-agent: Applebot-Extended
+Allow: /
+
+# Sitemap
+Sitemap: https://satuundangan.id/sitemap.xml

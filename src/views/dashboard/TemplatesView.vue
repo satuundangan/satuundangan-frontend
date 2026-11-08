@@ -97,8 +97,8 @@
                  </div>
                  
                  <div class="flex items-center justify-between mt-auto pt-3 border-t border-slate-100">
-                    <div class="font-black text-xs text-slate-900">
-                       Desain gratis
+                    <div class="font-extrabold text-xs text-slate-700 flex items-center gap-1">
+                       <i class="pi pi-pencil text-[9px] text-amber-600" aria-hidden="true"></i> Coba Desain
                     </div>
                     <div class="flex gap-1">
                        <span 
