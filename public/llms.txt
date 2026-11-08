@@ -1,0 +1,32 @@
+# Satu Undangan
+
+> Satu Undangan (https://www.satuundangan.id) adalah platform pembuatan website undangan digital pernikahan di Indonesia dengan desain modern, katalog tema beragam, kalkulator budget nikah gratis, serta fitur interaktif lengkap (RSVP online, amplop digital, buku tamu, integrasi Google Maps, dan sebar undangan via WhatsApp).
+
+## Tentang Platform
+- **Nama Produk:** Satu Undangan
+- **Website:** https://www.satuundangan.id
+- **Kategori:** Website Undangan Digital Pernikahan (Digital Wedding Invitation Platform)
+- **Target Pengguna:** Calon pengantin di Indonesia yang ingin membuat undangan pernikahan online yang elegan, responsif di HP/desktop, tanpa batas penerima tamu, dan dapat disebar secara instan.
+
+## Fitur Utama
+- **Katalog Desain Premium:** Puluhan template estetik mulai dari Minimalis Modern, Dark Elegant, Anime (Kimi no Na wa, Naruto, One Piece), Floral, Adat Nusantara (Jawa, Sunda, Batak, Dayak), hingga Editorial Magazine.
+- **RSVP & Konfirmasi Kehadiran Real-time:** Tamu undangan dapat mengisi konfirmasi kehadiran (hadir / tidak hadir beserta jumlah tamu) secara online.
+- **Buku Tamu & Ucapan Doa:** Menampung ucapan dan doa restu dari para tamu secara langsung di website undangan dengan moderasi mandiri.
+- **Amplop Digital & QRIS:** Integrasi nomor rekening bank (BCA, Mandiri, BRI, BNI) dan dompet digital untuk mempermudah tamu memberikan hadiah/kado pernikahan.
+- **Navigasi Lokasi & Google Maps:** Panduan rute langsung ke venue pernikahan dengan satu klik.
+- **Distribusi Undangan via WhatsApp:** Kirim undangan personal ke ratusan tamu otomatis dengan format pesan yang rapi.
+- **Kalkulator Budget Nikah & Wedding Checklist:** Alat bantu gratis untuk menghitung estimasi anggaran pernikahan dan panduan persiapan pernikahan.
+- **Masa Aktif:** Hingga 365 hari (1 tahun penuh) setelah acara selesai.
+
+## Paket dan Harga
+- **Paket Basic (Rp 49.000):** Template modern, RSVP, Google Maps, Countdown acara, Amplop digital, Masa aktif 6 bulan.
+- **Paket Premium (Rp 89.000):** Seluruh fitur Basic + Galeri foto/video, Kisah cinta (love story), Background music pilihan, Filter tamu WhatsApp, Masa aktif 1 tahun.
+- **Paket Eksklusif (Rp 129.000):** Seluruh fitur Premium + Subdomain khusus, Bebas watermark, Prioritas customer support 24/7.
+- **Uji Coba Gratis:** Calon pengantin dapat memilih template, mengisi data, dan melihat live preview secara gratis sebelum memutuskan untuk aktivasi.
+
+## Halaman dan Tautan Penting
+- [Beranda & Katalog Template](https://www.satuundangan.id/): Halaman utama dan pilihan desain undangan pernikahan.
+- [Kalkulator Anggaran Pernikahan](https://www.satuundangan.id/kalkulator-budget): Alat bantu estimasi biaya pernikahan gratis.
+- [Panduan & Artikel Pernikahan](https://www.satuundangan.id/blog): Tips persiapan pernikahan, inspirasi busana, dan rekomendasi vendor.
+- [Syarat & Ketentuan](https://www.satuundangan.id/terms): Kebijakan layanan Satu Undangan.
+- [Kebijakan Privasi](https://www.satuundangan.id/privacy): Komitmen perlindungan data pribadi calon pengantin dan tamu undangan.
