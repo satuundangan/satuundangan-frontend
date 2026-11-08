@@ -24,7 +24,7 @@
     </div>
 
     <!-- Music Control (autoplay on open) -->
-    <MusicControl v-if="data.musicChoice && !showWelcome" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#fdfbf7" accentColor="#657b62" :autoPlay="!showWelcome" />
+    <MusicControl v-if="data.musicChoice" :src="getMusicUrl(data.musicChoice)" :audioStart="data.audioStart" :audioEnd="data.audioEnd" primaryColor="#fdfbf7" accentColor="#657b62"  />
 
     <!-- Mobile Bottom Navigation (Footer Menu) -->
     <nav v-if="!showWelcome"
@@ -642,8 +642,24 @@ function formatInstagramUrl(handle) {
 }
 
 function copyToClipboard(text) {
-  navigator.clipboard.writeText(text)
-  toast.success('Berhasil disalin!')
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => toast.success('Berhasil disalin!'));
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+      toast.success('Berhasil disalin!');
+    }
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 function addToCalendar() {

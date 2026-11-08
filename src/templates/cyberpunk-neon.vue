@@ -433,15 +433,24 @@ function formatTime(dateStr) {
   return new Date(dateStr).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
 }
 function formatInstagramUrl(handle) { return `https://instagram.com/${handle.replace('@', '')}` }
-function copyToClipboard(text) { navigator.clipboard.writeText(text); toast.success('Data Copied') }
-
-function initData() {
-  if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
-    rsvp.value.name = data.value.guestName
-  }
-
-  if (data.value.galleryImages?.length > 0) {
-    galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
+function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => toast.success('Berhasil disalin!'));
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+      toast.success('Berhasil disalin!');
+    }
+  } catch (err) {
+    console.error(err);
   }
 }
 

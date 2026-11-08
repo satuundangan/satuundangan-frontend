@@ -177,7 +177,7 @@
                   </div>
                   <div class="text-right">
                     <span class="text-sm md:text-base font-black text-emerald-600">
-                      Terkirim: {{ sentGuestsCount }} / {{ totalGuestsCount }}
+                      Ditandai terkirim: {{ sentGuestsCount }} / {{ totalGuestsCount }}
                     </span>
                     <span class="text-xs font-black text-slate-500 ml-1">({{ sentPercentage }}%)</span>
                   </div>
@@ -194,7 +194,7 @@
                 <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
                   <span class="flex items-center gap-1">
                     <i class="fa-solid fa-circle-check text-emerald-500"></i>
-                    <span>{{ sentGuestsCount }} sudah terkirim</span>
+                    <span>{{ sentGuestsCount }} ditandai terkirim</span>
                   </span>
                   <span class="flex items-center gap-1">
                     <i class="fa-regular fa-clock text-amber-500"></i>
@@ -249,14 +249,20 @@
                 <span>Status Kehadiran (RSVP):</span>
               </div>
               <div class="flex items-center gap-2 flex-wrap">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-indigo-50 text-indigo-700 text-[11px] font-black border border-indigo-100">
+                  <i class="fa-solid fa-users text-[10px]"></i> Total Alokasi: {{ totalPaxCount }} / 200 Pax
+                </span>
+                <span v-if="totalPhysicalCount > 0" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-purple-50 text-purple-700 text-[11px] font-bold border border-purple-100">
+                  <i class="fa-solid fa-envelope text-[10px]"></i> Undangan Fisik: {{ totalPhysicalCount }}
+                </span>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-green-50 text-green-700 text-[11px] font-bold border border-green-100">
-                  <i class="fa-solid fa-circle-check text-[10px]"></i> Hadir: {{ rsvpAttendingCount }}
+                  <i class="fa-solid fa-circle-check text-[10px]"></i> Hadir (orang): {{ rsvpAttendingCount }}
                 </span>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-rose-50 text-rose-600 text-[11px] font-bold border border-rose-100">
-                  <i class="fa-solid fa-circle-xmark text-[10px]"></i> Tidak Hadir: {{ rsvpDeclinedCount }}
+                  <i class="fa-solid fa-circle-xmark text-[10px]"></i> Tidak Hadir (tamu): {{ rsvpDeclinedCount }}
                 </span>
                 <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg bg-slate-100 text-slate-600 text-[11px] font-bold border border-slate-200">
-                  <i class="fa-solid fa-hourglass-half text-[10px]"></i> Menunggu: {{ rsvpPendingCount }}
+                  <i class="fa-solid fa-hourglass-half text-[10px]"></i> Menunggu (tamu): {{ rsvpPendingCount }}
                 </span>
               </div>
             </div>
@@ -341,6 +347,7 @@
                 <tr>
                   <th class="px-6 py-4">Nama Tamu</th>
                   <th class="px-6 py-4">Kategori</th>
+                  <th class="px-6 py-4 text-center">Pax &amp; Fisik</th>
                   <th class="px-6 py-4">Status Kirim</th>
                   <th class="px-6 py-4">Status RSVP</th>
                   <th class="px-6 py-4 text-right">Aksi</th>
@@ -365,6 +372,20 @@
                       >{{ guest.group || 'Umum' }}</span
                     >
                   </td>
+                  <td class="px-6 py-4 text-center">
+                    <div class="inline-flex items-center gap-1.5">
+                      <span class="px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 text-[10px] font-black border border-amber-200">
+                        {{ guest.pax || 1 }} Pax
+                      </span>
+                      <span
+                        v-if="guest.isPhysical"
+                        class="px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[9px] font-black border border-purple-200"
+                        title="Menerima Undangan Fisik"
+                      >
+                        <i class="fa-solid fa-envelope mr-0.5"></i> Fisik
+                      </span>
+                    </div>
+                  </td>
                   <td class="px-6 py-4">
                     <!-- Interactive Status Badge: click to toggle -->
                     <button
@@ -377,7 +398,7 @@
                       :title="guest.statusSend === 'sent' ? 'Klik untuk tandai Belum Terkirim' : 'Klik untuk tandai Sudah Terkirim'"
                     >
                       <i :class="guest.statusSend === 'sent' ? 'fa-solid fa-check text-[9px]' : 'fa-regular fa-clock text-[9px]'"></i>
-                      <span>{{ guest.statusSend === 'sent' ? 'Terkirim' : 'Belum Terkirim' }}</span>
+                      <span>{{ guest.statusSend === 'sent' ? 'Ditandai Terkirim' : 'Belum Terkirim' }}</span>
                     </button>
                   </td>
                   <td class="px-6 py-4">
@@ -441,10 +462,21 @@
                     {{ guest.phoneNumber || 'Tanpa nomor HP' }}
                   </p>
                 </div>
-                <span
-                  class="shrink-0 px-2 py-0.5 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider"
-                  >{{ guest.group || 'Umum' }}</span
-                >
+                <div class="shrink-0 flex items-center gap-1">
+                  <span
+                    class="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider"
+                    >{{ guest.group || 'Umum' }}</span
+                  >
+                  <span class="px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-800 text-[9px] font-black border border-amber-200">
+                    {{ guest.pax || 1 }} Pax
+                  </span>
+                  <span
+                    v-if="guest.isPhysical"
+                    class="px-1.5 py-0.5 rounded-md bg-purple-50 text-purple-700 text-[9px] font-black border border-purple-200"
+                  >
+                    Fisik
+                  </span>
+                </div>
               </div>
 
               <!-- Status badge & RSVP row -->
@@ -458,7 +490,7 @@
                     : 'bg-amber-50 text-amber-700 border-amber-200'"
                 >
                   <i :class="guest.statusSend === 'sent' ? 'fa-solid fa-check text-[9px]' : 'fa-regular fa-clock text-[9px]'"></i>
-                  <span>{{ guest.statusSend === 'sent' ? 'Terkirim' : 'Belum Terkirim' }}</span>
+                  <span>{{ guest.statusSend === 'sent' ? 'Ditandai Terkirim' : 'Belum Terkirim' }}</span>
                 </button>
 
                 <div class="text-xs">
@@ -532,7 +564,7 @@
               Template Pesan WhatsApp
             </h3>
             <p class="text-xs text-slate-400 mt-0.5">
-              Sesuaikan pesan undangan otomatis yang akan terkirim ke WhatsApp setiap tamu.
+              Sesuaikan pesan yang disiapkan untuk setiap tamu sebelum dibuka di WhatsApp.
             </p>
           </div>
           <button
@@ -673,7 +705,7 @@
               </h3>
             </div>
             <p class="text-[11px] text-slate-400 mt-0.5">
-              Mode sebar cepat personal: buka WhatsApp & otomatis tandai terkirim ke antrean berikutnya.
+              Buka WhatsApp untuk tiap tamu, lalu tandai setelah kamu menekan Kirim di WhatsApp.
             </p>
           </div>
           <button
@@ -690,9 +722,9 @@
             <i class="fa-solid fa-circle-check"></i>
           </div>
           <div class="space-y-1">
-            <h4 class="text-xl font-black text-slate-900">Semua Undangan Terkirim! 🎉</h4>
+            <h4 class="text-xl font-black text-slate-900">Semua Tamu Ditandai Terkirim! 🎉</h4>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">
-              Luar biasa! Seluruh {{ totalGuestsCount }} tamu dalam daftar undangan telah berhasil ditandai terkirim via WhatsApp.
+              Seluruh {{ totalGuestsCount }} tamu dalam daftar undangan telah ditandai terkirim.
             </p>
           </div>
           <div class="pt-4 flex justify-center gap-3">
@@ -757,12 +789,21 @@
           <div v-if="currentQueueGuest" class="space-y-2.5 pt-2">
             <button
               type="button"
-              @click="markAndSendCurrentInQueue"
+              @click="openCurrentInQueue"
               class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-all cursor-pointer"
             >
               <i class="fa-brands fa-whatsapp text-lg"></i>
-              <span>Buka WhatsApp & Tandai Terkirim</span>
+              <span>Buka WhatsApp</span>
               <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+            </button>
+
+            <button
+              v-if="openedQueueGuestId === currentQueueGuest.id"
+              type="button"
+              @click="confirmCurrentInQueue"
+              class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-xs transition-colors"
+            >
+              Saya sudah menekan Kirim di WhatsApp — Tandai Terkirim
             </button>
 
             <div class="grid grid-cols-3 gap-2">
@@ -783,7 +824,7 @@
                 title="Tandai status Terkirim tanpa membuka WhatsApp"
               >
                 <i class="fa-solid fa-check text-emerald-600 text-xs"></i>
-                <span>Tandai Saja</span>
+                <span>Sudah Kirim</span>
               </button>
 
               <button
@@ -933,6 +974,31 @@
               placeholder="085121266550"
             />
           </div>
+          <div class="grid grid-cols-2 gap-3 items-center">
+            <div>
+              <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
+                >Jumlah Pax</label
+              >
+              <input
+                v-model.number="newGuest.pax"
+                type="number"
+                min="1"
+                max="20"
+                class="w-full border border-gray-100 rounded-xl p-3 bg-gray-50 focus:ring-2 focus:ring-[#a47148]/20 outline-none text-sm font-bold"
+                placeholder="1"
+              />
+            </div>
+            <div class="pt-5">
+              <label class="inline-flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  v-model="newGuest.isPhysical"
+                  type="checkbox"
+                  class="w-4 h-4 rounded border-gray-300 text-[#a47148] focus:ring-[#a47148]"
+                />
+                <span class="text-xs font-bold text-slate-700">Undangan Fisik</span>
+              </label>
+            </div>
+          </div>
         </div>
         <div class="mt-8 flex gap-3">
           <button @click="showAddModal = false" class="flex-1 py-3 text-gray-400 font-bold text-sm cursor-pointer">
@@ -1044,6 +1110,13 @@
             <i class="fa-brands fa-whatsapp text-lg"></i> Buka WhatsApp
           </button>
         </div>
+        <button
+          v-if="shareWhatsAppOpened"
+          @click="confirmSingleGuestSent"
+          class="mt-3 w-full rounded-xl bg-slate-900 py-3 text-xs font-bold text-white hover:bg-slate-800"
+        >
+          Saya sudah menekan Kirim di WhatsApp — Tandai Terkirim
+        </button>
       </div>
     </div>
 
@@ -1115,6 +1188,7 @@
 
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
 import Topbar from '@/components/dashboard/TopbarDashboard.vue'
 import BottomNav from '@/components/dashboard/BottomNav.vue'
@@ -1139,6 +1213,7 @@ import {
 } from '@/utils/whatsappDistribution'
 
 const toast = useToast()
+const route = useRoute()
 const invitations = ref([])
 const selectedInvitationId = ref(null)
 const guests = ref([])
@@ -1162,8 +1237,9 @@ const shareMessage = ref('')
 const shareUrl = ref('')
 const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
+const shareWhatsAppOpened = ref(false)
 const updatingGuestAccess = ref(false)
-const newGuest = ref({ name: '', group: '', phoneNumber: '' })
+const newGuest = ref({ name: '', group: '', phoneNumber: '', pax: 1, isPhysical: false })
 
 // Template WhatsApp Modal state
 const showTemplateModal = ref(false)
@@ -1174,6 +1250,7 @@ const templateTextareaRef = ref(null)
 // Queue Runner (Mode Kirim Cepat) state
 const showQueueModal = ref(false)
 const queueIndex = ref(0)
+const openedQueueGuestId = ref(null)
 
 // Export Links Modal state
 const showExportModal = ref(false)
@@ -1191,6 +1268,8 @@ const isContactPickerSupported = computed(() => {
 
 // Stats Computations
 const totalGuestsCount = computed(() => guests.value.length)
+const totalPaxCount = computed(() => guests.value.reduce((sum, g) => sum + Number(g.pax ?? 1), 0))
+const totalPhysicalCount = computed(() => guests.value.filter((g) => g.isPhysical).length)
 const sentGuestsCount = computed(() => guests.value.filter((g) => g.statusSend === 'sent').length)
 const unsentGuestsCount = computed(() => guests.value.filter((g) => g.statusSend !== 'sent').length)
 const sentPercentage = computed(() => {
@@ -1198,10 +1277,16 @@ const sentPercentage = computed(() => {
   return Math.round((sentGuestsCount.value / totalGuestsCount.value) * 100)
 })
 
-const rsvpAttendingCount = computed(() => guests.value.filter((g) => g.rsvpStatus === 'hadir').length)
-const rsvpDeclinedCount = computed(() => guests.value.filter((g) => g.rsvpStatus === 'tidak').length)
+const rsvpAttendingCount = computed(() =>
+  guests.value
+    .filter((guest) => guest.rsvpStatus === 'hadir')
+    .reduce((sum, guest) => sum + Number(guest.pax ?? 1), 0),
+)
+const rsvpDeclinedCount = computed(() =>
+  guests.value.filter((guest) => guest.rsvpStatus === 'tidak').length,
+)
 const rsvpPendingCount = computed(
-  () => guests.value.filter((g) => g.rsvpStatus !== 'hadir' && g.rsvpStatus !== 'tidak').length,
+  () => guests.value.filter((guest) => guest.rsvpStatus !== 'hadir' && guest.rsvpStatus !== 'tidak').length,
 )
 
 const uniqueGroups = computed(() => {
@@ -1304,7 +1389,7 @@ async function fetchInvitations() {
     const data = Array.isArray(res) ? res : res.data || []
     invitations.value = data
     if (data.length > 0 && !selectedInvitationId.value) {
-      selectedInvitationId.value = data[0].id
+      selectedInvitationId.value = data.find((inv) => inv.slug === route.query.slug)?.id || data[0].id
     }
   } catch (error) {
     toast.error('Gagal memuat undangan')
@@ -1418,53 +1503,48 @@ function startQueueRunner() {
     return
   }
   if (!featuresFor(currentInvitation.value?.package).whatsapp) {
-    toast.warning('Kirim undangan via WhatsApp tersedia untuk paket Premium & Eksklusif.')
+    toast.warning('Paket undangan ini belum mendukung pengiriman via WhatsApp.')
     return
   }
   queueIndex.value = 0
+  openedQueueGuestId.value = null
   showQueueModal.value = true
 }
 
-async function markAndSendCurrentInQueue() {
+function openCurrentInQueue() {
   const guest = currentQueueGuest.value
   if (!guest) return
 
   const message = formatGuestMessage(currentInvitation.value?.whatsappMessageTemplate, guest)
   const waUrl = buildWhatsAppUrl(guest.phoneNumber, message)
-
-  // Open WhatsApp in new tab
   window.open(waUrl, '_blank')
+  openedQueueGuestId.value = guest.id
+}
 
-  // Optimistic update status
-  guest.statusSend = 'sent'
+async function markGuestAsSent(guest) {
   try {
     await updateGuest(guest.id, { statusSend: 'sent' })
-    toast.success(`Terkirim ke ${guest.name}`)
+    guest.statusSend = 'sent'
+    toast.success(`Ditandai terkirim: ${guest.name}`)
+    return true
   } catch (err) {
-    console.error('Failed to update status in queue:', err)
+    console.error('Failed to update guest status:', err)
+    toast.error('Gagal memperbarui status pengiriman')
+    return false
   }
+}
 
-  // Adjust queue pointer if at the end of remaining list
-  if (queueIndex.value >= unsentGuests.value.length && unsentGuests.value.length > 0) {
-    queueIndex.value = unsentGuests.value.length - 1
-  }
+async function confirmCurrentInQueue() {
+  const guest = currentQueueGuest.value
+  if (!guest || openedQueueGuestId.value !== guest.id) return
+  if (await markGuestAsSent(guest)) openedQueueGuestId.value = null
 }
 
 async function markSentOnlyInQueue() {
   const guest = currentQueueGuest.value
   if (!guest) return
 
-  guest.statusSend = 'sent'
-  try {
-    await updateGuest(guest.id, { statusSend: 'sent' })
-    toast.success(`Ditandai terkirim ke ${guest.name}`)
-  } catch (err) {
-    console.error('Failed to mark as sent:', err)
-  }
-
-  if (queueIndex.value >= unsentGuests.value.length && unsentGuests.value.length > 0) {
-    queueIndex.value = unsentGuests.value.length - 1
-  }
+  if (await markGuestAsSent(guest)) openedQueueGuestId.value = null
 }
 
 function nextInQueue() {
@@ -1513,7 +1593,7 @@ async function submitGuest() {
     await createGuest({ ...newGuest.value, invitationId: selectedInvitationId.value })
     toast.success('Tamu berhasil ditambahkan')
     showAddModal.value = false
-    newGuest.value = { name: '', group: '', phoneNumber: '' }
+    newGuest.value = { name: '', group: '', phoneNumber: '', pax: 1, isPhysical: false }
     await fetchGuests(selectedInvitationId.value)
   } catch (error) {
     toast.error('Gagal menambahkan tamu')
@@ -1671,6 +1751,10 @@ async function handleExcelImport(event) {
         const name = cell(row.Nama ?? row.nama ?? row.Name ?? row.name)
         const phone = phoneCell(row.WhatsApp ?? row.whatsapp ?? row.NoHP ?? row.phone ?? row.telp)
         const group = cell(row.Kategori ?? row.group ?? row.category) || undefined
+        const rawPax = Number(row.Pax ?? row.pax ?? row.PAX ?? row['Jumlah Pax'])
+        const pax = !isNaN(rawPax) && rawPax > 0 ? rawPax : 1
+        const rawPhys = cell(row.Fisik ?? row.fisik ?? row['Undangan Fisik'] ?? row.isPhysical).toLowerCase()
+        const isPhysical = rawPhys === 'ya' || rawPhys === 'true' || rawPhys === '1' || rawPhys === 'yes'
 
         if (name) {
           try {
@@ -1678,6 +1762,8 @@ async function handleExcelImport(event) {
               name,
               phoneNumber: phone,
               group,
+              pax,
+              isPhysical,
               invitationId: selectedInvitationId.value,
             })
             success++
@@ -1708,8 +1794,8 @@ async function handleExcelImport(event) {
 
 function downloadTemplate() {
   const ws = XLSX.utils.json_to_sheet([
-    { Nama: 'Budi Santoso', WhatsApp: '08123456789', Kategori: 'Keluarga' },
-    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman' },
+    { Nama: 'Budi Santoso & Istri', WhatsApp: '08123456789', Kategori: 'Keluarga', Pax: 2, 'Undangan Fisik': 'Ya' },
+    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman', Pax: 1, 'Undangan Fisik': 'Tidak' },
   ])
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Template Tamu')
@@ -1736,10 +1822,11 @@ async function openShareModal(guest) {
     return
   }
   if (!featuresFor(currentInvitation.value?.package).whatsapp) {
-    toast.warning('Kirim undangan via WhatsApp tersedia untuk paket Premium & Eksklusif.')
+    toast.warning('Paket undangan ini belum mendukung pengiriman via WhatsApp.')
     return
   }
   selectedGuestForShare.value = guest
+  shareWhatsAppOpened.value = false
   showShareModal.value = true
   loadingMessage.value = true
   try {
@@ -1759,21 +1846,21 @@ async function openShareModal(guest) {
   }
 }
 
-async function sendWhatsApp() {
+function sendWhatsApp() {
   if (!selectedGuestForShare.value) return
   const guest = selectedGuestForShare.value
   const waUrl = buildWhatsAppUrl(guest.phoneNumber, shareMessage.value)
   window.open(waUrl, '_blank')
+  shareWhatsAppOpened.value = true
+}
 
-  if (guest.statusSend !== 'sent') {
-    guest.statusSend = 'sent'
-    try {
-      await updateGuest(guest.id, { statusSend: 'sent' })
-    } catch (err) {
-      console.error('Failed to update status:', err)
-    }
+async function confirmSingleGuestSent() {
+  const guest = selectedGuestForShare.value
+  if (!guest || !shareWhatsAppOpened.value) return
+  if (guest.statusSend === 'sent' || (await markGuestAsSent(guest))) {
+    showShareModal.value = false
+    shareWhatsAppOpened.value = false
   }
-  showShareModal.value = false
 }
 
 // Generic Clipboard Copy

@@ -275,7 +275,7 @@ const devVerificationUrl = ref('')
 
 const turnstileToken = ref('')
 const turnstileRef = ref(null)
-const turnstileEnabled = !!import.meta.env.VITE_TURNSTILE_SITE_KEY
+const turnstileEnabled = import.meta.env.PROD && !!import.meta.env.VITE_TURNSTILE_SITE_KEY
 
 function resetTurnstile() {
   turnstileToken.value = ''

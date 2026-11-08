@@ -123,37 +123,54 @@ const initAudio = () => {
   }
 }
 
+const removeGestureListeners = () => {
+  window.removeEventListener('click', tryPlayFromGesture)
+  window.removeEventListener('touchstart', tryPlayFromGesture)
+}
+
+const startPlayback = async () => {
+  if (isYoutube.value) {
+    if (isMuted.value) toggleYoutubeMute()
+    return true
+  }
+
+  if (!audio.value) initAudio()
+  try {
+    await audio.value.play()
+    isPlaying.value = true
+    removeGestureListeners()
+    return true
+  } catch {
+    isPlaying.value = false
+    return false
+  }
+}
+
+const tryPlayFromGesture = () => {
+  startPlayback()
+}
+
+defineExpose({ play: startPlayback })
+
 onMounted(() => {
   if (isYoutube.value) return
 
   initAudio()
 
   if (props.autoPlay) {
-    const tryPlay = () => {
-      if (!audio.value) return
-      audio.value.play().then(() => {
-        isPlaying.value = true
-      }).catch(() => {
-        isPlaying.value = false
-      })
-      window.removeEventListener('click', tryPlay)
-      window.removeEventListener('touchstart', tryPlay)
-    }
-
     // Attempt immediate playback (carries the BUKA-button user activation);
     // fall back to first gesture if the browser blocks it.
-    audio.value.play().then(() => {
-      isPlaying.value = true
-      window.removeEventListener('click', tryPlay)
-      window.removeEventListener('touchstart', tryPlay)
-    }).catch(() => {
-      window.addEventListener('click', tryPlay)
-      window.addEventListener('touchstart', tryPlay)
+    startPlayback().then((started) => {
+      if (!started) {
+        window.addEventListener('click', tryPlayFromGesture)
+        window.addEventListener('touchstart', tryPlayFromGesture)
+      }
     })
   }
 })
 
 onUnmounted(() => {
+  removeGestureListeners()
   if (audio.value) {
     audio.value.pause()
     audio.value = null
@@ -164,10 +181,10 @@ const toggleAudio = () => {
   if (!audio.value) return
   if (isPlaying.value) {
     audio.value.pause()
+    isPlaying.value = false
   } else {
-    audio.value.play()
+    startPlayback()
   }
-  isPlaying.value = !isPlaying.value
 }
 
 watch(() => props.src, () => {

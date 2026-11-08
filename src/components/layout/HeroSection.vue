@@ -144,11 +144,18 @@
           
           <!-- Screen Content -->
           <div class="w-full h-full bg-[#faf7f2] overflow-hidden relative rounded-[2.5rem] isolate">
-             <img
-               src="@/assets/hero_invitation_preview.jpg"
-               alt="Digital Wedding Invitation Preview"
-               class="w-full h-full object-cover object-top scale-100 group-hover:scale-105 transition-transform duration-700 ease-out rounded-[2.5rem]"
-             />
+             <picture>
+               <source srcset="@/assets/hero_invitation_preview.webp" type="image/webp" />
+               <img
+                 src="@/assets/hero_invitation_preview.webp"
+                 alt="Digital Wedding Invitation Preview"
+                 width="768"
+                 height="1376"
+                 fetchpriority="high"
+                 decoding="async"
+                 class="w-full h-full object-cover object-top scale-100 group-hover:scale-105 transition-transform duration-700 ease-out rounded-[2.5rem]"
+               />
+             </picture>
           </div>
         </div>
 

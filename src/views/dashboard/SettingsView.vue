@@ -16,6 +16,32 @@
           <p class="text-xs md:text-sm text-muted">Kelola informasi profil dan keamanan akunmu.</p>
         </div>
 
+        <div v-if="pendingCheckoutPath" class="rounded-2xl border border-mocha/20 bg-white p-5 shadow-sm">
+          <h3 class="text-sm font-bold text-dark">Lanjutkan pembayaran undangan</h3>
+          <p class="mt-1 text-xs text-muted">
+            {{ isEmailVerified
+              ? 'Email sudah terverifikasi. Kamu bisa kembali ke checkout undanganmu.'
+              : 'Verifikasi email melalui tautan yang dikirimkan, lalu periksa statusnya di sini.' }}
+          </p>
+          <button
+            v-if="isEmailVerified"
+            type="button"
+            @click="resumeCheckout"
+            class="mt-4 rounded-xl bg-mocha px-5 py-2.5 text-xs font-bold text-white hover:bg-dark"
+          >
+            Lanjutkan Pembayaran
+          </button>
+          <button
+            v-else
+            type="button"
+            :disabled="checkingVerification"
+            @click="refreshVerificationStatus"
+            class="mt-4 rounded-xl border border-mocha px-5 py-2.5 text-xs font-bold text-mocha disabled:opacity-50"
+          >
+            {{ checkingVerification ? 'Memeriksa...' : 'Saya Sudah Verifikasi' }}
+          </button>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div class="lg:col-span-2 space-y-6">
             <div class="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
@@ -215,6 +241,8 @@ const loadingProfile = ref(false)
 const loadingPassword = ref(false)
 const resendingVerification = ref(false)
 const devVerificationUrl = ref('')
+const pendingCheckoutPath = ref('')
+const checkingVerification = ref(false)
 
 const profileForm = ref({
   name: auth.user?.name || '',
@@ -227,6 +255,18 @@ const passwordForm = ref({
 })
 
 onMounted(async () => {
+  try {
+    const savedPath = localStorage.getItem('pendingCheckoutPath')
+    if (savedPath) {
+      const url = new URL(savedPath, window.location.origin)
+      if (url.origin === window.location.origin && url.pathname === '/checkout' && url.searchParams.get('slug')) {
+        pendingCheckoutPath.value = `${url.pathname}${url.search}`
+      }
+    }
+  } catch {
+    localStorage.removeItem('pendingCheckoutPath')
+  }
+
   if (route.query.email_verified === 'success') {
     await auth.fetchProfile()
     toast.success('Email berhasil diverifikasi')
@@ -236,6 +276,24 @@ onMounted(async () => {
     router.replace({ query: { ...route.query, email_verified: undefined } })
   }
 })
+
+async function refreshVerificationStatus() {
+  checkingVerification.value = true
+  try {
+    await auth.fetchProfile()
+    if (!isEmailVerified.value) toast.info('Email belum terverifikasi. Periksa kotak masuk dan coba lagi.')
+  } catch {
+    toast.error('Gagal memeriksa status verifikasi. Coba lagi.')
+  } finally {
+    checkingVerification.value = false
+  }
+}
+
+async function resumeCheckout() {
+  if (!isEmailVerified.value || !pendingCheckoutPath.value) return
+  await router.push(pendingCheckoutPath.value)
+  localStorage.removeItem('pendingCheckoutPath')
+}
 
 async function handleUpdateProfile() {
   if (!profileForm.value.name.trim()) {

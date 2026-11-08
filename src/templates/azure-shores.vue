@@ -471,32 +471,24 @@ function formatInstagramUrl(handle) {
   if (!handle) return '#'
   return `https://instagram.com/${handle.replace('@', '')}`
 }
-function copyToClipboard(text) { navigator.clipboard.writeText(text); toast.success('Nomor Rekening Disalin') }
-
-function initData() {
-  if (data.value.guestName && data.value.guestName !== 'Tamu Undangan') {
-    rsvp.value.name = data.value.guestName
-  }
-
-  if (data.value.galleryImages?.length > 0) {
-    galleryImages.value = data.value.galleryImages.map(src => ({ src, thumbnail: src }))
-  }
-
-  const targetDate = data.value.akadLocation?.dateTime || data.value.dateTime
-  if (targetDate) {
-    const target = new Date(targetDate).getTime()
-    if (!isNaN(target)) {
-      if (interval) clearInterval(interval)
-      interval = setInterval(() => {
-        const now = new Date().getTime()
-        const diff = target - now
-        if (diff <= 0) return clearInterval(interval)
-        countdown.value.Hari = Math.floor(diff / (1000 * 60 * 60 * 24)).toString().padStart(2, '0')
-        countdown.value.Jam = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0')
-        countdown.value.Menit = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0')
-        countdown.value.Detik = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0')
-      }, 1000)
+function copyToClipboard(text) {
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(() => toast.success('Berhasil disalin!'));
+    } else {
+      const textArea = document.createElement("textarea");
+      textArea.value = text;
+      textArea.style.position = "fixed";
+      textArea.style.left = "-999999px";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      document.execCommand('copy');
+      textArea.remove();
+      toast.success('Berhasil disalin!');
     }
+  } catch (err) {
+    console.error(err);
   }
 }
 
