@@ -17,6 +17,21 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [vue(), ...(devToolsDisabled ? [] : [vueDevTools()]), tailwindcss()],
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (id.includes('node_modules')) {
+              if (id.includes('@primevue') || id.includes('@primeuix')) return 'vendor-primevue'
+              if (id.includes('@tiptap') || id.includes('prosemirror')) return 'vendor-editor'
+              if (id.includes('lucide-vue-next')) return 'vendor-lucide'
+              if (id.includes('mixpanel-browser')) return 'vendor-mixpanel'
+              if (id.includes('qrcode') || id.includes('canvas-confetti')) return 'vendor-utils'
+            }
+          },
+        },
+      },
+    },
     esbuild: {
       drop: mode === 'production' ? ['console', 'debugger'] : [],
     },

@@ -1,33 +1,11 @@
-import CheckoutPage from '@/views/CheckoutPage.vue'
-import CreateDesign from '@/views/CreateDesign.vue'
-import CreateForm from '@/views/CreateForm.vue'
 import HomeView from '@/views/HomeView.vue'
 import Invitation from '@/views/InvitationView.vue'
-import PreviewInvitation from '@/views/PreviewInvitation.vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
 import { getCustomSubdomain } from '@/api/invitation'
 import { analytics } from '@/api/analytics.js'
 import { trackPageView, trackError } from '@/utils/telemetry.js'
-import DashboardView from '@/views/dashboard/DashboardView.vue'
-import InvitationsView from '@/views/dashboard/InvitationsView.vue'
-import TemplatesView from '@/views/dashboard/TemplatesView.vue'
-import GuestsView from '@/views/dashboard/GuestsView.vue'
-import GuestbookView from '@/views/dashboard/GuestbookView.vue'
-import SettingsView from '@/views/dashboard/SettingsView.vue'
-import AdminLogin from '@/views/admin/AdminLogin.vue'
 import { canOpenAdminPath } from '@/utils/adminAccess'
-import AdminDashboard from '@/views/admin/AdminDashboard.vue'
-import AdminUsers from '@/views/admin/AdminUsers.vue'
-import AdminInvitations from '@/views/admin/AdminInvitations.vue'
-import AdminTemplates from '@/views/admin/AdminTemplates.vue'
-import AdminPaletteColors from '@/views/admin/AdminPaletteColors.vue'
-import AdminAudio from '@/views/admin/AdminAudio.vue'
-import AdminBanks from '@/views/admin/AdminBanks.vue'
-import AdminSections from '@/views/admin/AdminSections.vue'
-import AdminCategories from '@/views/admin/AdminCategories.vue'
-import AdminPromoCodes from '@/views/admin/AdminPromoCodes.vue'
-import PantauAnakKrakatau from '@/views/PantauAnakKrakatau.vue'
 
 // Host-based routing: on a custom subdomain (e.g. rina-budi.satuundangan.id),
 // the root path serves that invitation instead of the marketing homepage.
@@ -69,12 +47,12 @@ const router = createRouter({
     {
       path: '/preview',
       name: 'preview',
-      component: PreviewInvitation,
+      component: () => import('@/views/PreviewInvitation.vue'),
     },
     {
       path: '/checkout',
       name: 'checkout',
-      component: CheckoutPage,
+      component: () => import('@/views/CheckoutPage.vue'),
       meta: { title: 'Checkout & Pembayaran' },
     },
     {
@@ -141,7 +119,7 @@ const router = createRouter({
     {
       path: '/pantau-anak-krakatau',
       name: 'pantau-anak-krakatau',
-      component: PantauAnakKrakatau,
+      component: () => import('@/views/PantauAnakKrakatau.vue'),
       meta: { title: 'Pantau Anak Krakatau' },
     },
     {
@@ -165,13 +143,13 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'dashboard',
-      component: DashboardView,
+      component: () => import('@/views/dashboard/DashboardView.vue'),
       meta: { requiresAuth: true, requiresApproval: true },
     },
     {
       path: '/invitations',
       name: 'Invitations',
-      component: InvitationsView,
+      component: () => import('@/views/dashboard/InvitationsView.vue'),
       meta: { requiresAuth: true, requiresApproval: true },
     },
     {
@@ -196,22 +174,22 @@ const router = createRouter({
     {
       path: '/templates',
       name: 'Templates',
-      component: TemplatesView,
+      component: () => import('@/views/dashboard/TemplatesView.vue'),
       meta: { title: 'Katalog Template' },
     },
     {
       path: '/guestbook',
       name: 'Guestbook',
-      component: GuestbookView,
+      component: () => import('@/views/dashboard/GuestbookView.vue'),
       meta: { title: 'Buku Tamu', requiresAuth: true, requiresApproval: true },
     },
     {
       path: '/settings',
       name: 'Settings',
-      component: SettingsView,
+      component: () => import('@/views/dashboard/SettingsView.vue'),
       meta: { requiresAuth: true, requiresApproval: true },
     },
-    { path: '/admin/login', name: 'admin-login', component: AdminLogin, meta: { guestOnly: true } },
+    { path: '/admin/login', name: 'admin-login', component: () => import('@/views/admin/AdminLogin.vue'), meta: { guestOnly: true } },
     {
       path: '/admin/totp/setup',
       name: 'admin-totp-setup',
@@ -231,19 +209,19 @@ const router = createRouter({
     {
       path: '/admin',
       name: 'admin-dashboard',
-      component: AdminDashboard,
+      component: () => import('@/views/admin/AdminDashboard.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/users',
       name: 'admin-users',
-      component: AdminUsers,
+      component: () => import('@/views/admin/AdminUsers.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/invitations',
       name: 'admin-invitations',
-      component: AdminInvitations,
+      component: () => import('@/views/admin/AdminInvitations.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
@@ -267,43 +245,43 @@ const router = createRouter({
     {
       path: '/admin/templates',
       name: 'admin-templates',
-      component: AdminTemplates,
+      component: () => import('@/views/admin/AdminTemplates.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/palettes',
       name: 'admin-palettes',
-      component: AdminPaletteColors,
+      component: () => import('@/views/admin/AdminPaletteColors.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Master Palet' },
     },
     {
       path: '/admin/audio',
       name: 'admin-audio',
-      component: AdminAudio,
+      component: () => import('@/views/admin/AdminAudio.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/banks',
       name: 'admin-banks',
-      component: AdminBanks,
+      component: () => import('@/views/admin/AdminBanks.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/sections',
       name: 'admin-sections',
-      component: AdminSections,
+      component: () => import('@/views/admin/AdminSections.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/categories',
       name: 'admin-categories',
-      component: AdminCategories,
+      component: () => import('@/views/admin/AdminCategories.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
       path: '/admin/promo-codes',
       name: 'admin-promo-codes',
-      component: AdminPromoCodes,
+      component: () => import('@/views/admin/AdminPromoCodes.vue'),
       meta: { requiresAuth: true, requiresAdmin: true },
     },
     {
@@ -385,7 +363,7 @@ const router = createRouter({
       component: () => import('@/views/admin/AdminLogs.vue'),
       meta: { requiresAuth: true, requiresAdmin: true, title: 'Activity & Error Logs' },
     },
-    { path: '/guests', name: 'Guests', component: GuestsView },
+    { path: '/guests', name: 'Guests', component: () => import('@/views/dashboard/GuestsView.vue') },
     {
       path: '/tema',
       redirect: '/templates',
