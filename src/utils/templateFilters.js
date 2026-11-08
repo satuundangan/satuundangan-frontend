@@ -26,32 +26,105 @@ function groupBy(templates, keyFn) {
 }
 
 function withLabel(entry) {
-  return { ...entry, label: `${entry.name} (${entry.count})` }
+  const { _totalCount, ...rest } = entry
+  return { ...rest, label: `${rest.name} (${rest.count})` }
 }
 
-export function buildStyleFilters(templates, minCount = MIN_GROUP_SIZE) {
+export function buildStyleFilters(templates, minCount = MIN_GROUP_SIZE, options = {}) {
   const list = safeList(templates)
   const groups = groupBy(list, (t) => t?.filterGroup)
+
+  // Options can be { activePackage, searchQuery } or string (activePackage)
+  let activePackage = ALL_ID
+  let searchQuery = ''
+  if (typeof options === 'string') {
+    activePackage = options
+  } else if (options && typeof options === 'object') {
+    activePackage = options.activePackage || options.packageId || options.tier || ALL_ID
+    searchQuery = options.searchQuery || options.query || ''
+  }
+
+  const normPkg = normalize(activePackage).toLowerCase()
+  const hasPkgFilter = normPkg && normPkg !== ALL_ID
+  const hasQuery = Boolean(normalize(searchQuery))
 
   const entries = []
   for (const [name, items] of groups) {
     if (items.length < minCount) continue
-    entries.push({ id: name, name, count: items.length })
-  }
-  entries.sort((a, b) => b.count - a.count || a.name.localeCompare(b.name, 'id'))
 
-  const all = { id: ALL_ID, name: 'Semua', count: list.length }
+    let matching = items
+    if (hasPkgFilter) {
+      matching = matching.filter(
+        (t) => normalize(t?.category).toLowerCase() === normPkg,
+      )
+    }
+    if (hasQuery) {
+      matching = matching.filter((t) => scoreTemplateMatch(t, searchQuery) > 0)
+    }
+
+    entries.push({
+      id: name,
+      name,
+      count: matching.length,
+      _totalCount: items.length,
+    })
+  }
+
+  // Stable ordering by master group size, then alphabetically
+  entries.sort((a, b) => b._totalCount - a._totalCount || a.name.localeCompare(b.name, 'id'))
+
+  let allMatching = list
+  if (hasPkgFilter) {
+    allMatching = allMatching.filter(
+      (t) => normalize(t?.category).toLowerCase() === normPkg,
+    )
+  }
+  if (hasQuery) {
+    allMatching = allMatching.filter((t) => scoreTemplateMatch(t, searchQuery) > 0)
+  }
+
+  const all = { id: ALL_ID, name: 'Semua', count: allMatching.length }
   return [all, ...entries].map(withLabel)
 }
 
-export function buildPackageFilters(templates) {
+export function buildPackageFilters(templates, options = {}) {
   const list = safeList(templates)
   const groups = groupBy(list, (t) => t?.category)
 
+  // Options can be { activeStyle, searchQuery } or string (activeStyle)
+  let activeStyle = ALL_ID
+  let searchQuery = ''
+  if (typeof options === 'string') {
+    activeStyle = options
+  } else if (options && typeof options === 'object') {
+    activeStyle = options.activeStyle || options.styleId || options.category || ALL_ID
+    searchQuery = options.searchQuery || options.query || ''
+  }
+
+  const normStyle = normalize(activeStyle).toLowerCase()
+  const hasStyleFilter = normStyle && normStyle !== ALL_ID
+  const hasQuery = Boolean(normalize(searchQuery))
+
   const entries = []
   for (const [name, items] of groups) {
-    entries.push({ id: name, name, count: items.length })
+    let matching = items
+    if (hasStyleFilter) {
+      matching = matching.filter(
+        (t) => normalize(t?.filterGroup).toLowerCase() === normStyle,
+      )
+    }
+    if (hasQuery) {
+      matching = matching.filter((t) => scoreTemplateMatch(t, searchQuery) > 0)
+    }
+
+    entries.push({
+      id: name,
+      name,
+      count: matching.length,
+      _totalCount: items.length,
+    })
   }
+
   entries.sort((a, b) => {
     const aIndex = PACKAGE_ORDER.indexOf(a.name)
     const bIndex = PACKAGE_ORDER.indexOf(b.name)
@@ -61,7 +134,17 @@ export function buildPackageFilters(templates) {
     return aIndex - bIndex
   })
 
-  const all = { id: ALL_ID, name: 'Semua Paket', count: list.length }
+  let allMatching = list
+  if (hasStyleFilter) {
+    allMatching = allMatching.filter(
+      (t) => normalize(t?.filterGroup).toLowerCase() === normStyle,
+    )
+  }
+  if (hasQuery) {
+    allMatching = allMatching.filter((t) => scoreTemplateMatch(t, searchQuery) > 0)
+  }
+
+  const all = { id: ALL_ID, name: 'Semua Paket', count: allMatching.length }
   return [all, ...entries].map(withLabel)
 }
 

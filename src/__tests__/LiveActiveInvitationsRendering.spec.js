@@ -242,4 +242,58 @@ describe('Zero-Risk Verification: Live Active Invitations & Real Template Render
     expect(html).toContain('pi-sparkles')
     expect(html).toContain('pi-star')
   })
+
+  it('6. Real Live Customer "our-wedding" integrates MusicControl with comfortable 45% volume and zero audio blocking', async () => {
+    const mockAudio = {
+      play: vi.fn().mockResolvedValue(undefined),
+      pause: vi.fn(),
+      volume: 1,
+      preload: 'auto',
+      src: '',
+      loop: false,
+      currentTime: 0,
+      onloadedmetadata: null,
+      ontimeupdate: null,
+    }
+    const origAudio = global.Audio
+    global.Audio = vi.fn(function () {
+      return mockAudio
+    })
+
+    try {
+      const wrapper = mount(LightModern, {
+        props: {
+          data: realOurWeddingContent,
+        },
+        global: {
+          stubs: {
+            FloatingLoveBird: true,
+            WatermarkBadge: true,
+          },
+        },
+      })
+
+      // Click "Buka Undangan" specifically (not MusicControl button)
+      const openBtn = wrapper.findAll('button').find((b) => b.text().includes('Buka Undangan'))
+      if (openBtn) {
+        await openBtn.trigger('click')
+        await flushPromises()
+      }
+
+      // Verify customer's real custom song was bound
+      expect(mockAudio.src).toBe('https://cdn.satuundangan.id/1779017878467-KOMANG - RAIM LAODE LYRIC OFFICIAL.mp3')
+      // Volume must be comfortable (0.45)
+      expect(mockAudio.volume).toBe(0.45)
+      // Preload must be metadata (not full download blocking)
+      expect(mockAudio.preload).toBe('metadata')
+
+      // Verify event locations from customer
+      expect(wrapper.text()).toContain('Gereja Katolik Santo Ambrosius')
+      expect(wrapper.text()).toContain('Hotel Sol Marina Serpong')
+      expect(wrapper.text()).toContain('Nelson Pereira')
+      expect(wrapper.text()).toContain('Fransiska Tumbelaka')
+    } finally {
+      global.Audio = origAudio
+    }
+  })
 })
