@@ -15,7 +15,7 @@ export const demoData = {
   bridePhotoUrl: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop',
   groomPhotoUrl: 'https://cdn.satuundangan.id/1780000002-groom-photo.jpeg',
   photoCoupleUrl: 'https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=1974&auto=format&fit=crop',
-  videoPrewedding: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
+  videoPrewedding: 'https://www.youtube.com/embed/QJZ6ynylupE',
   dateTime: '2026-12-12T09:00:00.000Z',
   isSingleEvent: false,
   mergeEvents: false,

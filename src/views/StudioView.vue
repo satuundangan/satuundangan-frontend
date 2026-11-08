@@ -145,8 +145,8 @@
                 <div class="space-y-2">
                   <h4 class="font-serif font-bold text-dark text-lg">{{ selectedTemplate.name }}</h4>
                   <div class="flex items-center gap-2 flex-wrap">
-                    <span class="rounded-lg bg-white px-2 py-1 text-[9px] font-bold uppercase text-mocha shadow-sm border border-mocha/5">
-                      ✨ Semua Desain Gratis
+                    <span class="rounded-lg bg-white px-2 py-1 text-[9px] font-bold uppercase text-mocha shadow-sm border border-mocha/5 inline-flex items-center gap-1">
+                      <i class="pi pi-sparkles text-[9px]" aria-hidden="true"></i> Semua Desain Gratis
                     </span>
                   </div>
                   <button @click="goBackToTemplates" class="text-xs font-bold text-mocha hover:underline flex items-center gap-1.5 pt-1">
@@ -203,7 +203,9 @@
                   <!-- Wanita -->
                   <div class="space-y-5">
                     <h3 class="font-serif font-bold text-base text-mocha flex items-center gap-2">
-                      <span class="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center text-xs border border-mocha/10">👰‍♀️</span> 
+                      <span class="w-7 h-7 rounded-full bg-rose-50 shadow-sm flex items-center justify-center text-xs border border-rose-100 text-rose-500">
+                        <i class="pi pi-heart text-[10px]" aria-hidden="true"></i>
+                      </span> 
                       Mempelai Wanita
                     </h3>
                     <div class="space-y-4">
@@ -248,7 +250,9 @@
                   <!-- Pria -->
                   <div class="space-y-5">
                     <h3 class="font-serif font-bold text-base text-mocha flex items-center gap-2">
-                      <span class="w-7 h-7 rounded-full bg-white shadow-sm flex items-center justify-center text-xs border border-mocha/10">🤵‍♂️</span> 
+                      <span class="w-7 h-7 rounded-full bg-blue-50 shadow-sm flex items-center justify-center text-xs border border-blue-100 text-blue-500">
+                        <i class="pi pi-user text-[10px]" aria-hidden="true"></i>
+                      </span> 
                       Mempelai Pria
                     </h3>
                     <div class="space-y-4">
@@ -680,7 +684,7 @@
                     <li>Buka <strong>YouTube Studio</strong> (studio.youtube.com) atau aplikasi YouTube di HP.</li>
                     <li>Upload video prewedding kamu seperti biasa.</li>
                     <li>Pada tahap <strong>Visibilitas (Visibility)</strong>, pilih opsi <strong>"Tidak Publik" (Unlisted)</strong>.</li>
-                    <li>Salin link video tersebut lalu tempel (paste) ke kolom URL di atas. Selesai! 🎉</li>
+                    <li>Salin link video tersebut lalu tempel (paste) ke kolom URL di atas. Selesai!</li>
                   </ol>
                 </div>
               </div>

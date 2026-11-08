@@ -699,10 +699,10 @@
         <!-- All Sent Celebratory State -->
         <div v-if="unsentGuests.length === 0" class="py-12 px-4 text-center space-y-4 my-auto">
           <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
-            <i class="fa-solid fa-circle-check"></i>
+            <i class="pi pi-check-circle" aria-hidden="true"></i>
           </div>
           <div class="space-y-1">
-            <h4 class="text-xl font-black text-slate-900">Semua Tamu Ditandai Terkirim! 🎉</h4>
+            <h4 class="text-xl font-black text-slate-900">Semua Tamu Ditandai Terkirim!</h4>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">
               Seluruh {{ totalGuestsCount }} tamu dalam daftar undangan telah ditandai terkirim.
             </p>

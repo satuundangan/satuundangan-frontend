@@ -78,7 +78,7 @@
             ]"
           >
             <span>Tools Gratis</span>
-            <i class="fa-solid fa-chevron-down text-[10px] transition-transform duration-200" :class="{ 'rotate-180': toolsDropdownOpen }"></i>
+            <i class="pi pi-chevron-down text-[10px] transition-transform duration-200" :class="{ 'rotate-180': toolsDropdownOpen }" aria-hidden="true"></i>
           </button>
 
           <!-- Dropdown Menu -->
@@ -93,7 +93,7 @@
                 class="flex items-start gap-3 px-4 py-2.5 hover:bg-stone-50 transition-colors group"
               >
                 <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                  <i class="fa-solid fa-calculator text-xs"></i>
+                  <i class="pi pi-calculator text-xs" aria-hidden="true"></i>
                 </div>
                 <div>
                   <p class="text-xs font-bold text-dark group-hover:text-mocha transition-colors">Wedding Planner</p>
@@ -107,7 +107,7 @@
                 class="flex items-start gap-3 px-4 py-2.5 hover:bg-stone-50 transition-colors group"
               >
                 <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform">
-                  <i class="fa-solid fa-heart text-xs"></i>
+                  <i class="pi pi-heart text-xs" aria-hidden="true"></i>
                 </div>
                 <div>
                   <p class="text-xs font-bold text-dark group-hover:text-mocha transition-colors">Kalkulator Jodoh</p>
@@ -154,15 +154,15 @@
                  <p class="text-sm font-bold text-dark truncate">{{ userName }}</p>
               </div>
               <router-link to="/dashboard" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha group transition-colors">
-                 <i class="fa-solid fa-chart-line w-4 text-gray-400 group-hover:text-mocha transition-colors"></i> Dashboard
+                 <i class="pi pi-chart-line w-4 text-gray-400 group-hover:text-mocha transition-colors" aria-hidden="true"></i> Dashboard
               </router-link>
               <router-link to="/settings" class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-600 hover:bg-gray-50 hover:text-mocha group transition-colors">
-                 <i class="fa-solid fa-gear w-4 text-gray-400 group-hover:text-mocha transition-colors"></i> Pengaturan
+                 <i class="pi pi-cog w-4 text-gray-400 group-hover:text-mocha transition-colors" aria-hidden="true"></i> Pengaturan
               </router-link>
               <div class="border-t border-gray-100 my-1"></div>
               <button @click="handleLogout"
                 class="w-full text-left px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 flex items-center gap-2.5 transition-colors group">
-                <i class="fa-solid fa-right-from-bracket w-4 text-red-400 group-hover:text-red-500 transition-colors"></i> Logout
+                <i class="pi pi-sign-out w-4 text-red-400 group-hover:text-red-500 transition-colors" aria-hidden="true"></i> Logout
               </button>
             </div>
           </div>
@@ -173,7 +173,7 @@
              Masuk
           </button>
           <button @click="$emit('create-invitation')" class="btn-primary shadow-lg shadow-mocha/20 text-sm px-6 py-2.5 rounded-full hover:shadow-mocha/40 hover:-translate-y-0.5 transition-all flex items-center gap-2 font-bold">
-             <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+             <i class="pi pi-sparkles text-xs" aria-hidden="true"></i>
              <span>Buat Undangan</span>
           </button>
         </template>
@@ -181,7 +181,7 @@
 
       <!-- Mobile Menu Button -->
       <button @click="sidebarOpen = true" class="md:hidden text-lg hover:text-mocha transition-colors p-2 rounded-lg" :class="isScrolled ? 'text-dark' : 'text-dark'" aria-label="Menu Navigasi">
-        <i class="fa-solid fa-bars"></i>
+        <i class="pi pi-bars" aria-hidden="true"></i>
       </button>
     </div>
   </nav>
@@ -198,7 +198,7 @@
                <span class="font-serif font-bold text-lg text-mocha">SatuUndangan<span class="text-accent-gold">.id</span></span>
              </div>
              <button @click="sidebarOpen = false" class="w-8 h-8 rounded-full flex items-center justify-center text-gray-400 hover:bg-gray-100 hover:text-red-500 transition" aria-label="Tutup Menu">
-               <i class="fa-solid fa-xmark text-lg"></i>
+               <i class="pi pi-times text-lg" aria-hidden="true"></i>
              </button>
           </div>
 
@@ -375,7 +375,7 @@ const handleLogout = async () => {
 
   if (result.isConfirmed) {
     auth.logout()
-    toast.success('Berhasil logout 👋')
+    toast.success('Berhasil logout')
     router.push('/')
   }
 }

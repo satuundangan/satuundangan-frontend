@@ -37,17 +37,17 @@
                  v-model="selectedSort"
                  class="appearance-none bg-white border border-slate-200 text-slate-700 text-xs font-bold rounded-xl px-3 py-1.5 pr-7 focus:outline-none focus:ring-2 focus:ring-[#a47148]/20 focus:border-[#a47148] cursor-pointer shadow-xs transition-all"
                >
-                 <option value="newest">✨ Terbaru</option>
-                 <option value="name_asc">🔤 Nama A-Z</option>
-                 <option value="oldest">🕰️ Terlama</option>
+                 <option value="newest">Terbaru</option>
+                 <option value="name_asc">Nama (A-Z)</option>
+                 <option value="oldest">Terlama</option>
                </select>
-               <i class="fa-solid fa-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
+               <i class="pi pi-chevron-down absolute right-2.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 pointer-events-none"></i>
              </div>
            </div>
         </div>
 
         <div v-if="loading" class="flex flex-col items-center justify-center py-20 text-slate-400">
-           <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-slate-900"></i>
+           <i class="pi pi-spin pi-spinner text-3xl mb-3 text-slate-900"></i>
            <p class="text-xs font-bold">Memuat katalog desain...</p>
         </div>
 
@@ -69,7 +69,7 @@
                  />
                  <div class="absolute inset-0 bg-slate-900/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center backdrop-blur-xs">
                     <span class="bg-white text-slate-900 px-4 py-2 rounded-xl font-extrabold text-xs shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-all duration-300 flex items-center gap-1.5">
-                       <i class="fa-solid fa-wand-magic-sparkles text-[11px] text-blue-600"></i> Gunakan Desain
+                       <i class="pi pi-palette text-[11px] text-blue-600"></i> Gunakan Desain
                     </span>
                  </div>
                  
@@ -80,7 +80,7 @@
                    class="absolute top-2.5 right-2.5 w-8 h-8 bg-white/90 backdrop-blur-md rounded-xl flex items-center justify-center text-slate-700 shadow-sm border border-white/60 hover:bg-white hover:text-blue-600 transition-colors z-20"
                    title="Preview Demo"
                  >
-                    <i class="fa-solid fa-eye text-xs"></i>
+                    <i class="pi pi-eye text-xs"></i>
                  </a>
 
               </div>
@@ -110,7 +110,7 @@
 
         <div v-else class="py-20 text-center bg-white rounded-2xl border border-dashed border-slate-200 space-y-2">
            <div class="w-14 h-14 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto text-slate-300 text-xl border border-slate-100">
-             <i class="fa-solid fa-palette"></i>
+             <i class="pi pi-palette"></i>
            </div>
            <h3 class="text-sm font-extrabold text-slate-900">Belum Ada Template Ditemukan</h3>
            <p class="text-xs text-slate-400 max-w-xs mx-auto">Coba pilih kategori lain di filter atas untuk melihat pilihan desain yang tersedia.</p>

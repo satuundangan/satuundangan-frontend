@@ -242,7 +242,7 @@
             <!-- Akad -->
             <div class="bg-white p-8 md:p-12 border-t-4 border-[#839b7f] shadow-lg rounded-[2rem] space-y-6 relative overflow-hidden" v-observe>
               <div class="absolute top-0 right-0 w-24 h-24 bg-[#eef2ee] rounded-bl-full -z-0"></div>
-              <span class="text-3xl relative z-10">💍</span>
+              <div class="relative z-10"><i class="pi pi-heart text-3xl text-[#4e604d]" aria-hidden="true"></i></div>
               <h3 class="font-serif text-2xl font-semibold text-[#3e4d3e] relative z-10">Akad Nikah</h3>
               <div class="space-y-2 text-sm text-[#657b62] font-medium relative z-10">
                 <p class="uppercase tracking-widest">{{ formatDate(data.akadLocation?.dateTime) }}</p>
@@ -258,7 +258,7 @@
             <!-- Resepsi -->
             <div v-if="!data.mergeEvents" class="bg-white p-8 md:p-12 border-t-4 border-[#c5a059] shadow-lg rounded-[2rem] space-y-6 relative overflow-hidden" v-observe>
               <div class="absolute top-0 left-0 w-24 h-24 bg-[#faf6ec] rounded-br-full -z-0"></div>
-              <span class="text-3xl relative z-10">🥂</span>
+              <div class="relative z-10"><i class="pi pi-sparkles text-3xl text-[#c5a059]" aria-hidden="true"></i></div>
               <h3 class="font-serif text-2xl font-semibold text-[#3e4d3e] relative z-10">Resepsi</h3>
               <div class="space-y-2 text-sm text-[#657b62] font-medium relative z-10">
                 <p class="uppercase tracking-widest">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>

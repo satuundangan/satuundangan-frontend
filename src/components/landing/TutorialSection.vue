@@ -28,7 +28,7 @@
 
           <!-- Placeholder until a real TikTok URL is set -->
           <div v-else class="absolute inset-0 flex flex-col items-center justify-center text-center px-6 text-gray-400">
-            <i class="fa-brands fa-tiktok text-5xl mb-4 text-dark/70"></i>
+            <i class="pi pi-tiktok text-5xl mb-4 text-dark/70" aria-hidden="true"></i>
             <p class="font-bold text-dark/70">Video tutorial segera hadir</p>
             <p class="text-sm mt-1">Pasang link TikTok di <code>tiktokUrl</code>.</p>
           </div>

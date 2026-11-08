@@ -769,10 +769,10 @@ function getLocalPreviewPayload(slug) {
         <div class="relative inline-flex items-center justify-center">
           <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#f5ede4] via-white to-[#faebd7] border-2 border-[#a47148]/25 shadow-inner flex items-center justify-center">
             <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#a47148] to-[#86532d] text-white flex items-center justify-center shadow-lg shadow-[#a47148]/30">
-              <i class="fa-solid fa-feather-pointed text-xl sm:text-2xl"></i>
+              <i class="pi pi-pencil text-xl sm:text-2xl" aria-hidden="true"></i>
             </div>
           </div>
-          <span class="absolute -top-1 -right-1 text-amber-500 text-sm">✨</span>
+          <i class="pi pi-sparkles absolute -top-1 -right-1 text-amber-500 text-sm" aria-hidden="true"></i>
         </div>
 
         <!-- Pill Badge Header / Emblem -->
@@ -800,7 +800,7 @@ function getLocalPreviewPayload(slug) {
             data-test="draft-back-home-btn"
             class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 hover:from-black hover:to-slate-900 text-white font-bold text-xs sm:text-sm shadow-xl shadow-slate-900/15 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
           >
-            <i class="fa-solid fa-house text-xs"></i>
+            <i class="pi pi-home text-xs" aria-hidden="true"></i>
             <span>Kembali ke Beranda</span>
           </a>
 
@@ -809,7 +809,7 @@ function getLocalPreviewPayload(slug) {
             data-test="draft-create-own-btn"
             class="w-full py-3 px-6 rounded-2xl bg-[#a47148]/10 hover:bg-[#a47148]/20 text-[#a47148] border border-[#a47148]/30 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
           >
-            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            <i class="pi pi-sparkles text-xs" aria-hidden="true"></i>
             <span>Buat Undangan Sendiri di SatuUndangan</span>
           </a>
 
@@ -823,7 +823,7 @@ function getLocalPreviewPayload(slug) {
               data-test="draft-login-owner-btn"
               class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-[#a47148] underline decoration-slate-300 hover:decoration-[#a47148] transition-colors cursor-pointer"
             >
-              <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+              <i class="pi pi-sign-in text-xs" aria-hidden="true"></i>
               <span>Masuk ke Dashboard / Login</span>
             </a>
           </div>
@@ -835,13 +835,13 @@ function getLocalPreviewPayload(slug) {
     <div v-else-if="error" class="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4">
       <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-gray-100 shadow-xl text-center space-y-4">
         <div class="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto text-2xl">
-          <i class="fa-solid fa-triangle-exclamation"></i>
+          <i class="pi pi-exclamation-triangle" aria-hidden="true"></i>
         </div>
         <h2 class="text-xl font-serif font-black text-slate-900">Undangan Tidak Tersedia</h2>
         <p class="text-xs text-slate-500 leading-relaxed">{{ error }}</p>
         <div class="pt-2">
           <a href="/" class="inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-mocha text-white text-xs font-bold rounded-xl hover:bg-mocha/90 transition-colors">
-            <i class="fa-solid fa-house text-xs"></i>
+            <i class="pi pi-home text-xs" aria-hidden="true"></i>
             <span>Kembali ke Beranda</span>
           </a>
         </div>
@@ -866,7 +866,7 @@ function getLocalPreviewPayload(slug) {
         <div class="bg-slate-950/95 backdrop-blur-md text-white p-4 sm:p-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-3.5 text-left w-full sm:w-auto">
             <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 text-white flex items-center justify-center text-lg shrink-0 shadow-lg shadow-amber-500/20">
-              <i class="fa-solid fa-shield-halved"></i>
+              <i class="pi pi-shield" aria-hidden="true"></i>
             </div>
             <div class="space-y-0.5">
               <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-black uppercase tracking-wider">
@@ -883,7 +883,7 @@ function getLocalPreviewPayload(slug) {
             @click="goToCheckout"
             class="w-full sm:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 px-5 py-2.5 rounded-2xl font-black text-xs sm:text-sm shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.02] active:scale-95"
           >
-            <i class="fa-solid fa-bolt-lightning text-xs"></i>
+            <i class="pi pi-bolt text-xs" aria-hidden="true"></i>
             <span>Aktifkan Undangan Sekarang (Bayar)</span>
           </button>
         </div>
@@ -905,7 +905,7 @@ function getLocalPreviewPayload(slug) {
             class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] max-w-md w-[90%] bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-amber-500/40 flex items-center gap-3"
           >
             <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-circle-info"></i>
+              <i class="pi pi-info-circle" aria-hidden="true"></i>
             </div>
             <div class="text-xs">
               <p class="font-bold text-amber-400">Mode Pratinjau Draft</p>
@@ -916,7 +916,7 @@ function getLocalPreviewPayload(slug) {
               @click="showDraftSubmitNotice = false"
               class="text-slate-400 hover:text-white ml-auto text-xs"
             >
-              <i class="fa-solid fa-xmark"></i>
+              <i class="pi pi-times" aria-hidden="true"></i>
             </button>
           </div>
         </transition>
@@ -932,7 +932,7 @@ function getLocalPreviewPayload(slug) {
           @click="openTicketModal"
           class="flex items-center gap-2.5 px-4 sm:px-5 py-3 rounded-full bg-slate-900/95 hover:bg-black text-white shadow-2xl shadow-black/30 backdrop-blur-md border border-white/20 transition-all transform hover:scale-105 active:scale-95 text-xs sm:text-sm font-extrabold tracking-wide cursor-pointer group"
         >
-          <span class="text-base group-hover:rotate-12 transition-transform duration-300">🎟️</span>
+          <i class="pi pi-ticket text-base group-hover:rotate-12 transition-transform duration-300" aria-hidden="true"></i>
           <span>Tiket & QR Kehadiran</span>
           <span class="relative flex h-2 w-2">
             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -959,11 +959,11 @@ function getLocalPreviewPayload(slug) {
                 @click="showTicketModal = false"
                 class="absolute top-4 right-4 w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center text-xs transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-xmark"></i>
+                <i class="pi pi-times" aria-hidden="true"></i>
               </button>
 
               <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 text-[10px] font-black uppercase tracking-widest mb-3 backdrop-blur-xs border border-white/10">
-                <span>🎟️</span>
+                <i class="pi pi-ticket" aria-hidden="true"></i>
                 <span>E-Ticket & QR Kehadiran</span>
               </div>
 
@@ -997,7 +997,7 @@ function getLocalPreviewPayload(slug) {
                   <img :src="ticketQrDataUrl" alt="QR Code Kehadiran" class="w-full h-full object-contain" />
                 </div>
                 <div v-else class="w-48 h-48 sm:w-52 sm:h-52 mx-auto rounded-xl bg-slate-100 flex flex-col items-center justify-center text-slate-400">
-                  <i class="fa-solid fa-circle-notch animate-spin text-2xl mb-2 text-[#a47148]"></i>
+                  <i class="pi pi-spin pi-spinner text-2xl mb-2 text-[#a47148]" aria-hidden="true"></i>
                   <span class="text-xs font-bold">Membuat QR Code...</span>
                 </div>
               </div>
@@ -1005,7 +1005,7 @@ function getLocalPreviewPayload(slug) {
               <!-- Instructions -->
               <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                 <p class="text-xs text-slate-600 font-medium leading-relaxed">
-                  <i class="fa-solid fa-camera text-slate-400 mr-1"></i>
+                  <i class="pi pi-camera text-slate-400 mr-1" aria-hidden="true"></i>
                   Tunjukkan QR Code ini kepada penerima tamu di meja resepsi untuk akses masuk.
                 </p>
               </div>

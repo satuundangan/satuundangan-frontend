@@ -26,14 +26,14 @@
              Platform undangan pernikahan digital premium. Buat momen spesialmu lebih berkesan dengan desain elegan dan fitur canggih.
            </p>
            <div class="flex gap-4">
-              <a href="https://www.instagram.com/satuundangan_official" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
-                 <i class="fab fa-instagram"></i>
+              <a href="https://www.instagram.com/satuundangan_official" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white" aria-label="Instagram">
+                 <i class="pi pi-instagram text-sm" aria-hidden="true"></i>
               </a>
-              <a href="https://www.tiktok.com/@satuundangan.id" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
-                 <i class="fab fa-tiktok"></i>
+              <a href="https://www.tiktok.com/@satuundangan.id" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white" aria-label="TikTok">
+                 <i class="pi pi-tiktok text-sm" aria-hidden="true"></i>
               </a>
-              <a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white">
-                 <i class="fab fa-whatsapp"></i>
+              <a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-mocha transition-colors text-gray-400 hover:text-white" aria-label="WhatsApp">
+                 <i class="pi pi-whatsapp text-sm" aria-hidden="true"></i>
               </a>
            </div>
         </div>
@@ -82,13 +82,9 @@
       <div class="pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
          <p>© 2026 SatuUndangan.id. All rights reserved.</p>
          <div class="flex gap-6">
-            <span>Made with ❤️ in Indonesia</span>
+            <span>Made with <i class="pi pi-heart-fill text-rose-500 inline-block align-middle text-xs mx-0.5" aria-hidden="true"></i> in Indonesia</span>
          </div>
       </div>
     </div>
   </footer>
 </template>
-
-<style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-</style>

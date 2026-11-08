@@ -21,7 +21,7 @@
               {{ faq.question }}
             </span>
             <span class="text-mocha transition-transform duration-500 flex items-center justify-center w-8 h-8 rounded-full bg-ivory" :class="{ 'rotate-180 bg-mocha text-white': isOpen(index) }">
-              <i class="fa-solid fa-chevron-down text-sm"></i>
+              <i class="pi pi-chevron-down text-sm" aria-hidden="true"></i>
             </span>
           </button>
           
