@@ -33,7 +33,7 @@ export function resolveTemplateKey(slug, componentKey, registry = templateLoader
   return FALLBACK_TEMPLATE_KEY
 }
 
-const THUMB_VERSION = 'v=20261108'
+const THUMB_VERSION = 'v=20261108b'
 
 const LOCAL_TEMPLATE_THUMBNAILS = {
   'azure-shores': `/assets/templates/azure-shores.webp?${THUMB_VERSION}`,
