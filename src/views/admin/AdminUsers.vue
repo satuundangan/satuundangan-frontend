@@ -195,6 +195,7 @@
             <option value="checkout_pending">Checkout menunggu</option>
             <option value="paid">Memiliki transaksi berbayar</option>
             <option value="published">Undangan terbit</option>
+            <option value="event_completed">Acara dikonfirmasi selesai</option>
           </select>
         </label>
         <button
@@ -605,6 +606,25 @@
               {{ customerDetail.lifecycle.evidence }} Transaksi tanpa ID akun ditampilkan terpisah;
               email pembayar saja belum membuktikan kepemilikan akun.
             </p>
+            <div
+              class="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-blue-100 bg-blue-50 p-3"
+            >
+              <p class="text-xs leading-relaxed text-blue-950">
+                Cari tiket bantuan yang sudah tercatat untuk pelanggan ini. Pesan tidak dikirim dari
+                profil.
+              </p>
+              <button
+                v-if="customerDetail.customer.email"
+                type="button"
+                class="shrink-0 rounded-lg bg-blue-900 px-3 py-2 text-xs font-bold text-white hover:bg-blue-800"
+                @click="openCustomerSupportQueue"
+              >
+                Buka antrean bantuan
+              </button>
+              <span v-else class="text-xs font-semibold text-slate-500"
+                >Email pelanggan belum tersedia</span
+              >
+            </div>
             <div class="grid gap-5 lg:grid-cols-2">
               <section>
                 <h3 class="mb-2 text-sm font-black text-slate-900">Undangan</h3>
@@ -618,25 +638,67 @@
                   <li
                     v-for="inv in customerDetail.invitations"
                     :key="inv.id"
-                    class="flex items-center justify-between gap-3 p-3"
+                    class="flex flex-col gap-3 p-3 sm:flex-row sm:items-center sm:justify-between"
                   >
                     <div>
                       <p class="text-xs font-bold text-slate-800">
                         {{ inv.title || `Undangan #${inv.id}` }}
                       </p>
                       <p class="mt-1 text-[10px] text-slate-500">
-                        {{ formatDate(inv.createdAt) }} · waktu lama belum tervalidasi
+                        Dibuat {{ formatDate(inv.createdAt) }} · waktu lama belum tervalidasi
+                      </p>
+                      <p
+                        v-if="inv.publishedAt || inv.isPublished"
+                        class="mt-1 text-[10px] text-slate-500"
+                      >
+                        Pertama terbit:
+                        {{
+                          inv.publishedAt ? formatDate(inv.publishedAt) : 'waktu belum diketahui'
+                        }}
+                      </p>
+                      <p
+                        v-if="inv.eventCompletedAt"
+                        class="mt-1 text-[10px] font-semibold text-emerald-700"
+                      >
+                        Acara dikonfirmasi selesai {{ formatDate(inv.eventCompletedAt) }} · admin
+                        #{{ inv.eventCompletedByAdminId }}
+                        <span class="block font-normal text-slate-600">
+                          Alasan: {{ inv.eventCompletionReason }}
+                        </span>
                       </p>
                     </div>
-                    <span
-                      class="rounded-full px-2 py-1 text-[10px] font-bold"
-                      :class="
-                        inv.isPublished
-                          ? 'bg-emerald-50 text-emerald-700'
-                          : 'bg-slate-100 text-slate-600'
-                      "
-                      >{{ inv.isPublished ? 'Terbit' : 'Draft' }}</span
-                    >
+                    <div class="flex shrink-0 items-center gap-2 self-start sm:self-center">
+                      <span
+                        class="rounded-full px-2 py-1 text-[10px] font-bold"
+                        :class="
+                          inv.eventCompletedAt
+                            ? 'bg-emerald-50 text-emerald-700'
+                            : inv.isPublished
+                              ? 'bg-blue-50 text-blue-700'
+                              : 'bg-slate-100 text-slate-600'
+                        "
+                        >{{
+                          inv.eventCompletedAt
+                            ? 'Acara selesai'
+                            : inv.isPublished
+                              ? 'Terbit'
+                              : 'Draft'
+                        }}</span
+                      >
+                      <button
+                        v-if="inv.isPublished && !inv.eventCompletedAt"
+                        type="button"
+                        class="rounded-lg border border-emerald-200 px-2.5 py-1.5 text-[10px] font-bold text-emerald-800 hover:bg-emerald-50 disabled:opacity-50"
+                        :disabled="recordingEventCompletionId === inv.id"
+                        @click="confirmWeddingCompletion(inv)"
+                      >
+                        {{
+                          recordingEventCompletionId === inv.id
+                            ? 'Menyimpan…'
+                            : 'Catat acara selesai'
+                        }}
+                      </button>
+                    </div>
                   </li>
                 </ul>
                 <p
@@ -933,6 +995,7 @@
 <script setup>
 import { computed, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { useDebounceFn } from '@vueuse/core'
+import { useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import { useColumnVisibility } from '@/utils/columnVisibility.js'
@@ -943,6 +1006,7 @@ import {
   fetchAdminUsers,
   fetchAdminUserStats,
   fetchAdminCustomerDetail,
+  confirmAdminWeddingCompletion,
   createAdminUser,
   updateAdminUser,
   deleteAdminUser,
@@ -955,6 +1019,7 @@ import Swal from 'sweetalert2'
 
 const toast = useToast()
 const authStore = useAuthStore()
+const router = useRouter()
 const isSuperadmin = computed(() => authStore.adminRole === 'superadmin')
 const users = ref([])
 const total = ref(0)
@@ -991,6 +1056,8 @@ const customerDetailOpen = ref(false)
 const customerDetailLoading = ref(false)
 const customerDetailError = ref('')
 const customerDetail = ref(null)
+const CUSTOMER_SUPPORT_SEARCH_KEY = 'admin_support_customer_search'
+const recordingEventCompletionId = ref(null)
 
 const form = reactive({
   name: '',
@@ -1245,6 +1312,49 @@ async function openCustomerDetail(user) {
   }
 }
 
+function openCustomerSupportQueue() {
+  const email = String(customerDetail.value?.customer?.email || '').trim()
+  if (!email) return
+  try {
+    sessionStorage.setItem(CUSTOMER_SUPPORT_SEARCH_KEY, email)
+  } catch {
+    toast.error('Konteks pelanggan tidak dapat disiapkan di browser ini.')
+    return
+  }
+  customerDetailOpen.value = false
+  router.push({ path: '/admin/leads-support', query: { tab: 'tickets' } })
+}
+
+async function confirmWeddingCompletion(invitation) {
+  const userId = customerDetail.value?.customer?.id
+  if (!userId || !invitation?.id) return
+
+  const result = await Swal.fire({
+    title: 'Konfirmasi acara selesai',
+    text: 'Catat hanya setelah pelanggan mengonfirmasi acaranya sudah berlangsung. Tanggal acara yang lewat bukan bukti penyelesaian.',
+    input: 'textarea',
+    inputLabel: 'Alasan atau sumber konfirmasi',
+    inputPlaceholder: 'Contoh: pelanggan mengonfirmasi acara selesai melalui support',
+    inputValidator: (value) =>
+      String(value || '').trim().length < 5 ? 'Alasan minimal 5 karakter.' : undefined,
+    showCancelButton: true,
+    confirmButtonText: 'Catat selesai',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+
+  recordingEventCompletionId.value = invitation.id
+  try {
+    await confirmAdminWeddingCompletion(userId, invitation.id, result.value.trim())
+    toast.success('Konfirmasi acara selesai tercatat.')
+    await openCustomerDetail({ id: userId })
+  } catch (error) {
+    toast.error(error.message || 'Konfirmasi acara selesai gagal dicatat.')
+  } finally {
+    recordingEventCompletionId.value = null
+  }
+}
+
 function openCreate() {
   editing.value = null
   Object.assign(form, {
@@ -1416,6 +1526,7 @@ function lifecycleLabel(stage) {
   return (
     {
       published: 'Undangan terbit',
+      event_completed: 'Acara dikonfirmasi selesai',
       checkout_pending: 'Checkout menunggu',
       paid: 'Transaksi berbayar',
       paid_by_legacy_link: 'Transaksi tertaut tanpa ID akun',

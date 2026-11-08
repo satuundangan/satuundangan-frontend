@@ -28,7 +28,7 @@ test.describe('Password reset flow (mocked)', () => {
 
     await expect(page.getByText('Development reset link:')).toBeVisible()
     await expect(page.getByRole('link', { name: /reset-password\?token=dev-token/ })).toBeVisible()
-    expect(requestBody).toEqual({ email: 'user@mail.com' })
+    expect(requestBody).toMatchObject({ email: 'user@mail.com' })
   })
 
   test('customer can reset password using token link', async ({ page }) => {

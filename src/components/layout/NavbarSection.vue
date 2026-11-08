@@ -274,6 +274,21 @@ const auth = useAuthStore()
 const route = useRoute()
 const userName = computed(() => auth.user?.name || null)
 
+// The navbar owns the login/register modal for ?login=true and ?register=true on every page.
+watch(
+  () => route.query,
+  (query) => {
+    if (query?.login === 'true') {
+      authMode.value = 'login'
+      show.value = true
+    } else if (query?.register === 'true') {
+      authMode.value = 'register'
+      show.value = true
+    }
+  },
+  { immediate: true },
+)
+
 const toast = useToast()
 const dropdownOpen = ref(false)
 const dropdownRef = ref(null)
@@ -371,13 +386,6 @@ const handleScroll = () => {
 
 onMounted(() => {
    window.addEventListener('scroll', handleScroll)
-   if (route.query.login === 'true') {
-      show.value = true
-      authMode.value = 'login'
-   } else if (route.query.register === 'true') {
-      show.value = true
-      authMode.value = 'register'
-   }
 })
 
 onUnmounted(() => {

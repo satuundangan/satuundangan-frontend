@@ -22,6 +22,7 @@ const mockPromos = [
     discount_value: 50,
     max_uses: 100,
     used_count: 12,
+    redemptions_count: 12,
     valid_from: '2026-01-01T00:00:00.000Z',
     valid_until: '2026-12-31T23:59:59.000Z',
     is_active: true,
@@ -33,6 +34,7 @@ const mockPromos = [
     discount_value: 20000,
     max_uses: null,
     used_count: 5,
+    redemptions_count: 5,
     valid_from: null,
     valid_until: null,
     is_active: false,
@@ -59,11 +61,18 @@ test.describe('Promo Code: Checkout Page', () => {
 
     await setupAuth(page)
 
-    await page.route('**/invitation/slug/**', (route) => {
+    await page.route('**/invitation/my/slug/**', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ success: true, data: mockInvitation }),
+      })
+    })
+    await page.route('**/payment/packages', (route) => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'premium', label: 'Premium', price: 49000 }]),
       })
     })
   })
@@ -259,11 +268,19 @@ test.describe('Promo Code: Admin Management', () => {
 
     await setupAuth(page)
 
-    await page.route('https://api.satuundangan.id/admin/promo-codes**', (route) => {
+    await page.route('**/promo/admin/list**', (route) => {
       route.fulfill({
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify({ data: mockPromos, total: mockPromos.length }),
+      })
+    })
+    // Summary is optional: the page falls back to totals computed from the list.
+    await page.route('**/promo/admin/summary', (route) => {
+      route.fulfill({
+        status: 404,
+        contentType: 'application/json',
+        body: JSON.stringify({ message: 'Not found' }),
       })
     })
   })
@@ -280,16 +297,20 @@ test.describe('Promo Code: Admin Management', () => {
     await page.goto(`${BASE}/admin/promo-codes`)
 
     await expect(page.locator('text=Persentase').first()).toBeVisible({ timeout: 10000 })
-    await expect(page.locator('text=Fixed').first()).toBeVisible()
+    await expect(page.locator('text=Potongan Tetap').first()).toBeVisible()
     console.log('✅ Discount type badges displayed correctly')
   })
 
   test('should show usage count and max_uses correctly', async ({ page }) => {
     await page.goto(`${BASE}/admin/promo-codes`)
 
-    // NIKAH50: 12 / 100, DISKON20K: 5 / ∞
-    await expect(page.locator('text=12 / 100')).toBeVisible({ timeout: 10000 })
-    await expect(page.locator('text=5 / ∞')).toBeVisible()
+    // NIKAH50: 12 lunas / 100 kuota, DISKON20K: 5 lunas / ∞
+    const nikahRow = page.locator('tr').filter({ hasText: 'NIKAH50' })
+    await expect(nikahRow).toContainText('12 lunas', { timeout: 10000 })
+    await expect(nikahRow).toContainText('100 kuota')
+    const diskonRow = page.locator('tr').filter({ hasText: 'DISKON20K' })
+    await expect(diskonRow).toContainText('5 lunas')
+    await expect(diskonRow).toContainText('∞')
     console.log('✅ Usage counts displayed correctly')
   })
 
@@ -327,16 +348,12 @@ test.describe('Promo Code: Admin Management', () => {
 
   test('should send uppercase code in create payload', async ({ page }) => {
     let createPayload = null
-    await page.route('https://api.satuundangan.id/admin/promo-codes', (route) => {
+    await page.route('**/promo/admin', (route) => {
       if (route.request().method() === 'POST') {
         createPayload = JSON.parse(route.request().postData() || '{}')
         route.fulfill({ status: 201, contentType: 'application/json', body: JSON.stringify({ success: true }) })
       } else {
-        route.fulfill({
-          status: 200,
-          contentType: 'application/json',
-          body: JSON.stringify({ data: mockPromos, total: mockPromos.length }),
-        })
+        route.fallback()
       }
     })
 

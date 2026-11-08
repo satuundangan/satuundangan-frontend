@@ -4,7 +4,7 @@ const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || '6930e65c998145904
 const SCHEMA_VERSION = '2'
 const GA_MEASUREMENT_ID = 'G-Q5RSPLGGJ5'
 const PUBLIC_PATHS = /^\/(?:$|blog(?:\/|$)|templates$|tema(?:\/|$)|tools\/love-calculator$|wedding-planner$|tentang-kami$|terms$|privacy$|syarat-ketentuan$|kebijakan-privasi$)/
-const SAFE_KEYS = new Set(['template_id', 'templateId', 'invitation_id', 'invitationId', 'package', 'step', 'step_index', 'section_count', 'selected_count', 'total_sections', 'currency', 'value', 'amount', 'payment_purpose', 'transaction_id', 'duration_seconds', 'role', 'method', 'source', 'success', 'error_code'])
+const SAFE_KEYS = new Set(['template_id', 'templateId', 'content_group', 'invitation_id', 'invitationId', 'package', 'step', 'step_index', 'section_count', 'selected_count', 'total_sections', 'currency', 'value', 'amount', 'payment_purpose', 'transaction_id', 'duration_seconds', 'role', 'method', 'source', 'success', 'error_code'])
 let initialized = false
 let adminIdentity = false
 let current = null
@@ -71,9 +71,21 @@ function safeProperties(properties = {}) {
   const result = {}
   for (const [key, value] of Object.entries(properties)) {
     if (!SAFE_KEYS.has(key)) continue
+    if (key === 'template_id' || key === 'templateId') {
+      if (Number.isSafeInteger(value) && value > 0) result[key] = value
+      continue
+    }
+    if (key === 'content_group') {
+      if (typeof value === 'string' && /^template\/[1-9]\d{0,9}$/.test(value)) result[key] = value
+      continue
+    }
     if (typeof value === 'number' && Number.isFinite(value)) result[key] = value
     else if (typeof value === 'boolean') result[key] = value
     else if (typeof value === 'string' && value.length <= 100 && !/[@?#]/.test(value)) result[key] = value
+  }
+  const templateId = result.template_id ?? result.templateId
+  if (!result.content_group && Number.isSafeInteger(templateId) && templateId > 0) {
+    result.content_group = `template/${templateId}`
   }
   return result
 }
@@ -102,7 +114,7 @@ function emit(mixpanelName, ga4Name, properties = {}, context = current) {
 }
 
 function gaEventName(name) {
-  return ({ 'Login Success': 'login', 'Registration Success': 'sign_up', 'Studio Editor - Submitted': 'draft_saved', Logout: 'logout' })[name]
+  return ({ 'Login Success': 'login', 'Registration Success': 'sign_up', 'Studio Editor - Submitted': 'draft_saved', 'Template - Previewed': 'template_previewed', 'Checkout - Started': 'checkout_started', Logout: 'logout' })[name]
     || String(name).toLowerCase().replace(/[^a-z0-9_]/g, '_').replace(/_+/g, '_').slice(0, 40)
 }
 

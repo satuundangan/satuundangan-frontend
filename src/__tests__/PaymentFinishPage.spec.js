@@ -66,6 +66,75 @@ describe('PaymentFinishPage.vue (ADM-096)', () => {
     expect(wrapper.text()).toContain('Cetak / Simpan Bukti Bayar')
   })
 
+  it('routes a confirmed payment to its invitation, guest list, or dashboard', async () => {
+    routeState.query = { order_id: 'INV-103-PAID', transaction_status: 'settlement' }
+    api.getPaymentStatus.mockResolvedValueOnce({
+      orderId: 'INV-103-PAID',
+      status: 'settlement',
+      invitationSlug: 'test-couple',
+    })
+
+    const wrapper = mount(PaymentFinishPage, {
+      global: {
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
+      },
+    })
+
+    await flushPromises()
+
+    const invitationButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Lihat Undangan Aktif'))
+    const guestsButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Kelola Tamu & Bagikan'))
+    const dashboardButton = wrapper
+      .findAll('button')
+      .find((button) => button.text().includes('Ke Dashboard'))
+
+    expect(invitationButton).toBeTruthy()
+    expect(guestsButton).toBeTruthy()
+    expect(dashboardButton).toBeTruthy()
+
+    await invitationButton.trigger('click')
+    expect(api.push).toHaveBeenLastCalledWith('/test-couple')
+
+    await guestsButton.trigger('click')
+    expect(api.push).toHaveBeenLastCalledWith({
+      path: '/guests',
+      query: { slug: 'test-couple' },
+    })
+
+    await dashboardButton.trigger('click')
+    expect(api.push).toHaveBeenLastCalledWith('/dashboard')
+  })
+
+  it('shows retry guidance when the backend confirms a failed payment', async () => {
+    routeState.name = 'payment-error'
+    routeState.query = { order_id: 'INV-104-FAILED' }
+    api.getPaymentStatus.mockResolvedValueOnce({
+      orderId: 'INV-104-FAILED',
+      status: 'failure',
+      invitationSlug: 'test-couple',
+    })
+
+    const wrapper = mount(PaymentFinishPage, {
+      global: {
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
+      },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.text()).toContain('Pembayaran Tidak Berhasil')
+    expect(wrapper.text()).toContain('Ulangi Pembayaran')
+    expect(wrapper.text()).not.toContain('Lunas Terverifikasi')
+  })
+
   it('renders polite pending state with WhatsApp support CTA when transaction is pending', async () => {
     routeState.query = { order_id: 'INV-101-PENDING', transaction_status: 'pending' }
     api.getPaymentStatus.mockResolvedValueOnce({

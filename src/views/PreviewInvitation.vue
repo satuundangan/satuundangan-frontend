@@ -117,7 +117,8 @@ const isPublished = ref(false)
 const isActionBarVisible = ref(true)
 
 function goBack() {
-   router.push(invitationId.value ? `/invitation/${invitationId.value}/edit` : '/invitations')
+   const id = invitationId.value || route.query.id
+   router.push(id ? `/invitation/${id}/edit` : '/invitations')
 }
 
 function toggleFullscreen() {
@@ -163,6 +164,7 @@ const handlePublish = async () => {
 }
 
 onMounted(async () => {
+  invitationId.value = route.query.id ? String(route.query.id) : null
   const slugParam = route.query.slug
   
   if (slugParam) {

@@ -223,7 +223,7 @@ test.describe('P0 smoke suite (mocked)', () => {
     await page.getByRole('button', { name: 'Masuk Sekarang' }).click({ force: true })
 
     await expect(page).toHaveURL(/\/dashboard/)
-    await expect(page.getByText('Mulai Perjalananmu')).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Halo, Playwright/ })).toBeVisible()
   })
 
   test('non-admin is redirected to admin login', async ({ page }) => {
@@ -244,8 +244,8 @@ test.describe('P0 smoke suite (mocked)', () => {
     await page.goto(`${BASE_URL}/admin`)
 
     await expect(page.getByRole('heading', { name: 'Dashboard' })).toBeVisible()
-    await expect(page.getByText('Total Pengguna')).toBeVisible()
-    await expect(page.getByText('wedding-smoke')).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Undangan terbaru · semua waktu' })).toBeVisible()
+    await expect(page.getByText('Wedding Smoke')).toBeVisible()
   })
 
   test('guest can open public invitation and send RSVP', async ({ page }) => {
@@ -256,7 +256,9 @@ test.describe('P0 smoke suite (mocked)', () => {
     await expect(page.getByText('Buka Undangan').first()).toBeVisible({ timeout: 15000 })
     await page.getByText('Buka Undangan').first().click({ force: true })
 
-    await expect(page.getByRole('heading', { name: /Adam Syahreza & Hawa Safira/ })).toBeVisible({
+    await expect(
+      page.locator('#home').getByRole('heading', { name: /Adam Syahreza & Hawa Safira/ }),
+    ).toBeVisible({
       timeout: 15000,
     })
     await page.locator('#rsvp').scrollIntoViewIfNeeded()
@@ -283,6 +285,13 @@ test.describe('P0 smoke suite (mocked)', () => {
         status: 200,
         contentType: 'application/json',
         body: JSON.stringify(checkoutInvitation),
+      }),
+    )
+    await page.route('**/api/payment/packages', (route) =>
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify([{ id: 'premium', label: 'Premium', price: 79000 }]),
       }),
     )
     await page.route('**/api/payment/create', (route) =>
@@ -316,8 +325,8 @@ test.describe('P0 smoke suite (mocked)', () => {
     await expect(page.getByText('Ringkasan Pesanan')).toBeVisible({ timeout: 15000 })
     await page.getByRole('button', { name: 'Bayar Sekarang' }).click({ force: true })
 
-    await expect(page).toHaveURL(/\/free-smoke$/)
-    await expect(page.getByText('Buka Undangan').first()).toBeVisible({ timeout: 15000 })
+    // Free checkout activates the invitation and continues to guest management.
+    await expect(page).toHaveURL(/\/guests\?slug=free-smoke$/)
   })
 
   test.skip('registered affiliate can see affiliate code', async ({ page }) => {

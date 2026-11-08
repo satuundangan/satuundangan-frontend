@@ -10,10 +10,23 @@ import { demoData } from '@/api/demoData'
 import { getDemoPreset } from '@/api/templateDemoPresets'
 import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
+import { analytics } from '@/api/analytics'
 import { featuresFor } from '@/config/packageFeatures'
-import { onMounted, ref, computed, defineAsyncComponent, shallowRef, markRaw, h, watch } from 'vue'
+import {
+  onMounted,
+  onUnmounted,
+  ref,
+  computed,
+  defineAsyncComponent,
+  shallowRef,
+  markRaw,
+  h,
+  watch,
+  provide,
+} from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useToast } from 'vue-toastification'
 import QRCode from 'qrcode'
 import {
   templateLoaders,
@@ -43,6 +56,7 @@ const TemplateComponent = shallowRef(null)
 const loading = ref(true)
 const error = ref(null)
 const isPrivateAccessLocked = ref(false)
+const isDraftLocked = ref(false)
 const isPreviewMode = ref(false)
 const isOwnerPreview = ref(false)
 const isInsideFrame = ref(false)
@@ -51,6 +65,21 @@ const guestData = ref(null)
 const showTicketModal = ref(false)
 const ticketQrDataUrl = ref('')
 const isGeneratingQr = ref(false)
+
+const showDraftSubmitNotice = ref(false)
+let draftNoticeTimeout = null
+
+let toast = null
+try {
+  toast = useToast()
+} catch {
+  toast = null
+}
+
+provide(
+  'showBranding',
+  computed(() => !invitationData.value?.is_published || Boolean(invitationData.value?.show_branding))
+)
 
 const isLiveSyncActive = ref(false)
 
@@ -62,6 +91,29 @@ const ALL_SECTION_KEYS = [
 ]
 
 let templateResolveSeq = 0
+
+function focusDemoSectionFromHash() {
+  if (!isDemoMode.value || !window.location.hash) return
+
+  let targetId
+  try {
+    targetId = decodeURIComponent(window.location.hash.slice(1))
+  } catch {
+    return
+  }
+
+  let attempts = 0
+  const focusWhenReady = () => {
+    const target = document.getElementById(targetId)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      return
+    }
+    if (attempts++ < 300) window.requestAnimationFrame(focusWhenReady)
+  }
+
+  window.requestAnimationFrame(focusWhenReady)
+}
 
 onMounted(async () => {
   isPreviewMode.value = route.query.preview === 'true' || route.query.mode === 'live'
@@ -155,6 +207,7 @@ onMounted(async () => {
       loader: templateLoaders[key],
       errorComponent: { render: () => h('div', { class: 'text-center p-10' }, 'Template tidak ditemukan atau gagal dimuat.') }
     }))
+    focusDemoSectionFromHash()
   }, { immediate: true })
 
   // Tell the parent window (CreateForm) that we are ready to receive data
@@ -299,6 +352,7 @@ onMounted(async () => {
       // Fetch extra template design details (music, seo, custom sample content) asynchronously in background
       getTemplateDesignBySlug(templateSlug).then((tmpl) => {
         if (!tmpl || isLiveSyncActive.value) return
+        analytics.trackAction('Template - Previewed', { template_id: tmpl.id })
         const sampleContent = typeof tmpl.sampleContent === 'object' && tmpl.sampleContent ? tmpl.sampleContent : {}
         applyDemoSeo(tmpl)
 
@@ -340,13 +394,14 @@ onMounted(async () => {
         const isPublished = rawData.is_published !== undefined ? rawData.is_published : rawData.isPublished
         
         if (!isPublished && !isPreviewMode.value && !isOwnerPreview.value) {
-          error.value = 'Undangan ini belum dipublikasikan atau sudah tidak aktif.'
+          isDraftLocked.value = true
           loading.value = false
           return
         }
         
         // Flatten the data: merge root properties with content properties
         data = {
+          ...rawData,
           ...(rawData.content || {}),
           id: rawData.id,
           title: rawData.title,
@@ -404,13 +459,20 @@ onMounted(async () => {
     if (!isLiveSyncActive.value) {
       const status = err?.response?.status || err?.status
       const serverMsg = err?.response?.data?.message || err?.message || ''
+      const lowerMsg = String(serverMsg).toLowerCase()
 
-      if (status === 403 && (String(serverMsg).toLowerCase().includes('privat') || String(serverMsg).toLowerCase().includes('khusus'))) {
+      if (status === 403 && (lowerMsg.includes('privat') || lowerMsg.includes('khusus'))) {
         isPrivateAccessLocked.value = true
+      } else if (
+        status === 403 ||
+        lowerMsg.includes('belum dipublikasikan') ||
+        lowerMsg.includes('draft')
+      ) {
+        isDraftLocked.value = true
       } else {
         error.value = serverMsg || 'Undangan tidak ditemukan atau terjadi kesalahan.'
+        console.error(err)
       }
-      console.error(err)
     }
   } finally {
     if (!isLiveSyncActive.value) {
@@ -420,8 +482,60 @@ onMounted(async () => {
 })
 
 const goToCheckout = () => {
-  router.push(`/checkout?slug=${slug}`)
+  const currentSlug = invitationData.value?.slug || slug || route.params.slug
+  router.push(`/checkout?slug=${currentSlug}`)
 }
+
+const isDraftPreview = computed(() => {
+  return Boolean((isOwnerPreview.value || isPreviewMode.value) && !invitationData.value?.is_published)
+})
+
+const loginRedirectUrl = computed(() => {
+  const currentPath = route.fullPath || `/${slug || ''}`
+  return `/login?redirect=${encodeURIComponent(currentPath)}`
+})
+
+function triggerDraftInteractionNotice() {
+  showDraftSubmitNotice.value = true
+  if (draftNoticeTimeout) clearTimeout(draftNoticeTimeout)
+  draftNoticeTimeout = setTimeout(() => {
+    showDraftSubmitNotice.value = false
+  }, 5000)
+
+  try {
+    if (toast) {
+      toast.info('Form dinonaktifkan dalam mode pratinjau draft.')
+    }
+  } catch {
+    // safely ignore
+  }
+}
+
+function handleDraftFormSubmit(e) {
+  if (isDraftPreview.value) {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+      e.stopImmediatePropagation?.()
+    }
+    triggerDraftInteractionNotice()
+  }
+}
+
+function handleDraftClick(e) {
+  if (!isDraftPreview.value) return
+  const target = e.target
+  if (target && target.closest && target.closest('button[type="submit"], input[type="submit"]')) {
+    e.preventDefault()
+    e.stopPropagation()
+    e.stopImmediatePropagation?.()
+    triggerDraftInteractionNotice()
+  }
+}
+
+onUnmounted(() => {
+  if (draftNoticeTimeout) clearTimeout(draftNoticeTimeout)
+})
 
 const isPersonalGuest = computed(() => {
   return Boolean(
@@ -541,13 +655,16 @@ async function fetchInvitationData(slug) {
       response = await getInvitationBySubdomain(subdomainLabel)
     } else if (isPreviewMode.value) {
       response = await getMyInvitationBySlug(slug)
-    } else if (route.name === 'invitation.owner' && auth.token) {
+      isOwnerPreview.value = true
+    } else if (auth.token && slug && !route.params.guestSlug) {
+      // Owner Preview Detection: when user has auth.token, try getMyInvitationBySlug
+      // for both /inv/:slug and /:slug
       try {
         response = await getMyInvitationBySlug(slug)
         isOwnerPreview.value = true
       } catch {
-        response = await getInvitationBySlug(slug)
         isOwnerPreview.value = false
+        response = await getInvitationBySlug(slug)
       }
     } else if (route.params.guestSlug) {
       response = await getInvitationWithGuest(slug, route.params.guestSlug)
@@ -635,6 +752,85 @@ function getLocalPreviewPayload(slug) {
     <!-- Dedicated Luxury Private Lock Screen for unauthorized/anonymous access -->
     <PrivateLockScreen v-else-if="isPrivateAccessLocked" :slug="slug" />
 
+    <!-- Dedicated Luxury Draft Notice Screen for unpublished / draft invitations accessed by public / guests -->
+    <div
+      v-else-if="isDraftLocked"
+      data-test="draft-notice-screen"
+      class="draft-locked-screen min-h-screen bg-[#FAF8F5] relative flex items-center justify-center p-4 sm:p-6 overflow-hidden font-sans selection:bg-[#a47148]/20 selection:text-[#7a4e2b]"
+    >
+      <!-- Ambient Background Blobs & Textures -->
+      <div class="absolute -top-32 -left-32 w-96 h-96 rounded-full bg-[#f1e5d7] blur-3xl opacity-70 pointer-events-none"></div>
+      <div class="absolute -bottom-32 -right-32 w-96 h-96 rounded-full bg-[#ebd5bf] blur-3xl opacity-60 pointer-events-none"></div>
+      <div class="absolute inset-0 opacity-[0.03] pointer-events-none bg-[radial-gradient(#a47148_1px,transparent_1px)] [background-size:24px_24px]"></div>
+
+      <!-- Main Card Container -->
+      <div class="relative w-full max-w-lg bg-white/95 backdrop-blur-md rounded-[2.5rem] border border-[#a47148]/15 shadow-[0_20px_50px_rgba(164,113,72,0.12)] p-6 sm:p-10 text-center space-y-6 z-10">
+        <!-- Top Crest & Wedding Feather Icon -->
+        <div class="relative inline-flex items-center justify-center">
+          <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-gradient-to-tr from-[#f5ede4] via-white to-[#faebd7] border-2 border-[#a47148]/25 shadow-inner flex items-center justify-center">
+            <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-full bg-gradient-to-br from-[#a47148] to-[#86532d] text-white flex items-center justify-center shadow-lg shadow-[#a47148]/30">
+              <i class="fa-solid fa-feather-pointed text-xl sm:text-2xl"></i>
+            </div>
+          </div>
+          <span class="absolute -top-1 -right-1 text-amber-500 text-sm">✨</span>
+        </div>
+
+        <!-- Pill Badge Header / Emblem -->
+        <div>
+          <span class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-[#a47148]/10 border border-[#a47148]/20 text-[#a47148] text-[11px] font-extrabold uppercase tracking-widest">
+            <span>Status: Tahap Penyusunan (Draft)</span>
+          </span>
+        </div>
+
+        <!-- Title & Headline -->
+        <div class="space-y-3">
+          <h1 class="text-2xl sm:text-3xl font-serif font-black text-slate-900 tracking-tight leading-snug">
+            Undangan Sedang Disiapkan oleh Calon Pengantin
+          </h1>
+          <div class="w-12 h-0.5 bg-[#a47148]/30 mx-auto rounded-full"></div>
+          <p class="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-md mx-auto font-medium">
+            Calon mempelai sedang melengkapi rincian acara dan momen bahagia mereka. Undangan ini belum dipublikasikan secara resmi.
+          </p>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-3 pt-2">
+          <a
+            href="/"
+            data-test="draft-back-home-btn"
+            class="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-800 hover:from-black hover:to-slate-900 text-white font-bold text-xs sm:text-sm shadow-xl shadow-slate-900/15 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:-translate-y-0.5"
+          >
+            <i class="fa-solid fa-house text-xs"></i>
+            <span>Kembali ke Beranda</span>
+          </a>
+
+          <a
+            href="/templates"
+            data-test="draft-create-own-btn"
+            class="w-full py-3 px-6 rounded-2xl bg-[#a47148]/10 hover:bg-[#a47148]/20 text-[#a47148] border border-[#a47148]/30 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 cursor-pointer"
+          >
+            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            <span>Buat Undangan Sendiri di SatuUndangan</span>
+          </a>
+
+          <!-- Owner Login Link (if not logged in) -->
+          <div v-if="!auth.token" class="pt-3 border-t border-slate-100">
+            <p class="text-[11px] text-slate-400 font-medium mb-2">
+              Apakah Anda adalah pemilik undangan ini?
+            </p>
+            <a
+              :href="loginRedirectUrl"
+              data-test="draft-login-owner-btn"
+              class="inline-flex items-center gap-1.5 text-xs font-bold text-slate-700 hover:text-[#a47148] underline decoration-slate-300 hover:decoration-[#a47148] transition-colors cursor-pointer"
+            >
+              <i class="fa-solid fa-arrow-right-to-bracket text-xs"></i>
+              <span>Masuk ke Dashboard / Login</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Graceful Error Screen for other errors (e.g. 404 / inactive) -->
     <div v-else-if="error" class="min-h-screen bg-[#FAF8F5] flex items-center justify-center p-4">
       <div class="max-w-md w-full bg-white rounded-3xl p-8 border border-gray-100 shadow-xl text-center space-y-4">
@@ -653,23 +849,78 @@ function getLocalPreviewPayload(slug) {
     </div>
     
     <template v-else>
-      <component :is="TemplateComponent" :data="invitationData" />
-      
-      <!-- Floating Publish Button for Preview Mode -->
-      <div v-if="isPreviewMode && !invitationData?.is_published && !isInsideFrame" 
-        class="fixed bottom-10 left-1/2 -translate-x-1/2 z-[100] w-full max-w-md px-6">
-        <div class="bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-2xl border border-mocha/10 flex items-center justify-between gap-4">
-          <div class="hidden sm:block">
-            <p class="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Mode Preview</p>
-            <p class="text-xs font-semibold text-mocha">Undangan belum aktif</p>
+      <div
+        class="invitation-render-container"
+        @submit.capture="handleDraftFormSubmit"
+        @click.capture="handleDraftClick"
+      >
+        <component :is="TemplateComponent" :data="invitationData" />
+      </div>
+
+      <!-- Floating Notice / Paywall Banner for Owner Draft Preview -->
+      <div
+        v-if="isDraftPreview && !isInsideFrame"
+        data-test="owner-draft-banner"
+        class="owner-draft-paywall-banner fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 pointer-events-auto"
+      >
+        <div class="bg-slate-950/95 backdrop-blur-md text-white p-4 sm:p-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div class="flex items-center gap-3.5 text-left w-full sm:w-auto">
+            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 text-white flex items-center justify-center text-lg shrink-0 shadow-lg shadow-amber-500/20">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="space-y-0.5">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-black uppercase tracking-wider">
+                <span>Mode Preview Pemilik (Draft)</span>
+              </div>
+              <p class="text-xs text-slate-300 font-medium leading-snug">
+                Undangan ini masih berstatus DRAFT dan BELUM BISA diakses oleh tamu undangan.
+              </p>
+            </div>
           </div>
-          <button @click="goToCheckout" 
-            class="flex-1 sm:flex-none bg-mocha text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-lg shadow-mocha/20 hover:bg-mocha/90 transition-all flex items-center justify-center gap-2">
-            <i class="fa-solid fa-rocket"></i>
-            Publikasikan Sekarang
+          <button
+            type="button"
+            data-test="activate-invitation-btn"
+            @click="goToCheckout"
+            class="w-full sm:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 px-5 py-2.5 rounded-2xl font-black text-xs sm:text-sm shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.02] active:scale-95"
+          >
+            <i class="fa-solid fa-bolt-lightning text-xs"></i>
+            <span>Aktifkan Undangan Sekarang (Bayar)</span>
           </button>
         </div>
       </div>
+
+      <!-- Draft Interaction Blocked Notice Toast / Floating Pill -->
+      <Teleport to="body">
+        <transition
+          enter-active-class="transition duration-300 ease-out"
+          enter-from-class="opacity-0 -translate-y-4"
+          enter-to-class="opacity-100 translate-y-0"
+          leave-active-class="transition duration-200 ease-in"
+          leave-from-class="opacity-100 translate-y-0"
+          leave-to-class="opacity-0 -translate-y-4"
+        >
+          <div
+            v-if="showDraftSubmitNotice"
+            data-test="draft-interaction-info"
+            class="fixed top-6 left-1/2 -translate-x-1/2 z-[9999] max-w-md w-[90%] bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-amber-500/40 flex items-center gap-3"
+          >
+            <div class="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-circle-info"></i>
+            </div>
+            <div class="text-xs">
+              <p class="font-bold text-amber-400">Mode Pratinjau Draft</p>
+              <p class="text-slate-300">Form dinonaktifkan dalam mode pratinjau draft. Silakan aktifkan undangan untuk membuka fitur RSVP & ucapan.</p>
+            </div>
+            <button
+              type="button"
+              @click="showDraftSubmitNotice = false"
+              class="text-slate-400 hover:text-white ml-auto text-xs"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+        </transition>
+      </Teleport>
 
       <!-- Floating Ticket & QR Action Button for Personal Guest -->
       <div

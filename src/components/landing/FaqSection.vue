@@ -57,7 +57,7 @@ const faqs = [
   },
   {
     question: 'Apa perbedaan paket Basic, Premium, dan Eksklusif?',
-    answer: 'Semua paket mendapatkan masa aktif 365 + 1 hari (1 tahun), akses seluruh desain template, fitur RSVP, amplop digital, dan Wedding Planner gratis seumur hidup. Bedanya:<br/>• <strong>Basic</strong>: Pilihan hemat untuk acara simpel (galeri hingga 8 foto).<br/>• <strong>Premium (Paling Populer)</strong>: Galeri hingga 20 foto, upload musik MP3 sendiri, kirim WhatsApp otomatis, dan custom subdomain.<br/>• <strong>Eksklusif</strong>: Galeri maksimal 35 foto, tanpa watermark SatuUndangan, dan prioritas customer support.'
+    answer: 'Semua paket mendapatkan masa aktif 365 + 1 hari (1 tahun), akses seluruh desain template, fitur RSVP, amplop digital, Wedding Planner gratis seumur hidup, dan fitur berbagi undangan lewat WhatsApp per tamu. WhatsApp akan membuka chat dengan pesan yang disiapkan; kamu tetap meninjau dan menekan Kirim sendiri. Bedanya:<br/>• <strong>Basic</strong>: Pilihan hemat untuk acara simpel (galeri hingga 8 foto).<br/>• <strong>Premium (Paling Populer)</strong>: Galeri hingga 20 foto, upload musik MP3 sendiri, dan custom subdomain.<br/>• <strong>Eksklusif</strong>: Galeri maksimal 35 foto, tanpa watermark SatuUndangan, dan prioritas customer support.'
   },
   {
     question: 'Apakah bisa diedit setelah disebarkan?',

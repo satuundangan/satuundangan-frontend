@@ -15,6 +15,15 @@ export const fetchAdminUsers = (params) => apiFetch(withParams('/admin/users', p
 export const fetchAdminUserStats = () => apiFetch('/admin/users/stats')
 export const fetchAdminCustomerDetail = (id) =>
   apiFetch(`/admin/users/${encodeURIComponent(id)}/customer`)
+export const confirmAdminWeddingCompletion = (userId, invitationId, reason) =>
+  apiFetch(
+    `/admin/users/${encodeURIComponent(userId)}/invitations/${encodeURIComponent(invitationId)}/event-completion`,
+    {
+      method: 'POST',
+      body: JSON.stringify({ reason }),
+      headers: { 'x-admin-reason': reason },
+    },
+  )
 export const createAdminUser = (payload) =>
   apiFetch('/admin/users', {
     method: 'POST',
@@ -77,6 +86,12 @@ export const fetchAdminTemplates = (params) =>
   apiFetch(withParams('/admin/template-designs', params))
 export const fetchAdminTemplateMetrics = (params) =>
   apiFetch(withParams('/admin/template-designs/metrics', params))
+export const fetchAdminTemplateRevisions = (id) =>
+  apiFetch(`/admin/template-designs/${id}/revisions`)
+export const rollbackAdminTemplateRevision = (id, revisionId) =>
+  apiFetch(`/admin/template-designs/${id}/revisions/${revisionId}/rollback`, {
+    method: 'POST',
+  })
 export const createAdminTemplate = (payload) =>
   apiFetch('/admin/template-designs', {
     method: 'POST',

@@ -1220,8 +1220,21 @@ import { getAiCreditStats, getAiCreditLogs } from '@/api/aiCredits'
 const toast = useToast()
 const loading = ref(false)
 
+function consumeCustomerSupportSearch() {
+  try {
+    const email = sessionStorage.getItem('admin_support_customer_search') || ''
+    sessionStorage.removeItem('admin_support_customer_search')
+    return email
+  } catch {
+    return ''
+  }
+}
+
+const customerSupportSearch = consumeCustomerSupportSearch()
+const routeTab = new URLSearchParams(window.location.search).get('tab')
+
 // Tabs configuration
-const currentTab = ref('leads')
+const currentTab = ref(routeTab === 'tickets' || customerSupportSearch ? 'tickets' : 'leads')
 const tabs = [
   { key: 'leads', label: 'Inbox Prospek', icon: 'pi-user-plus' },
   { key: 'tickets', label: 'Antrean Bantuan', icon: 'pi-headphones' },
@@ -1546,7 +1559,7 @@ const ticketMetrics = ref({
 const ticketFilterStatus = ref('all')
 const ticketFilterPriority = ref('all')
 const ticketFilterCategory = ref('all')
-const ticketSearch = ref('')
+const ticketSearch = ref(customerSupportSearch)
 const activeTicketModal = ref(null)
 const newTicketReplyText = ref('')
 
@@ -1949,7 +1962,7 @@ async function loadAllData() {
 
     // 2. Tickets & Metrics
     const [ticketsRes, metricsRes] = await Promise.all([
-      getSupportTickets().catch(() => null),
+      getSupportTickets({ search: ticketSearch.value || undefined }).catch(() => null),
       getSupportTicketMetrics().catch(() => null),
     ])
     if (ticketsRes) {

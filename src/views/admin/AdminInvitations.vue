@@ -81,7 +81,7 @@
         class="rounded-lg bg-indigo-50 px-2 py-1 text-xs font-semibold text-indigo-800"
         data-testid="category-filter"
       >
-        Kategori: {{ selectedCategory }}
+        Kategori: {{ selectedCategoryLabel }}
       </p>
 
       <!-- Reset Filter Button -->
@@ -536,7 +536,16 @@ const selectedPublished = ref(route.query.isPublished || 'all')
 const selectedPackage = ref(route.query.package || 'all')
 const startDate = ref(String(route.query.startDate || ''))
 const endDate = ref(String(route.query.endDate || ''))
-const selectedCategory = ref(String(route.query.category || 'all'))
+const selectedCategory = ref(
+  String(route.query.categoryId || route.query.category || 'all'),
+)
+const selectedCategoryLabel = ref(
+  String(
+    route.query.categoryLabel ||
+      route.query.category ||
+      (route.query.categoryId ? 'dipilih' : 'all'),
+  ),
+)
 const loading = ref(false)
 const loadError = ref('')
 const lastLoadedAt = ref(null)
@@ -609,7 +618,13 @@ function syncUrlParams() {
   if (selectedPackage.value !== 'all') query.package = selectedPackage.value
   if (startDate.value) query.startDate = startDate.value
   if (endDate.value) query.endDate = endDate.value
-  if (selectedCategory.value !== 'all') query.category = selectedCategory.value
+  if (selectedCategory.value !== 'all') {
+    const isCategoryId = /^[\da-f]{8}-(?:[\da-f]{4}-){3}[\da-f]{12}$/i.test(
+      selectedCategory.value,
+    )
+    query[isCategoryId ? 'categoryId' : 'category'] = selectedCategory.value
+    if (route.query.categoryLabel) query.categoryLabel = route.query.categoryLabel
+  }
   router.replace({ query }).catch(() => {})
 }
 
@@ -663,6 +678,7 @@ function resetFilters() {
   startDate.value = ''
   endDate.value = ''
   selectedCategory.value = 'all'
+  selectedCategoryLabel.value = 'all'
   page.value = 1
   loadInvitations()
 }

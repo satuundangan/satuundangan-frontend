@@ -7,6 +7,39 @@ vi.mock('vue-toastification', () => ({
 }))
 
 describe('InvitationsTable.vue (ADM-097)', () => {
+  it('shows and copies one development-safe URL and passes the invitation to preview', async () => {
+    const invitation = {
+      id: 9,
+      title: 'Pernikahan Rina & Budi',
+      slug: 'rina-budi',
+      subdomain: 'rina-budi',
+      isPublished: true,
+    }
+    const writeText = vi.fn()
+    Object.defineProperty(navigator, 'clipboard', {
+      configurable: true,
+      value: { writeText },
+    })
+
+    const wrapper = mount(InvitationsTable, {
+      props: { invitations: [invitation] },
+      global: {
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
+      },
+    })
+    const expectedUrl = new URL('/inv/rina-budi', window.location.origin).toString()
+
+    expect(wrapper.text()).toContain(expectedUrl)
+
+    await wrapper.find('button[title="Salin Link"]').trigger('click')
+    expect(writeText).toHaveBeenCalledWith(expectedUrl)
+
+    await wrapper.find('button[title="Preview Live"]').trigger('click')
+    expect(wrapper.emitted('preview')[0][0]).toEqual(invitation)
+  })
+
   it('renders active status with package tier, expiry date, and receipt link for published invitations', () => {
     const mockInvitations = [
       {

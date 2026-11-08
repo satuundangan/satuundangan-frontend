@@ -1,5 +1,5 @@
 <template>
-  <div class="watermark-footer-wrapper mt-8 mb-4 text-center select-none px-4">
+  <div v-if="isVisible" class="watermark-footer-wrapper mt-8 mb-4 text-center select-none px-4">
     <a
       :href="targetUrl"
       target="_blank"
@@ -18,7 +18,7 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, inject, unref } from 'vue'
 
 const props = defineProps({
   variant: {
@@ -29,7 +29,22 @@ const props = defineProps({
   referralCode: {
     type: String,
     default: ''
+  },
+  forceShow: {
+    type: Boolean,
+    default: false
   }
+})
+
+const injectedShowBranding = inject('showBranding', null)
+
+const isVisible = computed(() => {
+  if (props.forceShow) return true
+  const branding = unref(injectedShowBranding)
+  if (branding !== null && branding !== undefined) {
+    return Boolean(branding)
+  }
+  return true
 })
 
 const targetUrl = computed(() => {

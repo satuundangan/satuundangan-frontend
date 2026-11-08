@@ -178,7 +178,7 @@ test.describe('Create Form stale draft recovery', () => {
     )
 
     await page.goto(`${BASE_URL}/create/form`)
-    await expect(page.getByRole('button', { name: /Preview Undangan|Preview Perubahan|Lanjut Preview/ })).toBeVisible({
+    await expect(page.getByRole('button', { name: /Simpan & Selesai/ })).toBeVisible({
       timeout: 10000,
     })
 
@@ -191,17 +191,29 @@ test.describe('Create Form stale draft recovery', () => {
       ),
     }
 
+    // Studio Editor groups the form into tabs.
+    await page.getByRole('button', { name: /Mempelai/i }).click()
     await page.getByPlaceholder('Putri Diana').fill('Putri')
     await page.getByPlaceholder('Pangeran Charles').fill('Putra')
     await page.getByPlaceholder(/The Wedding/).fill('Putra Putri')
     await page.locator('#bridePhoto').setInputFiles(imageFile)
+    await page.getByRole('button', { name: 'Simpan & Gunakan' }).click()
+    await page.waitForTimeout(500)
     await page.locator('#groomPhoto').setInputFiles(imageFile)
-    await page.locator('input[type="file"]').nth(2).setInputFiles(imageFile)
+    await page.getByRole('button', { name: 'Simpan & Gunakan' }).click()
+    await page.waitForTimeout(500)
+
+    await page.getByRole('button', { name: /Acara/i }).click()
     await page.getByText('Satu Lokasi').click()
-    await page.locator('input[type="datetime-local"]').fill('2026-05-21T15:29')
+    await page.locator('input[type="datetime-local"]').first().fill('2026-05-21T15:29')
     await page.getByPlaceholder('https://maps.app.goo.gl/...').fill('https://maps.app.goo.gl/example')
 
-    await page.getByRole('button', { name: /Preview Undangan|Preview Perubahan|Lanjut Preview/ }).click()
+    await page.getByRole('button', { name: /Media/i }).click()
+    await page.locator('#couplePhoto').setInputFiles(imageFile)
+    await page.getByRole('button', { name: 'Simpan & Gunakan' }).click()
+    await page.waitForTimeout(500)
+
+    await page.getByRole('button', { name: /Simpan & Selesai/ }).click()
 
     await expect(page).toHaveURL(/\/preview\?slug=putra-putri/, { timeout: 10000 })
     expect(updateCalled).toBe(true)

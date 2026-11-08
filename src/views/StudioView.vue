@@ -1264,6 +1264,34 @@
   </div>
 </template>
 
+<script>
+export const cleanForDraft = (obj) => {
+  if (obj === null || obj === undefined) return obj
+  if (typeof obj === 'string' && obj.startsWith('data:') && obj.length > 2000) {
+    return null
+  }
+  if (typeof File !== 'undefined' && obj instanceof File) return null
+  if (typeof Blob !== 'undefined' && obj instanceof Blob) return null
+  if (Array.isArray(obj)) {
+    return obj.map(cleanForDraft)
+  }
+  if (typeof obj === 'object') {
+    const cleaned = {}
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        if (key.toLowerCase().includes('file')) {
+          cleaned[key] = null
+        } else {
+          cleaned[key] = cleanForDraft(obj[key])
+        }
+      }
+    }
+    return cleaned
+  }
+  return obj
+}
+</script>
+
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
@@ -1335,7 +1363,7 @@ const filteredAudioList = computed(() => {
 const showLogin = ref(false)
 const authMode = ref('login')
 const auth = useAuthStore()
-const isAuthenticated = computed(() => !!auth.token)
+const isAuthenticated = computed(() => !!auth.token || !!auth.isAuthenticated)
 
 // Draft status & recovery states (ADM-094)
 const showCrossDeviceInfo = ref(false)
@@ -1348,7 +1376,20 @@ const lastSavedFormatted = computed(() => {
   return lastSavedTime.value.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
 })
 
-const applyDraftRecovery = () => {
+const applyDraftRecovery = (showToast = true) => {
+  if (!pendingDraftRecovery.value) {
+    const draftKey = route.params?.id ? `invitation_draft_${route.params.id}` : 'invitation_form_draft'
+    const stored = localStorage.getItem(draftKey)
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored)
+        if (parsed?.formData) {
+          pendingDraftRecovery.value = parsed
+        }
+      } catch (err) {}
+    }
+  }
+
   if (!pendingDraftRecovery.value) return
   deepMerge(formData.value, pendingDraftRecovery.value.formData)
   if (pendingDraftRecovery.value.sections) {
@@ -1356,7 +1397,10 @@ const applyDraftRecovery = () => {
       sections.value[k] = pendingDraftRecovery.value.sections[k]
     })
   }
-  toast.success('Draf berhasil dipulihkan!')
+  const shouldToast = typeof showToast === 'boolean' ? showToast : true
+  if (shouldToast) {
+    toast.success('Draf berhasil dipulihkan!')
+  }
   hasUnsavedChanges.value = true
   lastSavedTime.value = new Date(pendingDraftRecovery.value.timestamp || Date.now())
   pendingDraftRecovery.value = null
@@ -1867,28 +1911,6 @@ const syncDataToPreview = (data) => {
   } catch (err) {}
 }
 
-const cleanForDraft = (obj) => {
-  if (obj === null || obj === undefined) return obj
-  if (obj instanceof File || obj instanceof Blob) return null
-  if (Array.isArray(obj)) {
-    return obj.map(cleanForDraft)
-  }
-  if (typeof obj === 'object') {
-    const cleaned = {}
-    for (const key in obj) {
-      if (Object.prototype.hasOwnProperty.call(obj, key)) {
-        if (key.toLowerCase().includes('file')) {
-          cleaned[key] = null
-        } else {
-          cleaned[key] = cleanForDraft(obj[key])
-        }
-      }
-    }
-    return cleaned
-  }
-  return obj
-}
-
 const deepMerge = (target, source) => {
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
@@ -1914,6 +1936,7 @@ watch(isAuthenticated, (newVal) => {
   if (newVal && localStorage.getItem('pending_save_after_login') === 'true') {
      localStorage.removeItem('pending_save_after_login')
      showLogin.value = false
+     applyDraftRecovery(false)
      saveAndPreview()
   }
 })
@@ -1922,13 +1945,15 @@ const saveDraft = (data) => {
   try {
     const cleanedFormData = cleanForDraft(data)
     const draftData = { formData: cleanedFormData, sections: { ...sections.value }, timestamp: Date.now() }
-    const draftKey = route.params.id ? `invitation_draft_${route.params.id}` : 'invitation_form_draft'
+    const draftKey = route.params?.id ? `invitation_draft_${route.params.id}` : 'invitation_form_draft'
     localStorage.setItem(draftKey, JSON.stringify(draftData))
-    if (!route.params.id) {
+    if (!route.params?.id) {
       localStorage.setItem('selectedSections', JSON.stringify(Object.keys(sections.value).filter(k => sections.value[k])))
     }
     lastSavedTime.value = new Date()
-  } catch (e) {}
+  } catch (e) {
+    console.warn('Gagal menyimpan draf ke localStorage:', e)
+  }
 }
 
 
@@ -2075,6 +2100,12 @@ onMounted(async () => {
                 hour: '2-digit',
                 minute: '2-digit',
               })
+              // Jika ada draft tersimpan (< 24 jam) saat membuka /create baru, pulihkan draf secara otomatis ke formData
+              if (localStorage.getItem('pending_save_after_login') === 'true') {
+                 applyDraftRecovery(false)
+              } else {
+                 applyDraftRecovery(true)
+              }
            } else { clearDraft() }
         } else { clearDraft() }
      } catch (e) {
@@ -2110,6 +2141,7 @@ onMounted(async () => {
   // Handle pending save after login (e.g. after Google OAuth callback redirect)
   if (isAuthenticated.value && localStorage.getItem('pending_save_after_login') === 'true') {
      localStorage.removeItem('pending_save_after_login')
+     applyDraftRecovery(false)
      setTimeout(() => {
         saveAndPreview()
      }, 1000)
@@ -2725,6 +2757,7 @@ async function saveAndPreview() {
    if (!isAuthenticated.value) {
       toast.warning("Silakan masuk atau daftar terlebih dahulu untuk menyimpan undangan.")
       localStorage.setItem('pending_save_after_login', 'true')
+      saveDraft(formData.value)
       showLogin.value = true
       return
    }
@@ -2791,7 +2824,7 @@ async function saveAndPreview() {
       clearDraft()
       hasUnsavedChanges.value = false
       toast.success("Berhasil menyimpan data undangan!")
-      router.push({ path: '/preview', query: { slug: result.slug } })
+      router.push({ path: '/preview', query: { slug: result.slug, id: result.id } })
    } catch (error) { 
      console.error(error)
      const errorMsg = error.response?.data?.message || error.message || 'Gagal menyimpan data!'
@@ -2799,6 +2832,15 @@ async function saveAndPreview() {
    }
    finally { isUploading.value = false }
 }
+
+defineExpose({
+  formData,
+  sections,
+  applyDraftRecovery,
+  saveDraft,
+  saveAndPreview,
+  pendingDraftRecovery,
+})
 </script>
 
 <style scoped>

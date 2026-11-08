@@ -19,7 +19,7 @@
         </label>
         <label class="text-xs font-semibold text-slate-600">
           Kategori
-          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="name" optionLabel="name" placeholder="Semua kategori" showClear @change="loadData({ page: 1 })" />
+          <Select v-model="categoryFilter" class="mt-1 block min-w-40" :options="categories" optionValue="id" optionLabel="name" placeholder="Semua kategori" showClear @change="handleCategoryFilter" />
         </label>
         <label class="text-xs font-semibold text-slate-600">
           Status
@@ -33,10 +33,32 @@
       </div>
       <p class="text-xs leading-relaxed text-slate-600">
         Harga template adalah metadata lama dan tidak menentukan tagihan. Tagihan checkout mengikuti aturan paket undangan (Basic, Premium, Eksklusif) yang disediakan oleh endpoint harga paket.
-        Penjualan memakai pembayaran sukses yang tersettlement; atribusi mengikuti template saat ini pada undangan, karena snapshot template saat transaksi belum tersedia.
+        Pembayaran baru diatribusikan ke template yang dipilih saat checkout. Pembayaran lama tanpa snapshot tidak ditebak dari template undangan saat ini; funnel, cohort, dan perangkat belum dilacak di metrik ini.
+      </p>
+      <p v-if="unattributedMetrics" class="mt-2 rounded-lg bg-amber-50 p-3 text-xs text-amber-900" data-testid="unattributed-template-payments">
+        Pembayaran undangan legacy tanpa snapshot template: {{ number(unattributedMetrics.paidCount) }} transaksi paid,
+        {{ number(unattributedMetrics.freeCount) }} aktivasi gratis, omzet paid {{ formatRupiah(unattributedMetrics.grossAmount) }}.
+        Nilai ini tidak dibagikan ke template tertentu.
       </p>
       <p v-if="metricsError" class="mt-2 text-xs font-medium text-amber-700">Metrik belum tersedia: {{ metricsError }}</p>
     </div>
+    <section class="mb-4 flex flex-col gap-3 rounded-xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <h2 class="text-sm font-semibold text-slate-900">Preview dan pemeriksaan aset halaman ini</h2>
+        <p class="mt-1 text-xs text-slate-500">Cek thumbnail dan musik latar untuk maksimal {{ templates.length }} template pada halaman ini. Hasil hanya berlaku di sesi browser ini.</p>
+        <p v-if="assetAuditStarted" class="mt-2 text-xs font-medium text-slate-700" aria-live="polite">
+          {{ assetAuditProgress }} dari {{ templates.length }} template selesai · {{ assetAuditCounts.available }} aset tersedia · {{ assetAuditCounts.failed }} gagal · {{ assetAuditCounts.timeout }} waktu habis
+        </p>
+      </div>
+      <button
+        type="button"
+        class="shrink-0 rounded-lg bg-slate-900 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-700 disabled:cursor-wait disabled:opacity-60"
+        :disabled="loading || isAssetAuditRunning || !templates.length"
+        @click="checkTemplateAssets"
+      >
+        {{ isAssetAuditRunning ? 'Memeriksa aset…' : assetAuditStarted ? 'Ulangi cek aset' : 'Periksa aset halaman ini' }}
+      </button>
+    </section>
     <div v-if="!loadError" class="card">
       <DataTable
         :value="templates"
@@ -58,11 +80,15 @@
 
         <Column header="Preview" class="w-16">
           <template #body="{ data }">
-            <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
-              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data)" />
+            <div class="flex w-20 flex-col items-center gap-1">
+              <div class="h-10 w-10 rounded border border-slate-200 bg-slate-50 overflow-hidden shadow-sm">
+              <img :src="resolveTemplateThumbnail(data)" class="h-full w-full object-cover" v-if="resolveTemplateThumbnail(data) && !brokenThumbnailIds.has(data.id)" @error="markThumbnailBroken(data.id)" />
               <div class="h-full w-full flex items-center justify-center text-slate-300" v-else>
                 <i class="fa-solid fa-image text-xs"></i>
               </div>
+              </div>
+              <span v-if="!resolveTemplateThumbnail(data)" class="text-center text-[9px] font-medium text-amber-700">URL belum ada</span>
+              <span v-else-if="brokenThumbnailIds.has(data.id)" class="text-center text-[9px] font-medium text-rose-700">Gagal dimuat</span>
             </div>
           </template>
         </Column>
@@ -122,7 +148,7 @@
         <Column header="Omzet tercatat">
           <template #body="{ data }">{{ formatRupiah(templateMetric(data.id)?.grossAmount) }}</template>
         </Column>
-        <Column header="Kelengkapan metadata" style="min-width: 10rem">
+        <Column header="Metadata & renderer" style="min-width: 10rem">
           <template #body="{ data }">
             <span class="text-xs" :class="templateCompleteness(data).ok ? 'text-emerald-700' : 'text-amber-700'">
               {{ templateCompleteness(data).label }}
@@ -130,14 +156,23 @@
           </template>
         </Column>
 
+        <Column header="Status aset" style="min-width: 12rem">
+          <template #body="{ data }">
+            <div class="flex flex-col gap-1 text-[10px] text-slate-600">
+              <span>Thumbnail: {{ templateAssetLabel(data.id, 'thumbnail') }}</span>
+              <span>Musik: {{ templateAssetLabel(data.id, 'audio') }}</span>
+            </div>
+          </template>
+        </Column>
+
         <Column header="Aksi" headerClass="text-right" bodyClass="text-right">
           <template #body="{ data }">
             <div class="flex justify-end gap-1.5">
-              <a :href="`/demo/${data.slug}`" target="_blank"
+              <button type="button" @click="openTemplatePreview(data)"
                 class="flex h-8 w-8 items-center justify-center rounded-lg border border-blue-100 text-blue-600 hover:bg-blue-50 transition-colors"
-                title="Lihat Demo">
+                title="Preview mobile dan desktop" :aria-label="`Preview ${data.name} di mobile dan desktop`">
                 <i class="pi pi-eye text-xs"></i>
-              </a>
+              </button>
               <button
                 class="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-100 text-slate-600 hover:bg-slate-50 transition-colors"
                 @click="openEdit(data)"
@@ -159,16 +194,63 @@
       </p>
     </div>
 
+    <div v-if="previewTemplate" class="fixed inset-0 z-[70] flex items-center justify-center bg-slate-950/70 p-3 sm:p-6" @click.self="previewTemplate = null">
+      <section class="flex h-full max-h-[92vh] w-full max-w-7xl flex-col overflow-hidden rounded-2xl bg-white shadow-2xl" aria-label="Preview template">
+        <header class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3">
+          <div>
+            <h2 class="text-sm font-semibold text-slate-900">Preview {{ previewTemplate.name }}</h2>
+            <p class="text-[11px] text-slate-500">Mode tampilan pada lebar viewport terpilih; bukan pengukuran performa.</p>
+          </div>
+          <div class="flex items-center gap-2">
+            <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-semibold" :class="previewDevice === 'mobile' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600'" @click="previewDevice = 'mobile'">Mobile · 390 px</button>
+            <button type="button" class="rounded-lg border px-3 py-1.5 text-xs font-semibold" :class="previewDevice === 'desktop' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-slate-200 text-slate-600'" @click="previewDevice = 'desktop'">Desktop</button>
+            <button type="button" class="rounded-lg px-3 py-1.5 text-lg text-slate-500 hover:bg-slate-100" aria-label="Tutup preview" @click="previewTemplate = null">×</button>
+          </div>
+        </header>
+        <div class="flex min-h-0 flex-1 justify-center overflow-auto bg-slate-100 p-3 sm:p-5">
+          <iframe
+            :key="`${previewTemplate.slug}-${previewDevice}`"
+            :src="`/demo/${encodeURIComponent(previewTemplate.slug)}`"
+            :title="`Preview ${previewTemplate.name} ${previewDevice}`"
+            class="h-full min-h-[600px] max-w-full rounded-xl border border-slate-300 bg-white shadow-sm transition-[width]"
+            :style="{ width: previewDevice === 'mobile' ? '390px' : '100%' }"
+          />
+        </div>
+      </section>
+    </div>
+
     <Transition name="fade">
       <div v-if="showForm" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 px-4">
         <div class="max-h-[90vh] w-full overflow-y-auto rounded-2xl bg-white p-6 shadow-xl"
           :class="isThemeBuilderActive ? 'max-w-6xl' : 'max-w-3xl'">
           <div class="mb-4 flex items-center justify-between">
             <h2 class="text-lg font-semibold text-slate-900">{{ editing ? 'Edit Template' : 'Tambah Template' }}</h2>
-            <button class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
+            <div class="flex items-center gap-3">
+              <button v-if="editing" type="button" class="rounded-lg border border-slate-200 px-3 py-1.5 text-xs font-semibold text-slate-700 hover:bg-slate-50" @click="loadRevisionHistory">Riwayat versi</button>
+              <button type="button" class="text-slate-500 hover:text-slate-600" @click="closeForm">×</button>
+            </div>
           </div>
 
           <form class="grid grid-cols-1 gap-4 md:grid-cols-2" @submit.prevent="submitForm">
+            <div v-if="editing && showRevisionHistory" class="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div class="mb-3 flex items-center justify-between">
+                <div>
+                  <h3 class="text-sm font-semibold text-slate-900">Revisi tersimpan</h3>
+                  <p class="mt-1 text-xs text-slate-600">{{ currentInvitationCount ?? '—' }} undangan saat ini memakai template ini. Pemulihan mengubah konfigurasi template aktif; snapshot undangan tetap utuh.</p>
+                </div>
+                <span v-if="loadingRevisions" class="text-xs text-slate-500">Memuat…</span>
+              </div>
+              <p v-if="!loadingRevisions && !revisionHistory.length" class="text-xs text-slate-500">Belum ada revisi sebelumnya. Revisi pertama disimpan saat perubahan berikutnya berhasil.</p>
+              <div v-else class="space-y-2">
+                <div v-for="revision in revisionHistory" :key="revision.id" class="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 bg-white px-3 py-2">
+                  <div>
+                    <p class="text-xs font-semibold text-slate-800">Versi {{ revision.version }} · {{ formatRevisionDate(revision.createdAt) }}</p>
+                    <p class="text-[11px] text-slate-500">Sebelum perubahan · {{ revision.actorEmail || 'Aktor tidak tercatat' }}</p>
+                  </div>
+                  <button type="button" class="rounded-lg border border-amber-200 px-3 py-1.5 text-xs font-semibold text-amber-800 hover:bg-amber-50" @click="confirmRollback(revision)">Pulihkan versi ini</button>
+                </div>
+              </div>
+            </div>
             <div>
               <label class="text-sm font-medium text-slate-600">Nama</label>
               <input v-model="form.name" type="text"
@@ -211,8 +293,8 @@
                 class="mt-2 w-full rounded-lg border border-slate-200 px-3 py-2 text-sm outline-none focus:border-slate-400 focus:ring-2 focus:ring-slate-100"
                 required>
                 <option value="" disabled>Pilih Kategori</option>
-                <option v-for="cat in categories" :key="cat.id" :value="cat.name">
-                  {{ cat.name }}
+                <option v-for="cat in categories" :key="cat.id" :value="cat.name" :disabled="cat.isActive === false && cat.name !== form.category">
+                  {{ cat.name }}{{ cat.isActive === false ? ' (diarsipkan)' : '' }}
                 </option>
               </select>
             </div>
@@ -458,11 +540,13 @@
                 <div v-for="section in availableSections" :key="section.id"
                   class="flex items-center gap-4 rounded-lg border border-slate-200 p-3 hover:bg-slate-50">
                   <input type="checkbox" :checked="isSectionEnabled(section.id)"
+                    :disabled="section.is_active === false && !isSectionEnabled(section.id)"
                     @change="toggleSection(section.id)"
                     class="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-500" />
 
                   <span class="text-sm text-slate-700 font-medium min-w-[140px]">
                     {{ section.label }}
+                    <small v-if="section.is_active === false" class="block font-semibold text-amber-700">diarsipkan · tidak tersedia untuk pilihan baru</small>
                     <small class="block font-normal text-slate-500">dipakai {{ section.templateUseCount ?? 0 }} template · {{ section.enabledTemplateUseCount ?? 0 }} aktif</small>
                   </span>
 
@@ -717,6 +801,7 @@
 <script setup>
 import { onMounted, onUnmounted, reactive, ref, watch, computed } from 'vue'
 import { onClickOutside } from '@vueuse/core'
+import { useRoute, useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from 'primevue/datatable'
@@ -729,6 +814,8 @@ import {
   fetchAdminTemplateMetrics,
   createAdminTemplate,
   updateAdminTemplate,
+  fetchAdminTemplateRevisions,
+  rollbackAdminTemplateRevision,
   deleteAdminTemplate,
   fetchAdminCategories,
 } from '@/api/admin.js'
@@ -745,6 +832,8 @@ import {
 } from '@/components/admin/themeBuilderOptions.js'
 
 const toast = useToast()
+const route = useRoute()
+const router = useRouter()
 const thumbnailInput = ref(null)
 const cropper = ref({ show: false, image: '', aspectRatio: 3 / 4, setUrl: null })
 const audioRef = ref(null)
@@ -752,6 +841,14 @@ const audioCurrentTime = ref(0)
 const audioDuration = ref(0)
 const audioIsPlaying = ref(false)
 const templates = ref([])
+const brokenThumbnailIds = ref(new Set())
+const templateAssetStates = ref({})
+const assetAuditStarted = ref(false)
+const isAssetAuditRunning = ref(false)
+const assetAuditGeneration = ref(0)
+const assetAuditCleanupHandlers = new Set()
+const previewTemplate = ref(null)
+const previewDevice = ref('mobile')
 const categories = ref([])
 const availableSections = ref([]) // Dynamic sections from DB
 const audioList = ref([])
@@ -790,7 +887,13 @@ const sortOrder = ref('DESC')
 const currentPage = ref(1)
 const pageSize = ref(20)
 const searchTerm = ref('')
-const categoryFilter = ref(null)
+const categoryFilter = ref(
+  typeof route.query.categoryId === 'string'
+    ? route.query.categoryId
+    : typeof route.query.category === 'string'
+      ? route.query.category
+      : null,
+)
 const activeFilter = ref('')
 const metricsDays = ref(30)
 const periodOptions = [
@@ -799,17 +902,50 @@ const periodOptions = [
   { label: '90 hari', value: 90 },
 ]
 const templateMetrics = ref(new Map())
+const unattributedMetrics = ref(null)
 const metricPeriodLabel = ref('')
 const metricsError = ref('')
 const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
+const showRevisionHistory = ref(false)
+const loadingRevisions = ref(false)
+const revisionHistory = ref([])
+const currentInvitationCount = ref(null)
+const assetAuditProgress = computed(() =>
+  Object.values(templateAssetStates.value).filter(
+    (state) => state.thumbnail !== 'checking' && state.audio !== 'checking',
+  ).length,
+)
+const assetAuditCounts = computed(() => {
+  const states = Object.values(templateAssetStates.value).flatMap((state) => [state.thumbnail, state.audio])
+  return {
+    available: states.filter((state) => state === 'available').length,
+    failed: states.filter((state) => state === 'failed').length,
+    timeout: states.filter((state) => state === 'timeout').length,
+  }
+})
 
 const statusOptions = ref([
   { label: 'Aktif', value: true },
   { label: 'Nonaktif', value: false }
 ])
+
+watch(
+  () => [route.query.categoryId, route.query.category],
+  ([categoryId, categoryName]) => {
+    const nextCategory =
+      typeof categoryId === 'string'
+        ? categoryId
+        : typeof categoryName === 'string'
+          ? categoryName
+          : null
+    if (nextCategory === categoryFilter.value) return
+    categoryFilter.value = nextCategory
+    loadData({ page: 1 })
+  },
+)
 
 const tagInput = ref('')
 const FILTER_GROUP_OPTIONS = [
@@ -918,6 +1054,9 @@ const loadError = ref('')
 const lastLoadedAt = ref(null)
 
 async function loadData(options = {}) {
+  cancelAssetAudit()
+  templateAssetStates.value = {}
+  assetAuditStarted.value = false
   if (options.page) currentPage.value = options.page
   if (options.rows) pageSize.value = options.rows
   loading.value = true
@@ -943,9 +1082,27 @@ async function loadData(options = {}) {
     ])
 
     templates.value = tmplRes.data || tmplRes
+    brokenThumbnailIds.value = new Set()
     total.value = Number(tmplRes.total ?? tmplRes.data?.length ?? tmplRes.length ?? 0)
 
     categories.value = catRes.data || catRes
+    if (!route.query.categoryId && typeof route.query.category === 'string') {
+      const legacyCategory = categories.value.find(
+        (category) =>
+          category.name === route.query.category ||
+          category.aliases?.includes(route.query.category),
+      )
+      if (legacyCategory) {
+        categoryFilter.value = legacyCategory.id
+        router.replace({
+          query: {
+            ...route.query,
+            category: undefined,
+            categoryId: legacyCategory.id,
+          },
+        })
+      }
+    }
     availableSections.value = sectRes.data || sectRes
     audioList.value = audioRes.data || audioRes
     lastLoadedAt.value = new Date()
@@ -961,9 +1118,11 @@ async function loadMetrics() {
   try {
     const result = await fetchAdminTemplateMetrics({ days: metricsDays.value })
     templateMetrics.value = new Map((result.data || []).map((item) => [Number(item.templateId), item]))
+    unattributedMetrics.value = result.unattributed || { paidCount: 0, freeCount: 0, grossAmount: 0 }
     metricPeriodLabel.value = `${result.period.startDate} s/d ${result.period.endDate} (${result.period.timezone})`
   } catch (error) {
     templateMetrics.value = new Map()
+    unattributedMetrics.value = null
     metricsError.value = error.message || 'Metrik belum dapat dimuat'
   }
 }
@@ -982,11 +1141,27 @@ function resetSearch() {
   searchTerm.value = ''
   categoryFilter.value = null
   activeFilter.value = ''
+  router.replace({ query: { ...route.query, category: undefined, categoryId: undefined } })
+  loadData({ page: 1 })
+}
+
+function handleCategoryFilter() {
+  router.replace({
+    query: {
+      ...route.query,
+      category: undefined,
+      categoryId: categoryFilter.value || undefined,
+    },
+  })
   loadData({ page: 1 })
 }
 
 function templateMetric(id) {
   return templateMetrics.value.get(Number(id))
+}
+
+function number(value) {
+  return new Intl.NumberFormat('id-ID').format(value ?? 0)
 }
 
 function formatRupiah(amount) {
@@ -996,11 +1171,144 @@ function formatRupiah(amount) {
 
 function templateCompleteness(template) {
   const hasPreview = Boolean(template.previewUrl)
-  const hasThumbnail = Boolean(template.thumbnailUrl || resolveTemplateThumbnail(template))
+  const thumbnailUrl = resolveTemplateThumbnail(template)
   const renderer = template.componentKey || template.slug
   const hasRenderer = renderer === DYNAMIC_THEME_KEY || existingRendererKeys.value.includes(renderer)
-  const missing = [!hasPreview && 'demo', !hasThumbnail && 'thumbnail', !hasRenderer && 'renderer'].filter(Boolean)
-  return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Metadata lengkap' }
+  const missing = [
+    !hasPreview && 'demo',
+    !thumbnailUrl && 'thumbnail URL',
+    !hasRenderer && 'renderer',
+  ].filter(Boolean)
+  return { ok: missing.length === 0, label: missing.length ? `Perlu cek: ${missing.join(', ')}` : 'Konfigurasi lengkap' }
+}
+
+function openTemplatePreview(template) {
+  previewDevice.value = 'mobile'
+  previewTemplate.value = template
+}
+
+function templateAssetLabel(templateId, assetType) {
+  const status = templateAssetStates.value[templateId]?.[assetType]
+  if (!assetAuditStarted.value || !status) return 'belum dicek'
+  return ({
+    checking: 'sedang diperiksa',
+    available: 'tersedia',
+    failed: 'gagal dimuat',
+    timeout: 'waktu habis',
+    'not-configured': 'tidak diatur',
+    external: 'cek lewat preview',
+  })[status] || 'belum dicek'
+}
+
+function resolveTemplateAudioUrl(choice) {
+  if (!choice || choice.startsWith('yt:')) return null
+  if (choice.startsWith('http') || choice.startsWith('/')) return choice
+  return `/audio/${choice}`
+}
+
+function checkTemplateAssets() {
+  if (loading.value || isAssetAuditRunning.value || !templates.value.length) return
+  cancelAssetAudit()
+  const generation = assetAuditGeneration.value
+  const pageTemplates = [...templates.value]
+  templateAssetStates.value = Object.fromEntries(pageTemplates.map((template) => [template.id, {
+    thumbnail: resolveTemplateThumbnail(template) ? 'checking' : 'not-configured',
+    audio: !template.defaultMusic ? 'not-configured' : template.defaultMusic.startsWith('yt:') ? 'external' : 'checking',
+  }]))
+  assetAuditStarted.value = true
+  isAssetAuditRunning.value = true
+
+  let nextIndex = 0
+  const checkNextTemplate = async () => {
+    while (nextIndex < pageTemplates.length && generation === assetAuditGeneration.value) {
+      const template = pageTemplates[nextIndex++]
+      const [thumbnail, audio] = await Promise.all([
+        checkImageAsset(resolveTemplateThumbnail(template)),
+        template.defaultMusic?.startsWith('yt:')
+          ? Promise.resolve('external')
+          : checkAudioAsset(resolveTemplateAudioUrl(template.defaultMusic)),
+      ])
+      if (generation !== assetAuditGeneration.value) return
+      templateAssetStates.value = { ...templateAssetStates.value, [template.id]: { thumbnail, audio } }
+    }
+  }
+
+  Promise.all(Array.from({ length: Math.min(4, pageTemplates.length) }, () => checkNextTemplate())).finally(() => {
+    if (generation === assetAuditGeneration.value) isAssetAuditRunning.value = false
+  })
+}
+
+function checkImageAsset(url) {
+  if (!url) return Promise.resolve('not-configured')
+  return new Promise((resolve) => {
+    const image = new Image()
+    let settled = false
+    const cleanup = () => finish(null)
+    const timeoutId = window.setTimeout(() => finish('timeout'), 10000)
+    const finish = (result) => {
+      if (settled) return
+      settled = true
+      window.clearTimeout(timeoutId)
+      image.onload = null
+      image.onerror = null
+      image.src = ''
+      assetAuditCleanupHandlers.delete(cleanup)
+      resolve(result)
+    }
+    assetAuditCleanupHandlers.add(cleanup)
+    image.onload = () => finish('available')
+    image.onerror = () => finish('failed')
+    image.src = url
+    if (image.complete && image.naturalWidth > 0) finish('available')
+  })
+}
+
+function checkAudioAsset(url) {
+  if (!url) return Promise.resolve('not-configured')
+  return new Promise((resolve) => {
+    const audio = new Audio()
+    let settled = false
+    let timeoutId
+    const cleanup = () => finish(null)
+    const removeListeners = () => {
+      audio.removeEventListener('canplay', handleCanPlay)
+      audio.removeEventListener('error', handleError)
+      if (timeoutId) window.clearTimeout(timeoutId)
+      assetAuditCleanupHandlers.delete(cleanup)
+    }
+    const finish = (result) => {
+      if (settled) return
+      settled = true
+      removeListeners()
+      audio.pause()
+      audio.removeAttribute('src')
+      audio.load()
+      resolve(result)
+    }
+    const handleCanPlay = () => finish('available')
+    const handleError = () => finish('failed')
+    assetAuditCleanupHandlers.add(cleanup)
+    audio.preload = 'auto'
+    audio.addEventListener('canplay', handleCanPlay)
+    audio.addEventListener('error', handleError)
+    timeoutId = window.setTimeout(() => finish('timeout'), 10000)
+    try {
+      audio.src = url
+      audio.load()
+    } catch {
+      finish('failed')
+    }
+  })
+}
+
+function cancelAssetAudit() {
+  assetAuditGeneration.value += 1
+  for (const cleanup of [...assetAuditCleanupHandlers]) cleanup()
+  isAssetAuditRunning.value = false
+}
+
+function markThumbnailBroken(templateId) {
+  brokenThumbnailIds.value = new Set([...brokenThumbnailIds.value, templateId])
 }
 
 function getCategoryColor(categoryName) {
@@ -1147,6 +1455,8 @@ function removeTag(index) {
 
 function openCreate() {
   editing.value = null
+  showRevisionHistory.value = false
+  revisionHistory.value = []
   tagInput.value = ''
   audioSearch.value = ''
   showAudioDropdown.value = false
@@ -1181,6 +1491,9 @@ function openCreate() {
 
 function openEdit(template) {
   editing.value = template
+  showRevisionHistory.value = false
+  revisionHistory.value = []
+  currentInvitationCount.value = null
   tagInput.value = ''
   audioSearch.value = ''
   showAudioDropdown.value = false
@@ -1383,6 +1696,37 @@ async function submitForm() {
   if (saving.value) return
   try {
     const payload = buildPayload()
+    if (editing.value) {
+      const impact = await fetchAdminTemplateRevisions(editing.value.id)
+      const labels = {
+        name: 'Nama', slug: 'Slug', componentKey: 'Renderer', category: 'Kategori',
+        price: 'Metadata harga', previewUrl: 'URL preview', thumbnailUrl: 'Thumbnail',
+        description: 'Deskripsi', seoTitle: 'SEO title', seoDescription: 'SEO description',
+        isActive: 'Status aktif', defaultMusic: 'Musik default', defaultAudioStart: 'Awal musik',
+        defaultAudioEnd: 'Akhir musik', sections: 'Sections', tags: 'Tag',
+        filterGroup: 'Filter group', sampleContent: 'Contoh konten', designConfig: 'Konfigurasi desain',
+        paletteId: 'Palet', paletteColors: 'Warna palet',
+      }
+      const changedFields = Object.keys(payload).filter((key) =>
+        key !== 'paletteId' &&
+        JSON.stringify(normalizePreviewValue(key, payload[key])) !==
+          JSON.stringify(normalizePreviewValue(key, editing.value[key])),
+      )
+      const changedLabel = changedFields.length
+        ? changedFields.map((key) => labels[key] || key).join(', ')
+        : 'Tidak ada perubahan terdeteksi dari data form.'
+      const confirmation = await Swal.fire({
+        title: 'Pratinjau dampak perubahan',
+        text: `Perubahan terdeteksi: ${changedLabel}. Saat ini ${impact.currentInvitationCount} undangan memakai template ini. Revisi konfigurasi saat ini akan disimpan sebelum diterapkan; undangan yang sudah tersimpan tetap mereferensikan template ini.`,
+        icon: 'info',
+        showCancelButton: true,
+        confirmButtonColor: '#0f172a',
+        cancelButtonColor: '#94a3b8',
+        confirmButtonText: 'Simpan perubahan',
+        cancelButtonText: 'Kembali mengedit',
+      })
+      if (!confirmation.isConfirmed) return
+    }
     saving.value = true
     if (editing.value) {
       await updateAdminTemplate(editing.value.id, payload)
@@ -1399,6 +1743,62 @@ async function submitForm() {
   } finally {
     saving.value = false
   }
+}
+
+async function loadRevisionHistory() {
+  if (!editing.value) return
+  showRevisionHistory.value = true
+  loadingRevisions.value = true
+  try {
+    const result = await fetchAdminTemplateRevisions(editing.value.id)
+    revisionHistory.value = result.revisions || []
+    currentInvitationCount.value = result.currentInvitationCount ?? 0
+  } catch (error) {
+    toast.error(error.message || 'Gagal memuat riwayat versi')
+  } finally {
+    loadingRevisions.value = false
+  }
+}
+
+async function confirmRollback(revision) {
+  const result = await Swal.fire({
+    title: `Pulihkan versi ${revision.version}?`,
+    text: `Konfigurasi template akan dikembalikan ke ${formatRevisionDate(revision.createdAt)}. ${currentInvitationCount.value ?? 0} undangan yang mengacu pada template ini dapat menampilkan perubahan renderer/configuration. Snapshot data undangan tidak diedit. Versi saat ini akan disimpan sebagai revisi baru.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#b45309',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: 'Pulihkan versi',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await rollbackAdminTemplateRevision(editing.value.id, revision.id)
+    toast.success(`Template dipulihkan ke versi ${revision.version}`)
+    closeForm()
+    loadData({ page: currentPage.value })
+    loadMetrics()
+  } catch (error) {
+    toast.error(error.message || 'Gagal memulihkan versi template')
+  }
+}
+
+function formatRevisionDate(value) {
+  return value ? new Date(value).toLocaleString('id-ID') : 'Waktu tidak tersedia'
+}
+
+function normalizePreviewValue(key, value) {
+  if (key === 'sections') {
+    return (value || []).map((section) => [
+      section.sectionId ?? section.id,
+      Number(section.order),
+      Boolean(section.is_enabled),
+    ])
+  }
+  if (['price', 'defaultAudioStart', 'defaultAudioEnd'].includes(key)) {
+    return value === null || value === undefined ? null : Number(value)
+  }
+  return value ?? null
 }
 
 async function confirmDelete(template) {
@@ -1424,7 +1824,9 @@ async function confirmDelete(template) {
 }
 
 const handleKeydown = (e) => {
-  if (e.key === 'Escape' && showForm.value) closeForm()
+  if (e.key !== 'Escape') return
+  if (previewTemplate.value) previewTemplate.value = null
+  else if (showForm.value) closeForm()
 }
 
 onMounted(() => {
@@ -1434,6 +1836,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
+  cancelAssetAudit()
   window.removeEventListener('keydown', handleKeydown)
 })
 </script>

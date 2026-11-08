@@ -33,10 +33,54 @@
         <span class="text-sm">{{ item.templateUseCount ?? 0 }} template</span>
         <span class="block text-[10px] text-slate-500">{{ item.enabledTemplateUseCount ?? 0 }} memakai section ini</span>
       </template>
+      <template #cell(samplePreview)="{ item }">
+        <a
+          v-if="samplePreviewHref(item)"
+          :href="samplePreviewHref(item)"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="text-xs font-semibold text-blue-700 underline decoration-blue-200 underline-offset-2 hover:text-blue-900"
+        >
+          Demo {{ item.samplePreviewTemplate.name }}
+        </a>
+        <span v-else class="text-xs text-slate-500">Preview per section belum tersedia</span>
+        <span v-if="samplePreviewHref(item)" class="mt-1 block text-[10px] text-slate-500">
+          Data contoh, tanpa mengubah undangan pelanggan
+        </span>
+      </template>
+      <template #cell(rendererCoverage)="{ item }">
+        <div v-if="item.rendererCoverage?.length" class="space-y-2">
+          <div v-for="coverage in item.rendererCoverage" :key="coverage.renderer">
+            <p class="font-mono text-[11px] font-semibold" :class="rendererIsRegistered(coverage.renderer) ? 'text-emerald-700' : 'text-rose-700'">
+              {{ coverage.renderer }} · {{ rendererIsRegistered(coverage.renderer) ? 'terdaftar' : 'tidak ditemukan' }}
+            </p>
+            <p class="text-[10px] text-slate-500">{{ coverage.templateCount }} template · {{ coverage.publishedTemplateCount }} terbit</p>
+          </div>
+        </div>
+        <span v-else class="text-xs text-slate-500">Belum ada section aktif pada template</span>
+        <div v-if="packageLoadError" class="mt-2 text-[10px] text-amber-700">
+          <span>Aturan tier tidak termuat: {{ packageLoadError }}</span>
+          <button class="ml-1 underline" @click="loadPackageTiers">Coba lagi</button>
+        </div>
+        <p v-else-if="packagesLoading" class="mt-2 text-[10px] text-slate-500">Memuat aturan tier…</p>
+        <div v-else-if="packages.length" class="mt-2 space-y-1">
+          <p class="text-[10px] font-semibold text-slate-600">Paket saat ini</p>
+          <div
+            v-for="pkg in packages"
+            :key="pkg.id"
+            class="grid grid-cols-[4.5rem_1fr] gap-1 text-[10px]"
+          >
+            <span class="font-medium text-slate-600">{{ pkg.label }}</span>
+            <span class="text-slate-500">{{ packageSupportText(item, pkg) }}</span>
+          </div>
+        </div>
+      </template>
       <template #cell(actions)="{ item }">
         <div class="flex justify-end gap-2 text-xs font-medium">
           <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
             @click="openEdit(item)">Edit</button>
+          <button class="rounded-lg border border-slate-200 px-3 py-1 hover:bg-slate-50 transition-colors"
+            @click="toggleSectionActive(item)">{{ item.is_active ? 'Arsipkan' : 'Aktifkan' }}</button>
           <button class="rounded-lg border border-rose-200 px-3 py-1 text-rose-600 hover:bg-rose-50 transition-colors"
             @click="confirmDelete(item)">Hapus</button>
         </div>
@@ -97,8 +141,11 @@ import AdminShell from '@/components/admin/AdminShell.vue'
 import AdminTableStatus from '@/components/admin/AdminTableStatus.vue'
 import DataTable from '@/components/admin/DataTable.vue'
 import { fetchAdminSections, createAdminSection, updateAdminSection, deleteAdminSection } from '@/api/master.js'
+import { getPackages } from '@/api/payment'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
+import { sampleSectionPreviewHref } from './sectionPreview'
+import { templateComponentKeys, DYNAMIC_THEME_KEY } from '@/utils/templateRegistry'
 
 const toast = useToast()
 const sections = ref([])
@@ -107,12 +154,17 @@ const loading = ref(false)
 const showForm = ref(false)
 const saving = ref(false)
 const editing = ref(null)
+const packages = ref([])
+const packageLoadError = ref('')
+const packagesLoading = ref(false)
 
 const headers = [
   { label: 'Label (Nama Fitur)', key: 'label' },
   { label: 'Key (Kode Sistem)', key: 'key' },
   { label: 'Status', key: 'is_active' },
   { label: 'Dampak penggunaan', key: 'templateUseCount' },
+  { label: 'Contoh output', key: 'samplePreview' },
+  { label: 'Renderer dan paket', key: 'rendererCoverage' },
   { label: 'Aksi', key: 'actions', class: 'text-right' },
 ]
 
@@ -126,6 +178,26 @@ const loadError = ref('')
 const lastLoadedAt = ref(null)
 function resetSearch() {
   handleSearch('')
+}
+
+function samplePreviewHref(item) {
+  return sampleSectionPreviewHref(item)
+}
+
+function rendererIsRegistered(renderer) {
+  return renderer === DYNAMIC_THEME_KEY || templateComponentKeys.includes(renderer)
+}
+
+function packageSupportText(section, pkg) {
+  if (section.key?.trim().toLowerCase() === 'gallery') {
+    if (pkg.features?.gallery !== true) return 'Galeri tidak tersedia'
+    const limit = Number(pkg.features.galleryLimit)
+    return Number.isFinite(limit) && limit >= 0
+      ? `Galeri · maks. ${limit} foto`
+      : 'Galeri · batas tidak diketahui'
+  }
+
+  return 'Tidak dikunci tier; mengikuti renderer dan konfigurasi template'
 }
 
 async function loadSections() {
@@ -143,6 +215,21 @@ async function loadSections() {
     loadError.value = error.message || 'Gagal memuat data'
   } finally {
     loading.value = false
+  }
+}
+
+async function loadPackageTiers() {
+  packagesLoading.value = true
+  packageLoadError.value = ''
+  try {
+    const res = await getPackages()
+    if (!Array.isArray(res)) throw new Error('Format aturan tier tidak dikenali')
+    packages.value = res
+  } catch (error) {
+    packages.value = []
+    packageLoadError.value = error.message || 'Gagal memuat aturan tier'
+  } finally {
+    packagesLoading.value = false
   }
 }
 
@@ -227,8 +314,33 @@ async function confirmDelete(item) {
   }
 }
 
+async function toggleSectionActive(item) {
+  const nextIsActive = !item.is_active
+  const result = await Swal.fire({
+    title: nextIsActive ? 'Aktifkan section?' : 'Arsipkan section?',
+    text: nextIsActive
+      ? 'Section akan tersedia untuk konfigurasi template baru.'
+      : `${item.templateUseCount ?? 0} template mereferensikan section ini; ${item.enabledTemplateUseCount ?? 0} mengaktifkannya. Snapshot template yang tersimpan tidak diubah.`,
+    icon: nextIsActive ? 'question' : 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#0f172a',
+    cancelButtonColor: '#94a3b8',
+    confirmButtonText: nextIsActive ? 'Aktifkan' : 'Arsipkan',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+  try {
+    await updateAdminSection(item.id, { is_active: nextIsActive })
+    toast.success(nextIsActive ? 'Section diaktifkan' : 'Section diarsipkan')
+    await loadSections()
+  } catch (error) {
+    toast.error(error.message || 'Gagal mengubah status section')
+  }
+}
+
 onMounted(() => {
   loadSections()
+  loadPackageTiers()
 })
 </script>
 
