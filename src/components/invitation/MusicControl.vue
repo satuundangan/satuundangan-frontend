@@ -288,8 +288,6 @@ watch(() => props.volume, (newVol) => {
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-
 .animate-spin-slow {
   animation: spin 6s linear infinite;
 }

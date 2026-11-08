@@ -80,8 +80,6 @@ const variantClasses = computed(() => {
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
-
 .watermark-link {
   text-decoration: none;
 }
