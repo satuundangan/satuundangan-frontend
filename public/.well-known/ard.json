@@ -1,0 +1,36 @@
+{
+  "entries": [
+    {
+      "identifier": "urn:air:satuundangan.id:wedding-invitation-platform",
+      "displayName": "Satu Undangan",
+      "type": "text/html",
+      "url": "https://www.satuundangan.id",
+      "description": "Platform pembuatan website undangan digital pernikahan di Indonesia dengan desain modern, katalog tema beragam, kalkulator budget nikah gratis, serta fitur interaktif lengkap (RSVP online, amplop digital, buku tamu, integrasi Google Maps, dan sebar undangan via WhatsApp).",
+      "tags": [
+        "wedding",
+        "invitation",
+        "digital-wedding-invitation",
+        "undangan-digital",
+        "rsvp",
+        "budget-calculator"
+      ],
+      "capabilities": [
+        "CreateInvitation",
+        "BrowseTemplates",
+        "CalculateWeddingBudget",
+        "RSVPManagement"
+      ],
+      "representativeQueries": [
+        "Buat undangan digital pernikahan",
+        "Katalog template undangan pernikahan elegan",
+        "Kalkulator budget nikah gratis"
+      ],
+      "version": "1.0.0",
+      "updatedAt": "2026-11-08T00:00:00Z",
+      "trustManifest": {
+        "identity": "https://www.satuundangan.id",
+        "identityType": "https"
+      }
+    }
+  ]
+}
