@@ -17,6 +17,9 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [vue(), ...(devToolsDisabled ? [] : [vueDevTools()]), tailwindcss()],
+    esbuild: {
+      drop: mode === 'production' ? ['console', 'debugger'] : [],
+    },
     test: {
       globals: true,
       environment: 'jsdom',

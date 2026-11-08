@@ -150,8 +150,10 @@
           <!-- Screen Content -->
           <div class="w-full h-full bg-[#faf7f2] overflow-hidden relative rounded-[2.5rem] isolate">
              <img
-               src="@/assets/hero_invitation_preview.jpg"
+               src="@/assets/hero_invitation_preview.webp"
                alt="Digital Wedding Invitation Preview"
+               loading="eager"
+               decoding="async"
                class="w-full h-full object-cover object-top scale-100 group-hover:scale-105 transition-transform duration-700 ease-out rounded-[2.5rem]"
              />
           </div>
