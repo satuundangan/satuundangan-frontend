@@ -671,9 +671,9 @@
 
           <div class="p-4 overflow-y-auto flex-1 custom-scrollbar">
             <div class="mb-6">
-              <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">
+              <p class="text-xs font-bold text-stone-600 uppercase tracking-wider mb-3">
                 Kategori
-              </h5>
+              </p>
               <ul class="space-y-1">
                 <li
                   v-for="cat in modalStyleCategories"
@@ -698,7 +698,7 @@
             </div>
 
             <div class="mb-6">
-              <h5 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Paket</h5>
+              <p class="text-xs font-bold text-stone-600 uppercase tracking-wider mb-3">Paket</p>
               <ul class="space-y-1">
                 <li
                   v-for="pkg in modalPackageCategories"
@@ -1041,10 +1041,10 @@
     >
       <div class="flex items-center justify-between gap-3 max-w-md mx-auto">
         <div class="flex flex-col">
-          <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Mulai Sekarang</span>
+          <span class="text-[10px] text-stone-600 font-bold uppercase tracking-wider">Mulai Sekarang</span>
           <div class="flex items-baseline gap-1.5">
             <span class="font-bold text-dark text-sm">Coba Gratis</span>
-            <span class="text-[9px] text-emerald-600 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Bebas Revisi</span>
+            <span class="text-[9px] text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.5 rounded">Bebas Revisi</span>
           </div>
         </div>
         <button

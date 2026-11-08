@@ -45,7 +45,7 @@
 
         <!-- Tema Budaya & Populer (SEO Hub) -->
         <div>
-           <h4 class="font-bold text-lg mb-6">Tema Pilihan</h4>
+           <h3 class="font-bold text-lg mb-6">Tema Pilihan</h3>
            <ul class="space-y-3 text-sm text-gray-400">
               <li><router-link to="/tema/undangan-digital-adat-jawa" class="hover:text-mocha transition">Adat Jawa</router-link></li>
               <li><router-link to="/tema/undangan-digital-adat-sunda" class="hover:text-mocha transition">Adat Sunda</router-link></li>
@@ -61,7 +61,7 @@
 
         <!-- Links -->
         <div>
-           <h4 class="font-bold text-lg mb-6">Layanan</h4>
+           <h3 class="font-bold text-lg mb-6">Layanan</h3>
            <ul class="space-y-3 text-sm text-gray-400">
               <li><router-link to="/create" class="hover:text-mocha transition">Buat Undangan</router-link></li>
               <li><router-link to="/wedding-planner" class="hover:text-mocha transition">Free Wedding Planner & Budget</router-link></li>
@@ -74,7 +74,7 @@
         </div>
 
         <div>
-           <h4 class="font-bold text-lg mb-6">Perusahaan</h4>
+           <h3 class="font-bold text-lg mb-6">Perusahaan</h3>
            <ul class="space-y-3 text-sm text-gray-400">
               <li><router-link to="/tentang-kami" class="hover:text-mocha transition">Tentang Kami</router-link></li>
               <li><a href="https://wa.me/6285121266550?text=Halo%20SatuUndangan%2C%20saya%20ingin%20tanya%20tentang%20undangan%20digital" target="_blank" class="hover:text-mocha transition">Hubungi Kami</a></li>

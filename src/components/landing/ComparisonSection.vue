@@ -9,7 +9,7 @@
 
       <div class="grid md:grid-cols-2 gap-8 items-stretch">
         <!-- Undangan Cetak -->
-        <div class="bg-gray-50 rounded-[2rem] p-8 border border-gray-100 opacity-80">
+        <div class="bg-gray-50 rounded-[2rem] p-8 border border-gray-200">
           <div class="flex items-center gap-4 mb-8">
             <div class="w-12 h-12 rounded-2xl bg-gray-200 flex items-center justify-center text-gray-500 text-xl">
               <i class="pi pi-print" aria-hidden="true"></i>
@@ -23,8 +23,8 @@
                 <i class="pi pi-times" aria-hidden="true"></i>
               </div>
               <div>
-                <p class="font-bold text-dark/80">{{ item.title }}</p>
-                <p class="text-sm text-muted">{{ item.desc }}</p>
+                <p class="font-bold text-dark">{{ item.title }}</p>
+                <p class="text-sm text-stone-600">{{ item.desc }}</p>
               </div>
             </li>
           </ul>
