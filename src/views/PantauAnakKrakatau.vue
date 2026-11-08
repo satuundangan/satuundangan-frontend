@@ -99,12 +99,17 @@ async function initMap() {
   L.control.zoom({ position: 'topright' }).addTo(map)
 }
 function refreshData() { refreshing.value = true; window.setTimeout(() => { lastUpdated.value = new Date(); refreshing.value = false }, 700) }
-onMounted(initMap)
+onMounted(() => {
+  const link = document.createElement('link')
+  link.rel = 'stylesheet'
+  link.href = 'https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap'
+  document.head.appendChild(link)
+  initMap()
+})
 onBeforeUnmount(() => map?.remove())
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap');
 :global(body) { margin: 0; background: #f2f7f6; color: #123b40; font-family: Manrope, sans-serif; }
 .monitor-page { min-height: 100vh; background: #f2f7f6; }
 .topbar,.intro,.workspace,.status-strip,.notice,footer { max-width: 1240px; margin: auto; }

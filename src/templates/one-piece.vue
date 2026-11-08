@@ -773,7 +773,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Special+Elite&family=Cinzel:wght@500;700&display=swap');
 
 .font-pirate {

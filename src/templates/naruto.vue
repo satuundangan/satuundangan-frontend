@@ -1035,7 +1035,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css');
 @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Serif:wght@400;600&family=Great+Vibes&display=swap');
 
 .font-shinobi {
