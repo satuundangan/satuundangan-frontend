@@ -136,6 +136,7 @@
                     :alt="item.name"
                     class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
                     loading="lazy"
+                    decoding="async"
                     @error="
                       (e) => {
                         e.target.onerror = null
@@ -190,7 +191,7 @@
                   {{ item.name }}
                 </h4>
                 <div class="text-mocha font-bold">
-                  {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                  Desain gratis
                 </div>
               </div>
 
@@ -467,6 +468,8 @@
               <img
                 :src="item.avatar"
                 alt="avatar"
+                loading="lazy"
+                decoding="async"
                 class="w-12 h-12 rounded-full object-cover ring-2 ring-sage/30 p-0.5"
               />
               <div>
@@ -516,6 +519,7 @@
                 :alt="post.title"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                 loading="lazy"
+                decoding="async"
               />
               <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-mocha shadow-sm">
                 Panduan
@@ -724,6 +728,10 @@
                 :key="item.id"
                 :ref="(el) => (templateRefs[item.id] = el)"
                 @click="selectTemplate(item.id)"
+                @mouseenter="startTemplateTeaser(item, true)"
+                @mouseleave="stopTemplateTeaser(item)"
+                @focusin="startTemplateTeaser(item, true)"
+                @focusout="handleTemplateFocusOut($event, item)"
                 :class="[
                   selectedTemplate === item.id
                     ? 'ring-2 ring-mocha ring-offset-2 scale-[1.02]'
@@ -754,6 +762,7 @@
                         :alt="item.name"
                         class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
                         loading="lazy"
+                        decoding="async"
                         @error="
                           (e) => {
                             e.target.onerror = null
@@ -763,17 +772,41 @@
                         "
                       />
 
+                      <video
+                        v-if="getTemplateTeaserUrl(item)"
+                        :ref="(el) => (templateTeaserRefs[item.id] = el)"
+                        :src="getTemplateTeaserUrl(item)"
+                        :poster="resolveImageUrl(item.thumbnailUrl || item.previewUrl)"
+                        :aria-label="`Teaser template ${item.name}`"
+                        muted
+                        playsinline
+                        loop
+                        preload="none"
+                        class="absolute inset-0 z-10 h-full w-full object-cover opacity-0 transition-opacity duration-300"
+                        :class="activeTemplateTeaserId === item.id ? 'opacity-100' : 'pointer-events-none'"
+                      ></video>
+
                       <!-- Price Tag -->
                       <div class="absolute bottom-1.5 left-1.5 z-20">
                         <div
                           class="bg-dark/80 backdrop-blur-md text-white px-2 py-0.5 rounded text-[9px] font-bold border border-white/10"
                         >
-                          {{ item.price > 0 ? formatPrice(item.price) : 'Gratis' }}
+                          Desain gratis
                         </div>
                       </div>
 
                       <!-- Preview Button -->
                       <div class="absolute top-1.5 right-1.5 flex gap-1 z-20">
+                        <button
+                          v-if="getTemplateTeaserUrl(item)"
+                          type="button"
+                          @click.stop="toggleTemplateTeaser(item)"
+                          class="md:hidden bg-dark/90 text-white px-2 py-0.5 rounded text-[9px] font-bold shadow-sm flex items-center gap-1"
+                          :aria-label="`${activeTemplateTeaserId === item.id ? 'Hentikan' : 'Putar'} teaser ${item.name}`"
+                        >
+                          <i :class="activeTemplateTeaserId === item.id ? 'fa-solid fa-pause' : 'fa-solid fa-play'"></i>
+                          Teaser
+                        </button>
                         <button
                           type="button"
                           @click.stop="openMobileQr(item)"
@@ -997,6 +1030,7 @@ watch(showModal, (val) => {
     document.body.style.overflow = 'hidden'
   } else {
     document.body.style.overflow = ''
+    stopActiveTemplateTeaser()
   }
 })
 
@@ -1005,6 +1039,8 @@ const selectedCategory = ref('all') // Default to 'all' ID (= curated filterGrou
 const selectedTier = ref('all') // Package tier filter id (NOT selectedPackage — that name is
 // already used by the pricing section / localStorage key)
 const templateRefs = reactive({})
+const templateTeaserRefs = reactive({})
+const activeTemplateTeaserId = ref(null)
 const templates = ref([])
 const articles = ref([])
 const loading = ref(true)
@@ -1214,7 +1250,58 @@ watch(
 )
 
 function selectTemplate(id) {
+  stopActiveTemplateTeaser()
   selectedTemplate.value = id
+}
+
+function getTemplateTeaserUrl(item) {
+  return item?.slug === 'elysian-parallax'
+    ? '/videos/template-previews/elysian-parallax.mp4'
+    : null
+}
+
+async function startTemplateTeaser(item, fromHover = false) {
+  if (!getTemplateTeaserUrl(item)) return
+  if (fromHover && window.matchMedia('(hover: none)').matches) return
+
+  activeTemplateTeaserId.value = item.id
+  await nextTick()
+
+  const video = templateTeaserRefs[item.id]
+  if (!video) return
+
+  video.currentTime = 0
+  video.play().catch(() => {
+    activeTemplateTeaserId.value = null
+  })
+}
+
+function stopTemplateTeaser(item) {
+  if (activeTemplateTeaserId.value !== item?.id) return
+  stopActiveTemplateTeaser()
+}
+
+function stopActiveTemplateTeaser() {
+  const video = templateTeaserRefs[activeTemplateTeaserId.value]
+  if (video) {
+    video.pause()
+    video.currentTime = 0
+  }
+  activeTemplateTeaserId.value = null
+}
+
+function toggleTemplateTeaser(item) {
+  if (activeTemplateTeaserId.value === item.id) {
+    stopTemplateTeaser(item)
+    return
+  }
+  startTemplateTeaser(item)
+}
+
+function handleTemplateFocusOut(event, item) {
+  if (!event.currentTarget.contains(event.relatedTarget)) {
+    stopTemplateTeaser(item)
+  }
 }
 
 function openTemplate(id) {
@@ -1240,14 +1327,6 @@ function previewImageClass(item) {
       ? 'w-full h-full object-cover'
       : 'max-w-full max-h-full object-contain'
   return `${fit} rounded-md shadow-xl group-hover:scale-105 transition-transform duration-500`
-}
-
-function formatPrice(price) {
-  return new Intl.NumberFormat('id-ID', {
-    style: 'currency',
-    currency: 'IDR',
-    minimumFractionDigits: 0,
-  }).format(price)
 }
 
 function goToCreate() {
