@@ -369,7 +369,10 @@
                     :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)"
                     :alt="item.name"
                     class="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-105"
+                    width="340"
+                    height="240"
                     loading="lazy"
+                    decoding="async"
                     @error="
                       (e) => {
                         e.target.onerror = null
@@ -530,7 +533,10 @@
                 :src="item.avatar"
                 :alt="item.name"
                 class="w-12 h-12 rounded-full object-cover ring-2 ring-mocha/20 p-0.5 shadow-sm"
+                width="48"
+                height="48"
                 loading="lazy"
+                decoding="async"
               />
               <div>
                 <h4 class="text-sm font-bold text-dark">{{ item.name }}</h4>
@@ -578,7 +584,10 @@
                 :src="post.coverImage || 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=800&q=80'"
                 :alt="post.title"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                width="360"
+                height="225"
                 loading="lazy"
+                decoding="async"
               />
               <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold text-mocha shadow-sm">
                 Panduan
@@ -848,7 +857,10 @@
                         :src="resolveImageUrl(item.thumbnailUrl || item.previewUrl, item)"
                         :alt="item.name"
                         class="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                        width="280"
+                        height="200"
                         loading="lazy"
+                        decoding="async"
                         @error="
                           (e) => {
                             e.target.onerror = null

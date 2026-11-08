@@ -6,13 +6,18 @@
         <!-- Brand -->
         <div class="space-y-6">
            <div class="flex items-center gap-3">
-              <img
-                src="@/assets/logo_satuundangan.png"
-                alt="SatuUndangan Logo"
-                class="h-11 w-11 object-contain rounded-xl bg-white p-0.5 shadow-md border border-white/10"
-                width="44"
-                height="44"
-              />
+              <picture>
+                <source srcset="@/assets/logo_satuundangan.webp" type="image/webp" />
+                <img
+                  src="@/assets/logo_satuundangan.png"
+                  alt="SatuUndangan Logo"
+                  class="h-11 w-11 object-contain rounded-xl bg-white p-0.5 shadow-md border border-white/10"
+                  width="44"
+                  height="44"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </picture>
               <div class="flex flex-col">
                 <span class="font-serif font-bold text-xl tracking-tight text-white">
                   SatuUndangan<span class="text-accent-gold">.id</span>
