@@ -8,63 +8,67 @@
       
       <!-- Text Content -->
       <div class="space-y-6 text-center md:text-left z-10 animate-fade-in-up">
-        <div class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-mocha/10 text-[#7d512a] text-sm font-semibold mb-2 ring-1 ring-mocha/20">
-          <i class="pi pi-sparkles text-xs" aria-hidden="true"></i>
-          <span>#1 Platform Undangan Digital Premium</span>
+        <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-mocha/10 text-[#7d512a] text-xs sm:text-sm font-medium mb-1 ring-1 ring-mocha/15">
+          <span class="w-1.5 h-1.5 rounded-full bg-mocha animate-pulse" aria-hidden="true"></span>
+          <span>Platform Undangan Digital & Wedding Planner</span>
         </div>
-        <h1 class="text-5xl md:text-6xl lg:text-7xl font-bold text-dark leading-[1.1] font-serif tracking-tight">
+        <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-dark leading-[1.12] font-serif tracking-tight">
           Bagikan Kabar <br/>
-          <span class="text-mocha italic">Bahagiamu</span> <br/>
+          <span class="text-mocha italic font-normal">Bahagiamu</span> <br/>
           Dengan Elegan.
         </h1>
-        <p class="text-dark/70 text-lg md:text-xl max-w-lg mx-auto md:mx-0 leading-relaxed font-light">
-          Buat undangan pernikahan digital yang eksklusif, modern, dan penuh makna. 
-          <span class="font-bold text-dark/90 block mt-2">Termasuk Wedding Planner & Kalkulator Budget Gratis!</span>
+        <p class="text-dark/75 text-base sm:text-lg max-w-lg mx-auto md:mx-0 leading-relaxed font-normal">
+          Wujudkan undangan pernikahan digital eksklusif yang berkesan untuk momen istimewamu. Coba desain gratis, bayar hanya saat siap disebar.
         </p>
 
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-3 gap-x-6 text-sm font-bold text-stone-700 pt-2">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2.5 gap-x-5 text-xs sm:text-sm font-semibold text-stone-700 pt-1">
           <div class="flex items-center gap-2 group">
-            <div class="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
-              <i class="pi pi-check-square text-amber-600 text-xs" aria-hidden="true"></i>
+            <div class="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center group-hover:bg-amber-500/20 transition-colors">
+              <i class="pi pi-check-square text-amber-700 text-xs" aria-hidden="true"></i>
             </div>
-            <span class="text-amber-800">Free Wedding Planner</span>
+            <span class="text-stone-800">Wedding Planner Gratis</span>
           </div>
           <div class="flex items-center gap-2 group">
-            <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
+            <div class="w-7 h-7 rounded-lg bg-mocha/10 flex items-center justify-center group-hover:bg-mocha/15 transition-colors">
               <i class="pi pi-sync text-mocha text-xs" aria-hidden="true"></i>
             </div>
-            <span>Unlimited Revisi</span>
+            <span class="text-stone-800">Revisi Tanpa Batas</span>
           </div>
           <div class="flex items-center gap-2 group">
-            <div class="w-8 h-8 rounded-lg bg-mocha/5 flex items-center justify-center group-hover:bg-mocha/10 transition-colors">
-              <i class="pi pi-bolt text-mocha text-xs" aria-hidden="true"></i>
+            <div class="w-7 h-7 rounded-lg bg-emerald-500/10 flex items-center justify-center group-hover:bg-emerald-500/20 transition-colors">
+              <i class="pi pi-bolt text-emerald-700 text-xs" aria-hidden="true"></i>
             </div>
-            <span>Proses Instan</span>
+            <span class="text-stone-800">Siap Sebar 5 Menit</span>
           </div>
         </div>
         
-        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start pt-6">
-          <button @click="$emit('create-invitation')" class="btn-primary text-base md:text-lg px-8 py-4 shadow-xl shadow-mocha/25 hover:shadow-mocha/40 hover:-translate-y-1 active:translate-y-0 transition-all duration-300 rounded-full flex items-center justify-center gap-3 group font-bold">
-            <i class="pi pi-sparkles text-sm text-accent-gold group-hover:rotate-12 transition-transform" aria-hidden="true"></i>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 justify-center md:justify-start pt-3">
+          <button
+            @click="$emit('create-invitation')"
+            class="btn-primary group text-sm sm:text-base px-6 py-3.5 rounded-full shadow-lg shadow-mocha/20 hover:shadow-mocha/35 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center justify-center gap-2.5 font-bold whitespace-nowrap"
+          >
             <span>Buat Undangan Sekarang</span>
-            <i class="pi pi-arrow-right text-xs transition-transform duration-300 group-hover:translate-x-1" aria-hidden="true"></i>
+            <i class="pi pi-arrow-right text-xs transition-transform duration-200 group-hover:translate-x-1" aria-hidden="true"></i>
           </button>
-          <a href="#templates" class="btn-outline text-base md:text-lg px-8 py-4 hover:-translate-y-1 rounded-full border-gray-300 hover:border-mocha text-dark hover:bg-white transition-all duration-300 font-semibold flex items-center justify-center gap-2">
-            <i class="pi pi-palette text-mocha/60 text-sm" aria-hidden="true"></i>
+          <a
+            href="#templates"
+            class="btn-outline text-sm sm:text-base px-6 py-3.5 hover:-translate-y-0.5 rounded-full border border-stone-300 hover:border-mocha text-stone-800 hover:text-mocha bg-white/80 hover:bg-white backdrop-blur-sm transition-all duration-200 font-semibold flex items-center justify-center gap-2 whitespace-nowrap shadow-sm hover:shadow"
+          >
+            <i class="pi pi-palette text-mocha/70 text-xs" aria-hidden="true"></i>
             <span>Lihat Katalog Desain</span>
           </a>
         </div>
 
         <!-- Risk Reversal Micro-Copy -->
-        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-5 text-xs text-stone-700 pt-2 font-medium">
+        <div class="flex flex-wrap items-center justify-center md:justify-start gap-y-2 gap-x-5 text-xs text-stone-600 pt-1 font-medium">
           <span class="inline-flex items-center gap-1.5">
-            <i class="pi pi-check-circle text-emerald-600" aria-hidden="true"></i> Coba Gratis Tanpa Syarat
+            <i class="pi pi-check-circle text-emerald-600 text-[11px]" aria-hidden="true"></i> Coba Gratis Tanpa Syarat
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <i class="pi pi-bolt text-amber-500" aria-hidden="true"></i> Jadi dalam 5 Menit
+            <i class="pi pi-sparkles text-amber-500 text-[11px]" aria-hidden="true"></i> Desain Eksklusif
           </span>
           <span class="inline-flex items-center gap-1.5">
-            <i class="pi pi-shield text-mocha" aria-hidden="true"></i> Bayar Saat Siap Sebar
+            <i class="pi pi-shield-check text-mocha text-[11px]" aria-hidden="true"></i> Bayar Saat Siap Sebar
           </span>
         </div>
 
