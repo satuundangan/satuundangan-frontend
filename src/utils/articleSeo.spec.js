@@ -1,5 +1,10 @@
 import { describe, expect, it } from 'vitest'
-import { getArticleSeoChecklist, getArticleSeoScore } from './articleSeo.js'
+import {
+  getArticleSeoChecklist,
+  getArticleSeoScore,
+  parseArticleFaqs,
+  buildArticleFaqSchema,
+} from './articleSeo.js'
 
 const completeArticle = () => ({
   focusKeyword: 'undangan digital',
@@ -62,6 +67,54 @@ describe('article SEO completeness', () => {
     expect(checks.find((check) => check.id === 'meta-description')).toMatchObject({
       passed: true,
       label: expect.stringContaining('80–160'),
+    })
+  })
+
+  describe('FAQPage Schema Generation', () => {
+    it('returns null for empty, null, or invalid FAQs', () => {
+      expect(buildArticleFaqSchema(null)).toBeNull()
+      expect(buildArticleFaqSchema([])).toBeNull()
+      expect(buildArticleFaqSchema('invalid-json')).toBeNull()
+      expect(buildArticleFaqSchema([{ question: '', answer: '' }])).toBeNull()
+    })
+
+    it('builds valid Schema.org FAQPage for array of FAQs', () => {
+      const faqs = [
+        { question: 'Berapa biaya cetak?', answer: 'Gratis draf, bayar saat sebar.' },
+        { question: 'Berapa lama aktif?', answer: '365 hari penuh.' },
+      ]
+      const schema = buildArticleFaqSchema(faqs)
+      expect(schema).toEqual({
+        '@context': 'https://schema.org',
+        '@type': 'FAQPage',
+        mainEntity: [
+          {
+            '@type': 'Question',
+            name: 'Berapa biaya cetak?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: 'Gratis draf, bayar saat sebar.',
+            },
+          },
+          {
+            '@type': 'Question',
+            name: 'Berapa lama aktif?',
+            acceptedAnswer: {
+              '@type': 'Answer',
+              text: '365 hari penuh.',
+            },
+          },
+        ],
+      })
+    })
+
+    it('parses JSON stringified FAQs if provided', () => {
+      const rawJson = JSON.stringify([
+        { question: 'Apakah aman?', answer: 'Sangat aman.' },
+      ])
+      const schema = buildArticleFaqSchema(rawJson)
+      expect(schema?.mainEntity).toHaveLength(1)
+      expect(schema?.mainEntity[0].name).toBe('Apakah aman?')
     })
   })
 })

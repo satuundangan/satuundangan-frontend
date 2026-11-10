@@ -1,6 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
+import DOMPurify from 'dompurify'
 import { fetchArticles } from '@/api/article'
 import * as client from '@/api/client'
+import { buildArticleFaqSchema } from '@/utils/articleSeo'
 
 describe('Blog API & View Helpers', () => {
   it('fetchArticles forwards page, limit, and q parameters correctly', async () => {
@@ -43,5 +45,29 @@ describe('Blog API & View Helpers', () => {
     expect(getCategory({ title: 'Tips Menekan Budget Katering Pernikahan' })).toBe('Budget & Katering')
     expect(getCategory({ title: 'Inspirasi Konsep Adat Jawa Modern' })).toBe('Konsep & Adat')
     expect(getCategory({ title: 'Etika Menyebarkan Undangan Online' })).toBe('Panduan & Tips')
+  })
+
+  it('DOMPurify sanitizes stored XSS payloads while allowing iframes and safe attributes', () => {
+    const maliciousPayload = '<p>Halo</p><script>alert("xss")</script><img src=x onerror=alert(1)><iframe src="https://youtube.com/embed/123"></iframe><a href="https://example.com" target="_blank" rel="noopener">Link</a>'
+    const sanitized = DOMPurify.sanitize(maliciousPayload, {
+      ADD_TAGS: ['iframe'],
+      ADD_ATTR: ['target', 'rel'],
+    })
+
+    expect(sanitized).not.toContain('<script>')
+    expect(sanitized).not.toContain('onerror')
+    expect(sanitized).toContain('<iframe')
+    expect(sanitized).toContain('target="_blank"')
+    expect(sanitized).toContain('rel="noopener"')
+  })
+
+  it('injects schema.org FAQPage alongside article metadata for rich snippets', () => {
+    const faqs = [
+      { question: 'Berapa biaya cetak?', answer: 'Gratis coba draf, bayar saat siap sebar.' },
+    ]
+    const schema = buildArticleFaqSchema(faqs)
+    expect(schema['@type']).toBe('FAQPage')
+    expect(schema.mainEntity[0].name).toBe('Berapa biaya cetak?')
+    expect(schema.mainEntity[0].acceptedAnswer.text).toBe('Gratis coba draf, bayar saat siap sebar.')
   })
 })

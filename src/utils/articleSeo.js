@@ -66,3 +66,38 @@ export function getArticleSeoScore(article) {
   const checks = getArticleSeoChecklist(article)
   return Math.round((checks.filter((check) => check.passed).length / checks.length) * 100)
 }
+
+export function parseArticleFaqs(faqs) {
+  if (!faqs) return []
+  if (Array.isArray(faqs)) return faqs
+  if (typeof faqs === 'string') {
+    try {
+      const parsed = JSON.parse(faqs)
+      return Array.isArray(parsed) ? parsed : []
+    } catch {
+      return []
+    }
+  }
+  return []
+}
+
+export function buildArticleFaqSchema(faqs = []) {
+  const list = parseArticleFaqs(faqs)
+  const validFaqs = list.filter(
+    (faq) => faq && clean(faq.question) && clean(faq.answer)
+  )
+  if (validFaqs.length === 0) return null
+
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: validFaqs.map((faq) => ({
+      '@type': 'Question',
+      name: clean(faq.question),
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: clean(faq.answer),
+      },
+    })),
+  }
+}

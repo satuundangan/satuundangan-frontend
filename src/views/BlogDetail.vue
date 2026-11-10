@@ -422,10 +422,12 @@
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useToast } from 'vue-toastification'
+import DOMPurify from 'dompurify'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
 import { fetchArticleBySlug, fetchArticles } from '@/api/article'
 import { getArticleCover } from '@/utils/blogUtils'
+import { buildArticleFaqSchema } from '@/utils/articleSeo'
 
 const route = useRoute()
 const toast = useToast()
@@ -495,7 +497,10 @@ const processedContent = computed(() => {
 
   // Synchronize TOC items
   tocItems.value = items
-  return doc.body.innerHTML
+  return DOMPurify.sanitize(doc.body.innerHTML, {
+    ADD_TAGS: ['iframe'],
+    ADD_ATTR: ['target', 'rel'],
+  })
 })
 
 const scrollToHeading = (id) => {
@@ -674,6 +679,21 @@ const updateMeta = () => {
       '@id': currentUrl,
     },
   })
+
+  // Inject or update Schema.org FAQPage JSON-LD if article has FAQs
+  let faqScript = document.getElementById('article-faq-schema')
+  const faqSchema = buildArticleFaqSchema(article.value.faqs)
+  if (faqSchema) {
+    if (!faqScript) {
+      faqScript = document.createElement('script')
+      faqScript.id = 'article-faq-schema'
+      faqScript.type = 'application/ld+json'
+      document.head.appendChild(faqScript)
+    }
+    faqScript.textContent = JSON.stringify(faqSchema)
+  } else if (faqScript) {
+    faqScript.remove()
+  }
 }
 
 onMounted(() => {
@@ -683,6 +703,10 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
+  const schemaScript = document.getElementById('blog-post-schema')
+  if (schemaScript) schemaScript.remove()
+  const faqScript = document.getElementById('article-faq-schema')
+  if (faqScript) faqScript.remove()
 })
 
 watch(
