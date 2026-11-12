@@ -53,14 +53,16 @@
               <div class="flex gap-1">
                 <button
                   @click="triggerExcelImport"
-                  :disabled="!selectedInvitationId"
+                  :disabled="!selectedInvitationId || isImporting"
                   class="flex-1 md:flex-none bg-white text-emerald-600 border border-emerald-100 px-4 py-2.5 rounded-l-xl text-xs font-bold hover:bg-emerald-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all border-r-0 cursor-pointer"
                 >
-                  <i class="fa-solid fa-file-excel text-[11px]"></i> Import
+                  <i v-if="isImporting" class="fa-solid fa-circle-notch animate-spin text-[11px]"></i>
+                  <i v-else class="fa-solid fa-file-excel text-[11px]"></i>
+                  <span>{{ isImporting ? 'Mengimpor...' : 'Import' }}</span>
                 </button>
                 <button
                   @click="downloadTemplate"
-                  :disabled="!selectedInvitationId"
+                  :disabled="!selectedInvitationId || isImporting"
                   class="bg-white text-emerald-600 border border-emerald-100 px-3 py-2.5 rounded-r-xl text-xs font-bold hover:bg-emerald-50 flex items-center justify-center disabled:opacity-50 transition-all cursor-pointer"
                   title="Download Template Excel"
                 >
@@ -347,13 +349,40 @@
 
         <!-- Section 3c: Table & Mobile List Upgrades -->
         <div v-else class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-          <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-            <h3 class="font-bold text-slate-700 text-xs uppercase tracking-wider">
-              Menampilkan: {{ filteredGuests.length }} Tamu
-            </h3>
-            <span v-if="searchQuery || statusFilter !== 'all' || groupFilter" class="text-[11px] text-slate-400 font-medium">
-              Filter aktif
-            </span>
+          <div class="p-4 border-b border-gray-50 flex flex-wrap justify-between items-center gap-2 bg-gray-50/50">
+            <div class="flex items-center gap-2 sm:gap-3">
+              <h3 class="font-bold text-slate-700 text-xs uppercase tracking-wider">
+                Menampilkan: {{ filteredGuests.length }} Tamu
+              </h3>
+              <span
+                v-if="selectedGuestIds.length > 0"
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-extrabold bg-[#a47148]/10 text-[#a47148] border border-[#a47148]/20"
+              >
+                {{ selectedGuestIds.length }} Dipilih
+              </span>
+            </div>
+            <div class="flex items-center gap-2">
+              <button
+                v-if="selectedGuestIds.length > 0"
+                @click="clearSelection"
+                class="text-[11px] text-slate-500 hover:text-slate-800 font-bold px-2.5 py-1 rounded-lg hover:bg-slate-100 transition-colors cursor-pointer"
+              >
+                Batal Pilih
+              </button>
+              <button
+                v-if="selectedGuestIds.length > 0"
+                @click="deleteSelectedGuestsHandler"
+                :disabled="isDeletingBulk"
+                class="text-[11px] bg-rose-50 hover:bg-rose-100 text-rose-600 font-bold px-3 py-1 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50 border border-rose-100"
+              >
+                <i v-if="isDeletingBulk" class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>
+                <i v-else class="fa-solid fa-trash-can text-[10px]"></i>
+                <span>Hapus ({{ selectedGuestIds.length }})</span>
+              </button>
+              <span v-if="searchQuery || statusFilter !== 'all' || groupFilter" class="text-[11px] text-slate-400 font-medium">
+                Filter aktif
+              </span>
+            </div>
           </div>
 
           <!-- Desktop Table -->
@@ -363,7 +392,17 @@
                 class="bg-gray-50 text-gray-400 uppercase text-[10px] font-bold tracking-widest"
               >
                 <tr>
-                  <th class="px-6 py-4">Nama Tamu</th>
+                  <th class="w-12 px-4 py-4 text-center">
+                    <input
+                      type="checkbox"
+                      :checked="isAllSelected"
+                      :indeterminate.prop="isSomeSelected"
+                      @change="toggleSelectAll"
+                      class="w-4 h-4 rounded border-slate-300 text-[#a47148] focus:ring-[#a47148] cursor-pointer align-middle"
+                      title="Pilih Semua Tamu"
+                    />
+                  </th>
+                  <th class="px-4 py-4">Nama Tamu</th>
                   <th class="px-6 py-4">Kategori</th>
                   <th class="px-6 py-4">Status Kirim</th>
                   <th class="px-6 py-4">Status RSVP</th>
@@ -374,9 +413,19 @@
                 <tr
                   v-for="guest in filteredGuests"
                   :key="guest.id"
-                  class="hover:bg-gray-50/50 transition-colors"
+                  :class="selectedGuestIds.includes(guest.id) ? 'bg-[#a47148]/5 hover:bg-[#a47148]/10' : 'hover:bg-gray-50/50'"
+                  class="transition-colors"
                 >
-                  <td class="px-6 py-4">
+                  <td class="w-12 px-4 py-4 text-center">
+                    <input
+                      type="checkbox"
+                      :value="guest.id"
+                      :checked="selectedGuestIds.includes(guest.id)"
+                      @change="toggleSelectGuest(guest.id)"
+                      class="w-4 h-4 rounded border-slate-300 text-[#a47148] focus:ring-[#a47148] cursor-pointer align-middle"
+                    />
+                  </td>
+                  <td class="px-4 py-4">
                     <p class="font-bold text-slate-900">{{ guest.name }}</p>
                     <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
                       <i class="fa-solid fa-phone text-[9px]"></i>
@@ -455,81 +504,117 @@
           </div>
 
           <!-- Mobile Cards View -->
-          <div class="md:hidden divide-y divide-gray-50">
-            <div v-for="guest in filteredGuests" :key="guest.id" class="p-4 space-y-3">
-              <div class="flex justify-between items-start">
-                <div class="min-w-0 flex-1 pr-3">
-                  <p class="font-bold text-slate-900 truncate">{{ guest.name }}</p>
-                  <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
-                    <i class="fa-solid fa-phone text-[8px]"></i>
-                    {{ guest.phoneNumber || 'Tanpa nomor HP' }}
-                  </p>
-                </div>
-                <span
-                  class="shrink-0 px-2 py-0.5 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider"
-                  >{{ guest.group || 'Umum' }}</span
-                >
-              </div>
+          <div class="md:hidden">
+            <!-- Mobile Select All Bar -->
+            <div
+              v-if="filteredGuests.length > 0"
+              class="px-4 py-2.5 bg-slate-50 border-b border-gray-100 flex items-center justify-between"
+            >
+              <label class="flex items-center gap-2 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  :checked="isAllSelected"
+                  :indeterminate.prop="isSomeSelected"
+                  @change="toggleSelectAll"
+                  class="w-4 h-4 rounded border-slate-300 text-[#a47148] focus:ring-[#a47148] cursor-pointer"
+                />
+                <span class="text-xs font-bold text-slate-700">Pilih Semua ({{ filteredGuests.length }})</span>
+              </label>
+              <span v-if="selectedGuestIds.length > 0" class="text-[11px] font-bold text-[#a47148]">
+                {{ selectedGuestIds.length }} Terpilih
+              </span>
+            </div>
 
-              <!-- Status badge & RSVP row -->
-              <div class="flex items-center justify-between gap-2">
-                <button
-                  type="button"
-                  @click="toggleGuestStatusSend(guest)"
-                  class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wide transition-all cursor-pointer border"
-                  :class="guest.statusSend === 'sent'
-                    ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                    : 'bg-amber-50 text-amber-700 border-amber-200'"
-                >
-                  <i :class="guest.statusSend === 'sent' ? 'fa-solid fa-check text-[9px]' : 'fa-regular fa-clock text-[9px]'"></i>
-                  <span>{{ guest.statusSend === 'sent' ? 'Ditandai Terkirim' : 'Belum Terkirim' }}</span>
-                </button>
-
-                <div class="text-xs">
-                  <div
-                    v-if="guest.rsvpStatus === 'hadir'"
-                    class="flex items-center gap-1.5 text-green-600 font-bold"
-                  >
-                    <i class="fa-solid fa-circle-check"></i> Hadir
+            <div class="divide-y divide-gray-50">
+              <div
+                v-for="guest in filteredGuests"
+                :key="guest.id"
+                :class="selectedGuestIds.includes(guest.id) ? 'bg-[#a47148]/5' : ''"
+                class="p-4 space-y-3 transition-colors"
+              >
+                <div class="flex justify-between items-start gap-2.5">
+                  <div class="pt-0.5">
+                    <input
+                      type="checkbox"
+                      :value="guest.id"
+                      :checked="selectedGuestIds.includes(guest.id)"
+                      @change="toggleSelectGuest(guest.id)"
+                      class="w-4 h-4 rounded border-slate-300 text-[#a47148] focus:ring-[#a47148] cursor-pointer"
+                    />
                   </div>
-                  <div
-                    v-else-if="guest.rsvpStatus === 'tidak'"
-                    class="flex items-center gap-1.5 text-red-400 font-bold"
-                  >
-                    <i class="fa-solid fa-circle-xmark"></i> Tidak
+                  <div class="min-w-0 flex-1 pr-2">
+                    <p class="font-bold text-slate-900 truncate">{{ guest.name }}</p>
+                    <p class="text-[10px] text-slate-400 mt-0.5 flex items-center gap-1">
+                      <i class="fa-solid fa-phone text-[8px]"></i>
+                      {{ guest.phoneNumber || 'Tanpa nomor HP' }}
+                    </p>
                   </div>
-                  <div v-else class="text-gray-300 italic text-[10px]">Menunggu...</div>
+                  <span
+                    class="shrink-0 px-2 py-0.5 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider"
+                    >{{ guest.group || 'Umum' }}</span
+                  >
                 </div>
-              </div>
 
-              <!-- Card Actions -->
-              <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-50">
-                <button
-                  @click="copyGuestIndividualLink(guest)"
-                  class="h-9 px-3 flex items-center justify-center text-slate-600 bg-slate-100 active:bg-slate-200 rounded-xl text-xs font-bold gap-1.5 transition"
-                >
-                  <i class="fa-regular fa-copy text-xs"></i>
-                  <span>Salin Link</span>
-                </button>
-                <button
-                  @click="openShareModal(guest)"
-                  :class="
-                    currentInvitation?.isPublished
-                      ? 'text-white bg-emerald-600 active:bg-emerald-700 shadow-xs'
-                      : 'text-gray-400 bg-gray-100'
-                  "
-                  class="h-9 px-3 flex items-center justify-center rounded-xl text-xs font-bold gap-1.5 transition"
-                >
-                  <i class="fa-brands fa-whatsapp text-sm"></i>
-                  <span>Kirim WA</span>
-                </button>
-                <button
-                  @click="deleteGuestHandler(guest.id)"
-                  class="w-9 h-9 flex items-center justify-center text-red-400 bg-red-50 active:bg-red-100 rounded-xl transition"
-                  title="Hapus"
-                >
-                  <i class="fa-solid fa-trash-can text-sm"></i>
-                </button>
+                <!-- Status badge & RSVP row -->
+                <div class="flex items-center justify-between gap-2 pl-6">
+                  <button
+                    type="button"
+                    @click="toggleGuestStatusSend(guest)"
+                    class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-extrabold tracking-wide transition-all cursor-pointer border"
+                    :class="guest.statusSend === 'sent'
+                      ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                      : 'bg-amber-50 text-amber-700 border-amber-200'"
+                  >
+                    <i :class="guest.statusSend === 'sent' ? 'fa-solid fa-check text-[9px]' : 'fa-regular fa-clock text-[9px]'"></i>
+                    <span>{{ guest.statusSend === 'sent' ? 'Ditandai Terkirim' : 'Belum Terkirim' }}</span>
+                  </button>
+
+                  <div class="text-xs">
+                    <div
+                      v-if="guest.rsvpStatus === 'hadir'"
+                      class="flex items-center gap-1.5 text-green-600 font-bold"
+                    >
+                      <i class="fa-solid fa-circle-check"></i> Hadir
+                    </div>
+                    <div
+                      v-else-if="guest.rsvpStatus === 'tidak'"
+                      class="flex items-center gap-1.5 text-red-400 font-bold"
+                    >
+                      <i class="fa-solid fa-circle-xmark"></i> Tidak
+                    </div>
+                    <div v-else class="text-gray-300 italic text-[10px]">Menunggu...</div>
+                  </div>
+                </div>
+
+                <!-- Card Actions -->
+                <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-50 pl-6">
+                  <button
+                    @click="copyGuestIndividualLink(guest)"
+                    class="h-9 px-3 flex items-center justify-center text-slate-600 bg-slate-100 active:bg-slate-200 rounded-xl text-xs font-bold gap-1.5 transition"
+                  >
+                    <i class="fa-regular fa-copy text-xs"></i>
+                    <span>Salin Link</span>
+                  </button>
+                  <button
+                    @click="openShareModal(guest)"
+                    :class="
+                      currentInvitation?.isPublished
+                        ? 'text-white bg-emerald-600 active:bg-emerald-700 shadow-xs'
+                        : 'text-gray-400 bg-gray-100'
+                    "
+                    class="h-9 px-3 flex items-center justify-center rounded-xl text-xs font-bold gap-1.5 transition"
+                  >
+                    <i class="fa-brands fa-whatsapp text-sm"></i>
+                    <span>Kirim WA</span>
+                  </button>
+                  <button
+                    @click="deleteGuestHandler(guest.id)"
+                    class="w-9 h-9 flex items-center justify-center text-red-400 bg-red-50 active:bg-red-100 rounded-xl transition"
+                    title="Hapus"
+                  >
+                    <i class="fa-solid fa-trash-can text-sm"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1015,6 +1100,90 @@
       </div>
     </div>
 
+    <!-- Real-time Import Progress Modal -->
+    <div
+      v-if="isImporting"
+      class="fixed inset-0 bg-black/60 z-[120] flex items-center justify-center p-4 backdrop-blur-xs"
+    >
+      <div class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 shadow-2xl animate-scale-up space-y-5 text-center">
+        <div class="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-2xl shadow-inner animate-pulse">
+          <i class="fa-solid fa-file-excel"></i>
+        </div>
+
+        <div class="space-y-1">
+          <h3 class="font-black text-lg text-slate-900">Mengimpor Data Tamu</h3>
+          <p class="text-xs text-slate-500">
+            Sedang membaca dan memvalidasi file Excel...
+          </p>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="space-y-2">
+          <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden p-0.5 border border-slate-200/50">
+            <div
+              class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-200"
+              :style="{ width: `${importProgressPercentage}%` }"
+            ></div>
+          </div>
+          <div class="flex items-center justify-between text-xs font-bold text-slate-600 px-1">
+            <span>{{ importProgress.current }} / {{ importProgress.total }} tamu</span>
+            <span class="text-emerald-600 font-extrabold">{{ importProgressPercentage }}%</span>
+          </div>
+        </div>
+
+        <div v-if="importProgress.currentName" class="text-[11px] text-slate-500 truncate bg-slate-50 py-2 px-3 rounded-xl border border-slate-100">
+          Sedang memproses: <span class="font-bold text-slate-800">{{ importProgress.currentName }}</span>
+        </div>
+
+        <p class="text-[10px] text-slate-400 italic">
+          Mohon tunggu sebentar, jangan tutup atau refresh halaman.
+        </p>
+      </div>
+    </div>
+
+    <!-- Floating Bulk Action Bar (when guests are selected) -->
+    <transition
+      enter-active-class="transition duration-200 ease-out"
+      enter-from-class="transform translate-y-8 opacity-0"
+      enter-to-class="transform translate-y-0 opacity-100"
+      leave-active-class="transition duration-150 ease-in"
+      leave-from-class="transform translate-y-0 opacity-100"
+      leave-to-class="transform translate-y-8 opacity-0"
+    >
+      <div
+        v-if="selectedGuestIds.length > 0"
+        class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 backdrop-blur-md text-white px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-4 border border-slate-800 max-w-[92vw]"
+      >
+        <div class="flex items-center gap-2">
+          <span class="w-6 h-6 rounded-full bg-[#a47148] text-white flex items-center justify-center text-xs font-black">
+            {{ selectedGuestIds.length }}
+          </span>
+          <span class="text-xs font-bold text-slate-200 hidden sm:inline">Tamu Terpilih</span>
+        </div>
+
+        <div class="h-4 w-px bg-slate-700"></div>
+
+        <div class="flex items-center gap-2">
+          <button
+            @click="deleteSelectedGuestsHandler"
+            :disabled="isDeletingBulk"
+            class="px-3.5 py-1.5 bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50 cursor-pointer"
+          >
+            <i v-if="isDeletingBulk" class="fa-solid fa-circle-notch animate-spin text-xs"></i>
+            <i v-else class="fa-solid fa-trash-can text-xs"></i>
+            <span>{{ isDeletingBulk ? 'Menghapus...' : 'Hapus Terpilih' }}</span>
+          </button>
+
+          <button
+            @click="clearSelection"
+            class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+          >
+            Batal
+          </button>
+        </div>
+      </div>
+    </transition>
+
     <!-- Import Summary Modal (ADM-098) -->
     <div
       v-if="showImportSummaryModal"
@@ -1209,6 +1378,7 @@
 <script setup>
 import { onMounted, ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
+import Swal from 'sweetalert2'
 import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
 import Topbar from '@/components/dashboard/TopbarDashboard.vue'
 import BottomNav from '@/components/dashboard/BottomNav.vue'
@@ -1219,6 +1389,7 @@ import {
   createGuest,
   updateGuest,
   deleteGuest,
+  bulkDeleteGuests,
   getGuestShareLink,
   importGuests,
 } from '@/api/guest'
@@ -1248,6 +1419,18 @@ const isSubmitting = ref(false)
 const searchQuery = ref('')
 const isSidebarOpen = ref(window.innerWidth >= 768)
 const excelInput = ref(null)
+
+// Bulk Selection State
+const selectedGuestIds = ref([])
+const isDeletingBulk = ref(false)
+
+// Real-time Import State
+const isImporting = ref(false)
+const importProgress = ref({ current: 0, total: 0, currentName: '' })
+const importProgressPercentage = computed(() => {
+  if (!importProgress.value.total) return 0
+  return Math.min(100, Math.round((importProgress.value.current / importProgress.value.total) * 100))
+})
 
 // Filtering state (SAT-50: support rsvp hadir filter from dashboard statcard)
 const statusFilter = ref(route.query?.filter === 'hadir' ? 'hadir' : 'all') // 'all' | 'unsent' | 'sent' | 'hadir'
@@ -1356,6 +1539,87 @@ const filteredGuests = computed(() => {
   return list
 })
 
+// Bulk Selection State Computations & Methods
+const isAllSelected = computed(() => {
+  if (filteredGuests.value.length === 0) return false
+  return filteredGuests.value.every((g) => selectedGuestIds.value.includes(g.id))
+})
+
+const isSomeSelected = computed(() => {
+  return (
+    selectedGuestIds.value.length > 0 &&
+    !isAllSelected.value &&
+    filteredGuests.value.some((g) => selectedGuestIds.value.includes(g.id))
+  )
+})
+
+function toggleSelectAll(event) {
+  if (event.target.checked) {
+    const allFilteredIds = filteredGuests.value.map((g) => g.id)
+    const set = new Set([...selectedGuestIds.value, ...allFilteredIds])
+    selectedGuestIds.value = Array.from(set)
+  } else {
+    const filteredSet = new Set(filteredGuests.value.map((g) => g.id))
+    selectedGuestIds.value = selectedGuestIds.value.filter((id) => !filteredSet.has(id))
+  }
+}
+
+function toggleSelectGuest(id) {
+  const index = selectedGuestIds.value.indexOf(id)
+  if (index > -1) {
+    selectedGuestIds.value.splice(index, 1)
+  } else {
+    selectedGuestIds.value.push(id)
+  }
+}
+
+function clearSelection() {
+  selectedGuestIds.value = []
+}
+
+async function deleteSelectedGuestsHandler() {
+  if (selectedGuestIds.value.length === 0) return
+
+  const count = selectedGuestIds.value.length
+  const result = await Swal.fire({
+    title: `Hapus ${count} Tamu?`,
+    text: `Semua tamu yang dipilih (${count} orang) akan dihapus permanen dari daftar undangan. Tindakan ini tidak dapat dibatalkan.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e11d48',
+    cancelButtonColor: '#cbd5e1',
+    confirmButtonText: `Ya, Hapus ${count} Tamu`,
+    cancelButtonText: 'Batal',
+  })
+
+  if (!result.isConfirmed) return
+
+  isDeletingBulk.value = true
+  const idsToDelete = [...selectedGuestIds.value]
+
+  try {
+    try {
+      await bulkDeleteGuests(idsToDelete)
+    } catch (bulkErr) {
+      console.warn('Bulk delete endpoint failed, falling back to batch deletion:', bulkErr)
+      const CONCURRENCY = 6
+      for (let i = 0; i < idsToDelete.length; i += CONCURRENCY) {
+        const batch = idsToDelete.slice(i, i + CONCURRENCY)
+        await Promise.all(batch.map((id) => deleteGuest(id).catch((e) => console.error(e))))
+      }
+    }
+
+    toast.success(`${count} tamu berhasil dihapus`)
+    clearSelection()
+    await fetchGuests(selectedInvitationId.value)
+  } catch (error) {
+    console.error('Error deleting guests:', error)
+    toast.error('Gagal menghapus beberapa tamu')
+  } finally {
+    isDeletingBulk.value = false
+  }
+}
+
 // Unsent Guests queue
 const unsentGuests = computed(() => {
   return guests.value.filter((g) => g.statusSend !== 'sent')
@@ -1409,6 +1673,7 @@ onMounted(async () => {
 })
 
 watch(selectedInvitationId, async (newId) => {
+  clearSelection()
   if (newId) await fetchGuests(newId)
 })
 
@@ -1431,6 +1696,9 @@ async function fetchGuests(invId) {
   try {
     const res = await getGuestsByInvitationId(invId)
     guests.value = Array.isArray(res) ? res : res.data || []
+    selectedGuestIds.value = selectedGuestIds.value.filter((id) =>
+      guests.value.some((g) => g.id === id),
+    )
   } catch (error) {
     toast.error('Gagal memuat tamu')
     console.error(error)
@@ -1768,6 +2036,14 @@ async function handleExcelImport(event) {
       }
 
       isSubmitting.value = true
+      isImporting.value = true
+      importProgress.value = {
+        current: 0,
+        total: jsonData.length,
+        currentName: 'Memvalidasi data...',
+      }
+      toast.info('Memulai impor tamu dari file Excel...')
+
       // Excel cells may be numbers; 08xx phones lose their leading 0 (→ 8xx)
       const cell = (v) => (v === undefined || v === null ? '' : String(v).trim())
       const phoneCell = (v) => {
@@ -1776,13 +2052,15 @@ async function handleExcelImport(event) {
       }
 
       const existingNames = new Set(
-        guests.value.map((g) => (g.name || '').trim().toLowerCase()).filter(Boolean)
+        guests.value.map((g) => (g.name || '').trim().toLowerCase()).filter(Boolean),
       )
       const seenInFile = new Set()
 
       let success = 0
       const failed = []
+      const validQueue = []
 
+      // 1. Synchronous Pre-validation pass (in-memory)
       for (let i = 0; i < jsonData.length; i++) {
         const row = jsonData[i]
         const rowNumber = i + 2 // Row 1 is header
@@ -1806,24 +2084,41 @@ async function handleExcelImport(event) {
           continue
         }
 
-        try {
-          await createGuest({
-            name,
-            phoneNumber: phone,
-            group,
-            invitationId: selectedInvitationId.value,
-          })
-          success++
-          existingNames.add(normalizedName)
-          seenInFile.add(normalizedName)
-        } catch (err) {
-          console.error(err)
-          failed.push({
-            row: rowNumber,
-            name,
-            reason: err.response?.data?.message || 'Gagal menyimpan ke server',
-          })
-        }
+        existingNames.add(normalizedName)
+        seenInFile.add(normalizedName)
+        validQueue.push({ rowNumber, name, phone, group })
+      }
+
+      // Initial progress reflects rows that were pre-validated and skipped
+      importProgress.value.current = failed.length
+
+      // 2. Concurrent Batch Processing (6 parallel requests at a time)
+      const BATCH_SIZE = 6
+      for (let i = 0; i < validQueue.length; i += BATCH_SIZE) {
+        const batch = validQueue.slice(i, i + BATCH_SIZE)
+        await Promise.all(
+          batch.map(async (item) => {
+            importProgress.value.currentName = item.name
+            try {
+              await createGuest({
+                name: item.name,
+                phoneNumber: item.phone,
+                group: item.group,
+                invitationId: selectedInvitationId.value,
+              })
+              success++
+            } catch (err) {
+              console.error(err)
+              failed.push({
+                row: item.rowNumber,
+                name: item.name,
+                reason: err.response?.data?.message || 'Gagal menyimpan ke server',
+              })
+            } finally {
+              importProgress.value.current++
+            }
+          }),
+        )
       }
 
       importSummary.value = { success, failed }
@@ -1839,6 +2134,7 @@ async function handleExcelImport(event) {
       console.error(err)
     } finally {
       isSubmitting.value = false
+      isImporting.value = false
       if (excelInput.value) excelInput.value.value = ''
     }
   }
@@ -1857,10 +2153,22 @@ function downloadTemplate() {
 
 // Delete Guest
 async function deleteGuestHandler(id) {
-  if (!confirm('Hapus tamu ini dari daftar?')) return
+  const result = await Swal.fire({
+    title: 'Hapus Tamu?',
+    text: 'Tamu ini akan dihapus dari daftar undangan.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e11d48',
+    cancelButtonColor: '#cbd5e1',
+    confirmButtonText: 'Ya, Hapus',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+
   try {
     await deleteGuest(id)
     toast.success('Tamu berhasil dihapus')
+    selectedGuestIds.value = selectedGuestIds.value.filter((gid) => gid !== id)
     await fetchGuests(selectedInvitationId.value)
   } catch (error) {
     toast.error('Gagal menghapus tamu')

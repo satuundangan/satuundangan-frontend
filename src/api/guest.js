@@ -20,6 +20,12 @@ export const deleteGuest = (id) =>
     method: 'DELETE',
   })
 
+export const bulkDeleteGuests = (ids) =>
+  apiFetch('/guests/bulk-delete', {
+    method: 'POST',
+    body: JSON.stringify({ ids }),
+  })
+
 export const importGuests = (formData) =>
   apiFetch('/guests/import', {
     method: 'POST',
