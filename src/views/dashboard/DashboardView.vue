@@ -5,7 +5,7 @@
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
       <!-- Topbar -->
-      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" @startTour="startDashboardTour({ force: true })" />
 
       <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar">
         
@@ -72,7 +72,7 @@
           </h3>
           
           <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-             <router-link to="/planner" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-amber-200/80 shadow-xs hover:border-amber-400 hover:shadow-md transition-all group relative overflow-hidden">
+             <router-link to="/planner" data-tour="dashboard-action-planner" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-amber-200/80 shadow-xs hover:border-amber-400 hover:shadow-md transition-all group relative overflow-hidden">
                 <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                    <i class="fa-solid fa-clipboard-check text-base"></i>
                 </div>
@@ -94,7 +94,7 @@
                 </div>
              </router-link>
              
-             <router-link to="/guests" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
+             <router-link to="/guests" data-tour="dashboard-action-guests" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
                 <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                    <i class="fa-solid fa-user-plus text-base"></i>
                 </div>
@@ -104,7 +104,7 @@
                 </div>
              </router-link>
              
-             <router-link to="/guestbook" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
+             <router-link to="/guestbook" data-tour="dashboard-action-reception" class="flex items-center gap-3.5 p-4 bg-white rounded-2xl border border-slate-100 shadow-xs hover:border-slate-300 hover:shadow-md transition-all group">
                 <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
                    <i class="fa-solid fa-qrcode text-base"></i>
                 </div>
@@ -127,7 +127,7 @@
         </div>
 
         <!-- Daftar Undangan Terbaru -->
-        <div class="bg-white rounded-2xl p-6 shadow-xs border border-slate-100 space-y-4">
+        <div data-tour="dashboard-invitations-card" class="bg-white rounded-2xl p-6 shadow-xs border border-slate-100 space-y-4">
            <div class="flex items-center justify-between">
               <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider flex items-center gap-2">
                  <i class="fa-solid fa-clock-rotate-left text-blue-500"></i> Undangan Terakhir Dibuat
@@ -265,6 +265,7 @@ import { getInvitations, getDashboardStats } from "@/api/invitation"
 import { getInvitationPublicUrl } from "@/utils/invitationUrls"
 import { useAuthStore } from "@/stores/auth"
 import { useToast } from "vue-toastification"
+import { startDashboardTour } from "@/composables/useOnboardingTour"
 
 const toast = useToast()
 const auth = useAuthStore()
@@ -345,6 +346,10 @@ onMounted(async () => {
     toast.error("Gagal memuat dashboard")
   } finally {
     loading.value = false
+    // Trigger onboarding tour for new users with a smooth delay
+    setTimeout(() => {
+      startDashboardTour({ force: false })
+    }, 1000)
   }
 })
 </script>

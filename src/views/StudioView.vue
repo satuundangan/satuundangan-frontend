@@ -24,6 +24,17 @@
       </div>
 
       <div class="flex items-center gap-3 md:gap-4">
+        <!-- Tour Guide Trigger Button -->
+        <button
+          type="button"
+          @click="startStudioTour({ force: true })"
+          class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-mocha/10 hover:bg-mocha/20 text-mocha text-[11px] font-bold transition-all cursor-pointer shadow-xs"
+          title="Mulai Tur Panduan Studio"
+        >
+          <i class="fa-solid fa-circle-question text-xs"></i>
+          <span class="hidden sm:inline">Panduan</span>
+        </button>
+
         <!-- Free Design & Preview Reassurance Pill -->
         <div class="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/80 text-emerald-700 text-[10px] font-bold">
           <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -31,45 +42,47 @@
         </div>
 
         <!-- Draft status indicator with timestamp & cross-device popover (ADM-094) -->
-        <div class="relative">
-          <button
-            type="button"
-            @click="showCrossDeviceInfo = !showCrossDeviceInfo"
-            class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold transition-colors cursor-pointer"
-            title="Klik untuk info penyimpanan draf"
-          >
-            <i class="fa-solid fa-cloud-arrow-up text-mocha text-[11px]"></i>
-            <span class="hidden md:inline">{{ lastSavedFormatted ? `Draf Tersimpan (${lastSavedFormatted})` : 'Draf Otomatis Tersimpan' }}</span>
-            <span class="md:hidden">Draf Tersimpan</span>
-            <i class="fa-solid fa-circle-info text-[9px] text-slate-400"></i>
-          </button>
+        <div data-tour="studio-save-action" class="flex items-center gap-2.5">
+          <div class="relative">
+            <button
+              type="button"
+              @click="showCrossDeviceInfo = !showCrossDeviceInfo"
+              class="flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 text-[10px] font-bold transition-colors cursor-pointer"
+              title="Klik untuk info penyimpanan draf"
+            >
+              <i class="fa-solid fa-cloud-arrow-up text-mocha text-[11px]"></i>
+              <span class="hidden md:inline">{{ lastSavedFormatted ? `Draf Tersimpan (${lastSavedFormatted})` : 'Draf Otomatis Tersimpan' }}</span>
+              <span class="md:hidden">Draf Tersimpan</span>
+              <i class="fa-solid fa-circle-info text-[9px] text-slate-400"></i>
+            </button>
 
-          <!-- Cross Device Info Popover -->
-          <div
-            v-if="showCrossDeviceInfo"
-            class="absolute right-0 top-full mt-2 w-72 p-3 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 text-left text-xs space-y-2 animate-scale-up"
-          >
-            <div class="flex items-center justify-between pb-1 border-b border-slate-100">
-              <span class="font-extrabold text-slate-800 text-[11px] flex items-center gap-1.5">
-                <i class="fa-solid fa-laptop text-mocha"></i> Info Penyimpanan Draf
-              </span>
-              <button @click="showCrossDeviceInfo = false" class="text-slate-400 hover:text-slate-600">
-                <i class="fa-solid fa-xmark text-xs"></i>
-              </button>
-            </div>
-            <p class="text-[11px] text-slate-500 leading-relaxed">
-              Draf formulir Anda tersimpan otomatis di peramban ini. Untuk melanjutkan di perangkat lain, klik <b>Simpan</b> dan masuk ke akun Anda.
-            </p>
-            <div class="pt-1 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
-              <i class="fa-solid fa-shield-check"></i> Draf lokal aman meskipun halaman dimuat ulang.
+            <!-- Cross Device Info Popover -->
+            <div
+              v-if="showCrossDeviceInfo"
+              class="absolute right-0 top-full mt-2 w-72 p-3 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 text-left text-xs space-y-2 animate-scale-up"
+            >
+              <div class="flex items-center justify-between pb-1 border-b border-slate-100">
+                <span class="font-extrabold text-slate-800 text-[11px] flex items-center gap-1.5">
+                  <i class="fa-solid fa-laptop text-mocha"></i> Info Penyimpanan Draf
+                </span>
+                <button @click="showCrossDeviceInfo = false" class="text-slate-400 hover:text-slate-600">
+                  <i class="fa-solid fa-xmark text-xs"></i>
+                </button>
+              </div>
+              <p class="text-[11px] text-slate-500 leading-relaxed">
+                Draf formulir Anda tersimpan otomatis di peramban ini. Untuk melanjutkan di perangkat lain, klik <b>Simpan</b> dan masuk ke akun Anda.
+              </p>
+              <div class="pt-1 text-[10px] text-emerald-600 font-semibold flex items-center gap-1">
+                <i class="fa-solid fa-shield-check"></i> Draf lokal aman meskipun halaman dimuat ulang.
+              </div>
             </div>
           </div>
+          <button @click="saveAndPreview" :disabled="isUploading" class="bg-mocha text-white font-bold py-2.5 px-6 rounded-xl hover:bg-dark shadow-lg shadow-mocha/20 transition-all disabled:opacity-50 flex items-center gap-2 text-xs md:text-sm">
+            <span v-if="isUploading" class="animate-spin w-3 h-3 border-2 border-white/30 border-t-white rounded-full"></span>
+            <span>{{ route.params.id ? 'Simpan' : 'Simpan & Selesai' }}</span>
+            <i v-if="!isUploading" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+          </button>
         </div>
-        <button @click="saveAndPreview" :disabled="isUploading" class="bg-mocha text-white font-bold py-2.5 px-6 rounded-xl hover:bg-dark shadow-lg shadow-mocha/20 transition-all disabled:opacity-50 flex items-center gap-2 text-xs md:text-sm">
-          <span v-if="isUploading" class="animate-spin w-3 h-3 border-2 border-white/30 border-t-white rounded-full"></span>
-          <span>{{ route.params.id ? 'Simpan' : 'Simpan & Selesai' }}</span>
-          <i v-if="!isUploading" class="fa-solid fa-wand-magic-sparkles text-xs"></i>
-        </button>
       </div>
     </header>
 
@@ -106,7 +119,7 @@
         <!-- Editor Content with Side Sub-Nav -->
         <div class="flex-1 flex overflow-hidden">
           <!-- Sidebar Sub-Nav (Desktop) -->
-          <nav class="w-16 md:w-20 bg-white border-r border-gray-100 flex flex-col items-center py-6 gap-2 shrink-0">
+          <nav data-tour="studio-tabs" class="w-16 md:w-20 bg-white border-r border-gray-100 flex flex-col items-center py-6 gap-2 shrink-0">
           <button v-for="tab in tabOptions" :key="tab.id" 
                   @click="activeTab = tab.id"
                   :class="[
@@ -122,7 +135,7 @@
         </nav>
 
         <!-- Editor Form Panel -->
-        <div ref="editorFormPanel" class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 custom-scrollbar">
+        <div ref="editorFormPanel" data-tour="studio-form-panel" class="flex-1 overflow-y-auto p-4 md:p-8 pb-32 custom-scrollbar">
           <div class="max-w-3xl mx-auto space-y-8">
             
             <!-- Section Header -->
@@ -1117,7 +1130,7 @@
       </div>
 
       <!-- Preview Mockup Area -->
-      <div ref="previewArea" class="flex-1 w-full flex items-center justify-center overflow-hidden py-4 relative">
+      <div ref="previewArea" data-tour="studio-preview-frame" class="flex-1 w-full flex items-center justify-center overflow-hidden py-4 relative">
         <!-- Dynamic Frame Wrapper -->
         <div :class="[
           'overflow-hidden flex flex-col shadow-2xl',
@@ -1314,6 +1327,7 @@ import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
 import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
+import { startStudioTour } from '@/composables/useOnboardingTour'
 
 const router = useRouter()
 const route = useRoute()
@@ -2150,6 +2164,11 @@ onMounted(async () => {
         saveAndPreview()
      }, 1000)
   }
+
+  // Trigger onboarding walkthrough for first-time visitors
+  setTimeout(() => {
+    startStudioTour({ force: false })
+  }, 1200)
 })
 
 onUnmounted(() => {

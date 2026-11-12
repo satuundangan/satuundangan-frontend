@@ -25,6 +25,16 @@
     </div>
     
     <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+      <button 
+        type="button"
+        @click="$emit('startTour')" 
+        class="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all text-xs font-bold cursor-pointer"
+        title="Mulai Tur Panduan Interaktif"
+      >
+        <i class="fa-solid fa-circle-question text-mocha text-xs"></i>
+        <span class="hidden sm:inline">Panduan</span>
+      </button>
+
       <router-link 
         v-if="showButton" 
         to="/templates" 
@@ -54,7 +64,7 @@ defineProps({
   showButton: { type: Boolean, default: false },
 })
 
-defineEmits(['toggleSidebar'])
+defineEmits(['toggleSidebar', 'startTour'])
 
 const auth = useAuthStore()
 const userInitial = computed(() => (auth.user?.name || 'U').trim().charAt(0).toUpperCase())
