@@ -155,9 +155,19 @@ export async function startDashboardTour(options = {}) {
 
   const steps = [
     {
+      element: '[data-tour="dashboard-journey-checklist"]',
+      popover: {
+        title: '1. Panduan Langkah Persiapan',
+        description:
+          'Pantau progres 4 langkah penting menyiapkan undangan: pilih desain, isi data kedua mempelai, masukkan daftar tamu, dan sebar via WhatsApp.',
+        side: 'bottom',
+        align: 'start',
+      },
+    },
+    {
       element: '[data-tour="dashboard-invitations-card"]',
       popover: {
-        title: '1. Undangan Digital Kamu',
+        title: '2. Undangan Digital Kamu',
         description:
           'Pantau status undangan (Draft / Aktif), salin tautan website undangan, edit kembali di Studio, atau buka pratinjau publik.',
         side: 'bottom',
@@ -167,7 +177,7 @@ export async function startDashboardTour(options = {}) {
     {
       element: '[data-tour="dashboard-action-guests"]',
       popover: {
-        title: '2. Personalisasi Nama Tamu',
+        title: '3. Personalisasi Nama Tamu',
         description:
           'Masukkan daftar tamu undanganmu di sini agar setiap tamu memiliki link unik dengan sapaan personal ("Kepada Yth. Bapak/Ibu...").',
         side: 'top',
@@ -177,7 +187,7 @@ export async function startDashboardTour(options = {}) {
     {
       element: '[data-tour="dashboard-action-planner"]',
       popover: {
-        title: '3. Wedding Planner Terintegrasi',
+        title: '4. Wedding Planner Terintegrasi',
         description:
           'Gunakan Wedding Planner untuk menyusun kalkulator anggaran pernikahan, daftar checklist persiapan (H-180 hingga Hari H), dan kontak vendor.',
         side: 'top',
@@ -187,7 +197,7 @@ export async function startDashboardTour(options = {}) {
     {
       element: '[data-tour="dashboard-action-reception"]',
       popover: {
-        title: '4. Meja Resepsi & Standee QR',
+        title: '5. Meja Resepsi & Standee QR',
         description:
           'Cetak Standee QR untuk meja penerima tamu fisik, dan gunakan kamera HP panitia untuk memindai tiket kedatangan tamu di Hari H.',
         side: 'top',

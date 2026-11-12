@@ -33,6 +33,13 @@
           <i class="fa-solid fa-envelope-open-text absolute -right-6 -bottom-8 text-white/10 text-[180px] rotate-12 pointer-events-none hidden sm:block"></i>
         </div>
 
+        <!-- Panduan Persiapan Undangan (SAT-62: Journey Checklist Widget) -->
+        <JourneyChecklistWidget 
+          :invitations="invitations" 
+          :stats="stats" 
+          :loading="loading" 
+        />
+
         <!-- Ringkasan Statistik (SAT-50: Tautan Cepat ke Detail Modul) -->
         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3.5">
           <StatCard 
@@ -260,6 +267,7 @@ import { onMounted, ref, computed } from "vue"
 import Sidebar from "@/components/dashboard/SidebarDashboard.vue"
 import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import StatCard from "@/components/dashboard/StatCard.vue"
+import JourneyChecklistWidget from "@/components/dashboard/JourneyChecklistWidget.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations, getDashboardStats } from "@/api/invitation"
 import { getInvitationPublicUrl } from "@/utils/invitationUrls"
