@@ -333,12 +333,13 @@
 
           <!-- Dress code -->
           <div
-            v-if="isSectionEnabled('dress-code') && data.dressCode"
-            class="scroll-card p-8 text-center max-w-xl mx-auto"
+            v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)"
+            class="scroll-card p-8 text-center max-w-xl mx-auto space-y-3"
             v-observe
           >
             <h4 class="font-shinobi text-2xl text-[#ff7800] mb-2">Dress Code</h4>
-            <p class="text-xl text-[#2a1c0d] font-semibold">"{{ data.dressCode }}"</p>
+            <p v-if="data.dressCode" class="text-xl text-[#2a1c0d] font-semibold">"{{ data.dressCode }}"</p>
+            <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
           </div>
         </section>
 
@@ -528,6 +529,7 @@ import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

@@ -592,7 +592,7 @@
           </div>
 
           <div
-            v-if="isSectionEnabled('dress-code') && data.dressCode"
+            v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)"
             class="mt-12 text-center"
             v-observe
           >
@@ -603,7 +603,7 @@
               Dress Code
             </h3>
             <div
-              class="inline-block p-6 rounded-[var(--dt-radius)] border"
+              class="inline-block p-6 rounded-[var(--dt-radius)] border max-w-md w-full"
               :style="{
                 backgroundColor: 'var(--dt-color-surface)',
                 borderColor: 'var(--dt-color-secondary)',
@@ -613,9 +613,10 @@
                 class="fa-solid fa-shirt text-2xl mb-3 block"
                 :style="{ color: 'var(--dt-color-accent)' }"
               ></i>
-              <p class="text-sm tracking-wide" :style="{ color: 'var(--dt-color-text-muted)' }">
+              <p v-if="data.dressCode" class="text-sm tracking-wide" :style="{ color: 'var(--dt-color-text-muted)' }">
                 {{ data.dressCode }}
               </p>
+              <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
             </div>
           </div>
 
@@ -1045,6 +1046,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import ThemeArtScene from '@/components/invitation/ThemeArtScene.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 import {

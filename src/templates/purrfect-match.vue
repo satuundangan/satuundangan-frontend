@@ -995,7 +995,11 @@
           <!-- Swatches -->
           <div class="space-y-4">
             <p class="text-xs font-bold uppercase tracking-wider text-[#4A4E69]">Palette Warna yang Disarankan:</p>
-            <div class="flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
+            <DressCodeSwatches
+              v-if="data.designSettings?.dressCodeColors?.length || data.dressCodeColors?.length"
+              :colors="data.designSettings?.dressCodeColors || data.dressCodeColors"
+            />
+            <div v-else class="flex items-center justify-center gap-4 sm:gap-6 flex-wrap">
               <div class="flex flex-col items-center gap-2">
                 <div class="w-12 h-12 rounded-full bg-[#FFF3EA] border-2 border-[#F4A261] shadow-inner"></div>
                 <span class="text-[10px] font-bold text-[#4A4E69]">Butter Peach</span>
@@ -1039,8 +1043,8 @@
             </div>
           </div>
 
-          <p v-if="data.dressCodeNote" class="text-xs text-[#E76F51] font-semibold italic">
-            "{{ data.dressCodeNote }}"
+          <p v-if="data.dressCode || data.dressCodeNote" class="text-xs text-[#E76F51] font-semibold italic">
+            "{{ data.dressCode || data.dressCodeNote }}"
           </p>
         </div>
       </section>
@@ -1408,6 +1412,7 @@ import { useToast } from 'vue-toastification'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 
 // Props Declaration

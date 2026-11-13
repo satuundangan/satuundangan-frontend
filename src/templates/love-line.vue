@@ -663,7 +663,13 @@
           </div>
 
           <!-- Color Swatches with Labels -->
-          <div class="flex items-center justify-center gap-4 sm:gap-6 mt-8">
+          <DressCodeSwatches 
+            v-if="data.designSettings?.dressCodeColors?.length || data.dressCodeColors?.length"
+            :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" 
+            :showLabel="false"
+            size="lg"
+          />
+          <div v-else class="flex items-center justify-center gap-4 sm:gap-6 mt-8">
             <div
               v-for="(item, idx) in dressCodeSwatches"
               :key="idx"
@@ -994,6 +1000,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { useRoute } from 'vue-router'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

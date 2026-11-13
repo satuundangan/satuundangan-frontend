@@ -540,6 +540,24 @@
       </section>
 
       <!-- ============================================================ -->
+      <!-- SECTION 5.5: DRESS CODE                                       -->
+      <!-- ============================================================ -->
+      <section
+        v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)"
+        class="py-16 px-6 bg-[#161d18] border-t border-[#dfb974]/20 text-center"
+        v-observe
+      >
+        <div class="max-w-md mx-auto space-y-4 p-8 rounded-2xl bg-[#121713]/80 border border-[#dfb974]/30 shadow-xl">
+          <div class="text-[#dfb974]"><i class="fa-solid fa-shirt text-2xl"></i></div>
+          <h3 class="text-xl font-serif text-[#f4eee1]">Dress Code / Tata Busana</h3>
+          <p v-if="data.dressCode" class="text-xs sm:text-sm text-[#dfb974] leading-relaxed">
+            {{ data.dressCode }}
+          </p>
+          <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
+        </div>
+      </section>
+
+      <!-- ============================================================ -->
       <!-- SECTION 6: LOVE STORY                                         -->
       <!-- ============================================================ -->
       <section
@@ -785,6 +803,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

@@ -337,11 +337,18 @@
         <div class="max-w-md mx-auto text-center space-y-5 bg-white/90 backdrop-blur-md p-6 md:p-8 rounded-3xl border border-[#FAD2DA] shadow-sm">
           <span class="text-[10px] font-black uppercase tracking-[0.25em] text-[#E85D75]">Panduan Busana</span>
           <h3 class="text-xl md:text-2xl font-serif font-black text-[#314E35]">Dress Code Tamu</h3>
-          <p class="text-xs text-[#436248] font-medium">
+          <p v-if="data.dressCode" class="text-xs text-[#436248] font-medium">
+            {{ data.dressCode }}
+          </p>
+          <p v-else class="text-xs text-[#436248] font-medium">
             Untuk keselarasan momen foto bersama, kami menyarankan busana dengan nuansa warna berikut:
           </p>
 
-          <div class="flex items-center justify-center gap-3 pt-2">
+          <DressCodeSwatches
+            v-if="data.designSettings?.dressCodeColors?.length || data.dressCodeColors?.length"
+            :colors="data.designSettings?.dressCodeColors || data.dressCodeColors"
+          />
+          <div v-else class="flex items-center justify-center gap-3 pt-2">
             <div class="flex flex-col items-center gap-1.5">
               <span class="w-10 h-10 rounded-full bg-[#E85D75] shadow-sm border-2 border-white ring-2 ring-[#E85D75]/20"></span>
               <span class="text-[9px] font-bold text-[#D3415C]">Strawberry</span>
@@ -600,6 +607,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

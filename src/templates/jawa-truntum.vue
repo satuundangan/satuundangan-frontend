@@ -336,13 +336,14 @@
       </section>
 
       <!-- DRESS CODE & PROTOKOL -->
-      <section v-if="isSectionEnabled('dress-code') && data.dressCode" class="py-16 px-6 bg-[#140e09] border-t border-[#c5a059]/15 text-center" v-observe>
+      <section v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="py-16 px-6 bg-[#140e09] border-t border-[#c5a059]/15 text-center" v-observe>
         <div class="max-w-md mx-auto space-y-4 p-6 border border-[#c5a059]/20 rounded-2xl bg-[#1c140d]/60">
           <div class="text-[#c5a059]"><i class="fa-solid fa-shirt text-2xl"></i></div>
           <h3 class="text-xl font-serif text-[#fbf6ea]">Pangageman / Tata Busana</h3>
-          <p class="text-xs md:text-sm text-[#e0d6c4] leading-relaxed font-sans">
+          <p v-if="data.dressCode" class="text-xs md:text-sm text-[#e0d6c4] leading-relaxed font-sans">
             {{ data.dressCode }}
           </p>
+          <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
         </div>
       </section>
 
@@ -666,6 +667,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import gununganImg from '@/assets/ornaments/gunungan-gold.png'
 import cornerImg from '@/assets/ornaments/jawa-corner-gold.png'
 import dividerImg from '@/assets/ornaments/jawa-divider-gold.png'

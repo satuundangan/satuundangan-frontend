@@ -612,7 +612,11 @@
             <p class="text-xs font-sans text-[#635b54] leading-relaxed max-w-md mx-auto">
               We warmly invite gentlemen to don dark suits or tuxedos, and ladies to grace the celebration in floor-length gowns of muted earthy &amp; champagne hues.
             </p>
-            <div class="flex justify-center items-center gap-3 pt-2">
+            <DressCodeSwatches 
+              v-if="data.designSettings?.dressCodeColors?.length || data.dressCodeColors?.length"
+              :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" 
+            />
+            <div v-else class="flex justify-center items-center gap-3 pt-2">
               <span class="w-4 h-4 rounded-full bg-[#1a1614] border border-[#bfa15f]/50" title="Espresso Noir"></span>
               <span class="w-4 h-4 rounded-full bg-[#f4f1ea] border border-[#bfa15f]/50" title="Ivory Cream"></span>
               <span class="w-4 h-4 rounded-full bg-[#bfa15f] border border-[#bfa15f]/50" title="Antique Gold"></span>
@@ -974,6 +978,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

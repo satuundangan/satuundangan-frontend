@@ -448,10 +448,13 @@
           </div>
 
           <!-- Dress Code & Live Streaming Details -->
-          <div v-if="data.dressCode || data.liveStreamingUrl" class="max-w-xl mx-auto space-y-4 pt-6">
-            <div v-if="data.dressCode" class="p-5 border border-[#dfb15b]/25 bg-[#2c1810]/70 rounded-2xl flex items-center justify-center gap-3 text-xs md:text-sm text-[#d5ba99] font-sans">
-              <i class="fa-solid fa-shirt text-[#dfb15b]"></i>
-              <span><strong>Busana / Dress Code:</strong> {{ data.dressCode }}</span>
+          <div v-if="data.dressCode || data.designSettings?.dressCodeColors?.length || data.liveStreamingUrl" class="max-w-xl mx-auto space-y-4 pt-6">
+            <div v-if="data.dressCode || data.designSettings?.dressCodeColors?.length" class="p-5 border border-[#dfb15b]/25 bg-[#2c1810]/70 rounded-2xl flex flex-col items-center justify-center gap-2 text-xs md:text-sm text-[#d5ba99] font-sans">
+              <div class="flex items-center gap-2">
+                <i class="fa-solid fa-shirt text-[#dfb15b]"></i>
+                <span v-if="data.dressCode"><strong>Busana / Dress Code:</strong> {{ data.dressCode }}</span>
+              </div>
+              <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
             </div>
 
             <div v-if="data.liveStreamingUrl" class="p-5 border border-[#dfb15b]/25 bg-[#2c1810]/70 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4 font-sans">
@@ -789,6 +792,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

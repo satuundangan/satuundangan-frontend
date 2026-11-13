@@ -955,11 +955,15 @@
               <!-- Extra components and configs -->
               <div v-if="sections['dress-code'] || sections['extended-family'] || sections.likes" 
                    class="bg-white p-5 md:p-8 rounded-[2rem] shadow-sm border border-gray-100 space-y-6 animate-fade-in">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div v-if="sections['dress-code']">
+                <div v-if="sections['dress-code']" class="space-y-4">
+                  <div>
                     <label class="form-label">Dress Code (Aturan Busana)</label>
                     <input v-model="formData.dressCode" type="text" placeholder="Contoh: Putih / Batik Modern" class="form-input" />
                   </div>
+                  <!-- Visual Color Swatches Picker (SAT-63) -->
+                  <DressCodeColorPicker 
+                    v-model="formData.designSettings.dressCodeColors" 
+                  />
                 </div>
                 
                 <div v-if="sections['extended-family']" class="pt-4 border-t border-gray-50">
@@ -1327,6 +1331,7 @@ import GiftSection from './create-form/components/GiftSection.vue'
 import SocialSection from './create-form/components/SocialSection.vue'
 import ImageCropperModal from './create-form/components/ImageCropperModal.vue'
 import AuthModal from '@/components/modal/AuthModal.vue'
+import DressCodeColorPicker from '@/components/invitation/DressCodeColorPicker.vue'
 import { startStudioTour } from '@/composables/useOnboardingTour'
 
 const router = useRouter()
@@ -1607,6 +1612,7 @@ const formData = ref({
     eventStartTime: '',
     eventEndTime: '',
     hideRundown: false,
+    dressCodeColors: [],
   },
   gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
   akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
@@ -1915,6 +1921,7 @@ const syncDataToPreview = (data) => {
           eventStartTime: data.designSettings?.eventStartTime,
           eventEndTime: data.designSettings?.eventEndTime,
           hideRundown: !!data.designSettings?.hideRundown,
+          dressCodeColors: data.designSettings?.dressCodeColors || [],
         },
         selectedSections: getCanonicalSelectedSections()
       }
@@ -2303,6 +2310,7 @@ function mapPayloadToFormData(payload) {
      eventStartTime: '',
      eventEndTime: '',
      hideRundown: false,
+     dressCodeColors: [],
      ...(payload.designSettings || content.designSettings || {}),
      backgroundFile: null,
    }

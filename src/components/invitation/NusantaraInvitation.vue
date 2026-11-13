@@ -169,12 +169,13 @@
         </section>
 
         <section
-          v-if="isSectionEnabled('dress-code') && invitation.dressCode"
+          v-if="isSectionEnabled('dress-code') && (invitation.dressCode || invitation.designSettings?.dressCodeColors?.length)"
           class="nu-section nu-detail-section"
         >
           <p class="nu-section-kicker">Panduan bagi tamu</p>
           <h2 class="nu-section-title">Busana</h2>
-          <p class="nu-detail-copy">{{ invitation.dressCode }}</p>
+          <p v-if="invitation.dressCode" class="nu-detail-copy">{{ invitation.dressCode }}</p>
+          <DressCodeSwatches :colors="invitation.designSettings?.dressCodeColors || invitation.dressCodeColors" />
         </section>
 
         <section
@@ -424,6 +425,7 @@ import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestM
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },

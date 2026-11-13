@@ -614,7 +614,7 @@
             </div>
 
             <div
-              v-if="data.dressCode"
+              v-if="data.dressCode || data.designSettings?.dressCodeColors?.length"
               class="mt-2 text-center bg-[#022b1d] px-8 py-3 md:px-12 md:py-6 rounded-2xl md:rounded-[2rem] border border-[#d4af37]/20 shadow-lg relative overflow-hidden w-full max-w-[360px] md:max-w-none mx-auto"
             >
               <p
@@ -622,9 +622,10 @@
               >
                 The Dress Code
               </p>
-              <p class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">
+              <p v-if="data.dressCode" class="text-white font-serif italic text-xs md:text-2xl tracking-wide relative z-10">
                 "{{ data.dressCode }}"
               </p>
+              <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
             </div>
           </div>
         </section>
@@ -914,6 +915,7 @@ import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

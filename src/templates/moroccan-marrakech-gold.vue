@@ -836,16 +836,17 @@
 
           <!-- DRESS CODE / TATA BUSANA (If provided) -->
           <div
-            v-if="data.dressCode || isSectionEnabled('dress-code')"
+            v-if="data.dressCode || data.designSettings?.dressCodeColors?.length || isSectionEnabled('dress-code')"
             class="max-w-md mx-auto p-5 rounded-2xl border border-[#d4af37]/30 bg-[#162536]/60 space-y-2 text-center"
           >
             <div class="flex items-center justify-center gap-2 text-[#d4af37] text-sm">
               <i class="fa-solid fa-shirt"></i>
               <span class="font-bold text-xs uppercase tracking-widest">Dress Code / Busana Tamu</span>
             </div>
-            <p class="text-xs text-[#e2c9a5]">
-              {{ data.dressCode?.description || data.dressCode || 'Pakaian Sopan & Menutup Aurat / Nuansa Earth Tone, Sand Gold, atau Terracotta.' }}
+            <p v-if="data.dressCode" class="text-xs text-[#e2c9a5]">
+              {{ data.dressCode?.description || data.dressCode }}
             </p>
+            <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
           </div>
         </div>
       </section>
@@ -1236,6 +1237,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

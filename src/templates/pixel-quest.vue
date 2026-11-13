@@ -375,9 +375,10 @@
           </div>
           
           <!-- DRESS CODE SECTION -->
-          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="retro-border p-8 text-center max-w-xl mx-auto bg-slate-900 border-rose-500" v-observe>
+          <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="retro-border p-8 text-center max-w-xl mx-auto bg-slate-900 border-rose-500 space-y-4" v-observe>
             <h4 class="font-pixel-title text-sm mb-4 text-rose-500 uppercase tracking-widest">THE DRESS CODE</h4>
-            <p class="text-2xl text-white font-bold mb-2">"{{ data.dressCode }}"</p>
+            <p v-if="data.dressCode" class="text-2xl text-white font-bold mb-2">"{{ data.dressCode }}"</p>
+            <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
             <div class="mt-4 flex justify-center gap-4">
               <div class="w-12 h-12 bg-white/10 border-2 border-dashed border-white/20 flex items-center justify-center text-2xl">👔</div>
               <div class="w-12 h-12 bg-white/10 border-2 border-dashed border-white/20 flex items-center justify-center text-2xl">👗</div>
@@ -543,6 +544,7 @@ import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

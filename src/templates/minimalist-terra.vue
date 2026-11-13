@@ -235,12 +235,13 @@
           </div>
 
           <!-- DRESS CODE -->
-          <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="mt-20 text-center space-y-6" v-observe>
+          <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="mt-20 text-center space-y-6" v-observe>
              <h3 class="text-sm uppercase tracking-[0.3em] font-bold text-[#f2cc8f]">Dress Code</h3>
-             <div class="p-8 border border-white/10 rounded-[3rem] inline-block px-12">
+             <div v-if="data.dressCode" class="p-8 border border-white/10 rounded-[3rem] inline-block px-12">
                 <i class="fa-solid fa-shirt text-[#81b29a] text-2xl mb-4 block"></i>
                 <p class="text-white text-sm font-medium">{{ data.dressCode }}</p>
              </div>
+             <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
           </div>
 
           <!-- LIVE STREAMING -->
@@ -377,6 +378,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 const toast = useToast()

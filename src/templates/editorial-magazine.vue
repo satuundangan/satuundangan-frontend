@@ -226,10 +226,11 @@
             </div>
 
             <!-- DRESS CODE -->
-            <div v-if="isSectionEnabled('dress-code') && data.dressCode" class="border-t border-white/10 pt-10 text-center md:text-left space-y-6" v-observe>
+            <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="border-t border-white/10 pt-10 text-center md:text-left space-y-6" v-observe>
                <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] text-gray-500 font-black">Wardrobe</span>
                <h3 class="text-2xl md:text-4xl font-playfair font-bold uppercase tracking-widest italic text-gray-400">Dress Code</h3>
-               <p class="text-xs md:text-lg font-bold uppercase tracking-[0.2em]">{{ data.dressCode }}</p>
+               <p v-if="data.dressCode" class="text-xs md:text-lg font-bold uppercase tracking-[0.2em]">{{ data.dressCode }}</p>
+               <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
             </div>
 
             <!-- LIVE STREAMING -->
@@ -343,6 +344,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 const toast = useToast()

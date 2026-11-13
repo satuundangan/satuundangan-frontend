@@ -765,7 +765,11 @@
             <p class="text-xs text-[#f4f7f5]/80 leading-relaxed">
               {{ data.dressCode?.description || data.dressCode || 'Pakaian Formal / Batik / Nuansa Demon Slayer (Deep Forest Green, Obsidian Noir, Wisteria Lilac, atau Sentuhan Emas & Api).' }}
             </p>
-            <div class="flex items-center justify-center gap-3 pt-1">
+            <DressCodeSwatches
+              v-if="data.designSettings?.dressCodeColors?.length || data.dressCodeColors?.length"
+              :colors="data.designSettings?.dressCodeColors || data.dressCodeColors"
+            />
+            <div v-else class="flex items-center justify-center gap-3 pt-1">
               <span class="w-5 h-5 rounded-full bg-[#1a4731] border border-white/20 shadow" title="Forest Green"></span>
               <span class="w-5 h-5 rounded-full bg-[#0f1412] border border-white/20 shadow" title="Obsidian Noir"></span>
               <span class="w-5 h-5 rounded-full bg-[#9b5de5] border border-white/20 shadow" title="Wisteria Purple"></span>
@@ -1240,6 +1244,7 @@ import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

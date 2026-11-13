@@ -207,9 +207,10 @@
               <button class="calendar-btn" type="button" @click="downloadIcs">Apple / Outlook (.ics)</button>
             </div>
           </div>
-          <div v-if="data.dressCode" class="dress-code">
+          <div v-if="data.dressCode || data.designSettings?.dressCodeColors?.length" class="dress-code">
             <p class="eyebrow">Dress code</p>
-            <p class="dress-code__text">{{ data.dressCode }}</p>
+            <p v-if="data.dressCode" class="dress-code__text">{{ data.dressCode }}</p>
+            <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" class="mt-3" />
           </div>
         </div>
       </section>
@@ -398,6 +399,7 @@ import { useToast } from 'vue-toastification'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { decodeEntities } from '@/utils/decodeEntities'
 
 const props = defineProps({

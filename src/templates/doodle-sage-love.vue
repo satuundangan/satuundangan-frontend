@@ -569,9 +569,12 @@
                   <span class="text-[#e87a90] font-bold">📍 Lokasi:</span>
                   <span>{{ resepsiLocationDesc }}</span>
                 </div>
-                <div v-if="dressCodeText" class="flex items-start gap-2.5">
-                  <span class="text-[#e87a90] font-bold">👗 Dresscode:</span>
-                  <span>{{ dressCodeText }}</span>
+                <div v-if="dressCodeText" class="flex flex-col gap-1.5">
+                  <div class="flex items-start gap-2.5">
+                    <span class="text-[#e87a90] font-bold">👗 Dresscode:</span>
+                    <span>{{ dressCodeText }}</span>
+                  </div>
+                  <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" :showLabel="false" size="sm" />
                 </div>
               </div>
             </div>
@@ -1031,6 +1034,7 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 
 const props = defineProps({
   data: {

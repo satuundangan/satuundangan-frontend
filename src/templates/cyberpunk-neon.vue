@@ -211,6 +211,18 @@
         </div>
       </section>
 
+      <!-- DRESS CODE -->
+      <section v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="py-16 px-4 bg-[#0a0a12]/80 border-t border-white/5 text-center" v-observe>
+        <div class="max-w-md mx-auto space-y-4 p-8 border border-[#00f0ff]/30 bg-[#050508] relative">
+          <div class="absolute top-0 left-0 w-3 h-3 border-t-2 border-l-2 border-[#00f0ff]"></div>
+          <div class="absolute bottom-0 right-0 w-3 h-3 border-b-2 border-r-2 border-[#00f0ff]"></div>
+          <span class="text-[9px] font-mono uppercase tracking-[0.4em] text-[#00f0ff]">> Protocol</span>
+          <h3 class="text-2xl font-mono font-black uppercase text-white">Dress Code</h3>
+          <p v-if="data.dressCode" class="font-mono text-sm text-[#00f0ff] tracking-wide">{{ data.dressCode }}</p>
+          <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
+        </div>
+      </section>
+
       <!-- GALLERY -->
       <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-32 px-4">
         <div class="max-w-7xl mx-auto space-y-16">
@@ -309,6 +321,7 @@ import { ref, onMounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
+import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
