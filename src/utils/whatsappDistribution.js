@@ -176,7 +176,7 @@ export function getGuestUrl(guest, invitation, baseUrl) {
 }
 
 /**
- * Replaces placeholders [GuestName], [CoupleName], [GroomName], [BrideName], [Link]
+ * Replaces placeholders [GuestName], [CoupleName], [GroomName], [BrideName], [Link], [TableNumber], [NomorMeja]
  */
 export function formatGuestMessage(rawTemplate, guest, invitation, baseUrl) {
   const template =
@@ -185,6 +185,7 @@ export function formatGuestMessage(rawTemplate, guest, invitation, baseUrl) {
   const groomName = invitation?.groomName || 'Mempelai Pria'
   const brideName = invitation?.brideName || 'Mempelai Wanita'
   const guestName = guest?.name || 'Nama Tamu'
+  const tableNumber = guest?.tableNumber || '-'
   const guestLink = guest
     ? getGuestUrl(guest, invitation, baseUrl)
     : `https://satuundangan.id/inv/${invitation?.slug || 'undangan'}/sample`
@@ -195,6 +196,8 @@ export function formatGuestMessage(rawTemplate, guest, invitation, baseUrl) {
     .replace(/\[GroomName\]/g, groomName)
     .replace(/\[BrideName\]/g, brideName)
     .replace(/\[Link\]/g, guestLink)
+    .replace(/\[TableNumber\]/g, tableNumber)
+    .replace(/\[NomorMeja\]/g, tableNumber)
 }
 
 /**
