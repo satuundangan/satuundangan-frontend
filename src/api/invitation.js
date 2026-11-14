@@ -67,3 +67,8 @@ export const getCustomSubdomain = (host = window.location.hostname) => {
 export const getInvitationCategories = () => apiFetch('/invitation/categories')
 
 export const getDashboardStats = () => apiFetch('/dashboard/stats')
+
+export const getLiveScreenFeed = (slug, options = {}) => {
+  const query = options.preview ? '?preview=true' : ''
+  return apiFetch(`/invitation/slug/${slug}/live-feed${query}`)
+}

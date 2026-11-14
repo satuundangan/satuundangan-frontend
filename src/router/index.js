@@ -395,6 +395,11 @@ const router = createRouter({
       redirect: (to) => ({ path: '/', query: { login: 'true', redirect: to.query.redirect } }),
     },
     {
+      path: '/live-screen/:slug',
+      name: 'LiveScreen',
+      component: () => import('@/views/LiveScreenView.vue'),
+    },
+    {
       path: '/:slug',
       name: 'invitation',
       component: Invitation,
