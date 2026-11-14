@@ -947,7 +947,7 @@
             <div v-if="activeTab === 'ekstra'" class="space-y-6">
               
               <!-- Gift / Envelope Details -->
-              <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @wallet-crop="reopenCropperForWallet" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" @bank-crop="reopenCropperForBank" />
+              <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @wallet-crop="reopenCropperForWallet" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" @bank-crop="reopenCropperForBank" @qris-upload="handleQrisUpload" @qris-crop="reopenCropperForQris" @remove-qris="removeQris" />
               
               <!-- Social Media Links -->
               <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
@@ -1613,10 +1613,12 @@ const formData = ref({
     eventEndTime: '',
     hideRundown: false,
     dressCodeColors: [],
+    qrisImageUrl: '',
   },
   gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
   akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
   music: '', youtubeUrl: '', denah: '', denahFile: null,
+  qrisImageUrl: '', qrisImage: '', qrisImageFile: null,
   musicFile: null, musicPreview: '', audioStart: 0, audioEnd: 0,
   wishes: 'ya', rsvp: 'ya', encryptedGuest: 'ya',
   brideParents: '', groomParents: '', 
@@ -1901,6 +1903,7 @@ const syncDataToPreview = (data) => {
         giftDeliveryAddress: [...(data.giftAddresses || [])],
         bankAccounts: (data.bankAccounts || []).map(b => ({ bankName: b.bankName, accountNumber: b.accountNumber, accountName: b.accountName, bankLogo: b.bankLogo })),
         eWalletLink: (data.eWalletLink || []).map(w => ({ wallet_provider: w.wallet_provider, wallet_number: w.wallet_number, wallet_image: w.wallet_image })),
+        qrisImageUrl: data.qrisImageUrl || data.qrisImage || data.designSettings?.qrisImageUrl || '',
         dressCode: data.dressCode,
         healthProtocol: data.healthProtocol,
         extendedFamily: data.extendedFamilyText ? data.extendedFamilyText.split(/,|\n/).map(s => s.trim()).filter(Boolean) : [],
@@ -1922,6 +1925,7 @@ const syncDataToPreview = (data) => {
           eventEndTime: data.designSettings?.eventEndTime,
           hideRundown: !!data.designSettings?.hideRundown,
           dressCodeColors: data.designSettings?.dressCodeColors || [],
+          qrisImageUrl: data.qrisImageUrl || data.qrisImage || data.designSettings?.qrisImageUrl || '',
         },
         selectedSections: getCanonicalSelectedSections()
       }
@@ -2373,6 +2377,8 @@ function mapPayloadToFormData(payload) {
    formData.value.giftAddresses = Array.isArray(payload.giftDeliveryAddress) ? payload.giftDeliveryAddress : (payload.giftDeliveryAddress ? [payload.giftDeliveryAddress] : [])
    formData.value.eWalletLink = payload.eWalletLink || []
    formData.value.bankAccounts = payload.bankAccounts || []
+   formData.value.qrisImageUrl = payload.qrisImageUrl || payload.designSettings?.qrisImageUrl || ''
+   formData.value.qrisImage = formData.value.qrisImageUrl
    formData.value.dressCode = payload.dressCode || ''
    formData.value.healthProtocol = payload.healthProtocol !== false
    
@@ -2490,6 +2496,36 @@ async function handleBankUpload(event, index) {
    const file = event.target.files?.[0]; if (!file) return
    const reader = new FileReader(); reader.onload = () => { formData.value.bankAccounts[index].bankLogo = reader.result; formData.value.bankAccounts[index].bankLogoFile = file }; reader.readAsDataURL(file)
 }
+async function handleQrisUpload(event) {
+   const file = event.target.files?.[0]
+   if (!file) return
+   if (file.size > 5 * 1024 * 1024) {
+      toast.error('Ukuran file QRIS maksimal 5MB')
+      event.target.value = ''
+      return
+   }
+   const reader = new FileReader()
+   reader.onload = async () => {
+      const optimizedImage = await downscaleImage(reader.result, 1600)
+      cropper.value = { show: true, image: optimizedImage, aspectRatio: null, targetField: 'qris', targetIndex: null }
+   }
+   reader.readAsDataURL(file)
+   event.target.value = ''
+}
+function reopenCropperForQris() {
+   const img = formData.value.qrisImage || formData.value.qrisImageUrl
+   if (!img) return
+   cropper.value = { show: true, image: img, aspectRatio: null, targetField: 'qris', targetIndex: null }
+}
+function removeQris() {
+   formData.value.qrisImage = ''
+   formData.value.qrisImageUrl = ''
+   formData.value.qrisImageFile = null
+   if (formData.value.designSettings) {
+      formData.value.designSettings.qrisImageUrl = ''
+   }
+   syncDataToPreview()
+}
 
 // Image crop processing downscaling helper
 async function downscaleImage(dataUrl, maxWidth = 1200) {
@@ -2604,6 +2640,13 @@ function onCropComplete({ blob, preview }) {
    } else if (field === 'bank' && idx !== null && idx !== undefined && formData.value.bankAccounts[idx]) {
       formData.value.bankAccounts[idx].bankLogo = preview
       formData.value.bankAccounts[idx].bankLogoFile = new File([blob], `bank-${idx}.webp`, { type: 'image/webp' })
+   } else if (field === 'qris') {
+      formData.value.qrisImage = preview
+      formData.value.qrisImageUrl = preview
+      formData.value.qrisImageFile = new File([blob], 'qris.webp', { type: 'image/webp' })
+      if (!formData.value.designSettings) formData.value.designSettings = {}
+      formData.value.designSettings.qrisImageUrl = preview
+      syncDataToPreview()
    }
    cropper.value.show = false
 }
@@ -2750,6 +2793,25 @@ async function uploadAllFiles() {
    fd.loveStories.forEach((s, i) => add(s.photoFile, s.photo, `story-${i}`, (url) => formData.value.loveStories[i].photo = url, `Love Story Photo ${i+1}`))
    fd.eWalletLink.forEach((w, i) => add(w.wallet_image_file, w.wallet_image, `wallet-${i}`, (url) => formData.value.eWalletLink[i].wallet_image = url, `E-Wallet QR ${i+1}`))
    fd.bankAccounts.forEach((b, i) => add(b.bankLogoFile, b.bankLogo, `bank-${i}`, (url) => formData.value.bankAccounts[i].bankLogo = url, `Bank Logo ${i+1}`))
+   if (fd.qrisImageFile) {
+     filesToUpload.push({
+       file: fd.qrisImageFile,
+       setter: (url) => {
+         formData.value.qrisImageUrl = url
+         formData.value.qrisImage = url
+         if (!formData.value.designSettings) formData.value.designSettings = {}
+         formData.value.designSettings.qrisImageUrl = url
+       },
+       name: 'Barcode QRIS'
+     })
+   } else if (fd.qrisImage && fd.qrisImage.startsWith('data:')) {
+     add(null, fd.qrisImage, 'qris', (url) => {
+       formData.value.qrisImageUrl = url
+       formData.value.qrisImage = url
+       if (!formData.value.designSettings) formData.value.designSettings = {}
+       formData.value.designSettings.qrisImageUrl = url
+     }, 'Barcode QRIS')
+   }
    if (filesToUpload.length === 0) return
    
    uploadProgress.value.show = true; let uploadedCount = 0
@@ -2798,7 +2860,7 @@ async function saveAndPreview() {
       await uploadAllFiles()
 
       // Enable gift section in payload if accounts / envelopes present
-      if (formData.value.eWalletLink?.length > 0 || formData.value.bankAccounts?.length > 0 || formData.value.giftAddresses?.length > 0) {
+      if (formData.value.eWalletLink?.length > 0 || formData.value.bankAccounts?.length > 0 || formData.value.giftAddresses?.length > 0 || formData.value.qrisImageUrl || formData.value.qrisImage) {
          sections.value.gift = true
       }
 
@@ -2818,7 +2880,11 @@ async function saveAndPreview() {
          socialMediaBrides: { instagram: formData.value.sosmedBride.instagram, tiktok: formData.value.sosmedBride.tiktok, youtube: formData.value.sosmedBride.youtube, otherSocial: formData.value.sosmedBride.otherSocial },
          socialMediaGroom: { instagram: formData.value.sosmedGroom.instagram, tiktok: formData.value.sosmedGroom.tiktok, youtube: formData.value.sosmedGroom.youtube, otherSocial: formData.value.sosmedGroom.otherSocial },
          eWalletLink: formData.value.eWalletLink, bankAccounts: formData.value.bankAccounts, floorPlanImageUrl: formData.value.denah, quoteType: formData.value.quoteType, ...resolveQuoteForSave(formData.value), religion: formData.value.religion || null,
-         designSettings: formData.value.designSettings,
+         qrisImageUrl: formData.value.qrisImageUrl || formData.value.designSettings?.qrisImageUrl || '',
+         designSettings: {
+            ...formData.value.designSettings,
+            qrisImageUrl: formData.value.qrisImageUrl || formData.value.designSettings?.qrisImageUrl || ''
+         },
          subdomain: formData.value.subdomain ? subdomainStatus.value.normalized : '',
          package: formData.value.package || 'basic'
       }

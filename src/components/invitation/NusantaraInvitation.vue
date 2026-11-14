@@ -308,6 +308,17 @@
               </button>
             </article>
           </div>
+          <div
+            v-if="invitation.qrisImageUrl || invitation.designSettings?.qrisImageUrl || invitation.giftSettings?.qrisImageUrl"
+            class="mt-8 flex justify-center"
+          >
+            <QrisGiftCard
+              :data="invitation"
+              :groomName="invitation.groomName"
+              :brideName="invitation.brideName"
+              variant="gold"
+            />
+          </div>
           <p v-for="(address, index) in giftAddresses" :key="`address-${index}`" class="nu-address">
             {{ address }}
           </p>
@@ -426,6 +437,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 
 const props = defineProps({
   data: { type: Object, default: () => ({}) },
@@ -645,7 +657,12 @@ const walletItems = computed(() =>
 )
 const hasGiftDetails = computed(() =>
   Boolean(
-    invitation.value.bankAccounts?.length || walletItems.value.length || giftAddresses.value.length,
+    invitation.value.bankAccounts?.length ||
+      walletItems.value.length ||
+      giftAddresses.value.length ||
+      invitation.value.qrisImageUrl ||
+      invitation.value.designSettings?.qrisImageUrl ||
+      invitation.value.giftSettings?.qrisImageUrl,
   ),
 )
 const rsvp = ref({ name: '', attendance: 'hadir', totalGuests: 1, message: '' })

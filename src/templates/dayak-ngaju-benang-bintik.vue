@@ -481,7 +481,7 @@
 
       <!-- TANDA KASIH / HADIAH PERNIKAHAN -->
       <section
-        v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length)"
+        v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)"
         id="gift"
         class="py-24 md:py-32 px-6 bg-[#17120e] text-center"
         v-observe
@@ -541,7 +541,11 @@
             </div>
           </div>
 
-          <!-- Physical Gift Address -->
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="gold" />
+        </div>
+
+        <!-- Physical Gift Address -->
           <div v-if="giftAddresses.length" class="max-w-xl mx-auto space-y-4 pt-6">
             <h4 class="text-lg font-serif text-[#d4973b]">Kirim Kado Fisik</h4>
             <div
@@ -675,6 +679,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import talawangImg from '@/assets/ornaments/dayak-talawang.png'
 import talawangAuthenticImg from '@/assets/ornaments/dayak-talawang-authentic.png'
 import cornerImg from '@/assets/ornaments/dayak-corner-gold.png'

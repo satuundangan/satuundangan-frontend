@@ -851,7 +851,11 @@
             </div>
           </div>
 
-          <!-- Kirim Kado Fisik -->
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="gold" />
+        </div>
+
+        <!-- Kirim Kado Fisik -->
           <div v-if="giftAddresses.length" class="p-8 rounded-3xl border border-[#d4af37]/35 bg-[#28050b]/80 text-center space-y-4 shadow-xl">
             <div class="text-[#d4af37] text-2xl"><i class="fa-solid fa-gift"></i></div>
             <h4 class="text-xl font-serif text-[#fbf8ee]">Kirim Kado Fisik</h4>
@@ -1022,6 +1026,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
