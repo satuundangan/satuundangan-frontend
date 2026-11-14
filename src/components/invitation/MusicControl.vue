@@ -58,7 +58,7 @@
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, inject } from 'vue'
-import { useRoute } from 'vue-router'
+import { routeLocationKey } from 'vue-router'
 
 const props = defineProps({
   src: {
@@ -99,12 +99,7 @@ const props = defineProps({
   }
 })
 
-let route = null
-try {
-  route = useRoute()
-} catch {
-  route = null
-}
+const route = inject(routeLocationKey, null)
 
 const injectedIsPreview = inject('isInvitationPreview', null)
 

@@ -699,7 +699,7 @@ const handleCheckout = async () => {
             router.push(buildPaymentResultPath('/payment/error', result, data.order_id))
           },
           onClose: () => {
-            console.log('Payment popup closed')
+            // Popup dismissed by user
           },
         })
         return
