@@ -392,6 +392,23 @@ const activeSections = computed(() => {
 const showWelcome = ref(true)
 const galleryImages = ref([])
 const rsvp = ref({ name: '', attendance: '', totalGuests: 1, message: '' })
+const isPreviewMode = computed(() => data.value.id === 'live-preview' || data.value.id === 0)
+
+const mockStories = [
+  {
+    title: 'First Encounter',
+    date: 'Januari 2024',
+    description: 'Pertemuan pertama yang membuka awal kisah perjalanan cinta kami berdua.',
+    image: 'https://images.unsplash.com/photo-1511285560929-80b456fea0bc?q=80&w=800&auto=format&fit=crop'
+  },
+  {
+    title: 'A Promise to Forever',
+    date: 'Februari 2026',
+    description: 'Sebuah janji tulus untuk saling melengkapi dan melangkah bersama menuju masa depan.',
+    image: 'https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=800&auto=format&fit=crop'
+  }
+]
+
 // Navigation items with their corresponding keys in backend
 const allNavItems = [
   { id: 'home', label: 'Home', icon: 'fa-solid fa-house', key: 'hero' },
@@ -421,7 +438,10 @@ const isSectionEnabled = (key) => {
 
 const navItems = computed(() => {
   if (!activeSections.value) return allNavItems
-  return allNavItems.filter(item => isSectionEnabled(item.key))
+  return allNavItems.filter(item => {
+    if (item.id === 'story') return isSectionEnabled('love-story') && (data.value.loveStory?.length > 0 || isPreviewMode.value)
+    return isSectionEnabled(item.key)
+  })
 })
 function getEmbedUrlVideo(url) {
   if (!url) return ''

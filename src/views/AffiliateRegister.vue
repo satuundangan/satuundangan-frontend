@@ -41,6 +41,8 @@ const copyCode = async () => {
   await navigator.clipboard.writeText(affiliateCode.value)
 }
 
+const windowOrigin = typeof window !== 'undefined' ? window.location.origin : ''
+
 const submit = async () => {
   error.value = ''
   if (
@@ -90,7 +92,7 @@ const submit = async () => {
           </div>
           <p class="text-xs text-gray-400">
             Link afiliasi:
-            <span class="font-medium">{{ location.origin }}?ref={{ affiliateCode }}</span>
+            <span class="font-medium">{{ windowOrigin }}?ref={{ affiliateCode }}</span>
           </p>
           <button
             @click="router.push({ name: 'dashboard' })"
