@@ -40,12 +40,12 @@
                 :to="item.to" 
                 @click="$emit('close')"
                 class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
-                :class="$route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard')
+                :class="route.path === item.to || (route.path.startsWith(item.to) && item.to !== '/dashboard')
                   ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
                   : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
               >
                 <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
-                  $route.path === item.to || ($route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
+                  route.path === item.to || (route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
                 <span>{{ item.name }}</span>
                 <span v-if="item.badge" class="ml-auto px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-amber-100 text-amber-800">
                   {{ item.badge }}
@@ -63,12 +63,12 @@
                 :to="item.to" 
                 @click="$emit('close')"
                 class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
-                :class="$route.path === item.to 
+                :class="route.path === item.to 
                   ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
                   : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
               >
                 <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
-                  $route.path === item.to ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
+                  route.path === item.to ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
                 <span>{{ item.name }}</span>
               </router-link>
             </li>

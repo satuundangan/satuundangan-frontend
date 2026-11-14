@@ -6,7 +6,7 @@
     v-model:search="search"
     searchPlaceholder="Cari artikel..."
     actionLabel="+ Tulis Artikel"
-    @action="$router.push({ name: 'admin-article-create' })"
+    @action="router.push({ name: 'admin-article-create' })"
   >
     <!-- Auto-Blog Status & Action Banner -->
     <div
@@ -145,7 +145,7 @@
           }}
         </p>
         <button
-          @click="$router.push({ name: 'admin-article-create' })"
+          @click="router.push({ name: 'admin-article-create' })"
           class="mt-4 inline-flex items-center rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white hover:bg-slate-800"
         >
           + Tulis Artikel
@@ -231,7 +231,7 @@
             <td class="px-6 py-4 text-right">
               <div class="flex items-center justify-end gap-2">
                 <button
-                  @click="$router.push({ name: 'admin-article-edit', params: { id: article.id } })"
+                  @click="router.push({ name: 'admin-article-edit', params: { id: article.id } })"
                   class="rounded-lg p-2 text-slate-500 hover:bg-blue-50 hover:text-blue-600 transition-colors"
                   title="Edit"
                 >
@@ -282,6 +282,7 @@
 
 <script setup>
 import { ref, watch, computed, onBeforeUnmount } from 'vue'
+import { useRouter } from 'vue-router'
 import AdminShell from '@/components/admin/AdminShell.vue'
 import ArticleEditorialPanel from '@/components/admin/ArticleEditorialPanel.vue'
 import {
@@ -292,6 +293,8 @@ import {
 } from '@/api/admin.js'
 import { getArticleSeoScore as seoScore } from '@/utils/articleSeo.js'
 import Swal from 'sweetalert2'
+
+const router = useRouter()
 
 const articles = ref([])
 const loading = ref(true)
