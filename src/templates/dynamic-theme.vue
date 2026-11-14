@@ -729,7 +729,7 @@
 
       <!-- GIFT -->
       <section
-        v-if="isSectionEnabled('gift') && data.bankAccounts?.length"
+        v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)"
         id="gift"
         class="py-16 md:py-24 px-6 text-center"
         :style="sectionBg('gift')"
@@ -779,6 +779,9 @@
               <i class="fa-regular fa-copy mr-1"></i> Salin
             </button>
           </div>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" />
+        </div>
         </div>
       </section>
 
@@ -1047,6 +1050,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import ThemeArtScene from '@/components/invitation/ThemeArtScene.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 import {

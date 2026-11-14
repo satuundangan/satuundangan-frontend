@@ -291,7 +291,11 @@
             <span class="gift-holder">{{ account.accountName }}</span>
             <button type="button" class="gift-copy" @click="copyText(account.accountNumber)">Salin nomor rekening</button>
           </article>
-          <article v-for="(address, index) in giftAddresses" :key="`address-${index}`" class="gift-card">
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center">
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="dark" />
+        </div>
+
+        <article v-for="(address, index) in giftAddresses" :key="`address-${index}`" class="gift-card">
             <p class="eyebrow">Kirim kado</p>
             <p class="gift-address">{{ address }}</p>
             <button type="button" class="gift-copy" @click="copyText(address)">Salin alamat</button>
@@ -400,6 +404,7 @@ import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestM
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { decodeEntities } from '@/utils/decodeEntities'
 
 const props = defineProps({
@@ -622,7 +627,14 @@ const giftAddresses = computed(() => {
   return Array.isArray(value) ? value : value ? [value] : []
 })
 const hasGiftDetails = computed(
-  () => (data.value.bankAccounts?.length || 0) > 0 || giftAddresses.value.length > 0,
+  () =>
+    (data.value.bankAccounts?.length || 0) > 0 ||
+    giftAddresses.value.length > 0 ||
+    Boolean(
+      data.value.qrisImageUrl ||
+        data.value.designSettings?.qrisImageUrl ||
+        data.value.giftSettings?.qrisImageUrl,
+    ),
 )
 
 const galleryItems = computed(() =>

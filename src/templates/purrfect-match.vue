@@ -1189,7 +1189,11 @@
             </div>
           </div>
 
-          <!-- Physical Gift Address -->
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center">
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="default" />
+        </div>
+
+        <!-- Physical Gift Address -->
           <div
             v-if="data.giftAddress || isPreviewMode"
             class="bg-white rounded-3xl p-6 sm:p-8 border border-[#F4A261]/30 shadow-[0_10px_30px_rgba(231,111,81,0.08)] space-y-4 text-center max-w-xl mx-auto"
@@ -1413,6 +1417,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 
 // Props Declaration

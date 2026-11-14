@@ -405,7 +405,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length)" id="gift"
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift"
         class="py-20 md:py-24 px-6 bg-black text-center">
         <h2 class="text-2xl md:text-3xl font-serif text-[#d6b18a] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-10 max-w-lg mx-auto text-sm md:text-base">Doa restu Anda merupakan karunia yang
@@ -447,6 +447,10 @@
         </div>
 
         <!-- Gift Delivery Address -->
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="dark" />
+        </div>
+
         <div v-if="giftAddresses.length" class="max-w-xl mx-auto mt-10 space-y-4">
           <h3 class="text-lg font-serif text-[#d6b18a]" v-observe>Kirim Hadiah</h3>
           <div v-for="(address, idx) in giftAddresses" :key="'addr' + idx"
@@ -481,6 +485,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

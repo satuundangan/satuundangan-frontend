@@ -337,7 +337,7 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" id="gift" class="py-32 px-6 text-center bg-[#f4f1ea]">
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-32 px-6 text-center bg-[#f4f1ea]">
         <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-4" v-observe>Wedding Gift</h2>
         <p class="text-gray-400 mb-16 max-w-md mx-auto text-sm leading-relaxed">Your presence is enough for us, but if you wish to give a gift, you can use:</p>
 
@@ -354,6 +354,9 @@
               Copy Account
             </button>
           </div>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="light" />
+        </div>
         </div>
       </section>
 
@@ -379,6 +382,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 const toast = useToast()

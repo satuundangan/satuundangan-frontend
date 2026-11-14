@@ -39,6 +39,61 @@
     </div>
 
     <div class="space-y-6">
+      <!-- Barcode QRIS Utama (Amplop Digital) - SAT-66 -->
+      <div class="space-y-3 rounded-2xl border border-amber-200/80 bg-amber-50/40 p-5">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <span class="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 font-bold">
+              <i class="fa-solid fa-qrcode text-lg"></i>
+            </span>
+            <div>
+              <h4 class="text-sm font-bold text-gray-800">Barcode QRIS Amplop Digital</h4>
+              <p class="text-xs text-gray-500">Tamu dapat langsung scan QRIS dari m-banking atau e-wallet tanpa repot salin nomor.</p>
+            </div>
+          </div>
+          <span class="rounded-full bg-amber-100 px-2.5 py-0.5 text-[10px] font-bold text-amber-800 uppercase tracking-wider">
+            Rekomendasi
+          </span>
+        </div>
+
+        <div v-if="formData.qrisImageUrl || formData.qrisImage" class="pt-2 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+          <div class="relative group rounded-xl overflow-hidden border border-gray-200 bg-white p-2 shadow-sm">
+            <img :src="formData.qrisImageUrl || formData.qrisImage" alt="Barcode QRIS" class="h-44 w-44 object-contain rounded-lg" />
+            <div class="absolute inset-0 bg-black/40 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity rounded-xl">
+              <button type="button" @click="emit('qris-crop')" class="px-3 py-1.5 bg-white text-gray-800 rounded-lg text-xs font-bold shadow hover:bg-amber-500 hover:text-white transition-all flex items-center gap-1">
+                <i class="fa-solid fa-crop-simple"></i> Crop
+              </button>
+              <button type="button" @click="emit('remove-qris')" class="px-3 py-1.5 bg-red-500 text-white rounded-lg text-xs font-bold shadow hover:bg-red-600 transition-all flex items-center gap-1">
+                <i class="fa-solid fa-trash"></i> Hapus
+              </button>
+            </div>
+          </div>
+          <div class="space-y-1.5 text-xs text-gray-600">
+            <p class="font-medium text-green-700 flex items-center gap-1.5">
+              <i class="fa-solid fa-circle-check text-green-600"></i> Barcode QRIS aktif
+            </p>
+            <p class="leading-relaxed">Tombol <strong>"Scan QRIS"</strong> akan tampil otomatis pada bagian Amplop Digital di undangan pernikahan Anda.</p>
+            <div class="pt-2 flex items-center gap-2">
+              <button type="button" @click="emit('qris-crop')" class="px-3 py-1.5 border border-gray-300 rounded-lg text-xs font-medium hover:bg-white bg-white/80 transition-colors">
+                Ubah / Crop
+              </button>
+              <button type="button" @click="emit('remove-qris')" class="px-3 py-1.5 text-red-600 text-xs font-medium hover:underline">
+                Hapus QRIS
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div v-else class="pt-1">
+          <label class="flex flex-col items-center justify-center border-2 border-dashed border-amber-300/80 hover:border-amber-400 bg-white/70 hover:bg-white rounded-xl p-5 cursor-pointer transition-all text-center">
+            <i class="fa-solid fa-cloud-arrow-up text-2xl text-amber-500 mb-2"></i>
+            <span class="text-xs font-bold text-gray-700">Pilih gambar barcode QRIS Anda</span>
+            <span class="text-[11px] text-gray-400 mt-0.5">PNG, JPG, atau WebP (Maks. 5MB)</span>
+            <input type="file" accept="image/*" class="hidden" @change="emit('qris-upload', $event)" />
+          </label>
+        </div>
+      </div>
+
       <div class="space-y-4">
         <label class="block text-mocha font-semibold">QRIS / E-Wallet</label>
         <div v-for="(wallet, index) in formData.eWalletLink" :key="`wallet-${index}`" class="relative space-y-3 rounded-xl border border-gray-300 bg-white p-4">
@@ -139,6 +194,9 @@ const emit = defineEmits([
   'bank-upload',
   'wallet-crop',
   'bank-crop',
+  'qris-upload',
+  'qris-crop',
+  'remove-qris',
 ])
 
 const { sections, foodList, giftAddresses, formData } = toRefs(props)
