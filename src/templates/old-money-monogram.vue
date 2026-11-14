@@ -748,7 +748,7 @@
           </div>
 
           <!-- Bank Accounts Grid -->
-          <div v-if="data.bankAccounts?.length" class="grid md:grid-cols-2 gap-6 text-left">
+          <div v-if="(data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="grid md:grid-cols-2 gap-6 text-left">
             <div
               v-for="(acc, idx) in data.bankAccounts"
               :key="idx"
@@ -794,7 +794,11 @@
             </div>
           </div>
 
-          <!-- Physical Gifts Delivery Address -->
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="gold" />
+        </div>
+
+        <!-- Physical Gifts Delivery Address -->
           <div v-if="giftAddresses.length" class="space-y-4 max-w-lg mx-auto text-left font-sans">
             <div
               v-for="(addr, idx) in giftAddresses"
@@ -979,6 +983,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

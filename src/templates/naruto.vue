@@ -381,7 +381,11 @@
             </div>
           </div>
 
-          <div v-if="data.giftDeliveryAddress" class="scroll-card p-6 text-center" v-observe>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="default" />
+        </div>
+
+        <div v-if="data.giftDeliveryAddress" class="scroll-card p-6 text-center" v-observe>
             <h3 class="font-shinobi text-xl text-[#ff7800] mb-3">Kirim Hadiah ke Alamat Kami</h3>
             <p class="text-[15px] text-[#2a1c0d] leading-relaxed italic mb-5">
               "{{ Array.isArray(data.giftDeliveryAddress) ? data.giftDeliveryAddress[0] : data.giftDeliveryAddress }}"
@@ -530,6 +534,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

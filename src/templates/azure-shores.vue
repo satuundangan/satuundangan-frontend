@@ -296,7 +296,7 @@
       </section>
 
       <!-- GIFT -->
-      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-32 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Wedding Gift</h2>
@@ -314,6 +314,9 @@
               <button @click="copyToClipboard(bank.accountNumber)" class="w-full py-4 bg-[#f0f8ff] text-[#1e3a8a] text-[10px] uppercase tracking-widest font-bold rounded-full hover:bg-[#1e3a8a] hover:text-white transition-colors border border-[#bae6fd]">Copy Number</button>
             </div>
           </div>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="light" />
+        </div>
         </div>
       </section>
 
@@ -332,6 +335,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 const toast = useToast()

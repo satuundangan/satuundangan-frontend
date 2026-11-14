@@ -570,7 +570,7 @@
 
       <!-- GIFT -->
       <section
-        v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length)"
+        v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)"
         id="gift"
         class="py-32 px-6 text-center bg-[#fff8fa]"
       >
@@ -607,6 +607,9 @@
               Salin Rekening
             </button>
           </div>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="light" />
+        </div>
         </div>
       </section>
 
@@ -633,6 +636,7 @@ import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 

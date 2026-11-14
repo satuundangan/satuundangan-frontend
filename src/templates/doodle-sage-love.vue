@@ -750,7 +750,7 @@
       <!-- ======================================================== -->
       <!-- SECTION 8: AMPLOP DIGITAL & KADO                         -->
       <!-- ======================================================== -->
-      <section v-if="isSectionEnabled('gift') && (bankAccounts.length || giftAddress)" id="gift" class="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-24">
+      <section v-if="isSectionEnabled('gift') && (bankAccounts.length || giftAddress || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="max-w-5xl mx-auto px-4 sm:px-6 py-16 md:py-24">
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#fdeef2] border-2 border-[#e87a90]/40 rounded-full shadow-xs">
@@ -803,6 +803,10 @@
               </button>
             </div>
           </div>
+        </div>
+
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center">
+          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="default" />
         </div>
 
         <!-- Physical Gift Address -->
@@ -1035,6 +1039,7 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
+import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
 
 const props = defineProps({
   data: {
