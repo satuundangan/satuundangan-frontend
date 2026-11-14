@@ -48,3 +48,10 @@ export const checkInGuestByToken = (token) =>
 
 export const getCheckInSummary = (invitationId) =>
   apiFetch(`/guests/invitation/${invitationId}/check-in-summary`)
+
+export const updateGuestReception = (id, data) =>
+  apiFetch(`/guests/${id}/reception`, {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  })
+

@@ -30,7 +30,7 @@
 
             <div class="flex flex-wrap gap-2 md:gap-3">
               <button
-                @click="showAddModal = true"
+                @click="openAddModal"
                 :disabled="!selectedInvitationId"
                 class="flex-1 md:flex-none bg-[#a47148] text-white px-4 py-2.5 rounded-xl text-xs font-extrabold hover:bg-[#8e5e38] flex items-center justify-center gap-2 shadow-md shadow-[#a47148]/20 disabled:opacity-50 transition-all cursor-pointer"
               >
@@ -49,6 +49,14 @@
                 class="flex-1 md:flex-none bg-white text-blue-600 border border-blue-100 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
               >
                 <i class="fa-solid fa-address-book text-[11px]"></i> Kontak
+              </button>
+              <button
+                @click="exportGuestsExcel"
+                :disabled="!selectedInvitationId || guests.length === 0"
+                class="flex-1 md:flex-none bg-white text-slate-800 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
+                title="Ekspor Data Tamu ke Excel/CSV"
+              >
+                <i class="fa-solid fa-file-export text-[11px] text-slate-500"></i> Ekspor
               </button>
               <div class="flex gap-1">
                 <button
@@ -403,6 +411,7 @@
                     />
                   </th>
                   <th class="px-4 py-4">Nama Tamu</th>
+                  <th class="px-4 py-4">No. Meja</th>
                   <th class="px-6 py-4">Kategori</th>
                   <th class="px-6 py-4">Status Kirim</th>
                   <th class="px-6 py-4">Status RSVP</th>
@@ -431,6 +440,16 @@
                       <i class="fa-solid fa-phone text-[9px]"></i>
                       {{ guest.phoneNumber || 'Tanpa nomor HP' }}
                     </p>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span
+                      v-if="guest.tableNumber"
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                    >
+                      <i class="fa-solid fa-chair text-[10px]"></i>
+                      <span>{{ guest.tableNumber }}</span>
+                    </span>
+                    <span v-else class="text-xs text-slate-300">-</span>
                   </td>
                   <td class="px-6 py-4">
                     <span
@@ -470,6 +489,13 @@
                   </td>
                   <td class="px-6 py-4 text-right">
                     <div class="flex justify-end gap-2">
+                      <button
+                        @click="openEditModal(guest)"
+                        class="w-9 h-9 flex items-center justify-center text-blue-500 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition cursor-pointer"
+                        title="Edit Tamu"
+                      >
+                        <i class="fa-solid fa-pen-to-square text-xs"></i>
+                      </button>
                       <button
                         @click="openShareModal(guest)"
                         :class="
@@ -549,10 +575,19 @@
                       {{ guest.phoneNumber || 'Tanpa nomor HP' }}
                     </p>
                   </div>
-                  <span
-                    class="shrink-0 px-2 py-0.5 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider"
-                    >{{ guest.group || 'Umum' }}</span
-                  >
+                  <div class="flex flex-col items-end gap-1 shrink-0">
+                    <span
+                      class="px-2 py-0.5 rounded-lg text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase tracking-wider"
+                    >{{ guest.group || 'Umum' }}</span>
+                    <span
+                      v-if="guest.tableNumber"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100"
+                    >
+                      <i class="fa-solid fa-chair text-[8px]"></i>
+                      <span>Meja: {{ guest.tableNumber }}</span>
+                    </span>
+                    <span v-else class="text-[9px] text-slate-300 font-medium">Meja: -</span>
+                  </div>
                 </div>
 
                 <!-- Status badge & RSVP row -->
@@ -587,7 +622,15 @@
                 </div>
 
                 <!-- Card Actions -->
-                <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-50 pl-6">
+                <div class="flex items-center justify-end gap-2 pt-1 border-t border-slate-50 pl-6 flex-wrap">
+                  <button
+                    @click="openEditModal(guest)"
+                    class="h-9 px-3 flex items-center justify-center text-blue-600 bg-blue-50 active:bg-blue-100 rounded-xl text-xs font-bold gap-1.5 transition"
+                    title="Edit Tamu"
+                  >
+                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                    <span>Edit</span>
+                  </button>
                   <button
                     @click="copyGuestIndividualLink(guest)"
                     class="h-9 px-3 flex items-center justify-center text-slate-600 bg-slate-100 active:bg-slate-200 rounded-xl text-xs font-bold gap-1.5 transition"
@@ -984,7 +1027,7 @@
         </div>
 
         <!-- Modal Footer -->
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3">
+        <div class="pt-4 border-t border-slate-100 flex items-center justify-between gap-3 flex-wrap">
           <button
             type="button"
             @click="showExportModal = false"
@@ -992,27 +1035,39 @@
           >
             Tutup
           </button>
-          <button
-            type="button"
-            @click="copyExportList"
-            :disabled="!exportListText"
-            class="px-5 py-2.5 bg-[#a47148] hover:bg-[#8e5e38] text-white rounded-xl text-xs font-black shadow-md shadow-[#a47148]/20 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer"
-          >
-            <i class="fa-solid fa-copy text-xs"></i>
-            <span>Salin Semua Link</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button
+              type="button"
+              @click="exportGuestsExcel"
+              :disabled="guests.length === 0"
+              class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-xs transition-all flex items-center gap-2 cursor-pointer disabled:opacity-50"
+            >
+              <i class="fa-solid fa-file-excel text-xs"></i>
+              <span>Ekspor Excel/CSV</span>
+            </button>
+            <button
+              type="button"
+              @click="copyExportList"
+              :disabled="!exportListText"
+              class="px-5 py-2.5 bg-[#a47148] hover:bg-[#8e5e38] text-white rounded-xl text-xs font-black shadow-md shadow-[#a47148]/20 disabled:opacity-50 transition-all flex items-center gap-2 cursor-pointer"
+            >
+              <i class="fa-solid fa-copy text-xs"></i>
+              <span>Salin Semua Link</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- Add Single Guest Modal -->
+    <!-- Add / Edit Single Guest Modal -->
     <div
       v-if="showAddModal"
       class="fixed inset-0 bg-black/40 z-[100] flex items-center justify-center p-4"
     >
       <div class="bg-white rounded-3xl w-full max-w-md p-6 md:p-8 shadow-xl animate-scale-up">
         <h3 class="font-bold text-xl mb-6 text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-user-plus text-[#a47148]"></i> Tambah Tamu
+          <i :class="editingGuestId ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'" class="text-[#a47148]"></i>
+          <span>{{ editingGuestId ? 'Edit Tamu' : 'Tambah Tamu' }}</span>
         </h3>
         <div class="space-y-4">
           <div>
@@ -1042,6 +1097,17 @@
           </div>
           <div>
             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
+              >Nomor Meja (Seating)</label
+            >
+            <input
+              v-model="newGuest.tableNumber"
+              type="text"
+              class="w-full border border-gray-100 rounded-xl p-3 bg-gray-50 focus:ring-2 focus:ring-[#a47148]/20 outline-none text-sm"
+              placeholder="Contoh: Meja 4 (Keluarga Besar)"
+            />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
               >WhatsApp (08...)</label
             >
             <input
@@ -1061,7 +1127,7 @@
             :disabled="isSubmitting"
             class="flex-[2] py-3 bg-[#a47148] text-white rounded-xl text-sm font-bold disabled:opacity-50 cursor-pointer"
           >
-            {{ isSubmitting ? 'Menyimpan...' : 'Simpan Tamu' }}
+            {{ isSubmitting ? 'Menyimpan...' : (editingGuestId ? 'Simpan Perubahan' : 'Simpan Tamu') }}
           </button>
         </div>
       </div>
@@ -1452,7 +1518,25 @@ const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
 const shareWhatsAppOpened = ref(false)
 const updatingGuestAccess = ref(false)
-const newGuest = ref({ name: '', group: '', phoneNumber: '' })
+const newGuest = ref({ name: '', group: '', phoneNumber: '', tableNumber: '' })
+const editingGuestId = ref(null)
+
+function openAddModal() {
+  editingGuestId.value = null
+  newGuest.value = { name: '', group: '', phoneNumber: '', tableNumber: '' }
+  showAddModal.value = true
+}
+
+function openEditModal(guest) {
+  editingGuestId.value = guest.id
+  newGuest.value = {
+    name: guest.name || '',
+    group: guest.group || '',
+    phoneNumber: guest.phoneNumber || '',
+    tableNumber: guest.tableNumber || '',
+  }
+  showAddModal.value = true
+}
 
 // Template WhatsApp Modal state
 const showTemplateModal = ref(false)
@@ -1879,7 +1963,7 @@ async function toggleGuestAccess() {
   }
 }
 
-// Single Guest Add
+// Single Guest Add / Edit
 async function submitGuest() {
   if (!newGuest.value.name?.trim()) {
     toast.warning('Nama tamu wajib diisi')
@@ -1887,13 +1971,24 @@ async function submitGuest() {
   }
   isSubmitting.value = true
   try {
-    await createGuest({ ...newGuest.value, invitationId: selectedInvitationId.value })
-    toast.success('Tamu berhasil ditambahkan')
+    if (editingGuestId.value) {
+      await updateGuest(editingGuestId.value, {
+        name: newGuest.value.name,
+        group: newGuest.value.group,
+        phoneNumber: newGuest.value.phoneNumber,
+        tableNumber: newGuest.value.tableNumber,
+      })
+      toast.success('Data tamu berhasil diperbarui')
+    } else {
+      await createGuest({ ...newGuest.value, invitationId: selectedInvitationId.value })
+      toast.success('Tamu berhasil ditambahkan')
+    }
     showAddModal.value = false
-    newGuest.value = { name: '', group: '', phoneNumber: '' }
+    editingGuestId.value = null
+    newGuest.value = { name: '', group: '', phoneNumber: '', tableNumber: '' }
     await fetchGuests(selectedInvitationId.value)
   } catch (error) {
-    toast.error('Gagal menambahkan tamu')
+    toast.error(editingGuestId.value ? 'Gagal memperbarui tamu' : 'Gagal menambahkan tamu')
     console.error(error)
   } finally {
     isSubmitting.value = false
@@ -2051,6 +2146,17 @@ async function handleExcelImport(event) {
         return /^8\d{7,}$/.test(p) ? `0${p}` : p
       }
 
+      const findField = (rowObj, candidateKeys) => {
+        for (const key of Object.keys(rowObj)) {
+          const cleanKey = key.trim().toLowerCase().replace(/[^a-z0-9]/g, '')
+          if (candidateKeys.includes(cleanKey)) {
+            const val = cell(rowObj[key])
+            if (val) return val
+          }
+        }
+        return ''
+      }
+
       const existingNames = new Set(
         guests.value.map((g) => (g.name || '').trim().toLowerCase()).filter(Boolean),
       )
@@ -2067,6 +2173,15 @@ async function handleExcelImport(event) {
         const name = cell(row.Nama ?? row.nama ?? row.Name ?? row.name)
         const phone = phoneCell(row.WhatsApp ?? row.whatsapp ?? row.NoHP ?? row.phone ?? row.telp)
         const group = cell(row.Kategori ?? row.group ?? row.category) || undefined
+        const tableNumber =
+          findField(row, [
+            'nomeja',
+            'meja',
+            'table',
+            'tablenumber',
+            'seating',
+            'nomormeja',
+          ]) || undefined
 
         if (!name) {
           failed.push({ row: rowNumber, name: '', reason: 'Nama kosong' })
@@ -2086,7 +2201,7 @@ async function handleExcelImport(event) {
 
         existingNames.add(normalizedName)
         seenInFile.add(normalizedName)
-        validQueue.push({ rowNumber, name, phone, group })
+        validQueue.push({ rowNumber, name, phone, group, tableNumber })
       }
 
       // Initial progress reflects rows that were pre-validated and skipped
@@ -2104,6 +2219,7 @@ async function handleExcelImport(event) {
                 name: item.name,
                 phoneNumber: item.phone,
                 group: item.group,
+                tableNumber: item.tableNumber,
                 invitationId: selectedInvitationId.value,
               })
               success++
@@ -2141,10 +2257,36 @@ async function handleExcelImport(event) {
   reader.readAsArrayBuffer(file)
 }
 
+function exportGuestsExcel() {
+  if (!guests.value.length) {
+    toast.warning('Belum ada data tamu untuk diekspor')
+    return
+  }
+  const rows = guests.value.map((guest, idx) => ({
+    No: idx + 1,
+    'Nama Tamu': guest.name || '',
+    'Nomor WhatsApp': guest.phoneNumber || '',
+    Kategori: guest.group || 'Umum',
+    'No. Meja': guest.tableNumber || '-',
+    'Status Kirim': guest.statusSend === 'sent' ? 'Sudah Terkirim' : 'Belum Terkirim',
+    'Status RSVP': guest.rsvpStatus || 'Belum',
+    'Souvenir Diberikan': guest.souvenirGiven ? 'Sudah' : 'Belum',
+    'Kado Fisik/Amplop': guest.physicalGiftNotes || '-',
+    'Link Undangan': getGuestUrl(guest),
+  }))
+
+  const ws = XLSX.utils.json_to_sheet(rows)
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Daftar Tamu')
+  const filename = `Daftar_Tamu_${currentInvitation.value?.slug || 'SatuUndangan'}.xlsx`
+  XLSX.writeFile(wb, filename)
+  toast.success('Daftar tamu berhasil diekspor ke Excel')
+}
+
 function downloadTemplate() {
   const ws = XLSX.utils.json_to_sheet([
-    { Nama: 'Budi Santoso', WhatsApp: '08123456789', Kategori: 'Keluarga' },
-    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman' },
+    { Nama: 'Budi Santoso', WhatsApp: '08123456789', Kategori: 'Keluarga', 'No. Meja': 'Meja 4 (Keluarga)' },
+    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman', 'No. Meja': 'Meja 8 (Alumni)' },
   ])
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Template Tamu')

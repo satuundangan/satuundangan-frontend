@@ -959,6 +959,7 @@ function getLocalPreviewPayload(slug) {
       <Teleport to="body">
         <div
           v-if="showTicketModal"
+          id="ticket-modal"
           class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
           @click.self="showTicketModal = false"
         >
@@ -1003,6 +1004,10 @@ function getLocalPreviewPayload(slug) {
                 <h4 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">
                   {{ guestDisplayName }}
                 </h4>
+                <div v-if="guestData?.tableNumber" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black">
+                  <i class="fa-solid fa-chair text-emerald-600"></i>
+                  <span>Meja: {{ guestData.tableNumber }}</span>
+                </div>
               </div>
 
               <!-- QR Code Container -->
