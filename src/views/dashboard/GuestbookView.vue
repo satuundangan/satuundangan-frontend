@@ -427,7 +427,7 @@
           </div>
 
           <!-- 1. Live Stats Bar -->
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Stat 1: Hadir di Lokasi -->
             <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs relative overflow-hidden flex flex-col justify-between">
               <div class="flex items-center justify-between">
@@ -477,6 +477,20 @@
               </div>
               <div class="w-11 h-11 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-lg shrink-0">
                 <i class="fa-solid fa-clock"></i>
+              </div>
+            </div>
+
+            <!-- Stat 4: Souvenir Diberikan -->
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between">
+              <div>
+                <p class="text-[10px] font-black uppercase tracking-wider text-slate-400">Souvenir Diberikan</p>
+                <h3 class="text-xl sm:text-2xl font-black text-slate-900 mt-1">
+                  {{ souvenirGivenCount }} Tamu
+                </h3>
+                <p class="text-[11px] text-slate-400 mt-0.5">Rekap fisik yang sudah diserahkan</p>
+              </div>
+              <div class="w-11 h-11 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-lg shrink-0">
+                <i class="fa-solid fa-gift"></i>
               </div>
             </div>
           </div>
@@ -627,6 +641,57 @@
                         <p class="text-xs text-emerald-800 font-medium mt-0.5">
                           Kategori: <span class="font-bold">{{ recentScanResult.group }}</span> • Pukul: <span class="font-bold">{{ recentScanResult.time }}</span>
                         </p>
+
+                        <!-- Nomor Meja / Seating -->
+                        <div class="mt-2 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-emerald-200/60 inline-flex items-center gap-1.5">
+                          <span>📍 Meja / Seating:</span>
+                          <strong class="font-black text-slate-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
+                        </div>
+
+                        <!-- Tombol Toggle Souvenir Satu Klik -->
+                        <div class="mt-2.5 flex items-center gap-2 flex-wrap">
+                          <button
+                            type="button"
+                            @click="toggleRecentScanSouvenir"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer border shadow-2xs active:scale-95"
+                            :class="recentScanResult.souvenirGiven
+                              ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'
+                              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                          >
+                            <i :class="recentScanResult.souvenirGiven ? 'fa-solid fa-check' : 'fa-solid fa-gift'"></i>
+                            <span>{{ recentScanResult.souvenirGiven ? '✔ Sudah Terima Souvenir' : '🎁 Souvenir Diberikan' }}</span>
+                          </button>
+                        </div>
+
+                        <!-- Form Cepat Pencatatan Amplop Fisik / Kado Tunai -->
+                        <div class="mt-3 pt-3 border-t border-emerald-200/60 space-y-1.5">
+                          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <div class="relative flex-1">
+                              <i class="fa-solid fa-envelope-open-text absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                              <input
+                                v-model="recentScanPhysicalGiftInput"
+                                type="text"
+                                placeholder="Catat kado fisik / amplop (cth: Amplop Rp 500.000)..."
+                                class="w-full text-xs bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                                @keyup.enter="saveRecentScanPhysicalGift"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              @click="saveRecentScanPhysicalGift"
+                              :disabled="isSavingRecentScanGift"
+                              class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
+                            >
+                              <i v-if="isSavingRecentScanGift" class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>
+                              <i v-else class="fa-solid fa-floppy-disk text-[10px]"></i>
+                              <span>Simpan</span>
+                            </button>
+                          </div>
+                          <div v-if="recentScanResult.physicalGiftNotes" class="text-[11px] text-slate-700 font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-600 text-[10px]"></i>
+                            <span>Tercatat: <strong class="text-slate-900">{{ recentScanResult.physicalGiftNotes }}</strong></span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -657,6 +722,57 @@
                         <p class="text-xs text-amber-800 font-medium mt-0.5">
                           Nama: <span class="font-bold">{{ recentScanResult.guestName }}</span> • Kategori: <span class="font-bold">{{ recentScanResult.group }}</span>
                         </p>
+
+                        <!-- Nomor Meja / Seating -->
+                        <div class="mt-2 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/60 inline-flex items-center gap-1.5">
+                          <span>📍 Meja / Seating:</span>
+                          <strong class="font-black text-slate-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
+                        </div>
+
+                        <!-- Tombol Toggle Souvenir Satu Klik -->
+                        <div class="mt-2.5 flex items-center gap-2 flex-wrap">
+                          <button
+                            type="button"
+                            @click="toggleRecentScanSouvenir"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer border shadow-2xs active:scale-95"
+                            :class="recentScanResult.souvenirGiven
+                              ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'
+                              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                          >
+                            <i :class="recentScanResult.souvenirGiven ? 'fa-solid fa-check' : 'fa-solid fa-gift'"></i>
+                            <span>{{ recentScanResult.souvenirGiven ? '✔ Sudah Terima Souvenir' : '🎁 Souvenir Diberikan' }}</span>
+                          </button>
+                        </div>
+
+                        <!-- Form Cepat Pencatatan Amplop Fisik / Kado Tunai -->
+                        <div class="mt-3 pt-3 border-t border-amber-200/60 space-y-1.5">
+                          <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                            <div class="relative flex-1">
+                              <i class="fa-solid fa-envelope-open-text absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                              <input
+                                v-model="recentScanPhysicalGiftInput"
+                                type="text"
+                                placeholder="Catat kado fisik / amplop (cth: Amplop Rp 500.000)..."
+                                class="w-full text-xs bg-white border border-slate-200 rounded-xl pl-8 pr-3 py-1.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
+                                @keyup.enter="saveRecentScanPhysicalGift"
+                              />
+                            </div>
+                            <button
+                              type="button"
+                              @click="saveRecentScanPhysicalGift"
+                              :disabled="isSavingRecentScanGift"
+                              class="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 shrink-0"
+                            >
+                              <i v-if="isSavingRecentScanGift" class="fa-solid fa-circle-notch animate-spin text-[10px]"></i>
+                              <i v-else class="fa-solid fa-floppy-disk text-[10px]"></i>
+                              <span>Simpan</span>
+                            </button>
+                          </div>
+                          <div v-if="recentScanResult.physicalGiftNotes" class="text-[11px] text-slate-700 font-medium flex items-center gap-1.5">
+                            <i class="fa-solid fa-circle-check text-emerald-600 text-[10px]"></i>
+                            <span>Tercatat: <strong class="text-slate-900">{{ recentScanResult.physicalGiftNotes }}</strong></span>
+                          </div>
+                        </div>
                       </div>
                     </div>
 
@@ -801,38 +917,62 @@
                 </div>
 
                 <!-- Feed list -->
-                <div class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                <div class="space-y-2 max-h-96 overflow-y-auto custom-scrollbar pr-1">
                   <div
-                    v-for="(guest, idx) in checkedInGuests"
+                    v-for="(guest, idx) in recentCheckIns"
                     :key="guest.id"
-                    class="p-3 rounded-2xl bg-white border border-slate-100 hover:border-slate-200 transition-all flex items-center justify-between gap-3 shadow-2xs"
+                    class="p-3.5 rounded-2xl bg-white border border-slate-100 hover:border-slate-200 transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs"
                   >
-                    <div class="flex items-center gap-3 min-w-0">
-                      <div class="w-8 h-8 rounded-xl bg-[#a47148] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-xs">
+                    <div class="flex items-start gap-3 min-w-0">
+                      <div class="w-9 h-9 rounded-xl bg-[#a47148] text-white flex items-center justify-center font-black text-xs shrink-0 shadow-xs mt-0.5">
                         {{ guest.name ? guest.name.charAt(0).toUpperCase() : '?' }}
                       </div>
-                      <div class="min-w-0">
-                        <div class="flex items-center gap-2">
+                      <div class="min-w-0 flex-1">
+                        <div class="flex items-center gap-2 flex-wrap">
                           <h4 class="font-black text-slate-900 text-xs truncate">{{ guest.name }}</h4>
                           <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 shrink-0">
                             {{ guest.group || 'Umum' }}
                           </span>
+                          <!-- Badge Meja -->
+                          <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 shrink-0">
+                            <i class="fa-solid fa-chair text-[9px]"></i>
+                            <span>Meja: {{ guest.tableNumber || '-' }}</span>
+                          </span>
                         </div>
-                        <p class="text-[10px] text-slate-400 mt-0.5">
-                          Tamu ke-{{ checkedInGuests.length - idx }} tiba
-                        </p>
+                        <div class="flex items-center gap-2 mt-1 text-[10px] text-slate-400 flex-wrap">
+                          <span>Tamu ke-{{ recentCheckIns.length - idx }} tiba</span>
+                          <span>•</span>
+                          <span class="inline-flex items-center gap-1 text-slate-500 font-medium">
+                            <i class="fa-regular fa-clock text-[9px]"></i>
+                            {{ formatTime(guest.checkedInAt) }}
+                          </span>
+                        </div>
+                        <!-- Catatan Amplop Fisik jika ada -->
+                        <div v-if="guest.physicalGiftNotes" class="mt-1.5 inline-flex items-center gap-1.5 text-[10px] font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200/70">
+                          <i class="fa-solid fa-gift text-amber-600 text-[9px]"></i>
+                          <span class="truncate max-w-[240px]">Kado/Amplop: {{ guest.physicalGiftNotes }}</span>
+                        </div>
                       </div>
                     </div>
 
-                    <div class="text-right shrink-0">
-                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg bg-emerald-50 text-emerald-700 text-[10px] font-black">
-                        <i class="fa-regular fa-clock text-[9px]"></i>
-                        {{ formatTime(guest.checkedInAt) }}
-                      </span>
+                    <!-- Tombol / Badge Toggle Souvenir -->
+                    <div class="flex items-center gap-2 shrink-0 self-end sm:self-center">
+                      <button
+                        type="button"
+                        @click="toggleRowSouvenir(guest)"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-[10px] font-extrabold transition-all cursor-pointer border shadow-2xs active:scale-95"
+                        :class="guest.souvenirGiven
+                          ? 'bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100'
+                          : 'bg-slate-100 text-slate-500 border-slate-200 hover:bg-slate-200'"
+                        :title="guest.souvenirGiven ? 'Klik untuk membatalkan status souvenir' : 'Klik untuk menandai souvenir diserahkan'"
+                      >
+                        <i :class="guest.souvenirGiven ? 'fa-solid fa-check text-[9px]' : 'fa-solid fa-gift text-[9px]'"></i>
+                        <span>{{ guest.souvenirGiven ? '✔ Souvenir' : '🎁 Souvenir' }}</span>
+                      </button>
                     </div>
                   </div>
 
-                  <div v-if="checkedInGuests.length === 0" class="py-10 text-center text-slate-400 space-y-2">
+                  <div v-if="recentCheckIns.length === 0" class="py-10 text-center text-slate-400 space-y-2">
                     <div class="w-12 h-12 rounded-2xl bg-slate-50 text-slate-300 flex items-center justify-center mx-auto text-xl border border-slate-100">
                       <i class="fa-solid fa-users"></i>
                     </div>
@@ -1168,6 +1308,7 @@ import {
   checkInGuest,
   checkInGuestByToken,
   getCheckInSummary,
+  updateGuestReception,
 } from "@/api/guest"
 import { useToast } from "vue-toastification"
 import Swal from "sweetalert2"
@@ -1208,6 +1349,8 @@ const isCameraStarting = ref(false)
 const availableCameras = ref([])
 const selectedCameraId = ref('')
 const recentScanResult = ref(null)
+const recentScanPhysicalGiftInput = ref('')
+const isSavingRecentScanGift = ref(false)
 let isProcessingScan = false
 let lastScannedText = ''
 let lastScanTime = 0
@@ -1228,11 +1371,16 @@ const totalGuestsCount = computed(() => {
   return guests.value.length
 })
 
-const checkedInGuests = computed(() => {
+const souvenirGivenCount = computed(() => {
+  return guests.value.filter((g) => Boolean(g.souvenirGiven)).length
+})
+
+const recentCheckIns = computed(() => {
   return [...guests.value]
     .filter((g) => Boolean(g.checkedInAt))
     .sort((a, b) => new Date(b.checkedInAt).getTime() - new Date(a.checkedInAt).getTime())
 })
+const checkedInGuests = recentCheckIns
 
 const checkedInCount = computed(() => {
   if (summaryData.value?.checkedInCount !== undefined) return summaryData.value.checkedInCount
@@ -1736,11 +1884,17 @@ async function handleQrCodeScanned(decodedText) {
         const timeStr = formatTime(guest.checkedInAt)
         recentScanResult.value = {
           type: 'already',
+          guestId: guest.id,
+          guest,
           guestName: guest.name,
           group: guest.group || 'Umum',
+          tableNumber: guest.tableNumber,
+          souvenirGiven: guest.souvenirGiven,
+          physicalGiftNotes: guest.physicalGiftNotes,
           time: timeStr,
           message: `Tamu ini sudah pernah check-in sebelumnya pada pukul ${timeStr}`,
         }
+        recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
         toast.warning(`Tamu ${guest.name} sudah pernah check-in pada pukul ${timeStr}`)
         return
       }
@@ -1754,11 +1908,17 @@ async function handleQrCodeScanned(decodedText) {
       const timeStr = formatTime(checkInTime)
       recentScanResult.value = {
         type: 'new',
+        guestId: guest.id,
+        guest,
         guestName: guest.name,
         group: guest.group || 'Umum',
+        tableNumber: guest.tableNumber,
+        souvenirGiven: guest.souvenirGiven,
+        physicalGiftNotes: guest.physicalGiftNotes,
         time: timeStr,
         message: `Selamat Datang, ${guest.name}! Kategori: ${guest.group || 'Umum'} • Pukul: ${timeStr}`,
       }
+      recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
       toast.success(`Check-in berhasil: ${guest.name}`)
     } else {
       // Try backend checkInGuestByToken API
@@ -1768,13 +1928,25 @@ async function handleQrCodeScanned(decodedText) {
         const guestName = res?.guest?.name || res?.name || 'Tamu Undangan'
         const group = res?.guest?.group || res?.group || 'Umum'
         const timeStr = formatTime(res?.check_in_time || res?.checkedInAt || new Date().toISOString())
+        const resGuest = res?.guest || res
+        const guestId = resGuest?.id || res?.guestId
+        const found = guests.value.find((g) => g.id === guestId)
+        const gTable = found?.tableNumber || resGuest?.tableNumber
+        const gSouvenir = found?.souvenirGiven || resGuest?.souvenirGiven
+        const gNotes = found?.physicalGiftNotes || resGuest?.physicalGiftNotes
         recentScanResult.value = {
           type: 'new',
+          guestId: guestId || found?.id,
+          guest: found || resGuest,
           guestName,
           group,
+          tableNumber: gTable,
+          souvenirGiven: gSouvenir,
+          physicalGiftNotes: gNotes,
           time: timeStr,
           message: `Selamat Datang, ${guestName}! Kategori: ${group} • Pukul: ${timeStr}`,
         }
+        recentScanPhysicalGiftInput.value = gNotes || ''
         toast.success(`Check-in berhasil: ${guestName}`)
         await fetchGuests(selectedInvitationId.value)
       } catch {
@@ -1808,11 +1980,17 @@ async function manualCheckIn(guest) {
     const timeStr = formatTime(guest.checkedInAt)
     recentScanResult.value = {
       type: 'already',
+      guestId: guest.id,
+      guest,
       guestName: guest.name,
       group: guest.group || 'Umum',
+      tableNumber: guest.tableNumber,
+      souvenirGiven: guest.souvenirGiven,
+      physicalGiftNotes: guest.physicalGiftNotes,
       time: timeStr,
       message: `Tamu ini sudah pernah check-in sebelumnya pada pukul ${timeStr}`,
     }
+    recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
     toast.warning(`Tamu ${guest.name} sudah check-in pada pukul ${timeStr}`)
     return
   }
@@ -1827,17 +2005,104 @@ async function manualCheckIn(guest) {
     const timeStr = formatTime(checkInTime)
     recentScanResult.value = {
       type: 'new',
+      guestId: guest.id,
+      guest,
       guestName: guest.name,
       group: guest.group || 'Umum',
+      tableNumber: guest.tableNumber,
+      souvenirGiven: guest.souvenirGiven,
+      physicalGiftNotes: guest.physicalGiftNotes,
       time: timeStr,
       message: `Selamat Datang, ${guest.name}! Kategori: ${guest.group || 'Umum'} • Pukul: ${timeStr}`,
     }
+    recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
     toast.success(`Check-in berhasil: ${guest.name}`)
   } catch (err) {
     console.error('Manual check-in error:', err)
     toast.error('Gagal melakukan check-in: ' + (err.message || 'Terjadi kesalahan'))
   } finally {
     isSubmittingManualCheckIn.value = false
+  }
+}
+
+// ----------------------------------------------------
+// Reception Actions: Souvenir & Physical Gift
+// ----------------------------------------------------
+async function toggleRecentScanSouvenir() {
+  if (!recentScanResult.value || !recentScanResult.value.guestId) return
+  const guestId = recentScanResult.value.guestId
+  const currentStatus = Boolean(recentScanResult.value.souvenirGiven)
+  const targetStatus = !currentStatus
+
+  // Optimistic UI update (0ms)
+  recentScanResult.value.souvenirGiven = targetStatus
+  const localGuest = guests.value.find((g) => g.id === guestId)
+  if (localGuest) {
+    localGuest.souvenirGiven = targetStatus
+  }
+
+  try {
+    await updateGuestReception(guestId, { souvenirGiven: targetStatus })
+    toast.success(targetStatus ? 'Souvenir ditandai telah diberikan' : 'Status souvenir dibatalkan')
+  } catch (err) {
+    // Rollback on failure
+    recentScanResult.value.souvenirGiven = currentStatus
+    if (localGuest) {
+      localGuest.souvenirGiven = currentStatus
+    }
+    toast.error('Gagal memperbarui status souvenir: ' + (err.message || 'Terjadi kesalahan'))
+  }
+}
+
+async function saveRecentScanPhysicalGift() {
+  if (!recentScanResult.value || !recentScanResult.value.guestId) return
+  const guestId = recentScanResult.value.guestId
+  const notes = recentScanPhysicalGiftInput.value.trim()
+  const previousNotes = recentScanResult.value.physicalGiftNotes || ''
+
+  // Optimistic UI update
+  recentScanResult.value.physicalGiftNotes = notes
+  const localGuest = guests.value.find((g) => g.id === guestId)
+  if (localGuest) {
+    localGuest.physicalGiftNotes = notes
+  }
+
+  isSavingRecentScanGift.value = true
+  try {
+    await updateGuestReception(guestId, { physicalGiftNotes: notes })
+    toast.success('Pencatatan kado fisik/amplop berhasil disimpan')
+  } catch (err) {
+    // Rollback on failure
+    recentScanResult.value.physicalGiftNotes = previousNotes
+    if (localGuest) {
+      localGuest.physicalGiftNotes = previousNotes
+    }
+    toast.error('Gagal menyimpan catatan: ' + (err.message || 'Terjadi kesalahan'))
+  } finally {
+    isSavingRecentScanGift.value = false
+  }
+}
+
+async function toggleRowSouvenir(guest) {
+  if (!guest || !guest.id) return
+  const currentStatus = Boolean(guest.souvenirGiven)
+  const targetStatus = !currentStatus
+
+  // 0ms Optimistic UI update
+  guest.souvenirGiven = targetStatus
+  if (recentScanResult.value && recentScanResult.value.guestId === guest.id) {
+    recentScanResult.value.souvenirGiven = targetStatus
+  }
+
+  try {
+    await updateGuestReception(guest.id, { souvenirGiven: targetStatus })
+    toast.success(targetStatus ? `Souvenir diserahkan ke ${guest.name}` : `Status souvenir ${guest.name} dibatalkan`)
+  } catch (err) {
+    guest.souvenirGiven = currentStatus
+    if (recentScanResult.value && recentScanResult.value.guestId === guest.id) {
+      recentScanResult.value.souvenirGiven = currentStatus
+    }
+    toast.error('Gagal memperbarui status souvenir: ' + (err.message || 'Terjadi kesalahan'))
   }
 }
 
@@ -1856,9 +2121,12 @@ function exportToExcel() {
       'Nama Tamu': g.name || '-',
       'Nomor WhatsApp': g.phoneNumber || '-',
       'Kategori': g.group || 'Umum',
+      'No. Meja': g.tableNumber || '-',
       'Status RSVP': g.rsvpStatus || 'Belum Respon',
       'Status Kehadiran': g.checkedInAt ? 'Hadir di Lokasi' : 'Belum Check-in',
       'Waktu Check-in': g.checkedInAt ? formatDateTime(g.checkedInAt) : '-',
+      'Souvenir Diberikan': g.souvenirGiven ? 'Sudah' : 'Belum',
+      'Kado Fisik/Amplop': g.physicalGiftNotes || '-',
     }))
 
     const ws = XLSX.utils.json_to_sheet(rows)
@@ -1884,6 +2152,7 @@ function printRekap() {
     <tr>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 700;">${idx + 1}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 800; color: #0f172a;">${g.name || '-'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${g.tableNumber || '-'}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${g.phoneNumber || '-'}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${g.group || 'Umum'}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; font-size: 10px; font-weight: 700;">${g.rsvpStatus || '-'}</td>
@@ -1891,6 +2160,8 @@ function printRekap() {
         ${g.checkedInAt ? 'HADIR' : 'Belum Hadir'}
       </td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #475569;">${g.checkedInAt ? formatDateTime(g.checkedInAt) : '-'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: ${g.souvenirGiven ? '#047857' : '#64748b'};">${g.souvenirGiven ? 'Sudah' : 'Belum'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #475569;">${g.physicalGiftNotes || '-'}</td>
     </tr>
   `).join('')
 
@@ -1915,18 +2186,21 @@ function printRekap() {
   <div class="header">
     <div class="title">Rekapitulasi Kehadiran Tamu (Meja Resepsi)</div>
     <div class="subtitle">Undangan: ${title}</div>
-    <div class="meta">Dicetak: ${dateStr} • Total Tamu: ${totalGuestsCount.value} • Hadir: ${checkedInCount.value} (${checkInPercentage.value}%)</div>
+    <div class="meta">Dicetak: ${dateStr} • Total Tamu: ${totalGuestsCount.value} • Hadir: ${checkedInCount.value} (${checkInPercentage.value}%) • Souvenir: ${souvenirGivenCount.value}</div>
   </div>
   <table>
     <thead>
       <tr>
         <th style="width: 40px;">No</th>
         <th>Nama Tamu</th>
+        <th>No. Meja</th>
         <th>Nomor HP</th>
         <th>Kategori</th>
         <th>RSVP</th>
         <th>Status</th>
         <th>Waktu Check-in</th>
+        <th>Souvenir</th>
+        <th>Kado/Amplop</th>
       </tr>
     </thead>
     <tbody>
