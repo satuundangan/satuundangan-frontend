@@ -105,62 +105,77 @@
               </select>
             </div>
 
-            <!-- Standee Action Buttons -->
-            <div v-if="activeTab === 'standee'" class="flex items-center gap-2 pt-2 md:pt-0">
-              <button
-                type="button"
-                @click="downloadStandeeQr"
-                :disabled="!standeeQrDataUrl"
-                class="flex-1 md:flex-none px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            <!-- Action Buttons Toolbar -->
+            <div class="flex flex-wrap items-center gap-2 pt-2 md:pt-0 shrink-0">
+              <!-- Quick Action: Buka Layar Sapa Proyektor (SAT-64) -->
+              <a
+                v-if="currentInvitationSlug"
+                :href="`/live-screen/${currentInvitationSlug}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="px-3.5 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs shrink-0"
+                title="Buka Layar Sapa & Live Display Proyektor di tab baru"
               >
-                <i class="fa-solid fa-download text-emerald-600"></i>
-                <span>Download QR</span>
-              </button>
+                <span>🖥️ Buka Layar Sapa Proyektor</span>
+              </a>
 
-              <button
-                type="button"
-                @click="openStandeePrintModal"
-                :disabled="!standeeQrDataUrl"
-                class="flex-1 md:flex-none px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-sm"
-              >
-                <i class="fa-solid fa-print"></i>
-                <span>Cetak Standee</span>
-              </button>
-            </div>
+              <!-- Standee Action Buttons -->
+              <template v-if="activeTab === 'standee'">
+                <button
+                  type="button"
+                  @click="downloadStandeeQr"
+                  :disabled="!standeeQrDataUrl"
+                  class="flex-1 md:flex-none px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <i class="fa-solid fa-download text-emerald-600"></i>
+                  <span>Download QR</span>
+                </button>
 
-            <!-- Scanner action buttons -->
-            <div v-else-if="activeTab === 'scanner'" class="flex items-center gap-2 pt-2 md:pt-0">
-              <button
-                type="button"
-                @click="exportToExcel"
-                :disabled="guests.length === 0"
-                class="flex-1 md:flex-none px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                title="Download Rekap Kehadiran Excel"
-              >
-                <i class="fa-solid fa-file-excel text-emerald-600"></i>
-                <span>Download Excel</span>
-              </button>
+                <button
+                  type="button"
+                  @click="openStandeePrintModal"
+                  :disabled="!standeeQrDataUrl"
+                  class="flex-1 md:flex-none px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 shadow-sm"
+                >
+                  <i class="fa-solid fa-print"></i>
+                  <span>Cetak Standee</span>
+                </button>
+              </template>
 
-              <button
-                type="button"
-                @click="printRekap"
-                :disabled="guests.length === 0"
-                class="flex-1 md:flex-none px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                title="Cetak / Print Rekap"
-              >
-                <i class="fa-solid fa-print"></i>
-                <span>Cetak Rekap</span>
-              </button>
+              <!-- Scanner action buttons -->
+              <template v-else-if="activeTab === 'scanner'">
+                <button
+                  type="button"
+                  @click="exportToExcel"
+                  :disabled="guests.length === 0"
+                  class="flex-1 md:flex-none px-3.5 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  title="Download Rekap Kehadiran Excel"
+                >
+                  <i class="fa-solid fa-file-excel text-emerald-600"></i>
+                  <span>Download Excel</span>
+                </button>
 
-              <button
-                type="button"
-                @click="refreshData"
-                :disabled="loadingGuests"
-                class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer shrink-0"
-                title="Segarkan Data"
-              >
-                <i :class="['fa-solid fa-rotate-right text-xs', loadingGuests ? 'animate-spin text-[#a47148]' : '']"></i>
-              </button>
+                <button
+                  type="button"
+                  @click="printRekap"
+                  :disabled="guests.length === 0"
+                  class="flex-1 md:flex-none px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 border border-slate-200 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                  title="Cetak / Print Rekap"
+                >
+                  <i class="fa-solid fa-print"></i>
+                  <span>Cetak Rekap</span>
+                </button>
+
+                <button
+                  type="button"
+                  @click="refreshData"
+                  :disabled="loadingGuests"
+                  class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center transition-colors cursor-pointer shrink-0"
+                  title="Segarkan Data"
+                >
+                  <i :class="['fa-solid fa-rotate-right text-xs', loadingGuests ? 'animate-spin text-[#a47148]' : '']"></i>
+                </button>
+              </template>
             </div>
           </div>
         </div>
@@ -1204,6 +1219,8 @@ const isSubmittingManualCheckIn = ref(false)
 const currentInvitation = computed(() => {
   return invitations.value.find((i) => i.id === selectedInvitationId.value) || null
 })
+
+const currentInvitationSlug = computed(() => currentInvitation.value?.slug || '')
 
 // Stats Computations
 const totalGuestsCount = computed(() => {
