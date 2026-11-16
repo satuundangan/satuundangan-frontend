@@ -68,8 +68,8 @@
                <i class="fa-solid fa-sun text-[#ffb703]"></i>
                <span class="text-[8px] font-bold uppercase tracking-[0.3em] text-[#60a5fa]">Summer Wedding</span>
             </div>
-            <h1 class="text-6xl md:text-[5rem] font-serif leading-[1] text-[#1e3a8a]">
-              {{ data.groomName }} <br><span class="text-5xl md:text-7xl italic text-[#ffb703]">&</span><br> {{ data.brideName }}
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-serif leading-tight text-[#1e3a8a]">
+              {{ data.groomName }} <br><span class="text-3xl md:text-4xl italic text-[#ffb703]">&</span><br> {{ data.brideName }}
             </h1>
             <p class="text-xs md:text-sm font-bold uppercase tracking-[0.4em] text-[#3b82f6]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
           </div>
@@ -84,7 +84,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-32 px-6 bg-[#1e3a8a] text-white relative overflow-hidden" v-observe>
+      <section class="py-16 md:py-24 px-6 bg-[#1e3a8a] text-white relative overflow-hidden" v-observe>
         <div class="absolute top-0 right-0 w-64 h-64 bg-[#3b82f6]/30 rounded-full blur-[80px]"></div>
         <div class="max-w-4xl mx-auto text-center space-y-12 relative z-10">
           <i class="fa-solid fa-anchor text-[#ffb703] text-4xl mb-6"></i>
@@ -98,7 +98,7 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 relative">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 relative">
         <div class="max-w-7xl mx-auto space-y-20">
           <div class="text-center" v-observe>
             <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Our Voyage</h2>
@@ -123,8 +123,8 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
-        <div class="max-w-5xl mx-auto space-y-32">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6">
+        <div class="max-w-5xl mx-auto space-y-16 md:space-y-24">
           
           <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative">
@@ -135,7 +135,7 @@
             </div>
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[#60a5fa]">The Groom</span>
-              <h3 class="text-4xl md:text-6xl font-serif text-[#1e3a8a]">{{ data.groomName }}</h3>
+              <h3 class="text-3xl md:text-4xl font-serif text-[#1e3a8a]">{{ data.groomName }}</h3>
               <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Son of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
@@ -150,7 +150,7 @@
             </div>
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase tracking-[0.4em] font-bold text-[#60a5fa]">The Bride</span>
-              <h3 class="text-4xl md:text-6xl font-serif text-[#1e3a8a]">{{ data.brideName }}</h3>
+              <h3 class="text-3xl md:text-4xl font-serif text-[#1e3a8a]">{{ data.brideName }}</h3>
               <p class="text-xs font-medium text-[#3b82f6] leading-relaxed">Daughter of <br><span class="font-bold text-[#1e3a8a]">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-2 bg-white rounded-full shadow-sm text-[10px] uppercase tracking-widest font-bold text-[#1e3a8a] hover:bg-[#ffb703] hover:text-white transition-colors border border-[#e0f2fe]"><i class="fa-brands fa-instagram mr-2"></i>Follow</a>
             </div>
@@ -159,7 +159,7 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#1e3a8a]/5">
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-16 md:py-24 px-6 bg-[#1e3a8a]/5">
         <div class="max-w-4xl mx-auto space-y-16" v-observe>
           <div class="text-center">
              <h2 class="text-4xl md:text-5xl font-serif text-[#1e3a8a]">With Love, Our Family</h2>
@@ -176,7 +176,7 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 relative">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 relative">
         <div class="absolute inset-0 bg-[#e0f2fe]/50 -skew-y-3 origin-top-left z-0"></div>
         <div class="max-w-5xl mx-auto relative z-10">
           <div class="text-center mb-20" v-observe>
@@ -239,7 +239,7 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-32 px-4">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4">
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Captured Moments</h2>
@@ -252,7 +252,7 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6 bg-[#1e3a8a] text-white relative overflow-hidden">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 bg-[#1e3a8a] text-white relative overflow-hidden">
         <div class="absolute bottom-0 left-0 w-full h-full opacity-10" style="background-image: radial-gradient(circle at center, white 1px, transparent 1px); background-size: 20px 20px;"></div>
         <div class="max-w-3xl mx-auto relative z-10">
           <div class="text-center mb-16" v-observe>
@@ -296,7 +296,7 @@
       </section>
 
       <!-- GIFT -->
-      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-16 md:py-24 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Wedding Gift</h2>

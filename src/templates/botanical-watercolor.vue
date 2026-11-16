@@ -60,7 +60,7 @@
         <div class="relative z-10 space-y-8 animate-fade-in-up max-w-lg mx-auto">
           <div class="space-y-2">
             <p class="font-serif italic text-[#657b62] tracking-[0.4em] uppercase text-xs md:text-sm">The Wedding Of</p>
-            <h1 class="font-script text-6xl md:text-8xl text-[#4e604d] leading-tight drop-shadow-sm py-2">
+            <h1 class="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#4e604d] leading-snug drop-shadow-sm py-2">
               {{ data.groomName?.split(' ')[0] || data.groomName }} &amp; {{ data.brideName?.split(' ')[0] || data.brideName }}
             </h1>
           </div>
@@ -89,8 +89,8 @@
 
         <div class="space-y-6 max-w-2xl mx-auto relative z-10" v-observe>
           <span class="inline-block px-4 py-1 border-y border-[#c5d3c3] text-[10px] uppercase tracking-[0.4em] text-[#657b62] font-bold">Save The Date</span>
-          <h1 class="font-script text-6xl md:text-8xl leading-tight text-[#3e4d3e]">
-            {{ data.groomName }} <br> <span class="text-3xl md:text-4xl text-[#c5a059]">&</span> <br> {{ data.brideName }}
+          <h1 class="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-snug text-[#3e4d3e]">
+            {{ data.groomName }} <br> <span class="text-2xl md:text-3xl text-[#c5a059]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="font-serif text-base md:text-lg text-[#4e604d] tracking-[0.2em] uppercase">
             {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}

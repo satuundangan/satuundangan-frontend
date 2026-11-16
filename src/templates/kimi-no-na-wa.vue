@@ -80,7 +80,7 @@
 
           <div class="space-y-6 md:space-y-8 animate-fade-in-up" style="animation-delay: 0.3s">
             <h1
-              class="text-6xl md:text-[7rem] font-script text-white leading-tight drop-shadow-glow-intense"
+              class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-script text-white leading-tight drop-shadow-glow-intense"
             >
               {{ data.groomName?.split(' ')[0] || 'Arya' }}
               <span class="block text-2xl md:text-4xl font-serif italic text-[#ff8a00]/90 my-2">&</span>
@@ -152,7 +152,7 @@
             <p class="text-[8px] md:text-[10px] tracking-[0.8em] uppercase text-[#ff8a00] font-black">
               {{ data.heroLabel || 'The Wedding Of' }}
             </p>
-            <h1 class="text-5xl md:text-[8rem] font-script text-white leading-none drop-shadow-glow-intense">
+            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-script text-white leading-snug drop-shadow-glow-intense">
               {{ data.groomName?.split(' ')[0] || 'Arya' }}
               <span class="text-2xl md:text-4xl font-serif italic text-[#ff8a00]/80">&</span>
               {{ data.brideName?.split(' ')[0] || 'Kirana' }}
@@ -348,7 +348,7 @@
             <p class="text-[8px] md:text-xs tracking-[0.8em] text-[#ff8a00] font-black uppercase opacity-70">
               {{ data.eventLabel || 'Save The Date' }}
             </p>
-            <h2 class="text-4xl md:text-[5rem] font-script text-white leading-none">Acara Bahagia</h2>
+            <h2 class="text-3xl md:text-5xl font-script text-white leading-tight">Acara Bahagia</h2>
             <div class="flex items-center gap-4 justify-center pt-1">
               <div class="h-[1px] w-8 md:w-10 bg-[#ff8a00]/30"></div>
               <i class="fa-solid fa-star text-[#ff8a00]/50 text-[10px] md:text-xs"></i>
@@ -538,7 +538,7 @@
       >
         <div class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center">
           <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
-            <h2 class="text-5xl md:text-8xl font-script text-[#ff8a00] leading-none">
+            <h2 class="text-4xl md:text-6xl font-script text-[#ff8a00] leading-tight">
               RSVP <br />
               <span class="text-white">& Wishes</span>
             </h2>
@@ -642,7 +642,7 @@
             </div>
             <div class="space-y-3 pt-6">
               <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">Kami yang berbahagia,</p>
-              <h2 class="font-script text-5xl md:text-8xl text-white drop-shadow-glow-intense leading-none">
+              <h2 class="font-script text-4xl md:text-6xl text-white drop-shadow-glow-intense leading-snug">
                 {{ data.groomName?.split(' ')[0] || 'Arya' }} &
                 {{ data.brideName?.split(' ')[0] || 'Kirana' }}
               </h2>

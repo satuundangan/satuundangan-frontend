@@ -562,6 +562,13 @@ const isPersonalGuest = computed(() => {
   )
 })
 
+// Fitur Tiket & QR Kehadiran (termasuk badge kategori tamu) dimatikan untuk undangan tertentu
+const TICKET_QR_DISABLED_SLUGS = ['refda-tiara']
+const isTicketQrEnabled = computed(() => {
+  const currentSlug = invitationData.value?.slug || route.params.slug
+  return !TICKET_QR_DISABLED_SLUGS.includes(currentSlug)
+})
+
 const weddingCoupleNames = computed(() => {
   const d = invitationData.value
   if (!d) return 'The Wedding'
@@ -938,7 +945,7 @@ function getLocalPreviewPayload(slug) {
 
       <!-- Floating Ticket & QR Action Button for Personal Guest -->
       <div
-        v-if="isPersonalGuest && !isInsideFrame"
+        v-if="isPersonalGuest && isTicketQrEnabled && !isInsideFrame"
         class="fixed bottom-6 right-6 z-40 transition-all duration-300"
       >
         <button
@@ -958,7 +965,7 @@ function getLocalPreviewPayload(slug) {
       <!-- Ticket & QR Kehadiran Modal -->
       <Teleport to="body">
         <div
-          v-if="showTicketModal"
+          v-if="showTicketModal && isTicketQrEnabled"
           id="ticket-modal"
           class="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs transition-opacity"
           @click.self="showTicketModal = false"
