@@ -63,8 +63,8 @@
                <i class="fa-solid fa-microchip text-[#00f0ff] animate-pulse"></i>
                <span class="text-[8px] font-bold uppercase tracking-[0.4em] text-[#e2e8f0]">Connection Established</span>
             </div>
-            <h1 class="text-6xl md:text-[5rem] font-mono font-black uppercase leading-[1] text-white drop-shadow-[2px_2px_0px_#ff003c,-2px_-2px_0px_#00f0ff]">
-              {{ data.groomName }} <br><span class="text-5xl md:text-7xl text-[#facc15] drop-shadow-none">&</span><br> {{ data.brideName }}
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-mono font-black uppercase leading-tight text-white drop-shadow-[2px_2px_0px_#ff003c,-2px_-2px_0px_#00f0ff]">
+              {{ data.groomName }} <br><span class="text-3xl md:text-4xl text-[#facc15] drop-shadow-none">&</span><br> {{ data.brideName }}
             </h1>
             <p class="text-xs md:text-sm font-mono font-bold uppercase tracking-[0.5em] text-[#00f0ff]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
           </div>
@@ -79,7 +79,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-32 px-6 relative border-y border-white/5 bg-[#050508]" v-observe>
+      <section class="py-16 md:py-24 px-6 relative border-y border-white/5 bg-[#050508]" v-observe>
         <div class="max-w-4xl mx-auto text-center space-y-12 relative z-10">
           <i class="fa-solid fa-terminal text-[#ff003c] text-4xl mb-6 animate-pulse"></i>
           <p class="text-2xl md:text-4xl font-mono font-bold leading-tight uppercase tracking-wide text-[#e2e8f0]">"{{ data.quoteText }}"</p>
@@ -91,11 +91,11 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6">
         <div class="max-w-6xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> History.log</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white tracking-tighter">Timeline</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white tracking-tighter">Timeline</h2>
           </div>
 
           <div class="space-y-12">
@@ -122,8 +122,8 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
-        <div class="max-w-5xl mx-auto space-y-32">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6">
+        <div class="max-w-5xl mx-auto space-y-16 md:space-y-24">
           
           <div class="flex flex-col md:flex-row items-center gap-12 md:gap-20" v-observe>
             <div class="w-full md:w-1/2 relative group">
@@ -135,7 +135,7 @@
             </div>
             <div class="w-full md:w-1/2 text-center md:text-left space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#ff003c]">Player 1</span>
-              <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.groomName }}</h3>
+              <h3 class="text-3xl md:text-4xl font-mono font-black uppercase text-white">{{ data.groomName }}</h3>
               <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Son of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#ff003c] text-[10px] uppercase font-mono tracking-widest font-bold text-[#ff003c] hover:bg-[#ff003c] hover:text-white transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
@@ -151,7 +151,7 @@
             </div>
             <div class="w-full md:w-1/2 text-center md:text-right space-y-6">
               <span class="text-[10px] uppercase font-mono tracking-[0.5em] font-bold text-[#00f0ff]">Player 2</span>
-              <h3 class="text-4xl md:text-6xl font-mono font-black uppercase text-white">{{ data.brideName }}</h3>
+              <h3 class="text-3xl md:text-4xl font-mono font-black uppercase text-white">{{ data.brideName }}</h3>
               <p class="text-xs font-mono text-[#94a3b8] uppercase tracking-widest">Daughter of <br><span class="font-bold text-[#e2e8f0]">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</span></p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 px-6 py-3 border border-[#00f0ff] text-[10px] uppercase font-mono tracking-widest font-bold text-[#00f0ff] hover:bg-[#00f0ff] hover:text-black transition-colors"><i class="fa-brands fa-instagram mr-2"></i>Connect</a>
             </div>
@@ -160,11 +160,11 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 border-y border-white/5 bg-[#050508]">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 border-y border-white/5 bg-[#050508]">
         <div class="max-w-5xl mx-auto relative z-10">
           <div class="text-center mb-20 space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> Timeline</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Acara</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white">Acara</h2>
           </div>
           
           <div class="grid md:grid-cols-2 gap-10">
@@ -224,11 +224,11 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-32 px-4">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4">
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Logs</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Galeri</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white">Galeri</h2>
           </div>
           <div class="p-6 bg-[#0a0a12] border border-white/5">
              <GalleryInvitation :items="galleryImages" />
@@ -237,7 +237,7 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6 border-y border-white/5 bg-[#050508]">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 border-y border-white/5 bg-[#050508]">
         <div class="max-w-3xl mx-auto relative z-10">
           <div class="text-center mb-16 space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#00f0ff]">> Input Required</p>
@@ -284,11 +284,11 @@
       </section>
 
       <!-- GIFT -->
-      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-32 px-6 text-center">
+      <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-16 md:py-24 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Transaction</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Credits</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white">Credits</h2>
           </div>
           
           <div class="flex flex-wrap justify-center gap-8">

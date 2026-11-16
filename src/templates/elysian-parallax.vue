@@ -206,18 +206,18 @@
 
           <!-- Typography Couple Title (Floating in 3D Depth) -->
           <h1
-            class="text-5xl sm:text-7xl md:text-8xl font-serif text-[#f4eee1] leading-[1.08] tracking-tight drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)] mb-8"
+            class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-[#f4eee1] leading-snug tracking-tight drop-shadow-[0_10px_25px_rgba(0,0,0,0.8)] mb-8"
             v-observe
           >
             {{ data.groomName || 'Alexander' }}
             <br />
-            <span class="text-3xl sm:text-5xl md:text-6xl italic text-[#dfb974] font-serif">&amp;</span>
+            <span class="text-2xl sm:text-4xl md:text-5xl italic text-[#dfb974] font-serif">&amp;</span>
             <br />
             {{ data.brideName || 'Seraphina' }}
           </h1>
 
           <!-- Middle Layer: 3D Arch Framed Photo -->
-          <div class="relative w-64 sm:w-80 md:w-96 aspect-[3/4] mb-8 group" v-observe>
+          <div class="relative w-56 sm:w-64 md:w-72 aspect-[3/4] mb-8 group" v-observe>
             <!-- Golden Arch Frame SVG Overlay -->
             <img
               src="/assets/images/elysian/arch-frame-gold.svg"
@@ -316,7 +316,7 @@
       <!-- ============================================================ -->
       <!-- SECTION 3: COUPLE PROFILE                                     -->
       <!-- ============================================================ -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6 relative bg-[#121713]">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6 relative bg-[#121713]">
         <div class="max-w-5xl mx-auto space-y-24">
           <!-- Section Title -->
           <div class="text-center space-y-3" v-observe>
@@ -455,7 +455,7 @@
       <!-- ============================================================ -->
       <!-- SECTION 5: EVENT DETAILS (AKAD & RESEPSI)                     -->
       <!-- ============================================================ -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 bg-[#121713] relative">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 bg-[#121713] relative">
         <div class="max-w-5xl mx-auto space-y-20">
           <div class="text-center space-y-3" v-observe>
             <p class="text-[10px] uppercase font-bold tracking-[0.35em] text-[#dfb974]">Rangkaian Acara</p>
@@ -563,7 +563,7 @@
       <section
         id="story"
         v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)"
-        class="py-32 px-6 bg-[#161d18] relative"
+        class="py-16 md:py-24 px-6 bg-[#161d18] relative"
       >
         <div class="max-w-4xl mx-auto space-y-20">
           <div class="text-center space-y-3" v-observe>
@@ -605,7 +605,7 @@
       <!-- ============================================================ -->
       <!-- SECTION 7: GALLERY                                            -->
       <!-- ============================================================ -->
-      <section id="gallery" v-if="isSectionEnabled('gallery')" class="py-32 px-6 bg-[#121713] relative">
+      <section id="gallery" v-if="isSectionEnabled('gallery')" class="py-16 md:py-24 px-6 bg-[#121713] relative">
         <div class="max-w-6xl mx-auto space-y-16">
           <div class="text-center space-y-3" v-observe>
             <p class="text-[10px] uppercase font-bold tracking-[0.35em] text-[#dfb974]">Kenangan Indah</p>
@@ -625,7 +625,7 @@
       <!-- ============================================================ -->
       <!-- SECTION 8: DIGITAL GIFT / ENVELOPE                            -->
       <!-- ============================================================ -->
-      <section id="gift" v-if="isSectionEnabled('gift')" class="py-32 px-6 bg-[#161d18] relative">
+      <section id="gift" v-if="isSectionEnabled('gift')" class="py-16 md:py-24 px-6 bg-[#161d18] relative">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-3" v-observe>
             <p class="text-[10px] uppercase font-bold tracking-[0.35em] text-[#dfb974]">Tanda Kasih</p>
@@ -671,7 +671,7 @@
       <!-- ============================================================ -->
       <!-- SECTION 9: RSVP & WELL WISHES                                -->
       <!-- ============================================================ -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6 bg-[#121713] relative">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 bg-[#121713] relative">
         <div class="max-w-3xl mx-auto space-y-16">
           <div class="text-center space-y-3" v-observe>
             <p class="text-[10px] uppercase font-bold tracking-[0.35em] text-[#dfb974]">Konfirmasi Kehadiran</p>

@@ -56,8 +56,8 @@
 
           <div class="space-y-6 pt-10">
             <span class="inline-block px-4 py-1 bg-[#2c2c2c] text-[#fdfbf7] text-[10px] font-bold uppercase tracking-widest rounded-full">A Love Story</span>
-            <h1 class="text-6xl md:text-8xl font-serif font-black uppercase leading-none text-center">
-              {{ data.groomName }} <br><span class="text-[#e06d53]">&</span><br> {{ data.brideName }}
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black uppercase leading-tight text-center">
+              {{ data.groomName }} <br><span class="text-3xl md:text-5xl text-[#e06d53]">&</span><br> {{ data.brideName }}
             </h1>
             <p class="text-sm font-bold uppercase tracking-[0.3em] text-[#e06d53]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
           </div>
@@ -65,7 +65,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-32 px-6 bg-[#2c2c2c] text-[#fdfbf7]" v-observe>
+      <section class="py-16 md:py-24 px-6 bg-[#2c2c2c] text-[#fdfbf7]" v-observe>
         <div class="max-w-3xl mx-auto text-center space-y-8 relative">
           <i class="fa-solid fa-quote-left text-6xl text-[#e06d53] opacity-50 absolute -top-10 -left-6 md:-left-10"></i>
           <p class="text-2xl md:text-4xl font-serif font-bold leading-tight relative z-10">"{{ data.quoteText }}"</p>
@@ -75,10 +75,10 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-5xl mx-auto space-y-20">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase italic">Our Story</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase italic">Our Story</h2>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
 
@@ -119,14 +119,14 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6 relative overflow-hidden">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6 relative overflow-hidden">
         <div class="absolute top-20 left-10 w-32 h-32 border-4 border-dashed border-[#e06d53]/20 rounded-full animate-spin-slow"></div>
-        <div class="max-w-5xl mx-auto space-y-32">
+        <div class="max-w-5xl mx-auto space-y-16 md:space-y-24">
           
           <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center" v-observe>
             <div class="order-2 md:order-1 space-y-6 bg-white p-8 border-2 border-[#2c2c2c] shadow-[8px_8px_0px_0px_rgba(44,44,44,1)] rotate-[-1deg]">
               <span class="inline-block px-3 py-1 bg-[#e06d53] text-white text-[10px] font-bold uppercase tracking-widest">The Groom</span>
-              <h3 class="text-5xl font-serif font-black uppercase">{{ data.groomName }}</h3>
+              <h3 class="text-3xl md:text-4xl font-serif font-black uppercase">{{ data.groomName }}</h3>
               <p class="text-sm font-bold text-gray-500">Putra dari Bpk. {{ data.parents?.groomParents?.split('&')[0] }} <br>& Ibu {{ data.parents?.groomParents?.split('&')[1] }}</p>
               <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] hover:text-[#e06d53] underline decoration-2 underline-offset-4"><i class="fa-brands fa-instagram mr-2"></i>@{{ data.socialMediaGroom.instagram }}</a>
             </div>
@@ -143,7 +143,7 @@
             </div>
             <div class="space-y-6 bg-white p-8 border-2 border-[#2c2c2c] shadow-[-8px_8px_0px_0px_rgba(44,44,44,1)] rotate-[1deg]">
               <span class="inline-block px-3 py-1 bg-[#e06d53] text-white text-[10px] font-bold uppercase tracking-widest">The Bride</span>
-              <h3 class="text-5xl font-serif font-black uppercase">{{ data.brideName }}</h3>
+              <h3 class="text-3xl md:text-4xl font-serif font-black uppercase">{{ data.brideName }}</h3>
               <p class="text-sm font-bold text-gray-500">Putri dari Bpk. {{ data.parents?.brideParents?.split('&')[0] }} <br>& Ibu {{ data.parents?.brideParents?.split('&')[1] }}</p>
               <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-xs font-bold uppercase tracking-widest text-[#2c2c2c] hover:text-[#e06d53] underline decoration-2 underline-offset-4"><i class="fa-brands fa-instagram mr-2"></i>@{{ data.socialMediaBrides.instagram }}</a>
             </div>
@@ -152,7 +152,7 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-16 md:py-24 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
         <div class="max-w-4xl mx-auto space-y-12" v-observe>
           <div class="text-center">
              <h2 class="text-4xl font-serif font-black uppercase">Kami Yang Mengundang</h2>
@@ -167,10 +167,10 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 bg-[#e06d53] text-[#fdfbf7] relative">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 bg-[#e06d53] text-[#fdfbf7] relative">
         <div class="max-w-5xl mx-auto">
           <div class="text-center mb-20" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">Schedule</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">Schedule</h2>
             <div class="w-24 h-2 bg-[#2c2c2c] mx-auto mt-6"></div>
           </div>
           
@@ -229,10 +229,10 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-32 px-4 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">Memories</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">Memories</h2>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
           <div class="p-4 md:p-8 bg-white border-4 border-[#2c2c2c] shadow-[16px_16px_0px_0px_rgba(224,109,83,1)]">
@@ -242,10 +242,10 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
         <div class="max-w-3xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">R.S.V.P</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">R.S.V.P</h2>
             <p class="text-sm font-bold uppercase tracking-widest text-gray-400 mt-4">We'd love to see you there</p>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
@@ -286,7 +286,7 @@
       </section>
 
       <!-- VIDEO PREWEDDING -->
-      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-32 px-6 bg-[#fdfbf7]">
+      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-16 md:py-24 px-6 bg-[#fdfbf7]">
         <div class="max-w-4xl mx-auto text-center">
           <h2 class="text-4xl font-serif font-black uppercase text-[#2c2c2c] mb-10" v-observe>Video Prewedding</h2>
           <div class="relative w-full aspect-video overflow-hidden border-4 border-[#2c2c2c] shadow-[8px_8px_0px_0px_rgba(224,109,83,1)]">
@@ -296,7 +296,7 @@
       </section>
 
       <!-- MENU -->
-      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-32 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
+      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-16 md:py-24 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
         <div class="max-w-3xl mx-auto text-center">
           <h2 class="text-4xl font-serif font-black uppercase text-[#fdfbf7] mb-10" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
           <div class="grid gap-4 md:grid-cols-2">
@@ -309,10 +309,10 @@
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-32 px-6 text-center bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-16 md:py-24 px-6 text-center bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">Wedding Gift</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">Wedding Gift</h2>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
           
@@ -333,8 +333,8 @@
         </div>
       </section>
 
-      <footer class="py-24 text-center bg-[#2c2c2c] text-[#fdfbf7] space-y-6 pb-32 md:pb-24 border-t-8 border-[#e06d53]">
-        <h2 class="font-serif text-5xl font-black uppercase">{{ data.groomName }} & {{ data.brideName }}</h2>
+      <footer class="py-16 md:py-24 text-center bg-[#2c2c2c] text-[#fdfbf7] space-y-6 pb-24 border-t-8 border-[#e06d53]">
+        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl font-black uppercase">{{ data.groomName }} & {{ data.brideName }}</h2>
         <WatermarkBadge variant="dark" />
       </footer>
     </div>

@@ -71,11 +71,11 @@
               >The Wedding Of</span
             >
             <div class="flex flex-col items-center">
-              <h2 class="text-5xl md:text-7xl font-shippori text-[#5e3a45]">
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-shippori text-[#5e3a45]">
                 {{ data.groomName }}
               </h2>
-              <span class="text-2xl text-[#d6336c] my-1 font-shippori">& </span>
-              <h2 class="text-5xl md:text-7xl font-shippori text-[#5e3a45]">
+              <span class="text-xl text-[#d6336c] my-1 font-shippori">& </span>
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-shippori text-[#5e3a45]">
                 {{ data.brideName }}
               </h2>
             </div>
@@ -118,9 +118,9 @@
       >
         <div class="space-y-8 max-w-2xl mx-auto" v-observe>
           <SakuraFlower class="w-10 h-10 mx-auto text-[#d6336c]" />
-          <h1 class="text-5xl md:text-8xl font-shippori leading-tight text-[#5e3a45]">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-shippori leading-snug text-[#5e3a45]">
             <span class="block">{{ data.groomName }}</span>
-            <span class="block text-4xl md:text-6xl text-[#d6336c] font-shippori my-2">&</span>
+            <span class="block text-2xl md:text-4xl text-[#d6336c] font-shippori my-2">&</span>
             <span class="block">{{ data.brideName }}</span>
           </h1>
           <p class="text-sm md:text-base text-[#d6336c] font-bold tracking-[0.3em] uppercase">
@@ -144,7 +144,7 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-32 px-6 bg-white/40" v-observe>
+      <section class="py-16 md:py-24 px-6 bg-white/40" v-observe>
         <div class="max-w-2xl mx-auto text-center border-l-4 border-[#ffb6c1] pl-8">
           <p class="text-xl md:text-3xl text-[#5e3a45] italic leading-snug font-shippori mb-6">
             "{{ data.quoteText }}"
@@ -159,7 +159,7 @@
       <section
         id="story"
         v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)"
-        class="py-32 px-6 bg-[#fff8fa]"
+        class="py-16 md:py-24 px-6 bg-[#fff8fa]"
       >
         <div class="max-w-4xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
@@ -213,7 +213,7 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6">
         <div class="max-w-5xl mx-auto">
           <div class="text-center space-y-4 mb-24" v-observe>
             <span class="text-[10px] uppercase tracking-[0.4em] text-[#d6336c] font-bold"
@@ -301,7 +301,7 @@
       <!-- EXTENDED FAMILY -->
       <section
         v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length"
-        class="py-32 px-6 bg-white/40 text-center border-y border-[#ffb6c1]/30"
+        class="py-16 md:py-24 px-6 bg-white/40 text-center border-y border-[#ffb6c1]/30"
       >
         <div class="max-w-4xl mx-auto space-y-12" v-observe>
           <h3 class="text-2xl md:text-4xl font-shippori italic text-[#5e3a45]">Keluarga Besar</h3>
@@ -321,11 +321,11 @@
       <section
         id="event"
         v-if="isSectionEnabled('event')"
-        class="py-32 px-6 bg-[#4a2530] text-[#fbe4ec] rounded-[4rem] mx-4 md:mx-10 my-10"
+        class="py-16 md:py-24 px-6 bg-[#4a2530] text-[#fbe4ec] rounded-[4rem] mx-4 md:mx-10 my-10"
       >
         <div class="max-w-4xl mx-auto text-center space-y-20">
           <div class="space-y-4">
-            <h2 class="text-4xl md:text-6xl font-shippori italic" v-observe>Acara Pernikahan</h2>
+            <h2 class="text-3xl md:text-5xl font-shippori italic" v-observe>Acara Pernikahan</h2>
             <p class="text-[#ffb6c1] text-sm tracking-[0.3em] uppercase" v-observe>Save The Date</p>
           </div>
 
@@ -435,14 +435,14 @@
       <section
         id="gallery"
         v-if="isSectionEnabled('gallery') && galleryImages.length"
-        class="py-32 px-4 bg-[#fff8fa]"
+        class="py-16 md:py-24 px-4 bg-[#fff8fa]"
       >
         <div class="max-w-6xl mx-auto">
           <div class="flex flex-col items-center mb-20 space-y-4 text-center">
             <span class="text-[10px] uppercase tracking-[0.4em] text-[#d6336c] font-bold" v-observe
               >Gallery</span
             >
-            <h2 class="text-4xl md:text-6xl font-shippori italic text-[#5e3a45]" v-observe>
+            <h2 class="text-3xl md:text-5xl font-shippori italic text-[#5e3a45]" v-observe>
               Galeri Momen
             </h2>
             <SakuraFlower class="w-8 h-8 text-[#ffb6c1]" />
@@ -452,7 +452,7 @@
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6">
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6">
         <div
           class="max-w-xl mx-auto bg-white rounded-[3rem] p-10 md:p-16 shadow-sm border border-[#ffb6c1]/30"
           v-observe
@@ -527,7 +527,7 @@
       <!-- VIDEO PREWEDDING -->
       <section
         v-if="data.videoPrewedding && isSectionEnabled('video')"
-        class="py-32 px-6 bg-[#fff8fa]"
+        class="py-16 md:py-24 px-6 bg-[#fff8fa]"
       >
         <div class="max-w-4xl mx-auto text-center">
           <h2 class="text-3xl font-shippori italic text-[#5e3a45] mb-10" v-observe>
@@ -549,7 +549,7 @@
       <!-- MENU -->
       <section
         v-if="data.menu?.items?.length && isSectionEnabled('menu')"
-        class="py-32 px-6 bg-white/40"
+        class="py-16 md:py-24 px-6 bg-white/40"
       >
         <div class="max-w-3xl mx-auto text-center">
           <h2 class="text-3xl font-shippori italic text-[#5e3a45] mb-10" v-observe>
@@ -572,7 +572,7 @@
       <section
         v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)"
         id="gift"
-        class="py-32 px-6 text-center bg-[#fff8fa]"
+        class="py-16 md:py-24 px-6 text-center bg-[#fff8fa]"
       >
         <h2 class="text-3xl font-shippori italic text-[#5e3a45] mb-4" v-observe>
           Hadiah Pernikahan
@@ -614,7 +614,7 @@
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-32 bg-white text-center rounded-t-[4rem]">
+      <footer class="py-16 md:py-24 bg-white text-center rounded-t-[4rem]">
         <SakuraFlower class="w-10 h-10 mx-auto mb-6 text-[#ffb6c1]" />
         <h2 class="font-shippori italic text-5xl text-[#5e3a45] mb-4">
           {{ data.groomName }}
