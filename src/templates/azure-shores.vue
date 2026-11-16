@@ -68,7 +68,7 @@
                <i class="fa-solid fa-sun text-[#ffb703]"></i>
                <span class="text-[8px] font-bold uppercase tracking-[0.3em] text-[#60a5fa]">Summer Wedding</span>
             </div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-serif leading-tight text-[#1e3a8a]">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-serif leading-tight text-[#1e3a8a]">
               {{ data.groomName }} <br><span class="text-3xl md:text-4xl italic text-[#ffb703]">&</span><br> {{ data.brideName }}
             </h1>
             <p class="text-xs md:text-sm font-bold uppercase tracking-[0.4em] text-[#3b82f6]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
@@ -101,7 +101,7 @@
       <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 relative">
         <div class="max-w-7xl mx-auto space-y-20">
           <div class="text-center" v-observe>
-            <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Our Voyage</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1e3a8a] mb-4">Our Voyage</h2>
             <div class="w-16 h-1 bg-[#ffb703] mx-auto rounded-full"></div>
           </div>
 
@@ -180,7 +180,7 @@
         <div class="absolute inset-0 bg-[#e0f2fe]/50 -skew-y-3 origin-top-left z-0"></div>
         <div class="max-w-5xl mx-auto relative z-10">
           <div class="text-center mb-20" v-observe>
-            <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">When & Where</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1e3a8a] mb-4">When & Where</h2>
             <div class="w-16 h-1 bg-[#ffb703] mx-auto rounded-full"></div>
           </div>
           
@@ -242,7 +242,7 @@
       <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4">
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Captured Moments</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1e3a8a] mb-4">Captured Moments</h2>
             <div class="w-16 h-1 bg-[#ffb703] mx-auto rounded-full"></div>
           </div>
           <div class="p-6 bg-white rounded-[40px] shadow-xl border border-[#e0f2fe]">
@@ -299,7 +299,7 @@
       <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-16 md:py-24 px-6 text-center">
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-5xl md:text-6xl font-serif text-[#1e3a8a] mb-4">Wedding Gift</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1e3a8a] mb-4">Wedding Gift</h2>
             <div class="w-16 h-1 bg-[#ffb703] mx-auto rounded-full"></div>
           </div>
           

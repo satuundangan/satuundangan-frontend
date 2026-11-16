@@ -60,7 +60,7 @@
         <div class="relative z-10 space-y-8 animate-fade-in-up max-w-lg mx-auto">
           <div class="space-y-2">
             <p class="font-serif italic text-[#657b62] tracking-[0.4em] uppercase text-xs md:text-sm">The Wedding Of</p>
-            <h1 class="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-[#4e604d] leading-snug drop-shadow-sm py-2">
+            <h1 class="font-script text-3xl sm:text-4xl md:text-5xl lg:text-6xl text-[#4e604d] leading-snug drop-shadow-sm py-2">
               {{ data.groomName?.split(' ')[0] || data.groomName }} &amp; {{ data.brideName?.split(' ')[0] || data.brideName }}
             </h1>
           </div>
@@ -89,7 +89,7 @@
 
         <div class="space-y-6 max-w-2xl mx-auto relative z-10" v-observe>
           <span class="inline-block px-4 py-1 border-y border-[#c5d3c3] text-[10px] uppercase tracking-[0.4em] text-[#657b62] font-bold">Save The Date</span>
-          <h1 class="font-script text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-snug text-[#3e4d3e]">
+          <h1 class="font-script text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-snug text-[#3e4d3e]">
             {{ data.groomName }} <br> <span class="text-2xl md:text-3xl text-[#c5a059]">&</span> <br> {{ data.brideName }}
           </h1>
           <p class="font-serif text-base md:text-lg text-[#4e604d] tracking-[0.2em] uppercase">
@@ -126,7 +126,7 @@
       <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-24 px-6 bg-[#eef2ee]/40">
         <div class="max-w-4xl mx-auto">
           <div class="text-center mb-16" v-observe>
-            <h2 class="font-script text-5xl md:text-6xl text-[#4e604d] mb-2">Cerita Kita</h2>
+            <h2 class="font-script text-3xl md:text-5xl text-[#4e604d] mb-2">Cerita Kita</h2>
             <div class="w-16 h-px bg-[#c5a059] mx-auto"></div>
           </div>
 
@@ -164,7 +164,7 @@
       <section id="couple" v-if="isSectionEnabled('couple')" class="py-24 px-6 bg-[#fdfbf7]">
         <div class="max-w-5xl mx-auto text-center">
           <div class="mb-16" v-observe>
-            <h2 class="font-script text-5xl md:text-6xl text-[#4e604d] mb-2">Mempelai</h2>
+            <h2 class="font-script text-3xl md:text-5xl text-[#4e604d] mb-2">Mempelai</h2>
             <div class="w-16 h-px bg-[#c5a059] mx-auto"></div>
           </div>
 
@@ -234,7 +234,7 @@
       <section id="event" v-if="isSectionEnabled('event')" class="py-24 px-6 relative bg-[#fdfbf7]">
         <div class="max-w-4xl mx-auto text-center space-y-12">
           <div v-observe>
-            <h2 class="font-script text-5xl md:text-6xl text-[#4e604d] mb-2">Waktu &amp; Tempat</h2>
+            <h2 class="font-script text-3xl md:text-5xl text-[#4e604d] mb-2">Waktu &amp; Tempat</h2>
             <div class="w-16 h-px bg-[#c5a059] mx-auto"></div>
           </div>
 
@@ -302,7 +302,7 @@
       <!-- GALLERY -->
       <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-24 px-4 bg-[#3e4d3e]">
         <div class="text-center mb-12" v-observe>
-          <h2 class="font-script text-5xl md:text-6xl text-[#eef2ee] mb-2">Galeri Momen</h2>
+          <h2 class="font-script text-3xl md:text-5xl text-[#eef2ee] mb-2">Galeri Momen</h2>
           <div class="w-16 h-px bg-[#a3b6a0] mx-auto"></div>
         </div>
         <div class="max-w-6xl mx-auto">
@@ -392,7 +392,7 @@
       <!-- GIFT -->
       <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-24 px-6 text-center bg-[#fdfbf7]">
         <div v-observe>
-          <h2 class="font-script text-5xl md:text-6xl text-[#4e604d] mb-2">Wedding Gift</h2>
+          <h2 class="font-script text-3xl md:text-5xl text-[#4e604d] mb-2">Wedding Gift</h2>
           <div class="w-16 h-px bg-[#c5a059] mx-auto mb-4"></div>
         </div>
         <p class="text-[#657b62] mb-12 max-w-md mx-auto text-sm">Doa restu Anda sudah lebih dari cukup bagi kami, namun jika ingin memberikan tanda kasih, silakan melalui:</p>
@@ -439,7 +439,7 @@
         </svg>
         <div class="relative z-10">
           <p class="font-serif italic text-[#4e604d] text-lg mb-4">Terima Kasih</p>
-          <h2 class="font-script text-5xl md:text-6xl text-[#3e4d3e] mb-4">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
+          <h2 class="font-script text-3xl md:text-5xl text-[#3e4d3e] mb-4">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
           <p v-if="data.footerText" class="text-[#657b62] text-sm mb-8 max-w-lg mx-auto px-6 italic">{{ data.footerText }}</p>
           <div class="w-16 h-px bg-[#c5a059] mx-auto mb-8"></div>
           <WatermarkBadge variant="light" />

@@ -63,7 +63,7 @@
                <i class="fa-solid fa-microchip text-[#00f0ff] animate-pulse"></i>
                <span class="text-[8px] font-bold uppercase tracking-[0.4em] text-[#e2e8f0]">Connection Established</span>
             </div>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl font-mono font-black uppercase leading-tight text-white drop-shadow-[2px_2px_0px_#ff003c,-2px_-2px_0px_#00f0ff]">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-mono font-black uppercase leading-tight text-white drop-shadow-[2px_2px_0px_#ff003c,-2px_-2px_0px_#00f0ff]">
               {{ data.groomName }} <br><span class="text-3xl md:text-4xl text-[#facc15] drop-shadow-none">&</span><br> {{ data.brideName }}
             </h1>
             <p class="text-xs md:text-sm font-mono font-bold uppercase tracking-[0.5em] text-[#00f0ff]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
@@ -95,7 +95,7 @@
         <div class="max-w-6xl mx-auto space-y-24">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> History.log</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white tracking-tighter">Timeline</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white tracking-tighter">Timeline</h2>
           </div>
 
           <div class="space-y-12">
@@ -164,7 +164,7 @@
         <div class="max-w-5xl mx-auto relative z-10">
           <div class="text-center mb-20 space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#ff003c]">> Timeline</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Acara</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white">Acara</h2>
           </div>
           
           <div class="grid md:grid-cols-2 gap-10">
@@ -228,7 +228,7 @@
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Logs</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Galeri</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white">Galeri</h2>
           </div>
           <div class="p-6 bg-[#0a0a12] border border-white/5">
              <GalleryInvitation :items="galleryImages" />
@@ -288,7 +288,7 @@
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
             <p class="text-[10px] font-mono uppercase tracking-[0.5em] text-[#facc15]">> Transaction</p>
-            <h2 class="text-5xl md:text-6xl font-mono font-black uppercase text-white">Credits</h2>
+            <h2 class="text-3xl md:text-5xl font-mono font-black uppercase text-white">Credits</h2>
           </div>
           
           <div class="flex flex-wrap justify-center gap-8">

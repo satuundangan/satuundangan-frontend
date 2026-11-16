@@ -325,7 +325,7 @@
       >
         <div class="max-w-4xl mx-auto text-center space-y-20">
           <div class="space-y-4">
-            <h2 class="text-4xl md:text-6xl font-shippori italic" v-observe>Acara Pernikahan</h2>
+            <h2 class="text-3xl md:text-5xl font-shippori italic" v-observe>Acara Pernikahan</h2>
             <p class="text-[#ffb6c1] text-sm tracking-[0.3em] uppercase" v-observe>Save The Date</p>
           </div>
 
@@ -442,7 +442,7 @@
             <span class="text-[10px] uppercase tracking-[0.4em] text-[#d6336c] font-bold" v-observe
               >Gallery</span
             >
-            <h2 class="text-4xl md:text-6xl font-shippori italic text-[#5e3a45]" v-observe>
+            <h2 class="text-3xl md:text-5xl font-shippori italic text-[#5e3a45]" v-observe>
               Galeri Momen
             </h2>
             <SakuraFlower class="w-8 h-8 text-[#ffb6c1]" />
