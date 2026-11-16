@@ -45,9 +45,9 @@
           <div class="space-y-4">
             <h1 class="text-[10px] md:text-xs tracking-[0.6em] uppercase text-[#d4af37] font-bold">The Royal Wedding Of</h1>
             <div class="flex flex-col items-center gap-2">
-              <h2 class="text-5xl md:text-7xl font-cinzel text-white drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)]">{{ data.groomName }}</h2>
+              <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel text-white drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)] leading-tight max-w-xl mx-auto">{{ data.groomName }}</h2>
               <div class="w-20 h-px bg-gradient-to-r from-transparent via-[#d4af37] to-transparent"></div>
-              <h2 class="text-5xl md:text-7xl font-cinzel text-white drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)]">{{ data.brideName }}</h2>
+              <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-cinzel text-white drop-shadow-[0_2px_10px_rgba(212,175,55,0.3)] leading-tight max-w-xl mx-auto">{{ data.brideName }}</h2>
             </div>
           </div>
 
@@ -69,24 +69,24 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
-        <div class="space-y-8 max-w-3xl mx-auto" v-observe>
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative py-20">
+        <div class="space-y-6 max-w-3xl mx-auto" v-observe>
           <div class="flex items-center justify-center gap-4">
              <div class="w-12 h-px bg-[#d4af37]/50"></div>
              <span class="text-[10px] uppercase tracking-[0.5em] text-[#d4af37] font-bold">Est. 2026</span>
              <div class="w-12 h-px bg-[#d4af37]/50"></div>
           </div>
-          <h1 class="text-6xl md:text-9xl font-cinzel leading-tight text-white">
-            {{ data.groomName }} <br> <span class="text-4xl text-[#d4af37]">&</span> <br> {{ data.brideName }}
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-cinzel leading-snug text-white tracking-wide">
+            {{ data.groomName }} <br> <span class="text-2xl md:text-3xl text-[#d4af37] italic my-2 inline-block font-serif">&</span> <br> {{ data.brideName }}
           </h1>
-          <p class="text-lg md:text-2xl text-[#d4af37] font-medium tracking-[0.3em] uppercase">
+          <p class="text-base md:text-xl text-[#d4af37] font-medium tracking-[0.3em] uppercase">
             {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
           </p>
 
           <!-- Countdown -->
-          <div class="grid grid-cols-4 gap-4 md:gap-10 mt-16 max-w-md mx-auto">
-            <div v-for="(val, label) in countdown" :key="label" class="p-4 border border-[#d4af37]/30 rounded-lg bg-white/5">
-              <div class="text-2xl md:text-4xl font-cinzel text-white">{{ val }}</div>
+          <div class="grid grid-cols-4 gap-3 md:gap-8 mt-10 md:mt-12 max-w-md mx-auto">
+            <div v-for="(val, label) in countdown" :key="label" class="p-3 md:p-4 border border-[#d4af37]/30 rounded-lg bg-white/5">
+              <div class="text-xl md:text-3xl font-cinzel text-white">{{ val }}</div>
               <div class="text-[8px] uppercase tracking-widest text-[#d4af37] mt-1">{{ label }}</div>
             </div>
           </div>
@@ -94,27 +94,27 @@
       </section>
 
       <!-- QUOTE -->
-      <section class="py-32 px-6 relative bg-[#080e20]" v-observe>
+      <section class="py-16 md:py-24 px-6 relative bg-[#080e20]" v-observe>
         <div class="max-w-3xl mx-auto text-center">
-          <div class="text-[#d4af37] mb-8 flex justify-center">
-             <i class="fa-solid fa-crown text-3xl opacity-50"></i>
+          <div class="text-[#d4af37] mb-6 flex justify-center">
+             <i class="fa-solid fa-crown text-2xl md:text-3xl opacity-50"></i>
           </div>
-          <p class="text-lg md:text-2xl text-gray-300 italic leading-relaxed font-light mb-8 px-4 font-serif">
+          <p class="text-base md:text-xl text-gray-300 italic leading-relaxed font-light mb-6 px-4 font-serif">
             "{{ data.quoteText }}"
           </p>
-          <p class="text-sm font-bold text-[#d4af37] tracking-[0.4em] uppercase">{{ data.quoteSource }}</p>
+          <p class="text-xs md:text-sm font-bold text-[#d4af37] tracking-[0.4em] uppercase">{{ data.quoteSource }}</p>
         </div>
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[#0a1128]">
-        <div class="max-w-5xl mx-auto space-y-24">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 bg-[#0a1128]">
+        <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
-            <h2 class="text-4xl md:text-6xl font-cinzel text-white">Our Heritage</h2>
+            <h2 class="text-3xl md:text-4xl font-cinzel text-white">Our Heritage</h2>
             <div class="w-16 h-px bg-[#d4af37] mx-auto"></div>
           </div>
 
-          <div class="space-y-16">
+          <div class="space-y-12">
             <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative group" v-observe>
                <div class="grid md:grid-cols-12 gap-8 md:gap-16 items-center">
                   <div class="md:col-span-4" :class="idx % 2 === 0 ? '' : 'md:order-last'">
@@ -125,8 +125,8 @@
                   </div>
                   <div class="md:col-span-8 space-y-4" :class="idx % 2 === 0 ? 'text-left' : 'text-left md:text-right'">
                      <span class="text-[#d4af37] font-cinzel text-xl tracking-widest">{{ story.date }}</span>
-                     <h3 class="text-2xl md:text-4xl font-serif text-white uppercase tracking-tighter">{{ story.title }}</h3>
-                     <p class="text-gray-400 text-sm md:text-lg leading-relaxed font-serif italic">{{ story.description }}</p>
+                     <h3 class="text-2xl md:text-3xl font-serif text-white uppercase tracking-tighter">{{ story.title }}</h3>
+                     <p class="text-gray-400 text-sm md:text-base leading-relaxed font-serif italic">{{ story.description }}</p>
                   </div>
                </div>
             </div>
@@ -135,26 +135,26 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6 bg-[#0a1128]">
-        <div class="max-w-6xl mx-auto">
-          <h2 class="text-4xl md:text-6xl font-cinzel text-center text-white mb-24" v-observe>Mempelai</h2>
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6 bg-[#0a1128]">
+        <div class="max-w-5xl mx-auto">
+          <h2 class="text-3xl md:text-4xl font-cinzel text-center text-white mb-10 md:mb-14" v-observe>Mempelai</h2>
           
-          <div class="grid md:grid-cols-2 gap-20 items-center">
+          <div class="grid md:grid-cols-2 gap-10 md:gap-12 lg:gap-16 items-start">
             <!-- Groom -->
-            <div class="flex flex-col items-center gap-8" v-observe>
+            <div class="flex flex-col items-center gap-6" v-observe>
               <div class="relative group">
-                <div class="absolute inset-0 border-2 border-[#d4af37] -m-4 rounded-xl group-hover:m-0 transition-all duration-500"></div>
-                <div class="w-64 h-80 md:w-80 md:h-[450px] overflow-hidden rounded-lg shadow-2xl relative">
-                  <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x600'" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000" />
+                <div class="absolute inset-0 border-2 border-[#d4af37] -m-3 rounded-xl group-hover:m-0 transition-all duration-500"></div>
+                <div class="w-44 h-60 sm:w-52 sm:h-68 md:w-56 md:h-76 lg:w-64 lg:h-84 overflow-hidden rounded-lg shadow-2xl relative">
+                  <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x600'" class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-1000" />
                   <div class="absolute inset-0 bg-gradient-to-t from-[#0a1128] via-transparent to-transparent opacity-60"></div>
                 </div>
               </div>
-              <div class="text-center space-y-2">
-                <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.groomName }}</h3>
-                <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putra Dari</p>
-                <p class="text-gray-400 font-serif">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
-                <div class="pt-4 flex justify-center">
-                   <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
+              <div class="text-center space-y-2 max-w-sm">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-cinzel text-white leading-snug">{{ data.groomName }}</h3>
+                <p class="text-[#d4af37] text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold">Putra Dari</p>
+                <p class="text-gray-400 font-serif text-sm md:text-base leading-relaxed">{{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
+                <div class="pt-2 flex justify-center">
+                   <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="w-9 h-9 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all text-sm">
                      <i class="fa-brands fa-instagram"></i>
                    </a>
                 </div>
@@ -162,20 +162,20 @@
             </div>
 
             <!-- Bride -->
-            <div class="flex flex-col items-center gap-8" v-observe>
+            <div class="flex flex-col items-center gap-6" v-observe>
               <div class="relative group">
-                <div class="absolute inset-0 border-2 border-[#d4af37] -m-4 rounded-xl group-hover:m-0 transition-all duration-500"></div>
-                <div class="w-64 h-80 md:w-80 md:h-[450px] overflow-hidden rounded-lg shadow-2xl relative">
-                  <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x600'" class="w-full h-full object-cover scale-110 group-hover:scale-100 transition-transform duration-1000" />
+                <div class="absolute inset-0 border-2 border-[#d4af37] -m-3 rounded-xl group-hover:m-0 transition-all duration-500"></div>
+                <div class="w-44 h-60 sm:w-52 sm:h-68 md:w-56 md:h-76 lg:w-64 lg:h-84 overflow-hidden rounded-lg shadow-2xl relative">
+                  <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x600'" class="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-1000" />
                   <div class="absolute inset-0 bg-gradient-to-t from-[#0a1128] via-transparent to-transparent opacity-60"></div>
                 </div>
               </div>
-              <div class="text-center space-y-2">
-                <h3 class="text-3xl md:text-5xl font-cinzel text-white">{{ data.brideName }}</h3>
-                <p class="text-[#d4af37] text-xs uppercase tracking-[0.3em] font-bold">Putri Dari</p>
-                <p class="text-gray-400 font-serif">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
-                <div class="pt-4 flex justify-center">
-                   <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-10 h-10 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all">
+              <div class="text-center space-y-2 max-w-sm">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-cinzel text-white leading-snug">{{ data.brideName }}</h3>
+                <p class="text-[#d4af37] text-[10px] md:text-xs uppercase tracking-[0.3em] font-bold">Putri Dari</p>
+                <p class="text-gray-400 font-serif text-sm md:text-base leading-relaxed">{{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
+                <div class="pt-2 flex justify-center">
+                   <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="w-9 h-9 border border-[#d4af37]/50 rounded-full flex items-center justify-center text-[#d4af37] hover:bg-[#d4af37] hover:text-[#0a1128] transition-all text-sm">
                      <i class="fa-brands fa-instagram"></i>
                    </a>
                 </div>
@@ -186,11 +186,11 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-[#080e20] text-center">
-         <div class="max-w-4xl mx-auto space-y-12" v-observe>
-            <h3 class="text-2xl md:text-4xl font-cinzel text-[#d4af37] uppercase tracking-widest">Turut Mengundang</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-8 text-gray-300 font-serif">
-               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="border-b border-[#d4af37]/10 pb-4">
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-16 md:py-24 px-6 bg-[#080e20] text-center">
+         <div class="max-w-4xl mx-auto space-y-10" v-observe>
+            <h3 class="text-xl md:text-3xl font-cinzel text-[#d4af37] uppercase tracking-widest">Turut Mengundang</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-gray-300 font-serif">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="border-b border-[#d4af37]/10 pb-3">
                   {{ person }}
                </div>
             </div>
@@ -198,100 +198,100 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 bg-[#080e20]">
+      <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 bg-[#080e20]">
         <div class="max-w-5xl mx-auto text-center">
-          <h2 class="text-4xl md:text-6xl font-cinzel text-white mb-20" v-observe>Agenda Acara</h2>
+          <h2 class="text-3xl md:text-4xl font-cinzel text-white mb-12 md:mb-16" v-observe>Agenda Acara</h2>
           
-          <div class="grid md:grid-cols-2 gap-12">
-            <div class="relative group p-10 bg-white/5 border border-[#d4af37]/20 rounded-2xl space-y-8 hover:bg-[#d4af37]/5 transition-colors" v-observe>
-              <div class="text-[#d4af37]"><i class="fa-solid fa-ring text-4xl"></i></div>
-              <h3 class="text-3xl font-cinzel text-white tracking-widest">Akad Nikah</h3>
+          <div class="grid md:grid-cols-2 gap-8 md:gap-12">
+            <div class="relative group p-8 md:p-10 bg-white/5 border border-[#d4af37]/20 rounded-2xl space-y-6 md:space-y-8 hover:bg-[#d4af37]/5 transition-colors" v-observe>
+              <div class="text-[#d4af37]"><i class="fa-solid fa-ring text-3xl md:text-4xl"></i></div>
+              <h3 class="text-2xl md:text-3xl font-cinzel text-white tracking-widest">Akad Nikah</h3>
               <div class="space-y-2 text-[#d4af37] font-cinzel">
-                <p class="text-xl">{{ formatDate(data.akadLocation?.dateTime) }}</p>
-                <p class="text-lg">{{ formatTime(data.akadLocation?.dateTime) }} WIB</p>
+                <p class="text-lg md:text-xl">{{ formatDate(data.akadLocation?.dateTime) }}</p>
+                <p class="text-base md:text-lg">{{ formatTime(data.akadLocation?.dateTime) }} WIB</p>
               </div>
-              <p class="text-gray-400 font-serif italic">{{ data.akadLocation?.description }}</p>
+              <p class="text-gray-400 font-serif italic text-sm md:text-base">{{ data.akadLocation?.description }}</p>
               <a :href="data.akadLocation?.mapUrl" target="_blank"
-                class="inline-block px-10 py-3 bg-transparent border-2 border-[#d4af37] text-[#d4af37] font-black rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all text-[10px] uppercase tracking-[0.3em]">
+                class="inline-block px-8 py-3 bg-transparent border-2 border-[#d4af37] text-[#d4af37] font-black rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all text-[10px] uppercase tracking-[0.3em]">
                 Google Maps
               </a>
             </div>
 
-            <div v-if="!data.mergeEvents" class="relative group p-10 bg-white/5 border border-[#d4af37]/20 rounded-2xl space-y-8 hover:bg-[#d4af37]/5 transition-colors" v-observe>
-              <div class="text-[#d4af37]"><i class="fa-solid fa-champagne-glasses text-4xl"></i></div>
-              <h3 class="text-3xl font-cinzel text-white tracking-widest">Resepsi</h3>
+            <div v-if="!data.mergeEvents" class="relative group p-8 md:p-10 bg-white/5 border border-[#d4af37]/20 rounded-2xl space-y-6 md:space-y-8 hover:bg-[#d4af37]/5 transition-colors" v-observe>
+              <div class="text-[#d4af37]"><i class="fa-solid fa-champagne-glasses text-3xl md:text-4xl"></i></div>
+              <h3 class="text-2xl md:text-3xl font-cinzel text-white tracking-widest">Resepsi</h3>
               <div class="space-y-2 text-[#d4af37] font-cinzel">
-                <p class="text-xl">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>
-                <p class="text-lg">{{ formatTime(data.resepsiLocation?.dateTime) }} WIB</p>
+                <p class="text-lg md:text-xl">{{ formatDate(data.resepsiLocation?.dateTime) }}</p>
+                <p class="text-base md:text-lg">{{ formatTime(data.resepsiLocation?.dateTime) }} WIB</p>
               </div>
-              <p class="text-gray-400 font-serif italic">{{ data.resepsiLocation?.description }}</p>
+              <p class="text-gray-400 font-serif italic text-sm md:text-base">{{ data.resepsiLocation?.description }}</p>
               <a :href="data.resepsiLocation?.mapUrl" target="_blank"
-                class="inline-block px-10 py-3 bg-transparent border-2 border-[#d4af37] text-[#d4af37] font-black rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all text-[10px] uppercase tracking-[0.3em]">
+                class="inline-block px-8 py-3 bg-transparent border-2 border-[#d4af37] text-[#d4af37] font-black rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all text-[10px] uppercase tracking-[0.3em]">
                 Google Maps
               </a>
             </div>
           </div>
 
           <!-- DRESS CODE -->
-          <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="mt-20 text-center" v-observe>
-             <h3 class="text-xl font-cinzel text-[#d4af37] mb-6 tracking-widest">Dress Code</h3>
-             <div class="inline-block p-8 border border-[#d4af37]/30 bg-white/5 rounded-2xl px-12 max-w-md w-full">
+          <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="mt-14 md:mt-16 text-center" v-observe>
+             <h3 class="text-lg md:text-xl font-cinzel text-[#d4af37] mb-4 tracking-widest">Dress Code</h3>
+             <div class="inline-block p-6 md:p-8 border border-[#d4af37]/30 bg-white/5 rounded-2xl px-8 md:px-12 max-w-md w-full">
                 <i class="fa-solid fa-shirt text-[#d4af37] text-2xl mb-2 block"></i>
-                <p v-if="data.dressCode" class="text-white text-sm uppercase tracking-widest">{{ data.dressCode }}</p>
+                <p v-if="data.dressCode" class="text-white text-xs md:text-sm uppercase tracking-widest">{{ data.dressCode }}</p>
                 <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
              </div>
           </div>
 
           <!-- LIVE STREAMING -->
-          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
-             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-6 px-12 py-5 bg-[#d4af37] text-[#0a1128] font-black rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_30px_rgba(214,177,138,0.3)] group">
-                <i class="fa-solid fa-video text-xl animate-pulse"></i>
-                <span class="text-sm uppercase tracking-[0.3em]">Join Royal Celebration</span>
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-14 md:mt-16 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 md:gap-6 px-10 py-4 bg-[#d4af37] text-[#0a1128] font-black rounded-full hover:bg-white hover:scale-105 transition-all shadow-[0_0_30px_rgba(214,177,138,0.3)] group">
+                <i class="fa-solid fa-video text-lg animate-pulse"></i>
+                <span class="text-xs md:text-sm uppercase tracking-[0.3em]">Join Royal Celebration</span>
              </a>
           </div>
         </div>
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-32 px-4 bg-[#0a1128]">
-        <h2 class="text-4xl md:text-6xl font-cinzel text-center text-white mb-20" v-observe>Galeri Foto</h2>
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4 bg-[#0a1128]">
+        <h2 class="text-3xl md:text-4xl font-cinzel text-center text-white mb-12 md:mb-16" v-observe>Galeri Foto</h2>
         <div class="max-w-6xl mx-auto">
           <GalleryInvitation :items="galleryImages" />
         </div>
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6 bg-[#080e20]">
-        <div class="max-w-2xl mx-auto bg-white/5 border border-[#d4af37]/20 rounded-2xl p-8 md:p-16 text-center" v-observe>
-          <h2 class="text-4xl font-cinzel text-white mb-4">RSVP</h2>
-          <p class="text-[#d4af37] mb-12 text-sm uppercase tracking-widest">Konfirmasi Kehadiran</p>
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 bg-[#080e20]">
+        <div class="max-w-2xl mx-auto bg-white/5 border border-[#d4af37]/20 rounded-2xl p-6 md:p-12 text-center" v-observe>
+          <h2 class="text-3xl md:text-4xl font-cinzel text-white mb-2">RSVP</h2>
+          <p class="text-[#d4af37] mb-8 text-xs md:text-sm uppercase tracking-widest">Konfirmasi Kehadiran</p>
 
-          <form @submit.prevent="submitRSVP" class="space-y-8">
+          <form @submit.prevent="submitRSVP" class="space-y-6">
             <div class="relative">
               <input v-model="rsvp.name" type="text" placeholder="Nama Lengkap"
-                class="w-full bg-transparent border-b border-[#d4af37]/30 py-4 text-white focus:outline-none focus:border-[#d4af37] transition-colors placeholder-gray-600 font-cinzel tracking-widest"
+                class="w-full bg-transparent border-b border-[#d4af37]/30 py-3 text-white focus:outline-none focus:border-[#d4af37] transition-colors placeholder-gray-600 font-cinzel tracking-widest"
                 required />
             </div>
 
-            <div class="grid grid-cols-3 gap-4">
+            <div class="grid grid-cols-3 gap-3 md:gap-4">
               <label v-for="opt in [{v:'hadir',l:'Hadir'},{v:'tidak',l:'Maaf'},{v:'ragu',l:'Ragu'}]" :key="opt.v"
-                class="flex items-center justify-center py-4 rounded-lg cursor-pointer border transition-all text-[10px] font-bold uppercase tracking-widest"
+                class="flex items-center justify-center py-3.5 rounded-lg cursor-pointer border transition-all text-[10px] font-bold uppercase tracking-widest"
                 :class="rsvp.attendance === opt.v ? 'bg-[#d4af37] border-[#d4af37] text-[#0a1128]' : 'bg-transparent border-[#d4af37]/30 text-[#d4af37] hover:bg-[#d4af37]/10'">
                 <input type="radio" :value="opt.v" v-model="rsvp.attendance" class="hidden"> {{ opt.l }}
               </label>
             </div>
 
             <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
-              class="w-full bg-[#0a1128] border border-[#d4af37]/30 rounded-lg px-6 py-4 text-[#d4af37] focus:outline-none focus:border-[#d4af37] font-cinzel uppercase tracking-widest text-xs">
+              class="w-full bg-[#0a1128] border border-[#d4af37]/30 rounded-lg px-4 py-3 text-[#d4af37] focus:outline-none focus:border-[#d4af37] font-cinzel uppercase tracking-widest text-xs">
               <option value="" disabled>Jumlah Tamu</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} Orang</option>
             </select>
 
             <textarea v-model="rsvp.message" rows="4" placeholder="Ucapan & Doa"
-              class="w-full bg-[#0a1128]/50 border border-[#d4af37]/30 rounded-lg px-6 py-4 text-white focus:outline-none focus:border-[#d4af37] placeholder-gray-600 font-serif"></textarea>
+              class="w-full bg-[#0a1128]/50 border border-[#d4af37]/30 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#d4af37] placeholder-gray-600 font-serif"></textarea>
 
             <button type="submit"
-              class="w-full py-5 bg-[#d4af37] text-[#0a1128] font-black rounded-lg transition-all shadow-xl hover:bg-[#f1c40f] uppercase tracking-[0.3em] text-xs">
+              class="w-full py-4 bg-[#d4af37] text-[#0a1128] font-black rounded-lg transition-all shadow-xl hover:bg-[#f1c40f] uppercase tracking-[0.3em] text-xs">
               Kirim Konfirmasi
             </button>
           </form>
@@ -299,9 +299,9 @@
       </section>
 
       <!-- VIDEO PREWEDDING -->
-      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-32 px-6 bg-[#080e20]">
+      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-16 md:py-24 px-6 bg-[#080e20]">
         <div class="max-w-4xl mx-auto text-center">
-          <h2 class="text-4xl font-cinzel text-white mb-10" v-observe>Video Prewedding</h2>
+          <h2 class="text-3xl md:text-4xl font-cinzel text-white mb-8" v-observe>Video Prewedding</h2>
           <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#d4af37]/20">
             <iframe :src="getEmbedUrlVideo(data.videoPrewedding)" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
           </div>
@@ -309,46 +309,46 @@
       </section>
 
       <!-- MENU -->
-      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-32 px-6 bg-[#0a1128]">
+      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-16 md:py-24 px-6 bg-[#0a1128]">
         <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-4xl font-cinzel text-white mb-10" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
+          <h2 class="text-3xl md:text-4xl font-cinzel text-white mb-8" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
           <div class="grid gap-4 md:grid-cols-2">
             <div v-for="(item, idx) in data.menu.items" :key="idx"
-              class="bg-[#080e20] p-6 rounded-2xl border border-[#d4af37]/20 hover:border-[#d4af37]/50 transition-colors text-left" v-observe>
-              <h4 class="text-base font-cinzel text-white">{{ item.name || item }}</h4>
+              class="bg-[#080e20] p-5 rounded-2xl border border-[#d4af37]/20 hover:border-[#d4af37]/50 transition-colors text-left" v-observe>
+              <h4 class="text-sm md:text-base font-cinzel text-white">{{ item.name || item }}</h4>
             </div>
           </div>
         </div>
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-32 px-6 text-center bg-[#0a1128]">
-        <h2 class="text-4xl font-cinzel text-white mb-4" v-observe>Wedding Gift</h2>
-        <p class="text-[#d4af37] mb-16 max-w-md mx-auto text-xs uppercase tracking-widest">Tanda Kasih Digital</p>
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-16 md:py-24 px-6 text-center bg-[#0a1128]">
+        <h2 class="text-3xl md:text-4xl font-cinzel text-white mb-2" v-observe>Wedding Gift</h2>
+        <p class="text-[#d4af37] mb-12 max-w-md mx-auto text-xs uppercase tracking-widest">Tanda Kasih Digital</p>
 
-        <div class="flex flex-wrap justify-center gap-10 max-w-5xl mx-auto">
+        <div class="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto">
           <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
-            class="bg-[#080e20] border border-[#d4af37]/30 p-10 rounded-2xl w-full sm:w-[350px] shadow-2xl relative overflow-hidden" v-observe>
+            class="bg-[#080e20] border border-[#d4af37]/30 p-8 rounded-2xl w-full sm:w-[320px] shadow-2xl relative overflow-hidden" v-observe>
             <i class="pi pi-building absolute -top-10 -right-10 text-[#d4af37] opacity-5 text-9xl pointer-events-none select-none" aria-hidden="true"></i>
-            <div class="mb-8 text-[#d4af37] font-bold text-2xl tracking-widest uppercase font-cinzel">
+            <div class="mb-6 text-[#d4af37] font-bold text-xl tracking-widest uppercase font-cinzel">
               {{ bank.bankName }}
             </div>
-            <p class="text-2xl text-white font-mono mb-2 tracking-tighter">{{ bank.accountNumber }}</p>
-            <p class="text-[10px] text-gray-500 mb-8 uppercase tracking-[0.3em]">a.n {{ bank.accountName }}</p>
+            <p class="text-xl text-white font-mono mb-2 tracking-tighter">{{ bank.accountNumber }}</p>
+            <p class="text-[10px] text-gray-500 mb-6 uppercase tracking-[0.3em]">a.n {{ bank.accountName }}</p>
             <button @click="copyToClipboard(bank.accountNumber)"
-              class="w-full bg-transparent border border-[#d4af37] text-[#d4af37] py-3 rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all font-bold uppercase text-[10px] tracking-widest">
+              class="w-full bg-transparent border border-[#d4af37] text-[#d4af37] py-2.5 rounded-lg hover:bg-[#d4af37] hover:text-[#0a1128] transition-all font-bold uppercase text-[10px] tracking-widest">
               Salin Rekening
             </button>
           </div>
-        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-6 flex justify-center" v-observe>
           <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="gold" />
         </div>
         </div>
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-32 bg-[#050a18] text-center border-t border-[#d4af37]/20">
-        <h2 class="font-cinzel text-4xl md:text-6xl text-white mb-6">{{ data.groomName }} & {{ data.brideName }}</h2>
+      <footer class="py-16 md:py-20 bg-[#050a18] text-center border-t border-[#d4af37]/20">
+        <h2 class="font-cinzel text-2xl sm:text-3xl md:text-4xl text-white mb-4">{{ data.groomName }} & {{ data.brideName }}</h2>
         <div class="flex justify-center gap-4 mb-10 opacity-30">
            <div class="w-16 h-px bg-[#d4af37]"></div>
            <i class="fa-solid fa-gem text-[#d4af37]"></i>

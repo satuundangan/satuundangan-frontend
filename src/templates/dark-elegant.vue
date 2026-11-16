@@ -597,9 +597,11 @@ const vObserve = {
 function openInvitation() {
   showWelcome.value = false
   setTimeout(() => {
-    const el = document.getElementById('main-content')
-    if (el) el.classList.remove('opacity-0')
-    initScrollSpy()
+    if (typeof document !== 'undefined') {
+      const el = document.getElementById('main-content')
+      if (el) el.classList.remove('opacity-0')
+      initScrollSpy()
+    }
   }, 100)
 }
 

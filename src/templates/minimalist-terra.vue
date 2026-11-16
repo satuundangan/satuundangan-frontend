@@ -37,10 +37,10 @@
         <div class="relative z-10 space-y-12 animate-fade-in-up">
           <div class="space-y-4">
             <span class="text-[10px] tracking-[0.4em] uppercase text-[#e07a5f] font-bold">Hello, You Are Invited</span>
-            <div class="flex flex-col items-center">
-              <h2 class="text-6xl md:text-8xl font-playfair italic text-[#3d405b]">{{ data.groomName }}</h2>
-              <span class="text-2xl text-[#81b29a] my-[-10px] font-playfair">&</span>
-              <h2 class="text-6xl md:text-8xl font-playfair italic text-[#3d405b]">{{ data.brideName }}</h2>
+            <div class="flex flex-col items-center gap-1 max-w-xl mx-auto">
+              <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-playfair italic text-[#3d405b] leading-tight">{{ data.groomName }}</h2>
+              <span class="text-xl md:text-2xl text-[#81b29a] font-playfair my-1">&</span>
+              <h2 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-playfair italic text-[#3d405b] leading-tight">{{ data.brideName }}</h2>
             </div>
           </div>
 
@@ -63,32 +63,32 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative">
-        <div class="space-y-8 max-w-2xl mx-auto" v-observe>
-          <div class="w-16 h-16 mx-auto bg-[#f2cc8f] rounded-full flex items-center justify-center mb-4">
-             <i class="fa-solid fa-heart text-[#3d405b]"></i>
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative py-20">
+        <div class="space-y-6 max-w-2xl mx-auto" v-observe>
+          <div class="w-12 h-12 md:w-14 md:h-14 mx-auto bg-[#f2cc8f] rounded-full flex items-center justify-center mb-2">
+             <i class="fa-solid fa-heart text-[#3d405b] text-base md:text-lg"></i>
           </div>
-          <h1 class="text-5xl md:text-8xl font-playfair leading-tight text-[#3d405b]">
-            {{ data.groomName }} <br> <span class="text-3xl italic text-[#e07a5f]">&</span> <br> {{ data.brideName }}
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair leading-snug text-[#3d405b] tracking-normal">
+            {{ data.groomName }} <br> <span class="text-2xl md:text-3xl italic text-[#e07a5f] my-2 inline-block font-playfair">&</span> <br> {{ data.brideName }}
           </h1>
-          <p class="text-sm md:text-base text-[#81b29a] font-bold tracking-[0.3em] uppercase">
+          <p class="text-xs md:text-sm text-[#81b29a] font-bold tracking-[0.3em] uppercase">
             {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}
           </p>
 
           <!-- Countdown -->
-          <div class="flex justify-center gap-6 mt-16">
+          <div class="flex justify-center gap-4 md:gap-8 mt-10 md:mt-12">
             <div v-for="(val, label) in countdown" :key="label" class="flex flex-col items-center">
-              <div class="text-3xl md:text-5xl font-light text-[#3d405b]">{{ val }}</div>
-              <div class="text-[8px] uppercase tracking-widest text-[#e07a5f] font-bold">{{ label }}</div>
+              <div class="text-2xl md:text-4xl font-light text-[#3d405b]">{{ val }}</div>
+              <div class="text-[8px] uppercase tracking-widest text-[#e07a5f] font-bold mt-1">{{ label }}</div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- QUOTE -->
-      <section class="py-32 px-6 bg-white/40" v-observe>
-        <div class="max-w-2xl mx-auto text-center border-l-4 border-[#f2cc8f] pl-8">
-          <p class="text-xl md:text-3xl text-[#3d405b] italic leading-snug font-playfair mb-6">
+      <section class="py-16 md:py-24 px-6 bg-white/40" v-observe>
+        <div class="max-w-2xl mx-auto text-center border-l-4 border-[#f2cc8f] pl-6 md:pl-8">
+          <p class="text-lg md:text-2xl text-[#3d405b] italic leading-snug font-playfair mb-6">
             "{{ data.quoteText }}"
           </p>
           <p class="text-xs font-bold text-[#e07a5f] tracking-[0.2em] uppercase">— {{ data.quoteSource }}</p>
@@ -96,25 +96,25 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-32 px-6 bg-[#f4f1ea]">
-        <div class="max-w-4xl mx-auto space-y-24">
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 bg-[#f4f1ea]">
+        <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center space-y-4" v-observe>
-            <h2 class="text-3xl md:text-5xl font-playfair italic text-[#3d405b]">Our Voyage</h2>
+            <h2 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">Our Voyage</h2>
             <div class="w-16 h-1 bg-[#81b29a] rounded-full mx-auto"></div>
           </div>
 
-          <div class="space-y-20">
+          <div class="space-y-16">
             <div v-for="(story, idx) in (data.loveStory?.length ? data.loveStory : mockStories)" :key="idx" class="relative" v-observe>
-               <div class="grid md:grid-cols-2 gap-12 items-center">
+               <div class="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
                   <div :class="idx % 2 === 0 ? '' : 'md:order-last'">
                      <div class="rounded-[2rem] overflow-hidden shadow-lg aspect-square grayscale hover:grayscale-0 transition-all duration-700">
                         <img v-if="story.image || isPreviewMode" :src="story.image || 'https://via.placeholder.com/400x400'" class="w-full h-full object-cover" />
                         <div v-else class="w-full h-full bg-[#3d405b]/5 flex items-center justify-center"><i class="fa-solid fa-heart text-[#e07a5f]/20 text-4xl"></i></div>
                      </div>
                   </div>
-                  <div class="space-y-4" :class="idx % 2 === 0 ? 'text-left' : 'text-left md:text-right'">
+                  <div class="space-y-3" :class="idx % 2 === 0 ? 'text-left' : 'text-left md:text-right'">
                      <span class="text-[#e07a5f] font-bold text-xs uppercase tracking-[0.2em]">{{ story.date }}</span>
-                     <h3 class="text-2xl md:text-3xl font-playfair italic text-[#3d405b]">{{ story.title }}</h3>
+                     <h3 class="text-xl md:text-2xl font-playfair italic text-[#3d405b]">{{ story.title }}</h3>
                      <p class="text-gray-500 text-sm md:text-base leading-relaxed font-light">{{ story.description }}</p>
                   </div>
                </div>
@@ -124,43 +124,43 @@
       </section>
 
       <!-- COUPLE -->
-      <section id="couple" v-if="isSectionEnabled('couple')" class="py-32 px-6">
+      <section id="couple" v-if="isSectionEnabled('couple')" class="py-16 md:py-24 px-6">
         <div class="max-w-5xl mx-auto">
-          <h2 class="text-3xl md:text-5xl font-playfair text-center text-[#3d405b] mb-24" v-observe>The Couple</h2>
+          <h2 class="text-3xl md:text-4xl font-playfair text-center text-[#3d405b] mb-10 md:mb-14" v-observe>The Couple</h2>
           
-          <div class="grid md:grid-cols-2 gap-24 items-start">
+          <div class="grid md:grid-cols-2 gap-10 md:gap-12 lg:gap-16 items-start">
             <!-- Groom -->
-            <div class="space-y-8" v-observe>
-              <div class="relative">
-                <div class="absolute -top-6 -left-6 w-32 h-32 bg-[#81b29a]/20 rounded-full -z-10 animate-pulse"></div>
-                <div class="rounded-[3rem] rounded-tr-none overflow-hidden shadow-xl aspect-[4/5] bg-gray-200">
+            <div class="space-y-6 text-center md:text-left" v-observe>
+              <div class="relative max-w-[240px] sm:max-w-[280px] md:max-w-[300px] mx-auto md:mx-0">
+                <div class="absolute -top-4 -left-4 w-24 h-24 bg-[#81b29a]/20 rounded-full -z-10 animate-pulse"></div>
+                <div class="rounded-[2.5rem] rounded-tr-none overflow-hidden shadow-xl aspect-[4/5] bg-gray-200">
                   <img :src="data.groomPhotoUrl || 'https://via.placeholder.com/400x600'" class="w-full h-full object-cover" />
                 </div>
               </div>
-              <div class="space-y-2">
-                <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.groomName }}</h3>
+              <div class="space-y-2 max-w-sm mx-auto md:mx-0">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-playfair italic text-[#3d405b] leading-snug">{{ data.groomName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Groom</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">Son of {{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
-                <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
-                  <i class="fa-brands fa-instagram text-2xl"></i>
+                <p class="text-sm text-gray-500 leading-relaxed pt-1">Son of {{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
+                <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-3 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
+                  <i class="fa-brands fa-instagram text-xl"></i>
                 </a>
               </div>
             </div>
 
             <!-- Bride -->
-            <div class="space-y-8 md:mt-32" v-observe>
-              <div class="relative">
-                <div class="absolute -bottom-6 -right-6 w-32 h-32 bg-[#f2cc8f]/30 rounded-full -z-10 animate-pulse"></div>
-                <div class="rounded-[3rem] rounded-bl-none overflow-hidden shadow-xl aspect-[4/5] bg-gray-200">
+            <div class="space-y-6 text-center md:text-right" v-observe>
+              <div class="relative max-w-[240px] sm:max-w-[280px] md:max-w-[300px] mx-auto md:ml-auto md:mr-0">
+                <div class="absolute -bottom-4 -right-4 w-24 h-24 bg-[#f2cc8f]/30 rounded-full -z-10 animate-pulse"></div>
+                <div class="rounded-[2.5rem] rounded-bl-none overflow-hidden shadow-xl aspect-[4/5] bg-gray-200">
                   <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/400x600'" class="w-full h-full object-cover" />
                 </div>
               </div>
-              <div class="space-y-2 md:text-right">
-                <h3 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">{{ data.brideName }}</h3>
+              <div class="space-y-2 max-w-sm mx-auto md:ml-auto md:mr-0">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-playfair italic text-[#3d405b] leading-snug">{{ data.brideName }}</h3>
                 <p class="text-xs uppercase tracking-widest text-[#e07a5f] font-bold">The Bride</p>
-                <p class="text-sm text-gray-500 leading-relaxed pt-2">Daughter of {{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
-                <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
-                  <i class="fa-brands fa-instagram text-2xl"></i>
+                <p class="text-sm text-gray-500 leading-relaxed pt-1">Daughter of {{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
+                <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-3 text-[#3d405b] hover:text-[#e07a5f] transition-colors">
+                  <i class="fa-brands fa-instagram text-xl"></i>
                 </a>
               </div>
             </div>
@@ -169,11 +169,11 @@
       </section>
 
       <!-- EXTENDED FAMILY -->
-      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-32 px-6 bg-white/40 text-center border-y border-[#f2cc8f]/20">
-         <div class="max-w-4xl mx-auto space-y-12" v-observe>
-            <h3 class="text-2xl md:text-4xl font-playfair italic text-[#3d405b]">The Family Circle</h3>
+      <section v-if="isSectionEnabled('extended-family') && data.extendedFamily?.length" class="py-16 md:py-24 px-6 bg-white/40 text-center border-y border-[#f2cc8f]/20">
+         <div class="max-w-4xl mx-auto space-y-10" v-observe>
+            <h3 class="text-xl md:text-3xl font-playfair italic text-[#3d405b]">The Family Circle</h3>
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="p-6 bg-[#f4f1ea] rounded-[2rem] text-sm text-[#5d4037] font-medium tracking-wide">
+               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="p-5 bg-[#f4f1ea] rounded-[2rem] text-sm text-[#5d4037] font-medium tracking-wide">
                   {{ person }}
                </div>
             </div>
@@ -181,72 +181,72 @@
       </section>
 
       <!-- EVENTS -->
-      <section id="event" v-if="isSectionEnabled('event')" class="py-32 px-6 bg-[#3d405b] text-[#f4f1ea] rounded-[4rem] mx-4 md:mx-10 my-10">
-        <div class="max-w-4xl mx-auto text-center space-y-20">
-          <div class="space-y-4">
-            <h2 class="text-4xl md:text-6xl font-playfair italic" v-observe>Join Our Celebration</h2>
-            <p class="text-[#f2cc8f] text-sm tracking-[0.3em] uppercase" v-observe>Save The Date</p>
+      <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 bg-[#3d405b] text-[#f4f1ea] rounded-[3rem] mx-4 md:mx-10 my-8">
+        <div class="max-w-4xl mx-auto text-center space-y-14 md:space-y-16">
+          <div class="space-y-2">
+            <h2 class="text-3xl md:text-4xl font-playfair italic" v-observe>Join Our Celebration</h2>
+            <p class="text-[#f2cc8f] text-xs md:text-sm tracking-[0.3em] uppercase" v-observe>Save The Date</p>
           </div>
           
-          <div class="grid md:grid-cols-2 gap-12 text-left">
-            <div class="p-8 border border-white/10 rounded-3xl space-y-6 hover:bg-white/5 transition-colors" v-observe>
-              <h3 class="text-2xl font-playfair italic text-[#f2cc8f]">Akad Nikah</h3>
-              <div class="space-y-4">
-                <div class="flex items-center gap-4 text-sm">
-                  <i class="fa-regular fa-calendar-check text-[#81b29a] text-xl"></i>
+          <div class="grid md:grid-cols-2 gap-8 md:gap-12 text-left">
+            <div class="p-6 md:p-8 border border-white/10 rounded-3xl space-y-5 hover:bg-white/5 transition-colors" v-observe>
+              <h3 class="text-xl md:text-2xl font-playfair italic text-[#f2cc8f]">Akad Nikah</h3>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 text-sm">
+                  <i class="fa-regular fa-calendar-check text-[#81b29a] text-lg"></i>
                   <span>{{ formatDate(data.akadLocation?.dateTime) }}</span>
                 </div>
-                <div class="flex items-center gap-4 text-sm">
-                  <i class="fa-regular fa-clock text-[#81b29a] text-xl"></i>
+                <div class="flex items-center gap-3 text-sm">
+                  <i class="fa-regular fa-clock text-[#81b29a] text-lg"></i>
                   <span>{{ formatTime(data.akadLocation?.dateTime) }} WIB</span>
                 </div>
-                <div class="flex items-start gap-4 text-sm">
-                  <i class="fa-solid fa-location-dot text-[#81b29a] text-xl"></i>
+                <div class="flex items-start gap-3 text-sm">
+                  <i class="fa-solid fa-location-dot text-[#81b29a] text-lg"></i>
                   <span class="leading-relaxed">{{ data.akadLocation?.description }}</span>
                 </div>
               </div>
               <a :href="data.akadLocation?.mapUrl" target="_blank"
-                class="w-full py-3 bg-white/10 hover:bg-[#f2cc8f] hover:text-[#3d405b] text-white rounded-xl transition-all text-center block text-[10px] uppercase font-bold tracking-widest">
+                class="w-full py-2.5 bg-white/10 hover:bg-[#f2cc8f] hover:text-[#3d405b] text-white rounded-xl transition-all text-center block text-[10px] uppercase font-bold tracking-widest">
                 Google Maps
               </a>
             </div>
 
-            <div v-if="!data.mergeEvents" class="p-8 border border-white/10 rounded-3xl space-y-6 hover:bg-white/5 transition-colors" v-observe>
-              <h3 class="text-2xl font-playfair italic text-[#f2cc8f]">Resepsi</h3>
-              <div class="space-y-4">
-                <div class="flex items-center gap-4 text-sm">
-                  <i class="fa-regular fa-calendar-check text-[#81b29a] text-xl"></i>
+            <div v-if="!data.mergeEvents" class="p-6 md:p-8 border border-white/10 rounded-3xl space-y-5 hover:bg-white/5 transition-colors" v-observe>
+              <h3 class="text-xl md:text-2xl font-playfair italic text-[#f2cc8f]">Resepsi</h3>
+              <div class="space-y-3">
+                <div class="flex items-center gap-3 text-sm">
+                  <i class="fa-regular fa-calendar-check text-[#81b29a] text-lg"></i>
                   <span>{{ formatDate(data.resepsiLocation?.dateTime) }}</span>
                 </div>
-                <div class="flex items-center gap-4 text-sm">
-                  <i class="fa-regular fa-clock text-[#81b29a] text-xl"></i>
+                <div class="flex items-center gap-3 text-sm">
+                  <i class="fa-regular fa-clock text-[#81b29a] text-lg"></i>
                   <span>{{ formatTime(data.resepsiLocation?.dateTime) }} WIB</span>
                 </div>
-                <div class="flex items-start gap-4 text-sm">
-                  <i class="fa-solid fa-location-dot text-[#81b29a] text-xl"></i>
+                <div class="flex items-start gap-3 text-sm">
+                  <i class="fa-solid fa-location-dot text-[#81b29a] text-lg"></i>
                   <span class="leading-relaxed">{{ data.resepsiLocation?.description }}</span>
                 </div>
               </div>
               <a :href="data.resepsiLocation?.mapUrl" target="_blank"
-                class="w-full py-3 bg-white/10 hover:bg-[#f2cc8f] hover:text-[#3d405b] text-white rounded-xl transition-all text-center block text-[10px] uppercase font-bold tracking-widest">
+                class="w-full py-2.5 bg-white/10 hover:bg-[#f2cc8f] hover:text-[#3d405b] text-white rounded-xl transition-all text-center block text-[10px] uppercase font-bold tracking-widest">
                 Google Maps
               </a>
             </div>
           </div>
 
           <!-- DRESS CODE -->
-          <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="mt-20 text-center space-y-6" v-observe>
-             <h3 class="text-sm uppercase tracking-[0.3em] font-bold text-[#f2cc8f]">Dress Code</h3>
-             <div v-if="data.dressCode" class="p-8 border border-white/10 rounded-[3rem] inline-block px-12">
-                <i class="fa-solid fa-shirt text-[#81b29a] text-2xl mb-4 block"></i>
-                <p class="text-white text-sm font-medium">{{ data.dressCode }}</p>
+          <div v-if="isSectionEnabled('dress-code') && (data.dressCode || data.designSettings?.dressCodeColors?.length)" class="mt-14 md:mt-16 text-center space-y-4" v-observe>
+             <h3 class="text-xs uppercase tracking-[0.3em] font-bold text-[#f2cc8f]">Dress Code</h3>
+             <div v-if="data.dressCode" class="p-6 border border-white/10 rounded-[2.5rem] inline-block px-10">
+                <i class="fa-solid fa-shirt text-[#81b29a] text-2xl mb-3 block"></i>
+                <p class="text-white text-xs md:text-sm font-medium">{{ data.dressCode }}</p>
              </div>
              <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" />
           </div>
 
           <!-- LIVE STREAMING -->
-          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-20 text-center" v-observe>
-             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 px-12 py-5 bg-[#f2cc8f] text-[#3d405b] rounded-full hover:bg-white transition-all shadow-2xl hover:-translate-y-1">
+          <div v-if="isSectionEnabled('live-streaming') && data.liveStreamingUrl" class="mt-14 md:mt-16 text-center" v-observe>
+             <a :href="data.liveStreamingUrl" target="_blank" class="inline-flex items-center gap-4 px-10 py-4 bg-[#f2cc8f] text-[#3d405b] rounded-full hover:bg-white transition-all shadow-xl hover:-translate-y-1">
                 <i class="fa-solid fa-video animate-pulse"></i>
                 <span class="text-xs font-black uppercase tracking-[0.3em]">Watch Stream</span>
              </a>
@@ -254,7 +254,7 @@
 
           <div v-observe>
             <button @click="addToCalendar"
-              class="px-12 py-4 bg-[#f2cc8f] text-[#3d405b] rounded-2xl font-black hover:scale-105 transition-all shadow-xl text-xs uppercase tracking-[0.2em]">
+              class="px-10 py-3.5 bg-[#f2cc8f] text-[#3d405b] rounded-2xl font-black hover:scale-105 transition-all shadow-xl text-xs uppercase tracking-[0.2em]">
               Save to Calendar
             </button>
           </div>
@@ -262,51 +262,51 @@
       </section>
 
       <!-- GALLERY -->
-      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-32 px-4 bg-[#f4f1ea]">
+      <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4 bg-[#f4f1ea]">
         <div class="max-w-6xl mx-auto">
-          <div class="flex flex-col items-center mb-20 space-y-4 text-center">
-            <h2 class="text-4xl md:text-6xl font-playfair italic text-[#3d405b]" v-observe>Moments</h2>
-            <div class="w-20 h-1 bg-[#e07a5f] rounded-full"></div>
+          <div class="flex flex-col items-center mb-12 md:mb-16 space-y-3 text-center">
+            <h2 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]" v-observe>Moments</h2>
+            <div class="w-16 h-1 bg-[#e07a5f] rounded-full"></div>
           </div>
           <GalleryInvitation :items="galleryImages" />
         </div>
       </section>
 
       <!-- RSVP -->
-      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-32 px-6">
-        <div class="max-w-xl mx-auto bg-white rounded-[3rem] p-10 md:p-16 shadow-sm border border-[#f2cc8f]/30" v-observe>
-          <div class="text-center mb-12">
-            <h2 class="text-4xl font-playfair italic text-[#3d405b]">RSVP</h2>
-            <p class="text-[#81b29a] text-[10px] uppercase tracking-widest font-bold mt-2">Kindly Respond</p>
+      <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6">
+        <div class="max-w-xl mx-auto bg-white rounded-[2.5rem] p-8 md:p-14 shadow-sm border border-[#f2cc8f]/30" v-observe>
+          <div class="text-center mb-8 md:mb-10">
+            <h2 class="text-3xl md:text-4xl font-playfair italic text-[#3d405b]">RSVP</h2>
+            <p class="text-[#81b29a] text-[10px] uppercase tracking-widest font-bold mt-1">Kindly Respond</p>
           </div>
 
-          <form @submit.prevent="submitRSVP" class="space-y-8">
-            <div class="space-y-2">
+          <form @submit.prevent="submitRSVP" class="space-y-6">
+            <div class="space-y-1">
               <label class="text-[10px] uppercase tracking-widest text-gray-400 font-bold ml-2">Your Name</label>
               <input v-model="rsvp.name" type="text" placeholder="Full Name"
-                class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-6 py-4 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none transition-all placeholder-gray-300"
+                class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-5 py-3.5 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none transition-all placeholder-gray-300"
                 required />
             </div>
 
             <div class="grid grid-cols-3 gap-3">
               <label v-for="opt in [{v:'hadir',l:'Will Attend'},{v:'tidak',l:'Unable'},{v:'ragu',l:'Maybe'}]" :key="opt.v"
-                class="flex items-center justify-center py-4 rounded-2xl cursor-pointer border-2 transition-all text-[9px] font-bold uppercase tracking-widest text-center"
+                class="flex items-center justify-center py-3.5 rounded-2xl cursor-pointer border-2 transition-all text-[9px] font-bold uppercase tracking-widest text-center"
                 :class="rsvp.attendance === opt.v ? 'bg-[#3d405b] border-[#3d405b] text-white shadow-lg' : 'bg-transparent border-[#f4f1ea] text-gray-400 hover:border-[#81b29a]/30'">
                 <input type="radio" :value="opt.v" v-model="rsvp.attendance" class="hidden"> {{ opt.l }}
               </label>
             </div>
 
             <select v-if="rsvp.attendance === 'hadir'" v-model="rsvp.totalGuests"
-              class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-6 py-4 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none font-bold text-xs">
+              class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-5 py-3.5 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none font-bold text-xs">
               <option value="" disabled>Number of Guests</option>
               <option v-for="n in 5" :key="n" :value="n">{{ n }} People</option>
             </select>
 
             <textarea v-model="rsvp.message" rows="4" placeholder="Your Blessing & Message"
-              class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-6 py-4 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none placeholder-gray-300"></textarea>
+              class="w-full bg-[#f4f1ea] border-0 rounded-2xl px-5 py-3.5 text-[#3d405b] focus:ring-2 focus:ring-[#81b29a] outline-none placeholder-gray-300"></textarea>
 
             <button type="submit"
-              class="w-full py-5 bg-[#e07a5f] text-white font-bold rounded-2xl transition-all shadow-xl hover:bg-[#3d405b] uppercase tracking-[0.2em] text-[10px]">
+              class="w-full py-4 bg-[#e07a5f] text-white font-bold rounded-2xl transition-all shadow-xl hover:bg-[#3d405b] uppercase tracking-[0.2em] text-[10px]">
               Confirm Attendance
             </button>
           </form>
@@ -314,9 +314,9 @@
       </section>
 
       <!-- VIDEO PREWEDDING -->
-      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-32 px-6 bg-[#f4f1ea]">
+      <section v-if="data.videoPrewedding && isSectionEnabled('video')" class="py-16 md:py-24 px-6 bg-[#f4f1ea]">
         <div class="max-w-4xl mx-auto text-center">
-          <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-10" v-observe>Video Prewedding</h2>
+          <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-8" v-observe>Video Prewedding</h2>
           <div class="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl border border-[#f2cc8f]/20">
             <iframe :src="getEmbedUrlVideo(data.videoPrewedding)" class="absolute inset-0 w-full h-full" frameborder="0" allowfullscreen></iframe>
           </div>
@@ -324,45 +324,45 @@
       </section>
 
       <!-- MENU -->
-      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-32 px-6 bg-white/40">
+      <section v-if="data.menu?.items?.length && isSectionEnabled('menu')" class="py-16 md:py-24 px-6 bg-white/40">
         <div class="max-w-3xl mx-auto text-center">
-          <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-10" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
+          <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-8" v-observe>{{ data.menu.title || 'Menu Hidangan' }}</h2>
           <div class="grid gap-4 md:grid-cols-2">
             <div v-for="(item, idx) in data.menu.items" :key="idx"
-              class="bg-[#f4f1ea] p-6 rounded-[2rem] border border-[#f2cc8f]/30 text-left" v-observe>
-              <h4 class="text-base font-medium text-[#3d405b]">{{ item.name || item }}</h4>
+              class="bg-[#f4f1ea] p-5 rounded-[2rem] border border-[#f2cc8f]/30 text-left" v-observe>
+              <h4 class="text-sm md:text-base font-medium text-[#3d405b]">{{ item.name || item }}</h4>
             </div>
           </div>
         </div>
       </section>
 
       <!-- GIFT -->
-      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-32 px-6 text-center bg-[#f4f1ea]">
-        <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-4" v-observe>Wedding Gift</h2>
-        <p class="text-gray-400 mb-16 max-w-md mx-auto text-sm leading-relaxed">Your presence is enough for us, but if you wish to give a gift, you can use:</p>
+      <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-16 md:py-24 px-6 text-center bg-[#f4f1ea]">
+        <h2 class="text-3xl font-playfair italic text-[#3d405b] mb-2" v-observe>Wedding Gift</h2>
+        <p class="text-gray-400 mb-12 max-w-md mx-auto text-xs md:text-sm leading-relaxed">Your presence is enough for us, but if you wish to give a gift, you can use:</p>
 
         <div class="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto">
           <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
-            class="bg-white p-10 rounded-[3rem] w-full sm:w-[320px] shadow-sm hover:shadow-xl transition-all border border-white" v-observe>
-            <div class="h-12 flex items-center justify-center mb-8 text-[#e07a5f] font-bold text-2xl tracking-widest uppercase font-playfair">
+            class="bg-white p-8 rounded-[2.5rem] w-full sm:w-[320px] shadow-sm hover:shadow-xl transition-all border border-white" v-observe>
+            <div class="h-10 flex items-center justify-center mb-6 text-[#e07a5f] font-bold text-xl tracking-widest uppercase font-playfair">
               {{ bank.bankName }}
             </div>
             <p class="text-xl text-[#3d405b] font-medium mb-2 tracking-widest">{{ bank.accountNumber }}</p>
-            <p class="text-[10px] text-gray-400 mb-8 uppercase tracking-[0.2em] font-bold">a.n {{ bank.accountName }}</p>
+            <p class="text-[10px] text-gray-400 mb-6 uppercase tracking-[0.2em] font-bold">a.n {{ bank.accountName }}</p>
             <button @click="copyToClipboard(bank.accountNumber)"
-              class="px-8 py-3 bg-[#f4f1ea] text-[#3d405b] rounded-full hover:bg-[#3d405b] hover:text-white transition-all font-bold uppercase text-[9px] tracking-widest">
+              class="px-6 py-2.5 bg-[#f4f1ea] text-[#3d405b] rounded-full hover:bg-[#3d405b] hover:text-white transition-all font-bold uppercase text-[9px] tracking-widest">
               Copy Account
             </button>
           </div>
-        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
+        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-6 flex justify-center" v-observe>
           <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="light" />
         </div>
         </div>
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-32 bg-white text-center rounded-t-[4rem]">
-        <h2 class="font-playfair italic text-5xl text-[#3d405b] mb-4">{{ data.groomName }} & {{ data.brideName }}</h2>
+      <footer class="py-16 md:py-20 bg-white text-center rounded-t-[3rem]">
+        <h2 class="font-playfair italic text-2xl sm:text-3xl md:text-4xl text-[#3d405b] mb-3">{{ data.groomName }} & {{ data.brideName }}</h2>
         <p class="text-[#81b29a] text-[10px] tracking-[0.5em] uppercase font-bold mb-12">See You on Our Big Day</p>
         <div class="flex justify-center gap-6 opacity-20 mb-12">
            <div class="w-12 h-12 bg-[#e07a5f] rounded-full"></div>

@@ -78,9 +78,9 @@
             <p class="font-sans text-[10px] md:text-xs tracking-[0.4em] uppercase text-[#cba358] font-bold">
               Uleman Walimatul 'Ursy
             </p>
-            <h1 class="text-4xl md:text-6xl font-serif text-[#fbf8ee] drop-shadow-[0_2px_12px_rgba(203,163,88,0.35)] leading-tight">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-serif text-[#fbf8ee] drop-shadow-[0_2px_12px_rgba(203,163,88,0.35)] leading-tight">
               {{ data.groomName?.split(' ')[0] || data.groomName }}
-              <span class="text-2xl md:text-3xl font-serif text-[#cba358] block my-1">&amp;</span>
+              <span class="text-xl md:text-2xl font-serif text-[#cba358] block my-1">&amp;</span>
               {{ data.brideName?.split(' ')[0] || data.brideName }}
             </h1>
           </div>
@@ -116,8 +116,8 @@
       class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth"
     >
       <!-- HERO SECTION -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative py-24 bg-gradient-to-b from-[#163829] via-[#0d1f17] to-[#0d1f17]">
-        <div class="space-y-6 max-w-3xl mx-auto relative z-10" v-observe>
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center text-center px-6 relative py-16 md:py-20 bg-gradient-to-b from-[#163829] via-[#0d1f17] to-[#0d1f17]">
+        <div class="space-y-5 max-w-3xl mx-auto relative z-10" v-observe>
           <div class="flex items-center justify-center gap-4 text-[#cba358]">
             <span class="w-12 h-px bg-[#cba358]/50"></span>
             <span class="text-[10px] uppercase tracking-[0.4em] font-sans font-bold">Runtuyan Acara</span>
@@ -125,78 +125,78 @@
           </div>
 
           <!-- Couple Main Photo -->
-          <div v-if="data.photoCoupleUrl" class="relative inline-block my-4">
-            <div class="w-48 h-64 md:w-60 md:h-80 mx-auto rounded-t-full border-2 border-[#cba358] p-1.5 shadow-[0_0_30px_rgba(203,163,88,0.25)] overflow-hidden bg-[#163829]">
+          <div v-if="data.photoCoupleUrl" class="relative inline-block my-2">
+            <div class="w-36 h-48 sm:w-44 sm:h-56 md:w-48 md:h-64 mx-auto rounded-t-full border-2 border-[#cba358] p-1.5 shadow-[0_0_25px_rgba(203,163,88,0.25)] overflow-hidden bg-[#163829]">
               <img :src="data.photoCoupleUrl" alt="Foto Panganten" class="w-full h-full object-cover rounded-t-full" />
             </div>
-            <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-[#0d1f17] border border-[#cba358] px-4 py-0.5 rounded-full text-[10px] text-[#cba358] font-sans uppercase tracking-widest whitespace-nowrap">
+            <div class="absolute -bottom-2.5 left-1/2 -translate-x-1/2 bg-[#0d1f17] border border-[#cba358] px-3 py-0.5 rounded-full text-[9px] text-[#cba358] font-sans uppercase tracking-widest whitespace-nowrap">
               Calon Panganten
             </div>
           </div>
 
-          <h1 class="text-5xl md:text-8xl font-serif text-[#fbf8ee] leading-tight">
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-[#fbf8ee] leading-snug tracking-wide">
             {{ data.groomName }} <br />
-            <span class="text-3xl md:text-5xl text-[#cba358] italic my-2 inline-block font-serif">&amp;</span> <br />
+            <span class="text-2xl md:text-3xl text-[#cba358] italic my-1 inline-block font-serif">&amp;</span> <br />
             {{ data.brideName }}
           </h1>
 
-          <p class="text-base md:text-xl text-[#dcb86c] tracking-[0.25em] uppercase font-sans font-medium">
+          <p class="text-xs md:text-base text-[#dcb86c] tracking-[0.25em] uppercase font-sans font-medium">
             {{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime || data.dateTime) }}
           </p>
 
           <!-- Countdown Timer -->
-          <div class="grid grid-cols-4 gap-3 md:gap-6 mt-12 max-w-sm mx-auto">
+          <div class="grid grid-cols-4 gap-2.5 md:gap-5 mt-8 md:mt-10 max-w-sm mx-auto">
             <div
               v-for="(val, label) in countdown"
               :key="label"
-              class="p-3 md:p-4 border border-[#cba358]/30 rounded-2xl bg-[#163829]/80 backdrop-blur-sm shadow-md"
+              class="p-2.5 md:p-3.5 border border-[#cba358]/30 rounded-2xl bg-[#163829]/80 backdrop-blur-sm shadow-md"
             >
-              <div class="text-2xl md:text-3xl font-serif font-bold text-[#fbf8ee]">{{ val }}</div>
-              <div class="text-[9px] uppercase tracking-wider text-[#cba358] font-sans mt-1 font-semibold">{{ label }}</div>
+              <div class="text-xl md:text-2xl font-serif font-bold text-[#fbf8ee]">{{ val }}</div>
+              <div class="text-[8px] md:text-[9px] uppercase tracking-wider text-[#cba358] font-sans mt-0.5 font-semibold">{{ label }}</div>
             </div>
           </div>
         </div>
 
-        <div class="absolute bottom-6 animate-bounce text-[#cba358]/60">
-          <i class="fa-solid fa-chevron-down text-lg"></i>
+        <div class="absolute bottom-4 md:bottom-6 animate-bounce text-[#cba358]/60">
+          <i class="fa-solid fa-chevron-down text-base md:text-lg"></i>
         </div>
       </section>
 
       <!-- QUOTE SUNDA / AYAT SUCI -->
-      <section v-if="isSectionEnabled('quote')" class="py-24 px-6 bg-[#12281e] relative text-center border-y border-[#cba358]/20" v-observe>
-        <div class="max-w-2xl mx-auto space-y-6">
+      <section v-if="isSectionEnabled('quote')" class="py-16 md:py-20 px-6 bg-[#12281e] relative text-center border-y border-[#cba358]/20" v-observe>
+        <div class="max-w-2xl mx-auto space-y-5">
           <div class="flex justify-center text-[#cba358] opacity-75">
-            <i class="fa-solid fa-seedling text-2xl"></i>
+            <i class="fa-solid fa-seedling text-xl md:text-2xl"></i>
           </div>
-          <p class="font-serif text-lg md:text-2xl text-[#e8f2ec] italic leading-relaxed px-4">
+          <p class="font-serif text-base md:text-xl text-[#e8f2ec] italic leading-relaxed px-4">
             "{{ data.quoteText || 'Niti wanci nu mustari, ninggang mangsa nu utama, malati ligar na ati, mitembeyan hirup anyar dina beungkeutan tali asih suci.' }}"
           </p>
           <div class="w-16 h-px bg-[#cba358] mx-auto"></div>
-          <p class="text-xs font-sans font-bold text-[#cba358] tracking-[0.3em] uppercase">
+          <p class="text-[10px] md:text-xs font-sans font-bold text-[#cba358] tracking-[0.3em] uppercase">
             {{ data.quoteSource || 'Pangjajap Asih' }}
           </p>
         </div>
       </section>
 
       <!-- KEDUA MEMPELAI -->
-      <section v-if="isSectionEnabled('couple')" id="couple" class="py-24 md:py-32 px-6 bg-[#0d1f17]" v-observe>
-        <div class="max-w-4xl mx-auto text-center space-y-16">
-          <div class="space-y-4">
-            <div class="flex justify-center mb-2">
-              <img :src="sigerImg" alt="Mahkota Siger Sunda" class="w-16 h-auto md:w-24 opacity-90 drop-shadow-[0_2px_10px_rgba(203,163,88,0.3)]" />
+      <section v-if="isSectionEnabled('couple')" id="couple" class="py-16 md:py-24 px-6 bg-[#0d1f17]" v-observe>
+        <div class="max-w-4xl mx-auto text-center space-y-12 md:space-y-14">
+          <div class="space-y-3">
+            <div class="flex justify-center mb-1">
+              <img :src="sigerImg" alt="Mahkota Siger Sunda" class="w-14 h-auto md:w-20 opacity-90 drop-shadow-[0_2px_10px_rgba(203,163,88,0.3)]" />
             </div>
-            <p class="text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Panganten Sarimbit</p>
-            <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">Dua Asih Jadi Hiji</h2>
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Panganten Sarimbit</p>
+            <h2 class="text-3xl md:text-4xl font-serif text-[#fbf8ee]">Dua Asih Jadi Hiji</h2>
             <div class="flex justify-center max-w-xs mx-auto">
               <img :src="dividerImg" alt="Divider Emas" class="w-full h-auto object-contain opacity-80" />
             </div>
           </div>
 
-          <div class="grid md:grid-cols-2 gap-16 md:gap-12 items-center">
+          <div class="grid md:grid-cols-2 gap-10 md:gap-12 lg:gap-16 items-start">
             <!-- Groom -->
-            <div class="space-y-5">
+            <div class="space-y-4">
               <div class="relative inline-block">
-                <div class="w-52 h-72 md:w-60 md:h-80 mx-auto rounded-t-full border-2 border-[#cba358] p-1.5 shadow-[0_10px_25px_rgba(0,0,0,0.6)] bg-[#163829] overflow-hidden">
+                <div class="w-40 h-56 sm:w-48 sm:h-64 md:w-52 md:h-72 mx-auto rounded-t-full border-2 border-[#cba358] p-1.5 shadow-[0_10px_25px_rgba(0,0,0,0.6)] bg-[#163829] overflow-hidden">
                   <img
                     :src="data.groomPhotoUrl || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=1000&auto=format&fit=crop'"
                     alt="Panganten Pameget"
@@ -204,13 +204,13 @@
                   />
                 </div>
               </div>
-              <div class="space-y-2">
-                <h3 class="text-2xl md:text-3xl font-serif text-[#fbf8ee]">{{ data.groomName }}</h3>
+              <div class="space-y-1.5 max-w-xs mx-auto">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-serif text-[#fbf8ee] leading-snug">{{ data.groomName }}</h3>
                 <p v-if="data.parents?.groomParents" class="text-xs text-[#a3c2b2] max-w-xs mx-auto leading-relaxed">
                   Putra pameget ti kersana <br />
                   <strong class="text-[#d8ebd9]">{{ data.parents.groomParents }}</strong>
                 </p>
-                <div v-if="data.socialMediaGroom?.instagram" class="pt-2">
+                <div v-if="data.socialMediaGroom?.instagram" class="pt-1.5">
                   <a
                     :href="'https://instagram.com/' + data.socialMediaGroom.instagram"
                     target="_blank"
@@ -223,9 +223,9 @@
             </div>
 
             <!-- Bride -->
-            <div class="space-y-5">
+            <div class="space-y-4">
               <div class="relative inline-block">
-                <div class="w-52 h-72 md:w-60 md:h-80 mx-auto rounded-t-full border-2 border-[#cba358] p-1.5 shadow-[0_10px_25px_rgba(0,0,0,0.6)] bg-[#163829] overflow-hidden">
+                <div class="w-40 h-56 sm:w-48 sm:h-64 md:w-52 md:h-72 mx-auto rounded-t-full border-2 border-[#cba358] p-1.5 shadow-[0_10px_25px_rgba(0,0,0,0.6)] bg-[#163829] overflow-hidden">
                   <img
                     :src="data.bridePhotoUrl || 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?q=80&w=1000&auto=format&fit=crop'"
                     alt="Panganten Istri"
@@ -233,13 +233,13 @@
                   />
                 </div>
               </div>
-              <div class="space-y-2">
-                <h3 class="text-2xl md:text-3xl font-serif text-[#fbf8ee]">{{ data.brideName }}</h3>
+              <div class="space-y-1.5 max-w-xs mx-auto">
+                <h3 class="text-xl sm:text-2xl md:text-3xl font-serif text-[#fbf8ee] leading-snug">{{ data.brideName }}</h3>
                 <p v-if="data.parents?.brideParents" class="text-xs text-[#a3c2b2] max-w-xs mx-auto leading-relaxed">
                   Putri istri ti kersana <br />
                   <strong class="text-[#d8ebd9]">{{ data.parents.brideParents }}</strong>
                 </p>
-                <div v-if="data.socialMediaBrides?.instagram" class="pt-2">
+                <div v-if="data.socialMediaBrides?.instagram" class="pt-1.5">
                   <a
                     :href="'https://instagram.com/' + data.socialMediaBrides.instagram"
                     target="_blank"
@@ -255,11 +255,11 @@
       </section>
 
       <!-- RANGKAIAN ACARA (AKAD & RESEPSI) -->
-      <section v-if="isSectionEnabled('event')" id="event" class="py-24 md:py-32 px-6 bg-[#12281e] relative" v-observe>
-        <div class="max-w-4xl mx-auto space-y-16 text-center">
-          <div class="space-y-3">
-            <p class="text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Waktos &amp; Tempat</p>
-            <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">Akad &amp; Resepsi</h2>
+      <section v-if="isSectionEnabled('event')" id="event" class="py-16 md:py-24 px-6 bg-[#12281e] relative" v-observe>
+        <div class="max-w-4xl mx-auto space-y-12 md:space-y-14 text-center">
+          <div class="space-y-2">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Waktos &amp; Tempat</p>
+            <h2 class="text-3xl md:text-4xl font-serif text-[#fbf8ee]">Akad &amp; Resepsi</h2>
             <div class="flex justify-center max-w-xs mx-auto">
               <img :src="dividerImg" alt="Divider Emas" class="w-full h-auto object-contain opacity-80" />
             </div>
@@ -372,11 +372,11 @@
       </section>
 
       <!-- LOVE STORY -->
-      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-24 md:py-32 px-6 bg-[#12281e]" v-observe>
-        <div class="max-w-4xl mx-auto space-y-16">
-          <div class="text-center space-y-3">
-            <p class="text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Lalakon Asih</p>
-            <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">Carita Urang Berdua</h2>
+      <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 bg-[#12281e]" v-observe>
+        <div class="max-w-4xl mx-auto space-y-12 md:space-y-14">
+          <div class="text-center space-y-2">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Lalakon Asih</p>
+            <h2 class="text-3xl md:text-4xl font-serif text-[#fbf8ee]">Carita Urang Berdua</h2>
             <div class="w-16 h-px bg-[#cba358] mx-auto"></div>
           </div>
 
@@ -445,11 +445,11 @@
       </section>
 
       <!-- GALERI FOTO -->
-      <section v-if="isSectionEnabled('gallery') && galleryImages.length" id="gallery" class="py-24 md:py-32 px-6 bg-[#12281e]" v-observe>
-        <div class="max-w-5xl mx-auto space-y-16 text-center">
-          <div class="space-y-3">
-            <p class="text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Albeum Gambar</p>
-            <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">Momen Bahagia</h2>
+      <section v-if="isSectionEnabled('gallery') && galleryImages.length" id="gallery" class="py-16 md:py-24 px-6 bg-[#12281e]" v-observe>
+        <div class="max-w-5xl mx-auto space-y-12 md:space-y-14 text-center">
+          <div class="space-y-2">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Albeum Gambar</p>
+            <h2 class="text-3xl md:text-4xl font-serif text-[#fbf8ee]">Momen Bahagia</h2>
             <div class="w-16 h-px bg-[#cba358] mx-auto"></div>
           </div>
 
@@ -460,11 +460,11 @@
       <!-- TURUT MENGUNDANG -->
       <section
         v-if="isSectionEnabled('extended-family') && (data.extendedFamily?.length || data.turutMengundang)"
-        class="py-20 px-6 bg-[#0f241a] border-t border-[#cba358]/20 text-center"
+        class="py-16 px-6 bg-[#0f241a] border-t border-[#cba358]/20 text-center"
         v-observe
       >
-        <div class="max-w-2xl mx-auto space-y-6">
-          <h3 class="text-2xl font-serif text-[#fbf8ee]">Kersaning Kulawarga (Turut Mengundang)</h3>
+        <div class="max-w-2xl mx-auto space-y-5">
+          <h3 class="text-xl md:text-2xl font-serif text-[#fbf8ee]">Kersaning Kulawarga (Turut Mengundang)</h3>
           <div class="w-12 h-px bg-[#cba358] mx-auto"></div>
           <div class="space-y-2 text-sm text-[#d8ebd9] font-sans">
             <p v-for="(person, idx) in normalizedExtendedFamily" :key="idx" class="leading-relaxed">
@@ -478,15 +478,15 @@
       <section
         v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || walletItems.length || giftAddresses.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)"
         id="gift"
-        class="py-24 md:py-32 px-6 bg-[#0d1f17] text-center"
+        class="py-16 md:py-24 px-6 bg-[#0d1f17] text-center"
         v-observe
       >
-        <div class="max-w-4xl mx-auto space-y-12">
-          <div class="space-y-3">
-            <p class="text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Tanda Kaasih</p>
-            <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">Kado Pernikahan</h2>
+        <div class="max-w-4xl mx-auto space-y-10 md:space-y-12">
+          <div class="space-y-2">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Tanda Kaasih</p>
+            <h2 class="text-3xl md:text-4xl font-serif text-[#fbf8ee]">Kado Pernikahan</h2>
             <div class="w-16 h-px bg-[#cba358] mx-auto"></div>
-            <p class="text-sm text-[#a3c2b2] max-w-lg mx-auto font-sans leading-relaxed">
+            <p class="text-xs md:text-sm text-[#a3c2b2] max-w-lg mx-auto font-sans leading-relaxed">
               Doa sareng panjurung laku ti salira sadayana mangrupikeun kado anu paling utami kanggo kulawarga simkuring.
             </p>
           </div>
@@ -542,7 +542,7 @@
 
         <!-- Physical Gift Address -->
           <div v-if="giftAddresses.length" class="max-w-xl mx-auto space-y-4 pt-6">
-            <h4 class="text-lg font-serif text-[#cba358]">Kintun Kado Fisik</h4>
+            <h4 class="text-base md:text-lg font-serif text-[#cba358]">Kintun Kado Fisik</h4>
             <div
               v-for="(addr, idx) in giftAddresses"
               :key="'addr-' + idx"
@@ -561,15 +561,15 @@
       </section>
 
       <!-- RSVP & UCAPAN (DOA RESTU) -->
-      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="py-24 md:py-32 px-6 bg-[#12281e] relative" v-observe>
-        <div class="max-w-2xl mx-auto space-y-12">
-          <div class="text-center space-y-3">
-            <p class="text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Kasadiaan Rawuh</p>
-            <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">Konfirmasi &amp; Doa</h2>
+      <section v-if="isSectionEnabled('rsvp')" id="rsvp" class="py-16 md:py-24 px-6 bg-[#12281e] relative" v-observe>
+        <div class="max-w-2xl mx-auto space-y-10 md:space-y-12">
+          <div class="text-center space-y-2">
+            <p class="text-[10px] md:text-xs uppercase tracking-[0.3em] text-[#cba358] font-sans font-bold">Kasadiaan Rawuh</p>
+            <h2 class="text-3xl md:text-4xl font-serif text-[#fbf8ee]">Konfirmasi &amp; Doa</h2>
             <div class="w-16 h-px bg-[#cba358] mx-auto"></div>
           </div>
 
-          <div class="p-8 border border-[#cba358]/35 rounded-3xl bg-[#163829]/90 shadow-2xl space-y-6">
+          <div class="p-6 md:p-8 border border-[#cba358]/35 rounded-3xl bg-[#163829]/90 shadow-2xl space-y-6">
             <form @submit.prevent="submitRsvp" class="space-y-4">
               <div>
                 <label class="block text-xs uppercase font-sans text-[#cba358] tracking-wider mb-2 font-bold">Nami Salira</label>
@@ -647,20 +647,20 @@
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-20 md:py-28 bg-[#08140f] text-center border-t border-[#cba358]/25 relative overflow-hidden">
-        <div class="relative z-10 px-6 space-y-4">
+      <footer class="py-16 md:py-20 bg-[#08140f] text-center border-t border-[#cba358]/25 relative overflow-hidden">
+        <div class="relative z-10 px-6 space-y-3">
           <!-- Siger Sunda Silhouette / Mini Crest -->
           <div class="flex justify-center text-[#cba358] opacity-60">
-            <svg class="w-10 h-7" viewBox="0 0 120 70" fill="currentColor">
+            <svg class="w-8 h-6" viewBox="0 0 120 70" fill="currentColor">
               <path d="M10 60 Q30 50 40 30 Q50 10 60 5 Q70 10 80 30 Q90 50 110 60 Q60 55 10 60 Z" />
             </svg>
           </div>
-          <p class="font-serif italic text-[#cba358]/80 text-base md:text-lg">Hatur Nuhun</p>
-          <h2 class="text-4xl md:text-6xl font-serif text-[#fbf8ee]">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
+          <p class="font-serif italic text-[#cba358]/80 text-sm md:text-base">Hatur Nuhun</p>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-serif text-[#fbf8ee]">{{ data.groomName }} &amp; {{ data.brideName }}</h2>
           <p v-if="data.footerText" class="text-[#a3c2b2] text-xs md:text-sm max-w-lg mx-auto leading-relaxed font-sans">
             {{ data.footerText }}
           </p>
-          <div class="w-16 h-px bg-[#cba358]/30 mx-auto my-6"></div>
+          <div class="w-16 h-px bg-[#cba358]/30 mx-auto my-5"></div>
           <WatermarkBadge variant="gold" />
         </div>
       </footer>
