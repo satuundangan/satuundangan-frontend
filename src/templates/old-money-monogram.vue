@@ -282,9 +282,9 @@
             <p class="text-[9px] md:text-xs font-sans uppercase tracking-[0.4em] text-[#9c7c38] font-bold">
               High-Society Wedding Editorial
             </p>
-            <h1 class="text-4xl md:text-7xl lg:text-8xl font-serif text-[#1a1614] leading-[1.05] tracking-tight">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif text-[#1a1614] leading-snug tracking-tight">
               {{ data.groomName || 'Alexander Sterling' }}
-              <span class="text-2xl md:text-5xl font-serif text-[#bfa15f] italic block my-2">&amp;</span>
+              <span class="text-2xl md:text-4xl font-serif text-[#bfa15f] italic block my-2">&amp;</span>
               {{ data.brideName || 'Victoria Windsor' }}
             </h1>
             <div class="flex items-center justify-center gap-4 pt-2">
