@@ -56,7 +56,7 @@
 
           <div class="space-y-6 pt-10">
             <span class="inline-block px-4 py-1 bg-[#2c2c2c] text-[#fdfbf7] text-[10px] font-bold uppercase tracking-widest rounded-full">A Love Story</span>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-black uppercase leading-tight text-center">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-black uppercase leading-tight text-center">
               {{ data.groomName }} <br><span class="text-3xl md:text-5xl text-[#e06d53]">&</span><br> {{ data.brideName }}
             </h1>
             <p class="text-sm font-bold uppercase tracking-[0.3em] text-[#e06d53]">{{ formatDate(data.resepsiLocation?.dateTime || data.akadLocation?.dateTime) }}</p>
@@ -78,7 +78,7 @@
       <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-5xl mx-auto space-y-20">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase italic">Our Story</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase italic">Our Story</h2>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
 
@@ -170,7 +170,7 @@
       <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 bg-[#e06d53] text-[#fdfbf7] relative">
         <div class="max-w-5xl mx-auto">
           <div class="text-center mb-20" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">Schedule</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">Schedule</h2>
             <div class="w-24 h-2 bg-[#2c2c2c] mx-auto mt-6"></div>
           </div>
           
@@ -232,7 +232,7 @@
       <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4 bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">Memories</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">Memories</h2>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
           <div class="p-4 md:p-8 bg-white border-4 border-[#2c2c2c] shadow-[16px_16px_0px_0px_rgba(224,109,83,1)]">
@@ -245,7 +245,7 @@
       <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 bg-[#2c2c2c] text-[#fdfbf7]">
         <div class="max-w-3xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">R.S.V.P</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">R.S.V.P</h2>
             <p class="text-sm font-bold uppercase tracking-widest text-gray-400 mt-4">We'd love to see you there</p>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
@@ -312,7 +312,7 @@
       <section v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" id="gift" class="py-16 md:py-24 px-6 text-center bg-[url('https://www.transparenttextures.com/patterns/notebook.png')]">
         <div class="max-w-4xl mx-auto space-y-16">
           <div class="text-center" v-observe>
-            <h2 class="text-6xl font-serif font-black uppercase">Wedding Gift</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-black uppercase">Wedding Gift</h2>
             <div class="w-24 h-2 bg-[#e06d53] mx-auto mt-6"></div>
           </div>
           

@@ -88,7 +88,7 @@
           </div>
           <div class="space-y-6 md:space-y-8 animate-fade-in-up" style="animation-delay: 0.3s">
             <h1
-              class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-alex text-white leading-snug drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
+              class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-alex text-white leading-snug drop-shadow-[0_10px_30px_rgba(0,0,0,0.8)]"
             >
               {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
               <span class="text-3xl md:text-5xl font-serif italic text-[#d4af37]/80">&</span>
@@ -186,7 +186,7 @@
               >
                 {{ data.heroLabel || 'The Halal Journey Of' }}
               </p>
-              <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-alex text-white leading-snug drop-shadow-2xl">
+              <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-alex text-white leading-snug drop-shadow-2xl">
                 {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }}
                 <span class="text-2xl md:text-4xl font-cormorant italic text-[#d4af37]/80">&</span>
                 {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
@@ -320,7 +320,7 @@
             </div>
             <div class="space-y-4">
               <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Groom</p>
-              <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.groomName }}</h3>
+              <h3 class="text-3xl md:text-5xl font-alex text-white">{{ data.groomName }}</h3>
               <p class="text-white/50 text-sm md:text-xl font-serif italic">
                 Putra ke-{{ data.groomOrder || 'dua' }} dari:
               </p>
@@ -391,7 +391,7 @@
             </div>
             <div class="space-y-4">
               <p class="text-[#d4af37] font-black tracking-[0.4em] uppercase text-[9px]">The Bride</p>
-              <h3 class="text-4xl md:text-6xl font-alex text-white">{{ data.brideName }}</h3>
+              <h3 class="text-3xl md:text-5xl font-alex text-white">{{ data.brideName }}</h3>
               <p class="text-white/50 text-sm md:text-xl font-serif italic">
                 Putri ke-{{ data.brideOrder || 'dua' }} dari:
               </p>
@@ -421,7 +421,7 @@
 
           <div class="max-w-4xl mx-auto w-full space-y-10">
             <div class="text-center space-y-3" v-observe>
-              <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Chapter</h2>
+              <h2 class="text-3xl md:text-5xl font-alex text-[#d4af37]">Our Chapter</h2>
               <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">
                 Journey to Eternity
               </p>
@@ -650,7 +650,7 @@
 
           <div class="max-w-4xl mx-auto w-full space-y-10 relative z-10">
             <div class="text-center space-y-3" v-observe>
-              <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37]">Our Moments</h2>
+              <h2 class="text-3xl md:text-5xl font-alex text-[#d4af37]">Our Moments</h2>
               <p class="text-[8px] md:text-xs uppercase tracking-[0.5em] text-white/30">
                 Captured Memories
               </p>
@@ -686,7 +686,7 @@
             class="max-w-4xl mx-auto w-full space-y-4 md:space-y-10 overflow-y-auto no-scrollbar max-h-[90vh] py-6"
           >
             <div class="text-center space-y-2">
-              <h2 class="text-3xl md:text-7xl font-alex text-[#d4af37]">Wedding Gift</h2>
+              <h2 class="text-3xl md:text-5xl font-alex text-[#d4af37]">Wedding Gift</h2>
               <p class="text-white/50 text-[8px] md:text-sm font-light italic max-w-xs mx-auto">
                 Tanda kasih dapat dikirim melalui:
               </p>
@@ -775,7 +775,7 @@
             class="max-w-6xl mx-auto w-full grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-16 items-center"
           >
             <div class="space-y-4 md:space-y-8 text-center lg:text-left" v-observe>
-              <h2 class="text-4xl md:text-6xl font-alex text-[#d4af37] leading-tight">
+              <h2 class="text-3xl md:text-5xl font-alex text-[#d4af37] leading-tight">
                 RSVP <br />
                 <span class="text-white">& Wishes</span>
               </h2>
@@ -898,7 +898,7 @@
                 <p class="text-[9px] text-white/40 uppercase tracking-[0.5em] font-black">
                   Kami yang berbahagia,
                 </p>
-                <h2 class="font-alex text-4xl md:text-6xl text-white drop-shadow-2xl leading-snug">
+                <h2 class="font-alex text-3xl md:text-5xl text-white drop-shadow-2xl leading-snug">
                   {{ data.groomName?.split(' ')[1] || data.groomName || 'Pria' }} &
                   {{ data.brideName?.split(' ')[1] || data.brideName || 'Wanita' }}
                 </h2>

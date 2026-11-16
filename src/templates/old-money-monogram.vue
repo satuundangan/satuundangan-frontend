@@ -356,7 +356,7 @@
           
           <div class="text-center space-y-3">
             <p class="text-[10px] uppercase tracking-[0.4em] text-[#9c7c38] font-sans font-bold">The Betrothed</p>
-            <h2 class="text-3xl md:text-6xl font-serif text-[#1a1614]">The Gentleman &amp; The Lady</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1a1614]">The Gentleman &amp; The Lady</h2>
             <div class="flex items-center justify-center gap-4 text-[#bfa15f] opacity-80 pt-1">
               <span class="w-16 h-px bg-[#bfa15f]/60"></span>
               <i class="fa-solid fa-feather-pointed text-xs"></i>
@@ -491,7 +491,7 @@
           
           <div class="text-center space-y-3">
             <p class="text-[10px] uppercase tracking-[0.4em] text-[#9c7c38] font-sans font-bold">The Order of Events</p>
-            <h2 class="text-3xl md:text-6xl font-serif text-[#1a1614]">Solemnisation &amp; Grand Soirée</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1a1614]">Solemnisation &amp; Grand Soirée</h2>
             <div class="flex items-center justify-center gap-4 text-[#bfa15f] opacity-80 pt-1">
               <span class="w-16 h-px bg-[#bfa15f]/60"></span>
               <i class="fa-solid fa-champagne-glasses text-xs"></i>
@@ -633,7 +633,7 @@
           
           <div class="text-center space-y-3">
             <p class="text-[10px] uppercase tracking-[0.4em] text-[#9c7c38] font-sans font-bold">Our Chronicle</p>
-            <h2 class="text-3xl md:text-6xl font-serif text-[#1a1614]">The Chapters of Our Love</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1a1614]">The Chapters of Our Love</h2>
             <div class="flex items-center justify-center gap-4 text-[#bfa15f] opacity-80 pt-1">
               <span class="w-16 h-px bg-[#bfa15f]/60"></span>
               <i class="fa-solid fa-book-bookmark text-xs"></i>
@@ -697,7 +697,7 @@
           
           <div class="text-center space-y-3">
             <p class="text-[10px] uppercase tracking-[0.4em] text-[#9c7c38] font-sans font-bold">Visual Chronicle</p>
-            <h2 class="text-3xl md:text-6xl font-serif text-[#1a1614]">The Portrait Exhibition</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1a1614]">The Portrait Exhibition</h2>
             <div class="flex items-center justify-center gap-4 text-[#bfa15f] opacity-80 pt-1">
               <span class="w-16 h-px bg-[#bfa15f]/60"></span>
               <i class="fa-solid fa-camera text-xs"></i>
@@ -736,7 +736,7 @@
           
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-[0.4em] text-[#9c7c38] font-sans font-bold">Wedding Registry</p>
-            <h2 class="text-3xl md:text-6xl font-serif text-[#1a1614]">Tanda Kasih &amp; Tokens of Regard</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1a1614]">Tanda Kasih &amp; Tokens of Regard</h2>
             <div class="flex items-center justify-center gap-4 text-[#bfa15f] opacity-80 pt-1">
               <span class="w-16 h-px bg-[#bfa15f]/60"></span>
               <i class="fa-solid fa-gift text-xs"></i>
@@ -829,7 +829,7 @@
           
           <div class="space-y-3">
             <p class="text-[10px] uppercase tracking-[0.4em] text-[#9c7c38] font-sans font-bold">Kindly Respond</p>
-            <h2 class="text-3xl md:text-6xl font-serif text-[#1a1614]">RSVP &amp; Book of Regard</h2>
+            <h2 class="text-3xl md:text-5xl font-serif text-[#1a1614]">RSVP &amp; Book of Regard</h2>
             <div class="flex items-center justify-center gap-4 text-[#bfa15f] opacity-80 pt-1">
               <span class="w-16 h-px bg-[#bfa15f]/60"></span>
               <i class="fa-solid fa-signature text-xs"></i>

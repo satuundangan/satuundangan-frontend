@@ -32,10 +32,10 @@
           <div class="space-y-4">
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080]">A Cinematic Wedding</p>
             <div class="overflow-hidden">
-              <h2 class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold uppercase leading-tight tracking-tight animate-slide-up" style="animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards;">{{ data.groomName }}</h2>
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold uppercase leading-tight tracking-tight animate-slide-up" style="animation-delay: 0.2s; opacity: 0; animation-fill-mode: forwards;">{{ data.groomName }}</h2>
             </div>
             <div class="overflow-hidden">
-              <h2 class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold uppercase leading-tight tracking-tight animate-slide-up" style="animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards;">{{ data.brideName }}</h2>
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-serif font-bold uppercase leading-tight tracking-tight animate-slide-up" style="animation-delay: 0.4s; opacity: 0; animation-fill-mode: forwards;">{{ data.brideName }}</h2>
             </div>
           </div>
 
@@ -64,8 +64,8 @@
         
         <div class="relative z-10 w-full max-w-7xl mx-auto flex flex-col md:flex-row md:items-end justify-between gap-10" v-observe>
           <div class="space-y-4">
-            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif font-bold uppercase leading-[0.95] tracking-tight">
-              {{ data.groomName }} <br> <span class="text-3xl md:text-5xl text-[#808080] italic">&</span> <br> {{ data.brideName }}
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold uppercase leading-[0.95] tracking-tight">
+              {{ data.groomName }} <br> <span class="text-2xl md:text-3xl text-[#808080] italic">&</span> <br> {{ data.brideName }}
             </h1>
           </div>
           <div class="text-left md:text-right space-y-2">
@@ -78,7 +78,7 @@
       <!-- QUOTE -->
       <section class="py-16 md:py-24 px-6" v-observe>
         <div class="max-w-4xl mx-auto text-center space-y-12">
-          <p class="text-2xl md:text-5xl font-serif leading-tight">"{{ data.quoteText }}"</p>
+          <p class="text-xl md:text-3xl font-serif leading-tight">"{{ data.quoteText }}"</p>
           <div class="w-12 h-px bg-white/20 mx-auto"></div>
           <p class="text-[10px] font-bold uppercase tracking-[0.5em] text-[#808080]">{{ data.quoteSource }}</p>
         </div>
@@ -89,7 +89,7 @@
         <div class="max-w-7xl mx-auto space-y-24">
           <div class="text-center" v-observe>
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080] mb-4">The Narrative</p>
-            <h2 class="text-5xl md:text-7xl font-serif font-bold uppercase tracking-tighter">Our Story</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-bold uppercase tracking-tight">Our Story</h2>
           </div>
 
           <div class="relative">
@@ -148,7 +148,7 @@
         <div class="max-w-4xl mx-auto space-y-16" v-observe>
            <div class="text-center space-y-4">
               <p class="text-[8px] uppercase tracking-[0.8em] text-gray-400 font-bold">In Appreciation</p>
-              <h2 class="text-4xl md:text-6xl font-serif font-bold uppercase tracking-tighter">Family & Honors</h2>
+              <h2 class="text-3xl md:text-5xl font-serif font-bold uppercase tracking-tight">Family & Honors</h2>
            </div>
            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-20 gap-y-8 text-center border-y border-gray-100 py-16">
               <div v-for="(person, idx) in data.extendedFamily" :key="idx" class="text-sm font-serif uppercase tracking-widest font-bold">
@@ -164,7 +164,7 @@
           <div class="md:col-span-4" v-observe>
             <div class="sticky top-20 space-y-6 text-center md:text-left">
               <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080]">Schedule</p>
-              <h2 class="text-5xl md:text-7xl font-serif font-bold uppercase leading-none tracking-tighter">Show<br>Times</h2>
+              <h2 class="text-3xl md:text-5xl font-serif font-bold uppercase leading-none tracking-tight">Show<br>Times</h2>
             </div>
           </div>
           
@@ -235,7 +235,7 @@
         <div class="max-w-7xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080] mb-4">Behind The Scenes</p>
-            <h2 class="text-5xl md:text-7xl font-serif font-bold uppercase tracking-tighter">Stills</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-bold uppercase tracking-tight">Stills</h2>
           </div>
           <div class="grayscale hover:grayscale-0 transition-all duration-1000">
              <GalleryInvitation :items="galleryImages" />
@@ -248,7 +248,7 @@
         <div class="max-w-4xl mx-auto grid md:grid-cols-2 gap-16 items-center">
           <div class="space-y-8 text-center md:text-left" v-observe>
             <p class="text-[8px] uppercase tracking-[0.8em] text-gray-500">Box Office</p>
-            <h2 class="text-5xl md:text-7xl font-serif font-bold uppercase leading-none tracking-tighter">Reserve <br>Tickets</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-bold uppercase leading-none tracking-tight">Reserve <br>Tickets</h2>
             <p class="text-xs uppercase tracking-widest text-gray-600 font-bold">Please confirm your attendance</p>
           </div>
 
@@ -296,7 +296,7 @@
         <div class="max-w-5xl mx-auto space-y-16">
           <div class="text-center" v-observe>
             <p class="text-[8px] uppercase tracking-[0.8em] text-[#808080] mb-4">Registry</p>
-            <h2 class="text-5xl md:text-7xl font-serif font-bold uppercase tracking-tighter">Gifts</h2>
+            <h2 class="text-3xl md:text-5xl font-serif font-bold uppercase tracking-tight">Gifts</h2>
           </div>
           
           <div class="flex flex-wrap justify-center gap-8">
@@ -317,7 +317,7 @@
       </section>
 
       <footer class="py-16 md:py-24 text-center border-t border-white/10 space-y-8">
-        <h2 class="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold uppercase tracking-tight">{{ data.groomName }} & {{ data.brideName }}</h2>
+        <h2 class="font-serif text-2xl sm:text-3xl md:text-4xl font-bold uppercase tracking-tight">{{ data.groomName }} & {{ data.brideName }}</h2>
         <div class="space-y-4">
           <p class="text-[8px] uppercase tracking-[0.8em] font-bold text-[#808080]">The End</p>
           <WatermarkBadge variant="dark" />

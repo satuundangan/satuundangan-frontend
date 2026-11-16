@@ -31,9 +31,9 @@
             <div class="w-12 h-1 bg-black mx-auto mb-6 md:mb-10"></div>
             <h1 class="text-[8px] md:text-[9px] tracking-[0.5em] md:tracking-[0.8em] uppercase font-black text-gray-400">Special Editorial Issue</h1>
             <div class="space-y-2">
-              <h2 class="text-4xl sm:text-5xl md:text-6xl font-playfair font-black uppercase leading-tight tracking-tight shrink-0">{{ data.groomName }}</h2>
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-playfair font-black uppercase leading-tight tracking-tight shrink-0">{{ data.groomName }}</h2>
               <p class="text-lg md:text-xl font-playfair italic text-gray-400">&</p>
-              <h2 class="text-4xl sm:text-5xl md:text-6xl font-playfair font-black uppercase leading-tight tracking-tight shrink-0">{{ data.brideName }}</h2>
+              <h2 class="text-3xl sm:text-4xl md:text-5xl font-playfair font-black uppercase leading-tight tracking-tight shrink-0">{{ data.brideName }}</h2>
             </div>
           </div>
 
@@ -60,7 +60,7 @@
         <div class="w-full max-w-6xl grid md:grid-cols-12 gap-8 md:gap-10 items-center" v-observe>
           <div class="md:col-span-7 space-y-6 md:space-y-8 order-2 md:order-1 text-center md:text-left">
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-gray-300">The Wedding Issue / No. 01</span>
-            <h1 class="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-playfair font-black leading-[0.95] uppercase tracking-tight">
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-playfair font-black leading-[0.95] uppercase tracking-tight">
               {{ data.groomName }} <br> <span class="text-2xl md:text-4xl text-gray-300 italic">&</span> <br> {{ data.brideName }}
             </h1>
             <div class="flex items-center justify-center md:justify-start gap-4 md:gap-6">
@@ -100,7 +100,7 @@
       <section id="story" v-if="isSectionEnabled('love-story') && (data.loveStory?.length || isPreviewMode)" class="py-16 md:py-24 px-6 border-y-2 border-black">
         <div class="max-w-7xl mx-auto space-y-20">
           <div class="flex items-end justify-between border-b border-gray-100 pb-10">
-             <h2 class="text-4xl md:text-7xl font-playfair font-black uppercase leading-none tracking-tighter">Feature<br>Story</h2>
+             <h2 class="text-3xl md:text-5xl font-playfair font-black uppercase leading-none tracking-tighter">Feature<br>Story</h2>
              <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] text-gray-300">Volume 01 / Page 08</span>
           </div>
 
@@ -126,7 +126,7 @@
           <!-- Groom -->
           <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center relative" v-observe>
             <div class="space-y-6 md:space-y-10 order-2 md:order-1">
-              <h2 class="text-7xl md:text-9xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -left-4 md:-left-8 z-0 select-none">01</h2>
+              <h2 class="text-5xl md:text-7xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -left-4 md:-left-8 z-0 select-none">01</h2>
               <div class="relative z-10 space-y-4 md:space-y-6">
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Gentleman</span>
                 <h3 class="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold uppercase tracking-tight leading-none">{{ data.groomName }}</h3>
@@ -152,7 +152,7 @@
                </div>
             </div>
             <div class="order-1 md:order-2 space-y-6 md:space-y-10 text-right md:text-left">
-              <h2 class="text-7xl md:text-9xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -right-4 md:-right-8 md:left-auto z-0 select-none">02</h2>
+              <h2 class="text-5xl md:text-7xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -right-4 md:-right-8 md:left-auto z-0 select-none">02</h2>
               <div class="relative z-10 space-y-4 md:space-y-6">
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Lady</span>
                 <h3 class="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold uppercase tracking-tight leading-none">{{ data.brideName }}</h3>
@@ -186,7 +186,7 @@
       <section id="event" v-if="isSectionEnabled('event')" class="py-16 md:py-24 px-6 bg-black text-white">
         <div class="max-w-6xl mx-auto grid md:grid-cols-12 gap-12 md:gap-20">
           <div class="md:col-span-4 space-y-4 md:space-y-6 text-center md:text-left" v-observe>
-            <h2 class="text-5xl md:text-6xl font-playfair font-black uppercase leading-none">The <br class="hidden md:block"> Schedule</h2>
+            <h2 class="text-3xl md:text-5xl font-playfair font-black uppercase leading-none">The <br class="hidden md:block"> Schedule</h2>
             <p class="text-gray-500 text-[10px] md:text-xs uppercase tracking-[0.4em] font-bold">Mark Your Calendar</p>
           </div>
           
@@ -248,7 +248,7 @@
       <section id="gallery" v-if="isSectionEnabled('gallery') && galleryImages.length" class="py-16 md:py-24 px-4 bg-white">
         <div class="max-w-7xl mx-auto space-y-12 md:space-y-20">
           <div class="flex items-end justify-between border-b-2 md:border-b-4 border-black pb-6 md:pb-10" v-observe>
-            <h2 class="text-5xl md:text-7xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">Gallery</h2>
+            <h2 class="text-3xl md:text-5xl font-playfair font-black uppercase leading-none tracking-tighter shrink-0">Gallery</h2>
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.5em] text-gray-300 hidden md:block">Issue No. 01 / Page 12-24</span>
           </div>
           <GalleryInvitation :items="galleryImages" />
@@ -259,7 +259,7 @@
       <section id="rsvp" v-if="isSectionEnabled('rsvp')" class="py-16 md:py-24 px-6 bg-gray-50">
         <div class="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 md:gap-20 items-center">
           <div class="space-y-6 md:space-y-10 text-center md:text-left" v-observe>
-            <h2 class="text-5xl md:text-6xl font-playfair font-black uppercase leading-none">R.S.V.P</h2>
+            <h2 class="text-3xl md:text-5xl font-playfair font-black uppercase leading-none">R.S.V.P</h2>
             <p class="text-gray-500 text-xs md:text-sm leading-relaxed font-medium uppercase tracking-widest">Your confirmation is essential for our editorial planning. Please respond by the indicated date.</p>
             <div class="w-32 md:w-40 h-px bg-black mx-auto md:ml-0"></div>
           </div>
@@ -304,7 +304,7 @@
 
       <!-- GIFT -->
       <section id="gift" v-if="isSectionEnabled('gift') && (data.bankAccounts?.length || data.eWalletLink?.length || data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl)" class="py-16 md:py-24 px-6 text-center md:px-20">
-        <h2 class="text-5xl md:text-7xl font-playfair font-black uppercase tracking-tighter mb-12 md:mb-20" v-observe>Gifts</h2>
+        <h2 class="text-3xl md:text-5xl font-playfair font-black uppercase tracking-tighter mb-12 md:mb-20" v-observe>Gifts</h2>
         
         <div class="flex flex-wrap justify-center gap-4 md:gap-6">
           <div v-for="(bank, idx) in data.bankAccounts" :key="idx"
