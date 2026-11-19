@@ -70,5 +70,6 @@ export const getDashboardStats = () => apiFetch('/dashboard/stats')
 
 export const getLiveScreenFeed = (slug, options = {}) => {
   const query = options.preview ? '?preview=true' : ''
-  return apiFetch(`/invitation/slug/${slug}/live-feed${query}`)
+  const headers = options.etag ? { 'If-None-Match': options.etag } : {}
+  return apiFetch(`/invitation/slug/${slug}/live-feed${query}`, { headers })
 }

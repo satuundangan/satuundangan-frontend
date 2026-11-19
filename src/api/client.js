@@ -17,6 +17,10 @@ export async function apiFetch(path, options = {}) {
     headers: { ...headers, ...(options.headers || {}) },
   })
 
+  if (res.status === 304) {
+    return { notModified: true, status: 304, headers: res.headers }
+  }
+
   if (!res.ok) {
     const err = await res.json().catch(() => ({ message: 'Something went wrong' }))
     const errorObject = new Error(err.message || 'Something went wrong')
@@ -32,5 +36,9 @@ export async function apiFetch(path, options = {}) {
     return res
   }
 
-  return res.json().catch(() => res)
+  const data = await res.json().catch(() => res)
+  if (data && typeof data === 'object' && res.headers?.get?.('etag') && !data.etag) {
+    data.etag = res.headers.get('etag')
+  }
+  return data
 }
