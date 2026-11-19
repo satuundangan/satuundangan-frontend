@@ -3,8 +3,6 @@ import 'primeicons/primeicons.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import PrimeVue from 'primevue/config'
-import Aura from '@primevue/themes/aura'
 
 import App from './App.vue'
 import router from './router'
@@ -25,23 +23,6 @@ window.addEventListener('unhandledrejection', (event) => {
   trackError(error, { source: 'unhandledrejection' })
 })
 
-app.use(PrimeVue, {
-  theme: {
-    preset: Aura,
-    options: {
-      prefix: 'p',
-      darkModeSelector: '.dark',
-      cssLayer: false
-    }
-  },
-  // The scrollable area of every table must be reachable by keyboard.
-  pt: {
-    datatable: {
-      tableContainer: { tabindex: 0, role: 'region', 'aria-label': 'Tabel data, dapat digulir' },
-    },
-  },
-})
-
 app.use(Toast, {
   position: 'top-right',
   timeout: 3000,
@@ -51,8 +32,8 @@ app.use(Toast, {
   containerClassName: 'z-[10000]',
 })
 
-
 app.use(createPinia())
+router.app = app
 app.use(router)
 
 app.mount('#app')

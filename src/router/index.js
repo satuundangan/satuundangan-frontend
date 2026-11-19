@@ -1,4 +1,4 @@
-import HomeView from '@/views/HomeView.vue'
+const HomeView = () => import('@/views/HomeView.vue')
 const Invitation = () => import('@/views/InvitationView.vue')
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/auth.js'
@@ -6,6 +6,35 @@ import { getCustomSubdomain } from '@/api/invitation'
 import { analytics } from '@/api/analytics.js'
 import { trackPageView, trackError } from '@/utils/telemetry.js'
 import { canOpenAdminPath } from '@/utils/adminAccess'
+
+let primeVueLoaded = false
+export async function ensurePrimeVue(app) {
+  if (primeVueLoaded || !app) return
+  try {
+    const [{ default: PrimeVue }, { default: Aura }] = await Promise.all([
+      import('primevue/config'),
+      import('@primevue/themes/aura'),
+    ])
+    app.use(PrimeVue, {
+      theme: {
+        preset: Aura,
+        options: {
+          prefix: 'p',
+          darkModeSelector: '.dark',
+          cssLayer: false,
+        },
+      },
+      pt: {
+        datatable: {
+          tableContainer: { tabindex: 0, role: 'region', 'aria-label': 'Tabel data, dapat digulir' },
+        },
+      },
+    })
+    primeVueLoaded = true
+  } catch (err) {
+    console.error('Failed to load PrimeVue:', err)
+  }
+}
 
 // Host-based routing: on a custom subdomain (e.g. rina-budi.satuundangan.id),
 // the root path serves that invitation instead of the marketing homepage.
@@ -408,6 +437,10 @@ const router = createRouter({
 })
 
 router.beforeEach(async (to, _from, next) => {
+  if (to.path.startsWith('/admin')) {
+    await ensurePrimeVue(router.app)
+  }
+
   const authStore = useAuthStore()
 
   if (!authStore.user && !authStore.token && localStorage.getItem('token')) {

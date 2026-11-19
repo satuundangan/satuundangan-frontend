@@ -45,7 +45,7 @@ export default defineConfig(({ mode }) => {
               ) {
                 return 'vendor-vue'
               }
-              if (id.includes('@primevue') || id.includes('@primeuix')) return 'vendor-primevue'
+              if (id.includes('primevue') || id.includes('@primeuix')) return 'vendor-primevue'
               if (id.includes('@tiptap') || id.includes('prosemirror')) return 'vendor-editor'
               if (id.includes('lucide-vue-next')) return 'vendor-lucide'
               if (id.includes('mixpanel-browser')) return 'vendor-mixpanel'

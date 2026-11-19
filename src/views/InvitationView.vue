@@ -6,9 +6,6 @@ import {
   getInvitationBySubdomain,
   getCustomSubdomain,
 } from '@/api/invitation'
-import { demoData } from '@/api/demoData'
-import { getDemoPreset } from '@/api/templateDemoPresets'
-import { orangutanData } from '@/api/orangutanData'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
 import { analytics } from '@/api/analytics'
 import { featuresFor } from '@/config/packageFeatures'
@@ -245,12 +242,18 @@ onMounted(async () => {
     let data;
 
     if (slug === 'jennifer-hayato') {
+      const { orangutanData } = await import('@/api/orangutanData')
       data = {
         ...orangutanData,
         template_slug: route.query.templateId || 'royal-emerald',
         guestName: route.query.to || orangutanData.guestName,
       }
     } else if (isDemoMode.value) {
+      const [{ demoData }, { getDemoPreset }, { orangutanData }] = await Promise.all([
+        import('@/api/demoData'),
+        import('@/api/templateDemoPresets'),
+        import('@/api/orangutanData'),
+      ])
       // Handle Demo Mode — render immediately with local demo data to eliminate waiting latency
       const templateSlug = route.params.templateSlug
       const demoPreset = getDemoPreset(templateSlug)
