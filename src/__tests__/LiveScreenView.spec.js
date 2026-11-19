@@ -142,8 +142,8 @@ describe('LiveScreenView.vue (SAT-64)', () => {
       recentCheckIns: [newGuest],
     })
 
-    // Advance 3.5s poll timer
-    await vi.advanceTimersByTimeAsync(3500)
+    // Advance 5s poll timer (SAT-73 default 5000ms)
+    await vi.advanceTimersByTimeAsync(5000)
     await flushPromises()
 
     // Pop-up sambutan should appear
@@ -219,6 +219,104 @@ describe('LiveScreenView.vue (SAT-64)', () => {
     await flushPromises()
 
     expect(wrapper.find('[data-testid="greeting-modal"]').exists()).toBe(true)
+
+    wrapper.unmount()
+  })
+
+  it('5. Menangani response 304 Not Modified dengan conditional ETag tanpa merusak state yang ada (SAT-73)', async () => {
+    invitationApi.getLiveScreenFeed.mockResolvedValueOnce({
+      ...mockFeedData,
+      etag: '"v1-etag-12345"',
+    })
+
+    const wrapper = mount(LiveScreenView, {
+      props: { slug: 'romeo-juliet' },
+    })
+
+    await flushPromises()
+
+    expect(wrapper.find('[data-testid="couple-names"]').text()).toContain('Romeo & Juliet')
+    expect(wrapper.find('[data-testid="sync-status"]').text()).toContain('Live Sync Terhubung')
+
+    // Initial mount call passed etag: null
+    expect(invitationApi.getLiveScreenFeed).toHaveBeenLastCalledWith('romeo-juliet', { etag: null })
+
+    // Next poll returns 304 Not Modified
+    invitationApi.getLiveScreenFeed.mockResolvedValueOnce({
+      notModified: true,
+      status: 304,
+    })
+
+    // Advance 5s poll timer
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+
+    // Verify next request included the If-None-Match ETag
+    expect(invitationApi.getLiveScreenFeed).toHaveBeenLastCalledWith('romeo-juliet', { etag: '"v1-etag-12345"' })
+
+    // Verify state was preserved and syncStatus remains connected
+    expect(wrapper.find('[data-testid="couple-names"]').text()).toContain('Romeo & Juliet')
+    expect(wrapper.find('[data-testid="venue-info"]').text()).toContain('Grand Ballroom Hotel Mulia')
+    expect(wrapper.find('[data-testid="sync-status"]').text()).toContain('Live Sync Terhubung')
+
+    wrapper.unmount()
+  })
+
+  it('6. Adaptive backoff: memperlambat interval polling ke 8s saat idle (>= 10x 304) dan kembali ke 5s saat data baru diterima (SAT-73)', async () => {
+    invitationApi.getLiveScreenFeed.mockResolvedValueOnce({
+      ...mockFeedData,
+      etag: '"initial-tag"',
+    })
+
+    const wrapper = mount(LiveScreenView, {
+      props: { slug: 'romeo-juliet' },
+    })
+    await flushPromises()
+
+    // Subsequent polls return 304 Not Modified
+    invitationApi.getLiveScreenFeed.mockResolvedValue({
+      notModified: true,
+      status: 304,
+    })
+
+    // Advance 9 polls (9 x 5000ms) -> idleCount reaches 9, polling interval remains 5s
+    for (let i = 0; i < 9; i++) {
+      await vi.advanceTimersByTimeAsync(5000)
+      await flushPromises()
+    }
+    const callsAfter9 = invitationApi.getLiveScreenFeed.mock.calls.length
+
+    // 10th poll -> idleCount reaches 10, triggers adjustPollingInterval to 8000ms
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+    expect(invitationApi.getLiveScreenFeed.mock.calls.length).toBe(callsAfter9 + 1)
+
+    // Verify polling now waits 8000ms instead of 5000ms
+    const callsAfter10 = invitationApi.getLiveScreenFeed.mock.calls.length
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+    // Should NOT have fired at 5000ms because interval is now 8000ms
+    expect(invitationApi.getLiveScreenFeed.mock.calls.length).toBe(callsAfter10)
+
+    // Advance remaining 3000ms (total 8000ms) -> poll fires
+    await vi.advanceTimersByTimeAsync(3000)
+    await flushPromises()
+    expect(invitationApi.getLiveScreenFeed.mock.calls.length).toBe(callsAfter10 + 1)
+
+    // Now return full new data -> idleCount should reset to 0 and polling return to 5000ms
+    invitationApi.getLiveScreenFeed.mockResolvedValueOnce({
+      ...mockFeedData,
+      etag: '"updated-tag"',
+    })
+    // Advance 8000ms to trigger next poll
+    await vi.advanceTimersByTimeAsync(8000)
+    await flushPromises()
+
+    // Next poll should now fire at 5000ms
+    const callsAfterReset = invitationApi.getLiveScreenFeed.mock.calls.length
+    await vi.advanceTimersByTimeAsync(5000)
+    await flushPromises()
+    expect(invitationApi.getLiveScreenFeed.mock.calls.length).toBe(callsAfterReset + 1)
 
     wrapper.unmount()
   })
