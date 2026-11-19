@@ -1315,6 +1315,7 @@ export const cleanForDraft = (obj) => {
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
+import { useDebounceFn } from '@vueuse/core'
 import { useRouter, useRoute, onBeforeRouteLeave } from 'vue-router'
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
@@ -1873,7 +1874,8 @@ const wibInputToISO = (localInput) => {
 }
 
 // Debounced Live Preview Sync Logic
-const syncDataToPreview = (data) => {
+const syncDataToPreview = (data = formData.value) => {
+  if (!data) return
   try {
     const rawPayload = {
       type: 'LIVE_PREVIEW_UPDATE',
@@ -1940,6 +1942,15 @@ const syncDataToPreview = (data) => {
   } catch (err) {}
 }
 
+// Debounced helpers to eliminate typing jank (SAT-79)
+const debouncedSyncToPreview = useDebounceFn((data) => {
+  syncDataToPreview(data || formData.value)
+}, 300)
+
+const debouncedSaveDraft = useDebounceFn((data) => {
+  saveDraft(data || formData.value)
+}, 1000)
+
 const deepMerge = (target, source) => {
   for (const key in source) {
     if (Object.prototype.hasOwnProperty.call(source, key)) {
@@ -1993,24 +2004,25 @@ const clearDraft = () => {
   localStorage.removeItem('nova_draft')
 }
 
-// Watch both formData and sections to sync & save draft
+// Watch both formData and sections to sync & save draft with debouncing
 watch(formData, (newVal) => {
   if (isHydrating.value) return
   hasUnsavedChanges.value = true
-  syncDataToPreview(newVal)
-  saveDraft(newVal)
+  debouncedSyncToPreview(newVal)
+  debouncedSaveDraft(newVal)
 }, { deep: true })
 
-watch(sections, (newVal) => {
+watch(sections, () => {
   if (isHydrating.value) return
   hasUnsavedChanges.value = true
-  syncDataToPreview(formData.value)
-  saveDraft(formData.value)
+  debouncedSyncToPreview(formData.value)
+  debouncedSaveDraft(formData.value)
 }, { deep: true })
 
 
 const handleBeforeUnload = (e) => {
   if (hasUnsavedChanges.value) {
+    saveDraft(formData.value)
     e.preventDefault();
     e.returnValue = '';
   }
@@ -2019,6 +2031,7 @@ const handleBeforeUnload = (e) => {
 
 onBeforeRouteLeave((to, from, next) => {
   if (hasUnsavedChanges.value) {
+    saveDraft(formData.value)
     const answer = window.confirm('Ada perubahan yang belum disimpan. Yakin ingin keluar?')
     if (answer) {
       next()
@@ -2937,6 +2950,9 @@ defineExpose({
   saveDraft,
   saveAndPreview,
   pendingDraftRecovery,
+  syncDataToPreview,
+  debouncedSyncToPreview,
+  debouncedSaveDraft,
 })
 </script>
 
