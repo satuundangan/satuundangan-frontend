@@ -315,4 +315,75 @@ describe('StudioDraftPersistence (SAT-43)', () => {
       expect(stored.formData?.title).not.toBe('Old Draft')
     })
   })
+
+  describe('Debounced Watcher & Preview Sync (SAT-79)', () => {
+    it('exposes debounced helper functions on StudioView', () => {
+      localStorage.setItem('selectedTemplate', JSON.stringify({ id: 1, name: 'Dark Elegant' }))
+
+      const wrapper = mount(StudioView, {
+        global: {
+          stubs: {
+            QuoteSection: true,
+            AudioTrimmer: true,
+            LoveStorySection: true,
+            GiftSection: true,
+            SocialSection: true,
+            ImageCropperModal: true,
+            AuthModal: true,
+            RouterLink: true,
+          },
+        },
+      })
+
+      expect(typeof wrapper.vm.debouncedSyncToPreview).toBe('function')
+      expect(typeof wrapper.vm.debouncedSaveDraft).toBe('function')
+      expect(typeof wrapper.vm.syncDataToPreview).toBe('function')
+      expect(typeof wrapper.vm.saveDraft).toBe('function')
+    })
+
+    it('debounces draft saving to prevent main thread typing jank', async () => {
+      vi.useFakeTimers()
+      localStorage.setItem('selectedTemplate', JSON.stringify({ id: 1, name: 'Dark Elegant' }))
+
+      const wrapper = mount(StudioView, {
+        global: {
+          stubs: {
+            QuoteSection: true,
+            AudioTrimmer: true,
+            LoveStorySection: true,
+            GiftSection: true,
+            SocialSection: true,
+            ImageCropperModal: true,
+            AuthModal: true,
+            RouterLink: true,
+          },
+        },
+      })
+
+      const setItemSpy = vi.spyOn(localStorage, 'setItem')
+      setItemSpy.mockClear()
+
+      // Call debouncedSaveDraft multiple times rapidly (as user types)
+      wrapper.vm.debouncedSaveDraft({ title: 'T' })
+      wrapper.vm.debouncedSaveDraft({ title: 'Te' })
+      wrapper.vm.debouncedSaveDraft({ title: 'Tes' })
+      wrapper.vm.debouncedSaveDraft({ title: 'Test' })
+
+      // Immediately, setItem should not have been called yet
+      expect(setItemSpy).not.toHaveBeenCalled()
+
+      // Advance by 500ms (still before 1000ms delay)
+      vi.advanceTimersByTime(500)
+      expect(setItemSpy).not.toHaveBeenCalled()
+
+      // Advance past 1000ms delay: called exactly once (2 localStorage items: draftKey + selectedSections)
+      vi.advanceTimersByTime(550)
+      expect(setItemSpy).toHaveBeenCalledTimes(2)
+
+      const draft = JSON.parse(localStorage.getItem('invitation_form_draft') || '{}')
+      expect(draft.formData?.title).toBe('Test')
+
+      vi.useRealTimers()
+    })
+  })
 })
