@@ -1,4 +1,21 @@
-import mixpanel from 'mixpanel-browser'
+let mixpanelModule = null
+let mixpanelPromise = null
+
+async function getMixpanel() {
+  if (mixpanelModule) return mixpanelModule
+  if (!mixpanelPromise) {
+    mixpanelPromise = import('mixpanel-browser')
+      .then((m) => {
+        mixpanelModule = m.default || m
+        return mixpanelModule
+      })
+      .catch((err) => {
+        console.warn('Failed to load mixpanel-browser:', err)
+        return null
+      })
+  }
+  return mixpanelPromise
+}
 
 const MIXPANEL_TOKEN = import.meta.env.VITE_MIXPANEL_TOKEN || '6930e65c99814590474a355354a87d03'
 const SCHEMA_VERSION = '2'
@@ -56,15 +73,41 @@ function canTrack(context = current) {
   return area !== 'admin' && area !== 'test'
 }
 
-function initialize() {
-  if (initialized) return
-  mixpanel.init(MIXPANEL_TOKEN, {
-    debug: false, track_pageview: false, autocapture: false, save_referrer: false,
-    stop_utm_persistence: true,
-    persistence: 'localStorage',
-    property_blacklist: ['$current_url', '$referrer', '$initial_referrer', '$initial_referring_domain', '$email', '$name', 'mp_keyword', ...['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id'].flatMap((key) => [key, 'initial_' + key])],
-  })
-  initialized = true
+let initializingPromise = null
+
+async function initialize() {
+  if (initialized) return mixpanelModule
+  if (!initializingPromise) {
+    initializingPromise = (async () => {
+      const mp = await getMixpanel()
+      if (!mp) return null
+      if (!initialized) {
+        mp.init(MIXPANEL_TOKEN, {
+          debug: false,
+          track_pageview: false,
+          autocapture: false,
+          save_referrer: false,
+          stop_utm_persistence: true,
+          persistence: 'localStorage',
+          property_blacklist: [
+            '$current_url',
+            '$referrer',
+            '$initial_referrer',
+            '$initial_referring_domain',
+            '$email',
+            '$name',
+            'mp_keyword',
+            ...['utm_source', 'utm_medium', 'utm_campaign', 'utm_content', 'utm_term', 'utm_id'].flatMap((key) => [key, 'initial_' + key]),
+          ],
+        })
+        initialized = true
+      }
+      return mp
+    })().finally(() => {
+      initializingPromise = null
+    })
+  }
+  return initializingPromise
 }
 
 function safeProperties(properties = {}) {
@@ -102,15 +145,16 @@ function campaignProperties(fullPath) {
 
 function emit(mixpanelName, ga4Name, properties = {}, context = current) {
   if (!canTrack(context)) return
-  initialize()
   const payload = {
     ...safeProperties(properties),
     ...(context || analyticsRouteContext({ path: window.location.pathname })),
     event_schema_version: SCHEMA_VERSION,
     environment: import.meta.env.PROD ? 'production' : 'development',
   }
-  mixpanel.track(mixpanelName, payload)
   window.gtag?.('event', ga4Name, payload)
+  initialize().then((mp) => {
+    mp?.track?.(mixpanelName, payload)
+  })
 }
 
 function gaEventName(name) {
@@ -122,21 +166,30 @@ export const analytics = {
   identify(userId, properties = {}) {
     adminIdentity = properties.role === 'admin'
     if (!userId || !canTrack()) return
-    initialize()
-    mixpanel.identify(String(userId))
     const safe = safeProperties({ role: properties.role })
-    if (Object.keys(safe).length) mixpanel.people.set(safe)
+    initialize().then((mp) => {
+      if (!mp) return
+      mp.identify?.(String(userId))
+      if (Object.keys(safe).length) mp.people?.set?.(safe)
+    })
   },
   setOnce(properties = {}) {
     if (!canTrack()) return
     const date = properties['Signup Date']
     if (typeof date !== 'string' || !/^\d{4}-\d{2}-\d{2}T/.test(date)) return
-    initialize()
-    mixpanel.people.set_once({ 'Signup Date': date })
+    initialize().then((mp) => {
+      mp?.people?.set_once?.({ 'Signup Date': date })
+    })
   },
   trackPage(pageName, properties = {}) {
     const context = properties.path ? analyticsRouteContext({ path: properties.path, name: properties.name }) : current
     emit('Page View', 'page_view', properties, context)
+  },
+  pageView(path, properties = {}) {
+    this.trackPage(path, properties)
+  },
+  track(eventName, properties = {}) {
+    emit(eventName, gaEventName(eventName), properties)
   },
   trackNavigation(to, from, identity = {}) {
     adminIdentity = Boolean(identity.isAdmin)
@@ -149,17 +202,22 @@ export const analytics = {
     timers.delete('Time on Page')
     current = next
     if (!canTrack(next)) return next
-    initialize()
-    if (identity.userId) mixpanel.identify(String(identity.userId))
+
     const previous = analyticsRouteContext(from)
     const referrer = from?.name ? previous.page_location : externalReferrer()
     if (!from?.name) rememberFirstTouch(to.fullPath || to.path, document.referrer)
     const campaign = campaignProperties(to.fullPath || to.path)
     window.gtag?.('set', { page_location: next.page_location, page_referrer: referrer, page_title: next.page_type, ...campaign })
     const payload = { ...next, page_referrer: referrer, page_title: next.page_type, ...campaign, event_schema_version: SCHEMA_VERSION, environment: import.meta.env.PROD ? 'production' : 'development' }
-    mixpanel.track('Page View', payload)
     window.gtag?.('event', 'page_view', payload)
     timers.set('Time on Page', now)
+
+    initialize().then((mp) => {
+      if (!mp) return
+      if (identity.userId) mp.identify?.(String(identity.userId))
+      mp.track?.('Page View', payload)
+    })
+
     return next
   },
   trackAction(actionName, properties = {}) { emit(actionName, gaEventName(actionName), properties) },
@@ -179,8 +237,20 @@ export const analytics = {
     timers.delete(eventName)
     if (started != null) emit(eventName, gaEventName(eventName), { ...properties, duration_seconds: Math.max(0, (Date.now() - started) / 1000) })
   },
-  alias(userId) { if (userId && canTrack()) { initialize(); mixpanel.alias(String(userId)) } },
-  reset() { if (initialized) mixpanel.reset(); adminIdentity = false; timers.clear() },
+  alias(userId) {
+    if (userId && canTrack()) {
+      initialize().then((mp) => {
+        mp?.alias?.(String(userId))
+      })
+    }
+  },
+  reset() {
+    if (initialized) {
+      getMixpanel().then((mp) => mp?.reset?.())
+    }
+    adminIdentity = false
+    timers.clear()
+  },
 }
 
 const FIRST_TOUCH_KEY = 'su_first_touch'
