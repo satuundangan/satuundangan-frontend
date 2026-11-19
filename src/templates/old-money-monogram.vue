@@ -978,6 +978,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap')
 import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -1415,7 +1418,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Montserrat:wght@300;400;500;600;700&display=swap');
 
 .font-serif {
   font-family: 'Cormorant Garamond', Garamond, 'Times New Roman', serif;

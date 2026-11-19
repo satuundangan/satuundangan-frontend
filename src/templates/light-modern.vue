@@ -434,6 +434,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@200;300;400;500;600&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -795,7 +798,6 @@ watch(() => props.data, (newVal) => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Alex+Brush&family=Montserrat:wght@200;300;400;500;600&display=swap');
 
 .font-alex {
   font-family: 'Alex Brush', cursive;

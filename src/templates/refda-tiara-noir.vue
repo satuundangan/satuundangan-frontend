@@ -398,6 +398,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap')
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useToast } from 'vue-toastification'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
@@ -1087,7 +1090,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=DM+Sans:wght@400;500;600;700&family=Libre+Baskerville:wght@400;700&display=swap');
 
 .noir-invitation {
   --ink: #0c0c0c;

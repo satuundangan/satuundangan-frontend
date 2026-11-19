@@ -667,15 +667,18 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
-import gununganImg from '@/assets/ornaments/gunungan-gold.png'
-import cornerImg from '@/assets/ornaments/jawa-corner-gold.png'
-import dividerImg from '@/assets/ornaments/jawa-divider-gold.png'
+import gununganImg from '@/assets/ornaments/gunungan-gold.webp'
+import cornerImg from '@/assets/ornaments/jawa-corner-gold.webp'
+import dividerImg from '@/assets/ornaments/jawa-divider-gold.webp'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
@@ -1003,7 +1006,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
 
 .font-serif {
   font-family: 'Playfair Display', Georgia, serif;

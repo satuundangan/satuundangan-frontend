@@ -1237,6 +1237,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Marcellus&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap')
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -1639,7 +1642,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Marcellus&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&display=swap');
 
 .font-amiri {
   font-family: 'Amiri', serif;

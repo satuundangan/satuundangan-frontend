@@ -529,6 +529,9 @@ export default {
 </script>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Bungee&family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Serif:wght@400;600&family=Great+Vibes&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -1042,7 +1045,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Bungee&family=Zen+Kaku+Gothic+New:wght@500;700&family=Noto+Serif:wght@400;600&family=Great+Vibes&display=swap');
 
 .font-shinobi {
   font-family: 'Bungee', cursive;

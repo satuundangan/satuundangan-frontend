@@ -658,6 +658,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,400&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -1001,7 +1004,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Montserrat:wght@300;400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,700;1,400&display=swap');
 
 .font-script {
   font-family: 'Great Vibes', cursive;

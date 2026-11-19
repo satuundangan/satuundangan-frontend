@@ -1244,6 +1244,9 @@ export default {
 </script>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Shippori+Mincho:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -1772,7 +1775,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800;900&family=Shippori+Mincho:wght@500;700;800&family=Space+Mono:wght@400;700&display=swap');
 
 /* Typography for Demon Slayer Theme */
 .demon-slayer-theme {
