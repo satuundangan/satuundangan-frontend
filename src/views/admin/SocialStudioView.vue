@@ -1561,10 +1561,10 @@ const STICKERS_LIST = [
 
 // Ornaments List
 const ORNAMENTS_LIST = [
-  { id: 'siger', name: 'Siger Sunda', file: '/assets/ornaments/siger-gold.png' },
-  { id: 'gunungan', name: 'Gunungan Jawa', file: '/assets/ornaments/gunungan-gold.png' },
-  { id: 'gorga', name: 'Gorga Batak', file: '/assets/ornaments/gorga-batak.png' },
-  { id: 'dayak', name: 'Talawang Dayak', file: '/assets/ornaments/dayak-talawang.png' },
+  { id: 'siger', name: 'Siger Sunda', file: '/assets/ornaments/siger-gold.webp' },
+  { id: 'gunungan', name: 'Gunungan Jawa', file: '/assets/ornaments/gunungan-gold.webp' },
+  { id: 'gorga', name: 'Gorga Batak', file: '/assets/ornaments/gorga-batak.webp' },
+  { id: 'dayak', name: 'Talawang Dayak', file: '/assets/ornaments/dayak-talawang.webp' },
 ]
 
 // 12 Rich Template Layout Types
@@ -1702,7 +1702,7 @@ const FULL_CAROUSEL_DECKS = [
         fontSize: 66,
         textAlign: 'left',
         selectedStickers: [],
-        selectedOrnament: '/assets/ornaments/siger-gold.png',
+        selectedOrnament: '/assets/ornaments/siger-gold.webp',
       },
       {
         id: 12,
@@ -1730,7 +1730,7 @@ const FULL_CAROUSEL_DECKS = [
         fontSize: 54,
         textAlign: 'center',
         selectedStickers: [],
-        selectedOrnament: '/assets/ornaments/gunungan-gold.png',
+        selectedOrnament: '/assets/ornaments/gunungan-gold.webp',
       },
       {
         id: 14,
@@ -1744,7 +1744,7 @@ const FULL_CAROUSEL_DECKS = [
         fontSize: 54,
         textAlign: 'center',
         selectedStickers: [],
-        selectedOrnament: '/assets/ornaments/siger-gold.png',
+        selectedOrnament: '/assets/ornaments/siger-gold.webp',
       },
       {
         id: 15,
@@ -1834,7 +1834,7 @@ const FULL_CAROUSEL_DECKS = [
         fontSize: 64,
         textAlign: 'left',
         selectedStickers: [],
-        selectedOrnament: '/assets/ornaments/gunungan-gold.png',
+        selectedOrnament: '/assets/ornaments/gunungan-gold.webp',
       },
       {
         id: 32,

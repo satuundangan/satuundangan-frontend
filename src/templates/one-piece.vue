@@ -425,6 +425,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Pirata+One&family=Special+Elite&family=Cinzel:wght@500;700&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed, nextTick } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -780,7 +783,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Pirata+One&family=Special+Elite&family=Cinzel:wght@500;700&display=swap');
 
 .font-pirate {
   font-family: 'Pirata One', cursive;

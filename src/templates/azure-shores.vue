@@ -330,6 +330,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital,wght@0,400;1,400&family=Nunito:wght@300;400;700;900&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -528,7 +531,6 @@ watch(() => props.data, (newVal) => { if (newVal) { data.value = newVal; initDat
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital,wght@0,400;1,400&family=Nunito:wght@300;400;700;900&display=swap');
 .font-serif { font-family: 'DM Serif Display', serif; }
 .font-sans { font-family: 'Nunito', sans-serif; }
 

@@ -631,6 +631,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Shippori+Mincho:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;500;600;700&display=swap')
 import { ref, onMounted, onUnmounted, watch, computed, nextTick, h } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
@@ -990,7 +993,6 @@ watch(
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Shippori+Mincho:ital,wght@0,400;0,600;1,400&family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 .font-shippori {
   font-family: 'Shippori Mincho', serif;
