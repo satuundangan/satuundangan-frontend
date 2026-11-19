@@ -429,6 +429,9 @@ let pollInterval = null
 let slideInterval = null
 let wishInterval = null
 let clockInterval = null
+let currentEtag = null
+let idleCount = 0
+let currentPollingDelay = 5000
 
 // Computed: Couple Name
 const coupleDisplay = computed(() => {
@@ -771,11 +774,39 @@ async function generateQrCode(slug) {
   }
 }
 
+// Adaptive Polling Adjustment (5s active, 8s idle after >= 10 unmodified responses)
+function adjustPollingInterval() {
+  const targetDelay = idleCount >= 10 ? 8000 : 5000
+  if (targetDelay !== currentPollingDelay) {
+    currentPollingDelay = targetDelay
+    if (pollInterval) {
+      clearInterval(pollInterval)
+      pollInterval = setInterval(fetchFeed, currentPollingDelay)
+    }
+  }
+}
+
 // Fetch Feed from Backend
 async function fetchFeed() {
   if (!currentSlug.value) return
   try {
-    const res = await getLiveScreenFeed(currentSlug.value)
+    const res = await getLiveScreenFeed(currentSlug.value, { etag: currentEtag })
+    if (res?.notModified || res?.status === 304) {
+      idleCount++
+      syncStatus.value = 'connected'
+      lastSyncTime.value = new Date()
+      adjustPollingInterval()
+      return
+    }
+
+    idleCount = 0
+    if (res?.etag) {
+      currentEtag = res.etag
+    } else if (res?.headers?.get && res.headers.get('etag')) {
+      currentEtag = res.headers.get('etag')
+    }
+    adjustPollingInterval()
+
     const feed = res?.data || res || {}
 
     if (feed.invitation) {
@@ -805,6 +836,9 @@ async function fetchFeed() {
 
 watch(currentSlug, (newSlug) => {
   if (newSlug) {
+    currentEtag = null
+    idleCount = 0
+    adjustPollingInterval()
     generateQrCode(newSlug)
     fetchFeed()
   }
@@ -819,8 +853,10 @@ onMounted(async () => {
     await fetchFeed()
   }
 
-  // Setup periodic polling every 3.5s
-  pollInterval = setInterval(fetchFeed, 3500)
+  // Setup periodic polling with default 5000ms (adaptive backoff to 8000ms on idle)
+  currentPollingDelay = 5000
+  if (pollInterval) clearInterval(pollInterval)
+  pollInterval = setInterval(fetchFeed, currentPollingDelay)
 
   // Slideshow rotation every 9s
   slideInterval = setInterval(nextSlide, 9000)
@@ -839,7 +875,10 @@ onMounted(async () => {
 })
 
 onUnmounted(() => {
-  if (pollInterval) clearInterval(pollInterval)
+  if (pollInterval) {
+    clearInterval(pollInterval)
+    pollInterval = null
+  }
   if (slideInterval) clearInterval(slideInterval)
   if (wishInterval) clearInterval(wishInterval)
   if (clockInterval) clearInterval(clockInterval)
