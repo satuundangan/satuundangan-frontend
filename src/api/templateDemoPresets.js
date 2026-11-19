@@ -72,7 +72,7 @@ export const TEMPLATE_DEMO_PRESETS = {
       dateTime: '2027-06-12T11:00:00.000Z',
     },
     dressCode: 'Busana Nuansa Hijau Botol, Sage, atawa Batik Sunda Parahyangan',
-    musicChoice: 'traditional-degung-sunda.wav',
+    musicChoice: 'traditional-degung-sunda.mp3',
     bankAccounts: [
       { bankName: 'BCA', accountNumber: '7720918231', accountName: 'Cecep Farhan Fauzan' },
       { bankName: 'BSI', accountNumber: '7182938475', accountName: 'Neng Nissa Salsabila' }

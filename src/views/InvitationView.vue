@@ -269,7 +269,7 @@ onMounted(async () => {
         // Nusantara & Adat Heritage
         'bali-payas-agung': 'traditional-gamelan-bali.ogg',
         'minang-suntiang-emas': 'wedding-sacred-ceremony.mp3',
-        'sunda-sabilulungan': 'traditional-degung-sunda.wav',
+        'sunda-sabilulungan': 'traditional-degung-sunda.mp3',
         'jawa-truntum': 'traditional-gamelan-jawa.ogg',
         'batak-ragi-hotang': 'wedding-warm-reception.mp3',
         'betawi-palang-pintu': 'wedding-warm-reception.mp3',

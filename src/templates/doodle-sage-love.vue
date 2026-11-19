@@ -1036,6 +1036,9 @@
 </template>
 
 <script setup>
+import { loadGoogleFont } from '@/utils/fontLoader'
+
+loadGoogleFont('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&display=swap')
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import MusicControl from '@/components/invitation/MusicControl.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
@@ -1454,7 +1457,6 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-@import url('https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Patrick+Hand&family=Nunito:wght@400;600;700;800&display=swap');
 
 .font-gaegu {
   font-family: 'Gaegu', cursive, sans-serif;
