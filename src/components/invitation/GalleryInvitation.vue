@@ -3,24 +3,40 @@
     <!-- Thumbnail Grid -->
     <div class="grid-container">
       <div v-for="(item, index) in items" :key="index" class="grid-item" @click="openLightbox(index)">
-        <img :src="item.thumbnail || item.src" :alt="item.alt || `Image ${index + 1}`" class="thumbnail-image"
-          loading="lazy" />
+        <img
+          :src="getThumbnailSrc(item)"
+          :alt="item.alt || ('Foto Galeri ' + (index + 1))"
+          class="thumbnail-image"
+          loading="lazy"
+          decoding="async"
+          @error="handleThumbError($event, item)"
+        />
         <div v-if="item.caption" class="image-caption">{{ item.caption }}</div>
       </div>
     </div>
 
     <!-- Lightbox Overlay -->
     <Teleport to="body">
-      <div v-if="lightboxVisible" class="lightbox-overlay" @click="closeLightbox" @touchstart="handleTouchStart"
-        @touchmove="handleTouchMove" @touchend="handleTouchEnd">
+      <div
+        v-if="lightboxVisible"
+        class="lightbox-overlay"
+        @click="closeLightbox"
+        @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
+        @touchend="handleTouchEnd"
+      >
         <button class="close-btn" @click.stop="closeLightbox">×</button>
         <button class="nav-btn prev-btn" @click.stop="prevImage" @touchstart.stop>‹</button>
 
         <div class="lightbox-content">
           <transition :name="transitionDirection" mode="out-in">
-            <div class="slide-container" :key="currentIndex">
-              <img :src="items[currentIndex].src" :alt="items[currentIndex].alt || `Image ${currentIndex + 1}`"
-                class="lightbox-image" ref="lightboxImage" />
+            <div class="slide-container" :key="currentIndex" v-if="items[currentIndex]">
+              <img
+                :src="getFullSrc(items[currentIndex])"
+                :alt="items[currentIndex].alt || ('Foto Galeri ' + (currentIndex + 1))"
+                class="lightbox-image"
+                ref="lightboxImage"
+              />
               <div v-if="items[currentIndex].caption" class="lightbox-caption">
                 {{ items[currentIndex].caption }}
               </div>
@@ -35,15 +51,60 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 
 const props = defineProps({
   items: {
     type: Array,
-    required: true,
-    validator: (items) => items.every(item => 'src' in item)
+    default: () => []
+  },
+  images: {
+    type: Array,
+    default: () => []
   }
 })
+
+// Unified gallery items supporting both `items` and `images` props
+const items = computed(() => {
+  if (Array.isArray(props.items) && props.items.length > 0) {
+    return props.items
+  }
+  if (Array.isArray(props.images) && props.images.length > 0) {
+    return props.images
+  }
+  return []
+})
+
+// Normalization & Helpers
+const getFullSrc = (item) => {
+  if (!item) return ''
+  return item.fileUrl || item.src || item.url || (typeof item === 'string' ? item : '')
+}
+
+const getThumbnailSrc = (item) => {
+  if (item?.thumbnailUrl) {
+    return item.thumbnailUrl
+  }
+  if (item?.thumbnail && item.thumbnail !== item.src) {
+    return item.thumbnail
+  }
+  const fullSrc = getFullSrc(item)
+  if (typeof fullSrc === 'string' && /\.webp$/i.test(fullSrc) && !fullSrc.includes('-thumb')) {
+    return fullSrc.replace(/\.webp$/i, '-thumb.webp')
+  }
+  return fullSrc
+}
+
+const handleThumbError = (e, item) => {
+  if (!e || !e.target) return
+  const fullSrc = getFullSrc(item)
+  if (fullSrc && e.target.src !== fullSrc && !e.target.dataset?.fallbackApplied) {
+    if (e.target.dataset) {
+      e.target.dataset.fallbackApplied = 'true'
+    }
+    e.target.src = fullSrc
+  }
+}
 
 // Lightbox state
 const lightboxVisible = ref(false)
@@ -67,7 +128,8 @@ const closeLightbox = () => {
 }
 
 const nextImage = () => {
-  if (currentIndex.value < props.items.length - 1) {
+  if (!items.value.length) return
+  if (currentIndex.value < items.value.length - 1) {
     transitionDirection.value = 'slide-next'
     currentIndex.value++
   } else {
@@ -77,12 +139,13 @@ const nextImage = () => {
 }
 
 const prevImage = () => {
+  if (!items.value.length) return
   if (currentIndex.value > 0) {
     transitionDirection.value = 'slide-prev'
     currentIndex.value--
   } else {
     transitionDirection.value = 'slide-prev'
-    currentIndex.value = props.items.length - 1
+    currentIndex.value = items.value.length - 1
   }
 }
 
@@ -136,6 +199,17 @@ onMounted(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', handleKeyDown)
   document.body.style.overflow = ''
+})
+
+defineExpose({
+  items,
+  getFullSrc,
+  getThumbnailSrc,
+  handleThumbError,
+  openLightbox,
+  closeLightbox,
+  currentIndex,
+  lightboxVisible
 })
 </script>
 
