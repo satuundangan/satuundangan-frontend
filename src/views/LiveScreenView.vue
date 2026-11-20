@@ -115,7 +115,7 @@
     <!-- ============================================== -->
     <!-- MAIN STAGE DISPLAY (CENTER COUPLE & EVENT INFO) -->
     <!-- ============================================== -->
-    <main class="relative z-10 w-full h-full flex flex-col justify-between p-6 md:p-12 pb-24 md:pb-28">
+    <main class="relative z-10 w-full h-full flex flex-col justify-between p-6 md:px-12 md:pt-10 pb-28">
       <!-- Top Stage Header -->
       <div class="flex items-center justify-between text-center w-full">
         <div class="w-1/3 text-left">
@@ -137,7 +137,7 @@
       </div>
 
       <!-- Center Hero Couple Content -->
-      <div class="flex-1 flex flex-col items-center justify-center text-center px-4 max-w-5xl mx-auto space-y-6 my-auto">
+      <div class="flex-1 min-h-0 flex flex-col items-center justify-center text-center px-4 md:pr-40 max-w-5xl mx-auto space-y-[2.5vh] my-auto">
         <!-- Subtitle badge -->
         <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/10 backdrop-blur-md shadow-lg shadow-black/40">
           <span class="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-ping"></span>
@@ -148,7 +148,7 @@
 
         <!-- Couple Names (Grand Serif Display) -->
         <h1
-          class="text-5xl sm:text-6xl md:text-8xl lg:text-9xl font-serif font-extralight tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-200 to-[#d4af37] drop-shadow-2xl leading-none"
+          class="text-[clamp(2.5rem,min(11vh,8vw),9rem)] max-w-full break-words font-serif font-extralight tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-200 to-[#d4af37] drop-shadow-2xl leading-none"
           data-testid="couple-names"
         >
           {{ coupleDisplay }}
@@ -176,7 +176,7 @@
           data-testid="venue-info"
         >
           <i class="fa-solid fa-location-dot text-[#d4af37]"></i>
-          <span>{{ venueDisplay }}</span>
+          <span class="line-clamp-2">{{ venueDisplay }}</span>
         </p>
       </div>
 
@@ -219,7 +219,7 @@
               "{{ currentWish.message }}"
             </span>
             <span
-              v-if="currentWish.attendance || currentWish.rsvpStatus"
+              v-if="currentWish.attendance === 'ATTENDING' || String(currentWish.rsvpStatus || '').toLowerCase() === 'hadir'"
               class="hidden sm:inline-flex px-2 py-0.5 rounded text-[10px] uppercase font-bold shrink-0 bg-emerald-950/80 text-emerald-300 border border-emerald-500/30"
             >
               Hadir
@@ -240,6 +240,14 @@
         <span>{{ currentWishIndex + 1 }}</span>
         <span>/</span>
         <span>{{ wishesList.length }}</span>
+      </div>
+
+      <!-- Powered by (NAD-114) -->
+      <div class="flex items-center gap-4 shrink-0" data-testid="powered-by">
+        <div class="w-px h-4 bg-[#d4af37]/30"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.2em] text-slate-500 whitespace-nowrap font-light">
+          Powered by <span class="text-amber-300/80 font-semibold">satuundangan.id</span>
+        </span>
       </div>
     </footer>
 

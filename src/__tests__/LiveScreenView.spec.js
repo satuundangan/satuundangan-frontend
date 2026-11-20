@@ -183,6 +183,59 @@ describe('LiveScreenView.vue (SAT-64)', () => {
     wrapper.unmount()
   })
 
+  it('3b. Menampilkan baris "Powered by satuundangan.id" di ticker (NAD-114)', async () => {
+    const wrapper = mount(LiveScreenView, {
+      props: { slug: 'romeo-juliet' },
+    })
+
+    await flushPromises()
+
+    const poweredBy = wrapper.find('[data-testid="powered-by"]')
+    expect(poweredBy.exists()).toBe(true)
+    expect(poweredBy.text()).toContain('Powered by')
+    expect(poweredBy.text()).toContain('satuundangan.id')
+
+    wrapper.unmount()
+  })
+
+  it('3c. Badge Hadir hanya muncul untuk tamu hadir, bukan tidak_hadir (NAD-114)', async () => {
+    invitationApi.getLiveScreenFeed.mockResolvedValue({
+      ...mockFeedData,
+      wishes: [
+        {
+          id: 'wish-2',
+          senderName: 'Budi',
+          message: 'Mohon maaf tidak bisa hadir',
+          rsvpStatus: 'tidak_hadir',
+        },
+      ],
+    })
+
+    const wrapper = mount(LiveScreenView, {
+      props: { slug: 'romeo-juliet' },
+    })
+
+    await flushPromises()
+
+    const wishMessage = wrapper.find('[data-testid="wish-message"]')
+    expect(wishMessage.text()).toContain('Budi')
+    expect(wishMessage.find('span.uppercase').exists()).toBe(false)
+
+    wrapper.unmount()
+
+    // Sebaliknya: rsvpStatus 'hadir' tetap menampilkan badge
+    invitationApi.getLiveScreenFeed.mockResolvedValue({
+      ...mockFeedData,
+      wishes: [{ id: 'wish-3', senderName: 'Sari', message: 'Sampai jumpa!', rsvpStatus: 'hadir' }],
+    })
+    const attending = mount(LiveScreenView, { props: { slug: 'romeo-juliet' } })
+    await flushPromises()
+    const badge = attending.find('[data-testid="wish-message"] span.uppercase')
+    expect(badge.exists()).toBe(true)
+    expect(badge.text()).toBe('Hadir')
+    attending.unmount()
+  })
+
   it('4. Toggle fullscreen dan audio kontrol berfungsi', async () => {
     const wrapper = mount(LiveScreenView, {
       props: { slug: 'romeo-juliet' },
