@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
     
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
-      <Topbar title="Undangan Saya" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      <Topbar title="Undangan Saya" showButton @toggleSidebar="toggleSidebar" />
       
       <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar">
         <!-- Header Page -->
@@ -154,12 +154,13 @@ import { getInvitationPreviewUrl } from "@/utils/invitationUrls"
 import { useToast } from "vue-toastification"
 import { useRouter } from "vue-router"
 import Swal from "sweetalert2"
+import { useDashboardSidebar } from "@/composables/useDashboardSidebar"
 
 const router = useRouter()
 const toast = useToast()
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 const invitations = ref([])
 const loading = ref(true)
-const isSidebarOpen = ref(window.innerWidth >= 768)
 const showHelpModal = ref(false)
 const activeFilter = ref('all')
 

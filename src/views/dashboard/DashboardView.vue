@@ -1,11 +1,11 @@
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
     <!-- Sidebar -->
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
       <!-- Topbar -->
-      <Topbar title="Dashboard" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" @startTour="startDashboardTour({ force: true })" />
+      <Topbar title="Dashboard" showButton @toggleSidebar="toggleSidebar" @startTour="startDashboardTour({ force: true })" />
 
       <main class="p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto custom-scrollbar">
         
@@ -274,9 +274,11 @@ import { getInvitationPublicUrl } from "@/utils/invitationUrls"
 import { useAuthStore } from "@/stores/auth"
 import { useToast } from "vue-toastification"
 import { startDashboardTour } from "@/composables/useOnboardingTour"
+import { useDashboardSidebar } from "@/composables/useDashboardSidebar"
 
 const toast = useToast()
 const auth = useAuthStore()
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 const invitations = ref([])
 const statsData = ref({
   total_invitations: 0,
@@ -286,7 +288,6 @@ const statsData = ref({
 const loading = ref(true)
 const invitationLoadError = ref('')
 const invitationRequiresLogin = ref(false)
-const isSidebarOpen = ref(window.innerWidth >= 768)
 
 const userName = computed(() => auth.user?.name || auth.user?.username || 'Pengguna')
 const userFirstName = computed(() => {

@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
 
     <div
       :class="[
@@ -8,7 +8,7 @@
         isSidebarOpen ? 'md:ml-64' : 'md:ml-0',
       ]"
     >
-      <Topbar title="Daftar Tamu" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      <Topbar title="Daftar Tamu" showButton @toggleSidebar="toggleSidebar" />
 
       <main class="p-4 md:p-8 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
         <!-- Header & Main Actions -->
@@ -1468,9 +1468,11 @@ import {
   getGuestUrl as utilGetGuestUrl,
   formatGuestMessage as utilFormatGuestMessage,
 } from '@/utils/whatsappDistribution'
+import { useDashboardSidebar } from '@/composables/useDashboardSidebar'
 
 const toast = useToast()
 const route = useRoute()
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 const invitations = ref([])
 const selectedInvitationId = ref(null)
 const guests = ref([])
@@ -1483,7 +1485,6 @@ const importSummary = ref({ success: 0, failed: [] })
 const bulkText = ref('')
 const isSubmitting = ref(false)
 const searchQuery = ref('')
-const isSidebarOpen = ref(window.innerWidth >= 768)
 const excelInput = ref(null)
 
 // Bulk Selection State
