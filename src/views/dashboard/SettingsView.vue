@@ -1,6 +1,6 @@
 <template>
   <div class="flex h-screen bg-gray-50 overflow-hidden pb-20 md:pb-0">
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
 
     <div
       :class="[
@@ -8,7 +8,7 @@
         isSidebarOpen ? 'md:ml-64' : 'md:ml-0',
       ]"
     >
-      <Topbar title="Pengaturan" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      <Topbar title="Pengaturan" showButton @toggleSidebar="toggleSidebar" />
 
       <main class="p-4 md:p-8 space-y-6 overflow-y-auto">
         <div class="mb-2">
@@ -224,12 +224,13 @@ import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import { useRoute, useRouter } from 'vue-router'
 import { resendVerification, updateProfile } from '@/api/auth'
+import { useDashboardSidebar } from '@/composables/useDashboardSidebar'
 
 const toast = useToast()
 const auth = useAuthStore()
 const route = useRoute()
 const router = useRouter()
-const isSidebarOpen = ref(window.innerWidth >= 768)
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 
 const userName = computed(() => auth.user?.name || 'User')
 const userEmail = computed(() => auth.user?.email || 'email@example.com')

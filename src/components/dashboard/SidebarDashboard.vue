@@ -38,7 +38,7 @@
             <li v-for="item in primaryMenu" :key="item.name">
               <router-link 
                 :to="item.to" 
-                @click="$emit('close')"
+                @click="handleNavClick"
                 class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
                 :class="route.path === item.to || (route.path.startsWith(item.to) && item.to !== '/dashboard')
                   ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
@@ -61,7 +61,7 @@
             <li v-for="item in secondaryMenu" :key="item.name">
               <router-link 
                 :to="item.to" 
-                @click="$emit('close')"
+                @click="handleNavClick"
                 class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
                 :class="route.path === item.to 
                   ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
@@ -112,7 +112,13 @@ defineProps({
   isOpen: { type: Boolean, default: false }
 })
 
-defineEmits(['close'])
+const emit = defineEmits(['close'])
+
+const handleNavClick = () => {
+  if (typeof window !== 'undefined' && window.innerWidth < 768) {
+    emit('close')
+  }
+}
 
 const router = useRouter()
 const route = useRoute()

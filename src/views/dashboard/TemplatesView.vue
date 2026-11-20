@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" />
+    <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
-      <Topbar title="Katalog Template" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" />
+      <Topbar title="Katalog Template" showButton @toggleSidebar="toggleSidebar" />
 
       <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
@@ -136,14 +136,15 @@ import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getTemplateDesigns } from '@/api/templateDesign'
 import { getCategories } from '@/api/category'
 import { resolveTemplateThumbnail } from '@/utils/templateRegistry'
+import { useDashboardSidebar } from "@/composables/useDashboardSidebar"
 
 const router = useRouter()
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 const templates = ref([])
 const categories = ref([{ id: 'all', name: 'Semua' }])
 const selectedCategory = ref('all')
 const selectedSort = ref('newest')
 const loading = ref(true)
-const isSidebarOpen = ref(window.innerWidth >= 768)
 
 onMounted(async () => {
   try {

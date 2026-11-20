@@ -15,10 +15,12 @@ import {
 import { useToast } from 'vue-toastification'
 import { useAuthStore } from '@/stores/auth'
 import Swal from 'sweetalert2'
+import { useDashboardSidebar } from '@/composables/useDashboardSidebar'
 
 const router = useRouter()
 const toast = useToast()
 const authStore = useAuthStore()
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 
 const loading = ref(true)
 const dashboardData = ref(null)
@@ -161,10 +163,10 @@ onMounted(async () => {
 
 <template>
   <div class="min-h-screen bg-slate-50 flex">
-    <SidebarDashboard />
+    <SidebarDashboard :isOpen="isSidebarOpen" @close="closeSidebar" />
 
-    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
-      <TopbarDashboard title="Dashboard Reseller" />
+    <div :class="['flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
+      <TopbarDashboard title="Dashboard Reseller" @toggleSidebar="toggleSidebar" />
 
       <main class="flex-1 overflow-y-auto p-4 md:p-6 pb-24 md:pb-6">
         <div v-if="loading" class="flex justify-center items-center h-64">

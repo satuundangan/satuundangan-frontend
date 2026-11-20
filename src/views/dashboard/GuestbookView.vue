@@ -1,9 +1,9 @@
 <template>
   <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
-    <Sidebar :isOpen="isSidebarOpen" @close="isSidebarOpen = false" class="no-print" />
+    <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" class="no-print" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
-      <Topbar title="Buku Tamu & Meja Resepsi" showButton @toggleSidebar="isSidebarOpen = !isSidebarOpen" class="no-print" />
+      <Topbar title="Buku Tamu & Meja Resepsi" showButton @toggleSidebar="toggleSidebar" class="no-print" />
 
       <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
         <!-- Top Navigation / Tab Switcher -->
@@ -1317,12 +1317,13 @@ import * as XLSX from "xlsx"
 import { extractQrToken } from "@/utils/qrCheckIn"
 import QRCode from "qrcode"
 import { trackAction } from "@/utils/telemetry.js"
+import { useDashboardSidebar } from "@/composables/useDashboardSidebar"
 
 const toast = useToast()
 
 // View states
 const activeTab = ref('standee') // 'standee' | 'wishes' | 'scanner'
-const isSidebarOpen = ref(window.innerWidth >= 768)
+const { isSidebarOpen, toggleSidebar, closeSidebar } = useDashboardSidebar()
 
 // Standee states
 const showStandeeModal = ref(false)
