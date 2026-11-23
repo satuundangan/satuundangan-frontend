@@ -133,4 +133,48 @@ describe('InvitationsTable.vue (ADM-097)', () => {
     const publishLink = links.find((l) => l.props().to === '/checkout?slug=draft-baru')
     expect(publishLink).toBeDefined()
   })
+
+  it('renders visual preview thumbnail, couple names, and active management shortcuts', () => {
+    const mockInvitations = [
+      {
+        id: 42,
+        title: 'The Wedding of Romeo & Juliet',
+        slug: 'romeo-juliet',
+        groomName: 'Romeo Montague',
+        brideName: 'Juliet Capulet',
+        isPublished: true,
+        package: 'pro',
+        templateDesign: {
+          name: 'Royal Blossom',
+          thumbnailUrl: 'https://cdn.satuundangan.id/blossom-thumb.webp',
+        },
+      },
+    ]
+
+    const wrapper = mount(InvitationsTable, {
+      props: { invitations: mockInvitations },
+      global: {
+        stubs: {
+          RouterLink: RouterLinkStub,
+        },
+      },
+    })
+
+    // Check thumbnail image
+    const img = wrapper.find('img[src="https://cdn.satuundangan.id/blossom-thumb.webp"]')
+    expect(img.exists()).toBe(true)
+
+    // Check couple names
+    expect(wrapper.text()).toContain('Romeo Montague & Juliet Capulet')
+
+    // Check active management shortcuts
+    const links = wrapper.findAllComponents(RouterLinkStub)
+    const guestsLink = links.find((l) => l.props().to === '/guests?invitationId=42')
+    const guestbookLink = links.find((l) => l.props().to === '/guestbook?invitationId=42')
+    const liveScreenLink = links.find((l) => l.props().to === '/live-screen/romeo-juliet')
+
+    expect(guestsLink).toBeDefined()
+    expect(guestbookLink).toBeDefined()
+    expect(liveScreenLink).toBeDefined()
+  })
 })

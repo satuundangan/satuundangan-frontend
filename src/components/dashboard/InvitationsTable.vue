@@ -15,9 +15,61 @@
         <tbody class="divide-y divide-slate-100 text-xs">
           <tr v-for="invite in invitations" :key="invite.id" class="hover:bg-slate-50/60 transition-colors">
             <td class="px-6 py-4">
-              <div class="font-extrabold text-slate-900">{{ invite.title || 'Undangan Tanpa Judul' }}</div>
-              <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-tight mt-0.5">
-                {{ invite.templateDesign?.name || 'Default Template' }}
+              <div class="flex items-center gap-3.5">
+                <!-- Preview Thumbnail -->
+                <div class="relative w-12 h-14 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shrink-0 flex items-center justify-center shadow-2xs">
+                  <img
+                    v-if="getThumbnailUrl(invite) && !failedImages.has(invite.id)"
+                    :src="getThumbnailUrl(invite)"
+                    :alt="invite.title || 'Thumbnail'"
+                    class="w-full h-full object-cover"
+                    loading="lazy"
+                    @error="handleImageError(invite.id)"
+                  />
+                  <div v-else class="text-slate-300 flex items-center justify-center w-full h-full bg-slate-50">
+                    <i class="fa-solid fa-image text-slate-400 text-base"></i>
+                  </div>
+                </div>
+
+                <!-- Info and Shortcuts -->
+                <div class="min-w-0 space-y-0.5">
+                  <div class="font-extrabold text-slate-900 text-sm truncate max-w-xs">{{ invite.title || 'Undangan Tanpa Judul' }}</div>
+                  <div v-if="getCoupleNames(invite)" class="text-xs font-semibold text-[#a47148] flex items-center gap-1.5 truncate max-w-xs">
+                    <i class="fa-solid fa-heart text-[9px] text-[#a47148]/70"></i>
+                    <span>{{ getCoupleNames(invite) }}</span>
+                  </div>
+                  <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-tight">
+                    {{ invite.templateDesign?.name || 'Default Template' }}
+                  </div>
+
+                  <!-- Direct Management Shortcuts for Active Invitations -->
+                  <div v-if="invite.isPublished" class="flex flex-wrap items-center gap-1.5 pt-1.5">
+                    <router-link
+                      :to="`/guests?invitationId=${invite.id}`"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-50 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 border border-slate-200/60 transition-colors"
+                      title="Daftar Tamu"
+                    >
+                      <i class="fa-solid fa-users text-[9px] text-emerald-600"></i>
+                      <span>Daftar Tamu</span>
+                    </router-link>
+                    <router-link
+                      :to="`/guestbook?invitationId=${invite.id}`"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-50 hover:bg-purple-50 text-slate-600 hover:text-purple-700 border border-slate-200/60 transition-colors"
+                      title="Buku Tamu"
+                    >
+                      <i class="fa-solid fa-book-open text-[9px] text-purple-600"></i>
+                      <span>Buku Tamu</span>
+                    </router-link>
+                    <router-link
+                      :to="`/live-screen/${invite.slug}`"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-slate-50 hover:bg-blue-50 text-slate-600 hover:text-blue-700 border border-slate-200/60 transition-colors"
+                      title="Live Screen"
+                    >
+                      <i class="fa-solid fa-desktop text-[9px] text-blue-600"></i>
+                      <span>Live Screen</span>
+                    </router-link>
+                  </div>
+                </div>
               </div>
             </td>
             <td class="px-6 py-4">
@@ -97,14 +149,64 @@
     <!-- Mobile Card Layout -->
     <div class="md:hidden space-y-3">
       <div v-for="invite in invitations" :key="invite.id" class="bg-white p-4 rounded-2xl shadow-xs border border-slate-100 space-y-3">
-        <div class="flex justify-between items-start gap-2">
-          <div class="min-w-0 flex-1">
-            <div class="font-extrabold text-slate-900 text-sm truncate">{{ invite.title || 'Undangan Tanpa Judul' }}</div>
-            <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-tight">{{ invite.templateDesign?.name || 'Default Template' }}</div>
+        <!-- Header with Thumbnail -->
+        <div class="flex items-start gap-3">
+          <div class="relative w-12 h-14 rounded-xl overflow-hidden bg-slate-100 border border-slate-200/80 shrink-0 flex items-center justify-center shadow-2xs">
+            <img
+              v-if="getThumbnailUrl(invite) && !failedImages.has(invite.id)"
+              :src="getThumbnailUrl(invite)"
+              :alt="invite.title || 'Thumbnail'"
+              class="w-full h-full object-cover"
+              loading="lazy"
+              @error="handleImageError(invite.id)"
+            />
+            <div v-else class="text-slate-300 flex items-center justify-center w-full h-full bg-slate-50">
+              <i class="fa-solid fa-image text-slate-400 text-sm"></i>
+            </div>
           </div>
-          <span :class="getStatusBadgeClass(invite)" class="px-2 py-0.5 rounded-md text-[9px] font-black border uppercase shrink-0">
-            {{ getStatusText(invite) }}
-          </span>
+          <div class="min-w-0 flex-1">
+            <div class="flex justify-between items-start gap-2">
+              <div class="min-w-0 flex-1">
+                <div class="font-extrabold text-slate-900 text-sm truncate">{{ invite.title || 'Undangan Tanpa Judul' }}</div>
+                <div v-if="getCoupleNames(invite)" class="text-xs font-semibold text-[#a47148] flex items-center gap-1 truncate">
+                  <i class="fa-solid fa-heart text-[8px] text-[#a47148]/70"></i>
+                  <span>{{ getCoupleNames(invite) }}</span>
+                </div>
+                <div class="text-[10px] text-slate-400 font-semibold uppercase tracking-tight">{{ invite.templateDesign?.name || 'Default Template' }}</div>
+              </div>
+              <span :class="getStatusBadgeClass(invite)" class="px-2 py-0.5 rounded-md text-[9px] font-black border uppercase shrink-0">
+                {{ getStatusText(invite) }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mobile Direct Management Shortcuts for Active Invitations -->
+        <div v-if="invite.isPublished" class="grid grid-cols-3 gap-2 pt-1 border-t border-slate-100 text-[11px] font-bold">
+          <router-link
+            :to="`/guests?invitationId=${invite.id}`"
+            class="py-1.5 px-2 rounded-xl bg-slate-50 hover:bg-emerald-50 text-slate-700 hover:text-emerald-700 text-center transition-colors flex items-center justify-center gap-1 border border-slate-200/60"
+            title="Daftar Tamu"
+          >
+            <i class="fa-solid fa-users text-[10px] text-emerald-600"></i>
+            <span class="truncate">Daftar Tamu</span>
+          </router-link>
+          <router-link
+            :to="`/guestbook?invitationId=${invite.id}`"
+            class="py-1.5 px-2 rounded-xl bg-slate-50 hover:bg-purple-50 text-slate-700 hover:text-purple-700 text-center transition-colors flex items-center justify-center gap-1 border border-slate-200/60"
+            title="Buku Tamu"
+          >
+            <i class="fa-solid fa-book-open text-[10px] text-purple-600"></i>
+            <span class="truncate">Buku Tamu</span>
+          </router-link>
+          <router-link
+            :to="`/live-screen/${invite.slug}`"
+            class="py-1.5 px-2 rounded-xl bg-slate-50 hover:bg-blue-50 text-slate-700 hover:text-blue-700 text-center transition-colors flex items-center justify-center gap-1 border border-slate-200/60"
+            title="Live Screen"
+          >
+            <i class="fa-solid fa-desktop text-[10px] text-blue-600"></i>
+            <span class="truncate">Live Screen</span>
+          </router-link>
         </div>
 
         <div class="grid grid-cols-2 gap-3 py-2.5 border-y border-slate-100 text-xs">
@@ -169,6 +271,7 @@
 </template>
 
 <script setup>
+import { ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { getInvitationPublicUrl } from '@/utils/invitationUrls'
 
@@ -179,6 +282,26 @@ defineProps({
 })
 
 defineEmits(['edit', 'delete', 'preview'])
+
+const failedImages = ref(new Set())
+
+function handleImageError(id) {
+  failedImages.value.add(id)
+}
+
+function getThumbnailUrl(invite) {
+  return invite.templateDesign?.thumbnailUrl || invite.bridePhotoUrl || invite.photoCoupleUrl || ''
+}
+
+function getCoupleNames(invite) {
+  if (invite.coupleName) return invite.coupleName
+  const groom = invite.groomNickname || invite.groomName
+  const bride = invite.brideNickname || invite.brideName
+  if (groom && bride) return `${groom} & ${bride}`
+  if (groom) return groom
+  if (bride) return bride
+  return ''
+}
 
 function copyLink(invitation) {
   const fullUrl = getInvitationPublicUrl(invitation)
