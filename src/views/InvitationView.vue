@@ -1014,9 +1014,12 @@ function getLocalPreviewPayload(slug) {
                 <h4 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">
                   {{ guestDisplayName }}
                 </h4>
-                <div v-if="guestData?.tableNumber" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black">
+                <div v-if="guestData?.tableNumber" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-black mx-1">
                   <i class="fa-solid fa-chair text-emerald-600"></i>
                   <span>Meja: {{ guestData.tableNumber }}</span>
+                </div>
+                <div v-if="guestData?.sessionName" class="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-xs font-black mx-1">
+                  <span>Sesi: {{ guestData.sessionName }}</span>
                 </div>
               </div>
 

@@ -16,8 +16,36 @@ export function csvCell(value) {
 
 export function toCsv(columns, rows) {
   const header = columns.map((column) => csvCell(column.label)).join(',')
-  const lines = rows.map((row) => columns.map((column) => csvCell(column.value(row))).join(','))
+  const lines = rows.map((row, idx) => columns.map((column) => csvCell(column.value(row, idx))).join(','))
   return [header, ...lines].join('\r\n')
+}
+
+export const guestExportColumns = [
+  { label: 'No', value: (r, idx) => (idx !== undefined ? idx + 1 : r.no || '') },
+  { label: 'Nama Tamu', value: (r) => r.name || '' },
+  { label: 'Nomor WhatsApp', value: (r) => r.phoneNumber || '' },
+  { label: 'Kategori', value: (r) => r.group || 'Umum' },
+  { label: 'Sesi', value: (r) => r.sessionName || r.session || '-' },
+  { label: 'No. Meja', value: (r) => r.tableNumber || '-' },
+  { label: 'Status Kirim', value: (r) => (r.statusSend === 'sent' ? 'Sudah Terkirim' : 'Belum Terkirim') },
+  { label: 'Status RSVP', value: (r) => r.rsvpStatus || 'Belum' },
+  { label: 'Souvenir Diberikan', value: (r) => (r.souvenirGiven ? 'Sudah' : 'Belum') },
+  { label: 'Kado Fisik/Amplop', value: (r) => r.physicalGiftNotes || '-' },
+]
+
+export function formatGuestExportRow(guest, idx = 0) {
+  return {
+    No: idx + 1,
+    'Nama Tamu': guest.name || '',
+    'Nomor WhatsApp': guest.phoneNumber || '',
+    Kategori: guest.group || 'Umum',
+    Sesi: guest.sessionName || guest.session || '-',
+    'No. Meja': guest.tableNumber || '-',
+    'Status Kirim': guest.statusSend === 'sent' ? 'Sudah Terkirim' : 'Belum Terkirim',
+    'Status RSVP': guest.rsvpStatus || 'Belum',
+    'Souvenir Diberikan': guest.souvenirGiven ? 'Sudah' : 'Belum',
+    'Kado Fisik/Amplop': guest.physicalGiftNotes || '-',
+  }
 }
 
 /**
