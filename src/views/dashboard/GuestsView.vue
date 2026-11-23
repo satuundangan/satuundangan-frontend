@@ -167,13 +167,13 @@
                 :aria-label="currentInvitation.isGuestPublic !== false ? 'Kunci menjadi mode privat' : 'Buka menjadi mode publik'"
                 :disabled="updatingGuestAccess"
                 @click="toggleGuestAccess"
-                class="relative h-7 w-12 shrink-0 rounded-full transition-colors disabled:opacity-50 cursor-pointer block"
-                :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-500' : 'bg-amber-600'"
+                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden disabled:opacity-50"
+                :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-500' : 'bg-slate-300'"
                 :title="currentInvitation.isGuestPublic !== false ? 'Klik untuk mengubah ke Mode Privat' : 'Klik untuk mengubah ke Mode Publik'"
               >
                 <span
-                  class="absolute top-1 h-5 w-5 rounded-full bg-white shadow transition-transform"
-                  :class="currentInvitation.isGuestPublic !== false ? 'translate-x-6' : 'translate-x-1'"
+                  class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out"
+                  :class="currentInvitation.isGuestPublic !== false ? 'translate-x-5' : 'translate-x-0'"
                 ></span>
               </button>
             </div>
@@ -197,11 +197,12 @@
                       <p class="text-[11px] text-slate-400">Pantau progres penyebaran undangan dan kirim cepat ke seluruh tamu</p>
                     </div>
                   </div>
-                  <div class="text-right">
-                    <span class="text-sm md:text-base font-black text-emerald-600">
-                      Ditandai terkirim: {{ sentGuestsCount }} / {{ totalGuestsCount }}
-                    </span>
-                    <span class="text-xs font-black text-slate-500 ml-1">({{ sentPercentage }}%)</span>
+                  <div class="text-right shrink-0">
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-xl text-xs font-bold whitespace-nowrap shadow-2xs">
+                      <span class="text-[10px] text-slate-400 uppercase font-bold">Terkirim:</span>
+                      <span class="font-extrabold text-emerald-700">{{ sentGuestsCount }} / {{ totalGuestsCount }}</span>
+                      <span class="text-[10px] text-emerald-600 font-extrabold">({{ sentPercentage }}%)</span>
+                    </div>
                   </div>
                 </div>
 
