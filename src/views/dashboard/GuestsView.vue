@@ -347,6 +347,18 @@
                 <option v-for="grp in uniqueGroups" :key="grp" :value="grp">{{ grp }}</option>
               </select>
             </div>
+
+            <!-- Filter Sesi dropdown -->
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] font-bold text-slate-400 whitespace-nowrap">Filter Sesi:</span>
+              <select
+                v-model="sessionFilter"
+                class="border border-slate-200 rounded-xl px-3 py-1.5 bg-white text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-slate-900/10 cursor-pointer"
+              >
+                <option value="">Semua Sesi</option>
+                <option v-for="ses in uniqueSessions" :key="ses" :value="ses">{{ ses }}</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -411,6 +423,7 @@
                     />
                   </th>
                   <th class="px-4 py-4">Nama Tamu</th>
+                  <th class="px-4 py-4">Sesi</th>
                   <th class="px-4 py-4">No. Meja</th>
                   <th class="px-6 py-4">Kategori</th>
                   <th class="px-6 py-4">Status Kirim</th>
@@ -440,6 +453,16 @@
                       <i class="fa-solid fa-phone text-[9px]"></i>
                       {{ guest.phoneNumber || 'Tanpa nomor HP' }}
                     </p>
+                  </td>
+                  <td class="px-4 py-4">
+                    <span
+                      v-if="guest.sessionName"
+                      class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200"
+                    >
+                      <i class="fa-regular fa-clock text-[9px]"></i>
+                      <span>{{ guest.sessionName }}</span>
+                    </span>
+                    <span v-else class="text-xs text-slate-300">-</span>
                   </td>
                   <td class="px-4 py-4">
                     <span
@@ -574,6 +597,12 @@
                       <i class="fa-solid fa-phone text-[8px]"></i>
                       {{ guest.phoneNumber || 'Tanpa nomor HP' }}
                     </p>
+                    <div v-if="guest.sessionName" class="mt-1">
+                      <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200">
+                        <i class="fa-regular fa-clock text-[8px]"></i>
+                        <span>{{ guest.sessionName }}</span>
+                      </span>
+                    </div>
                   </div>
                   <div class="flex flex-col items-end gap-1 shrink-0">
                     <span
@@ -727,7 +756,7 @@
             </label>
             <div class="flex items-center gap-1.5 flex-wrap">
               <button
-                v-for="tag in ['[GuestName]', '[CoupleName]', '[GroomName]', '[BrideName]', '[Link]']"
+                v-for="tag in ['[GuestName]', '[CoupleName]', '[GroomName]', '[BrideName]', '[Link]', '{sesi}']"
                 :key="tag"
                 type="button"
                 @click="insertPlaceholder(tag)"
@@ -1080,6 +1109,35 @@
               class="w-full border border-gray-100 rounded-xl p-3 bg-gray-50 focus:ring-2 focus:ring-[#a47148]/20 outline-none text-sm"
               placeholder="Misal: Budi Santoso"
             />
+          </div>
+          <div>
+            <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
+              >Sesi Acara</label
+            >
+            <input
+              v-model="newGuest.sessionName"
+              list="sessionSuggestions"
+              type="text"
+              class="w-full border border-gray-100 rounded-xl p-3 bg-gray-50 focus:ring-2 focus:ring-[#a47148]/20 outline-none text-sm"
+              placeholder="Contoh: Sesi 1, Sesi 2, Akad, Akad & Resepsi 1"
+            />
+            <datalist id="sessionSuggestions">
+              <option value="Sesi 1" />
+              <option value="Sesi 2" />
+              <option value="Akad" />
+              <option value="Akad & Resepsi 1" />
+            </datalist>
+            <div class="flex flex-wrap gap-1.5 mt-2">
+              <button
+                type="button"
+                v-for="sug in ['Sesi 1', 'Sesi 2', 'Akad', 'Akad & Resepsi 1']"
+                :key="sug"
+                @click="newGuest.sessionName = sug"
+                class="text-[11px] px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100 font-medium transition cursor-pointer"
+              >
+                + {{ sug }}
+              </button>
+            </div>
           </div>
           <div>
             <label class="text-[10px] font-bold text-gray-400 uppercase tracking-widest block mb-1"
@@ -1502,6 +1560,7 @@ const importProgressPercentage = computed(() => {
 // Filtering state (SAT-50: support rsvp hadir filter from dashboard statcard)
 const statusFilter = ref(route.query?.filter === 'hadir' ? 'hadir' : 'all') // 'all' | 'unsent' | 'sent' | 'hadir'
 const groupFilter = ref('')
+const sessionFilter = ref('')
 
 watch(() => route.query?.filter, (newFilter) => {
   if (newFilter === 'hadir') {
@@ -1519,12 +1578,12 @@ const selectedGuestForShare = ref(null)
 const loadingMessage = ref(false)
 const shareWhatsAppOpened = ref(false)
 const updatingGuestAccess = ref(false)
-const newGuest = ref({ name: '', group: '', phoneNumber: '', tableNumber: '' })
+const newGuest = ref({ name: '', group: '', phoneNumber: '', tableNumber: '', sessionName: '' })
 const editingGuestId = ref(null)
 
 function openAddModal() {
   editingGuestId.value = null
-  newGuest.value = { name: '', group: '', phoneNumber: '', tableNumber: '' }
+  newGuest.value = { name: '', group: '', phoneNumber: '', tableNumber: '', sessionName: '' }
   showAddModal.value = true
 }
 
@@ -1535,6 +1594,7 @@ function openEditModal(guest) {
     group: guest.group || '',
     phoneNumber: guest.phoneNumber || '',
     tableNumber: guest.tableNumber || '',
+    sessionName: guest.sessionName || guest.session || '',
   }
   showAddModal.value = true
 }
@@ -1592,6 +1652,15 @@ const uniqueGroups = computed(() => {
   return Array.from(set)
 })
 
+const uniqueSessions = computed(() => {
+  const set = new Set()
+  guests.value.forEach((g) => {
+    const s = g.sessionName || g.session
+    if (s && s.trim()) set.add(s.trim())
+  })
+  return Array.from(set)
+})
+
 // Filtered Guests list
 const filteredGuests = computed(() => {
   let list = guests.value
@@ -1608,6 +1677,14 @@ const filteredGuests = computed(() => {
   // Category Filter
   if (groupFilter.value) {
     list = list.filter((g) => (g.group || '').toLowerCase() === groupFilter.value.toLowerCase())
+  }
+
+  // Session Filter
+  if (sessionFilter.value) {
+    list = list.filter((g) => {
+      const s = g.sessionName || g.session || ''
+      return s.toLowerCase() === sessionFilter.value.toLowerCase()
+    })
   }
 
   // Search Query
@@ -1731,6 +1808,8 @@ const previewFormattedMessage = computed(() => {
     name: 'Budi Santoso',
     slug: 'budi-santoso',
     accessToken: 'sample-token',
+    tableNumber: 'Meja 4',
+    sessionName: 'Resepsi Sesi 1',
   }
   return formatGuestMessage(templateText.value, sampleGuest)
 })
@@ -1978,6 +2057,7 @@ async function submitGuest() {
         group: newGuest.value.group,
         phoneNumber: newGuest.value.phoneNumber,
         tableNumber: newGuest.value.tableNumber,
+        sessionName: newGuest.value.sessionName,
       })
       toast.success('Data tamu berhasil diperbarui')
     } else {
@@ -1986,7 +2066,7 @@ async function submitGuest() {
     }
     showAddModal.value = false
     editingGuestId.value = null
-    newGuest.value = { name: '', group: '', phoneNumber: '', tableNumber: '' }
+    newGuest.value = { name: '', group: '', phoneNumber: '', tableNumber: '', sessionName: '' }
     await fetchGuests(selectedInvitationId.value)
   } catch (error) {
     toast.error(editingGuestId.value ? 'Gagal memperbarui tamu' : 'Gagal menambahkan tamu')
@@ -2183,6 +2263,14 @@ async function handleExcelImport(event) {
             'seating',
             'nomormeja',
           ]) || undefined
+        const sessionName =
+          findField(row, [
+            'sesi',
+            'session',
+            'sesiacara',
+            'eventsession',
+            'sessionname',
+          ]) || cell(row['Sesi'] || row['Session'] || row['sesi'] || row['session']) || undefined
 
         if (!name) {
           failed.push({ row: rowNumber, name: '', reason: 'Nama kosong' })
@@ -2202,7 +2290,7 @@ async function handleExcelImport(event) {
 
         existingNames.add(normalizedName)
         seenInFile.add(normalizedName)
-        validQueue.push({ rowNumber, name, phone, group, tableNumber })
+        validQueue.push({ rowNumber, name, phone, group, tableNumber, sessionName })
       }
 
       // Initial progress reflects rows that were pre-validated and skipped
@@ -2221,6 +2309,7 @@ async function handleExcelImport(event) {
                 phoneNumber: item.phone,
                 group: item.group,
                 tableNumber: item.tableNumber,
+                sessionName: item.sessionName,
                 invitationId: selectedInvitationId.value,
               })
               success++
@@ -2268,6 +2357,7 @@ function exportGuestsExcel() {
     'Nama Tamu': guest.name || '',
     'Nomor WhatsApp': guest.phoneNumber || '',
     Kategori: guest.group || 'Umum',
+    Sesi: guest.sessionName || guest.session || '-',
     'No. Meja': guest.tableNumber || '-',
     'Status Kirim': guest.statusSend === 'sent' ? 'Sudah Terkirim' : 'Belum Terkirim',
     'Status RSVP': guest.rsvpStatus || 'Belum',
@@ -2286,8 +2376,8 @@ function exportGuestsExcel() {
 
 function downloadTemplate() {
   const ws = XLSX.utils.json_to_sheet([
-    { Nama: 'Budi Santoso', WhatsApp: '08123456789', Kategori: 'Keluarga', 'No. Meja': 'Meja 4 (Keluarga)' },
-    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman', 'No. Meja': 'Meja 8 (Alumni)' },
+    { Nama: 'Budi Santoso', WhatsApp: '08123456789', Kategori: 'Keluarga', Sesi: 'Akad & Resepsi 1', 'No. Meja': 'Meja 4 (Keluarga)' },
+    { Nama: 'Ani Wijaya', WhatsApp: '081388889999', Kategori: 'Teman', Sesi: 'Resepsi Sesi 2', 'No. Meja': 'Meja 8 (Alumni)' },
   ])
   const wb = XLSX.utils.book_new()
   XLSX.utils.book_append_sheet(wb, ws, 'Template Tamu')
@@ -2338,7 +2428,7 @@ async function openShareModal(guest) {
     const data = res?.data || res
     shareUrl.value = data?.url || getGuestUrl(guest)
     if (data?.message) {
-      shareMessage.value = data.message
+      shareMessage.value = formatGuestMessage(data.message, guest)
     } else {
       shareMessage.value = formatGuestMessage(currentInvitation.value?.whatsappMessageTemplate, guest)
     }

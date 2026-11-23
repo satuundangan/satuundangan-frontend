@@ -117,6 +117,34 @@ describe('WhatsApp Distribution & Guest Blast QA Suite', () => {
       )
     })
 
+    it('replaces {sesi} and {session} placeholders (case-insensitive) with guest session', () => {
+      const guestWithSession = {
+        ...mockGuest,
+        sessionName: 'Resepsi Sesi 2 (Pukul 13:00 - 15:00 WIB)',
+      }
+      const template = 'Halo [GuestName], Anda terdaftar pada {sesi} atau {session}. Cek: {SESI} / [Sesi]'
+      const formatted = formatGuestMessage(template, guestWithSession, mockInvitation, 'https://satuundangan.id')
+
+      expect(formatted).toBe(
+        'Halo Budi Santoso, S.Kom, Anda terdaftar pada Resepsi Sesi 2 (Pukul 13:00 - 15:00 WIB) atau Resepsi Sesi 2 (Pukul 13:00 - 15:00 WIB). Cek: Resepsi Sesi 2 (Pukul 13:00 - 15:00 WIB) / Resepsi Sesi 2 (Pukul 13:00 - 15:00 WIB)',
+      )
+      expect(formatted).not.toContain('{sesi}')
+      expect(formatted).not.toContain('{session}')
+    })
+
+    it('replaces {sesi} using guest.session fallback or empty string when absent', () => {
+      const guestWithSessionProperty = {
+        ...mockGuest,
+        session: 'Akad Nikah',
+      }
+      const formatted1 = formatGuestMessage('Sesi: {sesi}', guestWithSessionProperty, mockInvitation)
+      expect(formatted1).toBe('Sesi: Akad Nikah')
+
+      const guestWithoutSession = { ...mockGuest }
+      const formatted2 = formatGuestMessage('Sesi: {sesi}', guestWithoutSession, mockInvitation)
+      expect(formatted2).toBe('Sesi: ')
+    })
+
     it('encodes special characters, emoji, and newlines safely with encodeURIComponent in WhatsApp URL', () => {
       const messageWithEmojis = `Assalamu'alaikum 💍✨\nSelamat datang di hari bahagia kami!\nCinta & Doa Restu ❤️\nLink: https://satuundangan.id/inv/test?ref=wa#rsvp`
       const url = buildWhatsAppUrl('08123456789', messageWithEmojis)

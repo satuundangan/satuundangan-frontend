@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { csvCell, fetchAllRows, toCsv } from './csvExport'
+import { csvCell, fetchAllRows, toCsv, guestExportColumns, formatGuestExportRow } from './csvExport'
 import { useColumnVisibility } from './columnVisibility'
 
 describe('csv export', () => {
@@ -15,6 +15,38 @@ describe('csv export', () => {
   it('builds a header and rows', () => {
     const csv = toCsv([{ label: 'ID', value: (r) => r.id }, { label: 'Nama', value: (r) => r.name }], [{ id: 1, name: 'Rani' }])
     expect(csv).toBe('ID,Nama\r\n1,Rani')
+  })
+
+  it('exports Sesi / sessionName in guest columns and formatted rows', () => {
+    const mockGuest = {
+      name: 'Rani Maharani',
+      phoneNumber: '08123456789',
+      group: 'VIP',
+      sessionName: 'Resepsi Sesi 1 (10:00 - 12:00)',
+      tableNumber: 'Meja VIP 1',
+      statusSend: 'sent',
+      rsvpStatus: 'hadir',
+      souvenirGiven: true,
+      physicalGiftNotes: 'Amplop',
+    }
+
+    const row = formatGuestExportRow(mockGuest, 0)
+    expect(row['Nama Tamu']).toBe('Rani Maharani')
+    expect(row['Sesi']).toBe('Resepsi Sesi 1 (10:00 - 12:00)')
+    expect(row['No. Meja']).toBe('Meja VIP 1')
+
+    const csvOutput = toCsv(guestExportColumns, [mockGuest])
+    expect(csvOutput).toContain('Sesi')
+    expect(csvOutput).toContain('Resepsi Sesi 1 (10:00 - 12:00)')
+
+    // Fallback when sessionName is empty or guest.session is provided
+    const guestWithSessionProp = { name: 'Dimas', session: 'Akad' }
+    const row2 = formatGuestExportRow(guestWithSessionProp, 1)
+    expect(row2['Sesi']).toBe('Akad')
+
+    const guestNoSession = { name: 'Eka' }
+    const row3 = formatGuestExportRow(guestNoSession, 2)
+    expect(row3['Sesi']).toBe('-')
   })
 
   it('collects every page with the active filters, not only the visible one', async () => {

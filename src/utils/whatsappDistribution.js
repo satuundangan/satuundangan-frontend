@@ -186,6 +186,7 @@ export function formatGuestMessage(rawTemplate, guest, invitation, baseUrl) {
   const brideName = invitation?.brideName || 'Mempelai Wanita'
   const guestName = guest?.name || 'Nama Tamu'
   const tableNumber = guest?.tableNumber || '-'
+  const sessionName = guest?.sessionName || guest?.session || ''
   const guestLink = guest
     ? getGuestUrl(guest, invitation, baseUrl)
     : `https://satuundangan.id/inv/${invitation?.slug || 'undangan'}/sample`
@@ -198,6 +199,8 @@ export function formatGuestMessage(rawTemplate, guest, invitation, baseUrl) {
     .replace(/\[Link\]/g, guestLink)
     .replace(/\[TableNumber\]/g, tableNumber)
     .replace(/\[NomorMeja\]/g, tableNumber)
+    .replace(/\{sesi\}|\{session\}/gi, sessionName)
+    .replace(/\[sesi\]|\[session\]/gi, sessionName)
 }
 
 /**

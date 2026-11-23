@@ -524,6 +524,41 @@
                   </span>
                 </div>
 
+                <!-- Sesi Acara Saat Ini / Filter Sesi -->
+                <div class="p-3.5 rounded-2xl bg-amber-50/70 border border-amber-200/80 space-y-2">
+                  <div class="flex items-center justify-between gap-2 flex-wrap">
+                    <div class="flex items-center gap-1.5 text-xs font-black text-amber-950">
+                      <i class="fa-regular fa-clock text-amber-700"></i>
+                      <span>Sesi Acara Saat Ini (Filter Sesi)</span>
+                    </div>
+                    <span v-if="activeSession" class="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-200 text-amber-900 border border-amber-300">
+                      Aktif: {{ activeSession }}
+                    </span>
+                    <span v-else class="text-[10px] font-bold text-amber-700 bg-amber-100/60 px-2 py-0.5 rounded-full">
+                      Semua Sesi
+                    </span>
+                  </div>
+                  <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+                    <select
+                      v-model="selectedSessionOption"
+                      @change="onSessionOptionChange"
+                      class="flex-1 border border-amber-300/80 rounded-xl px-3 py-2 bg-white text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30 cursor-pointer"
+                    >
+                      <option value="">Semua Sesi</option>
+                      <option v-for="ses in availableSessions" :key="ses" :value="ses">{{ ses }}</option>
+                      <option value="__custom__">+ Ketik Sesi Kustom...</option>
+                    </select>
+                    <input
+                      v-if="selectedSessionOption === '__custom__'"
+                      v-model="customSessionName"
+                      @input="activeSession = customSessionName"
+                      type="text"
+                      placeholder="Ketik sesi (cth: Akad Nikah)..."
+                      class="flex-1 border border-amber-300 rounded-xl px-3 py-2 bg-white text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/30"
+                    />
+                  </div>
+                </div>
+
                 <!-- Camera Controls & Selector -->
                 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-2 border-t border-slate-100">
                   <div class="flex-1">
@@ -648,6 +683,21 @@
                           <strong class="font-black text-slate-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
                         </div>
 
+                        <!-- Sesi Acara -->
+                        <div v-if="recentScanResult.sessionName" class="mt-2 ml-1 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/80 inline-flex items-center gap-1.5">
+                          <span>⏰ Sesi:</span>
+                          <strong class="font-black text-amber-950">{{ recentScanResult.sessionName }}</strong>
+                        </div>
+
+                        <!-- Session Mismatch Warning Banner -->
+                        <div
+                          v-if="recentScanResult.sessionMismatch"
+                          class="mt-2.5 p-3 rounded-xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold text-xs flex items-center gap-2 shadow-xs"
+                        >
+                          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
+                          <span>⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada {{ recentScanResult.sessionName }}</span>
+                        </div>
+
                         <!-- Tombol Toggle Souvenir Satu Klik -->
                         <div class="mt-2.5 flex items-center gap-2 flex-wrap">
                           <button
@@ -727,6 +777,21 @@
                         <div class="mt-2 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/60 inline-flex items-center gap-1.5">
                           <span>📍 Meja / Seating:</span>
                           <strong class="font-black text-slate-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
+                        </div>
+
+                        <!-- Sesi Acara -->
+                        <div v-if="recentScanResult.sessionName" class="mt-2 ml-1 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/80 inline-flex items-center gap-1.5">
+                          <span>⏰ Sesi:</span>
+                          <strong class="font-black text-amber-950">{{ recentScanResult.sessionName }}</strong>
+                        </div>
+
+                        <!-- Session Mismatch Warning Banner -->
+                        <div
+                          v-if="recentScanResult.sessionMismatch"
+                          class="mt-2.5 p-3 rounded-xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold text-xs flex items-center gap-2 shadow-xs"
+                        >
+                          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
+                          <span>⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada {{ recentScanResult.sessionName }}</span>
                         </div>
 
                         <!-- Tombol Toggle Souvenir Satu Klik -->
@@ -854,10 +919,14 @@
                         {{ guest.name ? guest.name.charAt(0).toUpperCase() : '?' }}
                       </div>
                       <div class="min-w-0">
-                        <div class="flex items-center gap-2">
+                        <div class="flex items-center gap-2 flex-wrap">
                           <h4 class="font-black text-slate-900 text-xs truncate">{{ guest.name }}</h4>
                           <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-blue-50 text-blue-600 border border-blue-100 shrink-0">
                             {{ guest.group || 'Umum' }}
+                          </span>
+                          <span v-if="guest.sessionName" class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                            <i class="fa-regular fa-clock text-[8px]"></i>
+                            <span>{{ guest.sessionName }}</span>
                           </span>
                         </div>
                         <p class="text-[10px] text-slate-400 mt-0.5 truncate">
@@ -932,6 +1001,11 @@
                           <h4 class="font-black text-slate-900 text-xs truncate">{{ guest.name }}</h4>
                           <span class="text-[9px] font-black uppercase px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 shrink-0">
                             {{ guest.group || 'Umum' }}
+                          </span>
+                          <!-- Badge Sesi -->
+                          <span v-if="guest.sessionName" class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-200 shrink-0">
+                            <i class="fa-regular fa-clock text-[9px]"></i>
+                            <span>Sesi: {{ guest.sessionName }}</span>
                           </span>
                           <!-- Badge Meja -->
                           <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-100 shrink-0">
@@ -1088,6 +1162,7 @@
               <tr class="border-b border-slate-300 text-slate-700 uppercase font-black text-[10px]">
                 <th class="py-2 pr-2">No</th>
                 <th class="py-2 px-2">Nama Tamu</th>
+                <th class="py-2 px-2">Sesi</th>
                 <th class="py-2 px-2">Nomor HP</th>
                 <th class="py-2 px-2">Kategori</th>
                 <th class="py-2 px-2">RSVP</th>
@@ -1099,6 +1174,7 @@
               <tr v-for="(g, idx) in guests" :key="g.id">
                 <td class="py-2 pr-2 font-bold">{{ idx + 1 }}</td>
                 <td class="py-2 px-2 font-black">{{ g.name }}</td>
+                <td class="py-2 px-2 text-amber-800 font-bold">{{ g.sessionName || '-' }}</td>
                 <td class="py-2 px-2 text-slate-600">{{ g.phoneNumber || '-' }}</td>
                 <td class="py-2 px-2">{{ g.group || 'Umum' }}</td>
                 <td class="py-2 px-2 uppercase text-[10px] font-bold">{{ g.rsvpStatus || '-' }}</td>
@@ -1356,6 +1432,44 @@ let isProcessingScan = false
 let lastScannedText = ''
 let lastScanTime = 0
 
+// Session filter / Active event session
+const activeSession = ref('')
+const selectedSessionOption = ref('')
+const customSessionName = ref('')
+
+const availableSessions = computed(() => {
+  const set = new Set(['Akad Nikah', 'Resepsi Sesi 1', 'Resepsi Sesi 2'])
+  guests.value.forEach((g) => {
+    const s = g.sessionName || g.session
+    if (s && s.trim()) set.add(s.trim())
+  })
+  return Array.from(set)
+})
+
+function onSessionOptionChange() {
+  if (selectedSessionOption.value === '__custom__') {
+    activeSession.value = customSessionName.value
+  } else {
+    activeSession.value = selectedSessionOption.value
+  }
+}
+
+watch(activeSession, (newVal) => {
+  if (availableSessions.value.includes(newVal) || newVal === '') {
+    selectedSessionOption.value = newVal
+  } else {
+    selectedSessionOption.value = '__custom__'
+    customSessionName.value = newVal
+  }
+})
+
+function checkSessionMismatch(guestSession) {
+  if (!activeSession.value || !activeSession.value.trim()) return false
+  const gSess = (guestSession || '').trim().toLowerCase()
+  const actSess = activeSession.value.trim().toLowerCase()
+  return gSess !== actSess
+}
+
 // Manual Search
 const manualSearchQuery = ref('')
 const isSubmittingManualCheckIn = ref(false)
@@ -1407,7 +1521,8 @@ const matchingGuests = computed(() => {
     const name = (g.name || '').toLowerCase()
     const phone = (g.phoneNumber || '').toLowerCase()
     const group = (g.group || '').toLowerCase()
-    return name.includes(q) || phone.includes(q) || group.includes(q)
+    const session = (g.sessionName || g.session || '').toLowerCase()
+    return name.includes(q) || phone.includes(q) || group.includes(q) || session.includes(q)
   })
 })
 
@@ -1880,6 +1995,8 @@ async function handleQrCodeScanned(decodedText) {
     )
 
     if (guest) {
+      const guestSession = guest.sessionName || guest.session || ''
+      const isMismatch = checkSessionMismatch(guestSession)
       if (guest.checkedInAt) {
         playWarningChime()
         const timeStr = formatTime(guest.checkedInAt)
@@ -1890,12 +2007,17 @@ async function handleQrCodeScanned(decodedText) {
           guestName: guest.name,
           group: guest.group || 'Umum',
           tableNumber: guest.tableNumber,
+          sessionName: guestSession,
+          sessionMismatch: isMismatch,
           souvenirGiven: guest.souvenirGiven,
           physicalGiftNotes: guest.physicalGiftNotes,
           time: timeStr,
           message: `Tamu ini sudah pernah check-in sebelumnya pada pukul ${timeStr}`,
         }
         recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
+        if (isMismatch) {
+          toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+        }
         toast.warning(`Tamu ${guest.name} sudah pernah check-in pada pukul ${timeStr}`)
         return
       }
@@ -1914,12 +2036,17 @@ async function handleQrCodeScanned(decodedText) {
         guestName: guest.name,
         group: guest.group || 'Umum',
         tableNumber: guest.tableNumber,
+        sessionName: guestSession,
+        sessionMismatch: isMismatch,
         souvenirGiven: guest.souvenirGiven,
         physicalGiftNotes: guest.physicalGiftNotes,
         time: timeStr,
         message: `Selamat Datang, ${guest.name}! Kategori: ${guest.group || 'Umum'} • Pukul: ${timeStr}`,
       }
       recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
+      if (isMismatch) {
+        toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+      }
       toast.success(`Check-in berhasil: ${guest.name}`)
     } else {
       // Try backend checkInGuestByToken API
@@ -1935,6 +2062,8 @@ async function handleQrCodeScanned(decodedText) {
         const gTable = found?.tableNumber || resGuest?.tableNumber
         const gSouvenir = found?.souvenirGiven || resGuest?.souvenirGiven
         const gNotes = found?.physicalGiftNotes || resGuest?.physicalGiftNotes
+        const guestSession = resGuest?.sessionName || resGuest?.session || found?.sessionName || found?.session || ''
+        const isMismatch = checkSessionMismatch(guestSession)
         recentScanResult.value = {
           type: 'new',
           guestId: guestId || found?.id,
@@ -1942,12 +2071,17 @@ async function handleQrCodeScanned(decodedText) {
           guestName,
           group,
           tableNumber: gTable,
+          sessionName: guestSession,
+          sessionMismatch: isMismatch,
           souvenirGiven: gSouvenir,
           physicalGiftNotes: gNotes,
           time: timeStr,
           message: `Selamat Datang, ${guestName}! Kategori: ${group} • Pukul: ${timeStr}`,
         }
         recentScanPhysicalGiftInput.value = gNotes || ''
+        if (isMismatch) {
+          toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+        }
         toast.success(`Check-in berhasil: ${guestName}`)
         await fetchGuests(selectedInvitationId.value)
       } catch {
@@ -1976,6 +2110,8 @@ async function handleQrCodeScanned(decodedText) {
 // Manual Check-in Logic
 // ----------------------------------------------------
 async function manualCheckIn(guest) {
+  const guestSession = guest.sessionName || guest.session || ''
+  const isMismatch = checkSessionMismatch(guestSession)
   if (guest.checkedInAt) {
     playWarningChime()
     const timeStr = formatTime(guest.checkedInAt)
@@ -1986,12 +2122,17 @@ async function manualCheckIn(guest) {
       guestName: guest.name,
       group: guest.group || 'Umum',
       tableNumber: guest.tableNumber,
+      sessionName: guestSession,
+      sessionMismatch: isMismatch,
       souvenirGiven: guest.souvenirGiven,
       physicalGiftNotes: guest.physicalGiftNotes,
       time: timeStr,
       message: `Tamu ini sudah pernah check-in sebelumnya pada pukul ${timeStr}`,
     }
     recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
+    if (isMismatch) {
+      toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+    }
     toast.warning(`Tamu ${guest.name} sudah check-in pada pukul ${timeStr}`)
     return
   }
@@ -2011,12 +2152,17 @@ async function manualCheckIn(guest) {
       guestName: guest.name,
       group: guest.group || 'Umum',
       tableNumber: guest.tableNumber,
+      sessionName: guestSession,
+      sessionMismatch: isMismatch,
       souvenirGiven: guest.souvenirGiven,
       physicalGiftNotes: guest.physicalGiftNotes,
       time: timeStr,
       message: `Selamat Datang, ${guest.name}! Kategori: ${guest.group || 'Umum'} • Pukul: ${timeStr}`,
     }
     recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
+    if (isMismatch) {
+      toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+    }
     toast.success(`Check-in berhasil: ${guest.name}`)
   } catch (err) {
     console.error('Manual check-in error:', err)
@@ -2122,6 +2268,7 @@ function exportToExcel() {
       'Nama Tamu': g.name || '-',
       'Nomor WhatsApp': g.phoneNumber || '-',
       'Kategori': g.group || 'Umum',
+      'Sesi': g.sessionName || g.session || '-',
       'No. Meja': g.tableNumber || '-',
       'Status RSVP': g.rsvpStatus || 'Belum Respon',
       'Status Kehadiran': g.checkedInAt ? 'Hadir di Lokasi' : 'Belum Check-in',
@@ -2153,6 +2300,7 @@ function printRekap() {
     <tr>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 700;">${idx + 1}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 800; color: #0f172a;">${g.name || '-'}</td>
+      <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 700; color: #92400e;">${g.sessionName || '-'}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; font-weight: 600;">${g.tableNumber || '-'}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0; color: #64748b;">${g.phoneNumber || '-'}</td>
       <td style="padding: 6px 8px; border-bottom: 1px solid #e2e8f0;">${g.group || 'Umum'}</td>
@@ -2194,6 +2342,7 @@ function printRekap() {
       <tr>
         <th style="width: 40px;">No</th>
         <th>Nama Tamu</th>
+        <th>Sesi</th>
         <th>No. Meja</th>
         <th>Nomor HP</th>
         <th>Kategori</th>
