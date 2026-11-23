@@ -373,4 +373,70 @@ describe('LiveScreenView.vue (SAT-64)', () => {
 
     wrapper.unmount()
   })
+
+  it('7. Pilihan tema proyektor: toggle dropdown, ubah ke tema Cerah (light) dan simpan ke localStorage', async () => {
+    const setItemSpy = vi.spyOn(window.localStorage, 'setItem')
+    const wrapper = mount(LiveScreenView, {
+      props: { slug: 'romeo-juliet' },
+    })
+    await flushPromises()
+
+    // 1. Tombol tema awal muncul dengan default Gelap
+    const btnTheme = wrapper.find('[data-testid="btn-toggle-theme"]')
+    expect(btnTheme.exists()).toBe(true)
+    expect(btnTheme.text()).toContain('Gelap')
+
+    // Dropdown initially closed
+    expect(wrapper.find('[data-testid="theme-dropdown-menu"]').exists()).toBe(false)
+
+    // 2. Klik tombol tema untuk membuka dropdown menu
+    await btnTheme.trigger('click')
+    const dropdown = wrapper.find('[data-testid="theme-dropdown-menu"]')
+    expect(dropdown.exists()).toBe(true)
+
+    // Option cerah exists
+    const optionLight = wrapper.find('[data-testid="theme-option-light"]')
+    expect(optionLight.exists()).toBe(true)
+    expect(optionLight.text()).toContain('Cerah Anggun')
+
+    // 3. Klik pilihan Cerah Anggun
+    await optionLight.trigger('click')
+    await flushPromises()
+
+    // Dropdown harus otomatis tertutup
+    expect(wrapper.find('[data-testid="theme-dropdown-menu"]').exists()).toBe(false)
+
+    // Label tombol berubah jadi Cerah
+    expect(wrapper.find('[data-testid="btn-toggle-theme"]').text()).toContain('Cerah')
+
+    // Class container berubah menjadi tema cerah (bg-[#faf7f2])
+    const container = wrapper.find('[data-testid="live-screen-container"]')
+    expect(container.classes()).toContain('bg-[#faf7f2]')
+
+    // LocalStorage harus dipanggil untuk menyimpan preferensi tema
+    expect(setItemSpy).toHaveBeenCalledWith('live_screen_theme_romeo-juliet', 'light')
+
+    setItemSpy.mockRestore()
+    wrapper.unmount()
+  })
+
+  it('8. Memuat preferensi tema yang tersimpan dari localStorage saat halaman dibuka', async () => {
+    const getItemSpy = vi.spyOn(window.localStorage, 'getItem').mockImplementation((key) => {
+      if (key === 'live_screen_theme_romeo-juliet') return 'light'
+      return null
+    })
+
+    const wrapper = mount(LiveScreenView, {
+      props: { slug: 'romeo-juliet' },
+    })
+    await flushPromises()
+
+    // Container langsung aktif dengan styling cerah
+    const container = wrapper.find('[data-testid="live-screen-container"]')
+    expect(container.classes()).toContain('bg-[#faf7f2]')
+    expect(wrapper.find('[data-testid="btn-toggle-theme"]').text()).toContain('Cerah')
+
+    getItemSpy.mockRestore()
+    wrapper.unmount()
+  })
 })
