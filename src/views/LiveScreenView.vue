@@ -1,7 +1,8 @@
 <template>
   <div
     ref="rootEl"
-    class="relative w-screen h-screen overflow-hidden bg-slate-950 text-slate-100 font-sans select-none"
+    class="relative w-screen h-screen overflow-hidden font-sans select-none transition-colors duration-700"
+    :class="themeClasses.container"
     data-testid="live-screen-container"
     @mousemove="handleUserActivity"
     @touchstart="handleUserActivity"
@@ -21,15 +22,17 @@
         />
       </transition-group>
 
-      <!-- Luxurious Dark & Gold Radial Vignette Overlay -->
+      <!-- Ambient Vignette Overlay -->
       <div
-        class="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/65 to-slate-950/85 pointer-events-none"
+        class="absolute inset-0 pointer-events-none transition-colors duration-700"
+        :class="themeClasses.vignette"
       />
       <div
-        class="absolute inset-0 pointer-events-none radial-gold-glow"
+        class="absolute inset-0 pointer-events-none transition-all duration-700"
+        :class="themeClasses.glow"
       />
 
-      <!-- Subtle Ambient Gold Light Dust / Particles -->
+      <!-- Subtle Ambient Light Dust / Particles -->
       <div class="absolute inset-0 pointer-events-none overflow-hidden opacity-40">
         <div class="particle particle-1"></div>
         <div class="particle particle-2"></div>
@@ -45,7 +48,8 @@
     <transition name="toolbar-slide">
       <header
         v-show="isToolbarVisible"
-        class="absolute top-0 inset-x-0 z-40 p-4 md:px-8 flex items-center justify-between backdrop-blur-md bg-slate-950/80 border-b border-amber-500/20 text-xs shadow-2xl transition-all duration-300"
+        class="absolute top-0 inset-x-0 z-40 p-4 md:px-8 flex items-center justify-between backdrop-blur-md border-b text-xs shadow-2xl transition-all duration-300"
+        :class="themeClasses.toolbar"
         data-testid="operator-toolbar"
       >
         <!-- Left: Status Indicator -->
@@ -65,14 +69,59 @@
         </div>
 
         <!-- Center: Branding -->
-        <div class="hidden md:flex items-center gap-2 text-amber-300/80 font-serif tracking-widest uppercase text-[11px]">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#d4af37]"></span>
+        <div class="hidden md:flex items-center gap-2 font-serif tracking-widest uppercase text-[11px]" :class="themeClasses.toolbarBadge">
+          <span class="w-1.5 h-1.5 rounded-full" :class="themeClasses.brandDivider"></span>
           <span>SatuUndangan Live Stage Projector</span>
-          <span class="w-1.5 h-1.5 rounded-full bg-[#d4af37]"></span>
+          <span class="w-1.5 h-1.5 rounded-full" :class="themeClasses.brandDivider"></span>
         </div>
 
         <!-- Right: Operator Controls -->
         <div class="flex items-center gap-2 sm:gap-3">
+          <!-- Button: Theme Selector Dropdown -->
+          <div class="relative" data-testid="theme-selector-container">
+            <button
+              type="button"
+              @click.stop="toggleThemeMenu"
+              class="px-3.5 py-1.5 rounded-xl border font-semibold flex items-center gap-1.5 transition-all cursor-pointer shadow-sm active:scale-95"
+              :class="themeClasses.themeBtn"
+              data-testid="btn-toggle-theme"
+              title="Pilih tema tampilan proyektor (Gelap / Cerah)"
+            >
+              <span>{{ activeThemeMeta.badge.split(' ')[0] }}</span>
+              <span class="hidden sm:inline">Tema: {{ activeThemeMeta.shortName }}</span>
+              <i class="fa-solid fa-chevron-down text-[10px] ml-0.5 opacity-70"></i>
+            </button>
+
+            <!-- Dropdown Menu -->
+            <transition name="dropdown-fade">
+              <div
+                v-if="isThemeMenuOpen"
+                class="absolute right-0 top-full mt-2 w-56 rounded-2xl p-1.5 shadow-2xl backdrop-blur-xl z-50 border"
+                :class="themeClasses.dropdownMenu"
+                data-testid="theme-dropdown-menu"
+              >
+                <div class="px-3 py-1.5 text-[10px] uppercase tracking-wider font-bold border-b mb-1" :class="themeClasses.dropdownHeaderBorder">
+                  Pilihan Tema Layar
+                </div>
+                <button
+                  v-for="item in LIVE_SCREEN_THEMES"
+                  :key="item.id"
+                  type="button"
+                  @click.stop="setTheme(item.id)"
+                  class="w-full text-left px-3 py-2 rounded-xl text-xs font-medium flex items-center justify-between transition-all cursor-pointer"
+                  :class="currentTheme === item.id ? themeClasses.dropdownActiveItem : themeClasses.dropdownItem"
+                  :data-testid="`theme-option-${item.id}`"
+                >
+                  <div class="flex items-center gap-2">
+                    <span>{{ item.badge.split(' ')[0] }}</span>
+                    <span>{{ item.name }}</span>
+                  </div>
+                  <i v-if="currentTheme === item.id" class="fa-solid fa-check text-xs"></i>
+                </button>
+              </div>
+            </transition>
+          </div>
+
           <!-- Button: Test Greeting Simulation -->
           <button
             type="button"
@@ -120,17 +169,17 @@
       <div class="flex items-center justify-between text-center w-full">
         <div class="w-1/3 text-left">
           <!-- Subtle Top Left Brand Mark -->
-          <span class="inline-flex items-center gap-2 text-xs md:text-sm font-light tracking-[0.25em] text-amber-200/60 uppercase">
+          <span class="inline-flex items-center gap-2 text-xs md:text-sm font-light tracking-[0.25em] uppercase" :class="themeClasses.stageSubheader">
             Wedding Reception
           </span>
         </div>
 
         <div class="w-1/3 flex justify-center">
-          <div class="w-12 h-0.5 bg-gradient-to-r from-transparent via-[#d4af37]/60 to-transparent"></div>
+          <div class="w-12 h-0.5 rounded-full" :class="themeClasses.brandDivider"></div>
         </div>
 
         <div class="w-1/3 text-right">
-          <span class="text-xs md:text-sm font-light tracking-widest text-slate-400">
+          <span class="text-xs md:text-sm font-light tracking-widest" :class="themeClasses.stageClock">
             {{ currentTimeString }}
           </span>
         </div>
@@ -139,16 +188,17 @@
       <!-- Center Hero Couple Content -->
       <div class="flex-1 min-h-0 flex flex-col items-center justify-center text-center px-4 md:pr-40 max-w-5xl mx-auto space-y-[2.5vh] my-auto">
         <!-- Subtitle badge -->
-        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/10 backdrop-blur-md shadow-lg shadow-black/40">
-          <span class="w-1.5 h-1.5 rounded-full bg-[#d4af37] animate-ping"></span>
-          <span class="text-xs md:text-sm uppercase tracking-[0.35em] font-serif text-amber-200">
+        <div class="inline-flex items-center gap-2 px-5 py-2 rounded-full border backdrop-blur-md" :class="themeClasses.heroBadge">
+          <span class="w-1.5 h-1.5 rounded-full animate-ping" :class="themeClasses.heroBadgePing"></span>
+          <span class="text-xs md:text-sm uppercase tracking-[0.35em] font-serif">
             Walimatul 'Ursy
           </span>
         </div>
 
         <!-- Couple Names (Grand Serif Display) -->
         <h1
-          class="text-[clamp(2.5rem,min(11vh,8vw),9rem)] max-w-full break-words font-serif font-extralight tracking-wide text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-200 to-[#d4af37] drop-shadow-2xl leading-none"
+          class="text-[clamp(2.5rem,min(11vh,8vw),9rem)] max-w-full break-words font-serif font-extralight tracking-wide leading-none"
+          :class="themeClasses.coupleNames"
           data-testid="couple-names"
         >
           {{ coupleDisplay }}
@@ -156,14 +206,15 @@
 
         <!-- Decorative Divider -->
         <div class="flex items-center justify-center gap-4 w-full max-w-md my-2">
-          <div class="flex-1 h-px bg-gradient-to-r from-transparent to-[#d4af37]/60"></div>
-          <span class="text-[#d4af37] text-sm">✦</span>
-          <div class="flex-1 h-px bg-gradient-to-l from-transparent to-[#d4af37]/60"></div>
+          <div class="flex-1 h-px" :class="themeClasses.dividerLine"></div>
+          <span class="text-sm" :class="themeClasses.dividerStar">✦</span>
+          <div class="flex-1 h-px" :class="themeClasses.dividerLineReverse"></div>
         </div>
 
         <!-- Event Date -->
         <p
-          class="text-lg sm:text-xl md:text-2xl font-light text-amber-100/90 tracking-widest font-serif"
+          class="text-lg sm:text-xl md:text-2xl font-light tracking-widest font-serif"
+          :class="themeClasses.eventDate"
           data-testid="event-date"
         >
           {{ formattedEventDate }}
@@ -172,10 +223,11 @@
         <!-- Venue Location -->
         <p
           v-if="venueDisplay"
-          class="text-sm sm:text-base md:text-lg text-slate-300 font-light flex items-center justify-center gap-2 tracking-wide max-w-2xl px-4"
+          class="text-sm sm:text-base md:text-lg font-light flex items-center justify-center gap-2 tracking-wide max-w-2xl px-4"
+          :class="themeClasses.venueText"
           data-testid="venue-info"
         >
-          <i class="fa-solid fa-location-dot text-[#d4af37]"></i>
+          <i class="fa-solid fa-location-dot" :class="themeClasses.venueIcon"></i>
           <span class="line-clamp-2">{{ venueDisplay }}</span>
         </p>
       </div>
@@ -188,7 +240,8 @@
     <!-- BOTTOM LIVE TICKER (Ucapan & Doa Restu Masuk) -->
     <!-- ============================================== -->
     <footer
-      class="absolute bottom-0 inset-x-0 z-30 bg-slate-950/85 backdrop-blur-xl border-t border-[#d4af37]/30 py-3.5 px-6 md:px-12 flex items-center justify-between gap-6"
+      class="absolute bottom-0 inset-x-0 z-30 backdrop-blur-xl border-t py-3.5 px-6 md:px-12 flex items-center justify-between gap-6 transition-colors duration-500"
+      :class="themeClasses.ticker"
       data-testid="wishes-ticker"
     >
       <!-- Ticker Title / Live Badge -->
@@ -197,7 +250,7 @@
           <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
           <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
         </span>
-        <span class="text-xs md:text-sm font-semibold tracking-wider text-amber-300 uppercase whitespace-nowrap">
+        <span class="text-xs md:text-sm font-semibold tracking-wider uppercase whitespace-nowrap" :class="themeClasses.tickerTitle">
           Doa & Ucapan Tamu
         </span>
       </div>
@@ -208,14 +261,14 @@
           <div
             v-if="currentWish"
             :key="currentWish.id || currentWishIndex"
-            class="flex items-center gap-3 text-xs md:text-sm text-slate-200 truncate w-full"
+            class="flex items-center gap-3 text-xs md:text-sm truncate w-full"
             data-testid="wish-message"
           >
-            <span class="font-bold text-amber-200 shrink-0 flex items-center gap-1.5">
-              <i class="fa-solid fa-comment-dots text-amber-400 text-xs"></i>
+            <span class="font-bold shrink-0 flex items-center gap-1.5" :class="themeClasses.tickerSender">
+              <i class="fa-solid fa-comment-dots text-xs"></i>
               {{ currentWish.senderName || currentWish.guestName || currentWish.name || 'Tamu Undangan' }}:
             </span>
-            <span class="italic text-slate-300 truncate">
+            <span class="italic truncate" :class="themeClasses.tickerMessage">
               "{{ currentWish.message }}"
             </span>
             <span
@@ -227,16 +280,17 @@
           </div>
           <div
             v-else
-            class="text-xs md:text-sm text-slate-400 italic flex items-center gap-2 truncate"
+            class="text-xs md:text-sm italic flex items-center gap-2 truncate opacity-70"
+            :class="themeClasses.tickerMessage"
           >
-            <i class="fa-solid fa-heart text-amber-400/70"></i>
+            <i class="fa-solid fa-heart text-amber-400/80"></i>
             <span>Scan QR di sudut layar untuk mengirimkan doa restu & ucapan kepada kedua mempelai.</span>
           </div>
         </transition>
       </div>
 
       <!-- Slide counter or indicator -->
-      <div v-if="wishesList.length > 1" class="hidden lg:flex items-center gap-1 text-[11px] text-slate-400 font-mono shrink-0">
+      <div v-if="wishesList.length > 1" class="hidden lg:flex items-center gap-1 text-[11px] font-mono shrink-0 opacity-70" :class="themeClasses.tickerMessage">
         <span>{{ currentWishIndex + 1 }}</span>
         <span>/</span>
         <span>{{ wishesList.length }}</span>
@@ -244,9 +298,9 @@
 
       <!-- Powered by (NAD-114) -->
       <div class="flex items-center gap-4 shrink-0" data-testid="powered-by">
-        <div class="w-px h-4 bg-[#d4af37]/30"></div>
-        <span class="text-[10px] md:text-xs tracking-[0.2em] text-slate-500 whitespace-nowrap font-light">
-          Powered by <span class="text-amber-300/80 font-semibold">satuundangan.id</span>
+        <div class="w-px h-4" :class="themeClasses.poweredByDivider"></div>
+        <span class="text-[10px] md:text-xs tracking-[0.2em] whitespace-nowrap font-light" :class="themeClasses.poweredBy">
+          Powered by <span :class="themeClasses.poweredByHighlight">satuundangan.id</span>
         </span>
       </div>
     </footer>
@@ -255,7 +309,8 @@
     <!-- CORNER QR CODE (Scan HP Tamu di Ballroom) -->
     <!-- ============================================== -->
     <aside
-      class="absolute bottom-20 right-6 md:right-10 z-30 flex flex-col items-center bg-slate-900/90 backdrop-blur-md p-3 md:p-3.5 rounded-2xl border border-[#d4af37]/40 shadow-2xl transition-all duration-300 hover:scale-105"
+      class="absolute bottom-20 right-6 md:right-10 z-30 flex flex-col items-center backdrop-blur-md p-3 md:p-3.5 rounded-2xl border shadow-2xl transition-all duration-300 hover:scale-105"
+      :class="themeClasses.cornerQr"
       data-testid="corner-qr"
     >
       <div class="w-20 h-20 md:w-24 md:h-24 bg-white p-1 rounded-xl flex items-center justify-center overflow-hidden shadow-inner">
@@ -270,10 +325,10 @@
         </div>
       </div>
       <div class="mt-2 text-center">
-        <span class="block text-[10px] md:text-[11px] font-bold text-amber-300 tracking-wider">
+        <span class="block text-[10px] md:text-[11px] font-bold tracking-wider" :class="themeClasses.cornerQrTitle">
           SCAN UNDANGAN
         </span>
-        <span class="block text-[9px] text-slate-400">
+        <span class="block text-[9px]" :class="themeClasses.cornerQrSubtitle">
           Kirim Ucapan & Doa
         </span>
       </div>
@@ -285,30 +340,33 @@
     <transition name="greeting-modal">
       <div
         v-if="currentGreeting"
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10 bg-slate-950/85 backdrop-blur-xl"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10 backdrop-blur-xl"
+        :class="themeClasses.greetingBackdrop"
         data-testid="greeting-modal"
         @click.self="dismissGreeting"
       >
         <!-- Modal Card Container -->
         <div
-          class="relative w-full max-w-3xl rounded-3xl p-8 md:p-14 text-center border-2 border-[#d4af37] bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-900/95 shadow-[0_0_80px_rgba(212,175,55,0.35)] overflow-hidden transform will-change-transform"
+          class="relative w-full max-w-3xl rounded-3xl p-8 md:p-14 text-center overflow-hidden transform will-change-transform"
+          :class="themeClasses.greetingCard"
         >
           <!-- Glowing Corner Decorations -->
-          <div class="absolute -top-12 -left-12 w-36 h-36 bg-[#d4af37]/20 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute -bottom-12 -right-12 w-36 h-36 bg-[#d4af37]/20 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -top-12 -left-12 w-36 h-36 rounded-full blur-3xl pointer-events-none" :class="themeClasses.greetingGlow1"></div>
+          <div class="absolute -bottom-12 -right-12 w-36 h-36 rounded-full blur-3xl pointer-events-none" :class="themeClasses.greetingGlow2"></div>
 
           <!-- Close / Dismiss button -->
           <button
             type="button"
             @click="dismissGreeting"
-            class="absolute top-5 right-5 w-9 h-9 rounded-full bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white flex items-center justify-center transition-all cursor-pointer text-sm"
+            class="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer text-sm"
+            :class="themeClasses.greetingCloseBtn"
             title="Tutup Sambutan"
           >
             ✕
           </button>
 
           <!-- Top Badge: Selamat Datang -->
-          <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#d4af37]/60 bg-[#d4af37]/15 text-[#d4af37] font-serif text-sm md:text-base tracking-[0.25em] uppercase font-bold mb-6 shadow-sm">
+          <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full border font-serif text-sm md:text-base tracking-[0.25em] uppercase font-bold mb-6 shadow-sm" :class="themeClasses.greetingWelcomeBadge">
             <span>✨</span>
             <span data-testid="greeting-welcome-text">Selamat Datang</span>
             <span>✨</span>
@@ -316,7 +374,8 @@
 
           <!-- Guest Name (Cinematic Highlight) -->
           <h2
-            class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-200 to-[#d4af37] drop-shadow-lg mb-3 tracking-wide leading-tight"
+            class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold mb-3 tracking-wide leading-tight"
+            :class="themeClasses.greetingGuestName"
             data-testid="greeting-guest-name"
           >
             {{ currentGreeting.name || 'Tamu Terhormat' }}
@@ -325,7 +384,8 @@
           <!-- Degree / Gelar -->
           <p
             v-if="currentGreeting.degree"
-            class="text-base md:text-lg text-amber-200/90 font-serif italic mb-4"
+            class="text-base md:text-lg font-serif italic mb-4"
+            :class="themeClasses.greetingGuestDegree"
             data-testid="greeting-guest-degree"
           >
             {{ currentGreeting.degree }}
@@ -335,24 +395,27 @@
           <div class="flex items-center justify-center gap-3 mb-8 flex-wrap">
             <span
               v-if="currentGreeting.group"
-              class="px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase bg-[#d4af37]/20 text-amber-200 border border-[#d4af37]/40 shadow-xs"
+              class="px-4 py-1.5 rounded-full text-xs md:text-sm font-semibold tracking-wider uppercase border shadow-xs"
+              :class="themeClasses.greetingGuestGroup"
               data-testid="greeting-guest-group"
             >
-              <i class="fa-solid fa-tag text-[#d4af37] mr-1.5 text-xs"></i>
+              <i class="fa-solid fa-tag mr-1.5 text-xs" :class="themeClasses.greetingGroupIcon"></i>
               {{ currentGreeting.group }}
             </span>
 
             <span
               v-if="currentGreeting.pax"
-              class="px-4 py-1.5 rounded-full text-xs md:text-sm font-medium bg-slate-800/80 text-slate-300 border border-slate-700"
+              class="px-4 py-1.5 rounded-full text-xs md:text-sm font-medium border"
+              :class="themeClasses.greetingPaxBadge"
             >
-              <i class="fa-solid fa-user-group text-slate-400 mr-1.5 text-xs"></i>
+              <i class="fa-solid fa-user-group opacity-60 mr-1.5 text-xs"></i>
               {{ currentGreeting.pax }} Orang
             </span>
 
             <span
               v-if="currentGreeting.checkedInAt"
-              class="px-4 py-1.5 rounded-full text-xs md:text-sm font-mono text-slate-400 bg-slate-850/60 border border-slate-700/60"
+              class="px-4 py-1.5 rounded-full text-xs md:text-sm font-mono border"
+              :class="themeClasses.greetingClockBadge"
             >
               <i class="fa-regular fa-clock mr-1 text-xs"></i>
               {{ formatCheckInTime(currentGreeting.checkedInAt) }}
@@ -360,14 +423,14 @@
           </div>
 
           <!-- Warm Welcome Message -->
-          <div class="max-w-xl mx-auto border-t border-[#d4af37]/30 pt-6">
-            <p class="text-base md:text-xl font-light text-slate-200 font-serif leading-relaxed italic">
+          <div class="max-w-xl mx-auto border-t pt-6" :class="themeClasses.greetingMessageBorder">
+            <p class="text-base md:text-xl font-light font-serif leading-relaxed italic" :class="themeClasses.greetingMessageText">
               "{{ currentGreeting.customGreeting || 'Merupakan suatu kehormatan dan kebahagiaan bagi kami atas kehadiran Bapak/Ibu/Saudara/i di hari bahagia kami.' }}"
             </p>
           </div>
 
           <!-- Progress Bar (7s duration indicator) -->
-          <div class="absolute bottom-0 inset-x-0 h-1 bg-slate-800">
+          <div class="absolute bottom-0 inset-x-0 h-1 bg-slate-800/40">
             <div class="h-full bg-gradient-to-r from-amber-400 to-[#d4af37] greeting-progress-bar"></div>
           </div>
         </div>
@@ -381,6 +444,34 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import QRCode from 'qrcode'
 import { getLiveScreenFeed } from '@/api/invitation'
+
+// Live Screen Themes
+const LIVE_SCREEN_THEMES = [
+  {
+    id: 'dark',
+    name: 'Gelap Mewah (Midnight Gold)',
+    shortName: 'Gelap',
+    badge: '🌙 Gelap',
+  },
+  {
+    id: 'light',
+    name: 'Cerah Anggun (Ivory Champagne)',
+    shortName: 'Cerah',
+    badge: '☀️ Cerah',
+  },
+  {
+    id: 'emerald',
+    name: 'Royal Emerald (Zamrud Elegan)',
+    shortName: 'Emerald',
+    badge: '🍃 Emerald',
+  },
+  {
+    id: 'rose',
+    name: 'Rose Romance (Mawar Romantis)',
+    shortName: 'Rose',
+    badge: '🌸 Rose',
+  },
+]
 
 const props = defineProps({
   slug: {
@@ -399,6 +490,259 @@ const isFullscreen = ref(false)
 // Operator Toolbar Auto-Hide
 const isToolbarVisible = ref(true)
 let toolbarTimeout = null
+
+// Live Screen Theme State
+const currentTheme = ref('dark')
+const isThemeMenuOpen = ref(false)
+
+const activeThemeMeta = computed(() => {
+  return LIVE_SCREEN_THEMES.find((t) => t.id === currentTheme.value) || LIVE_SCREEN_THEMES[0]
+})
+
+function toggleThemeMenu() {
+  handleUserActivity()
+  isThemeMenuOpen.value = !isThemeMenuOpen.value
+}
+
+function setTheme(themeId) {
+  currentTheme.value = themeId
+  isThemeMenuOpen.value = false
+  handleUserActivity()
+  try {
+    if (typeof localStorage !== 'undefined') {
+      if (currentSlug.value) {
+        localStorage.setItem(`live_screen_theme_${currentSlug.value}`, themeId)
+      }
+      localStorage.setItem('live_screen_theme_default', themeId)
+    }
+  } catch (err) {
+    console.warn('Failed to persist theme:', err)
+  }
+}
+
+function loadSavedTheme(slug) {
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const saved = slug ? localStorage.getItem(`live_screen_theme_${slug}`) : null
+      const globalSaved = localStorage.getItem('live_screen_theme_default')
+      if (saved && LIVE_SCREEN_THEMES.some((t) => t.id === saved)) {
+        currentTheme.value = saved
+        return
+      }
+      if (globalSaved && LIVE_SCREEN_THEMES.some((t) => t.id === globalSaved)) {
+        currentTheme.value = globalSaved
+        return
+      }
+    }
+  } catch {}
+  currentTheme.value = 'dark'
+}
+
+const themeClasses = computed(() => {
+  const t = currentTheme.value
+  if (t === 'light') {
+    return {
+      container: 'bg-[#faf7f2] text-slate-800',
+      vignette: 'bg-gradient-to-t from-[#f5ede2]/90 via-[#faf7f2]/55 to-[#f5ede2]/75',
+      glow: 'radial-light-glow',
+      toolbar: 'bg-white/90 border-amber-600/20 text-slate-800 shadow-md',
+      toolbarBadge: 'text-amber-800 font-semibold',
+      brandDivider: 'bg-[#b8860b]',
+      stageSubheader: 'text-amber-800/80 font-medium',
+      stageClock: 'text-slate-600 font-medium',
+      heroBadge: 'border-amber-600/40 bg-amber-500/15 text-amber-900 shadow-md shadow-amber-900/10 font-semibold',
+      heroBadgePing: 'bg-[#b8860b]',
+      coupleNames: 'text-transparent bg-clip-text bg-gradient-to-b from-amber-900 via-amber-800 to-[#b8860b] drop-shadow-md',
+      dividerLine: 'bg-gradient-to-r from-transparent to-amber-700/50',
+      dividerLineReverse: 'bg-gradient-to-l from-transparent to-amber-700/50',
+      dividerStar: 'text-[#b8860b]',
+      eventDate: 'text-amber-950 font-medium',
+      venueText: 'text-slate-700 font-medium',
+      venueIcon: 'text-[#b8860b]',
+      ticker: 'bg-white/95 border-amber-600/30 text-slate-800 shadow-xl',
+      tickerTitle: 'text-amber-800 font-bold',
+      tickerSender: 'text-amber-800 font-bold',
+      tickerMessage: 'text-slate-600',
+      poweredBy: 'text-slate-500',
+      poweredByHighlight: 'text-amber-800 font-semibold',
+      poweredByDivider: 'bg-amber-600/30',
+      cornerQr: 'bg-white/95 border-amber-600/30 text-slate-800 shadow-xl',
+      cornerQrTitle: 'text-amber-800',
+      cornerQrSubtitle: 'text-slate-500 font-medium',
+      greetingBackdrop: 'bg-slate-900/40 backdrop-blur-xl',
+      greetingCard: 'border-2 border-amber-600 bg-gradient-to-b from-[#faf7f2]/98 via-white/98 to-[#faf7f2]/98 text-slate-800 shadow-[0_0_80px_rgba(212,175,55,0.25)]',
+      greetingGlow1: 'bg-amber-400/20',
+      greetingGlow2: 'bg-amber-500/20',
+      greetingCloseBtn: 'bg-slate-200/80 text-slate-600 hover:text-slate-900 hover:bg-slate-300',
+      greetingWelcomeBadge: 'border-amber-600/60 bg-amber-500/15 text-amber-900',
+      greetingGuestName: 'text-transparent bg-clip-text bg-gradient-to-r from-amber-900 via-amber-800 to-[#b8860b] drop-shadow-md',
+      greetingGuestDegree: 'text-amber-800 font-serif italic',
+      greetingGuestGroup: 'bg-amber-100 text-amber-900 border-amber-300',
+      greetingGroupIcon: 'text-amber-700',
+      greetingPaxBadge: 'bg-slate-100 text-slate-700 border-slate-300',
+      greetingClockBadge: 'bg-slate-100 text-slate-600 border-slate-300',
+      greetingMessageBorder: 'border-amber-600/30',
+      greetingMessageText: 'text-slate-700 font-serif italic',
+      themeBtn: 'bg-amber-50 border-amber-300 text-amber-900 hover:bg-amber-100',
+      dropdownMenu: 'bg-white/95 border-amber-300/80 text-slate-800 shadow-2xl',
+      dropdownHeaderBorder: 'border-slate-200 text-slate-500',
+      dropdownActiveItem: 'bg-amber-100 text-amber-900 font-bold border border-amber-400/50',
+      dropdownItem: 'text-slate-700 hover:bg-amber-50',
+    }
+  }
+
+  if (t === 'emerald') {
+    return {
+      container: 'bg-[#04120e] text-emerald-50',
+      vignette: 'bg-gradient-to-t from-[#04120e]/95 via-[#061e18]/65 to-[#04120e]/85',
+      glow: 'radial-emerald-glow',
+      toolbar: 'bg-[#04120e]/90 border-emerald-500/30 text-emerald-100',
+      toolbarBadge: 'text-emerald-300/80',
+      brandDivider: 'bg-[#10b981]',
+      stageSubheader: 'text-emerald-200/70',
+      stageClock: 'text-emerald-200/60',
+      heroBadge: 'border-emerald-500/40 bg-emerald-500/15 text-emerald-200 shadow-lg shadow-black/40',
+      heroBadgePing: 'bg-[#10b981]',
+      coupleNames: 'text-transparent bg-clip-text bg-gradient-to-b from-emerald-100 via-amber-200 to-[#d4af37] drop-shadow-2xl',
+      dividerLine: 'bg-gradient-to-r from-transparent to-emerald-500/60',
+      dividerLineReverse: 'bg-gradient-to-l from-transparent to-emerald-500/60',
+      dividerStar: 'text-[#10b981]',
+      eventDate: 'text-emerald-100/90',
+      venueText: 'text-emerald-100/80',
+      venueIcon: 'text-[#10b981]',
+      ticker: 'bg-[#04120e]/90 border-emerald-500/30 text-emerald-100',
+      tickerTitle: 'text-emerald-300',
+      tickerSender: 'text-amber-300',
+      tickerMessage: 'text-emerald-100/80',
+      poweredBy: 'text-emerald-300/50',
+      poweredByHighlight: 'text-emerald-300/90 font-semibold',
+      poweredByDivider: 'bg-emerald-500/30',
+      cornerQr: 'bg-[#061e18]/90 border-emerald-500/40 text-emerald-300 shadow-2xl',
+      cornerQrTitle: 'text-emerald-300',
+      cornerQrSubtitle: 'text-emerald-200/60',
+      greetingBackdrop: 'bg-slate-950/85 backdrop-blur-xl',
+      greetingCard: 'border-2 border-[#10b981] bg-gradient-to-b from-[#061e18]/95 via-[#04120e]/95 to-[#061e18]/95 text-emerald-50 shadow-[0_0_80px_rgba(16,185,129,0.35)]',
+      greetingGlow1: 'bg-[#10b981]/20',
+      greetingGlow2: 'bg-[#10b981]/20',
+      greetingCloseBtn: 'bg-emerald-950/80 text-emerald-300 hover:text-white',
+      greetingWelcomeBadge: 'border-emerald-500/60 bg-emerald-500/20 text-emerald-200',
+      greetingGuestName: 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-100 via-amber-200 to-[#d4af37] drop-shadow-lg',
+      greetingGuestDegree: 'text-emerald-200/90 font-serif italic',
+      greetingGuestGroup: 'bg-emerald-500/20 text-emerald-200 border-emerald-500/40',
+      greetingGroupIcon: 'text-[#10b981]',
+      greetingPaxBadge: 'bg-emerald-950/80 text-emerald-300 border-emerald-800',
+      greetingClockBadge: 'bg-emerald-950/60 text-emerald-400 border-emerald-800/60',
+      greetingMessageBorder: 'border-emerald-500/30',
+      greetingMessageText: 'text-emerald-100 font-serif italic',
+      themeBtn: 'bg-emerald-950/90 border-emerald-700 text-emerald-300 hover:bg-emerald-900',
+      dropdownMenu: 'bg-[#061e18]/95 border-emerald-700/80 text-emerald-100 shadow-2xl',
+      dropdownHeaderBorder: 'border-emerald-800 text-emerald-400',
+      dropdownActiveItem: 'bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30',
+      dropdownItem: 'text-emerald-200 hover:bg-emerald-900/50',
+    }
+  }
+
+  if (t === 'rose') {
+    return {
+      container: 'bg-[#14060b] text-rose-50',
+      vignette: 'bg-gradient-to-t from-[#14060b]/95 via-[#220d15]/65 to-[#14060b]/85',
+      glow: 'radial-rose-glow',
+      toolbar: 'bg-[#14060b]/90 border-rose-500/30 text-rose-100',
+      toolbarBadge: 'text-rose-300/80',
+      brandDivider: 'bg-[#f472b6]',
+      stageSubheader: 'text-rose-200/70',
+      stageClock: 'text-rose-200/60',
+      heroBadge: 'border-rose-400/40 bg-rose-500/15 text-rose-200 shadow-lg shadow-black/40',
+      heroBadgePing: 'bg-[#f472b6]',
+      coupleNames: 'text-transparent bg-clip-text bg-gradient-to-b from-rose-100 via-rose-200 to-[#e8a598] drop-shadow-2xl',
+      dividerLine: 'bg-gradient-to-r from-transparent to-rose-400/60',
+      dividerLineReverse: 'bg-gradient-to-l from-transparent to-rose-400/60',
+      dividerStar: 'text-[#f472b6]',
+      eventDate: 'text-rose-100/90',
+      venueText: 'text-rose-100/80',
+      venueIcon: 'text-[#f472b6]',
+      ticker: 'bg-[#14060b]/90 border-rose-500/30 text-rose-100',
+      tickerTitle: 'text-rose-300',
+      tickerSender: 'text-rose-200',
+      tickerMessage: 'text-rose-100/80',
+      poweredBy: 'text-rose-300/50',
+      poweredByHighlight: 'text-rose-300/90 font-semibold',
+      poweredByDivider: 'bg-rose-500/30',
+      cornerQr: 'bg-[#220d15]/90 border-rose-500/40 text-rose-300 shadow-2xl',
+      cornerQrTitle: 'text-rose-300',
+      cornerQrSubtitle: 'text-rose-200/60',
+      greetingBackdrop: 'bg-slate-950/85 backdrop-blur-xl',
+      greetingCard: 'border-2 border-[#e8a598] bg-gradient-to-b from-[#220d15]/95 via-[#14060b]/95 to-[#220d15]/95 text-rose-50 shadow-[0_0_80px_rgba(244,114,182,0.35)]',
+      greetingGlow1: 'bg-[#f472b6]/20',
+      greetingGlow2: 'bg-[#f472b6]/20',
+      greetingCloseBtn: 'bg-rose-950/80 text-rose-300 hover:text-white',
+      greetingWelcomeBadge: 'border-rose-400/60 bg-rose-500/20 text-rose-200',
+      greetingGuestName: 'text-transparent bg-clip-text bg-gradient-to-r from-rose-100 via-rose-200 to-[#e8a598] drop-shadow-lg',
+      greetingGuestDegree: 'text-rose-200/90 font-serif italic',
+      greetingGuestGroup: 'bg-rose-500/20 text-rose-200 border-rose-500/40',
+      greetingGroupIcon: 'text-[#f472b6]',
+      greetingPaxBadge: 'bg-rose-950/80 text-rose-300 border-rose-800',
+      greetingClockBadge: 'bg-rose-950/60 text-rose-400 border-rose-800/60',
+      greetingMessageBorder: 'border-rose-500/30',
+      greetingMessageText: 'text-rose-100 font-serif italic',
+      themeBtn: 'bg-rose-950/90 border-rose-700 text-rose-300 hover:bg-rose-900',
+      dropdownMenu: 'bg-[#220d15]/95 border-rose-700/80 text-rose-100 shadow-2xl',
+      dropdownHeaderBorder: 'border-rose-800 text-rose-400',
+      dropdownActiveItem: 'bg-rose-500/20 text-rose-300 font-bold border border-rose-500/30',
+      dropdownItem: 'text-rose-200 hover:bg-rose-900/50',
+    }
+  }
+
+  // Default: Dark Luxurious
+  return {
+    container: 'bg-slate-950 text-slate-100',
+    vignette: 'bg-gradient-to-t from-slate-950/95 via-slate-950/65 to-slate-950/85',
+    glow: 'radial-gold-glow',
+    toolbar: 'bg-slate-950/80 border-amber-500/20 text-slate-200',
+    toolbarBadge: 'text-amber-300/80',
+    brandDivider: 'bg-[#d4af37]',
+    stageSubheader: 'text-amber-200/60',
+    stageClock: 'text-slate-400',
+    heroBadge: 'border-[#d4af37]/40 bg-[#d4af37]/10 text-amber-200 shadow-lg shadow-black/40',
+    heroBadgePing: 'bg-[#d4af37]',
+    coupleNames: 'text-transparent bg-clip-text bg-gradient-to-b from-amber-100 via-amber-200 to-[#d4af37] drop-shadow-2xl',
+    dividerLine: 'bg-gradient-to-r from-transparent to-[#d4af37]/60',
+    dividerLineReverse: 'bg-gradient-to-l from-transparent to-[#d4af37]/60',
+    dividerStar: 'text-[#d4af37]',
+    eventDate: 'text-amber-100/90',
+    venueText: 'text-slate-300',
+    venueIcon: 'text-[#d4af37]',
+    ticker: 'bg-slate-950/85 border-[#d4af37]/30 text-slate-200',
+    tickerTitle: 'text-amber-300',
+    tickerSender: 'text-amber-200',
+    tickerMessage: 'text-slate-300',
+    poweredBy: 'text-slate-500',
+    poweredByHighlight: 'text-amber-300/80 font-semibold',
+    poweredByDivider: 'bg-[#d4af37]/30',
+    cornerQr: 'bg-slate-900/90 border-[#d4af37]/40 text-amber-300 shadow-2xl',
+    cornerQrTitle: 'text-amber-300',
+    cornerQrSubtitle: 'text-slate-400',
+    greetingBackdrop: 'bg-slate-950/85 backdrop-blur-xl',
+    greetingCard: 'border-2 border-[#d4af37] bg-gradient-to-b from-slate-900/95 via-slate-950/95 to-slate-900/95 text-slate-100 shadow-[0_0_80px_rgba(212,175,55,0.35)]',
+    greetingGlow1: 'bg-[#d4af37]/20',
+    greetingGlow2: 'bg-[#d4af37]/20',
+    greetingCloseBtn: 'bg-slate-800/80 text-slate-400 hover:text-white',
+    greetingWelcomeBadge: 'border-[#d4af37]/60 bg-[#d4af37]/15 text-[#d4af37]',
+    greetingGuestName: 'text-transparent bg-clip-text bg-gradient-to-r from-amber-100 via-amber-200 to-[#d4af37] drop-shadow-lg',
+    greetingGuestDegree: 'text-amber-200/90 font-serif italic',
+    greetingGuestGroup: 'bg-[#d4af37]/20 text-amber-200 border-[#d4af37]/40',
+    greetingGroupIcon: 'text-[#d4af37]',
+    greetingPaxBadge: 'bg-slate-800/80 text-slate-300 border-slate-700',
+    greetingClockBadge: 'bg-slate-850/60 text-slate-400 border-slate-700/60',
+    greetingMessageBorder: 'border-[#d4af37]/30',
+    greetingMessageText: 'text-slate-200 font-serif italic',
+    themeBtn: 'bg-slate-900/90 border-slate-700 text-slate-200 hover:bg-slate-800',
+    dropdownMenu: 'bg-slate-900/95 border-slate-700/80 text-slate-200 shadow-2xl',
+    dropdownHeaderBorder: 'border-slate-800 text-slate-400',
+    dropdownActiveItem: 'bg-amber-500/20 text-amber-300 font-bold border border-amber-500/30',
+    dropdownItem: 'text-slate-300 hover:bg-slate-800',
+  }
+})
 
 // Audio Settings & Web Audio API
 const isAudioEnabled = ref(true)
@@ -547,6 +891,9 @@ function handleUserActivity() {
 // User Interaction: Resume AudioContext if suspended
 function handleUserInteraction() {
   handleUserActivity()
+  if (isThemeMenuOpen.value) {
+    isThemeMenuOpen.value = false
+  }
   if (audioCtx.value && audioCtx.value.state === 'suspended') {
     audioCtx.value.resume().catch(() => {})
   }
@@ -844,6 +1191,7 @@ async function fetchFeed() {
 
 watch(currentSlug, (newSlug) => {
   if (newSlug) {
+    loadSavedTheme(newSlug)
     currentEtag = null
     idleCount = 0
     adjustPollingInterval()
@@ -853,6 +1201,9 @@ watch(currentSlug, (newSlug) => {
 })
 
 onMounted(async () => {
+  if (currentSlug.value) {
+    loadSavedTheme(currentSlug.value)
+  }
   updateClock()
   clockInterval = setInterval(updateClock, 1000)
 
@@ -930,6 +1281,47 @@ onUnmounted(() => {
     rgba(15, 23, 42, 0.4) 60%,
     rgba(2, 6, 23, 0.85) 100%
   );
+}
+
+/* Light Ivory Glow Vignette */
+.radial-light-glow {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(212, 175, 55, 0.16) 0%,
+    rgba(251, 249, 245, 0.4) 60%,
+    rgba(245, 237, 226, 0.8) 100%
+  );
+}
+
+/* Royal Emerald Glow Vignette */
+.radial-emerald-glow {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(16, 185, 129, 0.15) 0%,
+    rgba(6, 30, 24, 0.4) 60%,
+    rgba(4, 18, 14, 0.85) 100%
+  );
+}
+
+/* Rose Romance Glow Vignette */
+.radial-rose-glow {
+  background: radial-gradient(
+    circle at 50% 45%,
+    rgba(244, 114, 182, 0.15) 0%,
+    rgba(34, 13, 21, 0.4) 60%,
+    rgba(20, 6, 11, 0.85) 100%
+  );
+}
+
+/* Theme Dropdown Menu Transition */
+.dropdown-fade-enter-active,
+.dropdown-fade-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.dropdown-fade-enter-from,
+.dropdown-fade-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
 }
 
 /* Subtle Floating Light Particles */
