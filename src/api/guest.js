@@ -55,3 +55,9 @@ export const updateGuestReception = (id, data) =>
     body: JSON.stringify(data),
   })
 
+export const createWalkInGuest = (invitationId, data) =>
+  apiFetch(`/guests/invitation/${invitationId}/walk-in`, {
+    method: 'POST',
+    body: JSON.stringify(data),
+  })
+
