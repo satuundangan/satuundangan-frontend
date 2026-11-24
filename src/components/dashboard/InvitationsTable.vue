@@ -73,9 +73,16 @@
               </div>
             </td>
             <td class="px-6 py-4">
-              <div class="flex items-center gap-1.5 text-blue-600 font-bold">
-                <span>{{ getInvitationPublicUrl(invite) }}</span>
-                <button @click="copyLink(invite)" class="p-1 text-slate-400 hover:text-blue-600 transition-colors" title="Salin Link">
+              <div class="flex items-center gap-1.5 text-blue-600 font-bold max-w-xs">
+                <a
+                  :href="getInvitationPublicUrl(invite)"
+                  target="_blank"
+                  class="truncate hover:underline hover:text-blue-700 transition-colors"
+                  title="Buka Undangan di Tab Baru"
+                >
+                  {{ getInvitationPublicUrl(invite) }}
+                </a>
+                <button @click="copyLink(invite)" class="p-1 text-slate-400 hover:text-blue-600 transition-colors shrink-0 cursor-pointer" title="Salin Link">
                   <i class="fa-solid fa-copy text-xs"></i>
                 </button>
               </div>
@@ -89,6 +96,10 @@
                 <p v-if="invite.isPublished" class="text-[10px] text-slate-400 font-medium">
                   Aktif s.d. {{ getExpiryLabel(invite) }}
                 </p>
+                <div v-if="invite.isPublished && invite.views !== undefined" class="text-[10px] text-slate-400 font-medium flex items-center gap-1 pt-0.5">
+                  <i class="fa-regular fa-eye text-[9px] text-slate-400"></i>
+                  <span>{{ Number(invite.views || 0).toLocaleString('id-ID') }} tayangan</span>
+                </div>
                 <p v-else-if="isPendingPayment(invite)" class="text-[10px] text-amber-600 font-semibold">
                   Menunggu verifikasi pembayaran
                 </p>
@@ -212,14 +223,25 @@
         <div class="grid grid-cols-2 gap-3 py-2.5 border-y border-slate-100 text-xs">
           <div>
             <div class="text-[9px] text-slate-400 uppercase font-black mb-0.5">Slug</div>
-            <div class="text-blue-600 font-bold truncate">{{ getInvitationPublicUrl(invite) }}</div>
+            <div class="text-blue-600 font-bold truncate flex items-center gap-1">
+              <a :href="getInvitationPublicUrl(invite)" target="_blank" class="truncate hover:underline">
+                {{ getInvitationPublicUrl(invite) }}
+              </a>
+              <button @click="copyLink(invite)" class="text-slate-400 hover:text-blue-600 shrink-0" title="Salin Link">
+                <i class="fa-solid fa-copy text-[10px]"></i>
+              </button>
+            </div>
           </div>
           <div>
             <div class="text-[9px] text-slate-400 uppercase font-black mb-0.5">
-              {{ invite.isPublished ? 'Masa Aktif (WIB)' : 'Tanggal Acara' }}
+              {{ invite.isPublished ? 'Masa Aktif & Views' : 'Tanggal Acara' }}
             </div>
             <div class="text-slate-700 font-medium truncate">
               {{ invite.isPublished ? getExpiryLabel(invite) : formatDate(invite.akadLocation?.dateTime || invite.dateTime) }}
+            </div>
+            <div v-if="invite.isPublished && invite.views !== undefined" class="text-[10px] text-slate-400 font-semibold flex items-center gap-1 mt-0.5">
+              <i class="fa-regular fa-eye text-[9px]"></i>
+              <span>{{ Number(invite.views || 0).toLocaleString('id-ID') }} views</span>
             </div>
           </div>
         </div>
