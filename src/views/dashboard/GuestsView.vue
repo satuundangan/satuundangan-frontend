@@ -167,12 +167,12 @@
                 :aria-label="currentInvitation.isGuestPublic !== false ? 'Kunci menjadi mode privat' : 'Buka menjadi mode publik'"
                 :disabled="updatingGuestAccess"
                 @click="toggleGuestAccess"
-                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden disabled:opacity-50"
+                class="relative inline-flex h-7 w-12 items-center rounded-full p-0.5 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-50 cursor-pointer select-none"
                 :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-500' : 'bg-slate-300'"
                 :title="currentInvitation.isGuestPublic !== false ? 'Klik untuk mengubah ke Mode Privat' : 'Klik untuk mengubah ke Mode Publik'"
               >
                 <span
-                  class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out"
+                  class="pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ease-in-out"
                   :class="currentInvitation.isGuestPublic !== false ? 'translate-x-5' : 'translate-x-0'"
                 ></span>
               </button>
@@ -837,7 +837,7 @@
       </div>
     </div>
 
-    <!-- Section 3e: Mode Kirim Cepat (Queue Runner / Assistant Modal) -->
+    <!-- Section 3e: Mode Sebar Cepat WhatsApp (Batch Sequence Dispatcher - SAT-71) -->
     <div
       v-if="showQueueModal"
       class="fixed inset-0 bg-black/60 z-[100] flex items-center justify-center p-3 sm:p-4 backdrop-blur-xs overflow-y-auto"
@@ -847,40 +847,99 @@
         <div class="flex items-start justify-between gap-3 pb-3 border-b border-slate-100">
           <div>
             <div class="flex items-center gap-2">
-              <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm">
-                <i class="fa-solid fa-paper-plane"></i>
+              <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shadow-xs">
+                <i class="fa-brands fa-whatsapp text-base"></i>
               </span>
-              <h3 class="font-black text-base sm:text-lg text-slate-900">
-                Asisten Sebar WhatsApp
-              </h3>
+              <div>
+                <h3 class="font-black text-base sm:text-lg text-slate-900">
+                  Mode Sebar Cepat WhatsApp
+                </h3>
+                <span class="text-[10px] text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full font-bold border border-emerald-100">
+                  Batch Sequence Dispatcher
+                </span>
+              </div>
             </div>
-            <p class="text-[11px] text-slate-400 mt-0.5">
-              Buka WhatsApp untuk tiap tamu, lalu tandai setelah kamu menekan Kirim di WhatsApp.
+            <p class="text-[11px] text-slate-400 mt-1">
+              Buka WhatsApp otomatis, tandai status terkirim seketika, dan lanjut ke tamu berikutnya dengan satu tombol atau <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[9px]">Space</kbd> / <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono text-[9px]">Enter</kbd>.
             </p>
           </div>
           <button
-            @click="showQueueModal = false"
+            @click="closeQueueModal"
             class="w-7 h-7 rounded-lg bg-slate-100 text-slate-400 hover:text-slate-700 flex items-center justify-center transition-colors cursor-pointer"
+            title="Tutup (Esc)"
           >
             <i class="fa-solid fa-xmark text-xs"></i>
           </button>
         </div>
 
-        <!-- All Sent Celebratory State -->
-        <div v-if="unsentGuests.length === 0" class="py-12 px-4 text-center space-y-4 my-auto">
-          <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner">
-            <i class="pi pi-check-circle" aria-hidden="true"></i>
+        <!-- Filter Controls Bar -->
+        <div class="py-2.5 px-3 bg-slate-50/80 rounded-2xl border border-slate-100 mt-3 flex items-center gap-2 flex-wrap text-xs">
+          <!-- Status Filter -->
+          <div class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">Status:</span>
+            <select
+              v-model="queueFilterStatus"
+              @change="queueIndex = 0"
+              class="border border-slate-200 rounded-lg px-2 py-1 bg-white text-[11px] font-bold text-slate-700 focus:outline-none cursor-pointer"
+            >
+              <option value="unsent">Belum Terkirim ({{ unsentGuestsCount }})</option>
+              <option value="all">Semua Tamu ({{ totalGuestsCount }})</option>
+            </select>
+          </div>
+
+          <!-- Group Filter -->
+          <div v-if="uniqueGroups.length > 0" class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">Grup:</span>
+            <select
+              v-model="queueFilterGroup"
+              @change="queueIndex = 0"
+              class="border border-slate-200 rounded-lg px-2 py-1 bg-white text-[11px] font-bold text-slate-700 focus:outline-none cursor-pointer max-w-[120px] truncate"
+            >
+              <option value="all">Semua Grup</option>
+              <option v-for="grp in uniqueGroups" :key="grp" :value="grp">{{ grp }}</option>
+            </select>
+          </div>
+
+          <!-- Session Filter -->
+          <div v-if="uniqueSessions.length > 0" class="flex items-center gap-1.5">
+            <span class="text-[10px] font-bold text-slate-400 uppercase">Sesi:</span>
+            <select
+              v-model="queueFilterSession"
+              @change="queueIndex = 0"
+              class="border border-slate-200 rounded-lg px-2 py-1 bg-white text-[11px] font-bold text-slate-700 focus:outline-none cursor-pointer max-w-[120px] truncate"
+            >
+              <option value="all">Semua Sesi</option>
+              <option v-for="ses in uniqueSessions" :key="ses" :value="ses">{{ ses }}</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- All Sent / Empty Queue Celebratory State -->
+        <div v-if="activeQueueList.length === 0" class="py-10 px-4 text-center space-y-4 my-auto">
+          <div class="w-16 h-16 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto text-3xl shadow-inner animate-bounce">
+            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
           </div>
           <div class="space-y-1">
-            <h4 class="text-xl font-black text-slate-900">Semua Tamu Ditandai Terkirim!</h4>
+            <h4 class="text-xl font-black text-slate-900">
+              {{ queueFilterStatus === 'unsent' ? 'Semua Tamu Selesai Dikirim!' : 'Tidak Ada Tamu Sesuai Filter' }}
+            </h4>
             <p class="text-xs text-slate-500 max-w-sm mx-auto">
-              Seluruh {{ totalGuestsCount }} tamu dalam daftar undangan telah ditandai terkirim.
+              {{ queueFilterStatus === 'unsent'
+                ? `Luar biasa! Seluruh tamu dalam antrean telah berhasil ditandai terkirim.`
+                : 'Coba ubah filter grup atau status di atas untuk melihat tamu lainnya.' }}
             </p>
           </div>
-          <div class="pt-4 flex justify-center gap-3">
+          <div class="pt-3 flex justify-center gap-2.5 flex-wrap">
             <button
-              @click="showQueueModal = false"
-              class="px-6 py-2.5 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors cursor-pointer"
+              v-if="queueFilterStatus === 'unsent' && totalGuestsCount > 0"
+              @click="queueFilterStatus = 'all'; queueIndex = 0"
+              class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors cursor-pointer"
+            >
+              Lihat Semua Tamu ({{ totalGuestsCount }})
+            </button>
+            <button
+              @click="closeQueueModal"
+              class="px-6 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold hover:bg-slate-800 transition-colors cursor-pointer"
             >
               Selesai & Tutup
             </button>
@@ -888,46 +947,91 @@
         </div>
 
         <!-- Active Queue Item State -->
-        <div v-else class="flex-1 overflow-y-auto py-4 space-y-4 custom-scrollbar">
-          <!-- Progress Indicator -->
-          <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-100 flex items-center justify-between gap-3">
-            <div>
-              <span class="text-[10px] uppercase font-black text-slate-400 tracking-wider block">Antrean Tamu Belum Terkirim</span>
-              <span class="text-xs font-black text-slate-800">
-                Tamu ke-{{ currentQueueIndex + 1 }} dari {{ unsentGuests.length }} belum terkirim
+        <div v-else class="flex-1 overflow-y-auto py-3 space-y-3.5 custom-scrollbar">
+          <!-- Progress Indicator Bar -->
+          <div class="bg-slate-50 p-3 rounded-2xl border border-slate-100 space-y-2">
+            <div class="flex items-center justify-between gap-3 text-xs">
+              <span class="font-black text-slate-800">
+                Tamu ke-{{ currentQueueIndex + 1 }} dari {{ activeQueueList.length }} antrean
+              </span>
+              <span class="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
+                {{ sentPercentage }}% Total Terkirim
               </span>
             </div>
-            <span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[10px] font-black">
-              {{ sentPercentage }}% Selesai
-            </span>
+            <div class="w-full h-2 bg-slate-200/60 rounded-full overflow-hidden p-0.5">
+              <div
+                class="h-full bg-emerald-500 rounded-full transition-all duration-300"
+                :style="{ width: `${((currentQueueIndex + 1) / activeQueueList.length) * 100}%` }"
+              ></div>
+            </div>
           </div>
 
           <!-- Current Guest Card -->
-          <div v-if="currentQueueGuest" class="bg-white rounded-2xl border-2 border-emerald-500/25 p-4 shadow-xs space-y-3">
+          <div v-if="currentQueueGuest" class="bg-white rounded-2xl border-2 border-emerald-500/30 p-4 shadow-sm space-y-3">
             <div class="flex items-start justify-between gap-2">
-              <div>
-                <h4 class="text-lg font-black text-slate-900">{{ currentQueueGuest.name }}</h4>
-                <div class="flex items-center gap-2 mt-1 flex-wrap">
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 flex-wrap">
+                  <h4 class="text-base sm:text-lg font-black text-slate-900 truncate">
+                    {{ currentQueueGuest.name }}
+                  </h4>
+                  <span
+                    v-if="currentQueueGuest.statusSend === 'sent'"
+                    class="px-2 py-0.5 rounded-md text-[9px] font-extrabold bg-emerald-50 text-emerald-700 border border-emerald-200"
+                  >
+                    <i class="fa-solid fa-check mr-0.5"></i> Terkirim
+                  </span>
+                  <span
+                    v-else
+                    class="px-2 py-0.5 rounded-md text-[9px] font-extrabold bg-amber-50 text-amber-700 border border-amber-200"
+                  >
+                    Belum Terkirim
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2 mt-1.5 flex-wrap">
                   <span class="px-2 py-0.5 rounded-md text-[9px] font-bold bg-blue-50 text-blue-600 border border-blue-100 uppercase">
                     {{ currentQueueGuest.group || 'Umum' }}
                   </span>
+                  <span v-if="currentQueueGuest.sessionName || currentQueueGuest.session" class="px-2 py-0.5 rounded-md text-[9px] font-bold bg-purple-50 text-purple-700 border border-purple-100">
+                    <i class="fa-regular fa-clock text-[8px] mr-1"></i>{{ currentQueueGuest.sessionName || currentQueueGuest.session }}
+                  </span>
+
+                  <!-- Phone Number Display or Quick Edit -->
                   <span v-if="currentQueueGuest.phoneNumber" class="text-xs font-bold text-slate-700 flex items-center gap-1.5">
                     <i class="fa-brands fa-whatsapp text-emerald-600 text-xs"></i>
                     {{ currentQueueGuest.phoneNumber }}
                   </span>
-                  <span v-else class="text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                  <span v-else class="text-[10px] font-bold text-rose-700 bg-rose-50 px-2 py-0.5 rounded-md border border-rose-200">
                     <i class="fa-solid fa-triangle-exclamation mr-1"></i>Belum ada nomor HP
                   </span>
+                </div>
+
+                <!-- Inline Quick Phone Input if phone is missing -->
+                <div v-if="!currentQueueGuest.phoneNumber" class="mt-2.5 pt-2 border-t border-slate-100 flex items-center gap-2">
+                  <input
+                    v-model="quickPhoneInput"
+                    type="tel"
+                    placeholder="Masukkan no HP (08xx / 628xx)..."
+                    @keyup.enter="saveQuickPhone"
+                    class="flex-1 px-3 py-1.5 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500/20"
+                  />
+                  <button
+                    @click="saveQuickPhone"
+                    :disabled="isSavingQuickPhone || !quickPhoneInput.trim()"
+                    class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold disabled:opacity-50 transition-colors cursor-pointer"
+                  >
+                    {{ isSavingQuickPhone ? 'Menyimpan...' : 'Simpan' }}
+                  </button>
                 </div>
               </div>
             </div>
 
-            <!-- WhatsApp Preview Bubble for this guest -->
+            <!-- WhatsApp Message Preview -->
             <div>
               <span class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1">
-                Pesan WhatsApp Personal:
+                Preview Pesan WhatsApp (VIP Personalized):
               </span>
-              <div class="bg-[#efeae2] rounded-xl p-3 max-h-48 overflow-y-auto custom-scrollbar border border-slate-200/50">
+              <div class="bg-[#efeae2] rounded-xl p-3 max-h-40 overflow-y-auto custom-scrollbar border border-slate-200/50">
                 <div class="bg-white rounded-xl rounded-tl-none p-3 shadow-xs max-w-[95%] text-xs text-slate-800 whitespace-pre-wrap leading-relaxed select-none break-words">
                   {{ currentQueueGuestFormattedMessage }}
                 </div>
@@ -935,59 +1039,69 @@
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <div v-if="currentQueueGuest" class="space-y-2.5 pt-2">
+          <!-- Main Unified Action Buttons -->
+          <div v-if="currentQueueGuest" class="space-y-2 pt-1">
+            <!-- Primary Single-Action Button -->
             <button
               type="button"
-              @click="openCurrentInQueue"
-              class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-all cursor-pointer"
+              @click="dispatchCurrentAndAdvance"
+              class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.99] text-white rounded-2xl font-black text-sm flex items-center justify-center gap-2.5 shadow-lg shadow-emerald-600/25 transition-all cursor-pointer group"
             >
-              <i class="fa-brands fa-whatsapp text-lg"></i>
-              <span>Buka WhatsApp</span>
-              <i class="fa-solid fa-arrow-right text-xs ml-1"></i>
+              <i class="fa-brands fa-whatsapp text-lg group-hover:scale-110 transition-transform"></i>
+              <span>Kirim via WA Web & Lanjut</span>
+              <span class="inline-flex items-center gap-1 ml-1.5 px-2 py-0.5 rounded-lg bg-emerald-700/60 text-[10px] font-mono tracking-tighter">
+                Enter ↵ / Space ␣
+              </span>
             </button>
 
-            <button
-              v-if="openedQueueGuestId === currentQueueGuest.id"
-              type="button"
-              @click="confirmCurrentInQueue"
-              class="w-full py-3 bg-slate-900 hover:bg-slate-800 text-white rounded-2xl font-bold text-xs transition-colors"
-            >
-              Saya sudah menekan Kirim di WhatsApp — Tandai Terkirim
-            </button>
-
+            <!-- Secondary Actions Row -->
             <div class="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 @click="prevInQueue"
                 :disabled="currentQueueIndex === 0"
                 class="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                title="Tamu Sebelumnya (←)"
               >
                 <i class="fa-solid fa-chevron-left text-[10px]"></i>
                 <span>Sebelumnya</span>
+                <kbd class="hidden sm:inline px-1 py-0.2 bg-slate-200/70 rounded text-[9px] font-mono">←</kbd>
               </button>
 
               <button
                 type="button"
-                @click="markSentOnlyInQueue"
+                @click="markSentOnlyAndAdvance"
                 class="py-2.5 px-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1 cursor-pointer"
                 title="Tandai status Terkirim tanpa membuka WhatsApp"
               >
                 <i class="fa-solid fa-check text-emerald-600 text-xs"></i>
-                <span>Sudah Kirim</span>
+                <span>Tandai Saja</span>
               </button>
 
               <button
                 type="button"
                 @click="nextInQueue"
-                :disabled="currentQueueIndex >= unsentGuests.length - 1"
+                :disabled="currentQueueIndex >= activeQueueList.length - 1"
                 class="py-2.5 px-2 bg-slate-100 hover:bg-slate-200 disabled:opacity-40 text-slate-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                title="Lewati Tamu Ini (→)"
               >
                 <span>Lewati</span>
+                <kbd class="hidden sm:inline px-1 py-0.2 bg-slate-200/70 rounded text-[9px] font-mono">→</kbd>
                 <i class="fa-solid fa-chevron-right text-[10px]"></i>
               </button>
             </div>
           </div>
+        </div>
+
+        <!-- Keyboard Shortcuts Hint Footer -->
+        <div class="pt-3 border-t border-slate-100 text-[10px] text-slate-400 flex items-center justify-between flex-wrap gap-2">
+          <div class="flex items-center gap-2">
+            <span class="font-bold">Pintasan Keyboard:</span>
+            <span><kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono">Space</kbd> / <kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono">Enter</kbd> Kirim & Lanjut</span>
+            <span><kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono">→</kbd> Lewati</span>
+            <span><kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono">←</kbd> Balik</span>
+          </div>
+          <span><kbd class="px-1.5 py-0.5 bg-slate-100 border border-slate-200 rounded font-mono">Esc</kbd> Tutup</span>
         </div>
       </div>
     </div>
@@ -1501,7 +1615,7 @@
 </template>
 
 <script setup>
-import { onMounted, ref, watch, computed } from 'vue'
+import { onMounted, onBeforeUnmount, ref, watch, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import Swal from 'sweetalert2'
 import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
@@ -1606,10 +1720,14 @@ const templateText = ref('')
 const isSavingTemplate = ref(false)
 const templateTextareaRef = ref(null)
 
-// Queue Runner (Mode Kirim Cepat) state
+// Queue Runner (Mode Sebar Cepat WhatsApp - SAT-71) state
 const showQueueModal = ref(false)
 const queueIndex = ref(0)
-const openedQueueGuestId = ref(null)
+const queueFilterStatus = ref('unsent')
+const queueFilterGroup = ref('all')
+const queueFilterSession = ref('all')
+const quickPhoneInput = ref('')
+const isSavingQuickPhone = ref(false)
 
 // Export Links Modal state
 const showExportModal = ref(false)
@@ -1783,19 +1901,33 @@ async function deleteSelectedGuestsHandler() {
   }
 }
 
-// Unsent Guests queue
+// Unsent Guests & Active Queue List (SAT-71: Mode Sebar Cepat)
 const unsentGuests = computed(() => {
   return guests.value.filter((g) => g.statusSend !== 'sent')
 })
 
+const activeQueueList = computed(() => {
+  let list = guests.value
+  if (queueFilterStatus.value === 'unsent') {
+    list = list.filter((g) => g.statusSend !== 'sent')
+  }
+  if (queueFilterGroup.value !== 'all') {
+    list = list.filter((g) => (g.group || '').toLowerCase() === queueFilterGroup.value.toLowerCase())
+  }
+  if (queueFilterSession.value !== 'all') {
+    list = list.filter((g) => (g.sessionName || g.session || '').toLowerCase() === queueFilterSession.value.toLowerCase())
+  }
+  return list
+})
+
 const currentQueueIndex = computed(() => {
-  if (unsentGuests.value.length === 0) return 0
-  return Math.min(queueIndex.value, unsentGuests.value.length - 1)
+  if (activeQueueList.value.length === 0) return 0
+  return Math.min(queueIndex.value, activeQueueList.value.length - 1)
 })
 
 const currentQueueGuest = computed(() => {
-  if (unsentGuests.value.length === 0) return null
-  return unsentGuests.value[currentQueueIndex.value] || null
+  if (activeQueueList.value.length === 0) return null
+  return activeQueueList.value[currentQueueIndex.value] || null
 })
 
 const currentQueueGuestFormattedMessage = computed(() => {
@@ -1958,7 +2090,7 @@ async function saveWhatsAppTemplate() {
   }
 }
 
-// Queue Runner Operations
+// Queue Runner Operations (SAT-71: Mode Sebar Cepat WhatsApp)
 function startQueueRunner() {
   if (!currentInvitation.value?.isPublished) {
     toast.warning('Undangan belum dipublikasikan')
@@ -1969,18 +2101,32 @@ function startQueueRunner() {
     return
   }
   queueIndex.value = 0
-  openedQueueGuestId.value = null
+  quickPhoneInput.value = ''
   showQueueModal.value = true
+  window.addEventListener('keydown', handleQueueKeydown)
 }
 
-function openCurrentInQueue() {
-  const guest = currentQueueGuest.value
-  if (!guest) return
+function closeQueueModal() {
+  showQueueModal.value = false
+  window.removeEventListener('keydown', handleQueueKeydown)
+}
 
-  const message = formatGuestMessage(currentInvitation.value?.whatsappMessageTemplate, guest)
-  const waUrl = buildWhatsAppUrl(guest.phoneNumber, message)
-  window.open(waUrl, '_blank')
-  openedQueueGuestId.value = guest.id
+async function saveQuickPhone() {
+  const guest = currentQueueGuest.value
+  if (!guest || !quickPhoneInput.value.trim()) return
+  isSavingQuickPhone.value = true
+  try {
+    const newPhone = quickPhoneInput.value.trim()
+    await updateGuest(guest.id, { phoneNumber: newPhone })
+    guest.phoneNumber = newPhone
+    toast.success('Nomor HP berhasil disimpan')
+    quickPhoneInput.value = ''
+  } catch (err) {
+    console.error('Failed to update phone:', err)
+    toast.error('Gagal menyimpan nomor HP')
+  } finally {
+    isSavingQuickPhone.value = false
+  }
 }
 
 async function markGuestAsSent(guest) {
@@ -1996,21 +2142,70 @@ async function markGuestAsSent(guest) {
   }
 }
 
-async function confirmCurrentInQueue() {
-  const guest = currentQueueGuest.value
-  if (!guest || openedQueueGuestId.value !== guest.id) return
-  if (await markGuestAsSent(guest)) openedQueueGuestId.value = null
-}
-
-async function markSentOnlyInQueue() {
+async function dispatchCurrentAndAdvance() {
   const guest = currentQueueGuest.value
   if (!guest) return
 
-  if (await markGuestAsSent(guest)) openedQueueGuestId.value = null
+  // 1. Open WhatsApp Web if phone number exists
+  if (guest.phoneNumber) {
+    const message = formatGuestMessage(currentInvitation.value?.whatsappMessageTemplate, guest)
+    const waUrl = buildWhatsAppUrl(guest.phoneNumber, message)
+    window.open(waUrl, '_blank')
+  } else {
+    toast.warning(`Nomor HP ${guest.name} belum diisi`)
+  }
+
+  // 2. Optimistic UI update (0ms synchronous)
+  const prevStatus = guest.statusSend
+  guest.statusSend = 'sent'
+  toast.success(`Terkirim: ${guest.name}`)
+
+  // 3. Background Sync (Zero-Latency)
+  updateGuest(guest.id, { statusSend: 'sent' }).catch((err) => {
+    console.error('Failed to sync guest status:', err)
+    guest.statusSend = prevStatus
+    toast.error(`Gagal sinkron status terkirim untuk ${guest.name}`)
+  })
+
+  // 4. Advance queue
+  if (queueFilterStatus.value === 'all') {
+    if (queueIndex.value < activeQueueList.value.length - 1) {
+      queueIndex.value++
+    }
+  } else {
+    if (queueIndex.value >= activeQueueList.value.length - 1) {
+      queueIndex.value = Math.max(0, activeQueueList.value.length - 2)
+    }
+  }
+}
+
+function markSentOnlyAndAdvance() {
+  const guest = currentQueueGuest.value
+  if (!guest) return
+
+  const prevStatus = guest.statusSend
+  guest.statusSend = 'sent'
+  toast.success(`Ditandai terkirim: ${guest.name}`)
+
+  updateGuest(guest.id, { statusSend: 'sent' }).catch((err) => {
+    console.error('Failed to sync guest status:', err)
+    guest.statusSend = prevStatus
+    toast.error(`Gagal mencatat status terkirim untuk ${guest.name}`)
+  })
+
+  if (queueFilterStatus.value === 'all') {
+    if (queueIndex.value < activeQueueList.value.length - 1) {
+      queueIndex.value++
+    }
+  } else {
+    if (queueIndex.value >= activeQueueList.value.length - 1) {
+      queueIndex.value = Math.max(0, activeQueueList.value.length - 2)
+    }
+  }
 }
 
 function nextInQueue() {
-  if (queueIndex.value < unsentGuests.value.length - 1) {
+  if (queueIndex.value < activeQueueList.value.length - 1) {
     queueIndex.value++
   }
 }
@@ -2020,6 +2215,32 @@ function prevInQueue() {
     queueIndex.value--
   }
 }
+
+function handleQueueKeydown(event) {
+  if (!showQueueModal.value) return
+  const target = event.target
+  if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)) {
+    return
+  }
+
+  if (event.key === ' ' || event.key === 'Enter') {
+    event.preventDefault()
+    dispatchCurrentAndAdvance()
+  } else if (event.key === 'ArrowRight') {
+    event.preventDefault()
+    nextInQueue()
+  } else if (event.key === 'ArrowLeft') {
+    event.preventDefault()
+    prevInQueue()
+  } else if (event.key === 'Escape') {
+    event.preventDefault()
+    closeQueueModal()
+  }
+}
+
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', handleQueueKeydown)
+})
 
 // Export Links Modal Operations
 async function copyExportList() {
