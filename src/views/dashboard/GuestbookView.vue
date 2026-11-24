@@ -865,6 +865,18 @@
                         <h4 class="font-black text-xs sm:text-sm text-rose-950 mt-1">
                           ❌ {{ recentScanResult.message }}
                         </h4>
+                        <!-- Quick action for Walk-in -->
+                        <div class="mt-2.5 pt-2 border-t border-rose-200/80 flex items-center justify-between gap-2">
+                          <span class="text-[11px] text-rose-800 font-medium">Tamu belum terdaftar di kontak?</span>
+                          <button
+                            type="button"
+                            @click="openWalkInModal()"
+                            class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 active:scale-95 text-white rounded-lg text-xs font-bold transition-all flex items-center gap-1 cursor-pointer shadow-2xs shrink-0"
+                          >
+                            <i class="fa-solid fa-user-plus text-[10px]"></i>
+                            <span>Check-in Walk-in</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -886,6 +898,17 @@
                       <p class="text-[11px] text-slate-400">Untuk tamu tanpa membawa HP atau QR code tiket</p>
                     </div>
                   </div>
+
+                  <!-- Action Button: Tamu Walk-in Baru (SAT-81) -->
+                  <button
+                    type="button"
+                    @click="openWalkInModal(manualSearchQuery)"
+                    class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer shadow-xs shrink-0"
+                    title="Tambah dan langsung check-in tamu walk-in / di luar kontak"
+                  >
+                    <i class="fa-solid fa-user-plus text-[10px]"></i>
+                    <span>+ Tamu Walk-in</span>
+                  </button>
                 </div>
 
                 <!-- Search Input -->
@@ -958,10 +981,18 @@
                     </div>
                   </div>
 
-                  <div v-if="matchingGuests.length === 0" class="py-6 text-center text-slate-400 space-y-1">
+                  <div v-if="matchingGuests.length === 0" class="py-6 text-center text-slate-400 space-y-2">
                     <i class="fa-solid fa-user-slash text-xl text-slate-300"></i>
                     <p class="text-xs font-bold">Tidak ada tamu yang cocok</p>
-                    <p class="text-[11px] text-slate-400">Coba ketik kata kunci pencarian yang lain.</p>
+                    <p class="text-[11px] text-slate-400">Tamu belum ada di daftar kontak undangan?</p>
+                    <button
+                      type="button"
+                      @click="openWalkInModal(manualSearchQuery)"
+                      class="mt-1 inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 active:scale-95 text-white rounded-xl text-xs font-bold transition-all shadow-xs cursor-pointer"
+                    >
+                      <i class="fa-solid fa-user-plus text-[10px]"></i>
+                      <span>Check-in sebagai Tamu Walk-in{{ manualSearchQuery ? ` "${manualSearchQuery}"` : '' }}</span>
+                    </button>
                   </div>
                 </div>
               </div>
@@ -1368,6 +1399,215 @@
       </div>
     </Teleport>
 
+    <!-- Modal Tamu Walk-in / On-the-Spot Check-in (SAT-81) -->
+    <Teleport to="body">
+      <div
+        v-if="showWalkInModal"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200"
+        @click.self="closeWalkInModal"
+      >
+        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[92vh]">
+          <!-- Modal Header -->
+          <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center text-lg font-bold shadow-xs">
+                <i class="fa-solid fa-user-plus"></i>
+              </div>
+              <div>
+                <h3 class="font-black text-slate-900 text-base">Check-in Tamu Walk-in</h3>
+                <p class="text-xs text-slate-500">Tamu langsung hadir di tempat di luar daftar kontak</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              @click="closeWalkInModal"
+              class="w-8 h-8 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-400 hover:text-slate-600 flex items-center justify-center text-xs transition-colors cursor-pointer"
+            >
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+
+          <!-- Modal Body Form -->
+          <form @submit.prevent="submitWalkInCheckIn" class="p-5 space-y-4 overflow-y-auto custom-scrollbar flex-1">
+            <!-- Nama Lengkap Tamu (Required) -->
+            <div>
+              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                Nama Tamu <span class="text-rose-500">*</span>
+              </label>
+              <div class="relative">
+                <i class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input
+                  ref="walkInNameInput"
+                  v-model="walkInForm.name"
+                  type="text"
+                  placeholder="Cth: Bapak Joko & Ibu / dr. Anita Wijaya"
+                  required
+                  class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Jumlah Pax & Kategori (Grid 2 col) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Pax Counter Stepper -->
+              <div>
+                <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                  Jumlah Orang (Pax)
+                </label>
+                <div class="flex items-center border border-slate-200 rounded-xl bg-slate-50 overflow-hidden">
+                  <button
+                    type="button"
+                    @click="walkInForm.pax = Math.max(1, (Number(walkInForm.pax) || 1) - 1)"
+                    class="px-3 py-2 text-slate-600 hover:bg-slate-200 font-black text-xs cursor-pointer transition-colors"
+                  >
+                    -
+                  </button>
+                  <input
+                    v-model.number="walkInForm.pax"
+                    type="number"
+                    min="1"
+                    max="50"
+                    class="w-full text-center text-xs font-black bg-transparent text-slate-800 focus:outline-none py-2"
+                  />
+                  <button
+                    type="button"
+                    @click="walkInForm.pax = (Number(walkInForm.pax) || 1) + 1"
+                    class="px-3 py-2 text-slate-600 hover:bg-slate-200 font-black text-xs cursor-pointer transition-colors"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <!-- Kategori / Grup Tamu -->
+              <div>
+                <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                  Kategori Tamu
+                </label>
+                <select
+                  v-model="walkInForm.group"
+                  class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all cursor-pointer"
+                >
+                  <option v-for="grp in availableGroups" :key="grp" :value="grp">
+                    {{ grp }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Sesi Acara & Nomor Meja (Grid 2 col) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+              <!-- Sesi Acara -->
+              <div>
+                <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                  Sesi Acara
+                </label>
+                <select
+                  v-model="walkInForm.sessionName"
+                  class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all cursor-pointer"
+                >
+                  <option value="">Semua Sesi / Bebas</option>
+                  <option v-for="sess in availableSessions" :key="sess" :value="sess">
+                    {{ sess }}
+                  </option>
+                </select>
+              </div>
+
+              <!-- Nomor Meja -->
+              <div>
+                <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                  Nomor Meja (Opsional)
+                </label>
+                <div class="relative">
+                  <i class="fa-solid fa-chair absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                  <input
+                    v-model="walkInForm.tableNumber"
+                    type="text"
+                    placeholder="Cth: Meja 05 / VIP-A"
+                    class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
+                  />
+                </div>
+              </div>
+            </div>
+
+            <!-- No. WhatsApp / Telepon (Opsional) -->
+            <div>
+              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                No. WhatsApp / HP (Opsional)
+              </label>
+              <div class="relative">
+                <i class="fa-brands fa-whatsapp absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input
+                  v-model="walkInForm.phoneNumber"
+                  type="tel"
+                  placeholder="08123456789 (untuk arsip atau terima kasih)"
+                  class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Toggle Souvenir Langsung Diberikan -->
+            <div class="p-3 bg-amber-50/60 rounded-2xl border border-amber-200/60 flex items-center justify-between gap-3">
+              <div class="flex items-center gap-2.5">
+                <div class="w-8 h-8 rounded-xl bg-amber-500 text-white flex items-center justify-center text-xs">
+                  <i class="fa-solid fa-gift"></i>
+                </div>
+                <div>
+                  <h4 class="text-xs font-black text-slate-900">Serahkan Souvenir Sekarang</h4>
+                  <p class="text-[11px] text-slate-500">Tandai souvenir sudah diberikan langsung di meja</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input
+                  v-model="walkInForm.souvenirGiven"
+                  type="checkbox"
+                  class="sr-only peer"
+                />
+                <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-emerald-600"></div>
+              </label>
+            </div>
+
+            <!-- Catatan Kado Fisik / Amplop (Opsional) -->
+            <div>
+              <label class="block text-xs font-black text-slate-700 uppercase tracking-wider mb-1.5">
+                Catatan Kado Fisik / Amplop (Opsional)
+              </label>
+              <div class="relative">
+                <i class="fa-solid fa-envelope-open-text absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                <input
+                  v-model="walkInForm.physicalGiftNotes"
+                  type="text"
+                  placeholder="Cth: Titip amplop Rp 300.000 / Kado bingkisan"
+                  class="w-full text-xs font-semibold bg-slate-50 border border-slate-200 rounded-xl pl-9 pr-3.5 py-2.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 focus:bg-white transition-all"
+                />
+              </div>
+            </div>
+
+            <!-- Modal Actions Footer -->
+            <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-2.5">
+              <button
+                type="button"
+                @click="closeWalkInModal"
+                :disabled="isSubmittingWalkIn"
+                class="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition-colors cursor-pointer disabled:opacity-50"
+              >
+                Batal
+              </button>
+              <button
+                type="submit"
+                :disabled="isSubmittingWalkIn"
+                class="px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white text-xs font-black transition-all shadow-md flex items-center gap-2 cursor-pointer disabled:opacity-50"
+              >
+                <i v-if="isSubmittingWalkIn" class="fa-solid fa-circle-notch animate-spin text-xs"></i>
+                <i v-else class="fa-solid fa-check text-xs"></i>
+                <span>Check-in Sekarang (0ms Live)</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </Teleport>
+
     <BottomNav class="no-print" />
   </div>
 </template>
@@ -1385,6 +1625,7 @@ import {
   checkInGuestByToken,
   getCheckInSummary,
   updateGuestReception,
+  createWalkInGuest,
 } from "@/api/guest"
 import { useToast } from "vue-toastification"
 import Swal from "sweetalert2"
@@ -1473,6 +1714,30 @@ function checkSessionMismatch(guestSession) {
 // Manual Search
 const manualSearchQuery = ref('')
 const isSubmittingManualCheckIn = ref(false)
+
+// Walk-in Guest States (SAT-81)
+const showWalkInModal = ref(false)
+const isSubmittingWalkIn = ref(false)
+const walkInNameInput = ref(null)
+const walkInForm = ref({
+  name: '',
+  pax: 1,
+  group: 'Walk-in / On-the-spot',
+  sessionName: '',
+  tableNumber: '',
+  souvenirGiven: false,
+  physicalGiftNotes: '',
+  phoneNumber: '',
+})
+
+const availableGroups = computed(() => {
+  const defaultGroups = ['Walk-in / On-the-spot', 'Keluarga', 'VIP', 'Rekan Kerja', 'Sahabat', 'Umum']
+  const set = new Set(defaultGroups)
+  guests.value.forEach((g) => {
+    if (g.group && g.group.trim()) set.add(g.group.trim())
+  })
+  return Array.from(set)
+})
 
 const currentInvitation = computed(() => {
   return invitations.value.find((i) => i.id === selectedInvitationId.value) || null
@@ -2169,6 +2434,132 @@ async function manualCheckIn(guest) {
     toast.error('Gagal melakukan check-in: ' + (err.message || 'Terjadi kesalahan'))
   } finally {
     isSubmittingManualCheckIn.value = false
+  }
+}
+
+// ----------------------------------------------------
+// Walk-in / On-the-Spot Check-in (SAT-81)
+// ----------------------------------------------------
+function openWalkInModal(initialName = '') {
+  walkInForm.value = {
+    name: initialName.trim(),
+    pax: 1,
+    group: 'Walk-in / On-the-spot',
+    sessionName: activeSession.value || '',
+    tableNumber: '',
+    souvenirGiven: false,
+    physicalGiftNotes: '',
+    phoneNumber: '',
+  }
+  showWalkInModal.value = true
+  nextTick(() => {
+    if (walkInNameInput.value) {
+      walkInNameInput.value.focus()
+    }
+  })
+}
+
+function closeWalkInModal() {
+  if (isSubmittingWalkIn.value) return
+  showWalkInModal.value = false
+}
+
+async function submitWalkInCheckIn() {
+  if (!selectedInvitationId.value) {
+    toast.error('Pilih undangan terlebih dahulu')
+    return
+  }
+  const trimmedName = walkInForm.value.name.trim()
+  if (!trimmedName) {
+    toast.error('Nama tamu walk-in wajib diisi')
+    return
+  }
+
+  isSubmittingWalkIn.value = true
+  const now = new Date()
+  const timeStr = formatTime(now)
+  const tempId = 'temp-walkin-' + Date.now()
+
+  // Create optimistic guest record
+  const optimisticGuest = {
+    id: tempId,
+    name: trimmedName,
+    pax: Number(walkInForm.value.pax) || 1,
+    group: walkInForm.value.group || 'Walk-in / On-the-spot',
+    sessionName: walkInForm.value.sessionName || activeSession.value || '',
+    tableNumber: walkInForm.value.tableNumber || '',
+    phoneNumber: walkInForm.value.phoneNumber || '',
+    souvenirGiven: Boolean(walkInForm.value.souvenirGiven),
+    physicalGiftNotes: walkInForm.value.physicalGiftNotes || '',
+    checkedInAt: now.toISOString(),
+    rsvpStatus: 'hadir',
+    isWalkIn: true,
+  }
+
+  // 0ms Optimistic Update: unshift to guests array
+  guests.value.unshift(optimisticGuest)
+
+  // Update summary stats optimistically if present
+  if (summaryData.value) {
+    summaryData.value.totalGuests = (summaryData.value.totalGuests || 0) + 1
+    summaryData.value.checkedInCount = (summaryData.value.checkedInCount || 0) + 1
+  }
+
+  const isMismatch = checkSessionMismatch(optimisticGuest.sessionName)
+  recentScanResult.value = {
+    type: 'new',
+    guestId: tempId,
+    guest: optimisticGuest,
+    guestName: optimisticGuest.name,
+    group: optimisticGuest.group,
+    tableNumber: optimisticGuest.tableNumber,
+    sessionName: optimisticGuest.sessionName,
+    sessionMismatch: isMismatch,
+    souvenirGiven: optimisticGuest.souvenirGiven,
+    physicalGiftNotes: optimisticGuest.physicalGiftNotes,
+    time: timeStr,
+    message: `Selamat Datang (Walk-in), ${optimisticGuest.name}! Kategori: ${optimisticGuest.group} • Pukul: ${timeStr}`,
+  }
+  recentScanPhysicalGiftInput.value = optimisticGuest.physicalGiftNotes || ''
+
+  playSuccessChime()
+  showWalkInModal.value = false
+  toast.success(`Check-in walk-in berhasil: ${trimmedName}`)
+
+  try {
+    const payload = {
+      name: optimisticGuest.name,
+      pax: optimisticGuest.pax,
+      group: optimisticGuest.group,
+      sessionName: optimisticGuest.sessionName || undefined,
+      tableNumber: optimisticGuest.tableNumber || undefined,
+      phoneNumber: optimisticGuest.phoneNumber || undefined,
+      souvenirGiven: optimisticGuest.souvenirGiven,
+      physicalGiftNotes: optimisticGuest.physicalGiftNotes || undefined,
+    }
+    const saved = await createWalkInGuest(selectedInvitationId.value, payload)
+    const serverGuest = saved?.data || saved
+    if (serverGuest?.id) {
+      optimisticGuest.id = serverGuest.id
+      if (recentScanResult.value?.guestId === tempId) {
+        recentScanResult.value.guestId = serverGuest.id
+        recentScanResult.value.guest = serverGuest
+      }
+    }
+  } catch (err) {
+    console.error('Walk-in API error:', err)
+    // Rollback optimistic update on failure
+    guests.value = guests.value.filter((g) => g.id !== tempId)
+    if (summaryData.value) {
+      summaryData.value.totalGuests = Math.max(0, (summaryData.value.totalGuests || 1) - 1)
+      summaryData.value.checkedInCount = Math.max(0, (summaryData.value.checkedInCount || 1) - 1)
+    }
+    if (recentScanResult.value?.guestId === tempId) {
+      recentScanResult.value = null
+    }
+    toast.error('Gagal mencatat tamu walk-in ke server: ' + (err.message || 'Terjadi kesalahan'))
+  } finally {
+    isSubmittingWalkIn.value = false
   }
 }
 
