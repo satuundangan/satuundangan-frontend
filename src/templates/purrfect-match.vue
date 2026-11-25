@@ -1189,8 +1189,9 @@
             </div>
           </div>
 
-        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center">
-          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="default" />
+        <div class="mt-8 flex justify-center flex-wrap gap-3">
+          <QrisGiftCard v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="default" />
+          <GiftRegistryCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="default" />
         </div>
 
         <!-- Physical Gift Address -->
@@ -1421,6 +1422,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
+import GiftRegistryCard from '@/components/invitation/GiftRegistryCard.vue'
 import { createGuestMessage, getGuestMessagesByInvitationId } from '@/api/guestMessage'
 
 // Props Declaration

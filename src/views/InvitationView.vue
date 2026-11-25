@@ -33,6 +33,7 @@ import {
   DYNAMIC_THEME_KEY,
 } from '@/utils/templateRegistry'
 import PrivateLockScreen from '@/components/invitation/PrivateLockScreen.vue'
+import GiftRegistryCard from '@/components/invitation/GiftRegistryCard.vue'
 
 const props = defineProps({
   // Host-based mode: invitation resolved from custom subdomain, not route slug.
@@ -945,6 +946,22 @@ function getLocalPreviewPayload(slug) {
           </div>
         </transition>
       </Teleport>
+
+      <!-- Floating Wishlist Kado Impian (SAT-68) -->
+      <div
+        v-if="!isInsideFrame && invitationData && (invitationData.slug || invitationData.id)"
+        class="fixed bottom-6 left-6 z-40 transition-all duration-300"
+      >
+        <GiftRegistryCard
+          :data="invitationData"
+          :invitationId="invitationData.id"
+          :slug="invitationData.slug"
+          :groomName="invitationData.groomName"
+          :brideName="invitationData.brideName"
+          buttonText="Wishlist Kado"
+          variant="dark"
+        />
+      </div>
 
       <!-- Floating Ticket & QR Action Button for Personal Guest -->
       <div
