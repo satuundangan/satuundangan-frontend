@@ -40,6 +40,20 @@
         <div class="particle particle-4"></div>
         <div class="particle particle-5"></div>
       </div>
+
+      <!-- Editorial Guest Photo Attribution (SAT-69) -->
+      <div
+        v-if="currentSlideAttribution"
+        data-testid="guest-photo-attribution"
+        class="absolute bottom-6 left-6 z-20 max-w-sm rounded-xl border border-white/15 bg-stone-950/75 px-4 py-2.5 backdrop-blur-md text-left"
+      >
+        <p class="text-[10px] uppercase tracking-[0.18em] text-stone-300/80 font-medium">
+          Memory Wall · Foto oleh {{ currentSlideAttribution.guestName }}
+        </p>
+        <p v-if="currentSlideAttribution.caption" class="text-xs text-white/95 mt-0.5 line-clamp-1">
+          {{ currentSlideAttribution.caption }}
+        </p>
+      </div>
     </div>
 
     <!-- ============================================== -->
@@ -445,6 +459,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import QRCode from 'qrcode'
 import { getLiveScreenFeed } from '@/api/invitation'
+import { getLiveGuestPhotos } from '@/api/guestPhotos'
 
 // Live Screen Themes
 const LIVE_SCREEN_THEMES = [
@@ -753,6 +768,7 @@ const audioCtx = ref(null)
 const invitationData = ref(null)
 const recentCheckIns = ref([])
 const wishesList = ref([])
+const guestPhotos = ref([])
 const qrDataUrl = ref('')
 const syncStatus = ref('connected') // 'connected' | 'syncing' | 'error'
 const lastSyncTime = ref(null)
@@ -832,25 +848,36 @@ const venueDisplay = computed(() => {
   return ''
 })
 
-// Computed: Slide Photos
+// Computed: Slide Photos (Gallery + Approved Guest Memory Wall)
 const slidePhotos = computed(() => {
   const inv = invitationData.value
   const list = []
+  const seen = new Set()
+  const addUrl = (url) => {
+    if (typeof url === 'string' && url.trim() && !seen.has(url.trim())) {
+      seen.add(url.trim())
+      list.push(url.trim())
+    }
+  }
+
+  for (const photo of guestPhotos.value) {
+    if (photo?.imageUrl) addUrl(photo.imageUrl)
+  }
   if (Array.isArray(inv?.galleryImages) && inv.galleryImages.length > 0) {
     for (const img of inv.galleryImages) {
-      if (typeof img === 'string' && img.trim()) list.push(img.trim())
-      else if (img?.url) list.push(img.url)
+      if (typeof img === 'string') addUrl(img)
+      else if (img?.url) addUrl(img.url)
     }
   }
   if (Array.isArray(inv?.gallery) && inv.gallery.length > 0) {
     for (const img of inv.gallery) {
-      if (typeof img === 'string' && img.trim()) list.push(img.trim())
-      else if (img?.url) list.push(img.url)
+      if (typeof img === 'string') addUrl(img)
+      else if (img?.url) addUrl(img.url)
     }
   }
-  if (inv?.photoCoupleUrl) list.push(inv.photoCoupleUrl)
-  if (inv?.bridePhotoUrl) list.push(inv.bridePhotoUrl)
-  if (inv?.groomPhotoUrl) list.push(inv.groomPhotoUrl)
+  if (inv?.photoCoupleUrl) addUrl(inv.photoCoupleUrl)
+  if (inv?.bridePhotoUrl) addUrl(inv.bridePhotoUrl)
+  if (inv?.groomPhotoUrl) addUrl(inv.groomPhotoUrl)
 
   return list.length > 0 ? list : defaultSlides
 })
@@ -859,6 +886,17 @@ const slidePhotos = computed(() => {
 const currentSlidePhoto = computed(() => {
   const photos = slidePhotos.value
   return photos[currentSlideIndex.value] || photos[0] || defaultSlides[0]
+})
+
+const currentSlideAttribution = computed(() => {
+  const url = currentSlidePhoto.value
+  if (!url) return null
+  const match = guestPhotos.value.find((p) => p?.imageUrl === url)
+  if (!match) return null
+  return {
+    guestName: match.guestName || 'Tamu Undangan',
+    caption: match.caption || '',
+  }
 })
 
 // Computed: Current Wish in Ticker
@@ -1142,9 +1180,22 @@ function adjustPollingInterval() {
   }
 }
 
+async function fetchGuestPhotoStream() {
+  if (!currentSlug.value) return
+  try {
+    const res = await getLiveGuestPhotos(currentSlug.value)
+    if (Array.isArray(res?.photos)) {
+      guestPhotos.value = res.photos
+    }
+  } catch {
+    // Silent fallback so main live screen feed stays unaffected
+  }
+}
+
 // Fetch Feed from Backend
 async function fetchFeed() {
   if (!currentSlug.value) return
+  fetchGuestPhotoStream()
   try {
     const res = await getLiveScreenFeed(currentSlug.value, { etag: currentEtag })
     if (res?.notModified || res?.status === 304) {

@@ -85,6 +85,28 @@
                   {{ checkedInCount }}
                 </span>
               </button>
+
+              <!-- Tab 4: Memory Wall (SAT-69) -->
+              <button
+                type="button"
+                @click="activeTab = 'memory-wall'"
+                :class="[
+                  'flex-1 sm:flex-none flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl font-bold text-xs transition-all cursor-pointer whitespace-nowrap',
+                  activeTab === 'memory-wall'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-600 hover:text-slate-900'
+                ]"
+                title="Kelola foto candid tamu yang tampil di layar proyektor"
+              >
+                <i class="fa-solid fa-images text-stone-700 text-xs"></i>
+                <span>Memory Wall</span>
+                <span
+                  v-if="guestPhotos.length > 0"
+                  class="ml-1 px-1.5 py-0.2 text-[10px] rounded-full font-bold tabular-nums bg-stone-200 text-stone-800"
+                >
+                  {{ guestPhotos.length }}
+                </span>
+              </button>
             </div>
           </div>
 
@@ -1178,6 +1200,141 @@
           </div>
         </div>
 
+        <!-- TAB 4: MEMORY WALL (SAT-69) -->
+        <div v-if="activeTab === 'memory-wall'" class="space-y-6 animate-in fade-in duration-300 no-print">
+          <!-- Share Portal Card (Anti-Slop Stone Atelier) -->
+          <div class="bg-[#FAF8F5] border border-stone-200/80 rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+            <div class="flex items-start gap-4 min-w-0">
+              <div class="w-20 h-20 rounded-xl bg-white border border-stone-200/80 p-1.5 shrink-0 flex items-center justify-center">
+                <img
+                  v-if="snapQrDataUrl"
+                  :src="snapQrDataUrl"
+                  alt="QR Portal Memory Wall"
+                  class="w-full h-full object-contain"
+                />
+                <i v-else class="fa-solid fa-qrcode text-stone-300 text-2xl"></i>
+              </div>
+              <div class="space-y-1.5 min-w-0">
+                <p class="text-[11px] uppercase tracking-[0.18em] text-stone-400 font-semibold">
+                  Portal Unggah Tamu
+                </p>
+                <h2 class="font-serif text-lg text-stone-900">
+                  Live Memory Wall Hari-H
+                </h2>
+                <p class="text-xs text-stone-500 max-w-xl leading-relaxed">
+                  Bagikan tautan atau QR di bawah agar tamu dapat mengunggah foto candid langsung dari smartphone ke layar proyektor.
+                </p>
+                <p v-if="snapPortalUrl" class="text-xs font-mono text-stone-700 truncate pt-0.5">
+                  {{ snapPortalUrl }}
+                </p>
+              </div>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-2 shrink-0 w-full md:w-auto">
+              <button
+                type="button"
+                @click="copySnapUrl"
+                :disabled="!snapPortalUrl"
+                class="flex-1 md:flex-none px-4 py-2 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs font-semibold transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <i class="fa-regular fa-copy mr-1.5"></i>
+                <span>Salin Link</span>
+              </button>
+              <a
+                v-if="currentInvitationSlug"
+                :href="`/snap/${currentInvitationSlug}`"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="flex-1 md:flex-none px-4 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold text-center transition-colors"
+              >
+                <i class="fa-solid fa-arrow-up-right-from-square mr-1.5"></i>
+                <span>Buka Portal</span>
+              </a>
+            </div>
+          </div>
+
+          <!-- Moderation Grid -->
+          <div v-if="loadingGuestPhotos" class="py-12 text-center text-xs text-stone-500">
+            Memuat koleksi foto tamu...
+          </div>
+
+          <div
+            v-else-if="guestPhotos.length === 0"
+            class="bg-white border border-dashed border-stone-200 rounded-2xl p-12 text-center space-y-2"
+          >
+            <i class="fa-regular fa-images text-stone-300 text-2xl"></i>
+            <h3 class="font-serif text-base text-stone-800">Belum Ada Foto dari Tamu</h3>
+            <p class="text-xs text-stone-500 max-w-sm mx-auto">
+              Foto candid yang dikirim tamu melalui halaman Memory Wall akan muncul di sini untuk Anda kurasi.
+            </p>
+          </div>
+
+          <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <article
+              v-for="photo in guestPhotos"
+              :key="photo.id"
+              class="bg-white border border-stone-200/80 rounded-2xl overflow-hidden flex flex-col justify-between"
+            >
+              <div>
+                <div class="aspect-4/3 bg-stone-100 relative overflow-hidden">
+                  <img
+                    :src="photo.thumbnailUrl || photo.imageUrl"
+                    :alt="photo.caption || `Foto dari ${photo.guestName || 'Tamu'}`"
+                    loading="lazy"
+                    class="w-full h-full object-cover"
+                    :class="{ 'opacity-45 grayscale': !photo.isApproved }"
+                  />
+                  <span
+                    class="absolute top-3 left-3 px-2.5 py-1 rounded-lg text-[10px] font-semibold border backdrop-blur-xs"
+                    :class="
+                      photo.isApproved
+                        ? 'bg-white/90 border-stone-200 text-stone-800'
+                        : 'bg-stone-900/85 border-stone-700 text-stone-200'
+                    "
+                  >
+                    {{ photo.isApproved ? 'Tampil di Proyektor' : 'Disembunyikan' }}
+                  </span>
+                </div>
+                <div class="p-4 space-y-1">
+                  <div class="flex items-center justify-between gap-2">
+                    <h4 class="text-sm font-semibold text-stone-900 truncate">
+                      {{ photo.guestName || 'Tamu Undangan' }}
+                    </h4>
+                    <span class="text-[11px] text-stone-400 tabular-nums shrink-0">
+                      {{ formatDateTime(photo.createdAt) }}
+                    </span>
+                  </div>
+                  <p v-if="photo.caption" class="text-xs text-stone-500 line-clamp-2">
+                    {{ photo.caption }}
+                  </p>
+                </div>
+              </div>
+
+              <div class="px-4 py-3 border-t border-stone-100 flex items-center justify-between gap-2 bg-[#FAF8F5]/60">
+                <button
+                  type="button"
+                  @click="handleToggleGuestPhotoApproval(photo)"
+                  class="px-3 py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer"
+                  :class="
+                    photo.isApproved
+                      ? 'border-stone-200 bg-white text-stone-700 hover:bg-stone-100'
+                      : 'border-stone-900 bg-stone-900 text-white hover:bg-stone-800'
+                  "
+                >
+                  {{ photo.isApproved ? 'Sembunyikan' : 'Tampilkan' }}
+                </button>
+                <button
+                  type="button"
+                  @click="handleDeleteGuestPhoto(photo)"
+                  class="px-2.5 py-1.5 rounded-lg text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer"
+                >
+                  Hapus
+                </button>
+              </div>
+            </article>
+          </div>
+        </div>
+
         <!-- Hidden Printable Recap Area -->
         <div
           id="printable-recap"
@@ -1624,6 +1781,11 @@ import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations } from "@/api/invitation"
 import { getOwnerGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage"
 import {
+  getOwnerGuestPhotos,
+  toggleGuestPhotoApproval,
+  deleteGuestPhoto,
+} from "@/api/guestPhotos"
+import {
   getGuestsByInvitationId,
   checkInGuest,
   checkInGuestByToken,
@@ -1658,6 +1820,15 @@ const invitations = ref([])
 const selectedInvitationId = ref(null)
 const messages = ref([])
 const loadingMessages = ref(false)
+
+// Memory Wall (SAT-69)
+const guestPhotos = ref([])
+const loadingGuestPhotos = ref(false)
+const snapQrDataUrl = ref('')
+const snapPortalUrl = computed(() => {
+  if (!currentInvitationSlug.value || typeof window === 'undefined') return ''
+  return `${window.location.origin}/snap/${currentInvitationSlug.value}`
+})
 
 // Guests & Check-in
 const guests = ref([])
@@ -2023,7 +2194,9 @@ watch(selectedInvitationId, async (newId) => {
     await Promise.all([
       fetchGuests(newId),
       fetchMessages(newId),
+      fetchGuestPhotos(newId),
       generateStandeeQr(),
+      generateSnapQr(),
     ])
   }
 })
@@ -2814,6 +2987,85 @@ async function handleDeleteMessage(id) {
   } catch (e) {
     console.error(e)
     toast.error('Gagal menghapus ucapan: ' + (e.message || 'Terjadi kesalahan'))
+  }
+}
+
+async function fetchGuestPhotos(invId) {
+  if (!invId) return
+  loadingGuestPhotos.value = true
+  try {
+    const res = await getOwnerGuestPhotos(invId)
+    guestPhotos.value = Array.isArray(res) ? res : []
+  } catch (e) {
+    console.error('Error fetching guest photos:', e)
+  } finally {
+    loadingGuestPhotos.value = false
+  }
+}
+
+async function generateSnapQr() {
+  if (!snapPortalUrl.value) {
+    snapQrDataUrl.value = ''
+    return
+  }
+  try {
+    snapQrDataUrl.value = await QRCode.toDataURL(snapPortalUrl.value, {
+      width: 240,
+      margin: 1,
+      color: { dark: '#1c1917', light: '#ffffff' },
+    })
+  } catch {
+    snapQrDataUrl.value = ''
+  }
+}
+
+async function copySnapUrl() {
+  if (!snapPortalUrl.value) return
+  try {
+    await navigator.clipboard.writeText(snapPortalUrl.value)
+    toast.success('Tautan Memory Wall berhasil disalin')
+  } catch {
+    toast.error('Gagal menyalin tautan')
+  }
+}
+
+async function handleToggleGuestPhotoApproval(photo) {
+  if (!photo) return
+  const prev = Boolean(photo.isApproved)
+  const next = !prev
+  photo.isApproved = next // 0ms Optimistic UI Update
+
+  try {
+    await toggleGuestPhotoApproval(photo.id, next)
+    toast.success(next ? 'Foto ditampilkan di proyektor' : 'Foto disembunyikan dari proyektor')
+  } catch (e) {
+    photo.isApproved = prev // Rollback on failure
+    toast.error('Gagal memperbarui status foto: ' + (e.message || 'Terjadi kesalahan'))
+  }
+}
+
+async function handleDeleteGuestPhoto(photo) {
+  if (!photo) return
+  const result = await Swal.fire({
+    title: 'Hapus Foto Ini?',
+    text: 'Foto yang dihapus tidak akan tampil lagi di Memory Wall.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#e11d48',
+    cancelButtonColor: '#cbd5e1',
+    confirmButtonText: 'Ya, Hapus',
+    cancelButtonText: 'Batal',
+  })
+  if (!result.isConfirmed) return
+
+  const prevList = [...guestPhotos.value]
+  guestPhotos.value = guestPhotos.value.filter((p) => p.id !== photo.id)
+  try {
+    await deleteGuestPhoto(photo.id)
+    toast.success('Foto tamu berhasil dihapus')
+  } catch (e) {
+    guestPhotos.value = prevList
+    toast.error('Gagal menghapus foto: ' + (e.message || 'Terjadi kesalahan'))
   }
 }
 </script>

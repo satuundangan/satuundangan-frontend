@@ -429,6 +429,12 @@ const router = createRouter({
       component: () => import('@/views/LiveScreenView.vue'),
     },
     {
+      path: '/snap/:slug',
+      name: 'GuestPhotoUpload',
+      component: () => import('@/views/GuestPhotoUploadView.vue'),
+      meta: { title: 'Memory Wall' },
+    },
+    {
       path: '/:slug',
       name: 'invitation',
       component: Invitation,
