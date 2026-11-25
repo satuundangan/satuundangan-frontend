@@ -1,36 +1,30 @@
 <template>
-  <section class="section bg-white relative overflow-hidden py-24">
-    <!-- Subtle Background Pattern -->
-    <div class="absolute inset-0 opacity-[0.03] pointer-events-none" style="background-image: url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23000000\' fill-opacity=\'1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E');"></div>
-
-    <div class="max-w-7xl mx-auto px-6 relative z-10">
-      <div class="text-center mb-20">
-        <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Fitur Unggulan</span>
-        <h2 class="text-4xl md:text-5xl font-playfair font-bold text-dark mb-6">Fitur Lengkap Undanganmu</h2>
-        <p class="text-muted max-w-2xl mx-auto text-lg">
-          Semua yang kamu butuhkan untuk membuat undangan pernikahan digital yang sempurna dan berkesan ada di sini.
+  <section class="section bg-white border-t border-stone-200/70 py-20">
+    <div class="max-w-7xl mx-auto px-6">
+      <div class="text-center mb-16">
+        <span class="text-[#8f5e38] font-semibold tracking-widest uppercase text-xs mb-2 block">Fitur Lengkap</span>
+        <h2 class="text-3xl md:text-5xl font-playfair font-bold text-stone-900 mb-4">Dirancang untuk Kebutuhan Acara</h2>
+        <p class="text-stone-500 max-w-2xl mx-auto text-base md:text-lg">
+          Dari perencanaan anggaran hingga check-in tamu di meja resepsi dalam satu sistem terpadu.
         </p>
       </div>
 
-      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-5">
         <div v-for="(feature, index) in features" :key="index"
-          class="group p-8 rounded-3xl border border-gray-100 hover:border-mocha/30 hover:shadow-2xl transition-all duration-500 bg-white relative overflow-hidden">
+          class="group p-6 rounded-xl border border-stone-200/80 hover:border-stone-400 transition-colors bg-white relative">
           
           <!-- Badge if present -->
-          <div v-if="feature.badge" class="absolute top-4 right-4 bg-emerald-50 text-emerald-700 border border-emerald-200/60 text-[10px] font-black px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 z-20">
-            <i class="pi pi-bolt text-xs text-amber-500" aria-hidden="true"></i> {{ feature.badge }}
+          <div v-if="feature.badge" class="inline-block mb-4 bg-stone-100 text-stone-700 border border-stone-200/80 text-[10px] font-semibold px-2 py-0.5 rounded">
+            {{ feature.badge }}
           </div>
 
-          <!-- Hover Gradient Background -->
-          <div class="absolute inset-0 bg-gradient-to-br from-ivory/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-
-          <div class="relative z-10">
+          <div>
              <div
-               class="w-16 h-16 rounded-2xl bg-ivory text-mocha flex items-center justify-center text-2xl mb-8 group-hover:bg-mocha group-hover:text-white group-hover:scale-110 transition-all duration-500 shadow-sm">
+               class="w-11 h-11 rounded-lg bg-[#FAF8F5] border border-stone-200/80 text-[#8f5e38] flex items-center justify-center text-lg mb-5 group-hover:bg-stone-900 group-hover:text-white group-hover:border-stone-900 transition-colors">
                <i :class="feature.icon" aria-hidden="true"></i>
              </div>
-             <h3 class="text-xl font-bold text-dark mb-3 group-hover:text-mocha transition-colors">{{ feature.title }}</h3>
-             <p class="text-sm text-muted leading-relaxed">{{ feature.description }}</p>
+             <h3 class="text-base font-semibold text-stone-900 mb-2">{{ feature.title }}</h3>
+             <p class="text-sm text-stone-500 leading-relaxed">{{ feature.description }}</p>
           </div>
         </div>
       </div>
