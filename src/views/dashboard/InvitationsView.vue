@@ -31,7 +31,7 @@
         </div>
 
         <!-- Quick Stat Summary Row -->
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3.5">
           <StatCard
             label="Total Undangan"
             :value="invitations.length"
@@ -56,9 +56,16 @@
             class="cursor-pointer transition-transform hover:-translate-y-0.5"
             @click="activeFilter = activeFilter === 'pending' ? 'draft' : 'pending'"
           />
+          <StatCard
+            label="Tamu Terdaftar"
+            :value="totalGuestsRegistered"
+            iconClass="fa-solid fa-users"
+            color="bg-indigo-50 text-indigo-600"
+            class="transition-transform hover:-translate-y-0.5"
+          />
         </div>
 
-        <!-- Search and Filter Bar -->
+        <!-- Search and Filter Bar with View Mode Switcher -->
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <!-- Search Input -->
           <div class="relative flex-1 max-w-md">
@@ -66,7 +73,7 @@
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Cari judul atau slug..."
+              placeholder="Cari judul, slug, atau nama mempelai..."
               class="w-full pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#a47148] focus:ring-1 focus:ring-[#a47148] shadow-2xs transition-all"
             />
             <button
@@ -79,36 +86,60 @@
             </button>
           </div>
 
-          <!-- Filter Tabs -->
-          <div class="flex items-center overflow-x-auto p-1 bg-slate-100 rounded-xl text-xs font-bold text-slate-600 shrink-0">
-            <button 
-              @click="activeFilter = 'all'" 
-              class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-              :class="activeFilter === 'all' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
-            >
-              Semua ({{ invitations.length }})
-            </button>
-            <button 
-              @click="activeFilter = 'published'" 
-              class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-              :class="activeFilter === 'published' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
-            >
-              Aktif ({{ activeInvitationsCount }})
-            </button>
-            <button 
-              @click="activeFilter = 'pending'" 
-              class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-              :class="activeFilter === 'pending' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
-            >
-              Menunggu Bayar
-            </button>
-            <button 
-              @click="activeFilter = 'draft'" 
-              class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-              :class="activeFilter === 'draft' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
-            >
-              Draft
-            </button>
+          <div class="flex items-center gap-2 flex-wrap">
+            <!-- Filter Tabs -->
+            <div class="flex items-center overflow-x-auto p-1 bg-slate-100 rounded-xl text-xs font-bold text-slate-600 shrink-0">
+              <button 
+                @click="activeFilter = 'all'" 
+                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
+                :class="activeFilter === 'all' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+              >
+                Semua ({{ invitations.length }})
+              </button>
+              <button 
+                @click="activeFilter = 'published'" 
+                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
+                :class="activeFilter === 'published' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+              >
+                Aktif ({{ activeInvitationsCount }})
+              </button>
+              <button 
+                @click="activeFilter = 'pending'" 
+                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
+                :class="activeFilter === 'pending' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+              >
+                Menunggu Bayar
+              </button>
+              <button 
+                @click="activeFilter = 'draft'" 
+                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
+                :class="activeFilter === 'draft' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+              >
+                Draft
+              </button>
+            </div>
+
+            <!-- View Mode Toggle (Table vs Card Grid) -->
+            <div class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0 text-xs">
+              <button
+                @click="toggleViewMode('table')"
+                class="px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                :class="viewMode === 'table' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                title="Tampilan Tabel"
+              >
+                <i class="fa-solid fa-table-list"></i>
+                <span>Tabel</span>
+              </button>
+              <button
+                @click="toggleViewMode('grid')"
+                class="px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer"
+                :class="viewMode === 'grid' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                title="Tampilan Kartu"
+              >
+                <i class="fa-solid fa-table-cells-large"></i>
+                <span>Kartu</span>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -148,6 +179,7 @@
         <InvitationsTable 
           v-else 
           :invitations="filteredInvitations" 
+          :viewMode="viewMode"
           @edit="handleEdit" 
           @delete="handleDelete" 
           @preview="handlePreview" 
@@ -224,9 +256,19 @@ const loading = ref(true)
 const showHelpModal = ref(false)
 const activeFilter = ref('all')
 const searchQuery = ref('')
+const viewMode = ref(typeof window !== 'undefined' ? (localStorage.getItem('satuundangan_invitations_view_mode') || 'table') : 'table')
+
+function toggleViewMode(mode) {
+  viewMode.value = mode
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('satuundangan_invitations_view_mode', mode)
+  }
+}
 
 const activeInvitationsCount = computed(() => invitations.value.filter(inv => inv.isPublished).length)
 const pendingOrDraftCount = computed(() => invitations.value.filter(inv => !inv.isPublished).length)
+const totalGuestsRegistered = computed(() => invitations.value.reduce((acc, inv) => acc + Number(inv.guestCount || 0), 0))
+const totalRsvpHadir = computed(() => invitations.value.reduce((acc, inv) => acc + Number(inv.confirmedGuestCount || 0), 0))
 
 const filteredInvitations = computed(() => {
   let list = invitations.value
