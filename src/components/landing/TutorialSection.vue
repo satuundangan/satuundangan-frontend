@@ -1,12 +1,7 @@
 <template>
-  <section v-if="embedId" id="tutorial" class="section bg-white scroll-mt-20 py-24 relative overflow-hidden">
-    <!-- Decorative blobs -->
-    <div class="absolute top-0 right-0 w-80 h-80 bg-mocha/5 rounded-full blur-3xl translate-x-1/3 -translate-y-1/3"></div>
-    <div class="absolute bottom-0 left-0 w-80 h-80 bg-sage/5 rounded-full blur-3xl -translate-x-1/3 translate-y-1/3"></div>
-
+  <section v-if="embedId" id="tutorial" class="section bg-white scroll-mt-20 py-20 relative border-t border-stone-200/70">
     <div class="max-w-3xl mx-auto px-6 relative z-10 text-center">
-      <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Tutorial</span>
-      <h2 class="text-4xl md:text-5xl font-playfair font-bold text-dark mb-4">Lihat Cara Pakainya</h2>
+      <h2 class="text-3xl md:text-5xl font-playfair font-bold text-stone-900 mb-3">Lihat Cara Pakainya</h2>
       <p class="text-muted text-lg max-w-xl mx-auto mb-12">
         Tonton video singkat ini biar makin paham cara bikin undanganmu dari awal sampai jadi.
       </p>
