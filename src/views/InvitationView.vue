@@ -895,16 +895,16 @@ function getLocalPreviewPayload(slug) {
         data-test="owner-draft-banner"
         class="owner-draft-paywall-banner fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] w-full max-w-xl px-4 pointer-events-auto"
       >
-        <div class="bg-slate-950/95 backdrop-blur-md text-white p-4 sm:p-5 rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-stone-950 text-white p-4 sm:p-5 rounded-2xl shadow-xl border border-stone-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="flex items-center gap-3.5 text-left w-full sm:w-auto">
-            <div class="w-10 h-10 rounded-2xl bg-gradient-to-br from-amber-500 to-amber-700 text-white flex items-center justify-center text-lg shrink-0 shadow-lg shadow-amber-500/20">
+            <div class="w-10 h-10 rounded-xl bg-stone-800 border border-stone-700 text-amber-300 flex items-center justify-center text-base shrink-0">
               <i class="pi pi-shield" aria-hidden="true"></i>
             </div>
             <div class="space-y-0.5">
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/30 text-amber-300 text-[10px] font-black uppercase tracking-wider">
-                <span>Mode Preview Pemilik (Draft)</span>
-              </div>
-              <p class="text-xs text-slate-300 font-medium leading-snug">
+              <p class="text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-300">
+                Mode Preview Pemilik (Draft)
+              </p>
+              <p class="text-xs text-stone-300 font-medium leading-snug">
                 Undangan ini masih berstatus DRAFT dan BELUM BISA diakses oleh tamu undangan.
               </p>
             </div>
@@ -913,7 +913,7 @@ function getLocalPreviewPayload(slug) {
             type="button"
             data-test="activate-invitation-btn"
             @click="goToCheckout"
-            class="w-full sm:w-auto shrink-0 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-slate-950 px-5 py-2.5 rounded-2xl font-black text-xs sm:text-sm shadow-xl shadow-amber-500/20 transition-all flex items-center justify-center gap-2 cursor-pointer transform hover:scale-[1.02] active:scale-95"
+            class="w-full sm:w-auto shrink-0 bg-amber-500 hover:bg-amber-400 text-stone-950 px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 cursor-pointer"
           >
             <i class="pi pi-bolt text-xs" aria-hidden="true"></i>
             <span>Aktifkan Undangan Sekarang (Bayar)</span>

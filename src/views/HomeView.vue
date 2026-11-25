@@ -7,56 +7,53 @@
       <HeroSection @create-invitation="showModal = true" />
 
     <!-- Pricing Section -->
-    <section id="pricing" class="section bg-ivory scroll-mt-20 py-20 border-t border-stone-200/60">
+    <section id="pricing" class="section bg-[#FAF8F5] scroll-mt-20 py-20 border-t border-stone-200/70">
       <div class="max-w-6xl mx-auto px-6">
-        <div class="text-center mb-16">
-          <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block"
-            >Harga</span
-          >
-          <h2 class="text-4xl md:text-5xl font-serif font-bold text-dark mb-4">
+        <div class="text-center mb-14">
+          <h2 class="text-3xl md:text-5xl font-serif font-bold text-stone-900 mb-3">
             Pilih Paket Sesuai Kebutuhanmu
           </h2>
-          <p class="text-muted max-w-2xl mx-auto text-lg">
-            Semua desain bebas dipakai. Bedanya cuma di fiturnya — pilih yang pas buat acaramu.
+          <p class="text-stone-600 max-w-xl mx-auto text-base sm:text-lg">
+            Semua desain bebas dipakai. Pilih fitur yang paling sesuai dengan acara Anda.
           </p>
         </div>
 
-        <div class="grid md:grid-cols-3 gap-8 items-center">
+        <div class="grid md:grid-cols-3 gap-6 items-stretch">
           <div
             v-for="plan in pricingPlans"
             :key="plan.name"
             @click="choosePlan(plan.id)"
             :class="[
-              'rounded-3xl p-8 bg-white flex flex-col transition-all duration-300 cursor-pointer',
+              'rounded-2xl p-7 bg-white flex flex-col transition-colors duration-200 cursor-pointer border',
               plan.highlighted
-                ? 'border-2 border-mocha shadow-2xl shadow-mocha/15 md:scale-105 relative z-10'
-                : 'border border-gray-100 shadow-lg hover:shadow-xl',
-              selectedPlan === plan.id ? 'ring-2 ring-mocha ring-offset-2' : '',
+                ? 'border-stone-900 relative z-10'
+                : 'border-stone-200/80 hover:border-stone-400',
+              selectedPlan === plan.id ? 'ring-2 ring-stone-900 ring-offset-2' : '',
             ]"
           >
-            <!-- Best Seller Badge -->
-            <div
-              v-if="plan.highlighted"
-              class="absolute -top-4 left-1/2 -translate-x-1/2 bg-mocha text-white text-xs font-bold px-4 py-1.5 rounded-full shadow-lg tracking-wider uppercase"
-            >
-              Best Seller
+            <div class="mb-5">
+              <div class="flex items-center justify-between gap-2 mb-1">
+                <h3 class="text-xl font-serif font-bold text-stone-900">{{ plan.name }}</h3>
+                <span
+                  v-if="plan.highlighted"
+                  class="text-[11px] font-semibold uppercase tracking-[0.14em] text-stone-900"
+                >
+                  Paling Populer
+                </span>
+              </div>
+              <p class="text-sm text-stone-500 leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
             </div>
 
-            <div class="mb-6">
-              <h3 class="text-xl font-bold text-dark mb-1">{{ plan.name }}</h3>
-              <p class="text-sm text-muted leading-relaxed min-h-[40px]">{{ plan.tagline }}</p>
-            </div>
-
-            <div class="mb-8">
-              <div v-if="plan.originalPrice" class="flex items-center gap-2 mb-1.5">
-                <span class="text-sm text-stone-500 line-through">{{ plan.originalPrice }}</span>
-                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-rose-50 text-rose-600 tracking-wide">
-                  HEMAT {{ plan.discount }}
+            <div class="mb-7 pb-6 border-b border-stone-100">
+              <div v-if="plan.originalPrice" class="flex items-center gap-2 mb-1">
+                <span class="text-sm text-stone-400 line-through tabular-nums">{{ plan.originalPrice }}</span>
+                <span class="text-xs font-medium text-stone-600">
+                  Hemat {{ plan.discount }}
                 </span>
               </div>
               <div class="flex items-baseline gap-1">
-                <span class="text-4xl font-bold text-dark">{{ plan.price }}</span>
-                <span class="text-muted text-sm">/undangan</span>
+                <span class="text-3xl sm:text-4xl font-bold text-stone-900 tabular-nums">{{ plan.price }}</span>
+                <span class="text-stone-500 text-sm">/undangan</span>
               </div>
             </div>
 
@@ -1061,7 +1058,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick, reactive, onMounted, onUnmounted } from 'vue'
+import { ref, computed, watch, nextTick, reactive, onMounted, onUnmounted, onBeforeUnmount } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import Navbar from '@/components/layout/NavbarSection.vue'
 import Footer from '@/components/layout/FooterSection.vue'
@@ -1502,6 +1499,10 @@ function goToCreate() {
     router.push('/create')
   }
 }
+
+onBeforeUnmount(() => {
+  document.body.classList.remove('overflow-hidden')
+})
 </script>
 
 <style scoped>

@@ -10,11 +10,11 @@
         :class="isVisible ? 'translate-y-0' : 'translate-y-full sm:translate-y-8 sm:scale-95'"
       >
         <!-- Top bar with close button -->
-        <div class="flex justify-end p-3 sm:p-4 absolute top-0 right-0 z-10 w-full bg-gradient-to-b from-[#FDFBF7] to-transparent">
+        <div class="flex justify-end p-3 sm:p-4 absolute top-0 right-0 z-10 w-full bg-[#FDFBF7]/90">
           <div class="w-12 h-1.5 bg-gray-300 rounded-full mx-auto sm:hidden mb-2 mt-1 absolute left-1/2 -translate-x-1/2"></div>
           <button
             @click="close"
-            class="text-gray-400 hover:text-gray-800 transition-colors p-2 rounded-full hover:bg-gray-100/50 backdrop-blur-sm"
+            class="text-gray-400 hover:text-gray-800 transition-colors p-2 rounded-lg hover:bg-gray-100"
             aria-label="Tutup"
           >
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">

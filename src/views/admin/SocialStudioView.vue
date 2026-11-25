@@ -882,7 +882,7 @@
                         :key="idx"
                         class="flex items-start gap-2.5 font-medium"
                       >
-                        <span class="text-rose-500 font-bold shrink-0">✕</span>
+                        <span class="text-rose-500 font-bold shrink-0">X</span>
                         <span>{{ pt.trim() }}</span>
                       </li>
                     </ul>
@@ -908,7 +908,7 @@
                         :key="idx"
                         class="flex items-start gap-2.5 font-bold"
                       >
-                        <span class="text-emerald-700 font-extrabold shrink-0">✓</span>
+                        <span class="text-emerald-700 font-extrabold shrink-0">OK</span>
                         <span>{{ pt.trim() }}</span>
                       </li>
                     </ul>
@@ -1130,12 +1130,12 @@
                 <!-- Message 1: Left Bubble -->
                 <div class="flex items-start gap-3">
                   <div class="w-12 h-12 rounded-full bg-stone-300 flex items-center justify-center text-stone-700 font-bold shrink-0">
-                    👰
+                    B
                   </div>
                   <div class="bg-white p-5 rounded-2xl rounded-tl-none shadow-sm max-w-[550px]">
                     <span class="text-xs font-bold text-stone-400 block mb-1">Calon Istri</span>
                     <p class="text-[22px] text-stone-800 leading-snug">
-                      {{ currentSlide.chatMsg1 || 'Sayang, vendor katering sama dekor udah oke. Tapi biaya cetak 500 undangan kertas 3 juta lebih... budget kita jebol 😭' }}
+                      {{ currentSlide.chatMsg1 || 'Sayang, vendor katering sama dekor udah oke. Tapi biaya cetak 500 undangan kertas 3 juta lebih... budget kita jebol' }}
                     </p>
                   </div>
                 </div>
@@ -1145,11 +1145,11 @@
                   <div class="bg-[#d9fdd3] p-5 rounded-2xl rounded-tr-none shadow-sm max-w-[550px] text-left">
                     <span class="text-xs font-bold text-emerald-700 block mb-1">Calon Suami</span>
                     <p class="text-[22px] text-stone-800 leading-snug font-medium">
-                      {{ currentSlide.chatMsg2 || 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon! 😍' }}
+                      {{ currentSlide.chatMsg2 || 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon!' }}
                     </p>
                   </div>
                   <div class="w-12 h-12 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold shrink-0">
-                    🤵
+                    G
                   </div>
                 </div>
               </div>
@@ -1352,7 +1352,7 @@
                   </div>
                   <div class="text-left">
                     <span class="font-bold text-2xl block text-stone-900">@satuundangan_id</span>
-                    <span class="text-sm text-mocha font-bold">👉 {{ currentSlide.ctaAction || 'Klik Link di Bio Profil Instagram' }}</span>
+                    <span class="text-sm text-mocha font-bold">{{ currentSlide.ctaAction || 'Klik Link di Bio Profil Instagram' }}</span>
                   </div>
                 </div>
               </div>
@@ -1551,10 +1551,10 @@ const PALETTES = [
 
 // Stickers List
 const STICKERS_LIST = [
-  { id: 'cat-paw', name: 'Cat Paw 🐾', file: '/assets/images/clay-cat-paw.png' },
-  { id: 'clay-heart', name: 'Heart 3D ❤️', file: '/assets/images/clay-heart.png' },
-  { id: 'clay-rings', name: 'Cincin Emas 💍', file: '/assets/images/luxury-clay-rings.png' },
-  { id: 'clay-cats', name: 'Anabul 🐱', file: '/assets/images/luxury-clay-cats.png' },
+  { id: 'cat-paw', name: 'Cat Paw', file: '/assets/images/clay-cat-paw.png' },
+  { id: 'clay-heart', name: 'Heart 3D', file: '/assets/images/clay-heart.png' },
+  { id: 'clay-rings', name: 'Cincin Emas', file: '/assets/images/luxury-clay-rings.png' },
+  { id: 'clay-cats', name: 'Anabul', file: '/assets/images/luxury-clay-cats.png' },
   { id: 'cat-seal', name: 'Wax Seal', file: '/assets/images/cat-paw-seal.png' },
   { id: 'clay-envelope', name: 'Amplop', file: '/assets/images/luxury-clay-envelope.png' },
 ]
@@ -1615,7 +1615,7 @@ const FULL_CAROUSEL_DECKS = [
         id: 1,
         type: 'cover',
         badge: 'BONGKAR BUDGET NIKAH',
-        title: 'Cetak 500 Undangan Kertas Buat Dibuang ke Tong Sampah? 😭',
+        title: 'Cetak 500 Undangan Kertas Buat Dibuang ke Tong Sampah?',
         subtitle: 'Bukan pelit, tapi smart budgeting! Yuk hitung perbandingan riilnya.',
         paletteId: 'ivory',
         fontFamily: 'font-serif',
@@ -1648,8 +1648,8 @@ const FULL_CAROUSEL_DECKS = [
         type: 'chat_bubble',
         badge: 'RELATABLE STORY',
         title: 'Drama Calon Manten H-60',
-        chatMsg1: 'Sayang, vendor katering sama dekor udah oke. Tapi biaya cetak 500 undangan kertas 3 juta lebih... budget kita jebol 😭',
-        chatMsg2: 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon! 😍',
+        chatMsg1: 'Sayang, vendor katering sama dekor udah oke. Tapi biaya cetak 500 undangan kertas 3 juta lebih... budget kita jebol',
+        chatMsg2: 'Tenang yang! Kita pake satuundangan.id aja cuma 79 ribu udah dapet desain adat mewah, QR tamu, dan sebar WA otomatis. Sisa 2.9 juta buat honeymoon!',
         paletteId: 'ivory',
         fontFamily: 'font-serif',
         fontSize: 56,
@@ -1774,7 +1774,7 @@ const FULL_CAROUSEL_DECKS = [
       {
         id: 21,
         type: 'cover',
-        badge: 'CAT LOVERS EDITION 🐾',
+        badge: 'CAT LOVERS EDITION',
         title: 'Undangan Nikah Khusus Anabul Parents Pertama di Indonesia!',
         subtitle: 'Animasi 3D clay telapak kucing pastel imut siap meriahkan hari bahagiamu.',
         paletteId: 'ivory',
@@ -1952,7 +1952,7 @@ const FULL_CAROUSEL_DECKS = [
         id: 51,
         type: 'cover',
         badge: 'PROMO SPESIAL',
-        title: 'Mau Undangan Estetik Tanpa Bikin Kantong Jebol? 💸',
+        title: 'Mau Undangan Estetik Tanpa Bikin Kantong Jebol?',
         subtitle: 'Dapatkan 30+ pilihan tema pernikahan mewah mulai Rp 49.000 sekali bayar!',
         paletteId: 'ivory',
         fontFamily: 'font-serif',

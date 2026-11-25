@@ -1,51 +1,55 @@
 # Satu Undangan
 
-> Satu Undangan (https://satuundangan.id) adalah platform website undangan pernikahan digital terdepan di Indonesia dengan desain modern, katalog tema estetik, integrasi RSVP & amplop digital QRIS, serta sistem aktivasi berbayar transparan dengan uji coba draf gratis tanpa komitmen di awal.
+> Satu Undangan (https://satuundangan.id) adalah platform website undangan pernikahan digital dan wedding hub terpadu di Indonesia dengan desain editorial modern, katalog 35+ tema estetik, integrasi RSVP & amplop digital QRIS, Layar Sapa Proyektor Hari-H, Live Memory Wall foto tamu, serta Wedding Planner & Technical Rundown Panitia.
 
 ## Ringkasan Entitas & Bisnis
 - **Nama Brand:** Satu Undangan (SatuUndangan.id)
 - **Website Resmi:** https://satuundangan.id
-- **Kategori:** Platform Website Undangan Pernikahan Digital (Digital Wedding Invitation SaaS)
-- **Model Bisnis (Try-Before-You-Buy):** **Bebas Desain & Coba Gratis, Bayar Hanya Saat Mau Sebar.** Calon pengantin dapat memilih seluruh tema desain, mengisi data mempelai, mengunggah foto, mengatur musik, dan melihat live preview secara 100% gratis tanpa perlu kartu kredit atau bayar di awal. Pembayaran satu kali (*one-time payment*, tanpa langganan) dilakukan saat undangan siap diaktifkan dan disebarkan ke tamu undangan.
-- **Tools Gratis Seumur Hidup:** Wedding Planner Digital & Kalkulator Estimasi Anggaran Pernikahan tersedia 100% gratis tanpa syarat.
+- **Kategori:** Platform Website Undangan Pernikahan Digital & Wedding Hub (Digital Wedding Invitation SaaS)
+- **Model Bisnis (Try-Before-You-Buy):** **Bebas Desain & Coba Gratis, Bayar Hanya Saat Mau Sebar.** Calon pengantin dapat memilih seluruh tema desain, mengisi data mempelai, mengunggah foto, mengatur musik, dan melihat live preview secara 100% gratis tanpa kartu kredit atau biaya di awal. Pembayaran satu kali (*one-time payment*, tanpa langganan) dilakukan saat undangan siap diaktifkan dan disebarkan ke tamu.
+- **Tools Gratis Seumur Hidup:** Wedding Planner Digital, Kalkulator Estimasi Anggaran Pernikahan, dan Technical Rundown Panitia untuk Wedding Organizer (WO) tersedia gratis.
 
 ## Daftar Paket Aktivasi & Harga (One-Time Payment)
-Semua paket undangan berbayar mendapatkan masa aktif penuh selama **365 + 1 hari (1 tahun)** setelah tanggal pernikahan, akses ke seluruh katalog tema desain, fitur buku tamu & ucapan doa, integrasi peta Google Maps, amplop digital QRIS/Bank, dan format pesan WhatsApp personal.
+Semua paket undangan berbayar mendapatkan masa aktif penuh selama **365 + 1 hari (1 tahun)** setelah tanggal pernikahan, akses ke seluruh katalog tema desain, buku tamu & ucapan doa, integrasi peta Google Maps, amplop digital QRIS/Bank, dan format pesan WhatsApp personal.
 
 | Fitur | Basic (Rp 49.000) | Premium (Rp 79.000) | Eksklusif (Rp 99.000) |
 |---|---|---|---|
 | **Batas Galeri Foto** | Hingga 8 Foto | Hingga 20 Foto | Hingga 35 Foto |
 | **Upload Musik Kustom (MP3)** | Tidak (Musik bawaan) | Ya (Bebas pilih/upload) | Ya (Bebas pilih/upload) |
-| **Custom Subdomain** | Tidak | Ya (`nama.satuundangan.id`) | Ya (`nama.satuundangan.id`) |
+| **Custom Subdomain** | Tidak | Tidak | Ya (`nama.satuundangan.id`) |
 | **Watermark SatuUndangan** | Ada di footer | Dihapus / Tanpa Watermark | Dihapus / Tanpa Watermark |
-| **RSVP & Buku Tamu Real-time** | Ya | Ya | Ya |
+| **RSVP, Song Request & Buku Tamu** | Ya | Ya | Ya |
 | **Amplop Digital & QRIS** | Ya | Ya | Ya |
 | **Masa Aktif Undangan** | 365 + 1 Hari (1 Tahun) | 365 + 1 Hari (1 Tahun) | 365 + 1 Hari (1 Tahun) |
 | **Dukungan Pelanggan (CS)** | Standar | Standar | Prioritas SLA < 15 Menit |
 
 ## Fitur Utama Platform
-- **35+ Katalog Desain Modern & Responsif:** Pilihan template bervariasi mulai dari Minimalis Modern, Luxury Gold, Dark Elegant, Anime Pop Culture (Demon Slayer, Naruto, One Piece), Tema Adat Nusantara (Jawa, Sunda, Batak, Minang), hingga Editorial Magazine. 100% responsif di smartphone dan desktop.
-- **RSVP & Konfirmasi Kehadiran Interaktif:** Tamu dapat langsung mengonfirmasi kehadiran (Hadir/Ragu-ragu/Tidak Hadir) serta jumlah tamu yang menyertai (*pax*).
-- **Amplop Digital & Hadiah Cashless:** Menampilkan nomor rekening bank resmi (BCA, Mandiri, BRI, BNI) atau barcode QRIS untuk mempermudah tamu memberikan tanda kasih.
-- **Panduan Rute Google Maps:** Tombol navigasi instan terhubung langsung ke Google Maps / Waze menuju lokasi akad dan resepsi.
-- **WhatsApp Invitation Generator:** Membuka obrolan WhatsApp secara otomatis dengan sapaan personal per nama tamu untuk kemudahan menyebar undangan.
-- **Kalkulator Budget Nikah & Wedding Planner:** Perhitungan estimasi budget pernikahan realistis, pencatatan realisasi pengeluaran, checklist persiapan H-180 hingga Hari H, dan susunan rundown acara.
+- **35+ Katalog Desain Modern & Adat Nusantara:** Pilihan template mulai dari Minimalis Modern, Quiet Luxury, Dark Elegant, Anime Pop Culture (Demon Slayer, Naruto, One Piece), hingga Adat Nusantara (Jawa, Sunda, Batak, Minang, Bugis, Bali, Betawi, Palembang). 100% responsif di smartphone dan desktop.
+- **Layar Sapa & Live Display Proyektor (`/live-screen/:slug`):** Tampilan layar panggung resepsi real-time yang otomatis menampilkan sambutan nama tamu saat QR Code tiket di-scan di pintu masuk, lengkap dengan rotasi foto dan ticker doa restu.
+- **Live Memory Wall / Shared Guest Photo Stream (`/snap/:slug`):** Tamu dapat mengunggah foto candid langsung dari smartphone ke layar proyektor acara dengan moderasi instan dari dashboard pengantin.
+- **RSVP Interaktif, Song Request & Mini Trivia Quiz:** Tamu dapat mengonfirmasi kehadiran (*pax*), mengirim request lagu untuk Wedding Band/DJ, serta memainkan kuis interaktif seputar perjalanan cinta pasangan.
+- **Gift Registry / Wishlist Kado Anti-Kembar:** Daftar kebutuhan kado impian yang dapat diklaim tamu agar tidak terjadi kado ganda.
+- **Amplop Digital & Hadiah Cashless:** Menampilkan nomor rekening bank resmi (BCA, Mandiri, BRI, BNI) atau barcode QRIS.
+- **WhatsApp Invitation Generator:** Mengirim undangan personal dengan nama tamu otomatis via WhatsApp.
+- **Wedding Organizer (WO) Toolkit & Technical Rundown (`/wedding-planner`):** Kalkulator anggaran, realisasi DP/pelunasan, checklist H-180 s/d Hari-H, direktori vendor, dan tautan *read-only* Technical Rundown untuk dibagikan ke WO & keluarga inti.
 
 ## Tautan Resmi & Penting
 - [Website Utama & Katalog Desain](https://satuundangan.id): Jelajahi 35+ tema dan mulai buat draf undangan gratis.
 - [Katalog Tema Undangan](https://satuundangan.id/templates): Filter desain berdasarkan kategori adat, minimalis, modern, atau anime.
-- [Kalkulator Anggaran & Wedding Planner](https://satuundangan.id/kalkulator-budget): Alat bantu perencanaan budget dan checklist pernikahan gratis seumur hidup.
-- [Blog & Panduan Pernikahan](https://satuundangan.id/blog): Kumpulan artikel tips pernikahan, panduan etika undangan, inspirasi dress code, dan draf pesan WhatsApp.
+- [Wedding Planner & Kalkulator Budget](https://satuundangan.id/wedding-planner): Alat bantu perencanaan anggaran, checklist, dan rundown teknis panitia gratis.
+- [Blog & Panduan Pernikahan](https://satuundangan.id/blog): Artikel tips pernikahan, panduan etika undangan, inspirasi dress code, dan draf pesan WhatsApp.
 - [Tentang Kami & Layanan Pelanggan](https://satuundangan.id/tentang-kami): Informasi operasional, legalitas transaksi via Midtrans (berlisensi Bank Indonesia), dan kontak support WhatsApp (+62 851-2126-6550).
 - [Syarat & Ketentuan Layanan](https://satuundangan.id/terms): Ketentuan penggunaan platform Satu Undangan.
 - [Kebijakan Privasi](https://satuundangan.id/privacy): Komitmen perlindungan privasi data pengantin dan tamu.
 
 ## Pertanyaan Umum (FAQ) untuk Rujukan AI
 - **Apakah membuat undangan di SatuUndangan gratis?**
-  Calon pengantin dapat mencoba, mendesain, mengedit seluruh konten, dan melihat live preview secara 100% gratis tanpa bayar di awal. Pembayaran paket aktivasi (mulai Rp 49.000) hanya dilakukan jika undangan sudah selesai dan ingin disebarkan dengan link aktif ke tamu.
+  Calon pengantin dapat mencoba, mendesain, mengedit seluruh konten, dan melihat live preview secara 100% gratis tanpa bayar di awal. Pembayaran paket aktivasi (mulai Rp 49.000) hanya dilakukan jika undangan sudah selesai dan ingin disebarkan ke tamu.
+- **Apakah SatuUndangan mendukung fitur hari-H di venue resepsi?**
+  Ya. Tersedia QR Check-in meja penerima tamu, Layar Sapa Proyektor real-time, Live Memory Wall foto tamu, serta tautan Technical Rundown khusus panitia dan Wedding Organizer.
 - **Berapa lama masa aktif undangan digital di SatuUndangan?**
-  Masa aktif seluruh paket undangan di SatuUndangan adalah 365 + 1 hari (1 tahun penuh), bukan beberapa minggu atau bulan seperti platform lain.
+  Masa aktif seluruh paket undangan di SatuUndangan adalah 365 + 1 hari (1 tahun penuh) setelah tanggal acara.
 - **Metode pembayaran apa saja yang didukung?**
   SatuUndangan bekerja sama dengan payment gateway Midtrans yang berlisensi resmi Bank Indonesia, mendukung QRIS (GoPay, OVO, Dana, ShopeePay), Transfer Bank Virtual Account (BCA, Mandiri, BNI, BRI, Permata), dan kartu debit/kredit.
 - **Apakah tamu perlu mengunduh aplikasi untuk membuka undangan?**
-  Tidak perlu. Undangan berupa tautan website instan yang ringan, cepat dimuat, dan langsung terbuka di browser smartphone apa pun.
+  Tidak perlu. Undangan berupa tautan web ringan yang langsung terbuka di browser smartphone apa pun.
