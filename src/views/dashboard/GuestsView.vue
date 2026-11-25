@@ -167,12 +167,13 @@
                 :aria-label="currentInvitation.isGuestPublic !== false ? 'Kunci menjadi mode privat' : 'Buka menjadi mode publik'"
                 :disabled="updatingGuestAccess"
                 @click="toggleGuestAccess"
-                class="relative inline-flex h-7 w-12 items-center rounded-full p-0.5 transition-colors duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-50 cursor-pointer select-none"
+                class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full p-1 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-50 select-none"
                 :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-500' : 'bg-slate-300'"
                 :title="currentInvitation.isGuestPublic !== false ? 'Klik untuk mengubah ke Mode Privat' : 'Klik untuk mengubah ke Mode Publik'"
               >
                 <span
-                  class="pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow-md transform transition-transform duration-300 ease-in-out"
+                  aria-hidden="true"
+                  class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition-transform duration-200 ease-in-out"
                   :class="currentInvitation.isGuestPublic !== false ? 'translate-x-5' : 'translate-x-0'"
                 ></span>
               </button>
@@ -199,9 +200,9 @@
                   </div>
                   <div class="text-right shrink-0">
                     <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-xl text-xs font-bold whitespace-nowrap shadow-2xs">
-                      <span class="text-[10px] text-slate-400 uppercase font-bold">Terkirim:</span>
-                      <span class="font-extrabold text-emerald-700">{{ sentGuestsCount }} / {{ totalGuestsCount }}</span>
-                      <span class="text-[10px] text-emerald-600 font-extrabold">({{ sentPercentage }}%)</span>
+                      <span class="text-[10px] text-slate-500 uppercase font-bold whitespace-nowrap">Ditandai Terkirim:</span>
+                      <span class="font-extrabold text-emerald-700 whitespace-nowrap">{{ sentGuestsCount }} / {{ totalGuestsCount }}</span>
+                      <span class="text-[10px] text-emerald-600 font-extrabold whitespace-nowrap">({{ sentPercentage }}%)</span>
                     </div>
                   </div>
                 </div>
