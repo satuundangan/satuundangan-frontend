@@ -425,19 +425,19 @@ describe('SAT-65: Seating Allocation & Physical Souvenir / Gift Logging QA Suite
       await flushPromises()
 
       // Banner shows seating
-      expect(wrapper.text()).toContain('📍 Meja / Seating:')
+      expect(wrapper.text()).toContain('Meja / Seating:')
       expect(wrapper.text()).toContain('Meja 3 (VIP)')
 
       // Find the souvenir button in the banner
       const souvenirBtn = wrapper.findAll('button').find((b) => b.text().includes('Souvenir Diberikan'))
       expect(souvenirBtn).toBeTruthy()
-      expect(souvenirBtn.text()).toContain('🎁 Souvenir Diberikan')
+      expect(souvenirBtn.text()).toContain('Souvenir Diberikan')
 
-      // Click toggle souvenir -> Optimistic Update to '✔ Sudah Terima Souvenir'
+      // Click toggle souvenir -> Optimistic Update to 'Sudah Terima Souvenir'
       await souvenirBtn.trigger('click')
 
       // Assert immediate UI update (0ms)
-      expect(souvenirBtn.text()).toContain('✔ Sudah Terima Souvenir')
+      expect(souvenirBtn.text()).toContain('Sudah Terima Souvenir')
       expect(guestApi.updateGuestReception).toHaveBeenCalledWith(103, { souvenirGiven: true })
       expect(mockToast.success).toHaveBeenCalledWith('Souvenir ditandai telah diberikan')
     })
@@ -473,8 +473,8 @@ describe('SAT-65: Seating Allocation & Physical Souvenir / Gift Logging QA Suite
       await souvenirBtn.trigger('click')
       await flushPromises()
 
-      // Should rollback to '🎁 Souvenir Diberikan'
-      expect(souvenirBtn.text()).toContain('🎁 Souvenir Diberikan')
+      // Should rollback to 'Souvenir Diberikan'
+      expect(souvenirBtn.text()).toContain('Souvenir Diberikan')
       expect(mockToast.error).toHaveBeenCalled()
     })
 
@@ -543,15 +543,15 @@ describe('SAT-65: Seating Allocation & Physical Souvenir / Gift Logging QA Suite
       expect(wrapper.text()).toContain('Meja: Meja 2')
       expect(wrapper.text()).toContain('Kado/Amplop: Amplop Rp 500.000')
 
-      // Row souvenir button for Budi Santoso displays '✔ Souvenir'
+      // Row souvenir button for Budi Santoso displays check icon
       const rowSouvenirBtns = wrapper.findAll('button').filter((b) => b.text().includes('Souvenir'))
-      const budiBtn = rowSouvenirBtns.find((b) => b.text().includes('✔ Souvenir'))
+      const budiBtn = rowSouvenirBtns.find((b) => b.find('i.fa-check').exists())
       expect(budiBtn).toBeTruthy()
 
       // Toggle souvenir in row (toggles from true to false)
       await budiBtn.trigger('click')
 
-      expect(budiBtn.text()).toContain('🎁 Souvenir')
+      expect(budiBtn.find('i.fa-gift').exists()).toBe(true)
       expect(guestApi.updateGuestReception).toHaveBeenCalledWith(102, { souvenirGiven: false })
       expect(mockToast.success).toHaveBeenCalled()
     })

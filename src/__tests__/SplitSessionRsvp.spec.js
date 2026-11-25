@@ -172,7 +172,7 @@ describe('SAT-67: Split Sesi Undangan & Multi-Event RSVP Test Suite', () => {
         sessionName: guestSession,
         sessionMismatch,
         warningMessage: sessionMismatch
-          ? `⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession || 'Sesi Lain'}`
+          ? `Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession || 'Sesi Lain'}`
           : null,
       }
     }
@@ -211,7 +211,7 @@ describe('SAT-67: Split Sesi Undangan & Multi-Event RSVP Test Suite', () => {
 
       expect(result.sessionMismatch).toBe(true)
       expect(result.sessionName).toBe('Resepsi Sesi 2')
-      expect(result.warningMessage).toBe('⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada Resepsi Sesi 2')
+      expect(result.warningMessage).toBe('Peringatan Sesi Berbeda: Tamu ini terdaftar pada Resepsi Sesi 2')
     })
 
     it('detects mismatch when guest has no assigned session while active session is enforced', () => {
@@ -220,7 +220,7 @@ describe('SAT-67: Split Sesi Undangan & Multi-Event RSVP Test Suite', () => {
       const result = buildScanResult(activeSession, guest)
 
       expect(result.sessionMismatch).toBe(true)
-      expect(result.warningMessage).toBe('⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada Sesi Lain')
+      expect(result.warningMessage).toBe('Peringatan Sesi Berbeda: Tamu ini terdaftar pada Sesi Lain')
     })
   })
 })

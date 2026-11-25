@@ -40,6 +40,20 @@
         <div class="particle particle-4"></div>
         <div class="particle particle-5"></div>
       </div>
+
+      <!-- Editorial Guest Photo Attribution (SAT-69) -->
+      <div
+        v-if="currentSlideAttribution"
+        data-testid="guest-photo-attribution"
+        class="absolute bottom-6 left-6 z-20 max-w-sm rounded-xl border border-white/15 bg-stone-950/75 px-4 py-2.5 backdrop-blur-md text-left"
+      >
+        <p class="text-[10px] uppercase tracking-[0.18em] text-stone-300/80 font-medium">
+          Memory Wall · Foto oleh {{ currentSlideAttribution.guestName }}
+        </p>
+        <p v-if="currentSlideAttribution.caption" class="text-xs text-white/95 mt-0.5 line-clamp-1">
+          {{ currentSlideAttribution.caption }}
+        </p>
+      </div>
     </div>
 
     <!-- ============================================== -->
@@ -126,36 +140,37 @@
           <button
             type="button"
             @click="triggerGreetingSimulation"
-            class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             data-testid="btn-test-greeting"
             title="Uji coba animasi sambutan tamu (simulasi check-in)"
           >
-            <span>✨ Tes Sambutan</span>
+            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            <span>Tes Sambutan</span>
           </button>
 
           <!-- Button: Audio Chime Toggle -->
           <button
             type="button"
             @click="toggleAudio"
-            class="px-3.5 py-1.5 rounded-xl border font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            class="px-3.5 py-1.5 rounded-lg border font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             :class="isAudioEnabled ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 hover:bg-emerald-900/60' : 'bg-slate-900/80 border-slate-700 text-slate-400 hover:bg-slate-800'"
             data-testid="btn-toggle-audio"
             :title="isAudioEnabled ? 'Matikan Suara Chime' : 'Aktifkan Suara Chime'"
           >
             <i :class="isAudioEnabled ? 'fa-solid fa-bell text-emerald-400' : 'fa-solid fa-bell-slash text-slate-500'"></i>
-            <span>{{ isAudioEnabled ? '🔔 Suara: ON' : '🔕 Suara: OFF' }}</span>
+            <span>{{ isAudioEnabled ? 'Suara: ON' : 'Suara: OFF' }}</span>
           </button>
 
           <!-- Button: Fullscreen Toggle -->
           <button
             type="button"
             @click="toggleFullscreen"
-            class="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            class="px-3.5 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             data-testid="btn-toggle-fullscreen"
             :title="isFullscreen ? 'Keluar Layar Penuh' : 'Masuk Layar Penuh'"
           >
             <i :class="isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
-            <span>{{ isFullscreen ? '🗗 Keluar Penuh' : '⛶ Layar Penuh' }}</span>
+            <span>{{ isFullscreen ? 'Keluar Penuh' : 'Layar Penuh' }}</span>
           </button>
         </div>
       </header>
@@ -207,7 +222,7 @@
         <!-- Decorative Divider -->
         <div class="flex items-center justify-center gap-4 w-full max-w-md my-2">
           <div class="flex-1 h-px" :class="themeClasses.dividerLine"></div>
-          <span class="text-sm" :class="themeClasses.dividerStar">✦</span>
+          <i class="fa-solid fa-diamond text-[9px]" :class="themeClasses.dividerStar" aria-hidden="true"></i>
           <div class="flex-1 h-px" :class="themeClasses.dividerLineReverse"></div>
         </div>
 
@@ -358,18 +373,18 @@
           <button
             type="button"
             @click="dismissGreeting"
-            class="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer text-sm"
+            class="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer text-sm"
             :class="themeClasses.greetingCloseBtn"
             title="Tutup Sambutan"
           >
-            ✕
+            <i class="fa-solid fa-xmark"></i>
           </button>
 
           <!-- Top Badge: Selamat Datang -->
-          <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full border font-serif text-sm md:text-base tracking-[0.25em] uppercase font-bold mb-6 shadow-sm" :class="themeClasses.greetingWelcomeBadge">
-            <span>✨</span>
+          <div class="inline-flex items-center gap-2.5 px-6 py-2 rounded-full border font-serif text-sm md:text-base tracking-[0.25em] uppercase font-bold mb-6 shadow-sm" :class="themeClasses.greetingWelcomeBadge">
+            <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
             <span data-testid="greeting-welcome-text">Selamat Datang</span>
-            <span>✨</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
           </div>
 
           <!-- Guest Name (Cinematic Highlight) -->
@@ -444,6 +459,7 @@ import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import QRCode from 'qrcode'
 import { getLiveScreenFeed } from '@/api/invitation'
+import { getLiveGuestPhotos } from '@/api/guestPhotos'
 
 // Live Screen Themes
 const LIVE_SCREEN_THEMES = [
@@ -451,25 +467,25 @@ const LIVE_SCREEN_THEMES = [
     id: 'dark',
     name: 'Gelap Mewah (Midnight Gold)',
     shortName: 'Gelap',
-    badge: '🌙 Gelap',
+    badge: 'Gelap',
   },
   {
     id: 'light',
     name: 'Cerah Anggun (Ivory Champagne)',
     shortName: 'Cerah',
-    badge: '☀️ Cerah',
+    badge: 'Cerah',
   },
   {
     id: 'emerald',
     name: 'Royal Emerald (Zamrud Elegan)',
     shortName: 'Emerald',
-    badge: '🍃 Emerald',
+    badge: 'Emerald',
   },
   {
     id: 'rose',
     name: 'Rose Romance (Mawar Romantis)',
     shortName: 'Rose',
-    badge: '🌸 Rose',
+    badge: 'Rose',
   },
 ]
 
@@ -752,6 +768,7 @@ const audioCtx = ref(null)
 const invitationData = ref(null)
 const recentCheckIns = ref([])
 const wishesList = ref([])
+const guestPhotos = ref([])
 const qrDataUrl = ref('')
 const syncStatus = ref('connected') // 'connected' | 'syncing' | 'error'
 const lastSyncTime = ref(null)
@@ -831,25 +848,36 @@ const venueDisplay = computed(() => {
   return ''
 })
 
-// Computed: Slide Photos
+// Computed: Slide Photos (Gallery + Approved Guest Memory Wall)
 const slidePhotos = computed(() => {
   const inv = invitationData.value
   const list = []
+  const seen = new Set()
+  const addUrl = (url) => {
+    if (typeof url === 'string' && url.trim() && !seen.has(url.trim())) {
+      seen.add(url.trim())
+      list.push(url.trim())
+    }
+  }
+
+  for (const photo of guestPhotos.value) {
+    if (photo?.imageUrl) addUrl(photo.imageUrl)
+  }
   if (Array.isArray(inv?.galleryImages) && inv.galleryImages.length > 0) {
     for (const img of inv.galleryImages) {
-      if (typeof img === 'string' && img.trim()) list.push(img.trim())
-      else if (img?.url) list.push(img.url)
+      if (typeof img === 'string') addUrl(img)
+      else if (img?.url) addUrl(img.url)
     }
   }
   if (Array.isArray(inv?.gallery) && inv.gallery.length > 0) {
     for (const img of inv.gallery) {
-      if (typeof img === 'string' && img.trim()) list.push(img.trim())
-      else if (img?.url) list.push(img.url)
+      if (typeof img === 'string') addUrl(img)
+      else if (img?.url) addUrl(img.url)
     }
   }
-  if (inv?.photoCoupleUrl) list.push(inv.photoCoupleUrl)
-  if (inv?.bridePhotoUrl) list.push(inv.bridePhotoUrl)
-  if (inv?.groomPhotoUrl) list.push(inv.groomPhotoUrl)
+  if (inv?.photoCoupleUrl) addUrl(inv.photoCoupleUrl)
+  if (inv?.bridePhotoUrl) addUrl(inv.bridePhotoUrl)
+  if (inv?.groomPhotoUrl) addUrl(inv.groomPhotoUrl)
 
   return list.length > 0 ? list : defaultSlides
 })
@@ -858,6 +886,17 @@ const slidePhotos = computed(() => {
 const currentSlidePhoto = computed(() => {
   const photos = slidePhotos.value
   return photos[currentSlideIndex.value] || photos[0] || defaultSlides[0]
+})
+
+const currentSlideAttribution = computed(() => {
+  const url = currentSlidePhoto.value
+  if (!url) return null
+  const match = guestPhotos.value.find((p) => p?.imageUrl === url)
+  if (!match) return null
+  return {
+    guestName: match.guestName || 'Tamu Undangan',
+    caption: match.caption || '',
+  }
 })
 
 // Computed: Current Wish in Ticker
@@ -870,7 +909,7 @@ const currentWish = computed(() => {
 const syncStatusText = computed(() => {
   if (syncStatus.value === 'syncing') return 'Menghubungkan...'
   if (syncStatus.value === 'error') return 'Koneksi Terputus'
-  return '🟢 Live Sync Terhubung'
+  return 'Live Sync Terhubung'
 })
 
 const syncStatusClass = computed(() => {
@@ -1141,9 +1180,22 @@ function adjustPollingInterval() {
   }
 }
 
+async function fetchGuestPhotoStream() {
+  if (!currentSlug.value) return
+  try {
+    const res = await getLiveGuestPhotos(currentSlug.value)
+    if (Array.isArray(res?.photos)) {
+      guestPhotos.value = res.photos
+    }
+  } catch {
+    // Silent fallback so main live screen feed stays unaffected
+  }
+}
+
 // Fetch Feed from Backend
 async function fetchFeed() {
   if (!currentSlug.value) return
+  fetchGuestPhotoStream()
   try {
     const res = await getLiveScreenFeed(currentSlug.value, { etag: currentEtag })
     if (res?.notModified || res?.status === 304) {

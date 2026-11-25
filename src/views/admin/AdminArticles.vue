@@ -459,7 +459,7 @@ const triggerAutoGenerate = async () => {
     showCancelButton: true,
     confirmButtonColor: '#0f172a',
     cancelButtonColor: '#94a3b8',
-    confirmButtonText: '⚡ Ya, Tulis Sekarang',
+    confirmButtonText: 'Ya, Tulis Sekarang',
     cancelButtonText: 'Batal',
   })
 

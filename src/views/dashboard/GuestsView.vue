@@ -1,5 +1,5 @@
 <template>
-  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
+  <div class="flex h-screen bg-[#FAF8F5] overflow-hidden pb-20 md:pb-0 font-sans">
     <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
 
     <div
@@ -10,68 +10,68 @@
     >
       <Topbar title="Daftar Tamu" showButton @toggleSidebar="toggleSidebar" />
 
-      <main class="p-4 md:p-8 flex-1 overflow-y-auto space-y-6 custom-scrollbar">
+      <main class="p-4 md:p-8 flex-1 overflow-y-auto space-y-6 custom-scrollbar max-w-6xl w-full mx-auto">
         <!-- Header & Main Actions -->
-        <div class="space-y-4">
-          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="space-y-5">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-5 border-b border-stone-200/80">
             <div>
-              <div class="flex items-center gap-3">
-                <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Manajemen Tamu</h2>
+              <div class="flex items-center gap-2.5">
+                <h2 class="text-2xl md:text-3xl font-serif font-semibold text-stone-900 tracking-tight">Manajemen Tamu</h2>
                 <button
                   @click="showHelpModal = true"
-                  class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition-colors"
+                  class="w-7 h-7 rounded-lg bg-white border border-stone-200/80 text-stone-500 hover:text-stone-900 hover:border-stone-400 flex items-center justify-center text-xs transition-colors cursor-pointer"
                   title="Panduan Manajemen Tamu"
                 >
                   <i class="fa-solid fa-circle-question"></i>
                 </button>
               </div>
-              <p class="text-xs text-slate-400 mt-1">Kelola daftar penerima, asisten sebar WhatsApp, dan pantau status kehadiran.</p>
+              <p class="text-xs md:text-sm text-stone-500 mt-1">Kelola daftar penerima, sebar WhatsApp, dan konfirmasi kehadiran.</p>
             </div>
 
-            <div class="flex flex-wrap gap-2 md:gap-3">
+            <div class="flex flex-wrap gap-2">
               <button
                 @click="openAddModal"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-[#a47148] text-white px-4 py-2.5 rounded-xl text-xs font-extrabold hover:bg-[#8e5e38] flex items-center justify-center gap-2 shadow-md shadow-[#a47148]/20 disabled:opacity-50 transition-all cursor-pointer"
+                class="flex-1 md:flex-none bg-stone-900 text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-stone-800 flex items-center justify-center gap-2 disabled:opacity-50 transition-colors cursor-pointer"
               >
                 <i class="fa-solid fa-user-plus text-[11px]"></i> Tambah
               </button>
               <button
                 @click="showBulkModal = true"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-white text-slate-800 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
+                class="flex-1 md:flex-none bg-white text-stone-700 border border-stone-200/90 px-3.5 py-2 rounded-lg text-xs font-medium hover:bg-stone-50 hover:border-stone-300 flex items-center justify-center gap-2 disabled:opacity-50 transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-users text-[11px]"></i> Massal
+                <i class="fa-solid fa-users text-[11px] text-stone-500"></i> Massal
               </button>
               <button
                 @click="pickFromContacts"
                 :disabled="!selectedInvitationId"
-                class="flex-1 md:flex-none bg-white text-blue-600 border border-blue-100 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-blue-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
+                class="flex-1 md:flex-none bg-white text-stone-700 border border-stone-200/90 px-3.5 py-2 rounded-lg text-xs font-medium hover:bg-stone-50 hover:border-stone-300 flex items-center justify-center gap-2 disabled:opacity-50 transition-colors cursor-pointer"
               >
-                <i class="fa-solid fa-address-book text-[11px]"></i> Kontak
+                <i class="fa-solid fa-address-book text-[11px] text-stone-500"></i> Kontak
               </button>
               <button
                 @click="exportGuestsExcel"
                 :disabled="!selectedInvitationId || guests.length === 0"
-                class="flex-1 md:flex-none bg-white text-slate-800 border border-slate-200 px-4 py-2.5 rounded-xl text-xs font-bold hover:bg-slate-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
+                class="flex-1 md:flex-none bg-white text-stone-700 border border-stone-200/90 px-3.5 py-2 rounded-lg text-xs font-medium hover:bg-stone-50 hover:border-stone-300 flex items-center justify-center gap-2 disabled:opacity-50 transition-colors cursor-pointer"
                 title="Ekspor Data Tamu ke Excel/CSV"
               >
-                <i class="fa-solid fa-file-export text-[11px] text-slate-500"></i> Ekspor
+                <i class="fa-solid fa-file-export text-[11px] text-stone-500"></i> Ekspor
               </button>
-              <div class="flex gap-1">
+              <div class="flex">
                 <button
                   @click="triggerExcelImport"
                   :disabled="!selectedInvitationId || isImporting"
-                  class="flex-1 md:flex-none bg-white text-emerald-600 border border-emerald-100 px-4 py-2.5 rounded-l-xl text-xs font-bold hover:bg-emerald-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-all border-r-0 cursor-pointer"
+                  class="flex-1 md:flex-none bg-white text-stone-700 border border-stone-200/90 px-3.5 py-2 rounded-l-lg text-xs font-medium hover:bg-stone-50 flex items-center justify-center gap-2 disabled:opacity-50 transition-colors border-r-0 cursor-pointer"
                 >
                   <i v-if="isImporting" class="fa-solid fa-circle-notch animate-spin text-[11px]"></i>
-                  <i v-else class="fa-solid fa-file-excel text-[11px]"></i>
+                  <i v-else class="fa-solid fa-file-excel text-[11px] text-emerald-700"></i>
                   <span>{{ isImporting ? 'Mengimpor...' : 'Import' }}</span>
                 </button>
                 <button
                   @click="downloadTemplate"
                   :disabled="!selectedInvitationId || isImporting"
-                  class="bg-white text-emerald-600 border border-emerald-100 px-3 py-2.5 rounded-r-xl text-xs font-bold hover:bg-emerald-50 flex items-center justify-center disabled:opacity-50 transition-all cursor-pointer"
+                  class="bg-white text-stone-500 border border-stone-200/90 px-2.5 py-2 rounded-r-lg text-xs hover:bg-stone-50 hover:text-stone-900 flex items-center justify-center disabled:opacity-50 transition-colors cursor-pointer"
                   title="Download Template Excel"
                 >
                   <i class="fa-solid fa-download text-[11px]"></i>
@@ -89,16 +89,16 @@
 
           <!-- Selector & Search Row -->
           <div
-            class="bg-white p-4 rounded-2xl border border-slate-100 shadow-xs flex flex-col md:flex-row gap-4"
+            class="bg-white p-4 rounded-xl border border-stone-200/80 flex flex-col md:flex-row gap-4"
           >
             <div class="flex-1">
               <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5"
+                class="text-[11px] font-medium text-stone-500 block mb-1.5"
                 >Pilih Undangan</label
               >
               <select
                 v-model="selectedInvitationId"
-                class="w-full border border-slate-200 rounded-xl px-3.5 py-2 bg-slate-50 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition-all"
+                class="w-full border border-stone-200/90 rounded-lg px-3.5 py-2 bg-[#FAF8F5] text-xs font-semibold text-stone-800 focus:outline-none focus:border-[#8f5e38] transition-colors"
               >
                 <option v-for="inv in invitations" :key="inv.id" :value="inv.id">
                   {{ inv.title }}
@@ -107,18 +107,18 @@
             </div>
             <div class="flex-1">
               <label
-                class="text-[10px] font-black text-slate-400 uppercase tracking-wider block mb-1.5"
+                class="text-[11px] font-medium text-stone-500 block mb-1.5"
                 >Cari Nama / Kontak Tamu</label
               >
               <div class="relative">
                 <i
-                  class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"
+                  class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"
                 ></i>
                 <input
                   v-model="searchQuery"
                   type="text"
                   placeholder="Ketik nama, telepon, atau grup tamu..."
-                  class="w-full border border-gray-200 rounded-xl pl-10 pr-4 py-2 bg-gray-50 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#a47148]/20"
+                  class="w-full border border-stone-200/90 rounded-lg pl-10 pr-4 py-2 bg-[#FAF8F5] text-xs font-medium text-stone-800 focus:outline-none focus:border-[#8f5e38] transition-colors"
                 />
               </div>
             </div>
@@ -127,35 +127,35 @@
           <!-- Public vs Private Invitation Access Mode Toggle -->
           <div
             v-if="currentInvitation"
-            class="bg-white p-4 sm:p-5 rounded-2xl border border-slate-100 shadow-xs flex items-center justify-between gap-4"
+            class="bg-white p-4 sm:p-5 rounded-xl border border-stone-200/80 flex items-center justify-between gap-4"
           >
             <div class="flex items-start gap-3.5 min-w-0">
               <div
-                class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center text-sm transition-colors"
-                :class="currentInvitation.isGuestPublic === false ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'"
+                class="w-9 h-9 shrink-0 rounded-lg flex items-center justify-center text-sm border transition-colors"
+                :class="currentInvitation.isGuestPublic === false ? 'bg-amber-50 text-amber-700 border-amber-200/80' : 'bg-stone-100 text-emerald-700 border-stone-200/80'"
               >
                 <i :class="currentInvitation.isGuestPublic === false ? 'fa-solid fa-lock' : 'fa-solid fa-earth-asia'"></i>
               </div>
               <div class="min-w-0 flex-1">
                 <div class="flex items-center gap-2 flex-wrap">
-                  <h3 class="font-bold text-slate-900 text-xs sm:text-sm">Mode Privasi Undangan</h3>
+                  <h3 class="font-semibold text-stone-900 text-xs sm:text-sm">Mode Privasi Undangan</h3>
                   <span
                     v-if="currentInvitation.isGuestPublic === false"
-                    class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide bg-amber-50 text-amber-800 border border-amber-200/80 inline-flex items-center gap-1 shrink-0"
+                    class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 inline-flex items-center gap-1 shrink-0"
                   >
-                    <i class="fa-solid fa-lock text-[8px]"></i> MODE PRIVAT (TERKUNCI)
+                    <i class="fa-solid fa-lock text-[9px]"></i> Privat
                   </span>
                   <span
                     v-else
-                    class="px-2.5 py-0.5 rounded-full text-[9px] font-extrabold tracking-wide bg-emerald-50 text-emerald-700 border border-emerald-200/80 inline-flex items-center gap-1 shrink-0"
+                    class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80 inline-flex items-center gap-1 shrink-0"
                   >
-                    <i class="fa-solid fa-earth-asia text-[8px]"></i> AKSES PUBLIK (TERBUKA)
+                    <i class="fa-solid fa-earth-asia text-[9px]"></i> Publik
                   </span>
                 </div>
-                <p class="mt-1 max-w-2xl text-[11px] leading-relaxed text-slate-500">
+                <p class="mt-1 max-w-2xl text-xs leading-relaxed text-stone-500">
                   {{ currentInvitation.isGuestPublic === false
-                    ? 'Undangan dikunci khusus untuk tamu terdaftar. Orang asing yang membuka link utama akan disambut layar privat santun.'
-                    : 'Siapa saja dengan tautan utama dapat membuka dan melihat isi undangan. Cocok untuk perayaan umum atau resepsi massal.' }}
+                    ? 'Undangan dikunci khusus untuk tamu terdaftar. Pengunjung tanpa tautan personal akan melihat layar privat.'
+                    : 'Siapa saja dengan tautan utama dapat membuka isi undangan. Cocok untuk resepsi umum.' }}
                 </p>
               </div>
             </div>
@@ -168,7 +168,7 @@
                 :disabled="updatingGuestAccess"
                 @click="toggleGuestAccess"
                 class="relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full p-1 transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-emerald-500/30 disabled:opacity-50 select-none"
-                :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-500' : 'bg-slate-300'"
+                :class="currentInvitation.isGuestPublic !== false ? 'bg-emerald-600' : 'bg-stone-300'"
                 :title="currentInvitation.isGuestPublic !== false ? 'Klik untuk mengubah ke Mode Privat' : 'Klik untuk mengubah ke Mode Publik'"
               >
                 <span
@@ -183,62 +183,62 @@
           <!-- Section 3a: Stats & Progress Header Card -->
           <div
             v-if="currentInvitation"
-            class="bg-white p-5 md:p-6 rounded-2xl border border-slate-100 shadow-xs space-y-5"
+            class="bg-white p-5 md:p-6 rounded-xl border border-stone-200/80 space-y-5"
           >
             <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
               <!-- Left: WhatsApp Distribution Progress -->
               <div class="space-y-2.5 flex-1">
                 <div class="flex items-center justify-between gap-3">
                   <div class="flex items-center gap-2.5">
-                    <span class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-sm shadow-xs">
-                      <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span class="w-8 h-8 rounded-lg bg-stone-100 border border-stone-200/80 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+                      <i class="fa-brands fa-whatsapp text-base"></i>
                     </span>
                     <div>
-                      <h3 class="font-black text-slate-900 text-sm md:text-base">Distribusi & Sebar WhatsApp</h3>
-                      <p class="text-[11px] text-slate-400">Pantau progres penyebaran undangan dan kirim cepat ke seluruh tamu</p>
+                      <h3 class="font-semibold text-stone-900 text-sm">Distribusi WhatsApp</h3>
+                      <p class="text-[11px] text-stone-400">Progres pengiriman undangan personal via WhatsApp</p>
                     </div>
                   </div>
                   <div class="text-right shrink-0">
-                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-700 border border-emerald-200/60 rounded-xl text-xs font-bold whitespace-nowrap shadow-2xs">
-                      <span class="text-[10px] text-slate-500 uppercase font-bold whitespace-nowrap">Ditandai Terkirim:</span>
-                      <span class="font-extrabold text-emerald-700 whitespace-nowrap">{{ sentGuestsCount }} / {{ totalGuestsCount }}</span>
-                      <span class="text-[10px] text-emerald-600 font-extrabold whitespace-nowrap">({{ sentPercentage }}%)</span>
+                    <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-stone-50 text-stone-700 border border-stone-200/80 rounded-lg text-xs font-medium whitespace-nowrap tabular-nums">
+                      <span class="text-[11px] text-stone-500 whitespace-nowrap">Ditandai Terkirim:</span>
+                      <span class="font-semibold text-stone-900 whitespace-nowrap">{{ sentGuestsCount }} / {{ totalGuestsCount }}</span>
+                      <span class="text-[11px] text-emerald-700 font-semibold whitespace-nowrap">({{ sentPercentage }}%)</span>
                     </div>
                   </div>
                 </div>
 
-                <!-- Visual Progress Bar -->
-                <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden p-0.5">
+                <!-- Visual Progress Bar (Solid matte emerald, zero gradient slop) -->
+                <div class="w-full h-2 bg-stone-100 rounded-full overflow-hidden">
                   <div
-                    class="h-full bg-gradient-to-r from-emerald-500 to-teal-500 rounded-full transition-all duration-500"
+                    class="h-full bg-emerald-600 rounded-full transition-all duration-500"
                     :style="{ width: `${sentPercentage}%` }"
                   ></div>
                 </div>
 
-                <div class="flex items-center justify-between text-[11px] text-slate-500 font-semibold">
-                  <span class="flex items-center gap-1">
-                    <i class="fa-solid fa-circle-check text-emerald-500"></i>
+                <div class="flex items-center justify-between text-[11px] text-stone-500 font-medium tabular-nums">
+                  <span class="flex items-center gap-1.5">
+                    <i class="fa-solid fa-circle-check text-emerald-600"></i>
                     <span>{{ sentGuestsCount }} ditandai terkirim</span>
                   </span>
-                  <span class="flex items-center gap-1">
-                    <i class="fa-regular fa-clock text-amber-500"></i>
+                  <span class="flex items-center gap-1.5">
+                    <i class="fa-regular fa-clock text-amber-600"></i>
                     <span>{{ unsentGuestsCount }} belum terkirim</span>
                   </span>
                 </div>
               </div>
 
               <!-- Right: Distribution Assistant Buttons -->
-              <div class="flex flex-wrap sm:flex-nowrap items-center gap-2.5">
+              <div class="flex flex-wrap sm:flex-nowrap items-center gap-2">
                 <button
                   @click="startQueueRunner"
                   :disabled="!selectedInvitationId || totalGuestsCount === 0"
-                  class="flex-1 sm:flex-none px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-[0.98] text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 shadow-md shadow-emerald-600/20 disabled:opacity-50 transition-all cursor-pointer"
+                  class="flex-1 sm:flex-none px-4 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-2 disabled:opacity-50 transition-colors cursor-pointer"
                 >
-                  <i class="fa-solid fa-paper-plane text-xs"></i>
+                  <i class="fa-solid fa-paper-plane text-[11px]"></i>
                   <span>Mulai Sebar WhatsApp</span>
                   <span
                     v-if="unsentGuestsCount > 0"
-                    class="ml-1 px-1.5 py-0.5 rounded-full bg-emerald-800 text-[10px] font-bold"
+                    class="ml-0.5 px-1.5 py-0.2 rounded bg-emerald-900/70 text-[10px] font-semibold tabular-nums"
                   >
                     {{ unsentGuestsCount }}
                   </span>
@@ -247,7 +247,7 @@
                 <button
                   @click="openTemplateModal"
                   :disabled="!selectedInvitationId"
-                  class="flex-1 sm:flex-none px-3.5 py-2.5 bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 rounded-xl text-xs font-bold flex items-center justify-center gap-2 disabled:opacity-50 transition-all cursor-pointer"
+                  class="flex-1 sm:flex-none px-3.5 py-2 bg-white text-stone-700 border border-stone-200/90 hover:bg-stone-50 rounded-lg text-xs font-medium flex items-center justify-center gap-2 disabled:opacity-50 transition-colors cursor-pointer"
                   title="Atur Format Pesan WhatsApp"
                 >
                   <i class="fa-solid fa-pen-to-square text-xs text-slate-500"></i>
@@ -1361,7 +1361,7 @@
         <div class="space-y-2">
           <div class="w-full bg-slate-100 rounded-full h-3 overflow-hidden p-0.5 border border-slate-200/50">
             <div
-              class="bg-gradient-to-r from-emerald-500 to-teal-500 h-full rounded-full transition-all duration-200"
+              class="bg-emerald-600 h-full rounded-full transition-all duration-200"
               :style="{ width: `${importProgressPercentage}%` }"
             ></div>
           </div>

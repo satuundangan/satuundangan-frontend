@@ -848,7 +848,7 @@ async function submitRsvp() {
       createdAt: new Date()
     })
 
-    toast.success('Terima kasih atas konfirmasi dan doanya! ✨')
+    toast.success('Terima kasih atas konfirmasi dan doanya.')
     rsvpForm.value.message = ''
   } catch (err) {
     toast.error('Gagal mengirim ucapan, coba lagi nanti.')
