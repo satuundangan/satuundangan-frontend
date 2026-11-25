@@ -16,14 +16,14 @@ describe('SAT-71 & UI Polish Test Suite (Guests & Invitations)', () => {
   describe('1. Mode Privasi Toggle Button & Header Stat Pill (UI Stability)', () => {
     it('verifies bulletproof toggle switch layout without overflow', () => {
       // Toggle button classes verified
-      const toggleContainerClasses = 'relative inline-flex h-7 w-12 items-center rounded-full p-0.5'
-      const knobClasses = 'pointer-events-none inline-block h-6 w-6 rounded-full bg-white shadow-md'
+      const toggleContainerClasses = 'relative inline-flex h-7 w-12 shrink-0 cursor-pointer items-center rounded-full p-1'
+      const knobClasses = 'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0'
 
       expect(toggleContainerClasses).toContain('h-7')
       expect(toggleContainerClasses).toContain('w-12')
-      expect(toggleContainerClasses).toContain('p-0.5')
-      expect(knobClasses).toContain('h-6')
-      expect(knobClasses).toContain('w-6')
+      expect(toggleContainerClasses).toContain('p-1')
+      expect(knobClasses).toContain('h-5')
+      expect(knobClasses).toContain('w-5')
     })
 
     it('verifies stat pill has whitespace-nowrap to prevent multi-line breaks', () => {
