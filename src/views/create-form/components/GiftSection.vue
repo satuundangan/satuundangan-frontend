@@ -94,6 +94,9 @@
         </div>
       </div>
 
+      <!-- Wishlist Kado Fisik & Gift Registry (Anti-Kado Kembar - SAT-68) -->
+      <GiftRegistryManager :invitationId="invitationId || formData.id" :formData="formData" />
+
       <div class="space-y-4">
         <label class="block text-mocha font-semibold">QRIS / E-Wallet</label>
         <div v-for="(wallet, index) in formData.eWalletLink" :key="`wallet-${index}`" class="relative space-y-3 rounded-xl border border-gray-300 bg-white p-4">
@@ -173,12 +176,14 @@
 
 <script setup>
 import { toRefs } from 'vue'
+import GiftRegistryManager from './GiftRegistryManager.vue'
 
 const props = defineProps({
   sections: { type: Object, required: true },
   foodList: { type: Array, required: true },
   giftAddresses: { type: Array, required: true },
   formData: { type: Object, required: true },
+  invitationId: { type: [Number, String], default: null },
 })
 
 const emit = defineEmits([

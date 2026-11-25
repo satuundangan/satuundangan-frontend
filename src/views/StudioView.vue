@@ -947,7 +947,7 @@
             <div v-if="activeTab === 'ekstra'" class="space-y-6">
               
               <!-- Gift / Envelope Details -->
-              <GiftSection :sections="sections" :formData="formData" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @wallet-crop="reopenCropperForWallet" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" @bank-crop="reopenCropperForBank" @qris-upload="handleQrisUpload" @qris-crop="reopenCropperForQris" @remove-qris="removeQris" />
+              <GiftSection :sections="sections" :formData="formData" :invitationId="currentInvitationId" :foodList="formData.foodList" :giftAddresses="formData.giftAddresses" @add-food="addFood" @remove-food="removeFood" @add-gift="addGiftAddress" @remove-gift="removeGiftAddress" @add-wallet="addWallet" @remove-wallet="removeWallet" @wallet-upload="handleWalletUpload" @wallet-crop="reopenCropperForWallet" @add-bank="addBank" @remove-bank="removeBank" @bank-upload="handleBankUpload" @bank-crop="reopenCropperForBank" @qris-upload="handleQrisUpload" @qris-crop="reopenCropperForQris" @remove-qris="removeQris" />
               
               <!-- Social Media Links -->
               <SocialSection v-if="sections.socialMedia || sections['live-streaming']" :formData="formData" />
@@ -1598,6 +1598,8 @@ const suggestedTitle = computed(() => {
 })
 
 const DEFAULT_QUOTE = "Dan di antara tanda-tanda (kebesaran)-Nya ialah Dia menciptakan pasangan-pasangan untukmu dari jenismu sendiri, agar kamu cenderung dan merasa tenteram kepadanya, dan Dia menjadikan di antaramu rasa kasih dan sayang. Sungguh, pada yang demikian itu benar-benar terdapat tanda-tanda (kebesaran Allah) bagi kaum yang berpikir. (QS. Ar-Rum: 21)"
+
+const currentInvitationId = computed(() => route.params?.id || localStorage.getItem('editInvitationId') || null)
 
 // Form State
 const formData = ref({
