@@ -899,7 +899,15 @@
                 <h3 class="text-sm font-black text-slate-900">Susunan Acara (Rundown) Hari H</h3>
                 <p class="text-[11px] text-slate-400">Jadwal detail akad dan resepsi agar acara berjalan tepat waktu</p>
               </div>
-              <div class="flex items-center gap-2">
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  @click="handleShareWoRundown"
+                  class="px-3.5 py-2 rounded-xl bg-stone-900 hover:bg-stone-800 text-white text-xs font-semibold transition-all flex items-center gap-1.5 cursor-pointer"
+                >
+                  <i class="fa-solid fa-share-nodes text-[11px]"></i>
+                  <span>Bagikan Link WO</span>
+                </button>
                 <button
                   type="button"
                   @click="openPrintRundownModal"
@@ -1435,7 +1443,12 @@ import { ref, computed, reactive, onMounted } from 'vue'
 import Sidebar from '@/components/dashboard/SidebarDashboard.vue'
 import Topbar from '@/components/dashboard/TopbarDashboard.vue'
 import BottomNav from '@/components/dashboard/BottomNav.vue'
-import { getWeddingPlanner, unlockWeddingPlanner, updateWeddingPlanner } from '@/api/weddingPlanner'
+import {
+  getWeddingPlanner,
+  unlockWeddingPlanner,
+  updateWeddingPlanner,
+  createRundownShareLink,
+} from '@/api/weddingPlanner'
 import { useAuthStore } from '@/stores/auth'
 import { useToast } from 'vue-toastification'
 import Swal from 'sweetalert2'
@@ -2230,6 +2243,26 @@ function fallbackPrintWindow(html) {
   } catch (e) {
     console.error('Fatal print error:', e)
     toast.error('Gagal membuka dialog cetak. Silakan periksa izin browser Anda.')
+  }
+}
+
+async function handleShareWoRundown() {
+  try {
+    const res = await createRundownShareLink()
+    const token = res?.rundownShareToken
+    if (!token) {
+      toast.error('Gagal membuat tautan rundown WO.')
+      return
+    }
+    const shareUrl = `${window.location.origin}/wo-rundown/${token}`
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(shareUrl)
+      toast.success('Tautan rundown teknis WO berhasil disalin ke clipboard.')
+    } else {
+      toast.success(`Tautan WO siap: ${shareUrl}`)
+    }
+  } catch (e) {
+    toast.error('Gagal membuat tautan WO: ' + (e.message || 'Terjadi kesalahan'))
   }
 }
 </script>

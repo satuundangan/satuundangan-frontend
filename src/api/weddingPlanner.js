@@ -18,3 +18,11 @@ export const resetWeddingPlanner = () =>
   apiFetch('/wedding-planner/reset', {
     method: 'POST',
   })
+
+export const createRundownShareLink = () =>
+  apiFetch('/wedding-planner/rundown-share', {
+    method: 'POST',
+  })
+
+export const getPublicWoRundown = (token) =>
+  apiFetch(`/wedding-planner/public/rundown/${encodeURIComponent(token)}`)

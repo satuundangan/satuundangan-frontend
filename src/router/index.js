@@ -435,6 +435,12 @@ const router = createRouter({
       meta: { title: 'Memory Wall' },
     },
     {
+      path: '/wo-rundown/:token',
+      name: 'PublicWoRundown',
+      component: () => import('@/views/PublicWoRundownView.vue'),
+      meta: { title: 'Technical Rundown Panitia' },
+    },
+    {
       path: '/:slug',
       name: 'invitation',
       component: Invitation,
