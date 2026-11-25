@@ -1144,6 +1144,62 @@
             </div>
           </div>
 
+          <!-- Playlist Request Lagu Resepsi (SAT-70) -->
+          <div class="bg-[#FAF8F5] border border-stone-200/80 rounded-2xl p-5 space-y-4">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <p class="text-[11px] uppercase tracking-[0.18em] text-stone-400 font-semibold">
+                  Playlist Resepsi Tamu
+                </p>
+                <h4 class="font-serif text-base text-stone-900">
+                  Rekap Request Lagu ({{ songPlaylist.totalRequests }} permintaan)
+                </h4>
+              </div>
+              <div v-if="songPlaylist.songs.length > 0" class="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  @click="copySongPlaylist"
+                  class="px-3 py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 text-xs font-medium transition-colors cursor-pointer"
+                >
+                  <i class="fa-regular fa-copy mr-1.5"></i>
+                  <span>Salin untuk Band / DJ</span>
+                </button>
+                <button
+                  type="button"
+                  @click="exportSongPlaylistCsv"
+                  class="px-3 py-1.5 rounded-lg bg-stone-900 hover:bg-stone-800 text-white text-xs font-medium transition-colors cursor-pointer"
+                >
+                  <i class="fa-solid fa-download mr-1.5"></i>
+                  <span>Export CSV</span>
+                </button>
+              </div>
+            </div>
+
+            <div v-if="songPlaylist.songs.length === 0" class="text-xs text-stone-500">
+              Belum ada request lagu dari tamu. Tamu dapat mengirimkan request lagu langsung melalui undangan digital.
+            </div>
+
+            <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              <div
+                v-for="(song, idx) in songPlaylist.songs"
+                :key="song.songRequest + idx"
+                class="bg-white border border-stone-200/80 rounded-xl px-3.5 py-2.5 flex items-center justify-between gap-3"
+              >
+                <div class="min-w-0">
+                  <p class="text-xs font-semibold text-stone-900 truncate">
+                    {{ song.songRequest }}
+                  </p>
+                  <p class="text-[11px] text-stone-500 truncate">
+                    Oleh: {{ song.guests.join(', ') || 'Tamu Undangan' }}
+                  </p>
+                </div>
+                <span class="shrink-0 px-2 py-0.5 rounded-md bg-stone-100 text-stone-700 text-[11px] font-semibold tabular-nums">
+                  {{ song.count }}x
+                </span>
+              </div>
+            </div>
+          </div>
+
           <div v-if="loadingMessages" class="flex flex-col items-center justify-center py-20 text-slate-400">
             <i class="fa-solid fa-circle-notch animate-spin text-3xl mb-3 text-[#a47148]"></i>
             <p class="text-xs font-bold">Memuat pesan ucapan...</p>
@@ -1779,7 +1835,11 @@ import Sidebar from "@/components/dashboard/SidebarDashboard.vue"
 import Topbar from "@/components/dashboard/TopbarDashboard.vue"
 import BottomNav from "@/components/dashboard/BottomNav.vue"
 import { getInvitations } from "@/api/invitation"
-import { getOwnerGuestMessagesByInvitationId, deleteGuestMessage } from "@/api/guestMessage"
+import {
+  getOwnerGuestMessagesByInvitationId,
+  getSongRequestsByInvitationId,
+  deleteGuestMessage,
+} from "@/api/guestMessage"
 import {
   getOwnerGuestPhotos,
   toggleGuestPhotoApproval,
@@ -1825,6 +1885,9 @@ const loadingMessages = ref(false)
 const guestPhotos = ref([])
 const loadingGuestPhotos = ref(false)
 const snapQrDataUrl = ref('')
+
+// Song Request Playlist (SAT-70)
+const songPlaylist = ref({ totalRequests: 0, songs: [], items: [] })
 const snapPortalUrl = computed(() => {
   if (!currentInvitationSlug.value || typeof window === 'undefined') return ''
   return `${window.location.origin}/snap/${currentInvitationSlug.value}`
@@ -2194,6 +2257,7 @@ watch(selectedInvitationId, async (newId) => {
     await Promise.all([
       fetchGuests(newId),
       fetchMessages(newId),
+      fetchSongPlaylist(newId),
       fetchGuestPhotos(newId),
       generateStandeeQr(),
       generateSnapQr(),
@@ -3067,6 +3131,55 @@ async function handleDeleteGuestPhoto(photo) {
     guestPhotos.value = prevList
     toast.error('Gagal menghapus foto: ' + (e.message || 'Terjadi kesalahan'))
   }
+}
+
+async function fetchSongPlaylist(invId) {
+  if (!invId) return
+  try {
+    const res = await getSongRequestsByInvitationId(invId)
+    const data = res?.data || res
+    if (data && Array.isArray(data.songs)) {
+      songPlaylist.value = {
+        totalRequests: data.totalRequests || 0,
+        songs: data.songs,
+        items: Array.isArray(data.items) ? data.items : [],
+      }
+    }
+  } catch {
+    songPlaylist.value = { totalRequests: 0, songs: [], items: [] }
+  }
+}
+
+async function copySongPlaylist() {
+  if (!songPlaylist.value.songs.length) return
+  const lines = songPlaylist.value.songs.map(
+    (s, i) => `${i + 1}. ${s.songRequest} (${s.count}x - ${s.guests.join(', ')})`,
+  )
+  try {
+    await navigator.clipboard.writeText(lines.join('\n'))
+    toast.success('Daftar playlist berhasil disalin untuk Band / DJ')
+  } catch {
+    toast.error('Gagal menyalin daftar playlist')
+  }
+}
+
+function exportSongPlaylistCsv() {
+  if (!songPlaylist.value.songs.length) return
+  const header = ['No', 'Judul Lagu & Artis', 'Jumlah Request', 'Diminta Oleh']
+  const rows = songPlaylist.value.songs.map((s, idx) => [
+    idx + 1,
+    `"${String(s.songRequest).replace(/"/g, '""')}"`,
+    s.count,
+    `"${s.guests.join(', ').replace(/"/g, '""')}"`,
+  ])
+  const csv = [header.join(','), ...rows.map((r) => r.join(','))].join('\n')
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.href = url
+  link.download = `playlist-resepsi-${currentInvitationSlug.value || 'undangan'}.csv`
+  link.click()
+  URL.revokeObjectURL(url)
 }
 </script>
 

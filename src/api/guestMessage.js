@@ -33,6 +33,12 @@ export const createGuestMessage = (data, legacyPayload) => {
     }
   }
 
+  if (typeof payload.songRequest === 'string') {
+    const cleanSong = payload.songRequest.trim().slice(0, 180)
+    if (cleanSong) payload.songRequest = cleanSong
+    else delete payload.songRequest
+  }
+
   return apiFetch('/guest-messages', {
     method: 'POST',
     body: JSON.stringify(payload),
@@ -46,6 +52,10 @@ export const getGuestMessagesByInvitationId = (invitationId) =>
 // Dashboard: owner/admin view with full records (needs login).
 export const getOwnerGuestMessagesByInvitationId = (invitationId) =>
   apiFetch(`/guest-messages/invitation/${invitationId}`)
+
+// Dashboard: aggregated guest song requests for Band / DJ playlist (SAT-70).
+export const getSongRequestsByInvitationId = (invitationId) =>
+  apiFetch(`/guest-messages/song-requests/${invitationId}`)
 
 export const deleteGuestMessage = (id) =>
   apiFetch(`/guest-messages/${id}`, {
