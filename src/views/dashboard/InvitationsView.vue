@@ -1,30 +1,30 @@
 <template>
-  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
+  <div class="flex h-screen bg-[#FAF8F5] overflow-hidden pb-20 md:pb-0 font-sans">
     <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" />
     
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
       <Topbar title="Undangan Saya" showButton @toggleSidebar="toggleSidebar" />
       
-      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar">
-        <!-- Header Page -->
-        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar max-w-6xl w-full mx-auto">
+        <!-- Editorial Header Page -->
+        <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-5 border-b border-stone-200/80">
           <div>
-            <div class="flex items-center gap-3">
-              <h2 class="text-xl md:text-2xl font-black text-slate-900 tracking-tight">Undangan Saya</h2>
+            <div class="flex items-center gap-2.5">
+              <h2 class="text-2xl md:text-3xl font-serif font-semibold text-stone-900 tracking-tight">Undangan Saya</h2>
               <button 
                 @click="showHelpModal = true" 
-                class="w-7 h-7 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs hover:bg-blue-100 transition-colors" 
+                class="w-7 h-7 rounded-lg bg-white border border-stone-200/80 text-stone-500 hover:text-stone-900 hover:border-stone-400 flex items-center justify-center text-xs transition-colors cursor-pointer" 
                 title="Panduan Penggunaan"
               >
                 <i class="fa-solid fa-circle-question"></i>
               </button>
             </div>
-            <p class="text-xs text-slate-400 mt-1">Kelola seluruh undangan digital yang telah kamu buat.</p>
+            <p class="text-xs md:text-sm text-stone-500 mt-1">Kelola seluruh undangan digital, statistik tamu, dan tautan publik.</p>
           </div>
 
           <router-link 
             to="/templates" 
-            class="inline-flex items-center gap-2 px-4 py-2 bg-[#a47148] text-white rounded-xl text-xs font-bold shadow-md shadow-[#a47148]/20 hover:bg-[#8e5e38] transition-all self-start sm:self-auto"
+            class="inline-flex items-center gap-2 px-4 py-2.5 bg-stone-900 text-white rounded-lg text-xs font-semibold hover:bg-stone-800 transition-colors self-start sm:self-auto"
           >
             <i class="fa-solid fa-plus text-[10px]"></i> Buat Baru
           </router-link>
@@ -36,32 +36,24 @@
             label="Total Undangan"
             :value="invitations.length"
             iconClass="fa-solid fa-layer-group"
-            color="bg-blue-50 text-blue-600"
-            class="cursor-pointer transition-transform hover:-translate-y-0.5"
             @click="activeFilter = 'all'"
           />
           <StatCard
             label="Undangan Aktif"
             :value="activeInvitationsCount"
             iconClass="fa-solid fa-circle-check"
-            color="bg-emerald-50 text-emerald-600"
-            class="cursor-pointer transition-transform hover:-translate-y-0.5"
             @click="activeFilter = 'published'"
           />
           <StatCard
             label="Menunggu Pembayaran / Draf"
             :value="pendingOrDraftCount"
             iconClass="fa-solid fa-clock"
-            color="bg-amber-50 text-amber-600"
-            class="cursor-pointer transition-transform hover:-translate-y-0.5"
             @click="activeFilter = activeFilter === 'pending' ? 'draft' : 'pending'"
           />
           <StatCard
             label="Tamu Terdaftar"
             :value="totalGuestsRegistered"
             iconClass="fa-solid fa-users"
-            color="bg-indigo-50 text-indigo-600"
-            class="transition-transform hover:-translate-y-0.5"
           />
         </div>
 
@@ -69,17 +61,17 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
           <!-- Search Input -->
           <div class="relative flex-1 max-w-md">
-            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-xs"></i>
             <input
               v-model="searchQuery"
               type="text"
               placeholder="Cari judul, slug, atau nama mempelai..."
-              class="w-full pl-9 pr-8 py-2 bg-white border border-slate-200 rounded-xl text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:border-[#a47148] focus:ring-1 focus:ring-[#a47148] shadow-2xs transition-all"
+              class="w-full pl-9 pr-8 py-2 bg-white border border-stone-200/90 rounded-lg text-xs text-stone-800 placeholder:text-stone-400 focus:outline-none focus:border-[#8f5e38] focus:ring-1 focus:ring-[#8f5e38]/30 transition-colors"
             />
             <button
               v-if="searchQuery"
               @click="searchQuery = ''"
-              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 p-1 text-xs"
+              class="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-700 p-1 text-xs cursor-pointer"
               title="Reset pencarian"
             >
               <i class="fa-solid fa-xmark"></i>
@@ -88,43 +80,43 @@
 
           <div class="flex items-center gap-2 flex-wrap">
             <!-- Filter Tabs -->
-            <div class="flex items-center overflow-x-auto p-1 bg-slate-100 rounded-xl text-xs font-bold text-slate-600 shrink-0">
+            <div class="flex items-center overflow-x-auto p-1 bg-stone-200/60 rounded-lg text-xs font-medium text-stone-600 shrink-0">
               <button 
                 @click="activeFilter = 'all'" 
-                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-                :class="activeFilter === 'all' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+                class="px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer tabular-nums"
+                :class="activeFilter === 'all' ? 'bg-white text-stone-900 font-semibold border border-stone-200/60' : 'hover:text-stone-900'"
               >
                 Semua ({{ invitations.length }})
               </button>
               <button 
                 @click="activeFilter = 'published'" 
-                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-                :class="activeFilter === 'published' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+                class="px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer tabular-nums"
+                :class="activeFilter === 'published' ? 'bg-white text-stone-900 font-semibold border border-stone-200/60' : 'hover:text-stone-900'"
               >
                 Aktif ({{ activeInvitationsCount }})
               </button>
               <button 
                 @click="activeFilter = 'pending'" 
-                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-                :class="activeFilter === 'pending' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+                class="px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer"
+                :class="activeFilter === 'pending' ? 'bg-white text-stone-900 font-semibold border border-stone-200/60' : 'hover:text-stone-900'"
               >
                 Menunggu Bayar
               </button>
               <button 
                 @click="activeFilter = 'draft'" 
-                class="px-3 py-1.5 rounded-lg transition-all whitespace-nowrap"
-                :class="activeFilter === 'draft' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'hover:text-slate-900'"
+                class="px-3 py-1.5 rounded-md transition-colors whitespace-nowrap cursor-pointer"
+                :class="activeFilter === 'draft' ? 'bg-white text-stone-900 font-semibold border border-stone-200/60' : 'hover:text-stone-900'"
               >
                 Draft
               </button>
             </div>
 
             <!-- View Mode Toggle (Table vs Card Grid) -->
-            <div class="hidden md:flex items-center gap-1 bg-slate-100 p-1 rounded-xl shrink-0 text-xs">
+            <div class="hidden md:flex items-center gap-1 bg-stone-200/60 p-1 rounded-lg shrink-0 text-xs">
               <button
                 @click="toggleViewMode('table')"
-                class="px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                :class="viewMode === 'table' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                class="px-2.5 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                :class="viewMode === 'table' ? 'bg-white text-stone-900 font-semibold border border-stone-200/60' : 'text-stone-500 hover:text-stone-900'"
                 title="Tampilan Tabel"
               >
                 <i class="fa-solid fa-table-list"></i>
@@ -132,8 +124,8 @@
               </button>
               <button
                 @click="toggleViewMode('grid')"
-                class="px-2.5 py-1.5 rounded-lg font-bold transition-all flex items-center gap-1.5 cursor-pointer"
-                :class="viewMode === 'grid' ? 'bg-white text-slate-900 shadow-2xs font-extrabold' : 'text-slate-500 hover:text-slate-900'"
+                class="px-2.5 py-1.5 rounded-md font-medium transition-colors flex items-center gap-1.5 cursor-pointer"
+                :class="viewMode === 'grid' ? 'bg-white text-stone-900 font-semibold border border-stone-200/60' : 'text-stone-500 hover:text-stone-900'"
                 title="Tampilan Kartu"
               >
                 <i class="fa-solid fa-table-cells-large"></i>

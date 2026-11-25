@@ -231,7 +231,7 @@
             </ol>
           </div>
           <div class="shoot-us">
-            <p class="shoot-us__title">📸 Capture Our Best Moment &amp; WIN 50K</p>
+            <p class="shoot-us__title"><i class="fa-solid fa-camera mr-1.5" aria-hidden="true"></i>Capture Our Best Moment &amp; WIN 50K</p>
             <p class="shoot-us__text">Silakan isi form ini di hari H</p>
             <a class="event-cta" :href="SHOOT_US_URL" target="_blank" rel="noopener noreferrer">
               Shoot Us <span aria-hidden="true">↗</span>

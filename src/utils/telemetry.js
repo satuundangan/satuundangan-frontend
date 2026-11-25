@@ -51,10 +51,10 @@ export function setTelemetryExcluded(excluded = true) {
   try {
     if (excluded) {
       localStorage.setItem(EXCLUDE_STORAGE_KEY, 'true')
-      console.info('[Telemetry] 🛡️ Developer Mode: Tracking DISABLED for this browser.')
+      console.info('[Telemetry] Developer Mode: Tracking DISABLED for this browser.')
     } else {
       localStorage.removeItem(EXCLUDE_STORAGE_KEY)
-      console.info('[Telemetry] 👁️ Tracking ENABLED for this browser.')
+      console.info('[Telemetry] Tracking ENABLED for this browser.')
     }
   } catch (e) {
     console.warn('[Telemetry] Storage error:', e)

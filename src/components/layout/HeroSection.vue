@@ -98,49 +98,47 @@
       <div class="relative flex justify-center items-center z-10 mt-10 md:mt-0 perspective-1000">
         <!-- Floating Elements -->
         <!-- Notification 1 -->
-        <div class="absolute top-1/4 -left-12 bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] animate-float-slow hidden lg:block z-20 border border-white/60 hover:scale-105 transition-transform duration-300 w-64 group">
-          <div class="flex items-center gap-4">
-            <div class="w-12 h-12 bg-gradient-to-br from-green-400 to-emerald-600 rounded-full flex items-center justify-center text-white text-lg shadow-inner group-hover:rotate-12 transition-transform duration-300">
-              <i class="pi pi-check text-base font-bold" aria-hidden="true"></i>
+        <div class="absolute top-1/4 -left-12 bg-white p-4 rounded-xl shadow-[0_12px_30px_-10px_rgba(28,25,23,0.12)] animate-float-slow hidden lg:block z-20 border border-stone-200/80 w-64">
+          <div class="flex items-center gap-3.5">
+            <div class="w-10 h-10 bg-emerald-700 rounded-lg flex items-center justify-center text-white text-sm shrink-0">
+              <i class="pi pi-check font-bold" aria-hidden="true"></i>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center mb-0.5">
-                 <p class="text-[10px] font-bold text-emerald-700 uppercase tracking-wider">Status RSVP</p>
-                 <span class="text-[9px] text-stone-600">Baru saja</span>
+                 <p class="text-[10px] font-semibold text-emerald-700 uppercase tracking-wider">Status RSVP</p>
+                 <span class="text-[10px] text-stone-400">Baru saja</span>
               </div>
-              <p class="text-sm font-bold text-dark leading-tight mb-0.5">Undangan Terkirim</p>
-              <p class="text-xs text-gray-500 truncate">Ke: Keluarga Bp. Budi</p>
+              <p class="text-sm font-semibold text-stone-900 leading-tight mb-0.5">Undangan Terkirim</p>
+              <p class="text-xs text-stone-500 truncate">Ke: Keluarga Bp. Budi</p>
             </div>
           </div>
         </div>
 
         <!-- Notification 2 -->
-        <div class="absolute bottom-1/4 -right-12 bg-white/90 backdrop-blur-xl p-4 rounded-2xl shadow-[0_20px_40px_-15px_rgba(0,0,0,0.15)] animate-float-delayed hidden lg:block z-30 border border-white/60 hover:scale-105 transition-transform duration-300 w-64 group">
-          <div class="flex items-center gap-4">
-            <div class="relative">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=96&h=96&q=70" alt="Avatar" width="48" height="48" loading="lazy" decoding="async" class="w-12 h-12 rounded-full border-2 border-white shadow-sm object-cover" />
-              <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-mocha rounded-full border-2 border-white flex items-center justify-center text-white text-[8px]">
-                <i class="pi pi-heart-fill text-[8px]" aria-hidden="true"></i>
+        <div class="absolute bottom-1/4 -right-12 bg-white p-4 rounded-xl shadow-[0_12px_30px_-10px_rgba(28,25,23,0.12)] animate-float-delayed hidden lg:block z-30 border border-stone-200/80 w-64">
+          <div class="flex items-center gap-3.5">
+            <div class="relative shrink-0">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=96&h=96&q=70" alt="Avatar" width="44" height="44" loading="lazy" decoding="async" class="w-11 h-11 rounded-full border border-stone-200 object-cover" />
+              <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-[#8f5e38] rounded-full border-2 border-white flex items-center justify-center text-white text-[8px]">
+                <i class="pi pi-heart-fill text-[7px]" aria-hidden="true"></i>
               </div>
             </div>
-            <div class="flex-1">
+            <div class="flex-1 min-w-0">
               <div class="flex justify-between items-center mb-0.5">
-                 <p class="text-[10px] font-bold text-[#7d512a] uppercase tracking-wider">Pesan Baru</p>
-                 <span class="text-[9px] text-stone-600">2m lalu</span>
+                 <p class="text-[10px] font-semibold text-[#8f5e38] uppercase tracking-wider">Pesan Baru</p>
+                 <span class="text-[10px] text-stone-400">2m lalu</span>
               </div>
-              <p class="text-sm font-bold text-dark leading-tight mb-0.5 flex items-center">
+              <p class="text-sm font-semibold text-stone-900 leading-tight mb-0.5 flex items-center">
                 <span>"Happy Wedding!"</span>
                 <i class="pi pi-heart-fill text-rose-500 text-xs ml-1" aria-hidden="true"></i>
               </p>
-              <p class="text-xs text-gray-500 truncate">Dari: Nabila (Sahabat)</p>
+              <p class="text-xs text-stone-500 truncate">Dari: Nabila (Sahabat)</p>
             </div>
           </div>
         </div>
 
         <!-- Phone Frame -->
-        <div class="relative w-[300px] h-[600px] bg-dark rounded-[3rem] shadow-2xl border-[8px] border-dark overflow-hidden transform rotate-[-3deg] hover:rotate-0 transition-all duration-700 ring-2 ring-gray-800/50 group z-10">
-          <!-- Screen Glare Reflection -->
-          <div class="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0 z-30 pointer-events-none transform -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-1000 ease-in-out"></div>
+        <div class="relative w-[300px] h-[600px] bg-stone-900 rounded-[3rem] shadow-2xl border-[8px] border-stone-900 overflow-hidden ring-1 ring-stone-800 z-10">
           
           <!-- Modern Notch (Dynamic Island) -->
           <div class="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-black rounded-full z-20 flex items-center justify-between px-3 shadow-inner">

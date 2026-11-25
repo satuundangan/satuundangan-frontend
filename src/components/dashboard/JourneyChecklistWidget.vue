@@ -1,36 +1,32 @@
 <template>
   <div 
     data-tour="dashboard-journey-checklist"
-    class="bg-white rounded-2xl md:rounded-3xl border border-amber-100/90 p-5 md:p-6 shadow-xs relative overflow-hidden transition-all duration-300"
-    :class="{ 'ring-1 ring-amber-200/50': !isCollapsed && progressPercentage < 100 }"
+    class="bg-white rounded-xl border border-stone-200/80 p-5 md:p-6 relative transition-colors duration-200"
   >
-    <!-- Background subtle decoration -->
-    <div class="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-amber-100/40 to-transparent pointer-events-none blur-xl"></div>
-
     <!-- Header Section -->
     <div class="relative z-10 flex flex-col gap-4">
       <div class="flex items-start justify-between gap-3">
         <div class="flex items-center gap-3.5 min-w-0">
           <div 
-            class="w-10 h-10 rounded-2xl flex items-center justify-center shrink-0 shadow-xs transition-colors"
-            :class="progressPercentage === 100 ? 'bg-emerald-50 text-emerald-600 border border-emerald-200/60' : 'bg-gradient-to-br from-amber-50 to-amber-100 text-[#a47148] border border-amber-200/60'"
+            class="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 border transition-colors"
+            :class="progressPercentage === 100 ? 'bg-emerald-50 text-emerald-700 border-emerald-200/80' : 'bg-stone-100 text-[#8f5e38] border-stone-200/80'"
           >
-            <i :class="progressPercentage === 100 ? 'fa-solid fa-circle-check text-lg' : 'fa-solid fa-list-check text-base'"></i>
+            <i :class="progressPercentage === 100 ? 'fa-solid fa-circle-check text-base' : 'fa-solid fa-list-check text-sm'"></i>
           </div>
 
           <div class="min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <h3 class="text-sm md:text-base font-extrabold text-slate-900 tracking-tight">
+              <h3 class="text-sm md:text-base font-semibold text-stone-900 tracking-tight">
                 Panduan Persiapan Undangan
               </h3>
               <span 
-                class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider border transition-colors"
+                class="px-2 py-0.5 rounded-md text-[11px] font-semibold border transition-colors tabular-nums"
                 :class="progressBadgeClass"
               >
                 {{ completedCount }}/{{ steps.length }} Selesai
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-0.5 line-clamp-1">
+            <p class="text-xs text-stone-500 mt-0.5 line-clamp-1">
               {{ motivationMessage }}
             </p>
           </div>
@@ -39,38 +35,38 @@
         <!-- Action / Toggle Controls -->
         <div class="flex items-center gap-2 shrink-0">
           <div class="text-right hidden sm:block">
-            <span class="text-xs font-black text-slate-800">{{ progressPercentage }}%</span>
-            <span class="text-[10px] text-slate-400 block font-medium">Progres</span>
+            <span class="text-xs font-semibold text-stone-800 tabular-nums">{{ progressPercentage }}%</span>
+            <span class="text-[11px] text-stone-400 block">Progres</span>
           </div>
 
           <button 
             type="button"
             data-test="collapse-btn"
             @click="toggleCollapse"
-            class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-all"
+            class="p-2 text-stone-400 hover:text-stone-800 hover:bg-stone-100 rounded-lg transition-colors cursor-pointer"
             :title="isCollapsed ? 'Buka panduan langkah' : 'Ciutkan panduan langkah'"
             :aria-label="isCollapsed ? 'Buka panduan langkah' : 'Ciutkan panduan langkah'"
           >
             <i 
-              class="fa-solid fa-chevron-up text-xs transition-transform duration-300"
+              class="fa-solid fa-chevron-up text-xs transition-transform duration-200"
               :class="{ 'rotate-180': isCollapsed }"
             ></i>
           </button>
         </div>
       </div>
 
-      <!-- Linear Progress Bar -->
+      <!-- Linear Progress Bar (Solid Matte Color, Zero Gradient Slop) -->
       <div class="space-y-1">
-        <div class="h-2 w-full bg-slate-100 rounded-full overflow-hidden flex items-center p-0.5">
+        <div class="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden flex items-center">
           <div 
-            class="h-full rounded-full transition-all duration-700 ease-out"
-            :class="progressPercentage === 100 ? 'bg-emerald-500' : 'bg-gradient-to-r from-amber-500 via-[#a47148] to-emerald-500'"
+            class="h-full rounded-full transition-all duration-500 ease-out"
+            :class="progressPercentage === 100 ? 'bg-emerald-600' : 'bg-[#8f5e38]'"
             :style="{ width: `${progressPercentage}%` }"
           ></div>
         </div>
-        <div class="flex justify-between items-center text-[10px] text-slate-400 sm:hidden">
+        <div class="flex justify-between items-center text-[11px] text-stone-400 sm:hidden">
           <span>Progres Anda</span>
-          <span class="font-bold text-slate-700">{{ progressPercentage }}%</span>
+          <span class="font-semibold text-stone-700 tabular-nums">{{ progressPercentage }}%</span>
         </div>
       </div>
     </div>
@@ -84,31 +80,31 @@
       <div 
         v-for="(step, index) in steps" 
         :key="step.id"
-        class="rounded-2xl p-4 transition-all flex flex-col justify-between border"
+        class="rounded-xl p-4 transition-colors flex flex-col justify-between border"
         :class="getStepCardClass(step, index)"
       >
         <div>
           <!-- Step Top Header -->
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="text-[10px] font-black uppercase tracking-wider" :class="step.completed ? 'text-emerald-700' : isCurrentStep(index) ? 'text-amber-800' : 'text-slate-400'">
+          <div class="flex items-center justify-between gap-2 mb-2.5">
+            <span class="text-[11px] font-semibold" :class="step.completed ? 'text-emerald-700' : isCurrentStep(index) ? 'text-[#8f5e38]' : 'text-stone-400'">
               Langkah {{ index + 1 }}
             </span>
             
             <div 
-              class="w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0 transition-transform"
-              :class="step.completed ? 'bg-emerald-600 text-white' : isCurrentStep(index) ? 'bg-amber-600 text-white shadow-xs' : 'bg-slate-200 text-slate-500'"
+              class="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-semibold shrink-0 tabular-nums"
+              :class="step.completed ? 'bg-emerald-600 text-white' : isCurrentStep(index) ? 'bg-stone-900 text-white' : 'bg-stone-200 text-stone-600'"
             >
-              <i v-if="step.completed" class="fa-solid fa-check text-[11px]"></i>
+              <i v-if="step.completed" class="fa-solid fa-check text-[10px]"></i>
               <span v-else>{{ index + 1 }}</span>
             </div>
           </div>
 
           <!-- Step Title & Description -->
-          <h4 class="text-xs font-bold text-slate-900 mb-1 flex items-center gap-1.5">
-            <i :class="[step.icon, step.completed ? 'text-emerald-600' : 'text-slate-400']" class="text-[11px]"></i>
+          <h4 class="text-xs font-semibold text-stone-900 mb-1 flex items-center gap-1.5">
+            <i :class="[step.icon, step.completed ? 'text-emerald-600' : 'text-stone-400']" class="text-[11px]"></i>
             <span>{{ step.title }}</span>
           </h4>
-          <p class="text-[11px] leading-relaxed mb-3" :class="step.completed ? 'text-emerald-700/90 font-medium' : 'text-slate-500'">
+          <p class="text-[11px] leading-relaxed mb-3" :class="step.completed ? 'text-emerald-800/90' : 'text-stone-500'">
             {{ step.statusText }}
           </p>
         </div>
@@ -116,7 +112,7 @@
         <!-- Action Button -->
         <router-link 
           :to="step.actionTo" 
-          class="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-xl text-xs font-bold transition-all text-center"
+          class="inline-flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg text-xs font-medium transition-colors text-center"
           :class="getStepButtonClass(step, index)"
         >
           <span>{{ step.actionLabel }}</span>
@@ -266,7 +262,7 @@ const progressPercentage = computed(() => {
 const motivationMessage = computed(() => {
   const pct = progressPercentage.value
   if (pct === 100) {
-    return 'Luar biasa! Undangan digitalmu siap disebarkan ke keluarga dan sahabat 🎉'
+    return 'Luar biasa! Undangan digitalmu siap disebarkan ke keluarga dan sahabat.'
   }
   if (pct >= 75) {
     return 'Hampir selesai! Tambahkan daftar tamu terdekat untuk disapa via WhatsApp.'
@@ -285,9 +281,9 @@ const progressBadgeClass = computed(() => {
     return 'bg-emerald-50 text-emerald-700 border-emerald-200'
   }
   if (completedCount.value > 0) {
-    return 'bg-amber-50 text-amber-700 border-amber-200'
+    return 'bg-stone-100 text-[#8f5e38] border-stone-200'
   }
-  return 'bg-slate-100 text-slate-500 border-slate-200'
+  return 'bg-stone-100 text-stone-500 border-stone-200'
 })
 
 function isCurrentStep(index) {
@@ -298,12 +294,12 @@ function isCurrentStep(index) {
 
 function getStepCardClass(step, index) {
   if (step.completed) {
-    return 'bg-emerald-50/40 border-emerald-100/90'
+    return 'bg-emerald-50/40 border-emerald-200/60'
   }
   if (isCurrentStep(index)) {
-    return 'bg-amber-50/50 border-amber-300 ring-2 ring-amber-500/10 shadow-xs'
+    return 'bg-[#FAF8F5] border-[#a47148]/60'
   }
-  return 'bg-slate-50/50 border-slate-100'
+  return 'bg-stone-50/60 border-stone-200/70'
 }
 
 function getStepButtonClass(step, index) {
@@ -311,9 +307,9 @@ function getStepButtonClass(step, index) {
     return 'bg-emerald-100/70 hover:bg-emerald-200/80 text-emerald-800'
   }
   if (isCurrentStep(index)) {
-    return 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs'
+    return 'bg-stone-900 hover:bg-stone-800 text-white'
   }
-  return 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200/80'
+  return 'bg-white hover:bg-stone-100 text-stone-700 border border-stone-200/80'
 }
 
 function toggleCollapse() {

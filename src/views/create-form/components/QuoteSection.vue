@@ -70,7 +70,7 @@
                   ? 'bg-mocha text-white border-mocha shadow-sm'
                   : 'bg-white text-gray-600 border-gray-200 hover:border-mocha/30 hover:bg-mocha/5'"
               >
-                <span>{{ cat.icon }}</span>
+                <i :class="cat.icon" class="text-[11px]" aria-hidden="true"></i>
                 <span>{{ cat.name }}</span>
               </button>
             </div>

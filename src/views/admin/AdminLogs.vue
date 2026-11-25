@@ -476,9 +476,9 @@ function toggleExcludeCurrentBrowser() {
   const next = !isExcluded.value
   isExcluded.value = setTelemetryExcluded(next)
   if (isExcluded.value) {
-    toast.success('🛡️ Mode Dev Aktif: Browser Anda tidak akan tercatat di log!')
+    toast.success('Mode Dev Aktif: Browser Anda tidak akan tercatat di log')
   } else {
-    toast.info('👁️ Tracking Aktif: Aktivitas browser Anda kembali dicatat di log.')
+    toast.info('Tracking Aktif: Aktivitas browser Anda kembali dicatat di log')
   }
 }
 

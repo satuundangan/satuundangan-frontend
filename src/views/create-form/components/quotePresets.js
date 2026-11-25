@@ -5,12 +5,12 @@
 export const DEFAULT_RELIGION = 'islam'
 
 export const RELIGIONS = [
-  { id: 'islam', name: 'Islam', icon: '🕌' },
-  { id: 'kristen', name: 'Kristen', icon: '⛪' },
-  { id: 'katolik', name: 'Katolik', icon: '✝️' },
-  { id: 'hindu', name: 'Hindu', icon: '🕉️' },
-  { id: 'budha', name: 'Buddha', icon: '☸️' },
-  { id: 'umum', name: 'Umum', icon: '📜' },
+  { id: 'islam', name: 'Islam', icon: 'fa-solid fa-mosque' },
+  { id: 'kristen', name: 'Kristen', icon: 'fa-solid fa-church' },
+  { id: 'katolik', name: 'Katolik', icon: 'fa-solid fa-cross' },
+  { id: 'hindu', name: 'Hindu', icon: 'fa-solid fa-om' },
+  { id: 'budha', name: 'Buddha', icon: 'fa-solid fa-dharmachakra' },
+  { id: 'umum', name: 'Umum', icon: 'fa-solid fa-scroll' },
 ]
 
 export const RELIGION_IDS = RELIGIONS.map((r) => r.id)

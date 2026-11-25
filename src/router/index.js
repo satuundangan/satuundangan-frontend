@@ -429,6 +429,18 @@ const router = createRouter({
       component: () => import('@/views/LiveScreenView.vue'),
     },
     {
+      path: '/snap/:slug',
+      name: 'GuestPhotoUpload',
+      component: () => import('@/views/GuestPhotoUploadView.vue'),
+      meta: { title: 'Memory Wall' },
+    },
+    {
+      path: '/wo-rundown/:token',
+      name: 'PublicWoRundown',
+      component: () => import('@/views/PublicWoRundownView.vue'),
+      meta: { title: 'Technical Rundown Panitia' },
+    },
+    {
       path: '/:slug',
       name: 'invitation',
       component: Invitation,

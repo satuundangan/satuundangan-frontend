@@ -179,10 +179,10 @@
           class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
         >
           <option value="all">Semua Status Bayar</option>
-          <option value="success">✅ Sukses (Lunas)</option>
-          <option value="pending">⏳ Menunggu Pembayaran</option>
-          <option value="failed">❌ Gagal / Batal</option>
-          <option value="expired">🕰️ Expired</option>
+          <option value="success">Sukses (Lunas)</option>
+          <option value="pending">Menunggu Pembayaran</option>
+          <option value="failed">Gagal / Batal</option>
+          <option value="expired">Expired</option>
         </select>
 
         <!-- Filter Purpose / Tujuan -->
@@ -193,8 +193,8 @@
           class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
         >
           <option value="all">Semua Tujuan</option>
-          <option value="invitation">💍 Undangan Pernikahan</option>
-          <option value="ai_credits">✨ Topup Kredit AI Nova</option>
+          <option value="invitation">Undangan Pernikahan</option>
+          <option value="ai_credits">Topup Kredit AI Nova</option>
         </select>
 
         <!-- Filter Paket -->

@@ -1004,6 +1004,103 @@
                     </label>
                   </div>
                 </div>
+
+                <!-- Mini Trivia Quiz Pengantin (SAT-70) -->
+                <div class="pt-4 border-t border-gray-100 space-y-4">
+                  <div class="flex items-center justify-between gap-3">
+                    <div>
+                      <span class="text-xs font-bold block text-dark">Mini Trivia Quiz Pengantin</span>
+                      <span class="text-[10px] text-slate-400">Kuis interaktif 3-5 pertanyaan seru seputar perjalanan cinta Anda</span>
+                    </div>
+                    <label class="relative inline-flex items-center cursor-pointer select-none">
+                      <input
+                        type="checkbox"
+                        v-model="formData.designSettings.triviaQuiz.enabled"
+                        @change="onToggleTriviaQuiz"
+                        class="sr-only peer"
+                      />
+                      <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-mocha"></div>
+                    </label>
+                  </div>
+
+                  <div v-if="formData.designSettings.triviaQuiz?.enabled" class="space-y-3 rounded-2xl border border-stone-200/80 bg-[#FAF8F5] p-4">
+                    <div class="flex flex-wrap items-center justify-between gap-2">
+                      <input
+                        v-model="formData.designSettings.triviaQuiz.title"
+                        type="text"
+                        placeholder="Judul kuis (cth: Seberapa Kenal Kamu dengan Kami?)"
+                        class="flex-1 min-w-[200px] rounded-xl border border-stone-200 bg-white px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-stone-500"
+                      />
+                      <button
+                        type="button"
+                        @click="applyDefaultTriviaPreset"
+                        class="px-3 py-2 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-700 text-[11px] font-semibold cursor-pointer"
+                      >
+                        Isi 3 Pertanyaan Contoh
+                      </button>
+                    </div>
+
+                    <div
+                      v-for="(q, qIdx) in formData.designSettings.triviaQuiz.questions"
+                      :key="qIdx"
+                      class="rounded-xl border border-stone-200 bg-white p-3.5 space-y-2.5"
+                    >
+                      <div class="flex items-center justify-between gap-2">
+                        <span class="text-[11px] font-semibold text-stone-500 tabular-nums">Pertanyaan {{ qIdx + 1 }}</span>
+                        <button
+                          type="button"
+                          @click="removeTriviaQuestion(qIdx)"
+                          class="text-[11px] text-rose-600 hover:underline cursor-pointer"
+                        >
+                          Hapus
+                        </button>
+                      </div>
+                      <input
+                        v-model="q.question"
+                        type="text"
+                        placeholder="Tulis pertanyaan..."
+                        class="w-full rounded-lg border border-stone-200 px-3 py-2 text-xs text-stone-800 focus:outline-none focus:border-stone-500"
+                      />
+                      <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                        <div
+                          v-for="(_, oIdx) in q.options"
+                          :key="oIdx"
+                          class="flex items-center gap-1.5"
+                        >
+                          <input
+                            type="radio"
+                            :name="`trivia-correct-${qIdx}`"
+                            :checked="q.correctIndex === oIdx"
+                            @change="q.correctIndex = oIdx"
+                            title="Tandai sebagai jawaban benar"
+                            class="cursor-pointer"
+                          />
+                          <input
+                            v-model="q.options[oIdx]"
+                            type="text"
+                            :placeholder="`Opsi ${oIdx + 1}`"
+                            class="w-full rounded-lg border border-stone-200 px-2.5 py-1.5 text-xs text-stone-800 focus:outline-none focus:border-stone-500"
+                          />
+                        </div>
+                      </div>
+                      <input
+                        v-model="q.funFact"
+                        type="text"
+                        placeholder="Fakta seru setelah dijawab (opsional)"
+                        class="w-full rounded-lg border border-stone-200 px-3 py-1.5 text-[11px] text-stone-600 focus:outline-none focus:border-stone-500"
+                      />
+                    </div>
+
+                    <button
+                      v-if="(formData.designSettings.triviaQuiz.questions || []).length < 5"
+                      type="button"
+                      @click="addTriviaQuestion"
+                      class="w-full py-2 rounded-xl border border-dashed border-stone-300 text-xs font-medium text-stone-600 hover:border-stone-500 hover:text-stone-900 transition-colors cursor-pointer"
+                    >
+                      + Tambah Pertanyaan (Maks. 5)
+                    </button>
+                  </div>
+                </div>
               </div>
 
               <!-- Custom Subdomain (Tier Eksklusif only) -->
@@ -1617,6 +1714,11 @@ const formData = ref({
     hideRundown: false,
     dressCodeColors: [],
     qrisImageUrl: '',
+    triviaQuiz: {
+      enabled: false,
+      title: 'Seberapa Kenal Kamu dengan Kami?',
+      questions: [],
+    },
   },
   gallery: [], isSingleEvent: null, dateTime: '', map: '', mapDesc: '',
   akadDateTime: '', akadMap: '', akadDesc: '', resepsiDateTime: '', resepsiMap: '', resepsiDesc: '',
@@ -1654,6 +1756,62 @@ const formData = ref({
   wishesState: true,
   rsvpState: true
 })
+
+function applyDefaultTriviaPreset() {
+  if (!formData.value.designSettings.triviaQuiz) {
+    formData.value.designSettings.triviaQuiz = {
+      enabled: true,
+      title: 'Seberapa Kenal Kamu dengan Kami?',
+      questions: [],
+    }
+  }
+  formData.value.designSettings.triviaQuiz.questions = [
+    {
+      question: 'Siapa yang menyatakan perasaan duluan?',
+      options: ['Mempelai Pria', 'Mempelai Wanita', 'Sama-sama kode keras'],
+      correctIndex: 0,
+      funFact: 'Momen ini terjadi setelah pulang makan malam bersama.',
+    },
+    {
+      question: 'Berapa lama kami berpacaran sebelum memutuskan menikah?',
+      options: ['Kurang dari 1 tahun', '2 - 3 tahun', 'Lebih dari 4 tahun'],
+      correctIndex: 1,
+      funFact: 'Waktu yang cukup untuk saling mengenal keluarga masing-masing.',
+    },
+    {
+      question: 'Di mana destinasi liburan impian kami setelah menikah?',
+      options: ['Bali / Labuan Bajo', 'Jepang', 'Eropa'],
+      correctIndex: 1,
+      funFact: 'Kami sudah menyusun daftar kuliner yang wajib dicoba di sana.',
+    },
+  ]
+}
+
+function onToggleTriviaQuiz() {
+  const quiz = formData.value.designSettings.triviaQuiz
+  if (quiz?.enabled && (!Array.isArray(quiz.questions) || quiz.questions.length === 0)) {
+    applyDefaultTriviaPreset()
+  }
+}
+
+function addTriviaQuestion() {
+  const quiz = formData.value.designSettings.triviaQuiz
+  if (!quiz) return
+  if (!Array.isArray(quiz.questions)) quiz.questions = []
+  if (quiz.questions.length >= 5) return
+  quiz.questions.push({
+    question: '',
+    options: ['', '', ''],
+    correctIndex: 0,
+    funFact: '',
+  })
+}
+
+function removeTriviaQuestion(idx) {
+  const quiz = formData.value.designSettings.triviaQuiz
+  if (!quiz?.questions) return
+  quiz.questions.splice(idx, 1)
+}
 
 const isTiaraNoirInvitation = computed(
   () => formData.value.slug === 'refda-tiara' || selectedTemplate.value.slug === 'refda-tiara-noir',
@@ -1930,6 +2088,7 @@ const syncDataToPreview = (data = formData.value) => {
           hideRundown: !!data.designSettings?.hideRundown,
           dressCodeColors: data.designSettings?.dressCodeColors || [],
           qrisImageUrl: data.qrisImageUrl || data.qrisImage || data.designSettings?.qrisImageUrl || '',
+          triviaQuiz: data.designSettings?.triviaQuiz || { enabled: false, title: 'Seberapa Kenal Kamu dengan Kami?', questions: [] },
         },
         selectedSections: getCanonicalSelectedSections()
       }
@@ -2331,6 +2490,12 @@ function mapPayloadToFormData(payload) {
      hideRundown: false,
      dressCodeColors: [],
      ...(payload.designSettings || content.designSettings || {}),
+     triviaQuiz: {
+       enabled: false,
+       title: 'Seberapa Kenal Kamu dengan Kami?',
+       questions: [],
+       ...((payload.designSettings || content.designSettings || {})?.triviaQuiz || {}),
+     },
      backgroundFile: null,
    }
    noirBackgroundPreview.value = formData.value.designSettings.backgroundUrl || ''

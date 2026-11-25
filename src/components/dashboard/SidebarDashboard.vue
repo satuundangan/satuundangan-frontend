@@ -10,22 +10,22 @@
     </Transition>
 
     <aside :class="[
-      'bg-white border-r border-slate-100 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64 select-none',
-      isOpen ? 'translate-x-0 shadow-2xl md:shadow-none' : '-translate-x-full'
+      'bg-white border-r border-stone-200/80 flex flex-col h-screen fixed left-0 top-0 z-50 transition-transform duration-300 ease-in-out w-64 select-none',
+      isOpen ? 'translate-x-0 shadow-xl md:shadow-none' : '-translate-x-full'
     ]">
       <!-- Brand Logo Header -->
-      <div class="p-5 border-b border-slate-100/80 flex items-center justify-between">
+      <div class="p-5 border-b border-stone-100 flex items-center justify-between">
         <router-link to="/" class="flex items-center gap-3 group">
-          <div class="w-9 h-9 bg-[#a47148] text-white rounded-xl flex items-center justify-center font-extrabold text-sm shadow-md shadow-[#a47148]/20 group-hover:scale-105 transition-transform">
+          <div class="w-8 h-8 bg-[#8f5e38] text-white rounded-lg flex items-center justify-center font-serif font-bold text-sm">
             S
           </div>
           <div>
-            <span class="font-black text-sm text-slate-900 tracking-tight block">SatuUndangan</span>
-            <span class="text-[9px] font-bold text-[#a47148] uppercase tracking-widest block -mt-0.5">User Portal</span>
+            <span class="font-semibold text-sm text-stone-900 tracking-tight block">SatuUndangan</span>
+            <span class="text-[10px] font-medium text-stone-400 block -mt-0.5">Ruang Kerja</span>
           </div>
         </router-link>
         
-        <button @click="$emit('close')" class="md:hidden p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-50 rounded-lg transition-colors">
+        <button @click="$emit('close')" class="md:hidden p-2 text-stone-400 hover:text-stone-700 hover:bg-stone-50 rounded-lg transition-colors">
           <i class="fa-solid fa-xmark text-lg"></i>
         </button>
       </div>
@@ -33,21 +33,21 @@
       <!-- Main Navigation Menu -->
       <nav class="flex-1 overflow-y-auto py-5 px-3 custom-scrollbar space-y-6">
         <div>
-          <span class="px-3 text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Navigasi Utama</span>
+          <span class="px-3 text-[11px] font-medium text-stone-400 block mb-2">Menu</span>
           <ul class="space-y-1">
             <li v-for="item in primaryMenu" :key="item.name">
               <router-link 
                 :to="item.to" 
                 @click="handleNavClick"
-                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-150 group relative text-xs font-medium"
                 :class="route.path === item.to || (route.path.startsWith(item.to) && item.to !== '/dashboard')
-                  ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
-                  : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
+                  ? 'bg-stone-900 text-white font-semibold' 
+                  : 'text-stone-600 hover:bg-stone-100/80 hover:text-stone-900'"
               >
-                <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
-                  route.path === item.to || (route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
+                <i :class="['fa-solid', item.icon, 'text-xs w-4 text-center transition-colors', 
+                  route.path === item.to || (route.path.startsWith(item.to) && item.to !== '/dashboard') ? 'text-white' : 'text-stone-400 group-hover:text-stone-700']"></i>
                 <span>{{ item.name }}</span>
-                <span v-if="item.badge" class="ml-auto px-1.5 py-0.5 text-[9px] font-extrabold rounded-md bg-amber-100 text-amber-800">
+                <span v-if="item.badge" class="ml-auto px-1.5 py-0.5 text-[10px] font-semibold rounded bg-amber-100 text-amber-800">
                   {{ item.badge }}
                 </span>
               </router-link>
@@ -56,19 +56,19 @@
         </div>
 
         <div>
-          <span class="px-3 text-[10px] font-black uppercase tracking-wider text-slate-400 block mb-2">Akun & Pengaturan</span>
+          <span class="px-3 text-[11px] font-medium text-stone-400 block mb-2">Akun</span>
           <ul class="space-y-1">
             <li v-for="item in secondaryMenu" :key="item.name">
               <router-link 
                 :to="item.to" 
                 @click="handleNavClick"
-                class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl transition-all duration-200 group relative text-xs font-semibold"
+                class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors duration-150 group relative text-xs font-medium"
                 :class="route.path === item.to 
-                  ? 'bg-[#a47148] text-white font-bold shadow-md shadow-[#a47148]/20' 
-                  : 'text-slate-600 hover:bg-amber-50/60 hover:text-[#a47148]'"
+                  ? 'bg-stone-900 text-white font-semibold' 
+                  : 'text-stone-600 hover:bg-stone-100/80 hover:text-stone-900'"
               >
-                <i :class="['fa-solid', item.icon, 'text-sm w-5 transition-transform duration-200 group-hover:scale-110', 
-                  route.path === item.to ? 'text-white' : 'text-slate-400 group-hover:text-[#a47148]']"></i>
+                <i :class="['fa-solid', item.icon, 'text-xs w-4 text-center transition-colors', 
+                  route.path === item.to ? 'text-white' : 'text-stone-400 group-hover:text-stone-700']"></i>
                 <span>{{ item.name }}</span>
               </router-link>
             </li>
@@ -77,21 +77,21 @@
       </nav>
 
       <!-- User Profile & Logout Bottom Card -->
-      <div class="p-3 border-t border-slate-100 bg-slate-50/50">
-        <div class="p-3 rounded-2xl bg-white border border-slate-100 shadow-sm flex items-center justify-between gap-3">
+      <div class="p-3 border-t border-stone-100 bg-[#FAF8F5]">
+        <div class="p-2.5 rounded-lg bg-white border border-stone-200/80 flex items-center justify-between gap-2.5">
           <div class="flex items-center gap-2.5 min-w-0">
-            <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-[#a47148] to-[#c89f68] text-white flex items-center justify-center font-bold text-xs shrink-0 shadow-xs">
+            <div class="w-8 h-8 rounded-lg bg-stone-900 text-white flex items-center justify-center font-semibold text-xs shrink-0">
               {{ userInitial }}
             </div>
             <div class="min-w-0">
-              <span class="text-xs font-bold text-slate-900 truncate block">{{ userName }}</span>
-              <span class="text-[9px] text-slate-400 truncate block">{{ userEmail }}</span>
+              <span class="text-xs font-semibold text-stone-900 truncate block">{{ userName }}</span>
+              <span class="text-[10px] text-stone-400 truncate block">{{ userEmail }}</span>
             </div>
           </div>
 
           <button 
             @click="handleLogout" 
-            class="w-8 h-8 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors shrink-0" 
+            class="w-7 h-7 rounded-lg text-stone-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors shrink-0 cursor-pointer" 
             title="Keluar / Logout"
           >
             <i class="fa-solid fa-right-from-bracket text-xs"></i>

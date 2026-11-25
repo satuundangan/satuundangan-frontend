@@ -7,6 +7,7 @@ import {
   getCustomSubdomain,
 } from '@/api/invitation'
 import { getTemplateDesignBySlug } from '@/api/templateDesign'
+import GuestTriviaAndSongDock from '@/components/invitation/GuestTriviaAndSongDock.vue'
 import { analytics } from '@/api/analytics'
 import { featuresFor } from '@/config/packageFeatures'
 import {
@@ -881,6 +882,12 @@ function getLocalPreviewPayload(slug) {
       >
         <component :is="TemplateComponent" :data="invitationData" />
       </div>
+
+      <!-- Interactive Guest Engagement Dock: Mini Trivia & Song Request (SAT-70) -->
+      <GuestTriviaAndSongDock
+        :invitation="invitationData"
+        :is-demo="isDemoMode"
+      />
 
       <!-- Floating Notice / Paywall Banner for Owner Draft Preview -->
       <div
