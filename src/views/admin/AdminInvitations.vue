@@ -21,13 +21,13 @@
         class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
       >
         <option value="all">Semua Status Bayar</option>
-        <option value="paid">✅ Lunas Berbayar</option>
-        <option value="free">🎁 Gratis / Promo</option>
-        <option value="pending">⏳ Menunggu Pembayaran</option>
-        <option value="failed">❌ Gagal</option>
-        <option value="expired">🕰️ Expired</option>
-        <option value="reconcile">⚠️ Perlu Rekonsiliasi</option>
-        <option value="unpaid">🛒 Belum Checkout</option>
+        <option value="paid">Lunas Berbayar</option>
+        <option value="free">Gratis / Promo</option>
+        <option value="pending">Menunggu Pembayaran</option>
+        <option value="failed">Gagal</option>
+        <option value="expired">Expired</option>
+        <option value="reconcile">Perlu Rekonsiliasi</option>
+        <option value="unpaid">Belum Checkout</option>
       </select>
 
       <!-- Filter Publikasi -->
@@ -38,8 +38,8 @@
         class="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs focus:border-slate-400 focus:outline-none cursor-pointer"
       >
         <option value="all">Semua Publikasi</option>
-        <option value="published">🟢 Terbit (Online)</option>
-        <option value="draft">⚪ Draft (Belum Terbit)</option>
+        <option value="published">Terbit (Online)</option>
+        <option value="draft">Draft (Belum Terbit)</option>
       </select>
 
       <!-- Filter Paket -->
@@ -225,7 +225,7 @@
                 {{ data.paymentStatus.label }}
               </span>
               <span v-if="data.paymentStatus?.code === 'reconcile'" class="text-[10px] text-rose-600 font-semibold">
-                ⚠️ Terbit tanpa payment lunas!
+                Terbit tanpa payment lunas
               </span>
             </div>
           </template>

@@ -1084,7 +1084,7 @@
           </div>
 
           <div class="pt-2 text-[11px] text-stone-400">
-            <span>💡 Tidak ada komitmen • Simpan draf kapan saja • Bayar hanya saat publish</span>
+            <span>Tidak ada komitmen · Simpan draf kapan saja · Bayar hanya saat publish</span>
           </div>
 
           <div class="pt-2">
@@ -1364,11 +1364,11 @@ function animateCounter(target) {
 function shareNameResultWA() {
   if (!nameResult.value) return
   const text = `Hai! Kami baru cek kecocokan cinta di SatuUndangan:
-❤️ ${nameResult.value.displayName1} & ${nameResult.value.displayName2}
+${nameResult.value.displayName1} & ${nameResult.value.displayName2}
 Skor Chemistry: ${nameResult.value.score}% (${nameResult.value.title})
 "${nameResult.value.tagline}"
 
-💡 Di SatuUndangan bisa bikin & coba-coba desain undangan pernikahan GRATIS dulu loh (bayar cuma pas mau sebar link)!
+Di SatuUndangan bisa bikin & coba desain undangan pernikahan gratis dulu (bayar hanya saat sebar link).
 
 Cek kecocokanmu dan pasanganmu di: https://satuundangan.id/tools/love-calculator`
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
@@ -1376,12 +1376,12 @@ Cek kecocokanmu dan pasanganmu di: https://satuundangan.id/tools/love-calculator
 
 function copyNameResult() {
   if (!nameResult.value) return
-  const text = `❤️ Skor Chemistry Cinta: ${nameResult.value.displayName1} & ${nameResult.value.displayName2}
+  const text = `Skor Chemistry Cinta: ${nameResult.value.displayName1} & ${nameResult.value.displayName2}
 Persentase: ${nameResult.value.score}%
 Predikat: ${nameResult.value.title}
 Catatan: "${nameResult.value.tagline}"
 
-✨ Info: Bisa bikin & coba desain undangan digital berdua GRATIS dulu tanpa biaya di awal:
+Info: Bisa bikin & coba desain undangan digital berdua gratis dulu tanpa biaya di awal:
 https://satuundangan.id/tools/love-calculator`
 
   if (navigator.clipboard) {
@@ -1632,14 +1632,14 @@ function shareWetonResultWA() {
   if (!wetonResult.value) return
   const r = wetonResult.value
   const text = `Hasil Hitungan Weton Jodoh Primbon Jawa di SatuUndangan:
-🤵 ${r.groomName}: ${r.groom.wetonName} (Neptu ${r.groom.neptu})
-👰 ${r.brideName}: ${r.bride.wetonName} (Neptu ${r.bride.neptu})
+- ${r.groomName}: ${r.groom.wetonName} (Neptu ${r.groom.neptu})
+- ${r.brideName}: ${r.bride.wetonName} (Neptu ${r.bride.neptu})
 Total Neptu Jodoh: ${r.totalNeptu} -> Sisa ${r.category.remainder}: ${r.category.name} (${r.category.title})
 
 Makna & Nasihat:
 "${r.category.modernWisdom}"
 
-💡 Di SatuUndangan bisa bikin & coba-coba desain undangan pernikahan GRATIS dulu loh (bayar cuma pas mau sebar link)!
+Di SatuUndangan bisa bikin & coba desain undangan pernikahan gratis dulu (bayar hanya saat sebar link).
 
 Cek weton pernikahanmu di: https://satuundangan.id/tools/love-calculator`
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
@@ -1648,14 +1648,14 @@ Cek weton pernikahanmu di: https://satuundangan.id/tools/love-calculator`
 function copyWetonResult() {
   if (!wetonResult.value) return
   const r = wetonResult.value
-  const text = `💍 Hitungan Neptu & Weton Jodoh Jawa
+  const text = `Hitungan Neptu & Weton Jodoh Jawa
 Pria: ${r.groomName} (${r.groom.wetonName}, Neptu ${r.groom.neptu})
 Wanita: ${r.brideName} (${r.bride.wetonName}, Neptu ${r.bride.neptu})
 Total Neptu: ${r.totalNeptu} (Dibagi 8 = Sisa ${r.category.remainder}: ${r.category.name})
 Kategori: ${r.category.title}
 Nasihat Bijak: "${r.category.modernWisdom}"
 
-✨ Info: Bisa bikin & coba desain undangan digital berdua GRATIS dulu tanpa biaya di awal:
+Info: Bisa bikin & coba desain undangan digital berdua gratis dulu tanpa biaya di awal:
 https://satuundangan.id/tools/love-calculator`
 
   if (navigator.clipboard) {
@@ -1745,8 +1745,8 @@ function calculateZodiac() {
 function shareZodiacResultWA() {
   if (!zodiacResult.value) return
   const r = zodiacResult.value
-  const text = `✨ Ramalan Kompatibilitas Zodiak Cinta:
-♈ ${r.name1} (${r.zodiac1.name} • Elemen ${r.zodiac1.element}) & ${r.name2} (${r.zodiac2.name} • Elemen ${r.zodiac2.element})
+  const text = `Ramalan Kompatibilitas Zodiak Cinta:
+${r.name1} (${r.zodiac1.name} · Elemen ${r.zodiac1.element}) & ${r.name2} (${r.zodiac2.name} · Elemen ${r.zodiac2.element})
 Skor Kecocokan Bintang: ${r.score}% (${r.elementTitle})
 
 Dinamika Cinta:
@@ -1755,7 +1755,7 @@ Dinamika Cinta:
 Nasihat Menuju Pelaminan:
 "${r.marriageAdvice}"
 
-💡 Di SatuUndangan bisa coba desain undangan digital GRATIS dulu berdua (bayar cuma pas mau sebar link)!
+Di SatuUndangan bisa coba desain undangan digital gratis dulu berdua (bayar hanya saat sebar link).
 
 Cek kecocokan zodiak & weton kalian di: https://satuundangan.id/tools/love-calculator`
   window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank')
@@ -1764,13 +1764,13 @@ Cek kecocokan zodiak & weton kalian di: https://satuundangan.id/tools/love-calcu
 function copyZodiacResult() {
   if (!zodiacResult.value) return
   const r = zodiacResult.value
-  const text = `✨ Hasil Kompatibilitas Zodiak Cinta
+  const text = `Hasil Kompatibilitas Zodiak Cinta
 Pasangan: ${r.name1} (${r.zodiac1.name}) & ${r.name2} (${r.zodiac2.name})
 Skor Kecocokan: ${r.score}% (${r.elementTitle})
 Dinamika Hubungan: "${r.elementDynamic}"
 Nasihat Pelaminan: "${r.marriageAdvice}"
 
-✨ Info: Bisa coba & bikin draf undangan pernikahan gratis sepuasnya di:
+Info: Bisa coba & bikin draf undangan pernikahan gratis sepuasnya di:
 https://satuundangan.id/tools/love-calculator`
 
   if (navigator.clipboard) {

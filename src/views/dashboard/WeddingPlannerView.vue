@@ -1,27 +1,25 @@
 <template>
-  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
+  <div class="flex h-screen bg-[#FAF8F5] overflow-hidden pb-20 md:pb-0 font-sans">
     <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" class="no-print" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
       <Topbar title="Wedding Planner & Budget" showButton @toggleSidebar="toggleSidebar" class="no-print" />
 
-      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1 max-w-6xl w-full mx-auto">
         <!-- 1. Header Section -->
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+        <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-stone-200/80">
           <div>
-            <div class="flex flex-wrap items-center gap-2">
-              <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-amber-600 shrink-0"></span>
-                <h2 class="text-base sm:text-lg md:text-xl font-black text-slate-900 tracking-tight">
-                  Wedding Planner Eksklusif
-                </h2>
-              </div>
-              <span v-if="isUnlocked" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300/80 shadow-2xs">
-                Akses Gratis Aktif ✨
+            <div class="flex flex-wrap items-center gap-2.5">
+              <h2 class="text-2xl md:text-3xl font-serif font-semibold text-stone-900 tracking-tight">
+                Wedding Planner
+              </h2>
+              <span v-if="isUnlocked" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                <span>Akses Aktif</span>
               </span>
             </div>
-            <p class="text-xs text-slate-500 mt-1.5 max-w-xl leading-relaxed">
-              Susun anggaran pernikahan, pantau checklist persiapan H-180 s/d Hari H, kelola vendor, dan susun rundown acara dalam satu dasbor rapi.
+            <p class="text-xs md:text-sm text-stone-500 mt-1 max-w-xl leading-relaxed">
+              Susun anggaran pernikahan, pantau checklist persiapan, kelola vendor, dan susun rundown acara.
             </p>
           </div>
 
@@ -60,24 +58,20 @@
         </div>
 
         <!-- 2. LOCKED STATE GATE / MODAL -->
-        <div v-if="!loading && !isUnlocked" class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-amber-950 via-stone-900 to-slate-950 text-white p-6 md:p-12 shadow-2xl border border-amber-500/20">
-          <!-- Background Glow Effect -->
-          <div class="absolute -right-20 -top-20 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
-          <div class="absolute -left-20 -bottom-20 w-80 h-80 bg-amber-600/10 rounded-full blur-3xl pointer-events-none"></div>
-
-          <div class="max-w-2xl mx-auto text-center relative z-10 space-y-6">
+        <div v-if="!loading && !isUnlocked" class="rounded-xl bg-stone-900 text-white p-6 md:p-10 border border-stone-800">
+          <div class="max-w-2xl mx-auto text-center space-y-6">
             <!-- Badge -->
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 text-xs font-extrabold uppercase tracking-widest">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-stone-800 border border-stone-700 text-amber-300 text-xs font-semibold">
               <i class="fa-solid fa-crown text-amber-400"></i>
-              <span>Fitur Premium • Buka 100% Gratis</span>
+              <span>Akses Gratis</span>
             </div>
 
-            <h3 class="text-2xl md:text-3xl font-black tracking-tight leading-tight">
-              Buka Akses <span class="bg-gradient-to-r from-amber-200 via-amber-400 to-yellow-300 bg-clip-text text-transparent">Wedding Planner Terpadu</span> Seumur Hidup!
+            <h3 class="text-2xl md:text-3xl font-serif font-semibold tracking-tight leading-tight">
+              Buka Akses Wedding Planner Terpadu
             </h3>
 
             <p class="text-xs md:text-sm text-stone-300 leading-relaxed">
-              Dapatkan Kalkulator Budget Otomatis, 21 Checklist Persiapan Pernikahan Adat & Nasional, Buku Kontak Vendor, serta Generator Rundown Hari H tanpa biaya sepeser pun. Cukup dukung kami dengan 2 langkah mudah di bawah ini!
+              Dapatkan Kalkulator Budget Otomatis, Checklist Persiapan Pernikahan Adat & Nasional, Buku Kontak Vendor, dan Rundown Hari H. Cukup ikuti 2 langkah di bawah ini.
             </p>
 
             <!-- 2 Simple Steps -->
@@ -98,7 +92,7 @@
                   target="_blank"
                   rel="noopener noreferrer"
                   @click="hasClickedFollow = true"
-                  class="w-full py-2.5 px-3 rounded-xl bg-gradient-to-r from-purple-600 via-pink-600 to-amber-500 hover:opacity-90 text-white text-xs font-bold transition-all text-center flex items-center justify-center gap-2 cursor-pointer shadow-md"
+                  class="w-full py-2.5 px-3 rounded-lg bg-[#8f5e38] hover:bg-[#a47148] text-white text-xs font-semibold transition-colors text-center flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <i class="fa-brands fa-instagram text-sm"></i>
                   <span>{{ hasClickedFollow ? 'Sudah Diklik (Cek IG)' : 'Buka Instagram Kami' }}</span>
@@ -152,15 +146,16 @@
                 type="button"
                 @click="submitUnlock"
                 :disabled="unlocking"
-                class="w-full py-3 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-500 to-yellow-500 hover:from-amber-300 hover:to-yellow-400 text-slate-950 font-black text-xs md:text-sm tracking-wide transition-all shadow-xl shadow-amber-500/20 cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
+                class="w-full py-3 px-4 rounded-xl bg-amber-400 hover:bg-amber-300 text-stone-950 font-semibold text-xs md:text-sm tracking-wide transition-colors cursor-pointer disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <i v-if="unlocking" class="fa-solid fa-spinner fa-spin"></i>
-                <i v-else class="fa-solid fa-gift"></i>
-                <span>{{ unlocking ? 'Membuka Akses...' : 'Buka Akses Gratis Sekarang 🎉' }}</span>
+                <i v-else class="fa-solid fa-unlock-keyhole"></i>
+                <span>{{ unlocking ? 'Membuka Akses...' : 'Buka Akses Gratis Sekarang' }}</span>
               </button>
 
-              <p class="text-[10px] text-stone-400">
-                🔒 Tanpa kartu kredit. Akses terbuka instan dan tersimpan di akun Anda selamanya.
+              <p class="text-[11px] text-stone-400 flex items-center justify-center gap-1.5">
+                <i class="fa-solid fa-lock text-[10px]"></i>
+                <span>Tanpa kartu kredit. Akses terbuka instan dan tersimpan di akun Anda.</span>
               </p>
             </div>
           </div>
@@ -169,10 +164,8 @@
         <!-- 3. UNLOCKED TOOL INTERFACE -->
         <div v-else-if="!loading && isUnlocked" class="space-y-6">
           <!-- MINI DASHBOARD / PROGRESS SUMMARY BANNER -->
-          <div class="p-6 rounded-3xl bg-gradient-to-br from-slate-900 via-stone-900 to-amber-950 text-white shadow-xl border border-amber-500/20 relative overflow-hidden">
-            <div class="absolute -right-10 -bottom-10 w-60 h-60 bg-amber-500/10 rounded-full blur-2xl pointer-events-none"></div>
-
-            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+          <div class="p-6 rounded-xl bg-stone-900 text-white border border-stone-800">
+            <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
               <!-- Left: Wedding Overview Info -->
               <div class="space-y-3">
                 <div class="flex flex-wrap items-center gap-2">
@@ -229,9 +222,9 @@
 
             <!-- Global Readiness Progress Bar -->
             <div class="mt-4 pt-4 border-t border-white/10">
-              <div class="w-full h-2.5 bg-white/10 rounded-full overflow-hidden">
+              <div class="w-full h-2 bg-stone-800 rounded-full overflow-hidden">
                 <div
-                  class="h-full bg-gradient-to-r from-amber-400 via-emerald-400 to-teal-400 transition-all duration-700"
+                  class="h-full bg-[#d4a373] transition-all duration-700"
                   :style="{ width: overallReadinessPercent + '%' }"
                 ></div>
               </div>
@@ -315,8 +308,9 @@
               <div class="p-4 rounded-2xl bg-white border border-slate-100 shadow-xs space-y-1">
                 <span class="text-[10px] font-black uppercase tracking-wider text-slate-400">Total Estimasi Pos</span>
                 <h4 class="text-lg font-black text-blue-900 font-mono">{{ formatCurrency(totalEstimatedCost) }}</h4>
-                <p class="text-[11px]" :class="totalEstimatedCost > planner.budgetTotal ? 'text-rose-500 font-bold' : 'text-slate-400'">
-                  {{ totalEstimatedCost > planner.budgetTotal ? '⚠️ Melebihi target anggaran' : 'Dalam batas aman anggaran' }}
+                <p class="text-[11px]" :class="totalEstimatedCost > planner.budgetTotal ? 'text-rose-600 font-semibold flex items-center gap-1' : 'text-stone-400'">
+                  <i v-if="totalEstimatedCost > planner.budgetTotal" class="fa-solid fa-triangle-exclamation text-[10px]"></i>
+                  <span>{{ totalEstimatedCost > planner.budgetTotal ? 'Melebihi target anggaran' : 'Dalam batas aman anggaran' }}</span>
                 </p>
               </div>
 
@@ -343,10 +337,10 @@
                 <span class="text-slate-700">Realisasi vs Target Budget</span>
                 <span :class="budgetPercent > 100 ? 'text-rose-600' : 'text-slate-900'">{{ budgetPercent }}% ({{ formatCurrency(totalActualCost) }} / {{ formatCurrency(planner.budgetTotal || 0) }})</span>
               </div>
-              <div class="w-full h-3 bg-slate-100 rounded-full overflow-hidden">
+              <div class="w-full h-2.5 bg-stone-100 rounded-full overflow-hidden">
                 <div
                   class="h-full transition-all duration-500"
-                  :class="budgetPercent > 100 ? 'bg-rose-500' : 'bg-gradient-to-r from-amber-500 to-emerald-500'"
+                  :class="budgetPercent > 100 ? 'bg-rose-600' : 'bg-emerald-600'"
                   :style="{ width: Math.min(budgetPercent, 100) + '%' }"
                 ></div>
               </div>
@@ -519,20 +513,20 @@
           <!-- TAB 2: CHECKLIST COUNTDOWN H-180 -->
           <div v-else-if="activeTab === 'checklist'" class="space-y-6">
             <!-- Progress Banner -->
-            <div class="p-5 sm:p-6 rounded-3xl bg-gradient-to-r from-emerald-900 to-teal-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm">
+            <div class="p-5 sm:p-6 rounded-xl bg-stone-900 text-white flex flex-col sm:flex-row sm:items-center justify-between gap-4 border border-stone-800">
               <div>
-                <span class="text-[10px] font-black uppercase tracking-wider text-emerald-300">Countdown & Progress Persiapan</span>
-                <h3 class="text-base sm:text-lg font-black mt-0.5">
+                <span class="text-[11px] font-medium text-amber-300">Countdown & Progress Persiapan</span>
+                <h3 class="text-base sm:text-lg font-semibold mt-0.5 tabular-nums">
                   {{ completedChecklistCount }} dari {{ totalChecklistCount }} Tugas Selesai ({{ checklistPercent }}%)
                 </h3>
-                <p class="text-xs text-emerald-200/80 mt-1">
-                  Bagi tugas persiapan pernikahan dengan pasangan dan keluarga agar eksekusi lancar & bebas stres.
+                <p class="text-xs text-stone-300 mt-1">
+                  Bagi tugas persiapan pernikahan dengan pasangan dan keluarga agar eksekusi berjalan rapi.
                 </p>
               </div>
               <button
                 type="button"
                 @click="openAddChecklistModal"
-                class="px-4 py-2.5 rounded-xl bg-white text-emerald-950 font-black text-xs hover:bg-emerald-50 transition-all shadow-md shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
+                class="px-4 py-2 rounded-lg bg-white text-stone-900 font-semibold text-xs hover:bg-stone-100 transition-colors shrink-0 cursor-pointer flex items-center justify-center gap-1.5"
               >
                 <i class="fa-solid fa-plus text-xs"></i>
                 <span>Tambah Tugas Baru</span>
@@ -544,147 +538,152 @@
               <!-- Groom Task Card -->
               <div
                 @click="checklistFilter = checklistFilter === 'groom' ? 'all' : 'groom'"
-                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
-                :class="checklistFilter === 'groom' ? 'bg-blue-50 border-blue-300 ring-2 ring-blue-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+                class="p-3.5 rounded-xl border transition-colors cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'groom' ? 'bg-stone-100 border-stone-400' : 'bg-white border-stone-200/80 hover:border-stone-300'"
               >
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0">
-                    👨
+                  <div class="w-8 h-8 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid fa-user-tie"></i>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-[10px] font-black uppercase text-slate-400 truncate">Tugas Pria (Groom)</p>
-                    <p class="text-xs font-black text-slate-800">{{ groomCompletedCount }}/{{ groomTasksCount }} Selesai</p>
+                    <p class="text-[11px] font-medium text-stone-500 truncate">Tugas Pria</p>
+                    <p class="text-xs font-semibold text-stone-900 tabular-nums">{{ groomCompletedCount }}/{{ groomTasksCount }} Selesai</p>
                   </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+                <i class="fa-solid fa-chevron-right text-[10px] text-stone-300"></i>
               </div>
 
               <!-- Bride Task Card -->
               <div
                 @click="checklistFilter = checklistFilter === 'bride' ? 'all' : 'bride'"
-                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
-                :class="checklistFilter === 'bride' ? 'bg-pink-50 border-pink-300 ring-2 ring-pink-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+                class="p-3.5 rounded-xl border transition-colors cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'bride' ? 'bg-stone-100 border-stone-400' : 'bg-white border-stone-200/80 hover:border-stone-300'"
               >
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-8 h-8 rounded-xl bg-pink-100 text-pink-700 flex items-center justify-center text-sm shrink-0">
-                    👩
+                  <div class="w-8 h-8 rounded-lg bg-stone-100 text-stone-700 flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid fa-user"></i>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-[10px] font-black uppercase text-slate-400 truncate">Tugas Wanita (Bride)</p>
-                    <p class="text-xs font-black text-slate-800">{{ brideCompletedCount }}/{{ brideTasksCount }} Selesai</p>
+                    <p class="text-[11px] font-medium text-stone-500 truncate">Tugas Wanita</p>
+                    <p class="text-xs font-semibold text-stone-900 tabular-nums">{{ brideCompletedCount }}/{{ brideTasksCount }} Selesai</p>
                   </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+                <i class="fa-solid fa-chevron-right text-[10px] text-stone-300"></i>
               </div>
 
               <!-- Both Task Card -->
               <div
                 @click="checklistFilter = checklistFilter === 'both' ? 'all' : 'both'"
-                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
-                :class="checklistFilter === 'both' ? 'bg-purple-50 border-purple-300 ring-2 ring-purple-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+                class="p-3.5 rounded-xl border transition-colors cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'both' ? 'bg-stone-100 border-stone-400' : 'bg-white border-stone-200/80 hover:border-stone-300'"
               >
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-700 flex items-center justify-center text-sm shrink-0">
-                    💑
+                  <div class="w-8 h-8 rounded-lg bg-stone-100 text-[#8f5e38] flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid fa-user-group"></i>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-[10px] font-black uppercase text-slate-400 truncate">Tugas Bersama</p>
-                    <p class="text-xs font-black text-slate-800">{{ bothCompletedCount }}/{{ bothTasksCount }} Selesai</p>
+                    <p class="text-[11px] font-medium text-stone-500 truncate">Tugas Bersama</p>
+                    <p class="text-xs font-semibold text-stone-900 tabular-nums">{{ bothCompletedCount }}/{{ bothTasksCount }} Selesai</p>
                   </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+                <i class="fa-solid fa-chevron-right text-[10px] text-stone-300"></i>
               </div>
 
               <!-- Urgent Task Card -->
               <div
                 @click="checklistFilter = checklistFilter === 'urgent' ? 'all' : 'urgent'"
-                class="p-3.5 rounded-2xl border transition-all cursor-pointer flex items-center justify-between gap-3"
-                :class="checklistFilter === 'urgent' ? 'bg-rose-50 border-rose-300 ring-2 ring-rose-500/20' : 'bg-white border-slate-100 hover:border-slate-200'"
+                class="p-3.5 rounded-xl border transition-colors cursor-pointer flex items-center justify-between gap-3"
+                :class="checklistFilter === 'urgent' ? 'bg-rose-50 border-rose-300' : 'bg-white border-stone-200/80 hover:border-stone-300'"
               >
                 <div class="flex items-center gap-2.5 min-w-0">
-                  <div class="w-8 h-8 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center text-sm shrink-0">
-                    🔥
+                  <div class="w-8 h-8 rounded-lg bg-rose-50 text-rose-700 flex items-center justify-center text-xs shrink-0">
+                    <i class="fa-solid fa-fire"></i>
                   </div>
                   <div class="min-w-0">
-                    <p class="text-[10px] font-black uppercase text-rose-500 truncate">Tugas Urgent</p>
-                    <p class="text-xs font-black text-slate-800">{{ urgentTasksCount }} Pending</p>
+                    <p class="text-[11px] font-medium text-rose-600 truncate">Tugas Urgent</p>
+                    <p class="text-xs font-semibold text-stone-900 tabular-nums">{{ urgentTasksCount }} Pending</p>
                   </div>
                 </div>
-                <i class="fa-solid fa-chevron-right text-[10px] text-slate-300"></i>
+                <i class="fa-solid fa-chevron-right text-[10px] text-stone-300"></i>
               </div>
             </div>
 
             <!-- Filter Pills Bar -->
-            <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-bold scrollbar-none">
-              <span class="text-[11px] text-slate-400 uppercase font-black tracking-wider mr-1 shrink-0">Filter:</span>
+            <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs font-medium scrollbar-none">
+              <span class="text-[11px] text-stone-400 font-medium mr-1 shrink-0">Filter:</span>
               <button
                 type="button"
                 @click="checklistFilter = 'all'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer"
-                :class="checklistFilter === 'all' ? 'bg-slate-900 text-white border-slate-900 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-slate-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer tabular-nums"
+                :class="checklistFilter === 'all' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'"
               >
                 Semua ({{ totalChecklistCount }})
               </button>
               <button
                 type="button"
                 @click="checklistFilter = 'groom'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-                :class="checklistFilter === 'groom' ? 'bg-blue-600 text-white border-blue-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-blue-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer flex items-center gap-1.5 tabular-nums"
+                :class="checklistFilter === 'groom' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'"
               >
-                <span>👨 Pengantin Pria</span>
-                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="checklistFilter === 'groom' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600'">
+                <i class="fa-solid fa-user-tie text-[10px]"></i>
+                <span>Pengantin Pria</span>
+                <span class="px-1.5 py-0.2 rounded text-[10px]" :class="checklistFilter === 'groom' ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600'">
                   {{ groomTasksCount }}
                 </span>
               </button>
               <button
                 type="button"
                 @click="checklistFilter = 'bride'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-                :class="checklistFilter === 'bride' ? 'bg-pink-600 text-white border-pink-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-pink-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer flex items-center gap-1.5 tabular-nums"
+                :class="checklistFilter === 'bride' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'"
               >
-                <span>👩 Pengantin Wanita</span>
-                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="checklistFilter === 'bride' ? 'bg-pink-700 text-white' : 'bg-slate-100 text-slate-600'">
+                <i class="fa-solid fa-user text-[10px]"></i>
+                <span>Pengantin Wanita</span>
+                <span class="px-1.5 py-0.2 rounded text-[10px]" :class="checklistFilter === 'bride' ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600'">
                   {{ brideTasksCount }}
                 </span>
               </button>
               <button
                 type="button"
                 @click="checklistFilter = 'both'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-                :class="checklistFilter === 'both' ? 'bg-purple-600 text-white border-purple-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-purple-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer flex items-center gap-1.5 tabular-nums"
+                :class="checklistFilter === 'both' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'"
               >
-                <span>💑 Bersama</span>
-                <span class="px-1.5 py-0.2 rounded-full text-[10px]" :class="checklistFilter === 'both' ? 'bg-purple-700 text-white' : 'bg-slate-100 text-slate-600'">
+                <i class="fa-solid fa-user-group text-[10px]"></i>
+                <span>Bersama</span>
+                <span class="px-1.5 py-0.2 rounded text-[10px]" :class="checklistFilter === 'both' ? 'bg-stone-700 text-white' : 'bg-stone-100 text-stone-600'">
                   {{ bothTasksCount }}
                 </span>
               </button>
               <button
                 type="button"
                 @click="checklistFilter = 'family'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-                :class="checklistFilter === 'family' ? 'bg-amber-600 text-white border-amber-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-amber-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'family' ? 'bg-stone-900 text-white border-stone-900' : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'"
               >
-                <span>👥 Keluarga/Panitia</span>
+                <i class="fa-solid fa-users text-[10px]"></i>
+                <span>Keluarga/Panitia</span>
               </button>
               <button
                 type="button"
                 @click="checklistFilter = 'urgent'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-                :class="checklistFilter === 'urgent' ? 'bg-rose-600 text-white border-rose-600 shadow-xs' : 'bg-white text-rose-700 border-rose-200 hover:bg-rose-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer flex items-center gap-1.5 tabular-nums"
+                :class="checklistFilter === 'urgent' ? 'bg-rose-600 text-white border-rose-600' : 'bg-white text-rose-700 border-rose-200 hover:bg-rose-50'"
               >
                 <i class="fa-solid fa-fire text-xs"></i>
                 <span>Urgent</span>
-                <span v-if="urgentTasksCount > 0" class="px-1.5 py-0.2 rounded-full text-[10px] bg-rose-100 text-rose-800">
+                <span v-if="urgentTasksCount > 0" class="px-1.5 py-0.2 rounded text-[10px] bg-rose-100 text-rose-800">
                   {{ urgentTasksCount }}
                 </span>
               </button>
               <button
                 type="button"
                 @click="checklistFilter = 'pending'"
-                class="px-3 py-1.5 rounded-xl border transition-all shrink-0 cursor-pointer flex items-center gap-1.5"
-                :class="checklistFilter === 'pending' ? 'bg-emerald-600 text-white border-emerald-600 shadow-xs' : 'bg-white text-slate-600 border-slate-200 hover:bg-emerald-50'"
+                class="px-3 py-1.5 rounded-lg border transition-colors shrink-0 cursor-pointer flex items-center gap-1.5"
+                :class="checklistFilter === 'pending' ? 'bg-emerald-700 text-white border-emerald-700' : 'bg-white text-stone-600 border-stone-200/80 hover:bg-stone-50'"
               >
-                <span>⏳ Belum Selesai</span>
+                <i class="fa-regular fa-clock text-[10px]"></i>
+                <span>Belum Selesai</span>
               </button>
             </div>
 
@@ -730,43 +729,44 @@
                           <!-- Assignee Badge -->
                           <span
                             v-if="task.assignee === 'groom'"
-                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-blue-50 text-blue-700 border border-blue-200 flex items-center gap-1"
+                            class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-stone-700 border border-stone-200 inline-flex items-center gap-1"
                           >
-                            <span>👨</span> Pria (Groom)
+                            <i class="fa-solid fa-user-tie text-[9px] text-stone-500"></i> Pria
                           </span>
                           <span
                             v-else-if="task.assignee === 'bride'"
-                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-pink-50 text-pink-700 border border-pink-200 flex items-center gap-1"
+                            class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-stone-700 border border-stone-200 inline-flex items-center gap-1"
                           >
-                            <span>👩</span> Wanita (Bride)
+                            <i class="fa-solid fa-user text-[9px] text-stone-500"></i> Wanita
                           </span>
                           <span
                             v-else-if="task.assignee === 'family'"
-                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1"
+                            class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-amber-50 text-amber-800 border border-amber-200 inline-flex items-center gap-1"
                           >
-                            <span>👥</span> Keluarga
+                            <i class="fa-solid fa-users text-[9px]"></i> Keluarga
                           </span>
                           <span
                             v-else
-                            class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-purple-50 text-purple-700 border border-purple-200 flex items-center gap-1"
+                            class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-[#8f5e38] border border-stone-200 inline-flex items-center gap-1"
                           >
-                            <span>💑</span> Bersama
+                            <i class="fa-solid fa-user-group text-[9px]"></i> Bersama
                           </span>
 
                           <!-- Category Badge -->
-                          <span v-if="task.category" class="px-2 py-0.5 rounded-md text-[9px] font-extrabold uppercase bg-slate-100 text-slate-600 border border-slate-200">
+                          <span v-if="task.category" class="px-2 py-0.5 rounded-md text-[10px] font-medium bg-stone-100 text-stone-600 border border-stone-200">
                             {{ task.category }}
                           </span>
 
                           <!-- Urgent Badge -->
-                          <span v-if="task.isUrgent" class="px-2 py-0.5 rounded-md text-[9px] font-black bg-rose-50 text-rose-700 border border-rose-200 flex items-center gap-1">
-                            <i class="fa-solid fa-fire text-rose-500"></i> Urgent
+                          <span v-if="task.isUrgent" class="px-2 py-0.5 rounded-md text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1">
+                            <i class="fa-solid fa-fire text-rose-500 text-[9px]"></i> Urgent
                           </span>
                         </div>
 
                         <!-- Notes / Panduan -->
-                        <p v-if="task.notes" class="text-[11px] text-slate-500 mt-1 leading-relaxed bg-slate-50/70 p-2 rounded-xl border border-slate-100">
-                          📝 {{ task.notes }}
+                        <p v-if="task.notes" class="text-[11px] text-stone-600 mt-1 leading-relaxed bg-[#FAF8F5] p-2 rounded-lg border border-stone-200/70 flex items-start gap-1.5">
+                          <i class="fa-regular fa-note-sticky text-stone-400 mt-0.5 text-[10px] shrink-0"></i>
+                          <span>{{ task.notes }}</span>
                         </p>
 
                         <!-- Deadline DueDate -->
@@ -1172,11 +1172,11 @@
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <label class="font-bold text-slate-700 block mb-1">Penanggung Jawab (PIC)</label>
-                    <select v-model="checklistForm.assignee" class="w-full border border-slate-200 rounded-xl p-2.5 bg-slate-50 font-bold text-slate-800">
-                      <option value="both">💑 Bersama (Groom & Bride)</option>
-                      <option value="groom">👨 Pengantin Pria (Groom)</option>
-                      <option value="bride">👩 Pengantin Wanita (Bride)</option>
-                      <option value="family">👥 Keluarga / Panitia</option>
+                    <select v-model="checklistForm.assignee" class="w-full border border-stone-200 rounded-lg p-2.5 bg-stone-50 font-medium text-stone-800">
+                      <option value="both">Bersama (Groom & Bride)</option>
+                      <option value="groom">Pengantin Pria (Groom)</option>
+                      <option value="bride">Pengantin Wanita (Bride)</option>
+                      <option value="family">Keluarga / Panitia</option>
                     </select>
                   </div>
                   <div>
@@ -1727,7 +1727,7 @@ async function submitUnlock() {
       setupForm.estimatedGuests = planner.estimatedGuests
     }
 
-    toast.success('Selamat! Akses Wedding Planner kamu sudah aktif gratis seumur hidup 🎉')
+    toast.success('Akses Wedding Planner kamu sudah aktif selamanya')
     // Open onboarding modal immediately so user can customize their budget & date
     openSetupModal.value = true
   } catch (err) {

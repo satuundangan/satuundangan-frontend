@@ -59,9 +59,9 @@ const DEFAULT_DRIVER_CONFIG = {
   skipMissingElement: true,
   showProgress: true,
   progressText: 'Langkah {{current}} dari {{total}}',
-  nextBtnText: 'Lanjut →',
-  prevBtnText: '← Kembali',
-  doneBtnText: 'Selesai ✓',
+  nextBtnText: 'Lanjut',
+  prevBtnText: 'Kembali',
+  doneBtnText: 'Selesai',
   popoverClass: 'satuundangan-tour-popover',
 }
 

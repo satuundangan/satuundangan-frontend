@@ -2,8 +2,8 @@
   <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 text-black">
     <div class="max-w-md w-full bg-white p-8 rounded-2xl shadow-xl space-y-8 border border-gray-100">
       <div class="text-center">
-        <div class="mx-auto h-16 w-16 bg-mocha/10 rounded-full flex items-center justify-center text-mocha text-3xl mb-4">
-          ⚖️
+        <div class="mx-auto h-14 w-14 bg-stone-100 border border-stone-200 rounded-xl flex items-center justify-center text-[#8f5e38] text-2xl mb-4">
+          <i class="fa-solid fa-scale-balanced"></i>
         </div>
         <h2 class="text-3xl font-extrabold text-mocha">
           Persetujuan Hukum

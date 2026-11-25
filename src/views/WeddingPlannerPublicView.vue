@@ -363,8 +363,8 @@
           </router-link>
         </div>
 
-        <p class="text-[11px] text-stone-400">
-          💡 Tanpa komitmen pembayaran di muka • Bebas ganti tema • Dilengkapi RSVP &amp; Amplop Digital
+        <p class="text-[11px] text-stone-500">
+          Tanpa komitmen pembayaran di muka · Bebas ganti tema · Dilengkapi RSVP &amp; Amplop Digital
         </p>
       </div>
     </section>

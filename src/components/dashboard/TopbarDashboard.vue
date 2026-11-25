@@ -1,10 +1,10 @@
 <template>
-  <header class="flex items-center justify-between bg-white px-4 md:px-8 py-3.5 sticky top-0 z-40 border-b border-slate-100/80 shadow-xs select-none">
+  <header class="flex items-center justify-between bg-white px-4 md:px-8 py-3.5 sticky top-0 z-40 border-b border-stone-200/80 select-none">
     <div class="flex items-center gap-3">
       <!-- Mobile Sidebar Toggle -->
       <button 
         @click="$emit('toggleSidebar')" 
-        class="md:hidden p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-600 active:scale-95"
+        class="md:hidden p-2 hover:bg-stone-100 rounded-lg transition-colors text-stone-600 cursor-pointer"
         aria-label="Toggle Sidebar"
       >
         <i class="fa-solid fa-bars-staggered text-base"></i>
@@ -13,32 +13,32 @@
       <!-- Desktop Sidebar Toggle -->
       <button 
         @click="$emit('toggleSidebar')" 
-        class="hidden md:flex p-2 hover:bg-slate-50 rounded-xl transition-colors text-slate-400 hover:text-slate-700"
+        class="hidden md:flex p-2 hover:bg-stone-100 rounded-lg transition-colors text-stone-400 hover:text-stone-700 cursor-pointer"
         aria-label="Toggle Sidebar"
       >
         <i class="fa-solid fa-bars-staggered text-base"></i>
       </button>
 
-      <h1 class="text-sm md:text-lg font-extrabold text-slate-900 truncate tracking-tight flex items-center gap-2">
+      <h1 class="text-sm md:text-base font-semibold text-stone-900 truncate tracking-tight flex items-center gap-2">
         {{ title }}
       </h1>
     </div>
     
-    <div class="flex items-center gap-2 sm:gap-3 shrink-0">
+    <div class="flex items-center gap-2 sm:gap-2.5 shrink-0">
       <button 
         type="button"
         @click="$emit('startTour')" 
-        class="flex items-center gap-1.5 px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-all text-xs font-bold cursor-pointer"
+        class="flex items-center gap-1.5 px-2.5 py-1.5 bg-stone-100 hover:bg-stone-200/80 text-stone-700 rounded-lg transition-colors text-xs font-medium cursor-pointer"
         title="Mulai Tur Panduan Interaktif"
       >
-        <i class="fa-solid fa-circle-question text-mocha text-xs"></i>
+        <i class="fa-solid fa-circle-question text-[#8f5e38] text-xs"></i>
         <span class="hidden sm:inline">Panduan</span>
       </button>
 
       <router-link 
         v-if="showButton" 
         to="/templates" 
-        class="flex items-center gap-1.5 px-3 py-1.5 sm:px-4 sm:py-2 bg-[#a47148] text-white rounded-xl hover:bg-[#8e5e38] transition-all text-xs font-bold shadow-md shadow-[#a47148]/20 hover:scale-105 active:scale-95 shrink-0"
+        class="flex items-center gap-1.5 px-3 py-1.5 sm:px-3.5 sm:py-1.5 bg-stone-900 text-white rounded-lg hover:bg-stone-800 transition-colors text-xs font-semibold shrink-0"
         title="Buat Undangan Baru"
       >
         <i class="fa-solid fa-plus text-[10px]"></i>
@@ -46,8 +46,8 @@
         <span class="sm:hidden text-[11px]">Buat</span>
       </router-link>
       
-      <div class="flex items-center gap-2 pl-2 border-l border-slate-100">
-        <div class="w-8 h-8 md:w-9 md:h-9 rounded-xl bg-slate-100 text-slate-800 border border-slate-200/60 flex items-center justify-center text-xs font-extrabold shadow-2xs">
+      <div class="flex items-center gap-2 pl-2 border-l border-stone-200">
+        <div class="w-8 h-8 rounded-lg bg-stone-100 text-stone-800 border border-stone-200/80 flex items-center justify-center text-xs font-semibold">
           {{ userInitial }}
         </div>
       </div>

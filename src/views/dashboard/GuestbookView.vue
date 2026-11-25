@@ -1,22 +1,21 @@
 <template>
-  <div class="flex h-screen bg-slate-50 overflow-hidden pb-20 md:pb-0 font-sans">
+  <div class="flex h-screen bg-[#FAF8F5] overflow-hidden pb-20 md:pb-0 font-sans">
     <Sidebar :isOpen="isSidebarOpen" @close="closeSidebar" class="no-print" />
 
     <div :class="['flex-1 flex flex-col transition-all duration-300 min-w-0', isSidebarOpen ? 'md:ml-64' : 'md:ml-0']">
       <Topbar title="Buku Tamu & Meja Resepsi" showButton @toggleSidebar="toggleSidebar" class="no-print" />
 
-      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1">
+      <main class="p-4 md:p-8 space-y-6 overflow-y-auto custom-scrollbar flex-1 max-w-6xl w-full mx-auto">
         <!-- Top Navigation / Tab Switcher -->
         <div class="space-y-4 no-print">
-          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+          <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 pb-5 border-b border-stone-200/80">
             <div class="min-w-0 flex-1">
               <div class="flex items-center gap-2">
-                <span class="w-2.5 h-2.5 rounded-full bg-[#a47148]"></span>
-                <h2 class="text-lg md:text-xl font-black text-slate-900 tracking-tight truncate">
+                <h2 class="text-2xl md:text-3xl font-serif font-semibold text-stone-900 tracking-tight truncate">
                   {{ activeTab === 'standee' ? 'QR Code Meja Resepsi' : activeTab === 'wishes' ? 'Daftar Ucapan & Doa' : 'Scanner Tiket Tamu' }}
                 </h2>
               </div>
-              <p class="text-xs text-slate-400 mt-1 max-w-xl truncate">
+              <p class="text-xs md:text-sm text-stone-500 mt-1 max-w-xl truncate">
                 {{ activeTab === 'standee'
                   ? 'Cetak atau unduh standee QR Code untuk dipajang di meja penerima tamu.'
                   : activeTab === 'wishes'
@@ -113,10 +112,11 @@
                 :href="`/live-screen/${currentInvitationSlug}`"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="px-3.5 py-2 bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs shrink-0"
+                class="px-3.5 py-2 bg-[#8f5e38] hover:bg-[#734a2b] text-white rounded-lg text-xs font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer shrink-0"
                 title="Buka Layar Sapa & Live Display Proyektor di tab baru"
               >
-                <span>🖥️ Buka Layar Sapa Proyektor</span>
+                <i class="fa-solid fa-desktop text-[11px]"></i>
+                <span>Buka Layar Sapa Proyektor</span>
               </a>
 
               <!-- Standee Action Buttons -->
@@ -185,16 +185,16 @@
         <!-- ============================================== -->
         <div v-if="activeTab === 'standee'" class="space-y-6 main-dashboard-content">
           <!-- Top Guidance Alert -->
-          <div class="p-5 rounded-3xl bg-gradient-to-r from-amber-500/10 via-amber-400/5 to-transparent border border-amber-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div class="p-5 rounded-xl bg-white border border-stone-200/80 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex items-start gap-3.5">
-              <div class="w-10 h-10 rounded-2xl bg-amber-500 text-white flex items-center justify-center shrink-0 text-base shadow-sm">
+              <div class="w-10 h-10 rounded-lg bg-stone-100 border border-stone-200/80 text-[#8f5e38] flex items-center justify-center shrink-0 text-base">
                 <i class="fa-solid fa-qrcode"></i>
               </div>
               <div>
-                <h3 class="text-sm font-black text-slate-900 tracking-tight">
+                <h3 class="text-sm font-semibold text-stone-900 tracking-tight">
                   QR Code Buku Tamu Meja Resepsi
                 </h3>
-                <p class="text-xs text-slate-600 mt-0.5 max-w-2xl leading-relaxed">
+                <p class="text-xs text-stone-500 mt-0.5 max-w-2xl leading-relaxed">
                   Cetak atau pajang QR Code ini di meja resepsi / pintu masuk. Para tamu cukup scan menggunakan kamera HP mereka untuk langsung membuka buku tamu digital, menitipkan ucapan doa, konfirmasi hadir, atau mengirim amplop digital.
                 </p>
               </div>
@@ -670,32 +670,34 @@
                             <i class="fa-solid fa-xmark"></i>
                           </button>
                         </div>
-                        <h4 class="font-black text-sm text-emerald-950 mt-1 truncate">
-                          ✅ Selamat Datang, {{ recentScanResult.guestName }}!
+                        <h4 class="font-bold text-sm text-emerald-950 mt-1 truncate">
+                          Selamat Datang, {{ recentScanResult.guestName }}
                         </h4>
                         <p class="text-xs text-emerald-800 font-medium mt-0.5">
-                          Kategori: <span class="font-bold">{{ recentScanResult.group }}</span> • Pukul: <span class="font-bold">{{ recentScanResult.time }}</span>
+                          Kategori: <span class="font-bold">{{ recentScanResult.group }}</span> · Pukul: <span class="font-bold tabular-nums">{{ recentScanResult.time }}</span>
                         </p>
 
                         <!-- Nomor Meja / Seating -->
-                        <div class="mt-2 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-emerald-200/60 inline-flex items-center gap-1.5">
-                          <span>📍 Meja / Seating:</span>
-                          <strong class="font-black text-slate-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
+                        <div class="mt-2 text-xs font-medium text-stone-800 bg-white/90 py-1.5 px-3 rounded-lg border border-emerald-200/60 inline-flex items-center gap-1.5">
+                          <i class="fa-solid fa-location-dot text-emerald-700 text-[11px]"></i>
+                          <span>Meja / Seating:</span>
+                          <strong class="font-semibold text-stone-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
                         </div>
 
                         <!-- Sesi Acara -->
-                        <div v-if="recentScanResult.sessionName" class="mt-2 ml-1 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/80 inline-flex items-center gap-1.5">
-                          <span>⏰ Sesi:</span>
-                          <strong class="font-black text-amber-950">{{ recentScanResult.sessionName }}</strong>
+                        <div v-if="recentScanResult.sessionName" class="mt-2 ml-1 text-xs font-medium text-stone-800 bg-white/90 py-1.5 px-3 rounded-lg border border-amber-200/80 inline-flex items-center gap-1.5">
+                          <i class="fa-regular fa-clock text-amber-700 text-[11px]"></i>
+                          <span>Sesi:</span>
+                          <strong class="font-semibold text-amber-950">{{ recentScanResult.sessionName }}</strong>
                         </div>
 
                         <!-- Session Mismatch Warning Banner -->
                         <div
                           v-if="recentScanResult.sessionMismatch"
-                          class="mt-2.5 p-3 rounded-xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold text-xs flex items-center gap-2 shadow-xs"
+                          class="mt-2.5 p-3 rounded-lg bg-amber-100 border border-amber-300 text-amber-950 font-semibold text-xs flex items-center gap-2"
                         >
-                          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
-                          <span>⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada {{ recentScanResult.sessionName }}</span>
+                          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm shrink-0"></i>
+                          <span>Peringatan Sesi Berbeda: Tamu ini terdaftar pada {{ recentScanResult.sessionName }}</span>
                         </div>
 
                         <!-- Tombol Toggle Souvenir Satu Klik -->
@@ -703,13 +705,13 @@
                           <button
                             type="button"
                             @click="toggleRecentScanSouvenir"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer border shadow-2xs active:scale-95"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer border"
                             :class="recentScanResult.souvenirGiven
                               ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'
-                              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                              : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-50'"
                           >
                             <i :class="recentScanResult.souvenirGiven ? 'fa-solid fa-check' : 'fa-solid fa-gift'"></i>
-                            <span>{{ recentScanResult.souvenirGiven ? '✔ Sudah Terima Souvenir' : '🎁 Souvenir Diberikan' }}</span>
+                            <span>{{ recentScanResult.souvenirGiven ? 'Sudah Terima Souvenir' : 'Souvenir Diberikan' }}</span>
                           </button>
                         </div>
 
@@ -766,32 +768,34 @@
                             <i class="fa-solid fa-xmark"></i>
                           </button>
                         </div>
-                        <h4 class="font-black text-xs sm:text-sm text-amber-950 mt-1">
-                          ⚠️ Tamu ini sudah pernah check-in sebelumnya pada pukul {{ recentScanResult.time }}
+                        <h4 class="font-bold text-xs sm:text-sm text-amber-950 mt-1">
+                          Tamu ini sudah pernah check-in sebelumnya pada pukul {{ recentScanResult.time }}
                         </h4>
                         <p class="text-xs text-amber-800 font-medium mt-0.5">
-                          Nama: <span class="font-bold">{{ recentScanResult.guestName }}</span> • Kategori: <span class="font-bold">{{ recentScanResult.group }}</span>
+                          Nama: <span class="font-bold">{{ recentScanResult.guestName }}</span> · Kategori: <span class="font-bold">{{ recentScanResult.group }}</span>
                         </p>
 
                         <!-- Nomor Meja / Seating -->
-                        <div class="mt-2 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/60 inline-flex items-center gap-1.5">
-                          <span>📍 Meja / Seating:</span>
-                          <strong class="font-black text-slate-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
+                        <div class="mt-2 text-xs font-medium text-stone-800 bg-white/90 py-1.5 px-3 rounded-lg border border-amber-200/60 inline-flex items-center gap-1.5">
+                          <i class="fa-solid fa-location-dot text-amber-700 text-[11px]"></i>
+                          <span>Meja / Seating:</span>
+                          <strong class="font-semibold text-stone-900">{{ recentScanResult.tableNumber || 'Meja Umum' }}</strong>
                         </div>
 
                         <!-- Sesi Acara -->
-                        <div v-if="recentScanResult.sessionName" class="mt-2 ml-1 text-xs font-bold text-slate-800 bg-white/80 py-1.5 px-3 rounded-xl border border-amber-200/80 inline-flex items-center gap-1.5">
-                          <span>⏰ Sesi:</span>
-                          <strong class="font-black text-amber-950">{{ recentScanResult.sessionName }}</strong>
+                        <div v-if="recentScanResult.sessionName" class="mt-2 ml-1 text-xs font-medium text-stone-800 bg-white/90 py-1.5 px-3 rounded-lg border border-amber-200/80 inline-flex items-center gap-1.5">
+                          <i class="fa-regular fa-clock text-amber-700 text-[11px]"></i>
+                          <span>Sesi:</span>
+                          <strong class="font-semibold text-amber-950">{{ recentScanResult.sessionName }}</strong>
                         </div>
 
                         <!-- Session Mismatch Warning Banner -->
                         <div
                           v-if="recentScanResult.sessionMismatch"
-                          class="mt-2.5 p-3 rounded-xl bg-amber-100 border-2 border-amber-400 text-amber-950 font-bold text-xs flex items-center gap-2 shadow-xs"
+                          class="mt-2.5 p-3 rounded-lg bg-amber-100 border border-amber-300 text-amber-950 font-semibold text-xs flex items-center gap-2"
                         >
-                          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-base shrink-0"></i>
-                          <span>⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada {{ recentScanResult.sessionName }}</span>
+                          <i class="fa-solid fa-triangle-exclamation text-amber-600 text-sm shrink-0"></i>
+                          <span>Peringatan Sesi Berbeda: Tamu ini terdaftar pada {{ recentScanResult.sessionName }}</span>
                         </div>
 
                         <!-- Tombol Toggle Souvenir Satu Klik -->
@@ -799,13 +803,13 @@
                           <button
                             type="button"
                             @click="toggleRecentScanSouvenir"
-                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-extrabold transition-all cursor-pointer border shadow-2xs active:scale-95"
+                            class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors cursor-pointer border"
                             :class="recentScanResult.souvenirGiven
                               ? 'bg-emerald-600 text-white border-emerald-600 hover:bg-emerald-700'
-                              : 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50'"
+                              : 'bg-white text-stone-700 border-stone-300 hover:bg-stone-50'"
                           >
                             <i :class="recentScanResult.souvenirGiven ? 'fa-solid fa-check' : 'fa-solid fa-gift'"></i>
-                            <span>{{ recentScanResult.souvenirGiven ? '✔ Sudah Terima Souvenir' : '🎁 Souvenir Diberikan' }}</span>
+                            <span>{{ recentScanResult.souvenirGiven ? 'Sudah Terima Souvenir' : 'Souvenir Diberikan' }}</span>
                           </button>
                         </div>
 
@@ -862,8 +866,8 @@
                             <i class="fa-solid fa-xmark"></i>
                           </button>
                         </div>
-                        <h4 class="font-black text-xs sm:text-sm text-rose-950 mt-1">
-                          ❌ {{ recentScanResult.message }}
+                        <h4 class="font-bold text-xs sm:text-sm text-rose-950 mt-1">
+                          {{ recentScanResult.message }}
                         </h4>
                         <!-- Quick action for Walk-in -->
                         <div class="mt-2.5 pt-2 border-t border-rose-200/80 flex items-center justify-between gap-2">
@@ -1072,7 +1076,7 @@
                         :title="guest.souvenirGiven ? 'Klik untuk membatalkan status souvenir' : 'Klik untuk menandai souvenir diserahkan'"
                       >
                         <i :class="guest.souvenirGiven ? 'fa-solid fa-check text-[9px]' : 'fa-solid fa-gift text-[9px]'"></i>
-                        <span>{{ guest.souvenirGiven ? '✔ Souvenir' : '🎁 Souvenir' }}</span>
+                        <span>Souvenir</span>
                       </button>
                     </div>
                   </div>
@@ -1406,16 +1410,16 @@
         class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-xs animate-in fade-in duration-200"
         @click.self="closeWalkInModal"
       >
-        <div class="bg-white rounded-3xl w-full max-w-lg shadow-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[92vh]">
+        <div class="bg-white rounded-xl w-full max-w-lg shadow-xl border border-stone-200 overflow-hidden flex flex-col max-h-[92vh]">
           <!-- Modal Header -->
-          <div class="p-5 border-b border-slate-100 flex items-center justify-between bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent">
+          <div class="p-5 border-b border-stone-200/80 flex items-center justify-between bg-[#FAF8F5]">
             <div class="flex items-center gap-3">
-              <div class="w-10 h-10 rounded-2xl bg-amber-600 text-white flex items-center justify-center text-lg font-bold shadow-xs">
+              <div class="w-9 h-9 rounded-lg bg-stone-900 text-white flex items-center justify-center text-sm">
                 <i class="fa-solid fa-user-plus"></i>
               </div>
               <div>
-                <h3 class="font-black text-slate-900 text-base">Check-in Tamu Walk-in</h3>
-                <p class="text-xs text-slate-500">Tamu langsung hadir di tempat di luar daftar kontak</p>
+                <h3 class="font-semibold text-stone-900 text-base">Check-in Tamu Walk-in</h3>
+                <p class="text-xs text-stone-500">Tamu langsung hadir di tempat di luar daftar kontak</p>
               </div>
             </div>
             <button
@@ -2281,7 +2285,7 @@ async function handleQrCodeScanned(decodedText) {
         }
         recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
         if (isMismatch) {
-          toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+          toast.warning(`Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
         }
         toast.warning(`Tamu ${guest.name} sudah pernah check-in pada pukul ${timeStr}`)
         return
@@ -2310,7 +2314,7 @@ async function handleQrCodeScanned(decodedText) {
       }
       recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
       if (isMismatch) {
-        toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+        toast.warning(`Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
       }
       toast.success(`Check-in berhasil: ${guest.name}`)
     } else {
@@ -2345,7 +2349,7 @@ async function handleQrCodeScanned(decodedText) {
         }
         recentScanPhysicalGiftInput.value = gNotes || ''
         if (isMismatch) {
-          toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+          toast.warning(`Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
         }
         toast.success(`Check-in berhasil: ${guestName}`)
         await fetchGuests(selectedInvitationId.value)
@@ -2396,7 +2400,7 @@ async function manualCheckIn(guest) {
     }
     recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
     if (isMismatch) {
-      toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+      toast.warning(`Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
     }
     toast.warning(`Tamu ${guest.name} sudah check-in pada pukul ${timeStr}`)
     return
@@ -2426,7 +2430,7 @@ async function manualCheckIn(guest) {
     }
     recentScanPhysicalGiftInput.value = guest.physicalGiftNotes || ''
     if (isMismatch) {
-      toast.warning(`⚠️ Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
+      toast.warning(`Peringatan Sesi Berbeda: Tamu ini terdaftar pada ${guestSession}`)
     }
     toast.success(`Check-in berhasil: ${guest.name}`)
   } catch (err) {

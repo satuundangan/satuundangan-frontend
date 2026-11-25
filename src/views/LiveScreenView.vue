@@ -126,36 +126,37 @@
           <button
             type="button"
             @click="triggerGreetingSimulation"
-            class="px-3.5 py-1.5 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/40 font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            class="px-3.5 py-1.5 rounded-lg bg-amber-500/20 hover:bg-amber-500/30 text-amber-200 border border-amber-500/40 font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             data-testid="btn-test-greeting"
             title="Uji coba animasi sambutan tamu (simulasi check-in)"
           >
-            <span>✨ Tes Sambutan</span>
+            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+            <span>Tes Sambutan</span>
           </button>
 
           <!-- Button: Audio Chime Toggle -->
           <button
             type="button"
             @click="toggleAudio"
-            class="px-3.5 py-1.5 rounded-xl border font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            class="px-3.5 py-1.5 rounded-lg border font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             :class="isAudioEnabled ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-300 hover:bg-emerald-900/60' : 'bg-slate-900/80 border-slate-700 text-slate-400 hover:bg-slate-800'"
             data-testid="btn-toggle-audio"
             :title="isAudioEnabled ? 'Matikan Suara Chime' : 'Aktifkan Suara Chime'"
           >
             <i :class="isAudioEnabled ? 'fa-solid fa-bell text-emerald-400' : 'fa-solid fa-bell-slash text-slate-500'"></i>
-            <span>{{ isAudioEnabled ? '🔔 Suara: ON' : '🔕 Suara: OFF' }}</span>
+            <span>{{ isAudioEnabled ? 'Suara: ON' : 'Suara: OFF' }}</span>
           </button>
 
           <!-- Button: Fullscreen Toggle -->
           <button
             type="button"
             @click="toggleFullscreen"
-            class="px-3.5 py-1.5 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center gap-2 transition-all cursor-pointer shadow-sm active:scale-95"
+            class="px-3.5 py-1.5 rounded-lg bg-slate-900/90 hover:bg-slate-800 border border-slate-700 text-slate-200 font-semibold flex items-center gap-2 transition-colors cursor-pointer"
             data-testid="btn-toggle-fullscreen"
             :title="isFullscreen ? 'Keluar Layar Penuh' : 'Masuk Layar Penuh'"
           >
             <i :class="isFullscreen ? 'fa-solid fa-compress' : 'fa-solid fa-expand'"></i>
-            <span>{{ isFullscreen ? '🗗 Keluar Penuh' : '⛶ Layar Penuh' }}</span>
+            <span>{{ isFullscreen ? 'Keluar Penuh' : 'Layar Penuh' }}</span>
           </button>
         </div>
       </header>
@@ -207,7 +208,7 @@
         <!-- Decorative Divider -->
         <div class="flex items-center justify-center gap-4 w-full max-w-md my-2">
           <div class="flex-1 h-px" :class="themeClasses.dividerLine"></div>
-          <span class="text-sm" :class="themeClasses.dividerStar">✦</span>
+          <i class="fa-solid fa-diamond text-[9px]" :class="themeClasses.dividerStar" aria-hidden="true"></i>
           <div class="flex-1 h-px" :class="themeClasses.dividerLineReverse"></div>
         </div>
 
@@ -358,18 +359,18 @@
           <button
             type="button"
             @click="dismissGreeting"
-            class="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer text-sm"
+            class="absolute top-5 right-5 w-9 h-9 rounded-full flex items-center justify-center transition-colors cursor-pointer text-sm"
             :class="themeClasses.greetingCloseBtn"
             title="Tutup Sambutan"
           >
-            ✕
+            <i class="fa-solid fa-xmark"></i>
           </button>
 
           <!-- Top Badge: Selamat Datang -->
-          <div class="inline-flex items-center gap-2 px-6 py-2 rounded-full border font-serif text-sm md:text-base tracking-[0.25em] uppercase font-bold mb-6 shadow-sm" :class="themeClasses.greetingWelcomeBadge">
-            <span>✨</span>
+          <div class="inline-flex items-center gap-2.5 px-6 py-2 rounded-full border font-serif text-sm md:text-base tracking-[0.25em] uppercase font-bold mb-6 shadow-sm" :class="themeClasses.greetingWelcomeBadge">
+            <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
             <span data-testid="greeting-welcome-text">Selamat Datang</span>
-            <span>✨</span>
+            <span class="w-1.5 h-1.5 rounded-full bg-current opacity-60"></span>
           </div>
 
           <!-- Guest Name (Cinematic Highlight) -->
@@ -451,25 +452,25 @@ const LIVE_SCREEN_THEMES = [
     id: 'dark',
     name: 'Gelap Mewah (Midnight Gold)',
     shortName: 'Gelap',
-    badge: '🌙 Gelap',
+    badge: 'Gelap',
   },
   {
     id: 'light',
     name: 'Cerah Anggun (Ivory Champagne)',
     shortName: 'Cerah',
-    badge: '☀️ Cerah',
+    badge: 'Cerah',
   },
   {
     id: 'emerald',
     name: 'Royal Emerald (Zamrud Elegan)',
     shortName: 'Emerald',
-    badge: '🍃 Emerald',
+    badge: 'Emerald',
   },
   {
     id: 'rose',
     name: 'Rose Romance (Mawar Romantis)',
     shortName: 'Rose',
-    badge: '🌸 Rose',
+    badge: 'Rose',
   },
 ]
 
@@ -870,7 +871,7 @@ const currentWish = computed(() => {
 const syncStatusText = computed(() => {
   if (syncStatus.value === 'syncing') return 'Menghubungkan...'
   if (syncStatus.value === 'error') return 'Koneksi Terputus'
-  return '🟢 Live Sync Terhubung'
+  return 'Live Sync Terhubung'
 })
 
 const syncStatusClass = computed(() => {

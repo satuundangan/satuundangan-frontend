@@ -318,9 +318,9 @@
                     >
                     <span
                       v-if="isTestAccount(data)"
-                      class="text-[9px] font-black uppercase tracking-wider px-1.5 py-0.2 rounded bg-rose-100 text-rose-700 border border-rose-200"
+                      class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-rose-50 text-rose-700 border border-rose-200 inline-flex items-center gap-1"
                     >
-                      🤖 Akun Test
+                      <i class="fa-solid fa-flask text-[9px]"></i> Akun Test
                     </span>
                   </div>
                   <span class="text-[11px] text-slate-500 truncate max-w-[180px]">{{

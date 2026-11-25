@@ -464,7 +464,7 @@
             </div>
 
             <p v-if="hasCustomHex" class="text-[10px] text-amber-800 bg-amber-50 p-2.5 rounded-xl border border-amber-200 leading-relaxed">
-              ⚡ Warna manual sedang aktif. Klik <strong>Clear</strong> untuk kembali ke warna palet asli.
+              Warna manual sedang aktif. Klik <strong>Clear</strong> untuk kembali ke warna palet asli.
             </p>
 
             <div class="flex items-center justify-between p-2 rounded-xl bg-stone-50 border border-stone-200/80">
@@ -2018,7 +2018,7 @@ const applyScope = ref('current') // 'current' or 'all'
 function loadFullCarouselDeck(deck) {
   slides.value = JSON.parse(JSON.stringify(deck.slides))
   currentSlideIndex.value = 0
-  toast.success(`Berhasil memuat "${deck.title}" (${deck.slides.length} slide sekaligus)! 🚀`)
+  toast.success(`Berhasil memuat "${deck.title}" (${deck.slides.length} slide sekaligus)`)
 }
 
 // Active Colors
@@ -2065,7 +2065,7 @@ function undo() {
   if (currentSlideIndex.value >= slides.value.length) {
     currentSlideIndex.value = slides.value.length - 1
   }
-  toast.info('Undo ↩️')
+  toast.info('Undo')
   setTimeout(() => {
     isHistoryAction = false
   }, 60)
@@ -2079,7 +2079,7 @@ function redo() {
   if (currentSlideIndex.value >= slides.value.length) {
     currentSlideIndex.value = slides.value.length - 1
   }
-  toast.info('Redo ↪️')
+  toast.info('Redo')
   setTimeout(() => {
     isHistoryAction = false
   }, 60)
@@ -2214,7 +2214,7 @@ function applyPaletteToAll(pal) {
     s.customAccent = ''
     s.customText = ''
   })
-  toast.success(`Palet "${pal.name}" diterapkan ke SEMUA (${slides.value.length}) slide! 🎨`)
+  toast.success(`Palet "${pal.name}" diterapkan ke SEMUA (${slides.value.length}) slide`)
 }
 
 function applyFontToAll() {
@@ -2222,7 +2222,7 @@ function applyFontToAll() {
   slides.value.forEach((s) => {
     s.fontFamily = currentFont
   })
-  toast.success(`Font diterapkan ke SEMUA (${slides.value.length}) slide! ✍️`)
+  toast.success(`Font diterapkan ke SEMUA (${slides.value.length}) slide`)
 }
 
 function applyBgPatternToAll() {
@@ -2230,7 +2230,7 @@ function applyBgPatternToAll() {
   slides.value.forEach((s) => {
     s.bgPattern = currentPat
   })
-  toast.success(`Tekstur latar diterapkan ke SEMUA (${slides.value.length}) slide! ✨`)
+  toast.success(`Tekstur latar diterapkan ke SEMUA (${slides.value.length}) slide`)
 }
 
 function toggleSticker(stk) {
@@ -2308,7 +2308,7 @@ async function copyImageToClipboard() {
     const res = await fetch(dataUrl)
     const blob = await res.blob()
     await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })])
-    toast.success('Gambar berhasil disalin ke clipboard! Siap di-paste langsung 📋')
+    toast.success('Gambar berhasil disalin ke clipboard. Siap di-paste langsung')
   } catch (err) {
     console.error('Copy to clipboard failed:', err)
     toast.error('Browser tidak mendukung copy image: ' + err.message)
@@ -2350,7 +2350,7 @@ async function exportAllSlidesZip() {
     link.click()
     URL.revokeObjectURL(url)
 
-    toast.success(`Berhasil! ${slides.value.length} slide di-pack dalam 1 file ZIP! 📦`)
+    toast.success(`Berhasil! ${slides.value.length} slide di-pack dalam 1 file ZIP`)
   } catch (err) {
     console.error(err)
     toast.error('Gagal export ZIP: ' + err.message)
@@ -2364,10 +2364,10 @@ async function exportAllSlidesZip() {
 // Copy Caption & Hashtags
 function copyInstagramCaption() {
   const current = currentSlide.value
-  const caption = `${current.title}\n\n${current.subtitle || ''}\n\n✨ Bikin undangan pernikahan digital estetik & anti-ribet mulai 49rb di @satuundangan_id!\n\nFitur lengkap:\n✅ 30+ Pilihan Tema (Adat Nusantara, Luxury, Anime, Cat Lovers)\n✅ Bebas Watermark & Aktif 1 Tahun\n✅ Sebar WA Otomatis & QR Code Buku Tamu\n✅ Free Wedding Planner & Kalkulator Weton\n\n👉 Coba buat gratis sekarang: Klik link di bio @satuundangan_id\n\n.\n#undanganpernikahan #undangandigital #undanganonline #weddinginvitation #tipsnikah #persiapanpernikahan #nikahhemat #undanganpernikahandigital #satuundangan`
+  const caption = `${current.title}\n\n${current.subtitle || ''}\n\nBikin undangan pernikahan digital estetik & anti-ribet mulai 49rb di @satuundangan_id\n\nFitur lengkap:\n- 30+ Pilihan Tema (Adat Nusantara, Luxury, Anime, Cat Lovers)\n- Bebas Watermark & Aktif 1 Tahun\n- Sebar WA Otomatis & QR Code Buku Tamu\n- Free Wedding Planner & Kalkulator Weton\n\nCoba buat gratis sekarang: Klik link di bio @satuundangan_id\n\n.\n#undanganpernikahan #undangandigital #undanganonline #weddinginvitation #tipsnikah #persiapanpernikahan #nikahhemat #undanganpernikahandigital #satuundangan`
 
   navigator.clipboard.writeText(caption)
-  toast.success('Caption & Hashtags berhasil disalin ke clipboard! 📋')
+  toast.success('Caption & Hashtags berhasil disalin ke clipboard')
 }
 </script>
 

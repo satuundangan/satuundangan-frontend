@@ -21,7 +21,7 @@
         
         <div class="absolute top-10 right-6 md:right-16 pointer-events-none animate-wiggle">
           <span class="inline-block px-3 py-1.5 bg-[#fff2cd] border border-[#d5c38c] rounded-md font-hand text-xs text-[#745f28] shadow-xs rotate-6">
-            ✨ Special Delivery
+            Special Delivery
           </span>
         </div>
 
@@ -63,9 +63,9 @@
         <div class="my-auto z-10 w-full max-w-md flex flex-col items-center px-4 animate-scale-up">
           
           <div class="inline-flex items-center gap-2 px-3.5 py-1 bg-[#fdeef2] rounded-full border border-[#e87a90]/40 text-[#c74c65] font-hand text-xs sm:text-sm mb-4">
-            <span>🌸</span>
+            <i class="fa-solid fa-seedling text-[11px]" aria-hidden="true"></i>
             <span>The Wedding Celebration</span>
-            <span>🌸</span>
+            <i class="fa-solid fa-seedling text-[11px]" aria-hidden="true"></i>
           </div>
 
           <h1 class="font-gaegu text-6xl sm:text-7xl md:text-8xl font-bold text-[#5b7a58] tracking-tight leading-none drop-shadow-xs">
@@ -97,16 +97,16 @@
         <!-- Wax Seal Button to Open -->
         <div class="z-20 w-full max-w-xs flex flex-col items-center gap-2.5 mb-4">
           <p class="font-hand text-xs sm:text-sm text-stone-500 animate-pulse">
-            👇 Ketuk segel lilin untuk membuka undangan
+            Ketuk segel lilin untuk membuka undangan
           </p>
 
           <button
             @click="openInvitation"
             type="button"
-            class="group w-full py-4 px-8 rounded-2xl bg-gradient-to-r from-[#5b7a58] to-[#4b6649] text-white font-gaegu text-2xl sm:text-3xl font-bold tracking-wide shadow-xl hover:shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3 doodle-button cursor-pointer"
+            class="group w-full py-4 px-8 rounded-2xl bg-[#5b7a58] hover:bg-[#4b6649] text-white font-gaegu text-2xl sm:text-3xl font-bold tracking-wide shadow-xl hover:shadow-2xl active:scale-95 transition-all flex items-center justify-center gap-3 doodle-button cursor-pointer"
           >
             <span class="w-8 h-8 rounded-full bg-[#e87a90] border-2 border-white/80 shadow-inner flex items-center justify-center text-white font-hand text-xs font-black group-hover:rotate-12 transition-transform">
-              💌
+              <i class="fa-regular fa-envelope text-sm" aria-hidden="true"></i>
             </span>
             <span>Buka Undangan</span>
             <svg class="w-5 h-5 text-white/90 animate-bounce" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
@@ -146,7 +146,7 @@
         @click="scrollToSection(item.id)"
         class="nav-bottom-item group"
       >
-        <span class="text-base sm:text-lg group-hover:scale-115 transition-transform">{{ item.icon }}</span>
+        <i :class="item.icon" class="text-sm sm:text-base transition-colors group-hover:text-[#5b7a58]" aria-hidden="true"></i>
         <span class="text-[9px] sm:text-[10px] font-hand font-bold group-hover:text-[#5b7a58]">{{ item.label }}</span>
       </button>
     </nav>
@@ -166,9 +166,9 @@
         <div class="max-w-4xl mx-auto flex flex-col items-center z-10 pt-8">
           
           <div class="inline-flex items-center gap-2 px-4 py-1.5 bg-[#fdeef2] rounded-full border border-[#e87a90]/40 text-[#c74c65] font-hand text-xs sm:text-sm mb-4">
-            <span class="animate-bounce">🌸</span>
+            <i class="fa-solid fa-seedling text-[11px]" aria-hidden="true"></i>
             <span>The Wedding Celebration</span>
-            <span class="animate-bounce">🌸</span>
+            <i class="fa-solid fa-seedling text-[11px]" aria-hidden="true"></i>
           </div>
 
           <h1 class="font-gaegu text-6xl sm:text-7xl md:text-9xl font-bold text-[#5b7a58] tracking-tight leading-none drop-shadow-xs">
@@ -197,18 +197,18 @@
               />
             </div>
             <p class="font-hand text-sm sm:text-base text-stone-600 italic">
-              "Two souls, one heart, walking together forever." ✨
+              "Two souls, one heart, walking together forever."
             </p>
           </div>
 
           <!-- Wedding Date & Venue Quick Info -->
           <div class="mt-8 flex flex-wrap items-center justify-center gap-3">
             <div class="px-5 py-2.5 bg-white border-2 border-[#5b7a58]/30 rounded-2xl shadow-xs font-hand text-sm sm:text-base text-stone-700 font-bold flex items-center gap-2">
-              <span>📅</span>
+              <i class="fa-regular fa-calendar text-[#5b7a58]" aria-hidden="true"></i>
               <span>{{ weddingDateFull }}</span>
             </div>
             <div v-if="venueCity" class="px-5 py-2.5 bg-white border-2 border-[#5b7a58]/30 rounded-2xl shadow-xs font-hand text-sm sm:text-base text-stone-700 font-bold flex items-center gap-2">
-              <span>📍</span>
+              <i class="fa-solid fa-location-dot text-[#e87a90]" aria-hidden="true"></i>
               <span>{{ venueCity }}</span>
             </div>
           </div>
@@ -254,9 +254,9 @@
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#eef4ec] border-2 border-[#5b7a58]/40 rounded-full shadow-xs">
-            <span class="text-[#e87a90]">🌸</span>
+            <i class="fa-solid fa-heart text-[#e87a90] text-xs" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#5b7a58]">The Happy Couple</span>
-            <span class="text-[#e87a90]">🌸</span>
+            <i class="fa-solid fa-heart text-[#e87a90] text-xs" aria-hidden="true"></i>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
             Mempelai yang Berbahagia
@@ -381,8 +381,9 @@
           <div class="washi-tape washi-yellow -top-3.5 left-1/2 -translate-x-1/2"></div>
 
           <div class="text-center mb-8">
-            <span class="inline-block px-4 py-1.5 bg-[#fff8e7] border border-[#e5d5a6] rounded-md font-hand text-xs sm:text-sm text-[#7d6728] mb-1 font-bold">
-              🗓️ Mark Your Calendar
+            <span class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-[#fff8e7] border border-[#e5d5a6] rounded-md font-hand text-xs sm:text-sm text-[#7d6728] mb-1 font-bold">
+              <i class="fa-regular fa-calendar" aria-hidden="true"></i>
+              <span>Mark Your Calendar</span>
             </span>
             <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#5b7a58]">
               {{ calendarMonthYear }}
@@ -416,7 +417,7 @@
                     class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#e87a90] text-white font-bold flex flex-col items-center justify-center shadow-md animate-pulse relative z-10 border-2 border-white"
                   >
                     <span class="text-xs sm:text-sm leading-none font-bold">{{ day }}</span>
-                    <span class="text-[9px] leading-none">❤️</span>
+                    <i class="fa-solid fa-heart text-[8px]" aria-hidden="true"></i>
                   </div>
                   <span v-else :class="{'text-[#e87a90] font-bold': (day + calendarData.firstDayIndex) % 7 === 1}">
                     {{ day }}
@@ -427,8 +428,9 @@
 
             <!-- Countdown Timer & Actions -->
             <div class="md:col-span-5 flex flex-col items-center justify-center border-t md:border-t-0 md:border-l border-dashed border-[#5b7a58]/30 pt-6 md:pt-0 md:pl-8">
-              <p class="font-hand text-xs sm:text-sm text-stone-500 mb-3 font-bold uppercase tracking-wider">
-                ⏳ Menuju Hari Bahagia
+              <p class="font-hand text-xs sm:text-sm text-stone-500 mb-3 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                <i class="fa-regular fa-clock text-[#5b7a58]" aria-hidden="true"></i>
+                <span>Menuju Hari Bahagia</span>
               </p>
 
               <div class="grid grid-cols-4 gap-2 w-full max-w-xs text-center mb-6">
@@ -485,7 +487,7 @@
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#fdeef2] border-2 border-[#e87a90]/40 rounded-full shadow-xs">
-            <span class="text-[#e87a90]">💌</span>
+            <i class="fa-regular fa-envelope text-[#e87a90] text-sm" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#c74c65]">Waktu & Lokasi</span>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
@@ -516,11 +518,11 @@
 
               <div class="space-y-3 font-hand text-sm text-stone-700">
                 <div class="flex items-start gap-2.5">
-                  <span class="text-[#5b7a58] font-bold">📅 Hari/Tgl:</span>
+                  <span class="text-[#5b7a58] font-bold inline-flex items-center gap-1.5"><i class="fa-regular fa-calendar text-xs" aria-hidden="true"></i> Hari/Tgl:</span>
                   <span>{{ weddingDateFull }}</span>
                 </div>
                 <div class="flex items-start gap-2.5">
-                  <span class="text-[#5b7a58] font-bold">📍 Lokasi:</span>
+                  <span class="text-[#5b7a58] font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-xs" aria-hidden="true"></i> Lokasi:</span>
                   <span>{{ akadLocationDesc }}</span>
                 </div>
               </div>
@@ -549,7 +551,7 @@
             <div>
               <div class="flex items-center justify-between border-b border-dashed border-[#e87a90]/30 pb-4 mb-4">
                 <div class="flex items-center gap-3">
-                  <span class="text-3xl">🎉</span>
+                  <i class="fa-solid fa-champagne-glasses text-2xl text-[#e87a90]" aria-hidden="true"></i>
                   <div>
                     <span class="font-gaegu text-3xl font-bold text-[#e87a90] block leading-none">Resepsi</span>
                     <span class="font-hand text-xs text-stone-500">Pesta Perayaan Bersama Sahabat</span>
@@ -562,16 +564,16 @@
 
               <div class="space-y-3 font-hand text-sm text-stone-700">
                 <div class="flex items-start gap-2.5">
-                  <span class="text-[#e87a90] font-bold">📅 Hari/Tgl:</span>
+                  <span class="text-[#e87a90] font-bold inline-flex items-center gap-1.5"><i class="fa-regular fa-calendar text-xs" aria-hidden="true"></i> Hari/Tgl:</span>
                   <span>{{ weddingDateFull }}</span>
                 </div>
                 <div class="flex items-start gap-2.5">
-                  <span class="text-[#e87a90] font-bold">📍 Lokasi:</span>
+                  <span class="text-[#e87a90] font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-xs" aria-hidden="true"></i> Lokasi:</span>
                   <span>{{ resepsiLocationDesc }}</span>
                 </div>
                 <div v-if="dressCodeText" class="flex flex-col gap-1.5">
                   <div class="flex items-start gap-2.5">
-                    <span class="text-[#e87a90] font-bold">👗 Dresscode:</span>
+                    <span class="text-[#e87a90] font-bold inline-flex items-center gap-1.5"><i class="fa-solid fa-shirt text-xs" aria-hidden="true"></i> Dresscode:</span>
                     <span>{{ dressCodeText }}</span>
                   </div>
                   <DressCodeSwatches :colors="data.designSettings?.dressCodeColors || data.dressCodeColors" :showLabel="false" size="sm" />
@@ -605,7 +607,7 @@
             rel="noopener noreferrer"
             class="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-white border-2 border-[#5b7a58]/40 text-[#5b7a58] font-gaegu text-xl font-bold hover:bg-[#edf4eb] transition-colors shadow-sm"
           >
-            <span>📺</span>
+            <i class="fa-solid fa-video text-base" aria-hidden="true"></i>
             <span>Saksikan Siaran Live Streaming</span>
           </a>
         </div>
@@ -618,7 +620,7 @@
       <section v-if="videoEmbedUrl && isSectionEnabled('video')" id="video" class="max-w-4xl mx-auto px-4 sm:px-6 py-16 md:py-24">
         <div class="text-center mb-8">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#fdeef2] border-2 border-[#e87a90]/40 rounded-full shadow-xs">
-            <span>🎬</span>
+            <i class="fa-solid fa-film text-[#c74c65] text-sm" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#c74c65]">Video Prewedding</span>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
@@ -644,7 +646,7 @@
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#fff8e7] border-2 border-[#d5c38c] rounded-full shadow-xs">
-            <span>✨</span>
+            <i class="fa-solid fa-book-open text-[#745f28] text-xs" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#745f28]">Kisah Perjalanan</span>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
@@ -661,7 +663,7 @@
           >
             <!-- Timeline Pin Node -->
             <div class="absolute -left-[35px] sm:-left-[43px] top-6 w-8 h-8 rounded-full bg-[#fdeef2] border-2 border-[#e87a90] flex items-center justify-center text-xs text-[#e87a90] font-bold shadow-xs">
-              ❤️
+              <i class="fa-solid fa-heart text-[10px]" aria-hidden="true"></i>
             </div>
 
             <div class="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -689,7 +691,7 @@
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#eef4ec] border-2 border-[#5b7a58]/40 rounded-full shadow-xs">
-            <span>📷</span>
+            <i class="fa-solid fa-camera text-[#5b7a58] text-sm" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#5b7a58]">Galeri Kenangan</span>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
@@ -720,7 +722,7 @@
               />
             </div>
             <p class="font-hand text-xs sm:text-sm text-center text-stone-600 italic">
-              {{ galleryCaptions[idx] || 'Moment of Love ✨' }}
+              {{ galleryCaptions[idx] || 'Moment of Love' }}
             </p>
           </div>
         </div>
@@ -734,13 +736,13 @@
           <div class="relative max-w-lg w-full bg-white p-4 pb-8 rounded-3xl shadow-2xl border-4 border-[#5b7a58] animate-scale-up">
             <button
               @click.stop="selectedPhoto = null"
-              class="absolute -top-3.5 -right-3.5 w-9 h-9 rounded-full bg-[#e87a90] text-white font-bold flex items-center justify-center shadow-lg"
+              class="absolute -top-3.5 -right-3.5 w-9 h-9 rounded-full bg-[#e87a90] text-white font-bold flex items-center justify-center shadow-lg cursor-pointer"
             >
-              ✕
+              <i class="fa-solid fa-xmark" aria-hidden="true"></i>
             </button>
             <img :src="selectedPhoto" alt="Zoomed photo" class="w-full rounded-2xl object-contain max-h-[75vh]"/>
             <p class="font-hand text-center text-stone-600 mt-4 text-base">
-              💕 Eternal Memories
+              Eternal Memories
             </p>
           </div>
         </div>
@@ -754,7 +756,7 @@
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#fdeef2] border-2 border-[#e87a90]/40 rounded-full shadow-xs">
-            <span>🎁</span>
+            <i class="fa-solid fa-gift text-[#c74c65] text-sm" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#c74c65]">Tanda Kasih</span>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
@@ -812,7 +814,7 @@
         <!-- Physical Gift Address -->
         <div v-if="giftAddress" class="max-w-3xl mx-auto bg-white border-2 border-dashed border-[#5b7a58]/40 rounded-3xl p-6 sm:p-8 shadow-sm relative doodle-box">
           <div class="flex items-center gap-3 mb-2">
-            <span class="text-2xl">📦</span>
+            <i class="fa-solid fa-box-open text-xl text-[#5b7a58]" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl sm:text-3xl font-bold text-[#5b7a58]">Kirim Kado Fisik</span>
           </div>
           <p class="font-hand text-sm sm:text-base text-stone-600 leading-relaxed mb-4">
@@ -842,7 +844,7 @@
         
         <div class="text-center mb-12 sm:mb-16">
           <div class="inline-flex items-center gap-2 px-5 py-1.5 bg-[#eef4ec] border-2 border-[#5b7a58]/40 rounded-full shadow-xs">
-            <span>💌</span>
+            <i class="fa-regular fa-envelope-open text-[#5b7a58] text-sm" aria-hidden="true"></i>
             <span class="font-gaegu text-2xl font-bold text-[#5b7a58]">Konfirmasi & Doa Restu</span>
           </div>
           <h2 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#333d31] mt-3">
@@ -880,25 +882,28 @@
                     type="button"
                     @click="rsvpForm.status = 'hadir'"
                     :class="rsvpForm.status === 'hadir' ? 'bg-[#5b7a58] text-white border-[#5b7a58]' : 'bg-[#faf8f3] text-stone-600 border-stone-200'"
-                    class="py-2.5 px-2 rounded-xl border font-hand text-xs sm:text-sm font-bold text-center transition-all cursor-pointer"
+                    class="py-2.5 px-2 rounded-xl border font-hand text-xs sm:text-sm font-bold text-center transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    🌸 Hadir
+                    <i class="fa-solid fa-check text-xs" aria-hidden="true"></i>
+                    <span>Hadir</span>
                   </button>
                   <button
                     type="button"
                     @click="rsvpForm.status = 'ragu'"
                     :class="rsvpForm.status === 'ragu' ? 'bg-[#d5c38c] text-white border-[#d5c38c]' : 'bg-[#faf8f3] text-stone-600 border-stone-200'"
-                    class="py-2.5 px-2 rounded-xl border font-hand text-xs sm:text-sm font-bold text-center transition-all cursor-pointer"
+                    class="py-2.5 px-2 rounded-xl border font-hand text-xs sm:text-sm font-bold text-center transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    🌼 Ragu
+                    <i class="fa-regular fa-clock text-xs" aria-hidden="true"></i>
+                    <span>Ragu</span>
                   </button>
                   <button
                     type="button"
                     @click="rsvpForm.status = 'tidak'"
                     :class="rsvpForm.status === 'tidak' ? 'bg-[#e87a90] text-white border-[#e87a90]' : 'bg-[#faf8f3] text-stone-600 border-stone-200'"
-                    class="py-2.5 px-2 rounded-xl border font-hand text-xs sm:text-sm font-bold text-center transition-all cursor-pointer"
+                    class="py-2.5 px-2 rounded-xl border font-hand text-xs sm:text-sm font-bold text-center transition-all cursor-pointer flex items-center justify-center gap-1.5"
                   >
-                    🍃 Maaf
+                    <i class="fa-solid fa-xmark text-xs" aria-hidden="true"></i>
+                    <span>Maaf</span>
                   </button>
                 </div>
               </div>
@@ -933,9 +938,10 @@
 
               <button
                 type="submit"
-                class="w-full py-3.5 rounded-2xl bg-[#5b7a58] hover:bg-[#4b6649] text-white font-gaegu text-2xl font-bold tracking-wide transition-colors shadow-md active:scale-95 cursor-pointer"
+                class="w-full py-3.5 rounded-2xl bg-[#5b7a58] hover:bg-[#4b6649] text-white font-gaegu text-2xl font-bold tracking-wide transition-colors shadow-md active:scale-95 cursor-pointer flex items-center justify-center gap-2"
               >
-                💌 Kirim Ucapan & RSVP
+                <i class="fa-regular fa-paper-plane text-lg" aria-hidden="true"></i>
+                <span>Kirim Ucapan & RSVP</span>
               </button>
             </form>
           </div>
@@ -946,8 +952,9 @@
             :class="isSectionEnabled('rsvp') ? 'lg:col-span-7' : 'lg:col-span-12 max-w-4xl mx-auto'"
             class="w-full space-y-4"
           >
-            <p class="font-hand text-sm font-bold text-stone-500 uppercase tracking-wider text-center lg:text-left">
-              📌 Bulletin Board Doa Restu ({{ guestbook.length }})
+            <p class="font-hand text-sm font-bold text-stone-500 uppercase tracking-wider text-center lg:text-left flex items-center justify-center lg:justify-start gap-1.5">
+              <i class="fa-solid fa-thumbtack text-[#e87a90] text-xs" aria-hidden="true"></i>
+              <span>Bulletin Board Doa Restu ({{ guestbook.length }})</span>
             </p>
 
             <!-- Responsive 2 Columns of Sticky Notes on Tablet/Desktop -->
@@ -961,8 +968,8 @@
                 class="p-5 rounded-2xl border border-stone-300/60 shadow-sm relative doodle-box"
               >
                 <!-- Thumbtack on Top -->
-                <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 text-base">
-                  📌
+                <div class="absolute -top-2.5 left-1/2 -translate-x-1/2 text-sm text-[#e87a90]">
+                  <i class="fa-solid fa-thumbtack" aria-hidden="true"></i>
                 </div>
 
                 <div class="flex items-center justify-between mb-2 mt-1">
@@ -996,10 +1003,12 @@
       <!-- SECTION 10: CLOSING & FOOTER                             -->
       <!-- ======================================================== -->
       <footer class="w-full py-16 text-center relative flex flex-col items-center border-t-2 border-dashed border-[#5b7a58]/30 bg-gradient-to-b from-[#faf7f2] to-[#eef4ec]/60 px-4">
-        <div class="text-4xl mb-3">🌿</div>
+        <div class="text-2xl text-[#5b7a58] mb-3">
+          <i class="fa-solid fa-leaf" aria-hidden="true"></i>
+        </div>
 
         <h3 class="font-gaegu text-4xl sm:text-5xl font-bold text-[#5b7a58]">
-          Sampai Jumpa di Hari Bahagia!
+          Sampai Jumpa di Hari Bahagia
         </h3>
         <p class="font-hand text-sm sm:text-base text-stone-500 max-w-md mx-auto mt-2 leading-relaxed">
           {{ footerCustomText || 'Kehadiran serta doa restu Bapak/Ibu/Sahabat sekalian merupakan kehormatan dan kebahagiaan terbesar bagi kami.' }}
@@ -1014,7 +1023,7 @@
 
         <div class="mt-12 pt-6 border-t border-stone-200/60 w-full max-w-md text-center">
           <p class="font-hand text-xs text-stone-400">
-            Created with ❤️ by <a href="/" class="underline hover:text-[#5b7a58]">satuundangan.id</a>
+            Created with love by <a href="/" class="underline hover:text-[#5b7a58]">satuundangan.id</a>
           </p>
         </div>
       </footer>
@@ -1027,7 +1036,7 @@
         v-if="toastMessage"
         class="fixed top-8 left-1/2 -translate-x-1/2 z-[70] px-6 py-2.5 rounded-full bg-[#333d31] text-white font-hand text-sm font-bold shadow-2xl flex items-center gap-2 border border-white/20"
       >
-        <span>✨</span>
+        <i class="fa-solid fa-circle-check text-emerald-400 text-xs" aria-hidden="true"></i>
         <span>{{ toastMessage }}</span>
       </div>
     </transition>
@@ -1287,10 +1296,10 @@ const galleryImages = computed(() => {
 })
 
 const galleryCaptions = [
-  'First Coffee Date ☕',
-  'Golden Hour Memories ✨',
-  'Laughter in Bogor 🌸',
-  'Together Forever 💕'
+  'First Coffee Date',
+  'Golden Hour Memories',
+  'Laughter in Bogor',
+  'Together Forever'
 ]
 
 const footerCustomText = computed(() => props.data?.footerText || '')
@@ -1325,27 +1334,27 @@ function scrollToSection(id) {
 // Dynamic Navigation Items
 const navItems = computed(() => {
   const items = [
-    { id: 'hero', icon: '🏠', label: 'Beranda' }
+    { id: 'hero', icon: 'fa-solid fa-house', label: 'Beranda' }
   ]
-  if (isSectionEnabled('couple')) items.push({ id: 'couple', icon: '👫', label: 'Mempelai' })
+  if (isSectionEnabled('couple')) items.push({ id: 'couple', icon: 'fa-solid fa-heart', label: 'Mempelai' })
   if (isSectionEnabled('event')) {
-    items.push({ id: 'calendar', icon: '📅', label: 'Jadwal' })
-    items.push({ id: 'events', icon: '📍', label: 'Acara' })
+    items.push({ id: 'calendar', icon: 'fa-regular fa-calendar', label: 'Jadwal' })
+    items.push({ id: 'events', icon: 'fa-solid fa-location-dot', label: 'Acara' })
   }
   if (isSectionEnabled('story') && loveStories.value?.length) {
-    items.push({ id: 'story', icon: '📖', label: 'Cerita' })
+    items.push({ id: 'story', icon: 'fa-solid fa-book-open', label: 'Cerita' })
   }
   if (isSectionEnabled('video') && videoEmbedUrl.value) {
-    items.push({ id: 'video', icon: '🎬', label: 'Video' })
+    items.push({ id: 'video', icon: 'fa-solid fa-film', label: 'Video' })
   }
   if (isSectionEnabled('gallery') && galleryImages.value?.length) {
-    items.push({ id: 'gallery', icon: '📸', label: 'Galeri' })
+    items.push({ id: 'gallery', icon: 'fa-solid fa-camera', label: 'Galeri' })
   }
   if (isSectionEnabled('gift') && (bankAccounts.value?.length || giftAddress.value)) {
-    items.push({ id: 'gift', icon: '🎁', label: 'Kado' })
+    items.push({ id: 'gift', icon: 'fa-solid fa-gift', label: 'Kado' })
   }
   if (isSectionEnabled('rsvp') || isSectionEnabled('wishes')) {
-    items.push({ id: 'rsvp', icon: '💌', label: 'RSVP' })
+    items.push({ id: 'rsvp', icon: 'fa-regular fa-envelope', label: 'RSVP' })
   }
   return items
 })
@@ -1394,7 +1403,7 @@ const guestbook = ref([
   {
     name: 'Nabila Putri',
     status: 'Hadir',
-    message: 'Selamat Dewi dan Riyandi! Semoga dilancarkan acaranya sampai hari H yaa, bahagia selalu kalian ❤️',
+    message: 'Selamat Dewi dan Riyandi! Semoga dilancarkan acaranya sampai hari H yaa, bahagia selalu kalian.',
     time: '2 jam lalu'
   },
   {
@@ -1406,7 +1415,7 @@ const guestbook = ref([
   {
     name: 'Rina & Dimas',
     status: 'Hadir',
-    message: 'Happy wedding! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. Aamiin 🌸',
+    message: 'Happy wedding! Semoga menjadi keluarga yang sakinah, mawaddah, warahmah. Aamiin.',
     time: 'Kemarin'
   }
 ])
@@ -1421,7 +1430,7 @@ function submitRsvp() {
     time: 'Baru saja'
   })
 
-  showToast('Konfirmasi RSVP & doa berhasil dikirim! 💌')
+  showToast('Konfirmasi RSVP & doa berhasil dikirim')
   rsvpForm.value.name = ''
   rsvpForm.value.message = ''
 }
@@ -1429,7 +1438,7 @@ function submitRsvp() {
 function copyText(text, label) {
   if (navigator?.clipboard) {
     navigator.clipboard.writeText(text).then(() => {
-      showToast(`${label} berhasil disalin! ✨`)
+      showToast(`${label} berhasil disalin`)
     })
   } else {
     showToast(`${label}: ${text}`)

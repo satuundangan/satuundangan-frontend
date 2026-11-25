@@ -4,7 +4,6 @@
     <header class="bg-white/80 backdrop-blur-md border-b border-stone-200 sticky top-0 z-40">
       <div class="max-w-4xl mx-auto px-6 h-16 flex items-center justify-between">
         <router-link to="/" class="font-serif text-xl font-bold text-dark flex items-center gap-2">
-          <span>💍</span>
           <span>Satu<span class="text-mocha">Undangan</span></span>
         </router-link>
         <div class="flex items-center gap-4 text-xs font-semibold">
