@@ -446,9 +446,10 @@
           </div>
         </div>
 
-        <!-- Gift Delivery Address -->
-        <div v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" class="mt-8 flex justify-center" v-observe>
-          <QrisGiftCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="dark" />
+        <!-- Gift QRIS & Wishlist -->
+        <div class="mt-8 flex justify-center flex-wrap gap-3" v-observe>
+          <QrisGiftCard v-if="data.qrisImageUrl || data.designSettings?.qrisImageUrl || data.giftSettings?.qrisImageUrl" :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="dark" />
+          <GiftRegistryCard :data="data" :groomName="data.groomName" :brideName="data.brideName" variant="dark" />
         </div>
 
         <div v-if="giftAddresses.length" class="max-w-xl mx-auto mt-10 space-y-4">
@@ -489,6 +490,7 @@ import GalleryInvitation from '@/components/invitation/GalleryInvitation.vue'
 import WatermarkBadge from '@/components/invitation/WatermarkBadge.vue'
 import DressCodeSwatches from '@/components/invitation/DressCodeSwatches.vue'
 import QrisGiftCard from '@/components/invitation/QrisGiftCard.vue'
+import GiftRegistryCard from '@/components/invitation/GiftRegistryCard.vue'
 import { createGuestMessage } from '@/api/guestMessage'
 import { useToast } from 'vue-toastification'
 
