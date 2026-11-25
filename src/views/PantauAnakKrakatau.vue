@@ -33,7 +33,7 @@
       </div>
       <div class="status-item"><span>Pengamatan terakhir</span><strong>08 Sep 2026 · 14:20 WIB</strong></div>
       <div class="status-item"><span>Koordinat</span><strong>6°06′05″ LS · 105°25′23″ BT</strong></div>
-      <div class="status-source"><span class="source-check">✓</span> Sumber: PVMBG</div>
+      <div class="status-source"><span class="source-check">OK</span> Sumber: PVMBG</div>
     </section>
 
     <section class="workspace">

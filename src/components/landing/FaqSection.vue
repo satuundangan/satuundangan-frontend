@@ -1,13 +1,8 @@
 <template>
-  <section class="section bg-ivory relative py-24 overflow-hidden">
-    <!-- Decorative Circle -->
-    <div class="absolute top-1/2 left-0 w-64 h-64 bg-sage/10 rounded-full blur-3xl -translate-y-1/2 -translate-x-1/2"></div>
-    <div class="absolute bottom-0 right-0 w-80 h-80 bg-mocha/10 rounded-full blur-3xl translate-y-1/2 translate-x-1/3"></div>
-
+  <section class="section bg-[#FAF8F5] relative py-20 border-t border-stone-200/70">
     <div class="max-w-4xl mx-auto px-6 relative z-10">
-      <div class="text-center mb-16">
-        <span class="text-mocha font-bold tracking-widest uppercase text-sm mb-2 block">Bantuan</span>
-        <h2 class="text-4xl md:text-5xl font-playfair font-bold text-dark mb-4">Pertanyaan Umum</h2>
+      <div class="text-center mb-14">
+        <h2 class="text-3xl md:text-5xl font-playfair font-bold text-stone-900 mb-3">Pertanyaan Umum</h2>
         <p class="text-muted text-lg max-w-xl mx-auto">Jawaban untuk hal-hal yang sering ditanyakan seputar pembuatan undangan digital.</p>
       </div>
 
