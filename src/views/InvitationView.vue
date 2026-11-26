@@ -966,7 +966,7 @@ function getLocalPreviewPayload(slug) {
           :groomName="invitationData.groomName"
           :brideName="invitationData.brideName"
           buttonText="Wishlist Kado"
-          variant="dark"
+          variant="floating"
         />
       </div>
 
