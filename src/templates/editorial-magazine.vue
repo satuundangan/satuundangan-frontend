@@ -56,7 +56,7 @@
     <div v-if="!showWelcome" id="main-content" class="relative z-30 opacity-0 transition-opacity duration-1000 h-screen overflow-y-auto no-scrollbar scroll-smooth">
       
       <!-- HERO -->
-      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative pt-10 md:pt-0">
+      <section id="home" class="min-h-screen flex flex-col items-center justify-center px-6 md:px-20 relative pt-10 pb-24 md:py-0">
         <div class="w-full max-w-6xl grid md:grid-cols-12 gap-8 md:gap-10 items-center" v-observe>
           <div class="md:col-span-7 space-y-6 md:space-y-8 order-2 md:order-1 text-center md:text-left">
             <span class="text-[8px] md:text-[10px] font-black uppercase tracking-[0.4em] md:tracking-[0.6em] text-gray-300">The Wedding Issue / No. 01</span>
@@ -126,10 +126,10 @@
           <!-- Groom -->
           <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center relative" v-observe>
             <div class="space-y-6 md:space-y-10 order-2 md:order-1">
-              <h2 class="text-5xl md:text-7xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -left-4 md:-left-8 z-0 select-none">01</h2>
+              <h2 class="text-5xl md:text-7xl font-playfair font-black text-gray-100 absolute -top-10 md:-top-16 -left-4 md:-left-8 z-0 select-none">01</h2>
               <div class="relative z-10 space-y-4 md:space-y-6">
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Gentleman</span>
-                <h3 class="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold uppercase tracking-tight leading-none">{{ data.groomName }}</h3>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-playfair font-bold uppercase tracking-tight leading-none">{{ data.groomName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black"></div>
                 <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Son of {{ data.parents?.groomParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaGroom?.instagram" :href="formatInstagramUrl(data.socialMediaGroom.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
@@ -146,16 +146,16 @@
 
           <!-- Bride -->
           <div class="grid md:grid-cols-2 gap-12 md:gap-20 items-center relative" v-observe>
-            <div class="order-2 md:order-1 relative">
+            <div class="order-1 relative">
                <div class="aspect-[4/5] bg-gray-100 grayscale overflow-hidden shadow-xl md:shadow-2xl mx-auto max-w-[300px] md:max-w-none">
                   <img :src="data.bridePhotoUrl || 'https://via.placeholder.com/600x800'" class="w-full h-full object-cover" />
                </div>
             </div>
-            <div class="order-1 md:order-2 space-y-6 md:space-y-10 text-right md:text-left">
-              <h2 class="text-5xl md:text-7xl font-playfair font-black text-gray-50 absolute -top-10 md:-top-16 -right-4 md:-right-8 md:left-auto z-0 select-none">02</h2>
+            <div class="order-2 space-y-6 md:space-y-10 text-right md:text-left">
+              <h2 class="text-5xl md:text-7xl font-playfair font-black text-gray-100 absolute -top-10 md:-top-16 -right-4 md:-right-8 md:left-auto z-0 select-none">02</h2>
               <div class="relative z-10 space-y-4 md:space-y-6">
                 <span class="text-[8px] md:text-[10px] uppercase tracking-[0.4em] md:tracking-[0.5em] font-black text-gray-400">The Lady</span>
-                <h3 class="text-3xl md:text-4xl lg:text-5xl font-playfair font-bold uppercase tracking-tight leading-none">{{ data.brideName }}</h3>
+                <h3 class="text-2xl md:text-3xl lg:text-4xl font-playfair font-bold uppercase tracking-tight leading-none">{{ data.brideName }}</h3>
                 <div class="w-16 md:w-20 h-1 bg-black ml-auto md:ml-0"></div>
                 <p class="text-xs md:text-sm uppercase tracking-widest font-bold pt-2 md:pt-4">Daughter of {{ data.parents?.brideParents || 'Bpk. & Ibu' }}</p>
                 <a v-if="data.socialMediaBrides?.instagram" :href="formatInstagramUrl(data.socialMediaBrides.instagram)" target="_blank" class="inline-block mt-4 md:mt-6 text-[10px] md:text-sm font-black border-b-2 border-black pb-1 hover:text-gray-500 transition-colors uppercase tracking-widest">
@@ -329,8 +329,8 @@
       </section>
 
       <!-- FOOTER -->
-      <footer class="py-16 md:py-24 text-center bg-white border-t-4 md:border-t-8 border-black">
-        <h2 class="font-playfair font-black text-3xl sm:text-4xl md:text-5xl lg:text-6xl uppercase leading-tight tracking-tight mb-6 md:mb-8 px-4">{{ data.groomName }} & {{ data.brideName }}</h2>
+      <footer class="pt-16 pb-28 md:py-24 text-center bg-white border-t-4 md:border-t-8 border-black">
+        <h2 class="font-playfair font-black text-2xl sm:text-3xl md:text-4xl uppercase leading-tight tracking-tight mb-6 md:mb-8 px-4">{{ data.groomName }} & {{ data.brideName }}</h2>
         <p v-if="data.footerText" class="text-gray-600 text-sm md:text-base max-w-xl mx-auto mb-8 px-4 leading-relaxed font-serif italic">{{ data.footerText }}</p>
         <div class="flex flex-col items-center space-y-4 md:space-y-6 px-4">
            <p class="text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.5em] md:tracking-[0.8em] font-black">All Rights Reserved / 2026</p>

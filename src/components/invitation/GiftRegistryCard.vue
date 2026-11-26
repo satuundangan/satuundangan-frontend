@@ -343,6 +343,8 @@ const buttonClass = computed(() => {
   switch (props.variant) {
     case 'dark':
       return 'bg-white/10 text-white border border-white/20 hover:bg-white/20 hover:border-white/40'
+    case 'floating':
+      return 'bg-slate-900/95 text-white border border-white/20 backdrop-blur-md shadow-2xl shadow-black/30 hover:bg-black'
     case 'light':
       return 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 shadow-sm'
     case 'gold':
